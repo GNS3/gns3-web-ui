@@ -32,6 +32,11 @@
   --gns3-map-bg-dark-2: linear-gradient(135deg, #1565c0 0%, #1976d2 50%, #1565c0 100%);
   --gns3-map-bg-dark-3: linear-gradient(135deg, #424242 0%, #616161 50%, #424242 100%);
   --gns3-map-bg-dark-4: linear-gradient(135deg, #4a148c 0%, #6a1b9a 50%, #4a148c 100%);
+
+  // Lock status badge colors
+  --gns3-lock-badge-locked-color: #ff1744;
+  --gns3-lock-badge-unlocked-color: #00c853;
+  --gns3-lock-badge-outline-color: #ffffff;
 }
 
 /* Light theme backgrounds (auto resolves to these) */
@@ -77,8 +82,8 @@ svg#map {
   background: var(--gns3-map-bg, var(--mat-sys-surface));
 }
 
-/* Node/Link selection grayscale effect */
-svg#map g.selected {
+/* Node selection grayscale effect: keep status badges colored */
+svg#map g.node_body.selected > image {
   filter: grayscale(100%);
   -webkit-filter: grayscale(100%);
 }

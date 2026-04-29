@@ -40,6 +40,7 @@ describe('MapSettingsService', () => {
       expect(service.isLogConsoleVisible).toBe(false);
       expect(service.showInterfaceLabels).toBe(true);
       expect(service.integrateLinkLabelsToLinks).toBe(true);
+      expect(service.isItemLockStatusVisible).toBe(false);
     });
 
     it('should set symbolScaling default in localStorage', () => {
@@ -165,6 +166,14 @@ describe('MapSettingsService', () => {
       service.toggleLayers(true);
 
       expect(service.isLayerNumberVisible).toBe(true);
+    });
+  });
+
+  describe('toggleItemLockStatus', () => {
+    it('should set isItemLockStatusVisible', () => {
+      service.toggleItemLockStatus(true);
+
+      expect(service.isItemLockStatusVisible).toBe(true);
     });
   });
 

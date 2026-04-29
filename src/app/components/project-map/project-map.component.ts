@@ -176,6 +176,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public isInterfaceLabelVisible: boolean = false;
   public notificationsVisibility: boolean = false;
   public layersVisibility: boolean = false;
+  public itemLockStatusVisibility: boolean = false;
   public gridVisibility: boolean = false;
   public toolbarVisibility: boolean = true;
   public symbolScaling: boolean = true;
@@ -510,6 +511,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             this.title.setTitle(this.project.name);
             this.isInterfaceLabelVisible = this.mapSettingsService.showInterfaceLabels;
             this.toggleShowTopologySummary(this.mapSettingsService.isTopologySummaryVisible);
+            const lockKey = `itemLockStatusVisibility_${this.project.project_id}`;
+            this.itemLockStatusVisibility = localStorage.getItem(lockKey) === 'true';
+            this.mapSettingsService.toggleItemLockStatus(this.itemLockStatusVisibility);
 
             this.recentlyOpenedProjectService.setcontrollerId(this.controller.id.toString());
 
@@ -1270,6 +1274,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       localStorage.removeItem('layersVisibility');
     }
     this.mapChild().applyMapSettingsChanges();
+  }
+
+  public toggleItemLockStatus(visible: boolean) {
+    this.itemLockStatusVisibility = visible;
+    this.mapSettingsService.toggleItemLockStatus(visible);
+
+    const projectId = this.project?.project_id;
+    if (projectId != null) {
+      const lockKey = `itemLockStatusVisibility_${projectId}`;
+      if (visible) {
+        localStorage.setItem(lockKey, 'true');
+      } else {
+        localStorage.removeItem(lockKey);
+      }
+    }
+    this.mapChild()?.applyMapSettingsChanges();
   }
 
   public toggleGrid(visible: boolean) {

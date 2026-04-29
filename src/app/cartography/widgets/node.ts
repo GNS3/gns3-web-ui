@@ -11,6 +11,15 @@ import { SVGSelection } from '../models/types';
 import { LabelWidget } from './label';
 import { Widget } from './widget';
 
+const LOCKED_ICON_PATH =
+  'M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z';
+// Outer contour only (no inner rect subpath) — gives a solid filled shape so stroke only traces the outside edge
+const UNLOCKED_OUTER_PATH =
+  'M18 8h-8V6c0-1.1.9-2 2-2s2 .9 2 2h2c0-2.21-1.79-4-4-4S8 3.79 8 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z';
+const LOCKED_ICON_COLOR = 'var(--gns3-lock-badge-locked-color)';
+const UNLOCKED_ICON_COLOR = 'var(--gns3-lock-badge-unlocked-color)';
+const BADGE_OUTLINE_COLOR = 'var(--gns3-lock-badge-outline-color)';
+
 @Injectable()
 export class NodeWidget implements Widget {
   public onContextMenu = new EventEmitter<NodeContextMenu>();
@@ -53,21 +62,6 @@ export class NodeWidget implements Widget {
         .attr('fill', 'red');
     }
 
-    // Add locked border rect
-    node_body_merge.select('.locked_border').remove();
-    node_body_merge
-      .filter((n: MapNode) => n.locked)
-      .append<SVGRectElement>('rect')
-      .attr('class', 'locked_border')
-      .attr('width', (n: MapNode) => n.width || 60)
-      .attr('height', (n: MapNode) => n.height || 60)
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('stroke', 'var(--mat-sys-outline)')
-      .attr('stroke-width', 2)
-      .attr('stroke-dasharray', '5, 3')
-      .attr('fill', 'none');
-
     node_body_merge.select('.layer_label').remove();
     if (this.mapSettingsService.isLayerNumberVisible) {
       node_body_merge
@@ -90,6 +84,67 @@ export class NodeWidget implements Widget {
           return styles.join('; ');
         })
         .attr('fill', `#ffffff`);
+    }
+
+    node_body_merge.select('.node_lock_status_badge').remove();
+    if (this.mapSettingsService.isItemLockStatusVisible) {
+      const lockStatusBadge = node_body_merge
+        .append<SVGGElement>('g')
+        .attr('class', 'node_lock_status_badge')
+        .attr('pointer-events', 'none')
+        .attr('transform', (n: MapNode) => {
+          const w = n.width > 0 ? n.width : 60;
+          const h = n.height > 0 ? n.height : 60;
+          // Place badge 25% inward from the top-right corner so it is always
+          // clearly inside the item regardless of size.
+          // Cloud/NAT nodes (and any node whose symbol name contains 'nat' or 'cloud')
+          // are oval-shaped — use a fixed 12px inset from the 45° arc point so the
+          // badge stays fully inside even on small nodes (badge half-size ≈ 8px).
+          const isOval =
+            n.nodeType === 'cloud' ||
+            n.nodeType === 'nat' ||
+            (n.symbol && (n.symbol.toLowerCase().includes('nat') || n.symbol.toLowerCase().includes('cloud')));
+          if (isOval) {
+            const bx = w / 2 + (w / 2 - 12) / Math.SQRT2;
+            const by = h / 2 - (h / 2 - 12) / Math.SQRT2;
+            return `translate(${bx}, ${by})`;
+          }
+          return `translate(${w * 0.80}, ${h * 0.20})`;
+        });
+
+      const lockedBadge = lockStatusBadge.filter((n: MapNode) => n.locked);
+      lockedBadge
+        .append<SVGPathElement>('path')
+        .attr('d', LOCKED_ICON_PATH)
+        .attr('transform', 'translate(-7.68, -7.68) scale(0.64)')
+        .attr('fill', LOCKED_ICON_COLOR)
+        .attr('stroke', BADGE_OUTLINE_COLOR)
+        .attr('stroke-width', 1.2)
+        .attr('stroke-linejoin', 'round')
+        .attr('paint-order', 'stroke fill');
+
+      const unlockedBadge = lockStatusBadge.filter((n: MapNode) => !n.locked);
+      const unlockedIconGroup = unlockedBadge
+        .append<SVGGElement>('g')
+        .attr('transform', 'translate(-7.68, -7.68) scale(0.64)');
+
+      // Solid outer contour path (no inner rect subpath) — stroke traces only the outside edge, no inner white border
+      unlockedIconGroup
+        .append<SVGPathElement>('path')
+        .attr('d', UNLOCKED_OUTER_PATH)
+        .attr('fill', UNLOCKED_ICON_COLOR)
+        .attr('stroke', BADGE_OUTLINE_COLOR)
+        .attr('stroke-width', 1.2)
+        .attr('stroke-linejoin', 'round')
+        .attr('paint-order', 'stroke fill');
+
+      // White dot centered in the body (matching locked keyhole style)
+      unlockedIconGroup
+        .append<SVGCircleElement>('circle')
+        .attr('cx', 12)
+        .attr('cy', 15)
+        .attr('r', 2)
+        .attr('fill', BADGE_OUTLINE_COLOR);
     }
 
     // update image of node
