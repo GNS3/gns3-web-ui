@@ -56,11 +56,30 @@ export class LineConverter implements SvgConverter {
       drawing.arrow_end = false;
     }
 
+    // Parse data-drawing-type attribute
+    const drawing_type_attr = element.attributes.getNamedItem('data-drawing-type');
+    if (drawing_type_attr && (drawing_type_attr.value === 'straight' || drawing_type_attr.value === 'freeform')) {
+      drawing.drawing_type = drawing_type_attr.value;
+    } else {
+      drawing.drawing_type = 'straight';
+    }
+
+    // Parse data-control-offset attribute
+    const control_offset_attr = element.attributes.getNamedItem('data-control-offset');
+    if (control_offset_attr && control_offset_attr.value) {
+      const offsets = control_offset_attr.value.split(',');
+      if (offsets.length === 2) {
+        drawing.control_offset = [parseInt(offsets[0], 10), parseInt(offsets[1], 10)];
+      } else {
+        drawing.control_offset = [0, 0];
+      }
+    } else {
+      drawing.control_offset = [0, 0];
+    }
+
     // Set default values
     drawing.arrow_start = drawing.arrow_start ?? false;
     drawing.arrow_end = drawing.arrow_end ?? false;
-    drawing.drawing_type = 'straight';
-    drawing.control_offset = [0, 0];
 
     return drawing;
   }
