@@ -15,6 +15,10 @@ export class LineElementFactory implements DrawingElementFactory {
     lineElement.y2 = 0;
     lineElement.width = 100;
     lineElement.height = 0;
+    lineElement.arrow_start = false;
+    lineElement.arrow_end = false;
+    lineElement.drawing_type = 'straight';
+    lineElement.control_offset = [0, 0];
     return lineElement;
   }
 }
