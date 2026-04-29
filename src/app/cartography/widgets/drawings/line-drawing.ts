@@ -7,6 +7,7 @@ import { LineElement } from '../../models/drawings/line-element';
 import { MapDrawing } from '../../models/map/map-drawing';
 import { SVGSelection } from '../../models/types';
 import { DrawingShapeWidget } from './drawing-shape-widget';
+import { StyleTranslator } from '../links/style-translator';
 
 @Injectable()
 export class LineDrawingWidget implements DrawingShapeWidget {
@@ -43,23 +44,21 @@ export class LineDrawingWidget implements DrawingShapeWidget {
       defs = view.append('defs');
     }
 
-    const drawing = view.selectAll<SVGLineElement, LineElement>('line.line_element').data((d: MapDrawing) => {
-      return d.element && d.element instanceof LineElement ? [d.element] : [];
+    // Draw straight lines
+    const straightLines = view.selectAll<SVGLineElement, LineElement>('line.line_element').data((d: MapDrawing) => {
+      return d.element && d.element instanceof LineElement && d.element.drawing_type !== 'freeform' ? [d.element] : [];
     });
 
-    drawing.enter().append<SVGCircleElement>('circle').attr('class', 'right');
+    straightLines.enter().append<SVGCircleElement>('circle').attr('class', 'right');
 
-    drawing.enter().append<SVGCircleElement>('circle').attr('class', 'left');
+    straightLines.enter().append<SVGCircleElement>('circle').attr('class', 'left');
 
-    // Add control point circle for freeform mode
-    drawing.enter().append<SVGCircleElement>('circle').attr('class', 'control-point');
+    const straightLinesEnter = straightLines.enter().append<SVGLineElement>('line').attr('class', 'line_element noselect');
 
-    const drawing_enter = drawing.enter().append<SVGLineElement>('line').attr('class', 'line_element noselect');
+    const straightLinesMerge = straightLines.merge(straightLinesEnter);
 
-    const merge = drawing.merge(drawing_enter);
-
-    // Store original stroke color for hover effect
-    merge.each(function (line: LineElement) {
+    // Draw straight lines
+    straightLinesMerge.each(function (line: LineElement) {
       const originalStroke = line.stroke;
 
       // Create arrow markers if needed
@@ -112,31 +111,50 @@ export class LineDrawingWidget implements DrawingShapeWidget {
         });
     });
 
-    // Update control point for freeform lines
-    merge
-      .selectAll<SVGCircleElement, LineElement>('circle.control-point')
-      .attr('cx', (line) => {
-        if (line.drawing_type === 'freeform' && line.control_offset) {
-          const midX = (line.x1 + line.x2) / 2;
-          return midX + line.control_offset[0];
-        }
-        return (line.x1 + line.x2) / 2;
-      })
-      .attr('cy', (line) => {
-        if (line.drawing_type === 'freeform' && line.control_offset) {
-          const midY = (line.y1 + line.y2) / 2;
-          return midY + line.control_offset[1];
-        }
-        return (line.y1 + line.y2) / 2;
-      })
-      .attr('r', (line) => (line.drawing_type === 'freeform' ? 5 : 0))
-      .attr('fill', 'var(--mat-sys-primary)')
-      .attr('stroke', 'var(--mat-sys-on-primary)')
-      .attr('stroke-width', 2)
-      .attr('cursor', 'move')
-      .attr('display', (line) => (line.drawing_type === 'freeform' ? 'block' : 'none'));
+    // Draw freeform lines as paths
+    const freeformLines = view
+      .selectAll<SVGPathElement, LineElement>('path.line_element_freeform')
+      .data((d: MapDrawing) => {
+        return d.element && d.element instanceof LineElement && d.element.drawing_type === 'freeform' ? [d.element] : [];
+      });
 
-    drawing.exit().remove();
+    freeformLines.enter().append<SVGCircleElement>('circle').attr('class', 'right');
+
+    freeformLines.enter().append<SVGCircleElement>('circle').attr('class', 'left');
+
+    const freeformLinesEnter = freeformLines.enter().append<SVGPathElement>('path').attr('class', 'line_element_freeform noselect');
+
+    const freeformLinesMerge = freeformLines.merge(freeformLinesEnter);
+
+    // Draw freeform lines (drag behavior will be added in drawings.ts)
+    freeformLinesMerge.each(function (line: LineElement) {
+      // Create arrow markers if needed
+      if (line.arrow_end) {
+        self.createOrUpdateArrowMarkerForLine(defs, 'end', line.stroke, line.stroke_width);
+      }
+      if (line.arrow_start) {
+        self.createOrUpdateArrowMarkerForLine(defs, 'start', line.stroke, line.stroke_width);
+      }
+
+      // Calculate path data
+      const source: [number, number] = [line.x1, line.y1];
+      const target: [number, number] = [line.x2, line.y2];
+      const controlOffset = line.control_offset || [(line.x1 + line.x2) / 2, (line.y1 + line.y2) / 2];
+      const pathData = StyleTranslator.getFreeformBezierPath(source, target, undefined, undefined, controlOffset);
+
+      select(this)
+        .attr('d', pathData)
+        .attr('stroke', line.stroke)
+        .attr('stroke-width', line.stroke_width)
+        .attr('stroke-dasharray', self.qtDasharrayFixer.fix(line.stroke_dasharray))
+        .attr('fill', 'none')
+        .attr('cursor', 'grab')
+        .attr('marker-end', line.arrow_end ? 'url(#line-end)' : null)
+        .attr('marker-start', line.arrow_start ? 'url(#line-start)' : null);
+    });
+
+    straightLines.exit().remove();
+    freeformLines.exit().remove();
   }
 
   private drawCurveElements(view: SVGSelection) {
