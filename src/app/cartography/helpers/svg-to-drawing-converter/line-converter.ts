@@ -11,7 +11,7 @@ export class LineConverter implements SvgConverter {
     }
 
     const stroke_width = element.attributes.getNamedItem('stroke-width');
-    if (stroke) {
+    if (stroke_width) {
       drawing.stroke_width = parseInt(stroke_width.value, 10);
     }
 
@@ -39,6 +39,28 @@ export class LineConverter implements SvgConverter {
     if (y2) {
       drawing.y2 = parseInt(y2.value, 10);
     }
+
+    // Parse marker attributes for arrows
+    const marker_start = element.attributes.getNamedItem('marker-start');
+    const marker_end = element.attributes.getNamedItem('marker-end');
+
+    if (marker_start && marker_start.value.includes('line-start')) {
+      drawing.arrow_start = true;
+    } else {
+      drawing.arrow_start = false;
+    }
+
+    if (marker_end && marker_end.value.includes('line-end')) {
+      drawing.arrow_end = true;
+    } else {
+      drawing.arrow_end = false;
+    }
+
+    // Set default values
+    drawing.arrow_start = drawing.arrow_start ?? false;
+    drawing.arrow_end = drawing.arrow_end ?? false;
+    drawing.drawing_type = 'straight';
+    drawing.control_offset = [0, 0];
 
     return drawing;
   }
