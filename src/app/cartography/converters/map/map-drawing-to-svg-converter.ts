@@ -44,11 +44,12 @@ export class MapDrawingToSvgConverter implements Converter<MapDrawing, string> {
       const line = mapDrawing.element;
       const markerStart = line.arrow_start ? ' marker-start="url(#line-start)"' : '';
       const markerEnd = line.arrow_end ? ' marker-end="url(#line-end)"' : '';
+      const controlOffset = line.control_offset ? ` data-control-offset="${line.control_offset.join(',')}"` : '';
       elem = `<line stroke=\"${line.stroke}\" stroke-width=\"${line.stroke_width}\" x1=\"${
         line.x1
       }\" x2=\"${line.x2}\" y1=\"${line.y1}\" y2=\"${
         line.y2
-      }\" stroke-dasharray=\"${line.stroke_dasharray ?? 'none'}\"${markerStart}${markerEnd} data-drawing-type=\"${line.drawing_type ?? 'straight'}\" data-arrow-start=\"${line.arrow_start ?? false}\" data-arrow-end=\"${line.arrow_end ?? false}\" />`;
+      }\" stroke-dasharray=\"${line.stroke_dasharray ?? 'none'}\"${markerStart}${markerEnd} data-drawing-type=\"${line.drawing_type ?? 'straight'}\" data-arrow-start=\"${line.arrow_start ?? false}\" data-arrow-end=\"${line.arrow_end ?? false}\"${controlOffset} />`;
     } else if (mapDrawing.element instanceof CurveElement) {
       // Generate path data from points
       const curve = mapDrawing.element;
