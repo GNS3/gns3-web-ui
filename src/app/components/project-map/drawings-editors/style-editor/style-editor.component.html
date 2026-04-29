@@ -63,6 +63,25 @@
     </mat-form-field>
     }
 
+    @if (element.line_arrow_direction !== undefined) {
+    <mat-form-field class="form-field">
+      <mat-label>Arrow direction</mat-label>
+      <mat-select [value]="element.line_arrow_direction" (selectionChange)="onLineArrowDirectionChange($event.value)">
+        @for (dir of arrowDirections; track dir.value) {
+        <mat-option [value]="dir.value"> {{ dir.name }} </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="form-field">
+      <mat-label>Drawing type</mat-label>
+      <mat-select [value]="element.line_drawing_type" (selectionChange)="onLineDrawingTypeChange($event.value)">
+        @for (type of lineDrawingTypes; track type.value) {
+        <mat-option [value]="type.value"> {{ type.name }} </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    }
+
     <mat-form-field class="form-field">
       <mat-label>Rotation</mat-label>
       <input matInput formControlName="rotation" type="number" />

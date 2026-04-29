@@ -363,6 +363,28 @@ export class DrawingsWidget implements Widget {
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
 
+    let controlPointMove = drag()
+      .on('start', () => {
+        document.body.style.cursor = 'move';
+      })
+      .on('drag', (event: any, datum: MapDrawing) => {
+        const evt = event;
+        if (datum.element instanceof LineElement && (datum.element as LineElement).drawing_type === 'freeform') {
+          const line = datum.element as LineElement;
+          // Update control offset based on drag movement
+          if (!line.control_offset) {
+            line.control_offset = [0, 0];
+          }
+          line.control_offset[0] += evt.dx;
+          line.control_offset[1] += evt.dy;
+          this.redrawDrawing(view, datum);
+        }
+      })
+      .on('end', (event: any, datum: MapDrawing) => {
+        document.body.style.cursor = 'initial';
+        this.resizingFinished.emit(this.createResizingEvent(datum));
+      });
+
     merge.select<SVGAElement>('line.bottom').call(bottom);
 
     merge.select<SVGAElement>('line.top').call(top);
@@ -374,6 +396,8 @@ export class DrawingsWidget implements Widget {
     merge.select<SVGAElement>('circle.right').call(circleMoveRight);
 
     merge.select<SVGAElement>('circle.left').call(circleMoveLeft);
+
+    merge.select<SVGCircleElement>('circle.control-point').call(controlPointMove);
   }
 
   private createResizingEvent(datum: MapDrawing) {
