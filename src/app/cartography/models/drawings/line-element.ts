@@ -16,4 +16,13 @@ export class LineElement implements DrawingElement {
   arrow_end: boolean;
   drawing_type: LineDrawingType;
   control_offset: [number, number]; // For freeform mode: [x, y] offset from midpoint
+
+  // Text label properties
+  text: string;
+  text_font_family: string;
+  text_font_size: number;
+  text_font_weight: string;
+  text_fill: string;
+  text_x: number;
+  text_y: number;
 }

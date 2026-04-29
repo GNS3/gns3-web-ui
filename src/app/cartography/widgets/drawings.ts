@@ -381,7 +381,7 @@ export class DrawingsWidget implements Widget {
     merge.each((datum: MapDrawing) => {
       if (datum.element instanceof LineElement && (datum.element as LineElement).drawing_type === 'freeform') {
         const line = datum.element as LineElement;
-        const pathElement = select(merge.node()).select<SVGPathElement>('path.line_element_freeform');
+        const pathElement = view.select<SVGPathElement>(`g.drawing[drawing_id="${datum.id}"] path.line_element_freeform`);
 
         if (!pathElement.empty()) {
           const dragState = {
