@@ -253,6 +253,9 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
           if (node.status === 'started') {
             this.showCommand(`Launching console for node ${splittedCommand[1]}...`);
             var host = node.console_host;
+            if (host === '0.0.0.0' || host === '::' || host === '0:0:0:0:0:0:0:0') {
+              host = this.controller.host;
+            }
             if (ipaddr.IPv6.isValid(host)) {
               host = `[${host}]`;
             }
