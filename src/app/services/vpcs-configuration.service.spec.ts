@@ -19,12 +19,12 @@ describe('VpcsConfigurationService', () => {
   });
 
   describe('getConsoleTypes', () => {
-    it('should return exactly telnet and none', () => {
-      expect(service.getConsoleTypes()).toEqual(['telnet', 'none']);
+    it('should return exactly telnet, ssh and none', () => {
+      expect(service.getConsoleTypes()).toEqual(['telnet', 'ssh', 'none']);
     });
 
-    it('should return array with exactly 2 console types', () => {
-      expect(service.getConsoleTypes()).toHaveLength(2);
+    it('should return array with exactly 3 console types', () => {
+      expect(service.getConsoleTypes()).toHaveLength(3);
     });
 
     it('should return independent array on each call', () => {

@@ -304,13 +304,23 @@ describe('ContextConsoleMenuComponent', () => {
       expect(mockToasterService.error).toHaveBeenCalledWith('SPICE console is not yet supported.');
     });
 
-    it('should open telnet console for telnet type when node is started', () => {
+    it('should open terminal console for telnet type when node is started', () => {
       const telnetNode = createMockNode({ status: 'started', console_type: 'telnet' });
       (component as any).node = telnetNode;
 
       component.openWebConsole();
 
       expect(mockNodeConsoleService.openConsoleForNode).toHaveBeenCalledWith(telnetNode);
+      expect(logConsoleSubjectNext).toHaveBeenCalledWith(true);
+    });
+
+    it('should open terminal console for ssh type when node is started', () => {
+      const sshNode = createMockNode({ status: 'started', console_type: 'ssh' });
+      (component as any).node = sshNode;
+
+      component.openWebConsole();
+
+      expect(mockNodeConsoleService.openConsoleForNode).toHaveBeenCalledWith(sshNode);
       expect(logConsoleSubjectNext).toHaveBeenCalledWith(true);
     });
   });
@@ -343,9 +353,20 @@ describe('ContextConsoleMenuComponent', () => {
       expect(mockToasterService.error).toHaveBeenCalledWith('SPICE console is not yet supported.');
     });
 
-    it('should open telnet URL in new tab for telnet type when node is started', () => {
+    it('should open terminal URL in new tab for telnet type when node is started', () => {
       const telnetNode = createMockNode({ status: 'started', console_type: 'telnet' });
       (component as any).node = telnetNode;
+      const windowOpenSpy = vi.spyOn(window, 'open');
+
+      component.openWebConsoleInNewTab();
+
+      expect(windowOpenSpy).toHaveBeenCalled();
+      windowOpenSpy.mockRestore();
+    });
+
+    it('should open terminal URL in new tab for ssh type when node is started', () => {
+      const sshNode = createMockNode({ status: 'started', console_type: 'ssh' });
+      (component as any).node = sshNode;
       const windowOpenSpy = vi.spyOn(window, 'open');
 
       component.openWebConsoleInNewTab();

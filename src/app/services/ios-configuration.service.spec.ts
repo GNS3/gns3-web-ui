@@ -19,14 +19,15 @@ describe('IosConfigurationService', () => {
   });
 
   describe('getConsoleTypes', () => {
-    it('should return telnet and none console types', () => {
+    it('should return telnet, ssh, and none console types', () => {
       const result = service.getConsoleTypes();
       expect(result).toContain('telnet');
+      expect(result).toContain('ssh');
       expect(result).toContain('none');
     });
 
-    it('should return exactly 2 console types', () => {
-      expect(service.getConsoleTypes()).toHaveLength(2);
+    it('should return exactly 3 console types', () => {
+      expect(service.getConsoleTypes()).toHaveLength(3);
     });
 
     it('should return an array', () => {

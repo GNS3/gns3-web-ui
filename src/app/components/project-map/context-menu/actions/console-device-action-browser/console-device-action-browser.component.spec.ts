@@ -352,6 +352,29 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
     });
   });
 
+  describe('startConsole() with ssh', () => {
+    it('should build correct ssh URI', () => {
+      const mockNode = createMockNode({
+        console_host: '192.168.1.1',
+        console: 5000,
+        console_type: 'ssh',
+        name: 'Router1',
+        project_id: 'proj-1',
+        node_id: 'node-1',
+      });
+
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('node', mockNode);
+      fixture.detectChanges();
+
+      component.startConsole(false);
+
+      expect(mockProtocolHandlerService.open).toHaveBeenCalledWith(
+        'gns3+ssh://192.168.1.1:5000?name=Router1&project_id=proj-1&node_id=node-1'
+      );
+    });
+  });
+
   describe('startConsole() with IPv6', () => {
     it('should wrap IPv6 address in brackets for telnet', () => {
       const mockNode = createMockNode({
@@ -496,7 +519,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       component.startConsole(false);
 
       expect(mockToasterService.error).toHaveBeenCalledWith(
-        'Supported console types are: telnet, vnc, spice and spice+agent.'
+        'Supported console types are: telnet, ssh, vnc, spice and spice+agent.'
       );
     });
 

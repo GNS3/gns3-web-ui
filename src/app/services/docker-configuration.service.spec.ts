@@ -19,14 +19,15 @@ describe('DockerConfigurationService', () => {
   });
 
   describe('getConsoleTypes', () => {
-    it('should return 5 console types', () => {
+    it('should return 6 console types', () => {
       const result = service.getConsoleTypes();
-      expect(result).toHaveLength(5);
+      expect(result).toHaveLength(6);
     });
 
-    it('should include telnet, vnc, http, https, none', () => {
+    it('should include telnet, ssh, vnc, http, https, none', () => {
       const result = service.getConsoleTypes();
       expect(result).toContain('telnet');
+      expect(result).toContain('ssh');
       expect(result).toContain('vnc');
       expect(result).toContain('http');
       expect(result).toContain('https');
@@ -35,14 +36,15 @@ describe('DockerConfigurationService', () => {
   });
 
   describe('getAuxConsoleTypes', () => {
-    it('should return 2 aux console types', () => {
+    it('should return 3 aux console types', () => {
       const result = service.getAuxConsoleTypes();
-      expect(result).toHaveLength(2);
+      expect(result).toHaveLength(3);
     });
 
-    it('should include telnet and none', () => {
+    it('should include telnet, ssh and none', () => {
       const result = service.getAuxConsoleTypes();
       expect(result).toContain('telnet');
+      expect(result).toContain('ssh');
       expect(result).toContain('none');
     });
   });
