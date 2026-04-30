@@ -15,7 +15,7 @@ export class BuiltInTemplatesConfigurationService {
   }
 
   getConsoleTypesForCloudNodes() {
-    return ['telnet', 'vnc', 'spice', 'http', 'https', 'none'];
+    return ['telnet', 'ssh', 'vnc', 'spice', 'http', 'https', 'none'];
   }
 
   getCategoriesForEthernetHubs() {

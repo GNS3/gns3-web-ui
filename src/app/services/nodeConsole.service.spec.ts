@@ -234,6 +234,18 @@ describe('NodeConsoleService', () => {
       expect(window.open).toHaveBeenCalled();
     });
 
+    it('should open tab for started ssh node', () => {
+      mockRouter.url = '/projects/project-1/edit';
+      global.window = {
+        open: vi.fn(),
+      } as any;
+
+      const sshNode = { ...mockNode, console_type: 'ssh' };
+      service.openConsolesForAllNodesInNewTabs([sshNode]);
+
+      expect(window.open).toHaveBeenCalled();
+    });
+
     it('should show error for stopped node', () => {
       const stoppedNode = { ...mockNode, status: 'stopped' };
 
@@ -242,7 +254,7 @@ describe('NodeConsoleService', () => {
       expect(mockToasterService.error).toHaveBeenCalled();
     });
 
-    it('should skip non-telnet console types', () => {
+    it('should skip non-terminal console types', () => {
       global.window = {
         open: vi.fn(),
       } as any;

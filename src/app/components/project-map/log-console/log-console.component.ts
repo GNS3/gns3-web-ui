@@ -256,9 +256,9 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
             if (ipaddr.IPv6.isValid(host)) {
               host = `[${host}]`;
             }
-            if (node.console_type === 'telnet') {
+            if (node.console_type === 'telnet' || node.console_type === 'ssh') {
               this.protocolHandlerService.open(
-                `gns3+telnet://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
+                `gns3+${node.console_type}://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type === 'vnc') {
               this.protocolHandlerService.open(
@@ -271,7 +271,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
             } else if (node.console_type && node.console_type.startsWith('http')) {
               window.open(`${node.console_type}://${host}:${node.console}`);
             } else {
-              this.showCommand('Supported console types are: telnet, vnc, spice and spice+agent');
+              this.showCommand('Supported console types are: telnet, ssh, vnc, spice and spice+agent');
             }
           } else {
             this.showCommand(`This node must be started before a console can be opened.`);
