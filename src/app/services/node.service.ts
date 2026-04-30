@@ -131,6 +131,7 @@ export class NodeService {
   updateNode(controller: Controller, node: Node): Observable<Node> {
     return this.httpController.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       console_type: node.console_type,
+      aux_type: node.aux_type,
       console_auto_start: node.console_auto_start,
       locked: node.locked,
       name: node.name,
@@ -164,6 +165,7 @@ export class NodeService {
 
     return this.httpController.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       console_type: node.console_type,
+      aux_type: node.aux_type,
       console_auto_start: node.console_auto_start,
       custom_adapters: filtered_custom_adapters,
       name: node.name,
