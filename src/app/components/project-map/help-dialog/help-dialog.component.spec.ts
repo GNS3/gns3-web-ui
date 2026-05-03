@@ -15,6 +15,7 @@ describe('HelpDialogComponent', () => {
   ];
 
   beforeEach(async () => {
+    vi.clearAllMocks();
     mockDialogRef = { close: vi.fn() };
 
     await TestBed.configureTestingModule({
@@ -27,7 +28,9 @@ describe('HelpDialogComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('title', () => {
