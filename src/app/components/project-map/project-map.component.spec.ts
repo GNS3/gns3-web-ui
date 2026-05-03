@@ -506,9 +506,11 @@ describe('ProjectMapComponent', () => {
       toggleLogConsole: vi.fn(),
       toggleTopologySummary: vi.fn(),
       toggleLayers: vi.fn(),
+      toggleItemLockStatus: vi.fn(),
       showInterfaceLabels: false,
       isLogConsoleVisible: true,
       isTopologySummaryVisible: true,
+      isItemLockStatusVisible: false,
       logConsoleSubject: of(true),
       symbolScalingSubject: of(true),
       mapRenderedEmitter: { emit: vi.fn() },
@@ -861,6 +863,7 @@ describe('ProjectMapComponent', () => {
       expect(component.isInterfaceLabelVisible).toBe(false);
       expect(component.notificationsVisibility).toBe(false);
       expect(component.layersVisibility).toBe(false);
+      expect(component.itemLockStatusVisibility).toBe(false);
       expect(component.gridVisibility).toBe(false);
       expect(component.toolbarVisibility).toBe(true);
       expect(component.symbolScaling).toBe(true);
@@ -957,6 +960,37 @@ describe('ProjectMapComponent', () => {
 
       expect(component.notificationsVisibility).toBe(false);
       expect(localStorage.getItem('notificationsVisibility')).toBeNull();
+    });
+  });
+
+  describe('Toggle Item Lock Status', () => {
+    it('should toggle item lock status visibility', () => {
+      component.itemLockStatusVisibility = false;
+      component.project = mockProject;
+      vi.spyOn(component as any, 'mapChild').mockReturnValue({
+        applyMapSettingsChanges: vi.fn(),
+      });
+
+      component.toggleItemLockStatus(true);
+
+      expect(component.itemLockStatusVisibility).toBe(true);
+      expect(mockMapSettingsService.toggleItemLockStatus).toHaveBeenCalledWith(true);
+      expect(localStorage.getItem('itemLockStatusVisibility_proj1')).toBe('true');
+    });
+
+    it('should disable item lock status visibility and clear local storage', () => {
+      component.itemLockStatusVisibility = true;
+      component.project = mockProject;
+      localStorage.setItem('itemLockStatusVisibility_proj1', 'true');
+      vi.spyOn(component as any, 'mapChild').mockReturnValue({
+        applyMapSettingsChanges: vi.fn(),
+      });
+
+      component.toggleItemLockStatus(false);
+
+      expect(component.itemLockStatusVisibility).toBe(false);
+      expect(mockMapSettingsService.toggleItemLockStatus).toHaveBeenCalledWith(false);
+      expect(localStorage.getItem('itemLockStatusVisibility_proj1')).toBeNull();
     });
   });
 

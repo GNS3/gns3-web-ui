@@ -293,10 +293,9 @@ readonly value = input<string>('');
 
 ## Hardcoded Color Protection
 
-**Multi-layer protection system** prevents code quality bypass:
+**Two-layer protection system** prevents code quality bypass:
 - **Pre-commit**: Auto-checks for hardcoded colors + warns on `.husky/` modifications
 - **CI**: Requires `hooks-update` label for hook changes
-- **Script Integrity**: SHA256 checksum verification
 
 **Documentation**: [docs/guides/css/hardcoded-color-protection.md](docs/guides/css/hardcoded-color-protection.md)
 

@@ -1,7 +1,52 @@
 {
-  "version": "1.0.0",
-  "last_updated": "2026-03-31",
+  "version": "1.1.0",
+  "last_updated": "2026-04-27",
   "description": "Allowed hardcoded colors in legacy graphics rendering code. DO NOT modify without proper review. Supports .ts, .html, and .scss files.",
+  "allowed_scss_variables": [
+    {
+      "file": "src/styles/_map.scss",
+      "variables": [
+        "--gns3-map-bg-auto",
+        "--gns3-map-bg-light",
+        "--gns3-map-bg-dark",
+        "--gns3-map-bg-light-1",
+        "--gns3-map-bg-light-2",
+        "--gns3-map-bg-light-3",
+        "--gns3-map-bg-light-4",
+        "--gns3-map-bg-dark-1",
+        "--gns3-map-bg-dark-2",
+        "--gns3-map-bg-dark-3",
+        "--gns3-map-bg-dark-4",
+        "--gns3-map-bg"
+      ],
+      "reason": "Map background presets for light/dark themes and gradient patterns"
+    },
+    {
+      "file": "src/styles/_map.scss",
+      "variables": [
+        "--gns3-canvas-label-color",
+        "--gns3-canvas-link-color"
+      ],
+      "reason": "Canvas element colors that adapt to background (light vs dark)"
+    },
+    {
+      "file": "src/styles/_map.scss",
+      "variables": [
+        "--gns3-grid-drawing-color",
+        "--gns3-grid-node-color"
+      ],
+      "reason": "Grid colors for drawings and nodes with visibility optimization"
+    },
+    {
+      "file": "src/styles/_map.scss",
+      "variables": [
+        "--gns3-lock-badge-locked-color",
+        "--gns3-lock-badge-unlocked-color",
+        "--gns3-lock-badge-outline-color"
+      ],
+      "reason": "Lock status badge colors for nodes and drawings"
+    }
+  ],
   "allowed_colors": [
     {
       "file": "src/app/cartography/components/text-editor/text-editor.component.ts",
@@ -94,6 +139,15 @@
         ".attr('fill', `#ffffff`)"
       ],
       "reason": "Node fill color"
+    },
+    {
+      "file": "src/styles/_map.scss",
+      "patterns": [
+        "--gns3-lock-badge-locked-color: #ff1744;",
+        "--gns3-lock-badge-unlocked-color: #00c853;",
+        "--gns3-lock-badge-outline-color: #ffffff;"
+      ],
+      "reason": "Lock status badge CSS variable definitions - red=locked, green=unlocked, white=outline"
     },
     {
       "file": "src/app/components/project-map/drawings-editors/style-editor/style-editor.component.ts",
