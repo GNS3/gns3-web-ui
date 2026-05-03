@@ -6,6 +6,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { ProgressService } from '../../../../../common/progress/progress.service';
 
 @Component({
   selector: 'app-stop-node-action',
@@ -17,6 +18,7 @@ export class StopNodeActionComponent implements OnChanges {
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
   private cdr = inject(ChangeDetectorRef);
+  private progressService = inject(ProgressService);
 
   readonly controller = input<Controller>(undefined);
   readonly nodes = input<Node[]>(undefined);
@@ -34,10 +36,17 @@ export class StopNodeActionComponent implements OnChanges {
   }
 
   stopNodes() {
+    this.progressService.activate();
+
     this.nodes().forEach((node) => {
       this.nodeService.stop(this.controller(), node).subscribe({
-        next: (n: Node) => {},
+        next: (n: Node) => {
+          if (this.nodes().indexOf(node) === this.nodes().length - 1) {
+            this.progressService.deactivate();
+          }
+        },
         error: (err) => {
+          this.progressService.deactivate();
           const message = err.error?.message || err.message || 'Failed to stop node';
           this.toasterService.error(message);
           this.cdr.markForCheck();
