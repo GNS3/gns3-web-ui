@@ -12,6 +12,7 @@ export class MapSettingsService {
   public isTopologySummaryVisible: boolean = true;
   public isLogConsoleVisible: boolean = false;
   public isLayerNumberVisible: boolean = false;
+  public isItemLockStatusVisible: boolean = false;
   public logConsoleSubject = new Subject<boolean>();
   public mapRenderedEmitter = new EventEmitter<boolean>();
   public openReadme: boolean;
@@ -77,6 +78,10 @@ export class MapSettingsService {
 
   toggleLayers(value: boolean) {
     this.isLayerNumberVisible = value;
+  }
+
+  toggleItemLockStatus(value: boolean) {
+    this.isItemLockStatusVisible = value;
   }
 
   toggleShowInterfaceLabels(value: boolean) {
