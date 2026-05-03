@@ -8,6 +8,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { ProgressService } from '../../../../../common/progress/progress.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -16,6 +17,7 @@ describe('StartNodeActionComponent', () => {
   let fixture: ComponentFixture<StartNodeActionComponent>;
   let mockNodeService: { start: ReturnType<typeof vi.fn> };
   let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockProgressService: { activate: ReturnType<typeof vi.fn>; deactivate: ReturnType<typeof vi.fn> };
 
   const mockController: Controller = {
     id: 1,
@@ -67,12 +69,14 @@ describe('StartNodeActionComponent', () => {
 
     mockNodeService = { start: vi.fn().mockReturnValue(of({})) };
     mockToasterService = { error: vi.fn() };
+    mockProgressService = { activate: vi.fn(), deactivate: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [MatButtonModule, MatIconModule, MatMenuModule],
     })
       .overrideProvider(NodeService, { useValue: mockNodeService })
       .overrideProvider(ToasterService, { useValue: mockToasterService })
+      .overrideProvider(ProgressService, { useValue: mockProgressService })
       .overrideProvider(ChangeDetectorRef, { useValue: { markForCheck: vi.fn() } })
       .compileComponents();
 
@@ -81,7 +85,9 @@ describe('StartNodeActionComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('isNodeWithStoppedStatus', () => {
