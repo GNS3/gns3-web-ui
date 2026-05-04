@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { drag } from 'd3-drag';
+import { select } from 'd3-selection';
 
 import { Draggable } from '../events/draggable';
 import { DrawingContextMenu } from '../events/event-source';
@@ -14,6 +15,7 @@ import { MapDrawing } from '../models/map/map-drawing';
 import { SVGSelection } from '../models/types';
 import { DrawingWidget } from './drawing';
 import { Widget } from './widget';
+import { StyleTranslator } from './links/style-translator';
 
 @Injectable()
 export class DrawingsWidget implements Widget {
@@ -374,6 +376,67 @@ export class DrawingsWidget implements Widget {
     merge.select<SVGAElement>('circle.right').call(circleMoveRight);
 
     merge.select<SVGAElement>('circle.left').call(circleMoveLeft);
+
+    // Add drag behavior for freeform lines (similar to links)
+    merge.each((datum: MapDrawing) => {
+      if (datum.element instanceof LineElement && (datum.element as LineElement).drawing_type === 'freeform') {
+        const line = datum.element as LineElement;
+        const pathElement = view.select<SVGPathElement>(`g.drawing[drawing_id="${datum.id}"] path.line_element_freeform`);
+
+        if (!pathElement.empty()) {
+          const dragState = {
+            startX: 0,
+            startY: 0,
+            startOffset: [0, 0] as [number, number],
+          };
+
+          pathElement.call(
+            drag<SVGPathElement, MapDrawing>()
+              .on('start', (event: any) => {
+                document.body.style.cursor = 'grabbing';
+                dragState.startX = event.x;
+                dragState.startY = event.y;
+
+                if (line.control_offset) {
+                  dragState.startOffset = [line.control_offset[0], line.control_offset[1]];
+                } else {
+                  const midX = (line.x1 + line.x2) / 2;
+                  const midY = (line.y1 + line.y2) / 2;
+                  dragState.startOffset = [midX, midY];
+                }
+              })
+              .on('drag', (event: any) => {
+                const mousePos: [number, number] = [event.x, event.y];
+
+                const startX = dragState.startX;
+                const startY = dragState.startY;
+                const startOffset = dragState.startOffset;
+
+                const deltaX = mousePos[0] - startX;
+                const deltaY = mousePos[1] - startY;
+
+                const controlX = startOffset[0] + deltaX;
+                const controlY = startOffset[1] + deltaY;
+
+                // Update control offset (absolute coordinates like links)
+                line.control_offset = [controlX, controlY];
+
+                // Recalculate path
+                const source: [number, number] = [line.x1, line.y1];
+                const target: [number, number] = [line.x2, line.y2];
+                const newPath = StyleTranslator.getFreeformBezierPath(source, target, undefined, undefined, [controlX, controlY]);
+                pathElement.attr('d', newPath);
+
+                this.redrawDrawing(view, datum);
+              })
+              .on('end', (event: any) => {
+                document.body.style.cursor = 'initial';
+                this.resizingFinished.emit(this.createResizingEvent(datum));
+              })
+          );
+        }
+      }
+    });
   }
 
   private createResizingEvent(datum: MapDrawing) {

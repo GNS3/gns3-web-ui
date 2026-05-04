@@ -7,6 +7,7 @@ import { LineElement } from '../../models/drawings/line-element';
 import { MapDrawing } from '../../models/map/map-drawing';
 import { SVGSelection } from '../../models/types';
 import { DrawingShapeWidget } from './drawing-shape-widget';
+import { StyleTranslator } from '../links/style-translator';
 
 @Injectable()
 export class LineDrawingWidget implements DrawingShapeWidget {
@@ -35,29 +36,168 @@ export class LineDrawingWidget implements DrawingShapeWidget {
   }
 
   private drawLineElements(view: SVGSelection) {
-    const drawing = view.selectAll<SVGLineElement, LineElement>('line.line_element').data((d: MapDrawing) => {
-      return d.element && d.element instanceof LineElement ? [d.element] : [];
+    const self = this;
+
+    // Ensure defs element exists for arrow markers
+    let defs = view.select('defs');
+    if (defs.empty()) {
+      defs = view.append('defs');
+    }
+
+    // Draw straight lines
+    const straightLines = view.selectAll<SVGLineElement, MapDrawing>('line.line_element').data((d: MapDrawing) => {
+      return d.element && d.element instanceof LineElement && d.element.drawing_type !== 'freeform' ? [d] : [];
     });
 
-    drawing.enter().append<SVGCircleElement>('circle').attr('class', 'right');
+    straightLines.enter().append<SVGCircleElement>('circle').attr('class', 'right');
 
-    drawing.enter().append<SVGCircleElement>('circle').attr('class', 'left');
+    straightLines.enter().append<SVGCircleElement>('circle').attr('class', 'left');
 
-    const drawing_enter = drawing.enter().append<SVGLineElement>('line').attr('class', 'line_element noselect');
+    const straightLinesEnter = straightLines.enter().append<SVGLineElement>('line').attr('class', 'line_element noselect');
 
-    const merge = drawing.merge(drawing_enter);
+    // Add text label for straight lines
+    straightLinesEnter.append<SVGTextElement>('text').attr('class', 'line_text_label noselect');
 
-    merge
-      .attr('stroke', (line) => line.stroke)
-      .attr('stroke-width', (line) => line.stroke_width)
-      .attr('stroke-dasharray', (line) => this.qtDasharrayFixer.fix(line.stroke_dasharray))
-      .attr('x1', (line) => line.x1)
-      .attr('x2', (line) => line.x2)
-      .attr('y1', (line) => line.y1)
-      .attr('y2', (line) => line.y2)
-      .attr('cursor', 'pointer');
+    const straightLinesMerge = straightLines.merge(straightLinesEnter);
 
-    drawing.exit().remove();
+    // Draw straight lines
+    straightLinesMerge.each(function (mapDrawing: MapDrawing) {
+      const line = mapDrawing.element as LineElement;
+      const originalStroke = line.stroke;
+
+      // Create arrow markers with unique IDs per drawing
+      if (line.arrow_end) {
+        self.createOrUpdateArrowMarkerForLine(defs, mapDrawing.id, 'end', line.stroke, line.stroke_width);
+      }
+      if (line.arrow_start) {
+        self.createOrUpdateArrowMarkerForLine(defs, mapDrawing.id, 'start', line.stroke, line.stroke_width);
+      }
+
+      select(this)
+        .attr('stroke', line.stroke)
+        .attr('stroke-width', line.stroke_width)
+        .attr('stroke-dasharray', self.qtDasharrayFixer.fix(line.stroke_dasharray))
+        .attr('x1', line.x1)
+        .attr('x2', line.x2)
+        .attr('y1', line.y1)
+        .attr('y2', line.y2)
+        .attr('cursor', 'pointer')
+        .attr('marker-end', line.arrow_end ? `url(#line-end-${mapDrawing.id})` : null)
+        .attr('marker-start', line.arrow_start ? `url(#line-start-${mapDrawing.id})` : null)
+        .on('mouseenter', function () {
+          // Get the error color from CSS variable
+          const errorColor = getComputedStyle(document.documentElement)
+            .getPropertyValue('--mat-sys-error')
+            .trim();
+
+          // Update path stroke
+          select(this).attr('stroke', errorColor);
+
+          // Update arrow marker fills
+          if (line.arrow_end) {
+            defs.select(`#line-end-${mapDrawing.id} path`).attr('fill', errorColor);
+          }
+          if (line.arrow_start) {
+            defs.select(`#line-start-${mapDrawing.id} path`).attr('fill', errorColor);
+          }
+        })
+        .on('mouseleave', function () {
+          // Restore original stroke
+          select(this).attr('stroke', originalStroke);
+
+          // Restore arrow marker fills
+          if (line.arrow_end) {
+            defs.select(`#line-end-${mapDrawing.id} path`).attr('fill', originalStroke);
+          }
+          if (line.arrow_start) {
+            defs.select(`#line-start-${mapDrawing.id} path`).attr('fill', originalStroke);
+          }
+        });
+
+      // Update text label
+      const textLabel = select(this.parentNode as SVGGElement).select<SVGTextElement>('text.line_text_label');
+      if (line.text && line.text.trim() !== '') {
+        textLabel
+          .text(line.text)
+          .attr('x', line.text_x)
+          .attr('y', line.text_y)
+          .attr('fill', line.text_fill)
+          .attr('font-family', line.text_font_family)
+          .attr('font-size', `${line.text_font_size}px`)
+          .attr('font-weight', line.text_font_weight)
+          .attr('visibility', 'visible')
+          .attr('class', 'line_text_label noselect');
+      } else {
+        textLabel.attr('visibility', 'hidden');
+      }
+    });
+
+    // Draw freeform lines as paths
+    const freeformLines = view
+      .selectAll<SVGPathElement, MapDrawing>('path.line_element_freeform')
+      .data((d: MapDrawing) => {
+        return d.element && d.element instanceof LineElement && d.element.drawing_type === 'freeform' ? [d] : [];
+      });
+
+    freeformLines.enter().append<SVGCircleElement>('circle').attr('class', 'right');
+
+    freeformLines.enter().append<SVGCircleElement>('circle').attr('class', 'left');
+
+    const freeformLinesEnter = freeformLines.enter().append<SVGPathElement>('path').attr('class', 'line_element_freeform noselect');
+
+    // Add text label for freeform lines
+    freeformLinesEnter.append<SVGTextElement>('text').attr('class', 'line_text_label noselect');
+
+    const freeformLinesMerge = freeformLines.merge(freeformLinesEnter);
+
+    // Draw freeform lines (drag behavior will be added in drawings.ts)
+    freeformLinesMerge.each(function (mapDrawing: MapDrawing) {
+      const line = mapDrawing.element as LineElement;
+
+      // Create arrow markers with unique IDs per drawing
+      if (line.arrow_end) {
+        self.createOrUpdateArrowMarkerForLine(defs, mapDrawing.id, 'end', line.stroke, line.stroke_width);
+      }
+      if (line.arrow_start) {
+        self.createOrUpdateArrowMarkerForLine(defs, mapDrawing.id, 'start', line.stroke, line.stroke_width);
+      }
+
+      // Calculate path data
+      const source: [number, number] = [line.x1, line.y1];
+      const target: [number, number] = [line.x2, line.y2];
+      const controlOffset = line.control_offset || [(line.x1 + line.x2) / 2, (line.y1 + line.y2) / 2];
+      const pathData = StyleTranslator.getFreeformBezierPath(source, target, undefined, undefined, controlOffset);
+
+      select(this)
+        .attr('d', pathData)
+        .attr('stroke', line.stroke)
+        .attr('stroke-width', line.stroke_width)
+        .attr('stroke-dasharray', self.qtDasharrayFixer.fix(line.stroke_dasharray))
+        .attr('fill', 'none')
+        .attr('cursor', 'grab')
+        .attr('marker-end', line.arrow_end ? `url(#line-end-${mapDrawing.id})` : null)
+        .attr('marker-start', line.arrow_start ? `url(#line-start-${mapDrawing.id})` : null);
+
+      // Update text label
+      const textLabel = select(this.parentNode as SVGGElement).select<SVGTextElement>('text.line_text_label');
+      if (line.text && line.text.trim() !== '') {
+        textLabel
+          .text(line.text)
+          .attr('x', line.text_x)
+          .attr('y', line.text_y)
+          .attr('fill', line.text_fill)
+          .attr('font-family', line.text_font_family)
+          .attr('font-size', `${line.text_font_size}px`)
+          .attr('font-weight', line.text_font_weight)
+          .attr('visibility', 'visible')
+          .attr('class', 'line_text_label noselect');
+      } else {
+        textLabel.attr('visibility', 'hidden');
+      }
+    });
+
+    straightLines.exit().remove();
+    freeformLines.exit().remove();
   }
 
   private drawCurveElements(view: SVGSelection) {
@@ -169,6 +309,36 @@ export class LineDrawingWidget implements DrawingShapeWidget {
         select(this).remove();
       }
     });
+  }
+
+  private createOrUpdateArrowMarkerForLine(
+    defs: any,
+    drawingId: string,
+    position: 'start' | 'end',
+    color: string,
+    strokeWidth: number
+  ) {
+    const markerId = `line-${position}-${drawingId}`;
+    let marker = defs.select(`marker#${markerId}`);
+
+    if (marker.empty()) {
+      marker = defs
+        .append('marker')
+        .attr('id', markerId)
+        .attr('markerWidth', '4')
+        .attr('markerHeight', '4')
+        .attr('refX', position === 'end' ? '0' : '4')
+        .attr('refY', '2')
+        .attr('orient', 'auto')
+        .attr('markerUnits', 'strokeWidth');
+
+      marker
+        .append('path')
+        .attr('d', position === 'end' ? 'M0,0 L4,2 L0,4 z' : 'M4,0 L0,2 L4,4 z')
+        .attr('fill', color);
+    } else {
+      marker.select('path').attr('fill', color);
+    }
   }
 
   private createOrUpdateArrowMarker(
