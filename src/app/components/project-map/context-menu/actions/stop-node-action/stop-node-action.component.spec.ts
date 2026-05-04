@@ -8,6 +8,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
+import { ProgressService } from '../../../../../common/progress/progress.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -16,6 +17,7 @@ describe('StopNodeActionComponent', () => {
   let fixture: ComponentFixture<StopNodeActionComponent>;
   let mockNodeService: { stop: ReturnType<typeof vi.fn> };
   let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockProgressService: { activate: ReturnType<typeof vi.fn>; deactivate: ReturnType<typeof vi.fn> };
   let mockChangeDetectorRef: { markForCheck: ReturnType<typeof vi.fn> };
 
   const mockController: Controller = {
@@ -70,6 +72,7 @@ describe('StopNodeActionComponent', () => {
 
     mockNodeService = { stop: vi.fn().mockReturnValue(of({})) };
     mockToasterService = { error: vi.fn() };
+    mockProgressService = { activate: vi.fn(), deactivate: vi.fn() };
     mockChangeDetectorRef = { markForCheck: vi.fn() };
 
     await TestBed.configureTestingModule({
@@ -77,6 +80,7 @@ describe('StopNodeActionComponent', () => {
       providers: [
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ProgressService, useValue: mockProgressService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
