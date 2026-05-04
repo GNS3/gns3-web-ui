@@ -65,7 +65,7 @@
     "ng2-file-upload": "^3.0.0",
     "ngx-device-detector": "4.0.1",
     "ngx-json-viewer": "^3.2.1",
-    "ngx-markdown": "^21.1.0",
+    "ngx-markdown": "^21.2.0",
     "node-fetch": "^3.2.10",
     "notosans-fontface": "^1.3.0",
     "postcss-loader": "^6.2.1",
