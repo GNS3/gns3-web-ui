@@ -242,8 +242,19 @@ export class ConfiguratorDialogIosComponent implements OnInit {
       // Update general settings
       this.node.name = generalFormValues.name;
       this.node.properties.image = generalFormValues.path;
-      this.node.properties.midplane = generalFormValues.midplane;
-      this.node.properties.npe = generalFormValues.npe;
+
+      // Only update midplane and npe if supported by the platform (c7200)
+      const midplaneNpeSupportedPlatforms = ['c7200'];
+      if (midplaneNpeSupportedPlatforms.includes(this.node.properties.platform)) {
+        // Convert empty string to null (server expects null or valid enum value, not empty string)
+        this.node.properties.midplane = generalFormValues.midplane !== '' ? generalFormValues.midplane : null;
+        this.node.properties.npe = generalFormValues.npe !== '' ? generalFormValues.npe : null;
+      } else {
+        // Remove properties that don't exist on this platform
+        delete this.node.properties.midplane;
+        delete this.node.properties.npe;
+      }
+
       this.node.console_type = generalFormValues.console_type;
       this.node.aux_type = generalFormValues.aux_type;
       this.node.console_auto_start = generalFormValues.console_auto_start;
