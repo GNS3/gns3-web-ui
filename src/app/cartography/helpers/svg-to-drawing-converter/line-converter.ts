@@ -11,7 +11,7 @@ export class LineConverter implements SvgConverter {
     }
 
     const stroke_width = element.attributes.getNamedItem('stroke-width');
-    if (stroke) {
+    if (stroke_width) {
       drawing.stroke_width = parseInt(stroke_width.value, 10);
     }
 
@@ -39,6 +39,47 @@ export class LineConverter implements SvgConverter {
     if (y2) {
       drawing.y2 = parseInt(y2.value, 10);
     }
+
+    // Parse marker attributes for arrows
+    const marker_start = element.attributes.getNamedItem('marker-start');
+    const marker_end = element.attributes.getNamedItem('marker-end');
+
+    if (marker_start && marker_start.value.includes('line-start')) {
+      drawing.arrow_start = true;
+    } else {
+      drawing.arrow_start = false;
+    }
+
+    if (marker_end && marker_end.value.includes('line-end')) {
+      drawing.arrow_end = true;
+    } else {
+      drawing.arrow_end = false;
+    }
+
+    // Parse data-drawing-type attribute
+    const drawing_type_attr = element.attributes.getNamedItem('data-drawing-type');
+    if (drawing_type_attr && (drawing_type_attr.value === 'straight' || drawing_type_attr.value === 'freeform')) {
+      drawing.drawing_type = drawing_type_attr.value;
+    } else {
+      drawing.drawing_type = 'straight';
+    }
+
+    // Parse data-control-offset attribute
+    const control_offset_attr = element.attributes.getNamedItem('data-control-offset');
+    if (control_offset_attr && control_offset_attr.value) {
+      const offsets = control_offset_attr.value.split(',');
+      if (offsets.length === 2) {
+        drawing.control_offset = [parseInt(offsets[0], 10), parseInt(offsets[1], 10)];
+      } else {
+        drawing.control_offset = [0, 0];
+      }
+    } else {
+      drawing.control_offset = [0, 0];
+    }
+
+    // Set default values
+    drawing.arrow_start = drawing.arrow_start ?? false;
+    drawing.arrow_end = drawing.arrow_end ?? false;
 
     return drawing;
   }

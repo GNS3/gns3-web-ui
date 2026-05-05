@@ -82,6 +82,10 @@ export class StyleEditorDialogComponent implements OnInit {
     { value: 'start', name: 'Start Arrow' },
     { value: 'both', name: 'Both Arrows' },
   ];
+  lineDrawingTypes = [
+    { value: 'straight', name: 'Straight Line' },
+    { value: 'freeform', name: 'Freeform (Control Point)' },
+  ];
 
   constructor() {
     this.formGroup = this.formBuilder.group({
@@ -110,6 +114,20 @@ export class StyleEditorDialogComponent implements OnInit {
           ? ''
           : this.drawing.element.stroke_dasharray ?? 'none';
       this.element.stroke_width = this.drawing.element.stroke_width;
+
+      // Initialize arrow direction for line
+      if (this.drawing.element.arrow_start && this.drawing.element.arrow_end) {
+        this.element.line_arrow_direction = 'both';
+      } else if (this.drawing.element.arrow_start) {
+        this.element.line_arrow_direction = 'start';
+      } else if (this.drawing.element.arrow_end) {
+        this.element.line_arrow_direction = 'end';
+      } else {
+        this.element.line_arrow_direction = 'none';
+      }
+
+      // Initialize drawing type
+      this.element.line_drawing_type = this.drawing.element.drawing_type || 'straight';
     } else if (this.drawing.element instanceof CurveElement) {
       this.element.stroke = this.drawing.element.stroke;
       this.element.stroke_dasharray =
@@ -179,6 +197,16 @@ export class StyleEditorDialogComponent implements OnInit {
     this.cd.markForCheck();
   }
 
+  onLineArrowDirectionChange(value: string) {
+    this.element.line_arrow_direction = value;
+    this.cd.markForCheck();
+  }
+
+  onLineDrawingTypeChange(value: string) {
+    this.element.line_drawing_type = value;
+    this.cd.markForCheck();
+  }
+
   onNoClick() {
     this.dialogRef.close();
   }
@@ -212,6 +240,20 @@ export class StyleEditorDialogComponent implements OnInit {
         this.drawing.element.stroke = this.element.stroke;
         this.drawing.element.stroke_dasharray = this.element.stroke_dasharray;
         this.drawing.element.stroke_width = this.element.stroke_width === 0 ? 2 : this.element.stroke_width;
+
+        // Update arrow properties
+        this.drawing.element.arrow_start =
+          this.element.line_arrow_direction === 'start' || this.element.line_arrow_direction === 'both';
+        this.drawing.element.arrow_end =
+          this.element.line_arrow_direction === 'end' || this.element.line_arrow_direction === 'both';
+
+        // Update drawing type
+        this.drawing.element.drawing_type = (this.element.line_drawing_type || 'straight') as any;
+
+        // Initialize control_offset if switching to freeform
+        if (this.drawing.element.drawing_type === 'freeform' && !this.drawing.element.control_offset) {
+          this.drawing.element.control_offset = [0, 0];
+        }
       } else if (this.drawing.element instanceof CurveElement) {
         this.drawing.element.stroke = this.element.stroke ?? '#000000';
         this.drawing.element.stroke_dasharray =
@@ -263,4 +305,6 @@ export class ElementData {
   ry: number;
   curve_type: string;
   arrow_direction: string;
+  line_arrow_direction: string;
+  line_drawing_type: string;
 }
