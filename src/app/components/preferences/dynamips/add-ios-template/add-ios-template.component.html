@@ -135,10 +135,10 @@
 
         <mat-step label="Network adapters">
           <div class="ios-add__step-content">
-            @if (platform()) {
+            @if (platform() && chassis() && adapterMatrix()[platform()] && adapterMatrix()[platform()][chassis()]) {
             <div class="ios-add__adapters">
-              @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) { @if (adapterMatrix()[platform()][chassis() || ''] &&
-              adapterMatrix()[platform()][chassis() || ''][index]) {
+              @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) {
+              @if (adapterMatrix()[platform()][chassis()][index]) {
               <mat-form-field appearance="fill" class="ios-add__field">
                 <mat-label>Slot {{ index }}</mat-label>
                 <mat-select
@@ -146,10 +146,11 @@
                   [value]="networkAdaptersForTemplate()[index] || ''"
                   (selectionChange)="onAdapterChange(index, $event.value)"
                 >
-                  @if (adapterMatrix()[platform()][chassis()|| ''][index].length > 1 &&
-                  !adapterMatrix()[platform()][chassis()|| ''][index][0].startsWith('C7200')) {
+                  @if (adapterMatrix()[platform()][chassis()][index].length > 1 &&
+                  !adapterMatrix()[platform()][chassis()][index][0].startsWith('C7200')) {
                   <mat-option [value]=""></mat-option>
-                  } @for (option of adapterMatrix()[platform()][chassis() || ''][index]; track option) {
+                  }
+                  @for (option of adapterMatrix()[platform()][chassis()][index]; track option) {
                   <mat-option [value]="option">
                     {{ option }}
                   </mat-option>
