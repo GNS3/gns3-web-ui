@@ -472,7 +472,7 @@ describe('ConfiguratorDialogIosComponent', () => {
       expect(component.node.properties.midplane).toBe('vxr');
       expect(component.node.properties.npe).toBe('npe-300');
       expect(component.node.console_type).toBe('none');
-      expect(component.node.properties.aux_type).toBe('telnet');
+      expect(component.node.aux_type).toBe('telnet');
       expect(component.node.console_auto_start).toBe(true);
     });
 
