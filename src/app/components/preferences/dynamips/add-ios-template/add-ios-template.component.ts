@@ -161,15 +161,27 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   }
 
   fillDefaultSlots() {
-    if (this.platform()) {
-      const matrix = this.adapterMatrix();
-      for (let i = 0; i <= 6; i++) {
-        let adapters = matrix[this.platform()][this.chassis() || ''][i];
-        if (adapters && (adapters.length === 1 || adapters[0].startsWith('C7200'))) {
-          const currentAdapters = [...this.networkAdaptersForTemplate()];
-          currentAdapters[i] = adapters[0];
-          this.networkAdaptersForTemplate.set(currentAdapters);
-        }
+    if (!this.platform()) return;
+
+    const matrix = this.adapterMatrix();
+    const platformAdapters = matrix[this.platform()];
+    if (!platformAdapters) return;
+
+    // For platforms with chassis options (c1700, c2600, c3600), chassis must be set
+    const hasChassisOptions = this.chassisOptions()[this.platform()];
+    if (hasChassisOptions && !this.chassis()) return;
+
+    // For platforms without chassis (c2691, c3725, c3745, c7200), use empty string
+    const chassisKey = hasChassisOptions ? this.chassis() : '';
+    const chassisAdapters = platformAdapters[chassisKey];
+    if (!chassisAdapters) return;
+
+    for (let i = 0; i <= 6; i++) {
+      let adapters = chassisAdapters[i];
+      if (adapters && (adapters.length === 1 || adapters[0].startsWith('C7200'))) {
+        const currentAdapters = [...this.networkAdaptersForTemplate()];
+        currentAdapters[i] = adapters[0];
+        this.networkAdaptersForTemplate.set(currentAdapters);
       }
     }
   }
@@ -275,19 +287,60 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     let name: string = this.imageName().split('-')[0];
     this.templateName.set(name);
 
-    if (name === 'c3620' || name === 'c3640' || name === 'c3660') {
-      this.platform.set('c3600');
-    } else {
-      this.platform.set(name);
-    }
+    // Extract chassis from filename (e.g., '1710' from 'c1710')
+    let chassisFromName = name.substring(1);
 
-    if (name === 'c3620' || name === 'c3640' || name === 'c3660') this.chassis.set(name.substring(1));
-    else if (name === 'c1700') {
-      this.chassis.set('1760');
-    } else if (name === 'c2600') {
-      this.chassis.set('2651XM');
-    } else {
+    // 1. Check if it's a complete valid platform name
+    const validPlatforms = ['c1700', 'c2600', 'c2691', 'c3725', 'c3745', 'c3600', 'c7200'];
+    if (validPlatforms.includes(name)) {
+      this.platform.set(name);
+      // Set default chassis for platforms that require it
+      if (name === 'c1700') {
+        this.chassis.set('1760');
+      } else if (name === 'c2600') {
+        this.chassis.set('2651XM');
+      } else {
+        this.chassis.set('');
+      }
+    }
+    // 2. Check for c3600 chassis variants
+    else if (name.startsWith('c36')) {
+      this.platform.set('c3600');
+      const validChassis = ['3620', '3640', '3660'];
+      if (validChassis.includes(chassisFromName)) {
+        this.chassis.set(chassisFromName);
+      } else {
+        this.chassis.set('');
+        this.toasterService.warning(`Invalid chassis '${chassisFromName}' for platform c3600. Please select a valid chassis: ${validChassis.join(', ')}`);
+      }
+    }
+    // 3. Check for c1700 chassis variants
+    else if (name.startsWith('c17')) {
+      this.platform.set('c1700');
+      const validChassis = ['1720', '1721', '1750', '1751', '1760'];
+      if (validChassis.includes(chassisFromName)) {
+        this.chassis.set(chassisFromName);
+      } else {
+        this.chassis.set('');
+        this.toasterService.warning(`Invalid chassis '${chassisFromName}' for platform c1700. Please select a valid chassis: ${validChassis.join(', ')}`);
+      }
+    }
+    // 4. Check for c2600 chassis variants (but not c2691)
+    else if (name.startsWith('c26')) {
+      this.platform.set('c2600');
+      const validChassis = ['2610', '2611', '2620', '2621', '2610XM', '2611XM', '2620XM', '2621XM', '2650XM', '2651XM'];
+      if (validChassis.includes(chassisFromName)) {
+        this.chassis.set(chassisFromName);
+      } else {
+        this.chassis.set('');
+        this.toasterService.warning(`Invalid chassis '${chassisFromName}' for platform c2600. Please select a valid chassis.`);
+      }
+    }
+    // 5. Unknown platform, warn user
+    else {
+      this.platform.set(name);
       this.chassis.set('');
+      this.toasterService.warning(`Unknown platform '${name}'. Supported platforms are: c1700, c2600, c2691, c3600, c3725, c3745, c7200. Please verify the platform manually.`);
     }
     this.memory.set(String(this.defaultRam()[this.platform()]));
     this.fillDefaultSlots();
