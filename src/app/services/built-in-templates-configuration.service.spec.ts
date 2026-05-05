@@ -36,14 +36,15 @@ describe('BuiltInTemplatesConfigurationService', () => {
   });
 
   describe('getConsoleTypesForCloudNodes', () => {
-    it('should return 6 console types', () => {
+    it('should return 7 console types', () => {
       const result = service.getConsoleTypesForCloudNodes();
-      expect(result).toHaveLength(6);
+      expect(result).toHaveLength(7);
     });
 
-    it('should include telnet, vnc, spice, http, https, none', () => {
+    it('should include telnet, ssh, vnc, spice, http, https, none', () => {
       const result = service.getConsoleTypesForCloudNodes();
       expect(result).toContain('telnet');
+      expect(result).toContain('ssh');
       expect(result).toContain('vnc');
       expect(result).toContain('spice');
       expect(result).toContain('http');

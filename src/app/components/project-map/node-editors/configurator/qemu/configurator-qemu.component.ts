@@ -76,6 +76,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   generalSettingsForm: UntypedFormGroup;
   networkSettingsForm: UntypedFormGroup;
   consoleTypes: string[] = [];
+  auxConsoleTypes: string[] = [];
   onCloseOptions = [];
   bootPriorities = [];
   diskInterfaces: string[] = [];
@@ -155,7 +156,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
           boot_priority: node.properties.boot_priority || '',
           on_close: node.properties.on_close || '',
           console_type: node.console_type || '',
-          aux_type: node.properties.aux_type || '',
+          aux_type: node.aux_type || '',
           console_auto_start: node.console_auto_start || false,
           // HDD fields
           hda_disk_image: node.properties.hda_disk_image || '',
@@ -254,6 +255,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
   getConfiguration() {
     this.consoleTypes = this.qemuConfigurationService.getConsoleTypes();
+    this.auxConsoleTypes = this.qemuConfigurationService.getAuxConsoleTypes();
     this.onCloseOptions = this.qemuConfigurationService.getOnCloseOptions();
     this.qemuConfigurationService.getNetworkTypes().forEach((n) => {
       this.networkTypes.push(n);
@@ -365,7 +367,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
       this.node.properties.boot_priority = formValues.boot_priority;
       this.node.properties.on_close = formValues.on_close;
       this.node.console_type = formValues.console_type;
-      this.node.properties.aux_type = formValues.aux_type;
+      this.node.aux_type = formValues.aux_type;
       this.node.console_auto_start = formValues.console_auto_start;
 
       // Update HDD settings

@@ -5,7 +5,7 @@
  * Electron support was removed in commit b5bfb767.
  *
  * The console functionality is now handled by ConsoleDeviceActionBrowserComponent,
- * which uses custom protocol handlers (gns3+telnet://, gns3+spice://) to launch
+ * which uses custom protocol handlers (gns3+telnet://, gns3+ssh://, gns3+spice://) to launch
  * external console applications.
  *
  * TODO: Remove this component and its test files when convenient.

@@ -22,10 +22,10 @@ describe('VmwareConfigurationService', () => {
     it('should return all console types with correct values', () => {
       const result = service.getConsoleTypes();
 
-      expect(result).toEqual(['telnet', 'none']);
+      expect(result).toEqual(['telnet', 'ssh', 'none']);
     });
 
-    it.each(['telnet', 'none'])('should include console type: %s', (type) => {
+    it.each(['telnet', 'ssh', 'none'])('should include console type: %s', (type) => {
       expect(service.getConsoleTypes()).toContain(type);
     });
   });

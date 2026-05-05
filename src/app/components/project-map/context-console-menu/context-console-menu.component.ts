@@ -101,10 +101,12 @@ export class ContextConsoleMenuComponent implements OnInit {
       } else if (this.node.console_type && this.node.console_type.startsWith('spice')) {
         // SPICE console: not yet implemented
         this.toasterService.error('SPICE console is not yet supported.');
-      } else {
-        // Telnet and other types: use embedded console
+      } else if (this.node.console_type === 'telnet' || this.node.console_type === 'ssh') {
+        // Terminal console: use embedded console
         this.mapSettingsService.logConsoleSubject.next(true);
         this.consoleService.openConsoleForNode(this.node);
+      } else {
+        this.toasterService.error(`Console type '${this.node.console_type}' is not supported in web console mode.`);
       }
     } else {
       this.toasterService.error('To open console please start the node');
@@ -121,8 +123,8 @@ export class ContextConsoleMenuComponent implements OnInit {
       } else if (this.node.console_type && this.node.console_type.startsWith('spice')) {
         // SPICE console: not yet implemented
         this.toasterService.error('SPICE console is not yet supported.');
-      } else if (this.node.console_type === 'telnet') {
-        // Telnet console: use existing URL-based approach
+      } else if (this.node.console_type === 'telnet' || this.node.console_type === 'ssh') {
+        // Terminal console: use existing URL-based approach
         let url = this.router.url.split('/');
         let urlString = `/static/web-ui/${url[1]}/${url[2]}/${url[3]}/${url[4]}/nodes/${this.node.node_id}`;
         window.open(urlString);

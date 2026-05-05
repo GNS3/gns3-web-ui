@@ -43,8 +43,8 @@ export class HttpConsoleNewTabActionComponent {
 
             const uri = `${n.console_type}://${n.console_host}:${n.console}`;
             window.open(uri, '_blank');
-          } else if (n.console_type === 'telnet') {
-            // Telnet console: use existing URL-based approach in new tab
+          } else if (n.console_type === 'telnet' || n.console_type === 'ssh') {
+            // Terminal console: use existing URL-based approach in new tab
             let url = this.router.url.split('/');
             let urlString = `/static/web-ui/${url[1]}/${url[2]}/${url[3]}/${url[4]}/nodes/${n.node_id}`;
             window.open(urlString, '_blank');

@@ -36,11 +36,11 @@ export class QemuConfigurationService {
   }
 
   getConsoleTypes() {
-    return ['telnet', 'vnc', 'spice', 'spice+agent', 'none'];
+    return ['telnet', 'ssh', 'vnc', 'spice', 'spice+agent', 'none'];
   }
 
   getAuxConsoleTypes() {
-    return ['telnet', 'none'];
+    return ['telnet', 'ssh', 'none'];
   }
 
   getDiskInterfaces() {

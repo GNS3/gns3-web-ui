@@ -45,12 +45,12 @@ describe('QemuConfigurationService', () => {
       consoleTypes = service.getConsoleTypes();
     });
 
-    it('should return 5 console types', () => {
-      expect(consoleTypes).toHaveLength(5);
+    it('should return 6 console types', () => {
+      expect(consoleTypes).toHaveLength(6);
     });
 
-    it('should include telnet, vnc, spice, spice+agent, none', () => {
-      expect(consoleTypes).toEqual(['telnet', 'vnc', 'spice', 'spice+agent', 'none']);
+    it('should include telnet, ssh, vnc, spice, spice+agent, none', () => {
+      expect(consoleTypes).toEqual(['telnet', 'ssh', 'vnc', 'spice', 'spice+agent', 'none']);
     });
   });
 
@@ -61,12 +61,13 @@ describe('QemuConfigurationService', () => {
       auxConsoleTypes = service.getAuxConsoleTypes();
     });
 
-    it('should return 2 aux console types', () => {
-      expect(auxConsoleTypes).toHaveLength(2);
+    it('should return 3 aux console types', () => {
+      expect(auxConsoleTypes).toHaveLength(3);
     });
 
-    it('should include telnet and none', () => {
+    it('should include telnet, ssh and none', () => {
       expect(auxConsoleTypes).toContain('telnet');
+      expect(auxConsoleTypes).toContain('ssh');
       expect(auxConsoleTypes).toContain('none');
     });
   });

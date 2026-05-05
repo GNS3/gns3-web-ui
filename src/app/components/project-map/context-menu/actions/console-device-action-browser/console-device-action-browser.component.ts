@@ -67,7 +67,7 @@ export class ConsoleDeviceActionBrowserComponent {
         if (ipaddr.IPv6.isValid(host)) {
           host = `[${host}]`;
         }
-        if (node.console_type === 'telnet') {
+        if (node.console_type === 'telnet' || node.console_type === 'ssh') {
           var console_port;
           if (auxiliary === true) {
             console_port = node.properties.aux;
@@ -78,7 +78,7 @@ export class ConsoleDeviceActionBrowserComponent {
           } else {
             console_port = node.console;
           }
-          uri = `gns3+telnet://${host}:${console_port}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`;
+          uri = `gns3+${node.console_type}://${host}:${console_port}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`;
         } else if (node.console_type === 'vnc') {
           // Open VNC console in standalone page via WebSocket API
           this.vncConsoleService.openVncConsole(this.controller(), node);
@@ -89,7 +89,7 @@ export class ConsoleDeviceActionBrowserComponent {
           uri = `${node.console_type}://${host}:${node.console}`;
           return window.open(uri); // open an http console directly in a new window/tab
         } else {
-          this.toasterService.error('Supported console types are: telnet, vnc, spice and spice+agent.');
+          this.toasterService.error('Supported console types are: telnet, ssh, vnc, spice and spice+agent.');
           return;
         }
 

@@ -126,7 +126,7 @@ export class ConfiguratorDialogIosComponent implements OnInit {
           midplane: node.properties.midplane || '',
           npe: node.properties.npe || '',
           console_type: node.console_type || '',
-          aux_type: node.properties.aux_type || '',
+          aux_type: node.aux_type || '',
           console_auto_start: node.console_auto_start || false,
           // Slots
           slot0: node.properties.slot0 || '',
@@ -245,7 +245,7 @@ export class ConfiguratorDialogIosComponent implements OnInit {
       this.node.properties.midplane = generalFormValues.midplane;
       this.node.properties.npe = generalFormValues.npe;
       this.node.console_type = generalFormValues.console_type;
-      this.node.properties.aux_type = generalFormValues.aux_type;
+      this.node.aux_type = generalFormValues.aux_type;
       this.node.console_auto_start = generalFormValues.console_auto_start;
 
       // Update memory settings

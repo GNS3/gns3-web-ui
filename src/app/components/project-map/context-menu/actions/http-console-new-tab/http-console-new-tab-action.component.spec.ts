@@ -283,9 +283,23 @@ describe('HttpConsoleNewTabActionComponent', () => {
       });
     });
 
-    describe('Telnet console', () => {
+    describe('Terminal console', () => {
       it('should open window with telnet URL when node has telnet console type', () => {
         const node = createMockNode({ console_type: 'telnet', status: 'started' });
+        fixture.componentRef.setInput('nodes', [node]);
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.detectChanges();
+
+        component.openConsole();
+
+        expect(mockWindowOpen).toHaveBeenCalled();
+        const calledUrl = mockWindowOpen.mock.calls[0][0];
+        expect(calledUrl).toContain('/nodes/' + node.node_id);
+        expect(calledUrl).toContain('/static/web-ui/');
+      });
+
+      it('should open window with terminal URL when node has ssh console type', () => {
+        const node = createMockNode({ console_type: 'ssh', status: 'started' });
         fixture.componentRef.setInput('nodes', [node]);
         fixture.componentRef.setInput('controller', mockController);
         fixture.detectChanges();
@@ -301,7 +315,7 @@ describe('HttpConsoleNewTabActionComponent', () => {
 
     describe('Unsupported console type', () => {
       it('should show error when console type is not supported', () => {
-        const node = createMockNode({ console_type: 'ssh', status: 'started' });
+        const node = createMockNode({ console_type: 'unknown', status: 'started' });
         fixture.componentRef.setInput('nodes', [node]);
         fixture.componentRef.setInput('controller', mockController);
         fixture.detectChanges();
@@ -309,12 +323,12 @@ describe('HttpConsoleNewTabActionComponent', () => {
         component.openConsole();
 
         expect(mockToasterService.error).toHaveBeenCalledWith(
-          "Console type 'ssh' not supported in new tab for node Router1."
+          "Console type 'unknown' not supported in new tab for node Router1."
         );
       });
 
       it('should not open window when console type is unsupported', () => {
-        const node = createMockNode({ console_type: 'ssh', status: 'started' });
+        const node = createMockNode({ console_type: 'unknown', status: 'started' });
         fixture.componentRef.setInput('nodes', [node]);
         fixture.componentRef.setInput('controller', mockController);
         fixture.detectChanges();

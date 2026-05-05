@@ -13,7 +13,7 @@ export class IosConfigurationService {
   c3700_wics = ['WIC-1T', 'WIC-2T'];
 
   getConsoleTypes() {
-    return ['telnet', 'none'];
+    return ['telnet', 'ssh', 'none'];
   }
 
   getCategories() {

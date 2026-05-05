@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class VpcsConfigurationService {
   getConsoleTypes() {
-    return ['telnet', 'none'];
+    return ['telnet', 'ssh', 'none'];
   }
 
   getCategories() {

@@ -263,9 +263,22 @@ describe('HttpConsoleActionComponent', () => {
       });
     });
 
-    describe('Telnet console', () => {
+    describe('Terminal console', () => {
       it('should open telnet console in widget for started node', () => {
         const node = createMockNode({ console_type: 'telnet', status: 'started' });
+        fixture.componentRef.setInput('nodes', [node]);
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('project', mockProject);
+        fixture.detectChanges();
+
+        fixture.nativeElement.querySelector('button').click();
+        fixture.detectChanges();
+
+        expect(mockMapSettingsService.logConsoleSubject.next).toHaveBeenCalledWith(true);
+      });
+
+      it('should open ssh console in widget for started node', () => {
+        const node = createMockNode({ console_type: 'ssh', status: 'started' });
         fixture.componentRef.setInput('nodes', [node]);
         fixture.componentRef.setInput('controller', mockController);
         fixture.componentRef.setInput('project', mockProject);
@@ -296,7 +309,7 @@ describe('HttpConsoleActionComponent', () => {
 
     describe('unsupported console type', () => {
       it('should show error for unsupported console type on started node', () => {
-        const node = createMockNode({ console_type: 'ssh', status: 'started' });
+        const node = createMockNode({ console_type: 'unknown', status: 'started' });
         fixture.componentRef.setInput('nodes', [node]);
         fixture.componentRef.setInput('controller', mockController);
         fixture.componentRef.setInput('project', mockProject);
@@ -306,7 +319,7 @@ describe('HttpConsoleActionComponent', () => {
         fixture.detectChanges();
 
         expect(mockToasterService.error).toHaveBeenCalledWith(
-          "Console type 'ssh' is not supported for inline web console."
+          "Console type 'unknown' is not supported for inline web console."
         );
       });
     });

@@ -100,8 +100,8 @@ export class NodeConsoleService {
     let nodesToStart = 'Please start the following nodes if you want to open consoles in tabs for them: ';
     let nodesToStartCounter = 0;
     nodes.forEach((n) => {
-      // opening a console in tab is only supported for telnet type
-      if (n.console_type === 'telnet') {
+      // opening a console in tab is supported for terminal console types
+      if (n.console_type === 'telnet' || n.console_type === 'ssh') {
         if (n.status === 'started') {
           let url = this.router.url.split('/');
           let urlString = `/static/web-ui/${url[1]}/${url[2]}/${url[3]}/${url[4]}/nodes/${n.node_id}`;

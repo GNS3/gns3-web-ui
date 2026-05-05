@@ -66,8 +66,8 @@ export class HttpConsoleActionComponent {
         controller,
         project,
       });
-    } else if (node.console_type === 'telnet') {
-      // Telnet console: still use embedded widget (not inline window)
+    } else if (node.console_type === 'telnet' || node.console_type === 'ssh') {
+      // Terminal console: still use embedded widget (not inline window)
       this.mapSettingsService.logConsoleSubject.next(true);
       setTimeout(() => {
         this.nodeConsoleService.openConsoleForNode(node);

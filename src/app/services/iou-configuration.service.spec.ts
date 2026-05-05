@@ -19,10 +19,10 @@ describe('IouConfigurationService', () => {
   });
 
   describe('getConsoleTypes', () => {
-    it('should return telnet and none console types', () => {
+    it('should return telnet, ssh and none console types', () => {
       const result = service.getConsoleTypes();
 
-      expect(result).toEqual(['telnet', 'none']);
+      expect(result).toEqual(['telnet', 'ssh', 'none']);
     });
   });
 

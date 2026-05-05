@@ -19,10 +19,10 @@ describe('VirtualBoxConfigurationService', () => {
   });
 
   describe('getConsoleTypes', () => {
-    it('should return telnet and none with correct length', () => {
+    it('should return telnet, ssh and none with correct length', () => {
       const result = service.getConsoleTypes();
-      expect(result).toEqual(['telnet', 'none']);
-      expect(result).toHaveLength(2);
+      expect(result).toEqual(['telnet', 'ssh', 'none']);
+      expect(result).toHaveLength(3);
     });
 
     it('should not return null or undefined', () => {
