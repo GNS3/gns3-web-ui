@@ -23,8 +23,8 @@ export class ConfirmationDeleteAllProjectsComponent {
 
   isDelete = signal(false);
   isUsedFiles = signal(false);
-  deleteFliesDetails = signal<any[]>([]);
-  fileNotDeleted = signal<any[]>([]);
+  successfulDeletions = signal<any[]>([]);
+  failedDeletions = signal<any[]>([]);
 
   constructor(@Inject(MAT_DIALOG_DATA) public deleteData: any) {}
 
@@ -47,30 +47,30 @@ export class ConfirmationDeleteAllProjectsComponent {
 
     forkJoin(calls).subscribe({
       next: (responses: any[]) => {
-        const successfulDeletions: any[] = [];
-        const failedDeletions: any[] = [];
+        const successful: any[] = [];
+        const failed: any[] = [];
 
         responses.forEach((response, index) => {
           if (response && (response as any).error === true) {
             // Request failed with HTTP error (403, 404, etc.)
-            failedDeletions.push({
+            failed.push({
               project: this.deleteData.deleteFilesPaths[index],
               error: (response as any).data
             });
           } else if (response === null || response === undefined) {
             // 204 No Content - successful deletion
-            successfulDeletions.push(this.deleteData.deleteFilesPaths[index]);
+            successful.push(this.deleteData.deleteFilesPaths[index]);
           } else {
             // Non-null response - treat as potential error
-            failedDeletions.push({
+            failed.push({
               project: this.deleteData.deleteFilesPaths[index],
               error: response
             });
           }
         });
 
-        this.deleteFliesDetails.set(successfulDeletions);
-        this.fileNotDeleted.set(failedDeletions);
+        this.successfulDeletions.set(successful);
+        this.failedDeletions.set(failed);
         this.isUsedFiles.set(true);
         this.isDelete.set(true);
         this.cd.markForCheck();
