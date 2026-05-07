@@ -18,18 +18,22 @@
 </div>
 } @if (isDelete() && isUsedFiles()) {
 <div mat-dialog-content>
-  @if (deleteFliesDetails().length > 0) {
-  <h5>Project can't be deleted because image used in one or more template.</h5>
-  @for (message of deleteFliesDetails(); track $index; let i = $index) {
-  <p [ngClass]="{ 'deleted-error-text': message?.error?.message }">
-    @if (message !== null) {<span>{{ i + 1 }}. {{ message?.error?.message }}</span
-    >}
+  @if (successfulDeletions().length > 0) {
+  <h2 mat-dialog-title>✓ {{ successfulDeletions().length }} {{ successfulDeletions().length === 1 ? 'Project' : 'Projects' }} deleted successfully</h2>
+  @for (project of successfulDeletions(); track project; let i = $index) {
+  <p>{{ i + 1 }}. {{ project?.filename || project?.project_id }}</p>
+  } }
+
+  @if (failedDeletions().length > 0) {
+  <h2 mat-dialog-title class="mat-error">✗ {{ failedDeletions().length }} {{ failedDeletions().length === 1 ? 'Project' : 'Projects' }} failed to delete</h2>
+  @for (failure of failedDeletions(); track $index; let i = $index) {
+  <p>
+    {{ i + 1 }}. <strong>{{ failure.project?.filename || failure.project?.project_id }}</strong><br>
+    <span class="mat-error">{{ failure.error?.error?.message || failure.error?.message || 'Unknown error' }}</span>
   </p>
-  } } @if (fileNotDeleted().length > 0) {
-  <h5 class="delete-text">{{ fileNotDeleted().length }} Projects deleted successfully.</h5>
-  }
+  } }
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-raised-button color="primary" (click)="dialogRef.close(false)">Close</button>
+  <button mat-raised-button color="primary" (click)="dialogRef.close(successfulDeletions().length > 0)">Close</button>
 </div>
 }
