@@ -94,25 +94,46 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
       expect(mockProjectService.delete).toHaveBeenCalledWith('test-controller', 'project-2');
     });
 
-    it('should set isUsedFiles to true after deletions complete', () => {
+    it('should set isUsedFiles to true after successful deletions (null = 204 No Content)', () => {
       mockProjectService.delete.mockReturnValue(of(null));
 
       fixture.componentInstance.deleteFile();
       fixture.detectChanges();
 
       expect(fixture.componentInstance.isUsedFiles()).toBeTruthy();
-      expect(fixture.componentInstance.fileNotDeleted()).toEqual([null, null]);
+      // null response means successful deletion (204 No Content)
+      expect(fixture.componentInstance.deleteFliesDetails().length).toBe(2);
+      expect(fixture.componentInstance.fileNotDeleted().length).toBe(0);
     });
 
-    it('should set deleteFliesDetails when some deletions fail', () => {
+    it('should set fileNotDeleted when some deletions fail (non-null response)', () => {
       const errorResponse = { error: { message: 'File in use' } };
       mockProjectService.delete.mockReturnValue(of(errorResponse));
 
       fixture.componentInstance.deleteFile();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.deleteFliesDetails().length).toBe(2);
+      // Non-null response indicates potential error
+      expect(fixture.componentInstance.fileNotDeleted().length).toBe(2);
+      expect(fixture.componentInstance.deleteFliesDetails().length).toBe(0);
       expect(fixture.componentInstance.isUsedFiles()).toBeTruthy();
+    });
+
+    it('should correctly handle mixed success and failure deletions', () => {
+      let callCount = 0;
+      mockProjectService.delete.mockImplementation(() => {
+        callCount++;
+        // First call succeeds (null), second fails (error response)
+        return callCount === 1 ? of(null) : of({ error: { message: 'File in use' } });
+      });
+
+      fixture.componentInstance.deleteFile();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.deleteFliesDetails().length).toBe(1);
+      expect(fixture.componentInstance.fileNotDeleted().length).toBe(1);
+      expect(fixture.componentInstance.deleteFliesDetails()[0]).toEqual(mockDialogData.deleteFilesPaths[0]);
+      expect(fixture.componentInstance.fileNotDeleted()[0].project).toEqual(mockDialogData.deleteFilesPaths[1]);
     });
   });
 

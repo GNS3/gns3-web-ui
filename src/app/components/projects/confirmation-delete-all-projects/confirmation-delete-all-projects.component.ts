@@ -41,8 +41,26 @@ export class ConfirmationDeleteAllProjectsComponent {
     });
     forkJoin(calls).subscribe({
       next: (responses) => {
-        this.deleteFliesDetails.set(responses.filter((x) => x !== null));
-        this.fileNotDeleted.set(responses.filter((x) => x === null));
+        // For HTTP DELETE with 204 No Content, Angular HttpClient returns null
+        // null = successful deletion, non-null = potential error response
+        const successfulDeletions: any[] = [];
+        const failedDeletions: any[] = [];
+
+        responses.forEach((response, index) => {
+          if (response === null || response === undefined) {
+            // 204 No Content - successful deletion
+            successfulDeletions.push(this.deleteData.deleteFilesPaths[index]);
+          } else {
+            // Non-null response - may indicate an error
+            failedDeletions.push({
+              project: this.deleteData.deleteFilesPaths[index],
+              error: response
+            });
+          }
+        });
+
+        this.deleteFliesDetails.set(successfulDeletions);
+        this.fileNotDeleted.set(failedDeletions);
         this.isUsedFiles.set(true);
         this.isDelete.set(true);
         this.cd.markForCheck();
