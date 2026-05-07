@@ -5,7 +5,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-confirmation-delete-all-projects',
@@ -33,25 +34,34 @@ export class ConfirmationDeleteAllProjectsComponent {
   }
 
   deleteFile() {
-    const calls = [];
-    this.deleteData.deleteFilesPaths.forEach((project) => {
-      calls.push(
-        this.projectService.delete(this.deleteData.controller, project.project_id)
+    // Wrap each request to handle errors independently
+    // This prevents a single 403 from cancelling other pending requests
+    const calls = this.deleteData.deleteFilesPaths.map((project, index) => {
+      return this.projectService.delete(this.deleteData.controller, project.project_id).pipe(
+        catchError((error) => {
+          // Return error info instead of throwing, so forkJoin doesn't fail
+          return of({ error: true, data: error, projectIndex: index });
+        })
       );
     });
+
     forkJoin(calls).subscribe({
-      next: (responses) => {
-        // For HTTP DELETE with 204 No Content, Angular HttpClient returns null
-        // null = successful deletion, non-null = potential error response
+      next: (responses: any[]) => {
         const successfulDeletions: any[] = [];
         const failedDeletions: any[] = [];
 
         responses.forEach((response, index) => {
-          if (response === null || response === undefined) {
+          if (response && (response as any).error === true) {
+            // Request failed with HTTP error (403, 404, etc.)
+            failedDeletions.push({
+              project: this.deleteData.deleteFilesPaths[index],
+              error: (response as any).data
+            });
+          } else if (response === null || response === undefined) {
             // 204 No Content - successful deletion
             successfulDeletions.push(this.deleteData.deleteFilesPaths[index]);
           } else {
-            // Non-null response - may indicate an error
+            // Non-null response - treat as potential error
             failedDeletions.push({
               project: this.deleteData.deleteFilesPaths[index],
               error: response
@@ -66,6 +76,7 @@ export class ConfirmationDeleteAllProjectsComponent {
         this.cd.markForCheck();
       },
       error: (err) => {
+        // This should rarely be reached since we handle errors per-request
         const message = err.error?.message || err.message || 'Failed to delete projects';
         this.toasterService.error(message);
         this.cd.markForCheck();
