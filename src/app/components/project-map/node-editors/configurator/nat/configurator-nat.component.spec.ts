@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,6 +10,7 @@ import { of } from 'rxjs';
 import { ConfiguratorDialogNatComponent } from './configurator-nat.component';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { ValidationService } from '@services/validation';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -22,6 +22,7 @@ describe('ConfiguratorDialogNatComponent', () => {
   let mockDialogRef: any;
   let mockNodeService: any;
   let mockToasterService: any;
+  let mockValidationService: any;
 
   let mockController: Controller;
   let mockNode: Node;
@@ -85,6 +86,10 @@ describe('ConfiguratorDialogNatComponent', () => {
       error: vi.fn(),
     };
 
+    mockValidationService = {
+      required: vi.fn().mockReturnValue({ isValid: true }),
+    };
+
     mockNodeService = {
       getNode: vi.fn().mockReturnValue(of({ ...mockNode })),
       updateNode: vi.fn().mockReturnValue(of({ ...mockNode })),
@@ -92,7 +97,6 @@ describe('ConfiguratorDialogNatComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [
-        ReactiveFormsModule,
         MatDialogModule,
         MatCardModule,
         MatFormFieldModule,
@@ -106,6 +110,7 @@ describe('ConfiguratorDialogNatComponent', () => {
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ValidationService, useValue: mockValidationService },
       ],
     }).compileComponents();
 
@@ -124,6 +129,10 @@ describe('ConfiguratorDialogNatComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should initialize model signals', () => {
+    expect(component.nodeName).toBeTruthy();
+  });
+
   describe('ngOnInit', () => {
     it('should fetch node and populate form', () => {
       component.ngOnInit();
@@ -134,11 +143,8 @@ describe('ConfiguratorDialogNatComponent', () => {
   });
 
   describe('onSaveClick', () => {
-    it('should call updateNode when form is valid', () => {
-      component.generalSettingsForm = {
-        valid: true,
-        value: { name: 'NAT-1' },
-      } as any;
+    it('should call updateNode when validation passes', () => {
+      component.nodeName.set('NAT-1');
       component.node = { ...mockNode };
 
       component.onSaveClick();
@@ -147,10 +153,7 @@ describe('ConfiguratorDialogNatComponent', () => {
     });
 
     it('should close dialog on successful update', () => {
-      component.generalSettingsForm = {
-        valid: true,
-        value: { name: 'NAT-1' },
-      } as any;
+      component.nodeName.set('NAT-1');
       component.node = { ...mockNode };
 
       component.onSaveClick();
@@ -159,10 +162,7 @@ describe('ConfiguratorDialogNatComponent', () => {
     });
 
     it('should show success toast on successful update', () => {
-      component.generalSettingsForm = {
-        valid: true,
-        value: { name: 'NAT-1' },
-      } as any;
+      component.nodeName.set('NAT-1');
       component.node = { ...mockNode, name: 'NAT-1' };
 
       component.onSaveClick();
@@ -170,14 +170,16 @@ describe('ConfiguratorDialogNatComponent', () => {
       expect(mockToasterService.success).toHaveBeenCalledWith('Node NAT-1 updated.');
     });
 
-    it('should show error toast when form is invalid', () => {
-      component.generalSettingsForm = {
-        valid: false,
-      } as any;
+    it('should show error toast when name is empty', () => {
+      mockValidationService.required.mockReturnValue({
+        isValid: false,
+        errorMessage: 'Name is required',
+      });
+      component.nodeName.set('');
 
       component.onSaveClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields.');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Name is required');
       expect(mockNodeService.updateNode).not.toHaveBeenCalled();
     });
   });

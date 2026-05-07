@@ -4,10 +4,10 @@
   <div class="content">
     <div class="default-content">
       <mat-card class="matCard">
-        <form [formGroup]="generalSettingsForm">
+        <div class="form-container">
           <mat-form-field class="form-field">
             <mat-label>Name</mat-label>
-            <input matInput type="text" formControlName="name" />
+            <input matInput type="text" [value]="nodeName()" (input)="nodeName.set($event.target.value)" />
           </mat-form-field>
           <mat-form-field class="form-field tags-field">
             <mat-label>Tags</mat-label>
@@ -27,7 +27,7 @@
               (matChipInputTokenEnd)="addTag($event)"
             />
           </mat-form-field>
-        </form>
+        </div>
       </mat-card>
     </div>
   </div>
