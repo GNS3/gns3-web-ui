@@ -5,10 +5,10 @@
     @if (node) {
     <div class="default-content">
       <mat-card class="matCard">
-        <form [formGroup]="inputForm">
+        <div class="form-container">
           <mat-form-field class="form-field">
             <mat-label>Name</mat-label>
-            <input matInput type="text" formControlName="name" />
+            <input matInput type="text" [value]="nodeName()" (input)="nodeName.set($event.target.value)" />
           </mat-form-field>
 
           <mat-form-field class="form-field tags-field">
@@ -32,7 +32,7 @@
 
           <mat-form-field class="form-field">
             <mat-label>Console type</mat-label>
-            <mat-select formControlName="console_type">
+            <mat-select [value]="consoleType()" (valueChange)="consoleType.set($event)">
               @for (type of consoleTypes; track type) {
               <mat-option [value]="type">
                 {{ type }}
@@ -40,7 +40,7 @@
               }
             </mat-select>
           </mat-form-field>
-        </form>
+        </div>
         @if (node.properties) {
         <app-ports #ports [ethernetPorts]="node.properties.ports_mapping"></app-ports>
         }

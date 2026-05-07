@@ -6,6 +6,7 @@ import { ConfiguratorDialogEthernetSwitchComponent } from './configurator-ethern
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
+import { ValidationService } from '@services/validation';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { PortsComponent } from '@components/preferences/common/ports/ports.component';
@@ -19,6 +20,7 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockEthernetSwitchesConfigurationService: any;
+  let mockValidationService: any;
   let mockChangeDetectorRef: any;
 
   const mockController = { id: 1 } as unknown as Controller;
@@ -52,6 +54,10 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
       getPortTypesForEthernetSwitches: vi.fn().mockReturnValue(['access', 'trunk']),
     };
 
+    mockValidationService = {
+      required: vi.fn().mockReturnValue({ isValid: true }),
+    };
+
     mockChangeDetectorRef = {
       markForCheck: vi.fn(),
     };
@@ -63,6 +69,7 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: BuiltInTemplatesConfigurationService, useValue: mockEthernetSwitchesConfigurationService },
+        { provide: ValidationService, useValue: mockValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
@@ -91,13 +98,9 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
       expect(component.separatorKeysCodes).toContain(188); // COMMA
     });
 
-    it('should initialize inputForm with required name field', () => {
-      expect(component.inputForm.get('name')).toBeTruthy();
-      expect(component.inputForm.get('name')?.validator).toBeTruthy();
-    });
-
-    it('should initialize inputForm with console_type field', () => {
-      expect(component.inputForm.get('console_type')).toBeTruthy();
+    it('should initialize model signals for form fields', () => {
+      expect(component.nodeName).toBeTruthy();
+      expect(component.consoleType).toBeTruthy();
     });
   });
 
@@ -193,21 +196,27 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
   });
 
   describe('onSaveClick', () => {
-    it('should close dialog when form is invalid', () => {
-      component.inputForm.get('name')?.setValue('');
+    beforeEach(() => {
+      mockValidationService.required.mockReturnValue({ isValid: true });
+    });
+
+    it('should show error toast when name is empty', () => {
+      mockValidationService.required.mockReturnValue({
+        isValid: false,
+        errorMessage: 'Name is required',
+      });
+      component.nodeName.set('');
 
       component.onSaveClick();
 
-      expect(mockDialogRef.close).not.toHaveBeenCalled();
-      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields.');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Name is required');
+      expect(mockNodeService.updateNode).not.toHaveBeenCalled();
     });
 
-    it('should update node with form values when form is valid', () => {
+    it('should update node with signal values when validation passes', () => {
       component.node = { ...mockNode } as Node;
-      component.inputForm.patchValue({
-        name: 'Updated-Switch',
-        console_type: 'vnc',
-      });
+      component.nodeName.set('Updated-Switch');
+      component.consoleType.set('vnc');
 
       component.onSaveClick();
 
@@ -218,10 +227,8 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
 
     it('should show success toast and close dialog on successful update', () => {
       component.node = { ...mockNode } as Node;
-      component.inputForm.patchValue({
-        name: 'Switch-Updated',
-        console_type: 'telnet',
-      });
+      component.nodeName.set('Switch-Updated');
+      component.consoleType.set('telnet');
 
       component.onSaveClick();
 
@@ -279,10 +286,8 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
       mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
       const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
       component.node = { ...mockNode, properties: { ports_mapping: [] } } as Node;
-      component.inputForm.patchValue({
-        name: 'Updated-Switch',
-        console_type: 'telnet',
-      });
+      component.nodeName.set('Updated-Switch');
+      component.consoleType.set('telnet');
 
       component.onSaveClick();
 

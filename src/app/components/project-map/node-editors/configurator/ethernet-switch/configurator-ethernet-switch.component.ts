@@ -1,13 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,6 +16,7 @@ import { Controller } from '@models/controller';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { ValidationService } from '@services/validation';
 
 @Component({
   standalone: true,
@@ -33,7 +27,6 @@ import { ToasterService } from '@services/toaster.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     MatDialogModule,
     MatCardModule,
     MatFormFieldModule,
@@ -51,23 +44,19 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogEthernetSwitchComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
   private ethernetSwitchesConfigurationService = inject(BuiltInTemplatesConfigurationService);
   private cd = inject(ChangeDetectorRef);
+  private validationService = inject(ValidationService);
 
   controller: Controller;
   node: Node;
   name: string;
-  inputForm: UntypedFormGroup;
   consoleTypes: string[] = [];
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  constructor() {
-    this.inputForm = this.formBuilder.group({
-      name: new UntypedFormControl('', Validators.required),
-      console_type: new UntypedFormControl(''),
-    });
-  }
+  // Model signals
+  readonly nodeName = model('');
+  readonly consoleType = model('');
 
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
@@ -75,11 +64,9 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
         this.node = node;
         this.name = this.node.name;
 
-        // Update form values with node data
-        this.inputForm.patchValue({
-          name: node.name,
-          console_type: node.console_type || '',
-        });
+        // Update model signals with node data
+        this.nodeName.set(node.name || '');
+        this.consoleType.set(node.console_type || '');
 
         this.getConfiguration();
         if (!this.node.tags) {
@@ -100,28 +87,29 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   }
 
   onSaveClick() {
-    if (this.inputForm.valid) {
-      // Merge form values back into node
-      const formValues = this.inputForm.value;
-
-      this.node.name = formValues.name;
-      this.node.console_type = formValues.console_type;
-
-      this.node.properties.ports_mapping = this.portsComponent().ethernetPorts;
-      this.nodeService.updateNode(this.controller, this.node).subscribe({
-        next: () => {
-          this.toasterService.success(`Node ${this.node.name} updated.`);
-          this.onCancelClick();
-        },
-        error: (error: unknown) => {
-          const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
-          this.toasterService.error(errorMessage);
-          this.cd.markForCheck();
-        },
-      });
-    } else {
-      this.toasterService.error(`Fill all required fields.`);
+    // Validate name (required)
+    const nameValidation = this.validationService.required(this.nodeName(), 'Name');
+    if (!nameValidation.isValid) {
+      this.toasterService.error(nameValidation.errorMessage || 'Name is required');
+      return;
     }
+
+    // Merge signal values back into node
+    this.node.name = this.nodeName();
+    this.node.console_type = this.consoleType();
+
+    this.node.properties.ports_mapping = this.portsComponent().ethernetPorts;
+    this.nodeService.updateNode(this.controller, this.node).subscribe({
+      next: () => {
+        this.toasterService.success(`Node ${this.node.name} updated.`);
+        this.onCancelClick();
+      },
+      error: (error: unknown) => {
+        const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
+        this.toasterService.error(errorMessage);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onCancelClick() {
