@@ -4,10 +4,10 @@
   <div class="content">
     <div class="default-content">
       <mat-card class="matCard">
-        <form [formGroup]="inputForm">
+        <div class="form-container">
           <mat-form-field class="form-field">
             <mat-label>Name</mat-label>
-            <input matInput type="text" formControlName="name" />
+            <input matInput type="text" [value]="nodeName()" (input)="nodeName.set($event.target.value)" />
           </mat-form-field>
 
           <mat-form-field class="form-field tags-field">
@@ -31,9 +31,9 @@
 
           <mat-form-field class="form-field">
             <mat-label>Number of ports</mat-label>
-            <input matInput type="number" formControlName="numberOfPorts" />
+            <input matInput type="text" [value]="nodeNumberOfPorts()" (input)="nodeNumberOfPorts.set($event.target.value)" />
           </mat-form-field>
-        </form>
+        </div>
       </mat-card>
     </div>
   </div>

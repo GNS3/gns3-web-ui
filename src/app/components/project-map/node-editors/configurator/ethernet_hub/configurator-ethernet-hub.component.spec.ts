@@ -6,6 +6,7 @@ import { ConfiguratorDialogEthernetHubComponent } from './configurator-ethernet-
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
+import { ValidationService } from '@services/validation';
 import { Node, Properties, PortsMapping } from '../../../../../cartography/models/node';
 import { Port } from '@models/port';
 import { Controller } from '@models/controller';
@@ -19,6 +20,7 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockVpcsConfigurationService: any;
+  let mockValidationService: any;
   let mockChangeDetectorRef: any;
 
   const createMockProperties = (): Properties =>
@@ -152,6 +154,10 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
       getCategories: vi.fn().mockReturnValue(['category1', 'category2']),
     };
 
+    mockValidationService = {
+      required: vi.fn().mockReturnValue({ isValid: true }),
+    };
+
     mockChangeDetectorRef = {
       markForCheck: vi.fn(),
     };
@@ -163,6 +169,7 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: VpcsConfigurationService, useValue: mockVpcsConfigurationService },
+        { provide: ValidationService, useValue: mockValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
@@ -185,13 +192,9 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
       expect(component.separatorKeysCodes).toContain(188); // COMMA
     });
 
-    it('should initialize inputForm with required name field', () => {
-      expect(component.inputForm.get('name')).toBeTruthy();
-      expect(component.inputForm.get('name')?.hasError('required')).toBe(true);
-    });
-
-    it('should initialize inputForm with numberOfPorts field', () => {
-      expect(component.inputForm.get('numberOfPorts')).toBeTruthy();
+    it('should initialize model signals for form fields', () => {
+      expect(component.nodeName).toBeTruthy();
+      expect(component.nodeNumberOfPorts).toBeTruthy();
     });
   });
 
@@ -209,11 +212,11 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
       expect(component.numberOfPorts).toBe(3);
     });
 
-    it('should patch inputForm with node data', () => {
+    it('should populate model signals with node data', () => {
       fixture.detectChanges();
 
-      expect(component.inputForm.get('name')?.value).toBe('Ethernet Hub 1');
-      expect(component.inputForm.get('numberOfPorts')?.value).toBe(3);
+      expect(component.nodeName()).toBe('Ethernet Hub 1');
+      expect(component.nodeNumberOfPorts()).toBe('3');
     });
 
     it('should initialize tags array if node has no tags', () => {
@@ -345,14 +348,13 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
 
   describe('onSaveClick', () => {
     beforeEach(() => {
+      mockValidationService.required.mockReturnValue({ isValid: true });
       component.node = createMockNode();
-      component.inputForm.patchValue({
-        name: 'Updated Hub Name',
-        numberOfPorts: 4,
-      });
+      component.nodeName.set('Updated Hub Name');
+      component.nodeNumberOfPorts.set('4');
     });
 
-    it('should update node when form is valid', () => {
+    it('should update node when validation passes', () => {
       component.onSaveClick();
 
       expect(component.node.name).toBe('Updated Hub Name');
@@ -360,7 +362,7 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
     });
 
     it('should generate ports_mapping based on numberOfPorts', () => {
-      component.inputForm.patchValue({ numberOfPorts: 4 });
+      component.nodeNumberOfPorts.set('4');
 
       component.onSaveClick();
 
@@ -394,20 +396,33 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
     });
 
     it('should show error when name is empty', () => {
-      component.inputForm.patchValue({ name: '' });
+      mockValidationService.required.mockReturnValue({
+        isValid: false,
+        errorMessage: 'Name is required',
+      });
+      component.nodeName.set('');
 
       component.onSaveClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields.');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Name is required');
       expect(mockNodeService.updateNode).not.toHaveBeenCalled();
     });
 
-    it('should show error when form is invalid', () => {
-      component.inputForm.reset();
+    it('should show error when numberOfPorts is invalid', () => {
+      component.nodeNumberOfPorts.set('-1');
 
       component.onSaveClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields.');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Number of ports must be a non-negative integer');
+      expect(mockNodeService.updateNode).not.toHaveBeenCalled();
+    });
+
+    it('should show error when numberOfPorts is not a number', () => {
+      component.nodeNumberOfPorts.set('abc');
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Number of ports must be a non-negative integer');
       expect(mockNodeService.updateNode).not.toHaveBeenCalled();
     });
   });
@@ -435,10 +450,8 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
       mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
       const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
       component.node = createMockNode();
-      component.inputForm.patchValue({
-        name: 'Updated Hub',
-        numberOfPorts: 4,
-      });
+      component.nodeName.set('Updated Hub');
+      component.nodeNumberOfPorts.set('4');
 
       component.onSaveClick();
 
