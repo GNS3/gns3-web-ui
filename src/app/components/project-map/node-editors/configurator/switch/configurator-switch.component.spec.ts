@@ -6,6 +6,7 @@ import { Node, Properties } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { ValidationService } from '@services/validation';
 import { ConfiguratorDialogSwitchComponent, NodeMapping } from './configurator-switch.component';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -15,7 +16,7 @@ describe('ConfiguratorDialogSwitchComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockDialogRef: any;
-  let mockChangeDetectorRef: any;
+  let mockValidationService: any;
   let mockController: Controller;
   let mockNode: Node;
 
@@ -137,6 +138,11 @@ describe('ConfiguratorDialogSwitchComponent', () => {
       error: vi.fn(),
     };
 
+    mockValidationService = {
+      required: vi.fn().mockReturnValue({ isValid: true }),
+      validatePort: vi.fn().mockReturnValue({ isValid: true }),
+    };
+
     mockDialogRef = {
       close: vi.fn(),
     };
@@ -147,6 +153,7 @@ describe('ConfiguratorDialogSwitchComponent', () => {
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ValidationService, useValue: mockValidationService },
       ],
     }).compileComponents();
 
@@ -173,15 +180,12 @@ describe('ConfiguratorDialogSwitchComponent', () => {
       expect(component.displayedColumns).toEqual(['portIn', 'portOut', 'actions']);
     });
 
-    it('should initialize nameForm with required validator', () => {
-      expect(component.nameForm.get('name')?.hasError('required')).toBe(true);
-    });
-
-    it('should initialize inputForm with required validators', () => {
-      expect(component.inputForm.get('sourcePort')?.hasError('required')).toBe(true);
-      expect(component.inputForm.get('sourceDlci')?.hasError('required')).toBe(true);
-      expect(component.inputForm.get('destinationPort')?.hasError('required')).toBe(true);
-      expect(component.inputForm.get('destinationDlci')?.hasError('required')).toBe(true);
+    it('should initialize model signals for all form fields', () => {
+      expect(component.nodeName).toBeTruthy();
+      expect(component.sourcePort).toBeTruthy();
+      expect(component.sourceDlci).toBeTruthy();
+      expect(component.destinationPort).toBeTruthy();
+      expect(component.destinationDlci).toBeTruthy();
     });
   });
 
@@ -245,13 +249,11 @@ describe('ConfiguratorDialogSwitchComponent', () => {
       ];
     });
 
-    it('should add new mapping when form is valid', () => {
-      component.inputForm.patchValue({
-        sourcePort: '1',
-        sourceDlci: '10',
-        destinationPort: '2',
-        destinationDlci: '20',
-      });
+    it('should add new mapping when all fields are filled', () => {
+      component.sourcePort.set('1');
+      component.sourceDlci.set('10');
+      component.destinationPort.set('2');
+      component.destinationDlci.set('20');
 
       component.add();
 
@@ -259,58 +261,59 @@ describe('ConfiguratorDialogSwitchComponent', () => {
     });
 
     it('should show error when mapping already exists', () => {
-      component.inputForm.patchValue({
-        sourcePort: '0',
-        sourceDlci: '1',
-        destinationPort: '0',
-        destinationDlci: '2',
-      });
+      component.sourcePort.set('0');
+      component.sourceDlci.set('1');
+      component.destinationPort.set('0');
+      component.destinationDlci.set('2');
 
       component.add();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Mapping already defined.');
     });
 
-    it('should show error when form is invalid', () => {
-      component.inputForm.reset();
+    it('should show error when source port is empty', () => {
+      mockValidationService.required.mockReturnValueOnce({
+        isValid: false,
+        errorMessage: 'Source Port is required'
+      });
+      component.sourcePort.set('');
+      component.sourceDlci.set('10');
+      component.destinationPort.set('2');
+      component.destinationDlci.set('20');
 
       component.add();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields.');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Source Port is required');
     });
 
     it('should clear user input after successful add', () => {
-      component.inputForm.patchValue({
-        sourcePort: '3',
-        sourceDlci: '30',
-        destinationPort: '4',
-        destinationDlci: '40',
-      });
+      component.sourcePort.set('3');
+      component.sourceDlci.set('30');
+      component.destinationPort.set('4');
+      component.destinationDlci.set('40');
 
       component.add();
 
-      expect(component.inputForm.value.sourcePort).toBe('');
-      expect(component.inputForm.value.sourceDlci).toBe('');
-      expect(component.inputForm.value.destinationPort).toBe('');
-      expect(component.inputForm.value.destinationDlci).toBe('');
+      expect(component.sourcePort()).toBe('');
+      expect(component.sourceDlci()).toBe('');
+      expect(component.destinationPort()).toBe('');
+      expect(component.destinationDlci()).toBe('');
     });
   });
 
   describe('clearUserInput', () => {
-    it('should reset all input fields to empty values', () => {
-      component.inputForm.patchValue({
-        sourcePort: '5',
-        sourceDlci: '50',
-        destinationPort: '6',
-        destinationDlci: '60',
-      });
+    it('should reset all input signals to empty values', () => {
+      component.sourcePort.set('5');
+      component.sourceDlci.set('50');
+      component.destinationPort.set('6');
+      component.destinationDlci.set('60');
 
       component.clearUserInput();
 
-      expect(component.inputForm.value.sourcePort).toBe('');
-      expect(component.inputForm.value.sourceDlci).toBe('');
-      expect(component.inputForm.value.destinationPort).toBe('');
-      expect(component.inputForm.value.destinationDlci).toBe('');
+      expect(component.sourcePort()).toBe('');
+      expect(component.sourceDlci()).toBe('');
+      expect(component.destinationPort()).toBe('');
+      expect(component.destinationDlci()).toBe('');
     });
   });
 
@@ -336,15 +339,16 @@ describe('ConfiguratorDialogSwitchComponent', () => {
 
   describe('onSaveClick', () => {
     beforeEach(() => {
-      // Set up valid name form
-      component.nameForm.patchValue({ name: 'Updated Switch Name' });
+      mockValidationService.required.mockReturnValue({ isValid: true });
+      // Set up valid name signal
+      component.nodeName.set('Updated Switch Name');
       component.nodeMappingsDataSource = [
         { portIn: '0:1', portOut: '0:2' },
         { portIn: '0:3', portOut: '0:4' },
       ];
     });
 
-    it('should update node when nameForm is valid', () => {
+    it('should update node when validation passes', () => {
       component.onSaveClick();
 
       expect(mockNodeService.updateNode).toHaveBeenCalledWith(mockController, component.node);
@@ -362,12 +366,16 @@ describe('ConfiguratorDialogSwitchComponent', () => {
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
 
-    it('should show error when nameForm is invalid', () => {
-      component.nameForm.reset();
+    it('should show error when name is empty', () => {
+      mockValidationService.required.mockReturnValue({
+        isValid: false,
+        errorMessage: 'Name is required',
+      });
+      component.nodeName.set('');
 
       component.onSaveClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields.');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Name is required');
       expect(mockNodeService.updateNode).not.toHaveBeenCalled();
     });
 
