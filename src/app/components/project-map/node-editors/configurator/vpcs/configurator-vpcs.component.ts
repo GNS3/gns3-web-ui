@@ -1,13 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,6 +16,7 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
+import { ValidationService } from '@services/validation';
 
 @Component({
   standalone: true,
@@ -33,7 +27,6 @@ import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     MatDialogModule,
     MatCardModule,
     MatFormFieldModule,
@@ -49,24 +42,20 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogVpcsComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
   private vpcsConfigurationService = inject(VpcsConfigurationService);
   private cd = inject(ChangeDetectorRef);
+  private validationService = inject(ValidationService);
 
   controller: Controller;
   node: Node;
   name: string;
-  inputForm: UntypedFormGroup;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
 
-  constructor() {
-    this.inputForm = this.formBuilder.group({
-      name: new UntypedFormControl('', Validators.required),
-      console_type: new UntypedFormControl(''),
-      console_auto_start: new UntypedFormControl(false),
-    });
-  }
+  // Model signals
+  readonly nodeName = model('');
+  readonly consoleType = model('');
+  readonly consoleAutoStart = model(false);
 
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
@@ -74,12 +63,10 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
         this.node = node;
         this.name = node.name;
 
-        // Update form values with node data
-        this.inputForm.patchValue({
-          name: node.name,
-          console_type: node.console_type || '',
-          console_auto_start: node.console_auto_start || false,
-        });
+        // Update model signals with node data
+        this.nodeName.set(node.name || '');
+        this.consoleType.set(node.console_type || '');
+        this.consoleAutoStart.set(node.console_auto_start || false);
 
         this.getConfiguration();
         if (!this.node.tags) {
@@ -100,28 +87,28 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
   }
 
   onSaveClick() {
-    if (this.inputForm.valid) {
-      // Merge form values back into node
-      const formValues = this.inputForm.value;
-
-      this.node.name = formValues.name;
-      this.node.console_type = formValues.console_type;
-      this.node.console_auto_start = formValues.console_auto_start;
-
-      this.nodeService.updateNode(this.controller, this.node).subscribe({
-        next: () => {
-          this.toasterService.success(`Node ${this.node.name} updated.`);
-          this.onCancelClick();
-        },
-        error: (error: unknown) => {
-          const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
-          this.toasterService.error(errorMessage);
-          this.cd.markForCheck();
-        },
-      });
-    } else {
-      this.toasterService.error(`Fill all required fields.`);
+    // Validate name (required)
+    const nameValidation = this.validationService.required(this.nodeName(), 'Name');
+    if (!nameValidation.isValid) {
+      this.toasterService.error(nameValidation.errorMessage || 'Name is required');
+      return;
     }
+
+    this.node.name = this.nodeName();
+    this.node.console_type = this.consoleType();
+    this.node.console_auto_start = this.consoleAutoStart();
+
+    this.nodeService.updateNode(this.controller, this.node).subscribe({
+      next: () => {
+        this.toasterService.success(`Node ${this.node.name} updated.`);
+        this.onCancelClick();
+      },
+      error: (error: unknown) => {
+        const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
+        this.toasterService.error(errorMessage);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onCancelClick() {

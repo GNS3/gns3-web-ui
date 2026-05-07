@@ -6,6 +6,7 @@ import { ConfiguratorDialogVpcsComponent } from './configurator-vpcs.component';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
+import { ValidationService } from '@services/validation';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { ChangeDetectorRef } from '@angular/core';
@@ -18,6 +19,7 @@ describe('ConfiguratorDialogVpcsComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockVpcsConfigurationService: any;
+  let mockValidationService: any;
   let mockChangeDetectorRef: any;
 
   const mockController = { id: 1 } as unknown as Controller;
@@ -48,6 +50,10 @@ describe('ConfiguratorDialogVpcsComponent', () => {
       getConsoleTypes: vi.fn().mockReturnValue(['telnet', 'vnc']),
     };
 
+    mockValidationService = {
+      required: vi.fn().mockReturnValue({ isValid: true }),
+    };
+
     mockChangeDetectorRef = {
       markForCheck: vi.fn(),
     };
@@ -59,6 +65,7 @@ describe('ConfiguratorDialogVpcsComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: VpcsConfigurationService, useValue: mockVpcsConfigurationService },
+        { provide: ValidationService, useValue: mockValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
@@ -80,18 +87,11 @@ describe('ConfiguratorDialogVpcsComponent', () => {
       expect(Array.isArray(component.separatorKeysCodes)).toBe(true);
     });
 
-    it('should initialize inputForm with required name field', () => {
-      expect(component.inputForm.get('name')).toBeTruthy();
-      expect(component.inputForm.get('name')?.validator).toBeTruthy();
-    });
-
-    it('should initialize inputForm with console_type field', () => {
-      expect(component.inputForm.get('console_type')).toBeTruthy();
-    });
-
-    it('should initialize inputForm with console_auto_start field defaulting to false', () => {
-      expect(component.inputForm.get('console_auto_start')).toBeTruthy();
-      expect(component.inputForm.get('console_auto_start')?.value).toBe(false);
+    it('should initialize model signals', () => {
+      expect(component.nodeName).toBeTruthy();
+      expect(component.consoleType).toBeTruthy();
+      expect(component.consoleAutoStart).toBeTruthy();
+      expect(component.consoleAutoStart()).toBe(false);
     });
   });
 
@@ -161,22 +161,24 @@ describe('ConfiguratorDialogVpcsComponent', () => {
   });
 
   describe('onSaveClick', () => {
-    it('should close dialog when form is invalid', () => {
-      component.inputForm.get('name')?.setValue('');
+    it('should show error toast when name is empty', () => {
+      mockValidationService.required.mockReturnValue({
+        isValid: false,
+        errorMessage: 'Name is required',
+      });
+      component.nodeName.set('');
 
       component.onSaveClick();
 
-      expect(mockDialogRef.close).not.toHaveBeenCalled();
-      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields.');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Name is required');
+      expect(mockNodeService.updateNode).not.toHaveBeenCalled();
     });
 
-    it('should update node and close dialog when form is valid', () => {
+    it('should update node and close dialog when validation passes', () => {
       component.node = { ...mockNode } as Node;
-      component.inputForm.patchValue({
-        name: 'Updated-VPCS',
-        console_type: 'vnc',
-        console_auto_start: true,
-      });
+      component.nodeName.set('Updated-VPCS');
+      component.consoleType.set('vnc');
+      component.consoleAutoStart.set(true);
 
       component.onSaveClick();
 
@@ -188,11 +190,9 @@ describe('ConfiguratorDialogVpcsComponent', () => {
 
     it('should show success toast and close dialog on successful update', () => {
       component.node = { ...mockNode } as Node;
-      component.inputForm.patchValue({
-        name: 'VPCS-Updated',
-        console_type: 'telnet',
-        console_auto_start: false,
-      });
+      component.nodeName.set('VPCS-Updated');
+      component.consoleType.set('telnet');
+      component.consoleAutoStart.set(false);
 
       (mockNodeService.updateNode as ReturnType<typeof vi.fn>).mockReturnValue({
         subscribe: vi.fn((observer) => {
@@ -257,10 +257,8 @@ describe('ConfiguratorDialogVpcsComponent', () => {
       mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
       const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
       component.node = { ...mockNode } as Node;
-      component.inputForm.patchValue({
-        name: 'Updated-VPCS',
-        console_type: 'telnet',
-      });
+      component.nodeName.set('Updated-VPCS');
+      component.consoleType.set('telnet');
 
       component.onSaveClick();
 
