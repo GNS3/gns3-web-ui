@@ -149,6 +149,24 @@
 }
 
 /* =============================================
+// UDP tunnels grid (aligned with udp-tunnels component)
+// ============================================= */
+.udp-tunnels__input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+}
+
+.udp-tunnels__add-btn {
+  display: flex;
+  justify-content: center;
+
+  button {
+    width: 80%;
+  }
+}
+
+/* =============================================
 // Table
 // ============================================= */
 .cloud-nodes-details__table {

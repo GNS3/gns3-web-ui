@@ -1,13 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -28,6 +21,7 @@ import { Controller } from '@models/controller';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { CloudValidationService } from '@services/validation';
 
 @Component({
   standalone: true,
@@ -38,7 +32,6 @@ import { ToasterService } from '@services/toaster.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     MatDialogModule,
     MatCardModule,
     MatTabsModule,
@@ -57,14 +50,13 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogCloudComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
   private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
   private cd = inject(ChangeDetectorRef);
+  private validationService = inject(CloudValidationService);
 
   controller: Controller;
   node: Node;
   name: string;
-  generalSettingsForm: UntypedFormGroup;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   onCloseOptions = [];
@@ -83,18 +75,15 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   readonly ethernetInterface = model('');
   availableEthernetInterfaces: string[] = [];
 
-  readonly udpTunnels = viewChild<UdpTunnelsComponent>('udpTunnels');
+  // Model signals for form fields
+  readonly nodeName = model('');
+  readonly consoleType = model('none');
+  readonly remoteConsoleHost = model('');
+  readonly remoteConsolePort = model('');
+  readonly remoteConsoleHttpPath = model('');
+  readonly usage = model('');
 
-  constructor() {
-    this.generalSettingsForm = this.formBuilder.group({
-      name: new UntypedFormControl('', Validators.required),
-      console_type: new UntypedFormControl('none'),
-      remote_console_host: new UntypedFormControl(''),
-      remote_console_port: new UntypedFormControl(''),
-      remote_console_http_path: new UntypedFormControl(''),
-      usage: new UntypedFormControl(''),
-    });
-  }
+  readonly udpTunnels = viewChild<UdpTunnelsComponent>('udpTunnels');
 
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
@@ -102,20 +91,25 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
         this.node = node;
         this.name = node.name;
 
-        // Update form values with node data
-        this.generalSettingsForm.patchValue({
-          name: node.name,
-          console_type: node.console_type || 'none',
-          remote_console_host: node.properties.remote_console_host || '',
-          remote_console_port: node.properties.remote_console_port || '',
-          remote_console_http_path: node.properties.remote_console_http_path || '',
-          usage: node.properties.usage || '',
-        });
+        // Update model signals with node data
+        this.nodeName.set(node.name || '');
+        this.consoleType.set(node.console_type || 'none');
+        this.remoteConsoleHost.set(node.properties.remote_console_host || '');
+        this.remoteConsolePort.set(node.properties.remote_console_port?.toString() || '');
+        this.remoteConsoleHttpPath.set(node.properties.remote_console_http_path || '');
+        this.usage.set(node.properties.usage || '');
 
         this.getConfiguration();
 
         if (!this.node.tags) {
           this.node.tags = [];
+        }
+
+        // Populate available ethernet interfaces from gns3server
+        if (this.node.properties.interfaces) {
+          this.availableEthernetInterfaces = this.node.properties.interfaces
+            .filter((iface) => iface.type === 'ethernet')
+            .map((iface) => iface.name);
         }
 
         this.portsMappingEthernet = this.node.properties.ports_mapping.filter((elem) => elem.type === 'ethernet');
@@ -140,10 +134,18 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
 
   onAddEthernetInterface() {
     if (this.ethernetInterface()) {
+      // Validate interface name
+      const nameValidation = this.validationService.validateInterfaceName(this.ethernetInterface());
+      if (!nameValidation.isValid) {
+        this.toasterService.error(nameValidation.errorMessage || 'Invalid interface name');
+        return;
+      }
+
       // Check if interface already exists
-      const exists = this.portsMappingEthernet.some((port) => port.name === this.ethernetInterface());
-      if (exists) {
-        this.toasterService.error(`Interface ${this.ethernetInterface()} already configured.`);
+      const existingNames = this.portsMappingEthernet.map((port) => port.name);
+      const uniqueValidation = this.validationService.validateUniqueInterface(this.ethernetInterface(), existingNames);
+      if (!uniqueValidation.isValid) {
+        this.toasterService.error(uniqueValidation.errorMessage || `Interface ${this.ethernetInterface()} already configured.`);
         return;
       }
 
@@ -167,10 +169,18 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
 
   onAddTapInterface() {
     if (this.tapInterface()) {
+      // Validate interface name
+      const nameValidation = this.validationService.validateInterfaceName(this.tapInterface());
+      if (!nameValidation.isValid) {
+        this.toasterService.error(nameValidation.errorMessage || 'Invalid interface name');
+        return;
+      }
+
       // Check if interface already exists
-      const exists = this.portsMappingTap.some((port) => port.name === this.tapInterface());
-      if (exists) {
-        this.toasterService.error(`Interface ${this.tapInterface()} already configured.`);
+      const existingNames = this.portsMappingTap.map((port) => port.name);
+      const uniqueValidation = this.validationService.validateUniqueInterface(this.tapInterface(), existingNames);
+      if (!uniqueValidation.isValid) {
+        this.toasterService.error(uniqueValidation.errorMessage || `Interface ${this.tapInterface()} already configured.`);
         return;
       }
 
@@ -193,38 +203,76 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   }
 
   onSaveClick() {
-    if (this.generalSettingsForm.valid) {
-      // Merge form values back into node
-      const formValues = this.generalSettingsForm.value;
-
-      this.node.name = formValues.name;
-      // Ensure console_type is never empty - use 'none' as default
-      this.node.console_type = formValues.console_type || 'none';
-      this.node.properties.remote_console_host = formValues.remote_console_host;
-      this.node.properties.remote_console_port = formValues.remote_console_port;
-      this.node.properties.remote_console_http_path = formValues.remote_console_http_path;
-      this.node.properties.usage = formValues.usage;
-
-      this.portsMappingUdp = this.udpTunnels().dataSourceUdp;
-
-      this.node.properties.ports_mapping = this.portsMappingUdp
-        .concat(this.portsMappingEthernet)
-        .concat(this.portsMappingTap);
-
-      this.nodeService.updateNode(this.controller, this.node).subscribe({
-        next: () => {
-          this.toasterService.success(`Node ${this.node.name} updated.`);
-          this.onCancelClick();
-        },
-        error: (error: unknown) => {
-          const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
-          this.toasterService.error(errorMessage);
-          this.cd.markForCheck();
-        },
-      });
-    } else {
-      this.toasterService.error(`Fill all required fields.`);
+    // Validate required fields
+    const nameValidation = this.validationService.validateName(this.nodeName());
+    if (!nameValidation.isValid) {
+      this.toasterService.error(nameValidation.errorMessage || 'Name is required');
+      return;
     }
+
+    // Validate remote console port if provided
+    if (this.remoteConsolePort()) {
+      const portValidation = this.validationService.validateRemoteConsolePort(this.remoteConsolePort());
+      if (!portValidation.isValid) {
+        this.toasterService.error(portValidation.errorMessage || 'Remote console port must be between 1 and 65535');
+        return;
+      }
+    }
+
+    // Validate console type
+    const consoleTypeValidation = this.validationService.validateConsoleType(
+      this.consoleType(),
+      this.consoleTypes
+    );
+    if (!consoleTypeValidation.isValid) {
+      this.toasterService.error(consoleTypeValidation.errorMessage || 'Invalid console type');
+      return;
+    }
+
+    // Validate remote console host if provided
+    if (this.remoteConsoleHost()) {
+      const hostValidation = this.validationService.validateRemoteConsoleHost(this.remoteConsoleHost());
+      if (!hostValidation.isValid) {
+        this.toasterService.error(hostValidation.errorMessage || 'Invalid remote console host');
+        return;
+      }
+    }
+
+    // Validate HTTP path if provided
+    if (this.remoteConsoleHttpPath()) {
+      const pathValidation = this.validationService.validateRemoteConsoleHttpPath(this.remoteConsoleHttpPath());
+      if (!pathValidation.isValid) {
+        this.toasterService.error(pathValidation.errorMessage || 'Invalid HTTP path');
+        return;
+      }
+    }
+
+    // Merge model signal values back into node
+    this.node.name = this.nodeName();
+    // Ensure console_type is never empty - use 'none' as default
+    this.node.console_type = this.consoleType() || 'none';
+    this.node.properties.remote_console_host = this.remoteConsoleHost();
+    this.node.properties.remote_console_port = this.remoteConsolePort() ? parseInt(this.remoteConsolePort(), 10) : undefined;
+    this.node.properties.remote_console_http_path = this.remoteConsoleHttpPath();
+    this.node.properties.usage = this.usage();
+
+    this.portsMappingUdp = this.udpTunnels().dataSourceUdp;
+
+    this.node.properties.ports_mapping = this.portsMappingUdp
+      .concat(this.portsMappingEthernet)
+      .concat(this.portsMappingTap);
+
+    this.nodeService.updateNode(this.controller, this.node).subscribe({
+      next: () => {
+        this.toasterService.success(`Node ${this.node.name} updated.`);
+        this.onCancelClick();
+      },
+      error: (error: unknown) => {
+        const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
+        this.toasterService.error(errorMessage);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onCancelClick() {

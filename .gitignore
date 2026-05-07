@@ -65,4 +65,10 @@ licenses.csv
 .claude/settings.json
 .claude/settings.local.json
 .claude/zhipu-settings.json
+.claude/deepseek-settings.json
+.claude/gemini-settings.json
+.claude/grok-settings.json
+.claude/openai-settings.json
+.claude/minimax-settings.json
 docs/angular.dev/
+

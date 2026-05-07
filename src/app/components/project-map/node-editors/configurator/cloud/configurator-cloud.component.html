@@ -8,6 +8,18 @@
         <mat-tab-group>
           <mat-tab label="Ethernet interfaces">
             <div class="interfaces-list">
+              <div class="add-interface-row">
+                <mat-form-field>
+                  <mat-label>Ethernet interface</mat-label>
+                  <mat-select [value]="ethernetInterface()" (selectionChange)="ethernetInterface.set($event.value)">
+                    @for (iface of availableEthernetInterfaces; track iface) {
+                    <mat-option [value]="iface">{{ iface }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <button mat-button (click)="onAddEthernetInterface()">Add</button>
+              </div>
+
               <table mat-table [dataSource]="portsMappingEthernet" class="interfaces-table">
                 <ng-container matColumnDef="name">
                   <th mat-header-cell *matHeaderCellDef>Interface</th>
@@ -26,18 +38,18 @@
                 <tr mat-header-row *matHeaderRowDef="ethernetDisplayColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: ethernetDisplayColumns"></tr>
               </table>
-
-              <div class="add-interface-row">
-                <mat-form-field>
-                  <input matInput type="text" [value]="ethernetInterface()" (input)="ethernetInterface.set($event.target.value)" placeholder="Ethernet interface name" />
-                </mat-form-field>
-                <button mat-button (click)="onAddEthernetInterface()">Add</button>
-              </div>
             </div>
           </mat-tab>
 
           <mat-tab label="TAP interfaces">
             <div class="interfaces-list">
+              <div class="add-interface-row">
+                <mat-form-field>
+                  <input matInput type="text" [value]="tapInterface()" (input)="tapInterface.set($event.target.value)" placeholder="TAP interface" />
+                </mat-form-field>
+                <button mat-button (click)="onAddTapInterface()">Add</button>
+              </div>
+
               <table mat-table [dataSource]="portsMappingTap" class="interfaces-table">
                 <ng-container matColumnDef="name">
                   <th mat-header-cell *matHeaderCellDef>Interface</th>
@@ -56,13 +68,6 @@
                 <tr mat-header-row *matHeaderRowDef="tapDisplayColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: tapDisplayColumns"></tr>
               </table>
-
-              <div class="add-interface-row">
-                <mat-form-field>
-                  <input matInput type="text" [value]="tapInterface()" (input)="tapInterface.set($event.target.value)" placeholder="TAP interface" />
-                </mat-form-field>
-                <button mat-button (click)="onAddTapInterface()">Add</button>
-              </div>
             </div>
           </mat-tab>
 
@@ -71,10 +76,10 @@
           </mat-tab>
 
           <mat-tab label="Miscellaneous">
-            <form [formGroup]="generalSettingsForm">
+            <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Name</mat-label>
-                <input matInput type="text" formControlName="name" />
+                <input matInput type="text" [value]="nodeName()" (input)="nodeName.set($event.target.value)" />
               </mat-form-field>
 
               <mat-form-field class="form-field tags-field">
@@ -98,7 +103,7 @@
 
               <mat-form-field class="form-field">
                 <mat-label>Console type</mat-label>
-                <mat-select formControlName="console_type">
+                <mat-select [value]="consoleType()" (valueChange)="consoleType.set($event)">
                   @for (type of consoleTypes; track type) {
                   <mat-option [value]="type">
                     {{ type }}
@@ -109,28 +114,28 @@
 
               <mat-form-field class="form-field">
                 <mat-label>Console host</mat-label>
-                <input matInput type="text" formControlName="remote_console_host" />
+                <input matInput type="text" [value]="remoteConsoleHost()" (input)="remoteConsoleHost.set($event.target.value)" />
               </mat-form-field>
 
               <mat-form-field class="form-field">
                 <mat-label>Console port</mat-label>
-                <input matInput type="text" formControlName="remote_console_port" />
+                <input matInput type="text" [value]="remoteConsolePort()" (input)="remoteConsolePort.set($event.target.value)" />
               </mat-form-field>
 
               <mat-form-field class="form-field">
                 <mat-label>Console HTTP path</mat-label>
-                <input matInput type="text" formControlName="remote_console_http_path" />
+                <input matInput type="text" [value]="remoteConsoleHttpPath()" (input)="remoteConsoleHttpPath.set($event.target.value)" />
               </mat-form-field>
-            </form>
+            </div>
           </mat-tab>
 
           <mat-tab label="Usage">
-            <form [formGroup]="generalSettingsForm">
+            <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Usage</mat-label>
-                <textarea matInput formControlName="usage"></textarea>
+                <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)"></textarea>
               </mat-form-field>
-            </form>
+            </div>
           </mat-tab>
         </mat-tab-group>
         }

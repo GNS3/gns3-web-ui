@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
@@ -18,6 +19,7 @@ import { BuiltInTemplatesConfigurationService } from '@services/built-in-templat
 import { BuiltInTemplatesService } from '@services/built-in-templates.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { CloudValidationService } from '@services/validation';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 import { DialogConfigService } from '@services/dialog-config.service';
 
@@ -38,6 +40,7 @@ import { DialogConfigService } from '@services/dialog-config.service';
     MatSelectModule,
     MatChipsModule,
     MatTableModule,
+    MatTooltipModule,
   ],
 })
 export class CloudNodesTemplateDetailsComponent implements OnInit {
@@ -46,6 +49,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   private builtInTemplatesService = inject(BuiltInTemplatesService);
   private toasterService = inject(ToasterService);
   private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
+  private validationService = inject(CloudValidationService);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
@@ -59,7 +63,9 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   categories: any[] = [];
   consoleTypes: string[] = [];
   ethernetInterfaces: string[] = ['Ethernet 2', 'Ethernet 3'];
-  displayedColumns: string[] = ['name', 'lport', 'rhost', 'rport'];
+  ethernetDisplayColumns: string[] = ['name', 'actions'];
+  tapDisplayColumns: string[] = ['name', 'actions'];
+  displayColumnsUdp: string[] = ['name', 'lport', 'rhost', 'rport', 'action'];
 
   // Section expansion state
   generalExpanded = false;
@@ -179,38 +185,103 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   onAddEthernetInterface() {
     const ethInterface = this.ethernetInterface();
     if (ethInterface) {
-      this.portsMappingEthernet.push({
-        interface: ethInterface,
-        name: ethInterface,
-        port_number: 0,
-        type: 'ethernet',
-      });
+      // Validate interface name
+      const nameValidation = this.validationService.validateInterfaceName(ethInterface);
+      if (!nameValidation.isValid) {
+        this.toasterService.error(nameValidation.errorMessage || 'Invalid interface name');
+        return;
+      }
+
+      // Check for duplicate
+      const existingNames = this.portsMappingEthernet.map((port) => port.name);
+      const uniqueValidation = this.validationService.validateUniqueInterface(ethInterface, existingNames);
+      if (!uniqueValidation.isValid) {
+        this.toasterService.error(uniqueValidation.errorMessage || `Interface ${ethInterface} already configured.`);
+        return;
+      }
+
+      this.portsMappingEthernet = [
+        ...this.portsMappingEthernet,
+        {
+          interface: ethInterface,
+          name: ethInterface,
+          port_number: 0,
+          type: 'ethernet',
+        },
+      ];
       this.ethernetInterface.set('');
       this.cd.markForCheck();
     }
   }
 
+  onDeleteEthernetInterface(port: PortsMappingEntity) {
+    this.portsMappingEthernet = this.portsMappingEthernet.filter((p) => p !== port);
+    this.cd.markForCheck();
+  }
+
   onAddTapInterface() {
     const tap = this.tapInterface();
     if (tap) {
-      this.portsMappingTap.push({
-        interface: tap,
-        name: tap,
-        port_number: 0,
-        type: 'tap',
-      });
+      // Validate interface name
+      const nameValidation = this.validationService.validateInterfaceName(tap);
+      if (!nameValidation.isValid) {
+        this.toasterService.error(nameValidation.errorMessage || 'Invalid interface name');
+        return;
+      }
+
+      // Check for duplicate
+      const existingNames = this.portsMappingTap.map((port) => port.name);
+      const uniqueValidation = this.validationService.validateUniqueInterface(tap, existingNames);
+      if (!uniqueValidation.isValid) {
+        this.toasterService.error(uniqueValidation.errorMessage || `Interface ${tap} already configured.`);
+        return;
+      }
+
+      this.portsMappingTap = [
+        ...this.portsMappingTap,
+        {
+          interface: tap,
+          name: tap,
+          port_number: 0,
+          type: 'tap',
+        },
+      ];
       this.tapInterface.set('');
       this.cd.markForCheck();
     }
   }
 
+  onDeleteTapInterface(port: PortsMappingEntity) {
+    this.portsMappingTap = this.portsMappingTap.filter((p) => p !== port);
+    this.cd.markForCheck();
+  }
+
   onAddUdpInterface() {
+    // Validate remote host (required)
+    if (!this.newPortRhost() || this.newPortRhost().trim() === '') {
+      this.toasterService.error('Remote host is required');
+      return;
+    }
+
+    // Validate local port (1-65535, not 0)
+    if (this.newPortLport() < 1 || this.newPortLport() > 65535) {
+      this.toasterService.error('Local port must be between 1 and 65535');
+      return;
+    }
+
+    // Validate remote port (1-65535, not 0)
+    if (this.newPortRport() < 1 || this.newPortRport() > 65535) {
+      this.toasterService.error('Remote port must be between 1 and 65535');
+      return;
+    }
+
     const newPort: PortsMappingEntity = {
       name: this.newPortName(),
       lport: this.newPortLport(),
       rhost: this.newPortRhost(),
       rport: this.newPortRport(),
       port_number: 0,
+      type: 'udp',
     };
     this.portsMappingUdp.push(newPort);
     this.dataSourceUdp = [...this.portsMappingUdp];
@@ -222,7 +293,57 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
     this.cd.markForCheck();
   }
 
+  deleteUdpInterface(port: PortsMappingEntity) {
+    this.portsMappingUdp = this.portsMappingUdp.filter((p) => p !== port);
+    this.dataSourceUdp = [...this.portsMappingUdp];
+    this.cd.markForCheck();
+  }
+
   onSave() {
+    // Validate required fields
+    const nameValidation = this.validationService.validateName(this.name());
+    if (!nameValidation.isValid) {
+      this.toasterService.error(nameValidation.errorMessage || 'Name is required');
+      return;
+    }
+
+    // Validate remote console port if provided
+    if (this.consolePort()) {
+      const portValidation = this.validationService.validateRemoteConsolePort(this.consolePort().toString());
+      if (!portValidation.isValid) {
+        this.toasterService.error(portValidation.errorMessage || 'Remote console port must be between 1 and 65535');
+        return;
+      }
+    }
+
+    // Validate console type
+    const consoleTypeValidation = this.validationService.validateConsoleType(
+      this.consoleType(),
+      this.consoleTypes
+    );
+    if (!consoleTypeValidation.isValid) {
+      this.toasterService.error(consoleTypeValidation.errorMessage || 'Invalid console type');
+      return;
+    }
+
+    // Validate remote console host if provided
+    if (this.consoleHost()) {
+      const hostValidation = this.validationService.validateRemoteConsoleHost(this.consoleHost());
+      if (!hostValidation.isValid) {
+        this.toasterService.error(hostValidation.errorMessage || 'Invalid remote console host');
+        return;
+      }
+    }
+
+    // Validate HTTP path if provided
+    if (this.consoleHttpPath()) {
+      const pathValidation = this.validationService.validateRemoteConsoleHttpPath(this.consoleHttpPath());
+      if (!pathValidation.isValid) {
+        this.toasterService.error(pathValidation.errorMessage || 'Invalid HTTP path');
+        return;
+      }
+    }
+
     // Update cloudNodeTemplate from model signals
     this.cloudNodeTemplate.name = this.name();
     this.cloudNodeTemplate.default_name_format = this.defaultNameFormat();
