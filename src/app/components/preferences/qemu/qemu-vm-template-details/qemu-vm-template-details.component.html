@@ -19,38 +19,29 @@
       </div>
       @if (generalSettingsExpanded) {
       <form class="qemu-template-details__form">
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
-          <mat-label>Template name</mat-label>
-          <input
-            matInput
-            [value]="templateName()"
-            (input)="templateName.set($event.target.value)"
-            type="text"
-            placeholder="Template name"
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
-          <mat-label>Default name format</mat-label>
-          <input
-            matInput
-            [value]="defaultName()"
-            (input)="defaultName.set($event.target.value)"
-            type="text"
-            placeholder="Default name format"
-          />
-        </mat-form-field>
+        <div class="two-column-grid">
+          <mat-form-field appearance="fill" class="qemu-template-details__field">
+            <mat-label>Template name</mat-label>
+            <input matInput [value]="templateName()" (input)="templateName.set($event.target.value)" type="text" placeholder="Template name" />
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="qemu-template-details__field">
+            <mat-label>Default name format</mat-label>
+            <input matInput [value]="defaultName()" (input)="defaultName.set($event.target.value)" type="text" placeholder="Default name format" />
+          </mat-form-field>
+        </div>
 
         <div class="qemu-template-details__symbol-row">
+          <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--category">
+            <mat-label>Category</mat-label>
+            <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+              @for (cat of categories; track $index) {
+              <mat-option [value]="cat[1]">{{ cat[0] }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
           <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
             <mat-label>Symbol</mat-label>
-            <input
-              matInput
-              [value]="symbol()"
-              (input)="symbol.set($event.target.value)"
-              type="text"
-              placeholder="Symbol"
-            />
+            <input matInput [value]="symbol()" (input)="symbol.set($event.target.value)" type="text" placeholder="Symbol" />
           </mat-form-field>
           <button mat-button class="qemu-template-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
         </div>
@@ -74,63 +65,33 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
-          <mat-label>Category</mat-label>
-          <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
-            @for (cat of categories; track $index) {
-            <mat-option [value]="cat[1]">
-              {{ cat[0] }}
-            </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
-          <mat-label>Platform</mat-label>
-          <mat-select [value]="platform()" (selectionChange)="platform.set($event.value)">
-            @for (p of selectPlatform; track p) {
-            <mat-option [value]="p">
-              {{ p }}
-            </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
-          <mat-label>RAM</mat-label>
-          <input
-            matInput
-            [value]="ram()"
-            (input)="ram.set(+$event.target.value)"
-            type="number"
-            min="1"
-            placeholder="RAM"
-          />
-          <span matSuffix>MB</span>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
-          <mat-label>vCPUs</mat-label>
-          <input
-            matInput
-            [value]="cpus()"
-            (input)="cpus.set(+$event.target.value)"
-            type="number"
-            min="1"
-            placeholder="vCPUs"
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
-          <mat-label>Boot priority</mat-label>
-          <mat-select [value]="bootPriority()" (selectionChange)="bootPriority.set($event.value)">
-            @for (priority of bootPriorities; track priority[1]) {
-            <mat-option [value]="priority[1]">
-              {{ priority[0] }}
-            </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        <div class="four-column-grid">
+          <mat-form-field appearance="fill" class="qemu-template-details__field">
+            <mat-label>Platform</mat-label>
+            <mat-select [value]="platform()" (selectionChange)="platform.set($event.value)">
+              @for (p of selectPlatform; track p) {
+              <mat-option [value]="p">{{ p }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="qemu-template-details__field">
+            <mat-label>RAM</mat-label>
+            <input matInput [value]="ram()" (input)="ram.set(+$event.target.value)" type="text" placeholder="RAM" />
+            <span matSuffix>MB</span>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="qemu-template-details__field">
+            <mat-label>vCPUs</mat-label>
+            <input matInput [value]="cpus()" (input)="cpus.set(+$event.target.value)" type="text" placeholder="vCPUs" />
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="qemu-template-details__field">
+            <mat-label>Boot priority</mat-label>
+            <mat-select [value]="bootPriority()" (selectionChange)="bootPriority.set($event.value)">
+              @for (priority of bootPriorities; track priority[1]) {
+              <mat-option [value]="priority[1]">{{ priority[0] }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
 
         <mat-form-field appearance="fill" class="qemu-template-details__field">
           <mat-label>On close</mat-label>
@@ -143,27 +104,24 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
-          <mat-label>Console type</mat-label>
-          <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
-            @for (type of consoleTypes; track type) {
-            <mat-option [value]="type">
-              {{ type }}
-            </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
-          <mat-label>Auxiliary console type</mat-label>
-          <mat-select [value]="auxConsoleType()" (selectionChange)="auxConsoleType.set($event.value)">
-            @for (type of auxConsoleTypes; track type) {
-            <mat-option [value]="type">
-              {{ type }}
-            </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        <div class="two-column-grid">
+          <mat-form-field appearance="fill" class="qemu-template-details__field">
+            <mat-label>Console type</mat-label>
+            <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
+              @for (type of consoleTypes; track type) {
+              <mat-option [value]="type">{{ type }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="qemu-template-details__field">
+            <mat-label>Auxiliary console type</mat-label>
+            <mat-select [value]="auxConsoleType()" (selectionChange)="auxConsoleType.set($event.value)">
+              @for (type of auxConsoleTypes; track type) {
+              <mat-option [value]="type">{{ type }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
 
         <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)"
           >Auto start console</mat-checkbox
@@ -188,9 +146,20 @@
             <input
               matInput
               [value]="hdaDiskImage()"
-              (input)="hdaDiskImage.set($event.target.value)"
+              (input)="onHdaImageInput($event); hdaDiskImage.set($event.target.value)"
+              [matAutocomplete]="hdaAuto"
+              (focus)="refreshQemuImages()"
               placeholder="Disk image"
             />
+            <mat-autocomplete #hdaAuto="matAutocomplete">
+              @if (filteredImages.length) {
+              <mat-optgroup label="Global images">
+                @for (image of filteredImages; track image.filename) {
+                <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                }
+              </mat-optgroup>
+              }
+            </mat-autocomplete>
           </mat-form-field>
           <mat-form-field appearance="fill" class="qemu-template-details__field">
             <mat-label>Disk interface</mat-label>
@@ -211,9 +180,20 @@
             <input
               matInput
               [value]="hdbDiskImage()"
-              (input)="hdbDiskImage.set($event.target.value)"
+              (input)="onHdbImageInput($event); hdbDiskImage.set($event.target.value)"
+              [matAutocomplete]="hdbAuto"
+              (focus)="refreshQemuImages()"
               placeholder="Disk image"
             />
+            <mat-autocomplete #hdbAuto="matAutocomplete">
+              @if (filteredImages.length) {
+              <mat-optgroup label="Global images">
+                @for (image of filteredImages; track image.filename) {
+                <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                }
+              </mat-optgroup>
+              }
+            </mat-autocomplete>
           </mat-form-field>
           <mat-form-field appearance="fill" class="qemu-template-details__field">
             <mat-label>Disk interface</mat-label>
@@ -234,9 +214,20 @@
             <input
               matInput
               [value]="hdcDiskImage()"
-              (input)="hdcDiskImage.set($event.target.value)"
+              (input)="onHdcImageInput($event); hdcDiskImage.set($event.target.value)"
+              [matAutocomplete]="hdcAuto"
+              (focus)="refreshQemuImages()"
               placeholder="Disk image"
             />
+            <mat-autocomplete #hdcAuto="matAutocomplete">
+              @if (filteredImages.length) {
+              <mat-optgroup label="Global images">
+                @for (image of filteredImages; track image.filename) {
+                <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                }
+              </mat-optgroup>
+              }
+            </mat-autocomplete>
           </mat-form-field>
           <mat-form-field appearance="fill" class="qemu-template-details__field">
             <mat-label>Disk interface</mat-label>
@@ -257,9 +248,20 @@
             <input
               matInput
               [value]="hddDiskImage()"
-              (input)="hddDiskImage.set($event.target.value)"
+              (input)="onHddImageInput($event); hddDiskImage.set($event.target.value)"
+              [matAutocomplete]="hddAuto"
+              (focus)="refreshQemuImages()"
               placeholder="Disk image"
             />
+            <mat-autocomplete #hddAuto="matAutocomplete">
+              @if (filteredImages.length) {
+              <mat-optgroup label="Global images">
+                @for (image of filteredImages; track image.filename) {
+                <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                }
+              </mat-optgroup>
+              }
+            </mat-autocomplete>
           </mat-form-field>
           <mat-form-field appearance="fill" class="qemu-template-details__field">
             <mat-label>Disk interface</mat-label>
@@ -290,19 +292,31 @@
           #filecdrom
           class="qemu-template-details__file-input"
           (change)="uploadCdromImageFile($event)"
+          accept=".iso"
         />
         <button mat-raised-button color="primary" (click)="filecdrom.click()" class="qemu-template-details__browse-btn">
-          Browse
+          Upload
         </button>
         <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
           <mat-label>Image</mat-label>
           <input
             matInput
             [value]="cdromImage()"
-            (input)="cdromImage.set($event.target.value)"
+            (input)="onCdromInput($event); cdromImage.set($event.target.value)"
+            [matAutocomplete]="cdromAuto"
+            (focus)="refreshGlobalImages()"
             type="text"
             placeholder="Image"
           />
+          <mat-autocomplete #cdromAuto="matAutocomplete">
+            @if (filteredGlobalImages.length) {
+            <mat-optgroup label="Global images">
+              @for (image of filteredGlobalImages; track image.filename) {
+              <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+              }
+            </mat-optgroup>
+            }
+          </mat-autocomplete>
         </mat-form-field>
       </div>
       }
@@ -420,17 +434,28 @@
               (click)="fileinitrd.click()"
               class="qemu-template-details__browse-btn"
             >
-              Browse
+              Upload
             </button>
             <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
               <mat-label>Initial RAM disk (initrd)</mat-label>
               <input
                 matInput
                 [value]="initrd()"
-                (input)="initrd.set($event.target.value)"
+                (input)="onAdvancedInput($event); initrd.set($event.target.value)"
+                [matAutocomplete]="initrdAuto"
+                (focus)="refreshQemuImages()"
                 type="text"
                 placeholder="Initial RAM disk (initrd)"
               />
+              <mat-autocomplete #initrdAuto="matAutocomplete">
+                @if (filteredAdvancedImages.length) {
+                <mat-optgroup label="Global images">
+                  @for (image of filteredAdvancedImages; track image.filename) {
+                  <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                  }
+                </mat-optgroup>
+                }
+              </mat-autocomplete>
             </mat-form-field>
           </div>
 
@@ -447,17 +472,28 @@
               (click)="filekernelimage.click()"
               class="qemu-template-details__browse-btn"
             >
-              Browse
+              Upload
             </button>
             <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
               <mat-label>Kernel image</mat-label>
               <input
                 matInput
                 [value]="kernelImage()"
-                (input)="kernelImage.set($event.target.value)"
+                (input)="onAdvancedInput($event); kernelImage.set($event.target.value)"
+                [matAutocomplete]="kernelAuto"
+                (focus)="refreshQemuImages()"
                 type="text"
                 placeholder="Kernel image"
               />
+              <mat-autocomplete #kernelAuto="matAutocomplete">
+                @if (filteredAdvancedImages.length) {
+                <mat-optgroup label="Global images">
+                  @for (image of filteredAdvancedImages; track image.filename) {
+                  <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                  }
+                </mat-optgroup>
+                }
+              </mat-autocomplete>
             </mat-form-field>
           </div>
 
@@ -483,17 +519,28 @@
               (click)="filebios.click()"
               class="qemu-template-details__browse-btn"
             >
-              Browse
+              Upload
             </button>
             <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
               <mat-label>Bios image</mat-label>
               <input
                 matInput
                 [value]="biosImage()"
-                (input)="biosImage.set($event.target.value)"
+                (input)="onAdvancedInput($event); biosImage.set($event.target.value)"
+                [matAutocomplete]="biosAuto"
+                (focus)="refreshQemuImages()"
                 type="text"
                 placeholder="Bios image"
               />
+              <mat-autocomplete #biosAuto="matAutocomplete">
+                @if (filteredAdvancedImages.length) {
+                <mat-optgroup label="Global images">
+                  @for (image of filteredAdvancedImages; track image.filename) {
+                  <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                  }
+                </mat-optgroup>
+                }
+              </mat-autocomplete>
             </mat-form-field>
           </div>
         </div>
@@ -558,6 +605,13 @@
             >Enable the Trusted Platform Module (TPM)</mat-checkbox
           >
           <mat-checkbox [checked]="uefi()" (change)="uefi.set($event.checked)">Enable the UEFI boot mode</mat-checkbox>
+          <div class="two-column-grid" style="margin-top: 12px;">
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>Max CPUs (hot-plug)</mat-label>
+              <input matInput [value]="maxcpus()" (input)="maxcpus.set(+$event.target.value)" type="text" placeholder="Max CPUs" />
+            </mat-form-field>
+            <mat-checkbox [checked]="createConfigDisk()" (change)="createConfigDisk.set($event.checked)">Auto-create config disk</mat-checkbox>
+          </div>
         </div>
       </div>
       }

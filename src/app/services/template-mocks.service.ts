@@ -29,6 +29,8 @@ export class TemplateMocksService {
       aux_type: 'none',
       cpu_throttling: 0,
       cpus: 1,
+      maxcpus: 1,
+      create_config_disk: false,
       custom_adapters: [],
       default_name_format: '{name}-{0}',
       first_port_name: '',

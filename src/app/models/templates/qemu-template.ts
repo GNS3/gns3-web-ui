@@ -14,6 +14,8 @@ export class QemuTemplate {
   aux_type: string;
   cpu_throttling: number;
   cpus: number;
+  maxcpus: number;
+  create_config_disk: boolean;
   custom_adapters: CustomAdapter[];
   default_name_format: string;
   first_port_name: string;

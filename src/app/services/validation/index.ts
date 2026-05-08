@@ -22,6 +22,7 @@ export { CloudValidationService } from './nodes/cloud-validation.service';
 export { DockerValidationService } from './nodes/docker-validation.service';
 export { IosValidationService } from './nodes/ios-validation.service';
 export { IouValidationService } from './nodes/iou-validation.service';
+export { QemuValidationService } from './nodes/qemu-validation.service';
 
 // TODO: Add other node validation services as they are migrated
 // export { EthernetHubValidationService } from './nodes/ethernet-hub-validation.service';

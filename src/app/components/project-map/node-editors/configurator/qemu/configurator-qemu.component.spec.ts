@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { ConfiguratorDialogQemuComponent } from './configurator-qemu.component';
@@ -8,7 +7,9 @@ import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { QemuService } from '@services/qemu.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
-import { Node, Properties } from '../../../../../cartography/models/node';
+import { ValidationService } from '@services/validation';
+import { ImageManagerService } from '@services/image-manager.service';
+import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { QemuImage } from '@models/qemu/qemu-image';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -24,94 +25,10 @@ describe('ConfiguratorDialogQemuComponent', () => {
   let mockDialog: any;
   let mockDialogRef: any;
   let mockCd: any;
+  let mockValidationService: any;
+  let mockImageManagerService: any;
 
   const mockController = {} as Controller;
-
-  const createMockProperties = (): Properties => ({
-    adapter_type: 'e1000',
-    adapters: 4,
-    ethernet_adapters: 0,
-    serial_adapters: 0,
-    headless: false,
-    linked_clone: false,
-    on_close: 'stop',
-    aux: 0,
-    aux_type: 'telnet',
-    ram: 512,
-    system_id: '',
-    nvram: 0,
-    image: '',
-    usage: '',
-    use_any_adapter: false,
-    vmname: '',
-    ports_mapping: [],
-    mappings: {},
-    bios_image: '',
-    boot_priority: 'c',
-    cdrom_image: '',
-    cpu_throttling: 0,
-    cpus: 1,
-    hda_disk_image: 'hda.img',
-    hda_disk_image_md5sum: '',
-    hda_disk_interface: 'ide',
-    hdb_disk_image: '',
-    hdb_disk_image_md5sum: '',
-    hdb_disk_interface: '',
-    hdc_disk_image: '',
-    hdc_disk_image_md5sum: '',
-    hdc_disk_interface: '',
-    hdd_disk_image: '',
-    hdd_disk_image_md5sum: '',
-    hdd_disk_interface: '',
-    initrd: '',
-    initrd_md5sum: '',
-    kernel_command_line: '',
-    kernel_image: '',
-    kernel_image_md5sum: '',
-    mac_address: '00:00:00:00:00:00',
-    mac_addr: '',
-    options: '',
-    platform: 'x86_64',
-    chassis: '',
-    iomem: 0,
-    disk0: 0,
-    disk1: 0,
-    idlepc: '',
-    idlemax: 0,
-    idlesleep: 0,
-    exec_area: 0,
-    mmap: false,
-    sparsemem: false,
-    auto_delete_disks: false,
-    process_priority: 'normal',
-    qemu_path: '/usr/bin/qemu-system-x86_64',
-    environment: '',
-    extra_hosts: '',
-    start_command: '',
-    replicate_network_connection_state: false,
-    memory: 0,
-    tpm: false,
-    uefi: false,
-    slot0: '',
-    slot1: '',
-    slot2: '',
-    slot3: '',
-    slot4: '',
-    slot5: '',
-    slot6: '',
-    slot7: '',
-    wic0: '',
-    wic1: '',
-    wic2: '',
-    remote_console_host: '',
-    remote_console_port: 0,
-    remote_console_http_path: '',
-    use_default_iou_values: false,
-    console_resolution: '',
-    console_http_port: 0,
-    console_http_path: '',
-    extra_volumes: '',
-  });
 
   const createMockNode = (): Node =>
     ({
@@ -134,7 +51,93 @@ describe('ConfiguratorDialogQemuComponent', () => {
       label: undefined,
       symbol: '',
       symbol_url: '',
-      properties: createMockProperties(),
+      properties: {
+        adapter_type: 'e1000',
+        adapters: 4,
+        ethernet_adapters: 0,
+        serial_adapters: 0,
+        headless: false,
+        linked_clone: false,
+        on_close: 'stop',
+        aux: 0,
+        aux_type: 'telnet',
+        ram: 512,
+        system_id: '',
+        nvram: 0,
+        image: '',
+        usage: '',
+        use_any_adapter: false,
+        vmname: '',
+        ports_mapping: [],
+        mappings: {},
+        bios_image: '',
+        boot_priority: 'c',
+        cdrom_image: '',
+        cpu_throttling: 0,
+        cpus: 1,
+        hda_disk_image: 'hda.img',
+        hda_disk_image_md5sum: '',
+        hda_disk_interface: 'ide',
+        hdb_disk_image: '',
+        hdb_disk_image_md5sum: '',
+        hdb_disk_interface: '',
+        hdc_disk_image: '',
+        hdc_disk_image_md5sum: '',
+        hdc_disk_interface: '',
+        hdd_disk_image: '',
+        hdd_disk_image_md5sum: '',
+        hdd_disk_interface: '',
+        initrd: '',
+        initrd_md5sum: '',
+        kernel_command_line: '',
+        kernel_image: '',
+        kernel_image_md5sum: '',
+        mac_address: '00:00:00:00:00:00',
+        mac_addr: '',
+        options: '',
+        platform: 'x86_64',
+        chassis: '',
+        iomem: 0,
+        disk0: 0,
+        disk1: 0,
+        idlepc: '',
+        idlemax: 0,
+        idlesleep: 0,
+        exec_area: 0,
+        mmap: false,
+        sparsemem: false,
+        auto_delete_disks: false,
+        process_priority: 'normal',
+        qemu_path: '/usr/bin/qemu-system-x86_64',
+        environment: '',
+        extra_hosts: '',
+        start_command: '',
+        replicate_network_connection_state: false,
+        memory: 0,
+        tpm: false,
+        uefi: false,
+        slot0: '',
+        slot1: '',
+        slot2: '',
+        slot3: '',
+        slot4: '',
+        slot5: '',
+        slot6: '',
+        slot7: '',
+        wic0: '',
+        wic1: '',
+        wic2: '',
+        remote_console_host: '',
+        remote_console_port: 0,
+        remote_console_http_path: '',
+        use_default_iou_values: false,
+        console_resolution: '',
+        console_http_port: 0,
+        console_http_path: '',
+        extra_volumes: '',
+        maxcpus: 1,
+        create_config_disk: false,
+      } as any,
       console: 3080,
       console_auto_start: false,
       console_type: 'vnc',
@@ -151,6 +154,9 @@ describe('ConfiguratorDialogQemuComponent', () => {
   ];
 
   beforeEach(async () => {
+    TestBed.resetTestingModule();
+    vi.clearAllMocks();
+
     mockDialogRef = {
       close: vi.fn(),
     };
@@ -161,6 +167,7 @@ describe('ConfiguratorDialogQemuComponent', () => {
 
     mockNodeService = {
       getNode: vi.fn().mockReturnValue(of(createMockNode())),
+      getNodeFiles: vi.fn().mockReturnValue(of([])),
       updateNodeWithCustomAdapters: vi.fn().mockReturnValue(of({})),
     };
 
@@ -195,6 +202,15 @@ describe('ConfiguratorDialogQemuComponent', () => {
       error: vi.fn(),
     };
 
+    mockValidationService = {
+      required: vi.fn().mockReturnValue({ isValid: true, errorMessage: '' }),
+    };
+
+    mockImageManagerService = {
+      getImages: vi.fn().mockReturnValue(of([])),
+      uploadedImage: vi.fn().mockReturnValue(of({})),
+    };
+
     mockDialog = {
       open: vi.fn().mockReturnValue({
         afterClosed: vi.fn().mockReturnValue(of(null)),
@@ -207,13 +223,15 @@ describe('ConfiguratorDialogQemuComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [ConfiguratorDialogQemuComponent, ReactiveFormsModule],
+      imports: [ConfiguratorDialogQemuComponent],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
         { provide: QemuService, useValue: mockQemuService },
         { provide: QemuConfigurationService, useValue: mockQemuConfigurationService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ValidationService, useValue: mockValidationService },
+        { provide: ImageManagerService, useValue: mockImageManagerService },
         { provide: ChangeDetectorRef, useValue: mockCd },
       ],
     }).compileComponents();
@@ -247,53 +265,25 @@ describe('ConfiguratorDialogQemuComponent', () => {
   });
 
   // =====================================================================
-  // Form initialization
-  // =====================================================================
-
-  describe('form initialization', () => {
-    it('should create generalSettingsForm with required fields', () => {
-      expect(component.generalSettingsForm).toBeInstanceOf(UntypedFormGroup);
-      expect(component.generalSettingsForm.get('name')).toBeInstanceOf(UntypedFormControl);
-      expect(component.generalSettingsForm.get('ram')).toBeInstanceOf(UntypedFormControl);
-    });
-
-    it('should create networkSettingsForm with mac_address validator', () => {
-      expect(component.networkSettingsForm).toBeInstanceOf(UntypedFormGroup);
-      const macControl = component.networkSettingsForm.get('mac_address');
-      expect(macControl).toBeInstanceOf(UntypedFormControl);
-    });
-
-    it('should have name field marked as required', () => {
-      const nameControl = component.generalSettingsForm.get('name');
-      nameControl?.setValue('');
-      expect(nameControl?.valid).toBe(false);
-      nameControl?.setValue('Test VM');
-      expect(nameControl?.valid).toBe(true);
-    });
-  });
-
-  // =====================================================================
   // ngOnInit behavior
   // =====================================================================
 
   describe('ngOnInit', () => {
-    it('should load node data from NodeService', () => {
-      expect(mockNodeService.getNode).toHaveBeenCalledWith(mockController, component.node);
-    });
-
     it('should load QEMU images from QemuService', () => {
       expect(mockQemuService.getImages).toHaveBeenCalledWith(mockController);
     });
 
-    it('should populate generalSettingsForm with node properties', () => {
-      expect(component.generalSettingsForm.get('name')?.value).toBe('QEMU VM 1');
-      expect(component.generalSettingsForm.get('ram')?.value).toBe(512);
-      expect(component.generalSettingsForm.get('platform')?.value).toBe('x86_64');
+    it('should populate model signals from node properties', () => {
+      expect(component.nodeName()).toBe('QEMU VM 1');
+      expect(component.ram()).toBe('512');
+      expect(component.platform()).toBe('x86_64');
+      expect(component.hdaDiskImage()).toBe('hda.img');
+      expect(component.hdaDiskInterface()).toBe('ide');
     });
 
-    it('should populate networkSettingsForm with network properties', () => {
-      expect(component.networkSettingsForm.get('adapters')?.value).toBe(4);
-      expect(component.networkSettingsForm.get('mac_address')?.value).toBe('00:00:00:00:00:00');
+    it('should populate network signals from node properties', () => {
+      expect(component.adapters()).toBe('4');
+      expect(component.macAddress()).toBe('00:00:00:00:00:00');
     });
 
     it('should load configuration options', () => {
@@ -306,10 +296,6 @@ describe('ConfiguratorDialogQemuComponent', () => {
     it('should populate qemuImages and filteredImages', () => {
       expect(component.qemuImages).toEqual(mockQemuImages);
       expect(component.filteredImages).toEqual(mockQemuImages);
-    });
-
-    it('should initialize name from node', () => {
-      expect(component.name).toBe('QEMU VM 1');
     });
 
     it('should set empty tags array if node.tags is undefined', () => {
@@ -377,36 +363,92 @@ describe('ConfiguratorDialogQemuComponent', () => {
   });
 
   // =====================================================================
-  // File upload handlers
+  // onSaveClick
   // =====================================================================
 
-  describe('upload handlers', () => {
-    it('should update cdrom_image on uploadCdromImageFile', () => {
-      const event = { target: { files: [{ name: 'test.iso' }] } } as any;
-      component.uploadCdromImageFile(event);
-      expect(component.node.properties.cdrom_image).toBe('test.iso');
-      expect(component.generalSettingsForm.get('cdrom_image')?.value).toBe('test.iso');
+  describe('onSaveClick', () => {
+    it('should show error when name is empty', () => {
+      mockValidationService.required.mockReturnValue({ isValid: false, errorMessage: 'Name is required' });
+      component.onSaveClick();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Name is required');
+      expect(mockNodeService.updateNodeWithCustomAdapters).not.toHaveBeenCalled();
     });
 
-    it('should update initrd on uploadInitrdFile', () => {
-      const event = { target: { files: [{ name: 'initrd.img' }] } } as any;
-      component.uploadInitrdFile(event);
+    it('should update node properties from model signals on save', () => {
+      component.nodeName.set('Updated VM');
+      component.ram.set('1024');
+      component.platform.set('aarch64');
+      component.onSaveClick();
+      expect(component.node.name).toBe('Updated VM');
+      expect(component.node.properties.ram).toBe(1024);
+      expect(component.node.properties.platform).toBe('aarch64');
+    });
+
+    it('should update network properties on save', () => {
+      component.adapters.set('8');
+      component.adapterType.set('virtio');
+      component.onSaveClick();
+      expect(component.node.properties.adapters).toBe(8);
+      expect(component.node.properties.adapter_type).toBe('virtio');
+    });
+
+    it('should call updateNodeWithCustomAdapters on valid save', () => {
+      component.onSaveClick();
+      expect(mockNodeService.updateNodeWithCustomAdapters).toHaveBeenCalledWith(mockController, component.node);
+    });
+
+    it('should close dialog on successful update', () => {
+      component.onSaveClick();
+      expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should show success toast on successful update', () => {
+      component.onSaveClick();
+      expect(mockToasterService.success).toHaveBeenCalledWith(`Node QEMU VM 1 updated.`);
+    });
+
+    it('should show error toast on failed update', () => {
+      mockNodeService.updateNodeWithCustomAdapters.mockReturnValue(
+        throwError(() => ({ error: { message: 'Update failed' } }))
+      );
+      component.onSaveClick();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');
+    });
+
+    it('should show generic error message when error has no message', () => {
+      mockNodeService.updateNodeWithCustomAdapters.mockReturnValue(throwError(() => new Error('')));
+      component.onSaveClick();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node');
+    });
+
+    it('should save all disk image properties', () => {
+      component.hdaDiskImage.set('new_hda.img');
+      component.hdaDiskInterface.set('virtio');
+      component.hdbDiskImage.set('new_hdb.img');
+      component.hdbDiskInterface.set('sata');
+      component.onSaveClick();
+      expect(component.node.properties.hda_disk_image).toBe('new_hda.img');
+      expect(component.node.properties.hda_disk_interface).toBe('virtio');
+      expect(component.node.properties.hdb_disk_image).toBe('new_hdb.img');
+      expect(component.node.properties.hdb_disk_interface).toBe('sata');
+    });
+
+    it('should save advanced settings', () => {
+      component.initrd.set('initrd.img');
+      component.kernelImage.set('vmlinuz');
+      component.kernelCommandLine.set('console=ttyS0');
+      component.biosImage.set('bios.bin');
+      component.processPriority.set('high');
+      component.qemuPath.set('/usr/bin/qemu');
+      component.options.set('-enable-kvm');
+      component.tpm.set(true);
+      component.uefi.set(true);
+      component.usage.set('Test VM');
+      component.onSaveClick();
       expect(component.node.properties.initrd).toBe('initrd.img');
-      expect(component.generalSettingsForm.get('initrd')?.value).toBe('initrd.img');
-    });
-
-    it('should update kernel_image on uploadKernelImageFile', () => {
-      const event = { target: { files: [{ name: 'vmlinuz' }] } } as any;
-      component.uploadKernelImageFile(event);
       expect(component.node.properties.kernel_image).toBe('vmlinuz');
-      expect(component.generalSettingsForm.get('kernel_image')?.value).toBe('vmlinuz');
-    });
-
-    it('should update bios_image on uploadBiosFile', () => {
-      const event = { target: { files: [{ name: 'bios.bin' }] } } as any;
-      component.uploadBiosFile(event);
-      expect(component.node.properties.bios_image).toBe('bios.bin');
-      expect(component.generalSettingsForm.get('bios_image')?.value).toBe('bios.bin');
+      expect(component.node.properties.tpm).toBe(true);
+      expect(component.node.properties.uefi).toBe(true);
     });
   });
 
@@ -547,99 +589,6 @@ describe('ConfiguratorDialogQemuComponent', () => {
     it('should close dialog', () => {
       component.onCancelClick();
       expect(mockDialogRef.close).toHaveBeenCalled();
-    });
-  });
-
-  // =====================================================================
-  // onSaveClick
-  // =====================================================================
-
-  describe('onSaveClick', () => {
-    it('should show error when generalSettingsForm is invalid', () => {
-      component.generalSettingsForm.get('name')?.setValue('');
-      component.onSaveClick();
-      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields.');
-    });
-
-    it('should update node properties from generalSettingsForm on save', () => {
-      component.generalSettingsForm.get('name')?.setValue('Updated VM');
-      component.generalSettingsForm.get('ram')?.setValue(1024);
-      component.generalSettingsForm.get('platform')?.setValue('aarch64');
-      component.onSaveClick();
-      expect(component.node.name).toBe('Updated VM');
-      expect(component.node.properties.ram).toBe(1024);
-      expect(component.node.properties.platform).toBe('aarch64');
-    });
-
-    it('should update network properties from networkSettingsForm on save', () => {
-      component.networkSettingsForm.get('adapters')?.setValue(8);
-      component.networkSettingsForm.get('adapter_type')?.setValue('virtio');
-      component.onSaveClick();
-      expect(component.node.properties.adapters).toBe(8);
-      expect(component.node.properties.adapter_type).toBe('virtio');
-    });
-
-    it('should call updateNodeWithCustomAdapters on valid save', () => {
-      component.onSaveClick();
-      expect(mockNodeService.updateNodeWithCustomAdapters).toHaveBeenCalledWith(mockController, component.node);
-    });
-
-    it('should close dialog on successful update', () => {
-      component.onSaveClick();
-      expect(mockDialogRef.close).toHaveBeenCalled();
-    });
-
-    it('should show success toast on successful update', () => {
-      component.onSaveClick();
-      expect(mockToasterService.success).toHaveBeenCalledWith(`Node ${component.node.name} updated.`);
-    });
-
-    it('should show error toast on failed update', () => {
-      mockNodeService.updateNodeWithCustomAdapters.mockReturnValue(
-        throwError(() => ({ error: { message: 'Update failed' } }))
-      );
-      component.onSaveClick();
-      expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');
-    });
-
-    it('should show generic error message when error has no message', () => {
-      mockNodeService.updateNodeWithCustomAdapters.mockReturnValue(throwError(() => new Error('')));
-      component.onSaveClick();
-      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node');
-    });
-
-    it('should save all disk image properties', () => {
-      component.generalSettingsForm.patchValue({
-        hda_disk_image: 'new_hda.img',
-        hda_disk_interface: 'virtio',
-        hdb_disk_image: 'new_hdb.img',
-        hdb_disk_interface: 'sata',
-      });
-      component.onSaveClick();
-      expect(component.node.properties.hda_disk_image).toBe('new_hda.img');
-      expect(component.node.properties.hda_disk_interface).toBe('virtio');
-      expect(component.node.properties.hdb_disk_image).toBe('new_hdb.img');
-      expect(component.node.properties.hdb_disk_interface).toBe('sata');
-    });
-
-    it('should save advanced settings', () => {
-      component.generalSettingsForm.patchValue({
-        initrd: 'initrd.img',
-        kernel_image: 'vmlinuz',
-        kernel_command_line: 'console=ttyS0',
-        bios_image: 'bios.bin',
-        process_priority: 'high',
-        qemu_path: '/usr/bin/qemu',
-        options: '-enable-kvm',
-        tpm: true,
-        uefi: true,
-        usage: 'Test VM',
-      });
-      component.onSaveClick();
-      expect(component.node.properties.initrd).toBe('initrd.img');
-      expect(component.node.properties.kernel_image).toBe('vmlinuz');
-      expect(component.node.properties.tpm).toBe(true);
-      expect(component.node.properties.uefi).toBe(true);
     });
   });
 

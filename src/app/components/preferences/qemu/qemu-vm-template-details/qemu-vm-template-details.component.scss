@@ -76,6 +76,12 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  .two-column-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
 }
 
 .qemu-template-details__field {
@@ -84,6 +90,16 @@
 
 .qemu-template-details__field--flex {
   flex: 1;
+}
+
+.qemu-template-details__field--category {
+  flex: 0 0 150px;
+}
+
+.four-column-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 16px;
 }
 
 .qemu-template-details__field--full {

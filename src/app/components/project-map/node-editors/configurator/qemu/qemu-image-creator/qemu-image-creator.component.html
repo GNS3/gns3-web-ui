@@ -4,61 +4,142 @@
   <div class="content">
     <div class="default-content">
       <p class="info-note">
-        Note: The created image will be saved in the project's files directory and cannot be mounted via Web UI at this
-        time.
+        The image will be created in the node's working directory. After creation, it will appear in the HDD
+        field and can be selected from the dropdown in the HDD tab.
       </p>
       <mat-card class="matCard">
-        <form [formGroup]="inputForm">
-          <mat-form-field class="form-field">
-            <mat-label>Disk name *</mat-label>
-            <input
-              matInput
-              formControlName="disk_name"
-              [matAutocomplete]="auto"
-              placeholder="Type to search or enter"
-            />
-            <mat-autocomplete #auto="matAutocomplete">
-              @for (disk of filteredDisks$ | async; track disk) {
-              <mat-option [value]="disk">{{ disk }}</mat-option>
-              }
-            </mat-autocomplete>
-          </mat-form-field>
+        <div class="form-container">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <mat-form-field class="form-field">
+              <mat-label>Mount point *</mat-label>
+              <mat-select [value]="mountPoint()" (valueChange)="mountPoint.set($event)">
+                @for (mp of mountPointOptions; track mp) {
+                <mat-option [value]="mp">{{ mp.toUpperCase() }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <mat-label>Filename *</mat-label>
+              <input matInput type="text" [value]="diskName()" (input)="diskName.set($event.target.value)" placeholder="e.g. data.qcow2" />
+            </mat-form-field>
+          </div>
 
           <mat-form-field class="form-field">
             <mat-label>Format *</mat-label>
-            <mat-select formControlName="format">
+            <mat-select [value]="format()" (valueChange)="format.set($event)">
               @for (format of formatOptions; track format) {
-              <mat-option [value]="format">
-                {{ format }}
-              </mat-option>
+              <mat-option [value]="format">{{ format }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
 
           <mat-form-field class="form-field">
             <mat-label>Size (MB) *</mat-label>
-            <input matInput type="number" min="1" formControlName="size" />
+            <input matInput type="text" [value]="size()" (input)="size.set($event.target.value)" />
           </mat-form-field>
 
           <mat-form-field class="form-field">
             <mat-label>Preallocation</mat-label>
-            <mat-select formControlName="preallocation">
+            <mat-select [value]="preallocation()" (valueChange)="preallocation.set($event)">
               @for (prealloc of preallocationsOptions; track prealloc) {
-              <mat-option [value]="prealloc">
-                {{ prealloc }}
-              </mat-option>
+              <mat-option [value]="prealloc">{{ prealloc }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
 
           <mat-form-field class="form-field">
             <mat-label>Lazy refcounts</mat-label>
-            <mat-select formControlName="lazy_refcounts">
+            <mat-select [value]="lazyRefcounts()" (valueChange)="lazyRefcounts.set($event)">
               <mat-option value="on">on</mat-option>
               <mat-option value="off">off</mat-option>
             </mat-select>
           </mat-form-field>
-        </form>
+
+          @if (format() === 'qcow2') {
+          <mat-form-field class="form-field">
+            <mat-label>Cluster size (KB)</mat-label>
+            <mat-select [value]="clusterSize()" (valueChange)="clusterSize.set($event)">
+              <mat-option value="">Default (64)</mat-option>
+              @for (size of clusterSizeOptions; track size) {
+              <mat-option [value]="size">{{ size }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="form-field">
+            <mat-label>Refcount bits</mat-label>
+            <mat-select [value]="refcountBits()" (valueChange)="refcountBits.set($event)">
+              <mat-option value="">Default (12)</mat-option>
+              @for (bits of refcountBitsOptions; track bits) {
+              <mat-option [value]="bits">{{ bits }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          }
+
+          @if (format() === 'vmdk') {
+          <mat-form-field class="form-field">
+            <mat-label>Subformat</mat-label>
+            <mat-select [value]="subformat()" (valueChange)="subformat.set($event)">
+              <mat-option value="">Default</mat-option>
+              @for (opt of vmdkSubformatOptions; track opt) {
+              <mat-option [value]="opt">{{ opt }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="form-field">
+            <mat-label>Adapter type</mat-label>
+            <mat-select [value]="adapterType()" (valueChange)="adapterType.set($event)">
+              <mat-option value="">Default</mat-option>
+              @for (type of adapterTypeOptions; track type) {
+              <mat-option [value]="type">{{ type }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="form-field">
+            <mat-label>Zeroed grain</mat-label>
+            <mat-select [value]="zeroedGrain()" (valueChange)="zeroedGrain.set($event)">
+              <mat-option value="">Default</mat-option>
+              <mat-option value="on">on</mat-option>
+              <mat-option value="off">off</mat-option>
+            </mat-select>
+          </mat-form-field>
+          }
+
+          @if (format() === 'vhd' || format() === 'vpc') {
+          <mat-form-field class="form-field">
+            <mat-label>Subformat</mat-label>
+            <mat-select [value]="subformat()" (valueChange)="subformat.set($event)">
+              <mat-option value="">Default</mat-option>
+              @for (opt of vhdSubformatOptions; track opt) {
+              <mat-option [value]="opt">{{ opt }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="form-field">
+            <mat-label>Static</mat-label>
+            <mat-select [value]="static()" (valueChange)="static.set($event)">
+              <mat-option value="">Default</mat-option>
+              <mat-option value="on">on</mat-option>
+              <mat-option value="off">off</mat-option>
+            </mat-select>
+          </mat-form-field>
+          }
+
+          @if (format() === 'vdi') {
+          <mat-form-field class="form-field">
+            <mat-label>Static</mat-label>
+            <mat-select [value]="static()" (valueChange)="static.set($event)">
+              <mat-option value="">Default</mat-option>
+              <mat-option value="on">on</mat-option>
+              <mat-option value="off">off</mat-option>
+            </mat-select>
+          </mat-form-field>
+          }
+        </div>
       </mat-card>
     </div>
   </div>

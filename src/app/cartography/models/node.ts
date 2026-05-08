@@ -83,6 +83,8 @@ export class Properties {
   start_command: string;
   replicate_network_connection_state: boolean;
   memory: number;
+  maxcpus?: number;
+  create_config_disk?: boolean;
   tpm: boolean;
   uefi: boolean;
   slot0?: string;

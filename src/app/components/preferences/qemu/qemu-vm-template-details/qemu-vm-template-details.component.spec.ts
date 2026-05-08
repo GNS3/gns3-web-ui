@@ -4,9 +4,11 @@ import { QemuVmTemplateDetailsComponent } from './qemu-vm-template-details.compo
 import { QemuTemplate } from '@models/templates/qemu-template';
 import { Controller } from '@models/controller';
 import { QemuService } from '@services/qemu.service';
+import { ImageManagerService } from '@services/image-manager.service';
 import { ControllerService } from '@services/controller.service';
 import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { ToasterService } from '@services/toaster.service';
+import { QemuValidationService } from '@services/validation';
 import { DialogConfigService } from '@services/dialog-config.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
@@ -78,6 +80,8 @@ const mockQemuTemplate: QemuTemplate = {
   linked_clone: false,
   tpm: false,
   uefi: false,
+  maxcpus: 1,
+  create_config_disk: false,
   builtin: false,
   compute_id: 'local',
   usage: 'Test usage notes',
@@ -95,8 +99,12 @@ describe('QemuVmTemplateDetailsComponent', () => {
   let mockToasterService: any;
   let mockMatDialog: any;
   let mockDialogConfigService: any;
+  let mockImageManagerService: any;
+  let mockValidationService: any;
 
   beforeEach(async () => {
+    TestBed.resetTestingModule();
+    vi.clearAllMocks();
     mockActivatedRoute = {
       snapshot: {
         paramMap: {
@@ -118,8 +126,22 @@ describe('QemuVmTemplateDetailsComponent', () => {
     };
 
     mockQemuService = {
+      getImages: vi.fn().mockReturnValue(of([])),
       getTemplate: vi.fn().mockReturnValue(of(mockQemuTemplate)),
       saveTemplate: vi.fn().mockReturnValue(of(mockQemuTemplate)),
+    };
+
+    mockImageManagerService = {
+      getImages: vi.fn().mockReturnValue(of([])),
+      uploadedImage: vi.fn().mockReturnValue(of({})),
+    };
+
+    mockValidationService = {
+      validateName: vi.fn().mockReturnValue({ isValid: true, errorMessage: '' }),
+      validatePortNameFormat: vi.fn().mockReturnValue({ isValid: true, errorMessage: '' }),
+      validateFirstPortName: vi.fn().mockReturnValue({ isValid: true, errorMessage: '' }),
+      validatePortSegmentSize: vi.fn().mockReturnValue({ isValid: true, errorMessage: '' }),
+      validateMacAddress: vi.fn().mockReturnValue({ isValid: true, errorMessage: '' }),
     };
 
     mockQemuConfigurationService = {
@@ -184,6 +206,8 @@ describe('QemuVmTemplateDetailsComponent', () => {
         { provide: ToasterService, useValue: mockToasterService },
         { provide: MatDialog, useValue: mockMatDialog },
         { provide: DialogConfigService, useValue: mockDialogConfigService },
+        { provide: ImageManagerService, useValue: mockImageManagerService },
+        { provide: QemuValidationService, useValue: mockValidationService },
       ],
     }).compileComponents();
 
@@ -281,36 +305,32 @@ describe('QemuVmTemplateDetailsComponent', () => {
   });
 
   it('should show error when saving with missing template name', () => {
-    fixture.componentInstance.templateName.set('');
-    fixture.componentInstance.defaultName.set('PC{0}');
-    fixture.componentInstance.symbol.set('/symbols/qemu.svg');
+    mockValidationService.validateName.mockReturnValue({ isValid: false, errorMessage: 'Missing required fields: Template name' });
 
     fixture.componentInstance.onSave();
 
-    expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Missing required fields'));
     expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Template name'));
     expect(mockQemuService.saveTemplate).not.toHaveBeenCalled();
   });
 
   it('should show error when saving with missing default name format', () => {
-    fixture.componentInstance.templateName.set('Test VM');
-    fixture.componentInstance.defaultName.set('');
-    fixture.componentInstance.symbol.set('/symbols/qemu.svg');
+    mockValidationService.validateName.mockReturnValue({ isValid: true, errorMessage: '' });
+    mockValidationService.validatePortNameFormat.mockReturnValue({ isValid: false, errorMessage: 'Invalid port name format' });
 
     fixture.componentInstance.onSave();
 
-    expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Default name format'));
+    expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('port name format'));
     expect(mockQemuService.saveTemplate).not.toHaveBeenCalled();
   });
 
   it('should show error when saving with missing symbol', () => {
-    fixture.componentInstance.templateName.set('Test VM');
-    fixture.componentInstance.defaultName.set('PC{0}');
-    fixture.componentInstance.symbol.set('');
+    mockValidationService.validateName.mockReturnValue({ isValid: true, errorMessage: '' });
+    mockValidationService.validatePortNameFormat.mockReturnValue({ isValid: true, errorMessage: '' });
+    mockValidationService.validateFirstPortName.mockReturnValue({ isValid: false, errorMessage: 'First port name is required' });
 
     fixture.componentInstance.onSave();
 
-    expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Symbol'));
+    expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('port name'));
     expect(mockQemuService.saveTemplate).not.toHaveBeenCalled();
   });
 

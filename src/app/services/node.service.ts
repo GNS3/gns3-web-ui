@@ -194,6 +194,14 @@ export class NodeService {
     return `putty.exe -telnet \%h \%p -wt \"\%d\" -gns3 5 -skin 4`;
   }
 
+  uploadNodeFile(controller: Controller, projectId: string, nodeId: string, filePath: string, file: File): Observable<any> {
+    return this.httpController.post(controller, `/projects/${projectId}/nodes/${nodeId}/files/${filePath}`, file);
+  }
+
+  getNodeFiles(controller: Controller, projectId: string, nodeId: string): Observable<any[]> {
+    return this.httpController.get(controller, `/projects/${projectId}/nodes/${nodeId}/files`);
+  }
+
   getNetworkConfiguration(controller: Controller, node: Node) {
     return this.httpController.get(
       controller,
