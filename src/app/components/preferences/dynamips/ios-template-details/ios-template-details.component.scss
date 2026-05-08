@@ -105,6 +105,16 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  .two-column-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+
+    .grid-span-2 {
+      grid-column: 1 / -1;
+    }
+  }
 }
 
 .ios-details__field {
@@ -113,6 +123,16 @@
 
 .ios-details__field--flex {
   flex: 1;
+}
+
+.ios-details__field--category {
+  flex: 0 0 150px;
+}
+
+.three-column-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
 }
 
 .ios-details__field--full {

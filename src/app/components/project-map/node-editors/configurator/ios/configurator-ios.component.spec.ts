@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { of, Subject, throwError } from 'rxjs';
 import { ConfiguratorDialogIosComponent } from './configurator-ios.component';
 import { IosConfigurationService } from '@services/ios-configuration.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { IosValidationService } from '@services/validation';
 import { Node, Properties } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { ChangeDetectorRef } from '@angular/core';
@@ -19,6 +19,7 @@ describe('ConfiguratorDialogIosComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockConfigurationService: any;
+  let mockValidationService: any;
   let mockChangeDetectorRef: any;
   let mockController: Controller;
   let mockNode: Node;
@@ -116,6 +117,18 @@ describe('ConfiguratorDialogIosComponent', () => {
       error: vi.fn(),
     };
 
+    mockValidationService = {
+      validateName: vi.fn().mockReturnValue({ isValid: true }),
+      validateImagePath: vi.fn().mockReturnValue({ isValid: true }),
+      validateRam: vi.fn().mockReturnValue({ isValid: true }),
+      validateNvram: vi.fn().mockReturnValue({ isValid: true }),
+      validateMacAddress: vi.fn().mockReturnValue({ isValid: true }),
+      validateIdlepc: vi.fn().mockReturnValue({ isValid: true }),
+      validateRamForPlatform: vi.fn().mockReturnValue({ isValid: true }),
+      validateNvramForPlatform: vi.fn().mockReturnValue({ isValid: true }),
+      validateIomem: vi.fn().mockReturnValue({ isValid: true }),
+    };
+
     mockConfigurationService = {
       getConsoleTypes: vi.fn().mockReturnValue(['telnet', 'none']),
       getNPETypes: vi.fn().mockReturnValue(['npe-100', 'npe-400']),
@@ -197,6 +210,7 @@ describe('ConfiguratorDialogIosComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: IosConfigurationService, useValue: mockConfigurationService },
+        { provide: IosValidationService, useValue: mockValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
@@ -212,24 +226,12 @@ describe('ConfiguratorDialogIosComponent', () => {
   });
 
   describe('initialization', () => {
-    it('should create form groups in constructor', () => {
-      expect(component.generalSettingsForm).toBeInstanceOf(UntypedFormGroup);
-      expect(component.memoryForm).toBeInstanceOf(UntypedFormGroup);
-      expect(component.advancedSettingsForm).toBeInstanceOf(UntypedFormGroup);
-    });
-
-    it('should require name and path fields in generalSettingsForm', () => {
-      const nameCtrl = component.generalSettingsForm.get('name');
-      const pathCtrl = component.generalSettingsForm.get('path');
-      expect(nameCtrl?.hasError('required')).toBe(true);
-      expect(pathCtrl?.hasError('required')).toBe(true);
-    });
-
-    it('should require ram and nvram fields in memoryForm', () => {
-      const ramCtrl = component.memoryForm.get('ram');
-      const nvramCtrl = component.memoryForm.get('nvram');
-      expect(ramCtrl?.hasError('required')).toBe(true);
-      expect(nvramCtrl?.hasError('required')).toBe(true);
+    it('should initialize model signals', () => {
+      expect(component.nodeName).toBeTruthy();
+      expect(component.imagePath).toBeTruthy();
+      expect(component.ram).toBeTruthy();
+      expect(component.nvram).toBeTruthy();
+      expect(component.systemId).toBeTruthy();
     });
 
     it('should have separatorKeysCodes for chip input', () => {
@@ -250,15 +252,15 @@ describe('ConfiguratorDialogIosComponent', () => {
       expect(fillSlotsSpy).toHaveBeenCalled();
     });
 
-    it('should populate forms with node data after node loads', () => {
+    it('should populate model signals with node data after node loads', () => {
       fixture.detectChanges();
       nodeSubject.next(mockNode);
       fixture.detectChanges();
 
-      expect(component.generalSettingsForm.get('name')?.value).toBe('R1');
-      expect(component.generalSettingsForm.get('path')?.value).toBe('c7200-image.bin');
-      expect(component.generalSettingsForm.get('console_type')?.value).toBe('telnet');
-      expect(component.generalSettingsForm.get('slot1')?.value).toBe('PA-FE-TX');
+      expect(component.nodeName()).toBe('R1');
+      expect(component.imagePath()).toBe('c7200-image.bin');
+      expect(component.consoleType()).toBe('telnet');
+      expect(component.slot1()).toBe('PA-FE-TX');
     });
 
     it('should initialize empty tags array when node has no tags', () => {
@@ -295,11 +297,9 @@ describe('ConfiguratorDialogIosComponent', () => {
       component.adapterMatrix = mockConfigurationService.getAdapterMatrix();
       component.wicMatrix = mockConfigurationService.getWicMatrix();
 
-      component.generalSettingsForm.patchValue({
-        slot0: 'C7200-IO-FE',
-        slot1: 'PA-FE-TX',
-        wic0: 'WIC-1T',
-      });
+      component.slot0.set('C7200-IO-FE');
+      component.slot1.set('PA-FE-TX');
+      component.wic0.set('WIC-1T');
 
       component.saveSlotsData();
 
@@ -316,7 +316,8 @@ describe('ConfiguratorDialogIosComponent', () => {
       component.adapterMatrix = mockConfigurationService.getAdapterMatrix();
       component.wicMatrix = mockConfigurationService.getWicMatrix();
 
-      component.generalSettingsForm.patchValue({ slot0: '', slot1: '' });
+      component.slot0.set('');
+      component.slot1.set('');
       component.saveSlotsData();
 
       expect(component.node.properties.slot1).toBeUndefined();
@@ -406,46 +407,48 @@ describe('ConfiguratorDialogIosComponent', () => {
       fixture.detectChanges();
       nodeSubject.next(mockNode);
       fixture.detectChanges();
+      mockValidationService.validateName.mockReturnValue({ isValid: true });
+      mockValidationService.validateImagePath.mockReturnValue({ isValid: true });
+      mockValidationService.validateRam.mockReturnValue({ isValid: true });
+      mockValidationService.validateNvram.mockReturnValue({ isValid: true });
     });
 
-    it('should show error toast when forms are invalid', () => {
-      component.generalSettingsForm.patchValue({ name: '', path: '' });
+    it('should show error toast when name is empty', () => {
+      mockValidationService.validateName.mockReturnValue({ isValid: false, errorMessage: 'Name is required' });
+      component.nodeName.set('');
+      component.imagePath.set('test.bin');
+      component.ram.set('512');
+      component.nvram.set('256');
 
       component.onSaveClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields.');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Name is required');
       expect(mockNodeService.updateNode).not.toHaveBeenCalled();
     });
 
-    it('should update node, show success toast, and close dialog when forms are valid', () => {
-      component.generalSettingsForm.patchValue({
-        name: 'R1-updated',
-        path: 'new-image.bin',
-        midplane: 'vxr',
-        npe: 'npe-400',
-        console_type: 'none',
-        aux_type: 'telnet',
-        console_auto_start: true,
-      });
-      component.memoryForm.patchValue({
-        ram: 512,
-        nvram: 512,
-        iomem: 10,
-        disk0: 256,
-        disk1: 256,
-        auto_delete_disks: true,
-      });
-      component.advancedSettingsForm.patchValue({
-        system_id: 'SYS001',
-        mac_addr: '',
-        idlepc: '0x1234',
-        idlemax: 300,
-        idlesleep: 250,
-        exec_area: 64,
-        mmap: true,
-        sparsemem: false,
-        usage: 'test usage',
-      });
+    it('should update node, show success toast, and close dialog when validation passes', () => {
+      component.nodeName.set('R1-updated');
+      component.imagePath.set('new-image.bin');
+      component.midplane.set('vxr');
+      component.npe.set('npe-400');
+      component.consoleType.set('none');
+      component.auxType.set('telnet');
+      component.consoleAutoStart.set(true);
+      component.ram.set('512');
+      component.nvram.set('512');
+      component.iomem.set('10');
+      component.disk0.set('256');
+      component.disk1.set('256');
+      component.autoDeleteDisks.set(true);
+      component.systemId.set('SYS001');
+      component.baseMac.set('');
+      component.idlepc.set('0x1234');
+      component.idlemax.set('300');
+      component.idlesleep.set('250');
+      component.execArea.set('64');
+      component.mmap.set(true);
+      component.sparsemem.set(false);
+      component.usage.set('test usage');
 
       component.onSaveClick();
 
@@ -455,15 +458,15 @@ describe('ConfiguratorDialogIosComponent', () => {
     });
 
     it('should merge general settings into node properties on save', () => {
-      component.generalSettingsForm.patchValue({
-        name: 'NewName',
-        path: 'new-path.bin',
-        midplane: 'vxr',
-        npe: 'npe-300',
-        console_type: 'none',
-        aux_type: 'telnet',
-        console_auto_start: true,
-      });
+      component.nodeName.set('NewName');
+      component.imagePath.set('new-path.bin');
+      component.midplane.set('vxr');
+      component.npe.set('npe-300');
+      component.consoleType.set('none');
+      component.auxType.set('telnet');
+      component.consoleAutoStart.set(true);
+      component.ram.set('256');
+      component.nvram.set('256');
 
       component.onSaveClick();
 
@@ -477,17 +480,15 @@ describe('ConfiguratorDialogIosComponent', () => {
     });
 
     it('should merge memory settings into node properties on save', () => {
-      // Use a platform that supports iomem (c3600) for this test
       component.node.properties.platform = 'c3600';
-
-      component.memoryForm.patchValue({
-        ram: 1024,
-        nvram: 512,
-        iomem: 15,
-        disk0: 512,
-        disk1: 0,
-        auto_delete_disks: false,
-      });
+      component.nodeName.set('R1');
+      component.imagePath.set('test.bin');
+      component.ram.set('1024');
+      component.nvram.set('512');
+      component.iomem.set('15');
+      component.disk0.set('512');
+      component.disk1.set('0');
+      component.autoDeleteDisks.set(false);
 
       component.onSaveClick();
 
@@ -500,18 +501,16 @@ describe('ConfiguratorDialogIosComponent', () => {
     });
 
     it('should delete iomem property for unsupported platforms (e.g., c7200)', () => {
-      // c7200 does not support iomem - verify it gets deleted
       component.node.properties.platform = 'c7200';
-      component.node.properties.iomem = 10; // Pre-existing value
-
-      component.memoryForm.patchValue({
-        ram: 1024,
-        nvram: 512,
-        iomem: 15,
-        disk0: 512,
-        disk1: 0,
-        auto_delete_disks: false,
-      });
+      component.node.properties.iomem = 10;
+      component.nodeName.set('R1');
+      component.imagePath.set('test.bin');
+      component.ram.set('1024');
+      component.nvram.set('512');
+      component.iomem.set('15');
+      component.disk0.set('512');
+      component.disk1.set('0');
+      component.autoDeleteDisks.set(false);
 
       component.onSaveClick();
 
@@ -524,17 +523,19 @@ describe('ConfiguratorDialogIosComponent', () => {
     });
 
     it('should merge advanced settings into node properties on save', () => {
-      component.advancedSettingsForm.patchValue({
-        system_id: 'SYS123',
-        mac_addr: '0011.2233.4455',
-        idlepc: '0xdeadbeef',
-        idlemax: 500,
-        idlesleep: 300,
-        exec_area: 128,
-        mmap: true,
-        sparsemem: true,
-        usage: 'Busy Router',
-      });
+      component.nodeName.set('R1');
+      component.imagePath.set('test.bin');
+      component.ram.set('256');
+      component.nvram.set('256');
+      component.systemId.set('SYS123');
+      component.baseMac.set('0011.2233.4455');
+      component.idlepc.set('0xdeadbeef');
+      component.idlemax.set('500');
+      component.idlesleep.set('300');
+      component.execArea.set('128');
+      component.mmap.set(true);
+      component.sparsemem.set(true);
+      component.usage.set('Busy Router');
 
       component.onSaveClick();
 
@@ -572,15 +573,10 @@ describe('ConfiguratorDialogIosComponent', () => {
     it('should show error toast when updateNode fails', () => {
       mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
       const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
-      component.generalSettingsForm.patchValue({
-        name: 'R1-updated',
-        path: 'new-image.bin',
-      });
-      component.memoryForm.patchValue({
-        ram: 512,
-        nvram: 512,
-      });
-      component.advancedSettingsForm.patchValue({});
+      component.nodeName.set('R1-updated');
+      component.imagePath.set('new-image.bin');
+      component.ram.set('512');
+      component.nvram.set('512');
 
       component.onSaveClick();
 

@@ -20,6 +20,7 @@ export { ValidationService, ValidationResult } from './base/validation.service';
 export { AtmSwitchValidationService } from './nodes/atm-switch-validation.service';
 export { CloudValidationService } from './nodes/cloud-validation.service';
 export { DockerValidationService } from './nodes/docker-validation.service';
+export { IosValidationService } from './nodes/ios-validation.service';
 
 // TODO: Add other node validation services as they are migrated
 // export { EthernetHubValidationService } from './nodes/ethernet-hub-validation.service';

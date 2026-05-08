@@ -1,13 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -24,6 +17,7 @@ import { Controller } from '@models/controller';
 import { IosConfigurationService } from '@services/ios-configuration.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { IosValidationService } from '@services/validation';
 
 @Component({
   standalone: true,
@@ -34,7 +28,6 @@ import { ToasterService } from '@services/toaster.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     MatDialogModule,
     MatCardModule,
     MatTabsModule,
@@ -51,16 +44,13 @@ export class ConfiguratorDialogIosComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogIosComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
   private configurationService = inject(IosConfigurationService);
   private cd = inject(ChangeDetectorRef);
+  private validationService = inject(IosValidationService);
 
   controller: Controller;
   node: Node;
   name: string;
-  generalSettingsForm: UntypedFormGroup;
-  memoryForm: UntypedFormGroup;
-  advancedSettingsForm: UntypedFormGroup;
   consoleTypes: string[] = [];
   NPETypes: string[] = [];
   MidplaneTypes: string[] = [];
@@ -68,50 +58,37 @@ export class ConfiguratorDialogIosComponent implements OnInit {
   wicMatrix = {};
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  constructor() {
-    this.generalSettingsForm = this.formBuilder.group({
-      name: new UntypedFormControl('', Validators.required),
-      path: new UntypedFormControl('', Validators.required),
-      midplane: new UntypedFormControl(''),
-      npe: new UntypedFormControl(''),
-      console_type: new UntypedFormControl(''),
-      aux_type: new UntypedFormControl(''),
-      console_auto_start: new UntypedFormControl(false),
-      // Slots (0-6)
-      slot0: new UntypedFormControl(''),
-      slot1: new UntypedFormControl(''),
-      slot2: new UntypedFormControl(''),
-      slot3: new UntypedFormControl(''),
-      slot4: new UntypedFormControl(''),
-      slot5: new UntypedFormControl(''),
-      slot6: new UntypedFormControl(''),
-      // WICs (0-2)
-      wic0: new UntypedFormControl(''),
-      wic1: new UntypedFormControl(''),
-      wic2: new UntypedFormControl(''),
-    });
-
-    this.memoryForm = this.formBuilder.group({
-      ram: new UntypedFormControl('', Validators.required),
-      nvram: new UntypedFormControl('', Validators.required),
-      iomem: new UntypedFormControl(''),
-      disk0: new UntypedFormControl(''),
-      disk1: new UntypedFormControl(''),
-      auto_delete_disks: new UntypedFormControl(false),
-    });
-
-    this.advancedSettingsForm = this.formBuilder.group({
-      system_id: new UntypedFormControl(''),
-      mac_addr: new UntypedFormControl('', Validators.pattern(this.configurationService.getMacAddrRegex())),
-      idlepc: new UntypedFormControl('', Validators.pattern(this.configurationService.getIdlepcRegex())),
-      idlemax: new UntypedFormControl(''),
-      idlesleep: new UntypedFormControl(''),
-      exec_area: new UntypedFormControl(''),
-      mmap: new UntypedFormControl(false),
-      sparsemem: new UntypedFormControl(false),
-      usage: new UntypedFormControl(''),
-    });
-  }
+  // Model signals
+  readonly nodeName = model('');
+  readonly imagePath = model('');
+  readonly midplane = model('');
+  readonly npe = model('');
+  readonly consoleType = model('');
+  readonly auxType = model('');
+  readonly consoleAutoStart = model(false);
+  // Slots (0-6)
+  readonly slot0 = model(''); readonly slot1 = model(''); readonly slot2 = model('');
+  readonly slot3 = model(''); readonly slot4 = model(''); readonly slot5 = model('');
+  readonly slot6 = model('');
+  // WICs (0-2)
+  readonly wic0 = model(''); readonly wic1 = model(''); readonly wic2 = model('');
+  // Memory
+  readonly ram = model('');
+  readonly nvram = model('');
+  readonly iomem = model('');
+  readonly disk0 = model('');
+  readonly disk1 = model('');
+  readonly autoDeleteDisks = model(false);
+  // Advanced
+  readonly systemId = model('');
+  readonly baseMac = model('');
+  readonly idlepc = model('');
+  readonly idlemax = model('');
+  readonly idlesleep = model('');
+  readonly execArea = model('');
+  readonly mmap = model(false);
+  readonly sparsemem = model(false);
+  readonly usage = model('');
 
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
@@ -119,49 +96,35 @@ export class ConfiguratorDialogIosComponent implements OnInit {
         this.node = node;
         this.name = node.name;
 
-        // Update form values with node data
-        this.generalSettingsForm.patchValue({
-          name: node.name,
-          path: node.properties.image || '',
-          midplane: node.properties.midplane || '',
-          npe: node.properties.npe || '',
-          console_type: node.console_type || '',
-          aux_type: node.aux_type || '',
-          console_auto_start: node.console_auto_start || false,
-          // Slots
-          slot0: node.properties.slot0 || '',
-          slot1: node.properties.slot1 || '',
-          slot2: node.properties.slot2 || '',
-          slot3: node.properties.slot3 || '',
-          slot4: node.properties.slot4 || '',
-          slot5: node.properties.slot5 || '',
-          slot6: node.properties.slot6 || '',
-          // WICs
-          wic0: node.properties.wic0 || '',
-          wic1: node.properties.wic1 || '',
-          wic2: node.properties.wic2 || '',
-        });
-
-        this.memoryForm.patchValue({
-          ram: node.properties.ram || '',
-          nvram: node.properties.nvram || '',
-          iomem: node.properties.iomem || '',
-          disk0: node.properties.disk0 || 0,
-          disk1: node.properties.disk1 || 0,
-          auto_delete_disks: node.properties.auto_delete_disks || false,
-        });
-
-        this.advancedSettingsForm.patchValue({
-          system_id: node.properties.system_id || '',
-          mac_addr: node.properties.mac_addr || '',
-          idlepc: node.properties.idlepc || '',
-          idlemax: node.properties.idlemax || '',
-          idlesleep: node.properties.idlesleep || '',
-          exec_area: node.properties.exec_area || '',
-          mmap: node.properties.mmap || false,
-          sparsemem: node.properties.sparsemem || false,
-          usage: node.properties.usage || '',
-        });
+        // Update model signals with node data
+        this.nodeName.set(node.name || '');
+        this.imagePath.set(node.properties.image || '');
+        this.midplane.set(node.properties.midplane || '');
+        this.npe.set(node.properties.npe || '');
+        this.consoleType.set(node.console_type || '');
+        this.auxType.set(node.aux_type || '');
+        this.consoleAutoStart.set(node.console_auto_start || false);
+        this.slot0.set(node.properties.slot0 || ''); this.slot1.set(node.properties.slot1 || '');
+        this.slot2.set(node.properties.slot2 || ''); this.slot3.set(node.properties.slot3 || '');
+        this.slot4.set(node.properties.slot4 || ''); this.slot5.set(node.properties.slot5 || '');
+        this.slot6.set(node.properties.slot6 || '');
+        this.wic0.set(node.properties.wic0 || ''); this.wic1.set(node.properties.wic1 || '');
+        this.wic2.set(node.properties.wic2 || '');
+        this.ram.set(node.properties.ram?.toString() || '');
+        this.nvram.set(node.properties.nvram?.toString() || '');
+        this.iomem.set(node.properties.iomem?.toString() || '');
+        this.disk0.set(node.properties.disk0?.toString() || '');
+        this.disk1.set(node.properties.disk1?.toString() || '');
+        this.autoDeleteDisks.set(node.properties.auto_delete_disks || false);
+        this.systemId.set(node.properties.system_id || '');
+        this.baseMac.set(node.properties.mac_addr || '');
+        this.idlepc.set(node.properties.idlepc || '');
+        this.idlemax.set(node.properties.idlemax?.toString() || '');
+        this.idlesleep.set(node.properties.idlesleep?.toString() || '');
+        this.execArea.set(node.properties.exec_area?.toString() || '');
+        this.mmap.set(node.properties.mmap || false);
+        this.sparsemem.set(node.properties.sparsemem || false);
+        this.usage.set(node.properties.usage || '');
 
         if (!this.node.tags) {
           this.node.tags = [];
@@ -191,115 +154,117 @@ export class ConfiguratorDialogIosComponent implements OnInit {
     // This method is kept for compatibility but does nothing
   }
 
+  // Template helpers for dynamic slot/WIC access
+  getSlotValue(index: number): string {
+    return [this.slot0(), this.slot1(), this.slot2(), this.slot3(), this.slot4(), this.slot5(), this.slot6()][index] || '';
+  }
+  setSlotValue(index: number, value: string) {
+    [this.slot0, this.slot1, this.slot2, this.slot3, this.slot4, this.slot5, this.slot6][index]?.set(value);
+  }
+  getWicValue(index: number): string {
+    return [this.wic0(), this.wic1(), this.wic2()][index] || '';
+  }
+  setWicValue(index: number, value: string) {
+    [this.wic0, this.wic1, this.wic2][index]?.set(value);
+  }
+
   saveSlotsData() {
-    const generalFormValues = this.generalSettingsForm.value;
+    const slots = [this.slot0(), this.slot1(), this.slot2(), this.slot3(), this.slot4(), this.slot5(), this.slot6()];
+    const wics = [this.wic0(), this.wic1(), this.wic2()];
+    const platform = this.node.properties.platform;
+    const chassis = this.node.properties.chassis || '';
 
-    // save network adapters
     for (let i = 0; i <= 6; i++) {
-      const platform = this.node.properties.platform;
-      const chassis = this.node.properties.chassis || '';
       const slotAdapters = this.adapterMatrix?.[platform]?.[chassis]?.[i];
-
       if (slotAdapters) {
-        const slotValue = generalFormValues[`slot${i}`];
-        if (slotValue === undefined || slotValue === null) {
-          this.node.properties[`slot${i}`] = '';
-        } else {
-          this.node.properties[`slot${i}`] = slotValue;
-        }
+        this.node.properties[`slot${i}`] = slots[i] || '';
       } else {
-        // Remove slot properties that don't exist on this platform/chassis
         delete this.node.properties[`slot${i}`];
       }
     }
 
-    // save WICs
     for (let i = 0; i <= 2; i++) {
-      const platform = this.node.properties.platform;
       const wicAdapters = this.wicMatrix?.[platform]?.[i];
-
       if (wicAdapters) {
-        const wicValue = generalFormValues[`wic${i}`];
-        if (wicValue === undefined || wicValue === null) {
-          this.node.properties[`wic${i}`] = '';
-        } else {
-          this.node.properties[`wic${i}`] = wicValue;
-        }
+        this.node.properties[`wic${i}`] = wics[i] || '';
       } else {
-        // Remove WIC properties that don't exist on this platform
         delete this.node.properties[`wic${i}`];
       }
     }
   }
 
   onSaveClick() {
-    if (this.generalSettingsForm.valid && this.memoryForm.valid && this.advancedSettingsForm.valid) {
-      // Merge form values back into node
-      const generalFormValues = this.generalSettingsForm.value;
-      const memoryFormValues = this.memoryForm.value;
-      const advancedFormValues = this.advancedSettingsForm.value;
-
-      // Update general settings
-      this.node.name = generalFormValues.name;
-      this.node.properties.image = generalFormValues.path;
-
-      // Only update midplane and npe if supported by the platform (c7200)
-      const midplaneNpeSupportedPlatforms = ['c7200'];
-      if (midplaneNpeSupportedPlatforms.includes(this.node.properties.platform)) {
-        // Convert empty string to null (server expects null or valid enum value, not empty string)
-        this.node.properties.midplane = generalFormValues.midplane !== '' ? generalFormValues.midplane : null;
-        this.node.properties.npe = generalFormValues.npe !== '' ? generalFormValues.npe : null;
-      } else {
-        // Remove properties that don't exist on this platform
-        delete this.node.properties.midplane;
-        delete this.node.properties.npe;
-      }
-
-      this.node.console_type = generalFormValues.console_type;
-      this.node.aux_type = generalFormValues.aux_type;
-      this.node.console_auto_start = generalFormValues.console_auto_start;
-
-      // Update memory settings
-      this.node.properties.ram = memoryFormValues.ram;
-      this.node.properties.nvram = memoryFormValues.nvram;
-      // Only update iomem if it's supported by the platform (c1700, c2600, c2691, c3600, c3725, c3745)
-      const iomemSupportedPlatforms = ['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'];
-      if (iomemSupportedPlatforms.includes(this.node.properties.platform)) {
-        // Convert empty string to null (server expects integer or null, not empty string)
-        this.node.properties.iomem = memoryFormValues.iomem !== '' ? memoryFormValues.iomem : null;
-      } else {
-        delete this.node.properties.iomem;
-      }
-      this.node.properties.disk0 = memoryFormValues.disk0;
-      this.node.properties.disk1 = memoryFormValues.disk1;
-      this.node.properties.auto_delete_disks = memoryFormValues.auto_delete_disks;
-
-      // Update advanced settings
-      this.node.properties.system_id = advancedFormValues.system_id;
-      this.node.properties.mac_addr = advancedFormValues.mac_addr;
-      this.node.properties.idlepc = advancedFormValues.idlepc;
-      this.node.properties.idlemax = advancedFormValues.idlemax;
-      this.node.properties.idlesleep = advancedFormValues.idlesleep;
-      this.node.properties.exec_area = advancedFormValues.exec_area;
-      this.node.properties.mmap = advancedFormValues.mmap;
-      this.node.properties.sparsemem = advancedFormValues.sparsemem;
-      this.node.properties.usage = advancedFormValues.usage;
-
-      this.saveSlotsData();
-      this.nodeService.updateNode(this.controller, this.node).subscribe({
-        next: () => {
-          this.toasterService.success(`Node ${this.node.name} updated.`);
-          this.onCancelClick();
-        },
-        error: (error: unknown) => {
-          const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
-          this.toasterService.error(errorMessage);
-          this.cd.markForCheck();
-        },
-      });
-    } else {
-      this.toasterService.error(`Fill all required fields.`);
+    // Validate required fields
+    const nameValidation = this.validationService.validateName(this.nodeName());
+    if (!nameValidation.isValid) { this.toasterService.error(nameValidation.errorMessage); return; }
+    const pathValidation = this.validationService.validateImagePath(this.imagePath());
+    if (!pathValidation.isValid) { this.toasterService.error(pathValidation.errorMessage); return; }
+    const platform = this.node.properties.platform;
+    const ramValidation = this.validationService.validateRamForPlatform(this.ram(), platform);
+    if (!ramValidation.isValid) { this.toasterService.error(ramValidation.errorMessage); return; }
+    const nvramValidation = this.validationService.validateNvramForPlatform(this.nvram(), platform);
+    if (!nvramValidation.isValid) { this.toasterService.error(nvramValidation.errorMessage); return; }
+    // Validate optional fields
+    const macValidation = this.validationService.validateMacAddress(this.baseMac());
+    if (!macValidation.isValid) { this.toasterService.error(macValidation.errorMessage); return; }
+    const idlepcValidation = this.validationService.validateIdlepc(this.idlepc());
+    if (!idlepcValidation.isValid) { this.toasterService.error(idlepcValidation.errorMessage); return; }
+    if (this.iomem()) {
+      const iomemValidation = this.validationService.validateIomem(this.iomem());
+      if (!iomemValidation.isValid) { this.toasterService.error(iomemValidation.errorMessage); return; }
     }
+
+    // Merge signal values back into node
+    this.node.name = this.nodeName();
+    this.node.properties.image = this.imagePath();
+
+    const midplaneNpeSupported = ['c7200'];
+    if (midplaneNpeSupported.includes(this.node.properties.platform)) {
+      this.node.properties.midplane = this.midplane() || null;
+      this.node.properties.npe = this.npe() || null;
+    } else {
+      delete this.node.properties.midplane;
+      delete this.node.properties.npe;
+    }
+
+    this.node.console_type = this.consoleType();
+    this.node.aux_type = this.auxType();
+    this.node.console_auto_start = this.consoleAutoStart();
+
+    this.node.properties.ram = parseInt(this.ram(), 10) || 0;
+    this.node.properties.nvram = parseInt(this.nvram(), 10) || 0;
+    const iomemSupported = ['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'];
+    if (iomemSupported.includes(this.node.properties.platform)) {
+      this.node.properties.iomem = this.iomem() ? parseInt(this.iomem(), 10) : null;
+    } else {
+      delete this.node.properties.iomem;
+    }
+    this.node.properties.disk0 = parseInt(this.disk0(), 10) || 0;
+    this.node.properties.disk1 = parseInt(this.disk1(), 10) || 0;
+    this.node.properties.auto_delete_disks = this.autoDeleteDisks();
+
+    this.node.properties.system_id = this.systemId();
+    this.node.properties.mac_addr = this.baseMac();
+    this.node.properties.idlepc = this.idlepc();
+    this.node.properties.idlemax = parseInt(this.idlemax(), 10) || 0;
+    this.node.properties.idlesleep = parseInt(this.idlesleep(), 10) || 0;
+    this.node.properties.exec_area = parseInt(this.execArea(), 10) || 0;
+    this.node.properties.mmap = this.mmap();
+    this.node.properties.sparsemem = this.sparsemem();
+    this.node.properties.usage = this.usage();
+
+    this.saveSlotsData();
+    this.nodeService.updateNode(this.controller, this.node).subscribe({
+      next: () => {
+        this.toasterService.success(`Node ${this.node.name} updated.`);
+        this.onCancelClick();
+      },
+      error: (error: unknown) => {
+        const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
+        this.toasterService.error(errorMessage);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onCancelClick() {

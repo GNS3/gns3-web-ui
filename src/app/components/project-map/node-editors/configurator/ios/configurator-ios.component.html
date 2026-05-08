@@ -13,10 +13,10 @@
             <mat-label> (chassis: {{ node.properties.chassis }})</mat-label>
             }
             <br /><br />
-            <form [formGroup]="generalSettingsForm">
+            <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Name</mat-label>
-                <input matInput type="text" formControlName="name" />
+                <input matInput type="text" [value]="nodeName()" (input)="nodeName.set($event.target.value)" />
               </mat-form-field>
               <mat-form-field class="form-field tags-field">
                 <mat-label>Tags</mat-label>
@@ -38,57 +38,49 @@
               </mat-form-field>
               <mat-form-field class="form-field">
                 <mat-label>IOS image path</mat-label>
-                <input matInput type="text" formControlName="path" />
+                <input matInput type="text" [value]="imagePath()" (input)="imagePath.set($event.target.value)" />
               </mat-form-field>
               <div class="form-grid">
                 @if (node.properties.midplane) {
                 <mat-form-field class="form-field">
                   <mat-label>Midplane</mat-label>
-                  <mat-select formControlName="midplane">
+                  <mat-select [value]="midplane()" (valueChange)="midplane.set($event)">
                     @for (type of MidplaneTypes; track type) {
-                    <mat-option [value]="type">
-                      {{ type }}
-                    </mat-option>
+                    <mat-option [value]="type">{{ type }}</mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
                 } @if (node.properties.npe) {
                 <mat-form-field class="form-field">
                   <mat-label>NPE</mat-label>
-                  <mat-select formControlName="npe">
+                  <mat-select [value]="npe()" (valueChange)="npe.set($event)">
                     @for (type of NPETypes; track type) {
-                    <mat-option [value]="type">
-                      {{ type }}
-                    </mat-option>
+                    <mat-option [value]="type">{{ type }}</mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
                 }
                 <mat-form-field class="form-field">
                   <mat-label>Console type</mat-label>
-                  <mat-select formControlName="console_type">
+                  <mat-select [value]="consoleType()" (valueChange)="consoleType.set($event)">
                     @for (type of consoleTypes; track type) {
-                    <mat-option [value]="type">
-                      {{ type }}
-                    </mat-option>
+                    <mat-option [value]="type">{{ type }}</mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
                 <mat-form-field class="form-field">
                   <mat-label>Auxiliary console type</mat-label>
-                  <mat-select formControlName="aux_type">
+                  <mat-select [value]="auxType()" (valueChange)="auxType.set($event)">
                     @for (type of consoleTypes; track type) {
-                    <mat-option [value]="type">
-                      {{ type }}
-                    </mat-option>
+                    <mat-option [value]="type">{{ type }}</mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
-                <mat-checkbox class="form-grid__full" formControlName="console_auto_start">
+                <mat-checkbox class="form-grid__full" [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)">
                   Auto start console
                 </mat-checkbox>
               </div>
-            </form>
+            </div>
           </mat-tab>
 
           <mat-tab label="Memories and disks">
@@ -99,25 +91,25 @@
                   <h3 class="disk-card__title">Memory</h3>
                 </div>
                 <div class="disk-card__content">
-                  <form [formGroup]="memoryForm">
+                  <div class="form-container">
                     <mat-form-field class="form-field">
                       <mat-label>RAM</mat-label>
-                      <input matInput type="number" min="0" formControlName="ram" />
+                      <input matInput type="text" [value]="ram()" (input)="ram.set($event.target.value)" />
                       <span matSuffix>MiB</span>
                     </mat-form-field>
                     <mat-form-field class="form-field">
                       <mat-label>NVRAM</mat-label>
-                      <input matInput type="number" min="0" formControlName="nvram" />
+                      <input matInput type="text" [value]="nvram()" (input)="nvram.set($event.target.value)" />
                       <span matSuffix>MiB</span>
                     </mat-form-field>
                     @if (['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'].includes(node.properties.platform)) {
                     <mat-form-field class="form-field">
                       <mat-label>I/O memory</mat-label>
-                      <input matInput type="number" min="0" max="100" formControlName="iomem" />
+                      <input matInput type="text" [value]="iomem()" (input)="iomem.set($event.target.value)" />
                       <span matSuffix>%</span>
                     </mat-form-field>
                     }
-                  </form>
+                  </div>
                 </div>
               </div>
 
@@ -127,28 +119,28 @@
                   <h3 class="disk-card__title">Disks</h3>
                 </div>
                 <div class="disk-card__content">
-                  <form [formGroup]="memoryForm">
+                  <div class="form-container">
                     <mat-form-field class="form-field">
                       <mat-label>PCMCIA disk0</mat-label>
-                      <input matInput type="number" min="0" formControlName="disk0" />
+                      <input matInput type="text" [value]="disk0()" (input)="disk0.set($event.target.value)" />
                       <span matSuffix>MiB</span>
                     </mat-form-field>
                     <mat-form-field class="form-field">
                       <mat-label>PCMCIA disk1</mat-label>
-                      <input matInput type="number" min="0" formControlName="disk1" />
+                      <input matInput type="text" [value]="disk1()" (input)="disk1.set($event.target.value)" />
                       <span matSuffix>MiB</span>
                     </mat-form-field>
-                    <mat-checkbox formControlName="auto_delete_disks">
+                    <mat-checkbox [checked]="autoDeleteDisks()" (change)="autoDeleteDisks.set($event.checked)">
                       Automatically delete NVRAM and disk files
                     </mat-checkbox>
-                  </form>
+                  </div>
                 </div>
               </div>
             </div>
           </mat-tab>
 
           <mat-tab label="Slots">
-            <form [formGroup]="generalSettingsForm">
+            <div class="form-container">
               <div class="ios-configurator__slots-section">
                 <div class="ios-configurator__slots-group">
                   <h6 class="ios-configurator__slots-title">Network Adapters</h6>
@@ -157,18 +149,14 @@
                     (adapterMatrix[node.properties.platform][node.properties.chassis || ''][index]) {
                     <mat-form-field class="form-field">
                       <mat-label>Slot {{ index }}</mat-label>
-                      <mat-select [formControlName]="'slot' + index">
+                      <mat-select [value]="getSlotValue(index)" (valueChange)="setSlotValue(index, $event)">
                         @if (adapterMatrix[node.properties.platform][node.properties.chassis || ''][index].length > 1 &&
                         !adapterMatrix[node.properties.platform][node.properties.chassis ||
                         ''][index][0].startsWith('C7200')) {
-                        <mat-option [value]="">
-                          {{ '' }}
-                        </mat-option>
+                        <mat-option [value]=""> {{ '' }} </mat-option>
                         } @for (option of adapterMatrix[node.properties.platform][node.properties.chassis || ''][index];
                         track option) {
-                        <mat-option [value]="option">
-                          {{ option }}
-                        </mat-option>
+                        <mat-option [value]="option">{{ option }}</mat-option>
                         }
                       </mat-select>
                     </mat-form-field>
@@ -183,14 +171,10 @@
                     @for (index of [0, 1, 2]; track index) { @if (wicMatrix[node.properties.platform][index]) {
                     <mat-form-field class="form-field">
                       <mat-label>WIC {{ index }}</mat-label>
-                      <mat-select [formControlName]="'wic' + index">
-                        <mat-option [value]="">
-                          {{ '' }}
-                        </mat-option>
+                      <mat-select [value]="getWicValue(index)" (valueChange)="setWicValue(index, $event)">
+                        <mat-option [value]=""> {{ '' }} </mat-option>
                         @for (option of wicMatrix[node.properties.platform][index]; track option) {
-                        <mat-option [value]="option">
-                          {{ option }}
-                        </mat-option>
+                        <mat-option [value]="option">{{ option }}</mat-option>
                         }
                       </mat-select>
                     </mat-form-field>
@@ -199,13 +183,12 @@
                 </div>
                 }
               </div>
-            </form>
+            </div>
           </mat-tab>
 
           <mat-tab label="Advanced">
-            <form [formGroup]="advancedSettingsForm">
+            <div class="form-container">
               <div class="disk-cards-grid">
-                <!-- System Card -->
                 <div class="disk-card">
                   <div class="disk-card__header">
                     <h3 class="disk-card__title">System</h3>
@@ -213,16 +196,15 @@
                   <div class="disk-card__content">
                     <mat-form-field class="form-field">
                       <mat-label>System ID</mat-label>
-                      <input matInput type="text" formControlName="system_id" />
+                      <input matInput type="text" [value]="systemId()" (input)="systemId.set($event.target.value)" />
                     </mat-form-field>
                     <mat-form-field class="form-field">
                       <mat-label>Base MAC</mat-label>
-                      <input matInput formControlName="mac_addr" type="text" />
+                      <input matInput [value]="baseMac()" (input)="baseMac.set($event.target.value)" type="text" />
                     </mat-form-field>
                   </div>
                 </div>
 
-                <!-- Optimizations Card -->
                 <div class="disk-card">
                   <div class="disk-card__header">
                     <h3 class="disk-card__title">Optimizations</h3>
@@ -230,37 +212,37 @@
                   <div class="disk-card__content">
                     <mat-form-field class="form-field">
                       <mat-label>Idle-PC</mat-label>
-                      <input matInput formControlName="idlepc" />
+                      <input matInput [value]="idlepc()" (input)="idlepc.set($event.target.value)" />
                     </mat-form-field>
                     <mat-form-field class="form-field">
                       <mat-label>Idlemax</mat-label>
-                      <input matInput type="number" min="0" formControlName="idlemax" />
+                      <input matInput type="text" [value]="idlemax()" (input)="idlemax.set($event.target.value)" />
                     </mat-form-field>
                     <mat-form-field class="form-field">
                       <mat-label>Idlesleep</mat-label>
-                      <input matInput type="number" min="0" formControlName="idlesleep" />
+                      <input matInput type="text" [value]="idlesleep()" (input)="idlesleep.set($event.target.value)" />
                       <span matSuffix>ms</span>
                     </mat-form-field>
                     <mat-form-field class="form-field">
                       <mat-label>Exec area</mat-label>
-                      <input matInput type="number" min="0" formControlName="exec_area" />
+                      <input matInput type="text" [value]="execArea()" (input)="execArea.set($event.target.value)" />
                       <span matSuffix>MiB</span>
                     </mat-form-field>
-                    <mat-checkbox formControlName="mmap"> Enable mmap support </mat-checkbox>
-                    <mat-checkbox formControlName="sparsemem"> Enable sparse memory support </mat-checkbox>
+                    <mat-checkbox [checked]="mmap()" (change)="mmap.set($event.checked)"> Enable mmap support </mat-checkbox>
+                    <mat-checkbox [checked]="sparsemem()" (change)="sparsemem.set($event.checked)"> Enable sparse memory support </mat-checkbox>
                   </div>
                 </div>
               </div>
-            </form>
+            </div>
           </mat-tab>
 
           <mat-tab label="Usage">
-            <form [formGroup]="advancedSettingsForm">
+            <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Usage</mat-label>
-                <textarea matInput formControlName="usage"></textarea>
+                <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)"></textarea>
               </mat-form-field>
-            </form>
+            </div>
           </mat-tab>
         </mat-tab-group>
         }
