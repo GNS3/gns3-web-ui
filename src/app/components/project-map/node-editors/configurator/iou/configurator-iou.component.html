@@ -7,10 +7,10 @@
         @if (name) {
         <mat-tab-group>
           <mat-tab label="General settings">
-            <form [formGroup]="generalSettingsForm">
+            <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Name</mat-label>
-                <input matInput type="text" formControlName="name" />
+                <input matInput type="text" [value]="nodeName()" (input)="nodeName.set($event.target.value)" />
               </mat-form-field>
 
               <mat-form-field class="form-field tags-field">
@@ -23,68 +23,61 @@
                   </mat-chip>
                   }
                 </mat-chip-grid>
-                <input
-                  matInput
-                  placeholder="Add tags"
-                  [matChipInputFor]="chipList"
-                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                  (matChipInputTokenEnd)="addTag($event)"
-                />
+                <input matInput placeholder="Add tags" [matChipInputFor]="chipList"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="addTag($event)" />
               </mat-form-field>
 
               <mat-form-field class="form-field">
                 <mat-label>Console type</mat-label>
-                <mat-select formControlName="console_type">
+                <mat-select [value]="consoleType()" (valueChange)="consoleType.set($event)">
                   @for (type of consoleTypes; track type) {
-                  <mat-option [value]="type">
-                    {{ type }}
-                  </mat-option>
+                  <mat-option [value]="type">{{ type }}</mat-option>
                   }
                 </mat-select>
               </mat-form-field>
 
-              <mat-checkbox formControlName="console_auto_start"> Auto start console </mat-checkbox>
+              <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)"> Auto start console </mat-checkbox>
 
-              <mat-checkbox formControlName="use_default_iou_values">
+              <mat-checkbox [checked]="useDefaultIouValues()" (change)="useDefaultIouValues.set($event.checked)">
                 Use default IOU values for memories
               </mat-checkbox>
 
-              @if (!generalSettingsForm.value.use_default_iou_values) {
+              @if (!useDefaultIouValues()) {
               <mat-form-field class="form-field">
                 <mat-label>RAM size</mat-label>
-                <input matInput type="number" min="1" formControlName="ram" />
+                <input matInput type="text" [value]="ram()" (input)="ram.set($event.target.value)" />
                 <span matSuffix>MB</span>
               </mat-form-field>
-              } @if (!generalSettingsForm.value.use_default_iou_values) {
+              } @if (!useDefaultIouValues()) {
               <mat-form-field class="form-field">
                 <mat-label>NVRAM size</mat-label>
-                <input matInput type="number" min="1" formControlName="nvram" />
+                <input matInput type="text" [value]="nvram()" (input)="nvram.set($event.target.value)" />
                 <span matSuffix>KB</span>
               </mat-form-field>
               }
-            </form>
+            </div>
           </mat-tab>
 
           <mat-tab label="Network">
-            <form [formGroup]="networkForm">
+            <div class="two-column-grid">
               <mat-form-field class="form-field">
                 <mat-label>Ethernet adapters</mat-label>
-                <input matInput formControlName="ethernetAdapters" type="number" />
+                <input matInput [value]="ethernetAdapters()" (input)="ethernetAdapters.set($event.target.value)" type="text" />
               </mat-form-field>
               <mat-form-field class="form-field">
                 <mat-label>Serial adapters</mat-label>
-                <input matInput formControlName="serialAdapters" type="number" />
+                <input matInput [value]="serialAdapters()" (input)="serialAdapters.set($event.target.value)" type="text" />
               </mat-form-field>
-            </form>
+            </div>
           </mat-tab>
 
           <mat-tab label="Usage">
-            <form [formGroup]="generalSettingsForm">
+            <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Usage</mat-label>
-                <textarea matInput formControlName="usage"></textarea>
+                <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)"></textarea>
               </mat-form-field>
-            </form>
+            </div>
           </mat-tab>
         </mat-tab-group>
         }

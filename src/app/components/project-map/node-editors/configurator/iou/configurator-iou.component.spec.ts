@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +9,7 @@ import { ConfiguratorDialogIouComponent } from './configurator-iou.component';
 import { IouConfigurationService } from '@services/iou-configuration.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { IouValidationService } from '@services/validation';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { of, throwError } from 'rxjs';
@@ -23,6 +23,7 @@ describe('ConfiguratorDialogIouComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockConfigurationService: any;
+  let mockValidationService: any;
   let mockChangeDetectorRef: any;
   let mockController: Controller;
   let mockNode: Node;
@@ -135,6 +136,13 @@ describe('ConfiguratorDialogIouComponent', () => {
       getConsoleTypes: vi.fn().mockReturnValue(['telnet', 'vnc', 'none']),
     };
 
+    mockValidationService = {
+      validateName: vi.fn().mockReturnValue({ isValid: true }),
+      validatePath: vi.fn().mockReturnValue({ isValid: true }),
+      validateEthernetAdapters: vi.fn().mockReturnValue({ isValid: true }),
+      validateSerialAdapters: vi.fn().mockReturnValue({ isValid: true }),
+    };
+
     mockChangeDetectorRef = {
       markForCheck: vi.fn(),
     };
@@ -142,7 +150,6 @@ describe('ConfiguratorDialogIouComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ConfiguratorDialogIouComponent,
-        ReactiveFormsModule,
         MatDialogModule,
         MatChipsModule,
         MatIconModule,
@@ -154,8 +161,8 @@ describe('ConfiguratorDialogIouComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: IouConfigurationService, useValue: mockConfigurationService },
+        { provide: IouValidationService, useValue: mockValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
-        UntypedFormBuilder,
       ],
     }).compileComponents();
 
@@ -194,7 +201,7 @@ describe('ConfiguratorDialogIouComponent', () => {
       await TestBed.configureTestingModule({
         imports: [
           ConfiguratorDialogIouComponent,
-          ReactiveFormsModule,
+          
           MatDialogModule,
           MatChipsModule,
           MatIconModule,
@@ -206,7 +213,7 @@ describe('ConfiguratorDialogIouComponent', () => {
           { provide: NodeService, useValue: mockNodeService },
           { provide: ToasterService, useValue: mockToasterService },
           { provide: IouConfigurationService, useValue: mockConfigurationService },
-          UntypedFormBuilder,
+          
         ],
       }).compileComponents();
 
@@ -227,7 +234,7 @@ describe('ConfiguratorDialogIouComponent', () => {
       await TestBed.configureTestingModule({
         imports: [
           ConfiguratorDialogIouComponent,
-          ReactiveFormsModule,
+          
           MatDialogModule,
           MatChipsModule,
           MatIconModule,
@@ -239,7 +246,7 @@ describe('ConfiguratorDialogIouComponent', () => {
           { provide: NodeService, useValue: mockNodeService },
           { provide: ToasterService, useValue: mockToasterService },
           { provide: IouConfigurationService, useValue: mockConfigurationService },
-          UntypedFormBuilder,
+          
         ],
       }).compileComponents();
 
@@ -270,7 +277,7 @@ describe('ConfiguratorDialogIouComponent', () => {
       await TestBed.configureTestingModule({
         imports: [
           ConfiguratorDialogIouComponent,
-          ReactiveFormsModule,
+          
           MatDialogModule,
           MatChipsModule,
           MatIconModule,
@@ -282,7 +289,7 @@ describe('ConfiguratorDialogIouComponent', () => {
           { provide: NodeService, useValue: mockNodeService },
           { provide: ToasterService, useValue: mockToasterService },
           { provide: IouConfigurationService, useValue: mockConfigurationService },
-          UntypedFormBuilder,
+          
         ],
       }).compileComponents();
 
@@ -292,7 +299,9 @@ describe('ConfiguratorDialogIouComponent', () => {
       newComponent.node = updatedNode;
       newFixture.detectChanges();
 
-      newComponent.generalSettingsForm.patchValue({ name: 'UpdatedIOU' });
+      newComponent.nodeName.set('UpdatedIOU');
+      newComponent.ethernetAdapters.set('2');
+      newComponent.serialAdapters.set('0');
       newComponent.onSaveClick();
 
       expect(mockNodeService.updateNode).toHaveBeenCalled();
@@ -300,20 +309,12 @@ describe('ConfiguratorDialogIouComponent', () => {
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
 
-    it('should show error toaster when generalSettingsForm is invalid', () => {
-      component.generalSettingsForm.get('name')?.setValue('');
+    it('should show error toaster when name is empty', () => {
+      mockValidationService.validateName.mockReturnValue({ isValid: false, errorMessage: 'Name is required' });
+      component.nodeName.set('');
       component.onSaveClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields.');
-      expect(mockNodeService.updateNode).not.toHaveBeenCalled();
-    });
-
-    it('should show error toaster when networkForm is invalid', () => {
-      component.networkForm.get('ethernetAdapters')?.setValue('');
-      component.networkForm.get('serialAdapters')?.setValue('');
-      component.onSaveClick();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields.');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Name is required');
       expect(mockNodeService.updateNode).not.toHaveBeenCalled();
     });
 
@@ -334,7 +335,7 @@ describe('ConfiguratorDialogIouComponent', () => {
       await TestBed.configureTestingModule({
         imports: [
           ConfiguratorDialogIouComponent,
-          ReactiveFormsModule,
+          
           MatDialogModule,
           MatChipsModule,
           MatIconModule,
@@ -346,7 +347,7 @@ describe('ConfiguratorDialogIouComponent', () => {
           { provide: NodeService, useValue: mockNodeService },
           { provide: ToasterService, useValue: mockToasterService },
           { provide: IouConfigurationService, useValue: mockConfigurationService },
-          UntypedFormBuilder,
+          
         ],
       }).compileComponents();
 
@@ -356,24 +357,20 @@ describe('ConfiguratorDialogIouComponent', () => {
       newComponent.node = updatedNode;
       newFixture.detectChanges();
 
-      newComponent.generalSettingsForm.patchValue({
-        name: 'TestNode',
-        console_type: 'vnc',
-        console_auto_start: true,
-        use_default_iou_values: false,
-        ram: '512',
-        nvram: '128',
-        usage: 'custom usage',
-      });
-      newComponent.networkForm.patchValue({
-        ethernetAdapters: 4,
-        serialAdapters: 2,
-      });
+      newComponent.nodeName.set('TestNode');
+      newComponent.consoleType.set('vnc');
+      newComponent.consoleAutoStart.set(true);
+      newComponent.useDefaultIouValues.set(false);
+      newComponent.ram.set('512');
+      newComponent.nvram.set('128');
+      newComponent.usage.set('custom usage');
+      newComponent.ethernetAdapters.set('4');
+      newComponent.serialAdapters.set('2');
 
       newComponent.onSaveClick();
 
-      expect(newComponent.node.properties.ram).toBe('512');
-      expect(newComponent.node.properties.nvram).toBe('128');
+      expect(newComponent.node.properties.ram).toBe(512);
+      expect(newComponent.node.properties.nvram).toBe(128);
       expect(newComponent.node.properties.use_default_iou_values).toBe(false);
     });
   });
@@ -450,28 +447,22 @@ describe('ConfiguratorDialogIouComponent', () => {
   });
 
   describe('form validation', () => {
-    it('should have required validator on name field', () => {
-      const nameControl = component.generalSettingsForm.get('name');
-      nameControl?.setValue('');
-      expect(nameControl?.valid).toBe(false);
+    it('should validate name as required', () => {
+      mockValidationService.validateName.mockReturnValue({ isValid: false, errorMessage: 'Name is required' });
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Name is required');
     });
 
-    it('should be valid with name provided', () => {
-      const nameControl = component.generalSettingsForm.get('name');
-      nameControl?.setValue('ValidName');
-      expect(nameControl?.valid).toBe(true);
-    });
+    it('should validate ethernet adapters', () => {
+      mockValidationService.validateName.mockReturnValueOnce({ isValid: true });
+      mockValidationService.validatePath.mockReturnValueOnce({ isValid: true });
+      mockValidationService.validateEthernetAdapters.mockReturnValueOnce({ isValid: false, errorMessage: 'Ethernet adapters is required' });
 
-    it('should have required validator on ethernetAdapters field', () => {
-      const ethernetControl = component.networkForm.get('ethernetAdapters');
-      ethernetControl?.setValue('');
-      expect(ethernetControl?.valid).toBe(false);
-    });
+      component.onSaveClick();
 
-    it('should have required validator on serialAdapters field', () => {
-      const serialControl = component.networkForm.get('serialAdapters');
-      serialControl?.setValue('');
-      expect(serialControl?.valid).toBe(false);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Ethernet adapters is required');
     });
   });
 
@@ -489,8 +480,9 @@ describe('ConfiguratorDialogIouComponent', () => {
     it('should show error toast when updateNode fails', () => {
       mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
       const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
-      component.generalSettingsForm.patchValue({ name: 'IOU1' });
-      component.networkForm.patchValue({ ethernetAdapters: 2, serialAdapters: 0 });
+      component.nodeName.set('IOU1');
+      component.ethernetAdapters.set('2');
+      component.serialAdapters.set('0');
 
       component.onSaveClick();
 

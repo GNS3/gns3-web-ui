@@ -19,38 +19,29 @@
       </div>
       @if (generalSettingsExpanded()) {
       <form class="iou-template-details__form">
-        <mat-form-field appearance="fill" class="iou-template-details__field">
-          <mat-label>Template name</mat-label>
-          <input
-            matInput
-            [value]="templateName()"
-            (input)="templateName.set($event.target.value)"
-            type="text"
-            placeholder="Template name"
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="iou-template-details__field">
-          <mat-label>Default name format</mat-label>
-          <input
-            matInput
-            [value]="defaultName()"
-            (input)="defaultName.set($event.target.value)"
-            type="text"
-            placeholder="Default name format"
-          />
-        </mat-form-field>
+        <div class="two-column-grid">
+          <mat-form-field appearance="fill" class="iou-template-details__field">
+            <mat-label>Template name</mat-label>
+            <input matInput [value]="templateName()" (input)="templateName.set($event.target.value)" type="text" placeholder="Template name" />
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="iou-template-details__field">
+            <mat-label>Default name format</mat-label>
+            <input matInput [value]="defaultName()" (input)="defaultName.set($event.target.value)" type="text" placeholder="Default name format" />
+          </mat-form-field>
+        </div>
 
         <div class="iou-template-details__symbol-row">
+          <mat-form-field appearance="fill" class="iou-template-details__field iou-template-details__field--category">
+            <mat-label>Category</mat-label>
+            <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+              @for (cat of categories; track $index) {
+              <mat-option [value]="cat[1]">{{ cat[0] }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
           <mat-form-field appearance="fill" class="iou-template-details__field iou-template-details__field--flex">
             <mat-label>Symbol</mat-label>
-            <input
-              matInput
-              [value]="symbol()"
-              (input)="symbol.set($event.target.value)"
-              type="text"
-              placeholder="Symbol"
-            />
+            <input matInput [value]="symbol()" (input)="symbol.set($event.target.value)" type="text" placeholder="Symbol" />
           </mat-form-field>
           <button mat-button class="iou-template-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
         </div>
@@ -72,17 +63,6 @@
             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
             (matChipInputTokenEnd)="addTag($event)"
           />
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="iou-template-details__field">
-          <mat-label>Category</mat-label>
-          <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
-            @for (cat of categories; track $index) {
-            <mat-option [value]="cat[1]">
-              {{ cat[0] }}
-            </mat-option>
-            }
-          </mat-select>
         </mat-form-field>
 
         <div class="iou-template-details__file-row">
@@ -152,31 +132,18 @@
         </mat-checkbox>
 
         @if (!useDefaultIouValues()) {
-        <mat-form-field appearance="fill" class="iou-template-details__field">
-          <mat-label>RAM size</mat-label>
-          <input
-            matInput
-            [value]="ram()"
-            (input)="ram.set(+$event.target.value)"
-            type="number"
-            min="1"
-            placeholder="RAM size"
-          />
-          <span matSuffix>MB</span>
-        </mat-form-field>
-        } @if (!useDefaultIouValues()) {
-        <mat-form-field appearance="fill" class="iou-template-details__field">
-          <mat-label>NVRAM size</mat-label>
-          <input
-            matInput
-            [value]="nvram()"
-            (input)="nvram.set(+$event.target.value)"
-            type="number"
-            min="1"
-            placeholder="NVRAM size"
-          />
-          <span matSuffix>KB</span>
-        </mat-form-field>
+        <div class="two-column-grid">
+          <mat-form-field appearance="fill" class="iou-template-details__field">
+            <mat-label>RAM size</mat-label>
+            <input matInput [value]="ram()" (input)="ram.set(+$event.target.value)" type="number" min="1" placeholder="RAM size" />
+            <span matSuffix>MB</span>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="iou-template-details__field">
+            <mat-label>NVRAM size</mat-label>
+            <input matInput [value]="nvram()" (input)="nvram.set(+$event.target.value)" type="number" min="1" placeholder="NVRAM size" />
+            <span matSuffix>KB</span>
+          </mat-form-field>
+        </div>
         }
       </form>
       }
