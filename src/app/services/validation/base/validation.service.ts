@@ -361,31 +361,6 @@ export class ValidationService {
   }
 
   /**
-   * Validates MAC address format
-   *
-   * @param mac - The MAC address to validate
-   * @returns Validation result
-   */
-  validateMacAddress(mac: string): ValidationResult {
-    if (!mac || mac.trim() === '') {
-      return {
-        isValid: false,
-        errorMessage: 'MAC address is required',
-      };
-    }
-
-    // MAC address patterns (xx:xx:xx:xx:xx:xx or xx-xx-xx-xx-xx-xx)
-    const macPattern =
-      /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
-    const isValid = macPattern.test(mac);
-
-    return {
-      isValid,
-      errorMessage: isValid ? undefined : 'Invalid MAC address format',
-    };
-  }
-
-  /**
    * Checks if a value already exists in an array
    * Used for duplicate detection
    *
@@ -447,6 +422,25 @@ export class ValidationService {
    * @param formatHint - Optional hint about the expected format
    * @returns Validation result
    */
+  private readonly macRegex = /^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$/;
+
+  /**
+   * Validates a MAC address format (XX:XX:XX:XX:XX:XX)
+   * Empty value passes validation (optional field)
+   */
+  validateMacAddress(macValue: string): ValidationResult {
+    if (!macValue || macValue.trim() === '') {
+      return { isValid: true };
+    }
+    if (!this.macRegex.test(macValue)) {
+      return {
+        isValid: false,
+        errorMessage: 'Invalid MAC address format (expected XX:XX:XX:XX:XX:XX)',
+      };
+    }
+    return { isValid: true };
+  }
+
   validatePattern(
     value: string,
     pattern: RegExp,

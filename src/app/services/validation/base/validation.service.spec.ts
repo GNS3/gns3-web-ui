@@ -246,25 +246,25 @@ describe('ValidationService', () => {
       expect(result.errorMessage).toBeUndefined();
     });
 
-    it('should pass validation for valid MAC with dashes', () => {
+    it('should fail validation for MAC with dashes (backend requires colons)', () => {
       const result = service.validateMacAddress('00-11-22-33-44-55');
 
-      expect(result.isValid).toBe(true);
-      expect(result.errorMessage).toBeUndefined();
+      expect(result.isValid).toBe(false);
+      expect(result.errorMessage).toBe('Invalid MAC address format (expected XX:XX:XX:XX:XX:XX)');
     });
 
     it('should fail validation for invalid format', () => {
       const result = service.validateMacAddress('invalid');
 
       expect(result.isValid).toBe(false);
-      expect(result.errorMessage).toBe('Invalid MAC address format');
+      expect(result.errorMessage).toBe('Invalid MAC address format (expected XX:XX:XX:XX:XX:XX)');
     });
 
-    it('should fail validation for empty string', () => {
+    it('should pass validation for empty string (optional field)', () => {
       const result = service.validateMacAddress('');
 
-      expect(result.isValid).toBe(false);
-      expect(result.errorMessage).toBe('MAC address is required');
+      expect(result.isValid).toBe(true);
+      expect(result.errorMessage).toBeUndefined();
     });
   });
 

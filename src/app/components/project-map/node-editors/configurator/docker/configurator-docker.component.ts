@@ -1,13 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -24,9 +17,9 @@ import { Controller } from '@models/controller';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { DockerValidationService } from '@services/validation';
 import { ConfigureCustomAdaptersDialogComponent } from './configure-custom-adapters/configure-custom-adapters.component';
 import { EditNetworkConfigurationDialogComponent } from './edit-network-configuration/edit-network-configuration.component';
-import { NonNegativeValidator } from '../../../../../validators/non-negative-validator';
 
 @Component({
   standalone: true,
@@ -37,7 +30,6 @@ import { NonNegativeValidator } from '../../../../../validators/non-negative-val
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     MatDialogModule,
     MatCardModule,
     MatTabsModule,
@@ -54,16 +46,14 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   private dialogReference = inject(MatDialogRef<ConfiguratorDialogDockerComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
   private dockerConfigurationService = inject(DockerConfigurationService);
-  private nonNegativeValidator = inject(NonNegativeValidator);
   private dialog = inject(MatDialog);
   private cd = inject(ChangeDetectorRef);
+  private validationService = inject(DockerValidationService);
 
   controller: Controller;
   node: Node;
   name: string;
-  generalSettingsForm: UntypedFormGroup;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   auxConsoleTypes: string[] = [];
@@ -86,26 +76,24 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   };
   dialogRef;
 
-  constructor() {
-    this.generalSettingsForm = this.formBuilder.group({
-      name: new UntypedFormControl('', Validators.required),
-      startCommand: new UntypedFormControl(''),
-      adapter: new UntypedFormControl('', Validators.required),
-      mac_address: new UntypedFormControl('', Validators.pattern(this.dockerConfigurationService.getMacAddrRegex())),
-      memory: new UntypedFormControl('', this.nonNegativeValidator.get),
-      cpus: new UntypedFormControl('', this.nonNegativeValidator.get),
-      console_type: new UntypedFormControl(''),
-      aux_type: new UntypedFormControl(''),
-      console_auto_start: new UntypedFormControl(false),
-      console_resolution: new UntypedFormControl(''),
-      consoleHttpPort: new UntypedFormControl('', Validators.required),
-      consoleHttpPath: new UntypedFormControl('', Validators.required),
-      environment: new UntypedFormControl(''),
-      extra_hosts: new UntypedFormControl(''),
-      extra_volumes: new UntypedFormControl(''),
-      usage: new UntypedFormControl(''),
-    });
-  }
+  // Model signals
+  readonly nodeName = model('');
+  readonly dockerImage = model('');
+  readonly startCommand = model('');
+  readonly adapter = model('');
+  readonly macAddress = model('');
+  readonly memory = model('');
+  readonly cpus = model('');
+  readonly consoleType = model('');
+  readonly auxType = model('');
+  readonly consoleAutoStart = model(false);
+  readonly consoleResolution = model('');
+  readonly consoleHttpPort = model('');
+  readonly consoleHttpPath = model('');
+  readonly environment = model('');
+  readonly extraHosts = model('');
+  readonly extraVolumes = model('');
+  readonly usage = model('');
 
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
@@ -113,25 +101,25 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
         this.node = node;
         this.name = node.name;
 
-        // Update form values with node data
-        this.generalSettingsForm.patchValue({
-          name: node.name,
-          startCommand: node.properties.start_command || '',
-          adapter: node.properties.adapters || 0,
-          mac_address: node.properties.mac_address || '',
-          memory: node.properties.memory || 0,
-          cpus: node.properties.cpus || 0,
-          console_type: node.console_type || '',
-          aux_type: node.aux_type || '',
-          console_auto_start: node.console_auto_start || false,
-          console_resolution: node.properties.console_resolution || '',
-          consoleHttpPort: node.properties.console_http_port || '',
-          consoleHttpPath: node.properties.console_http_path || '',
-          environment: node.properties.environment || '',
-          extra_hosts: node.properties.extra_hosts || '',
-          extra_volumes: node.properties.extra_volumes || '',
-          usage: node.properties.usage || '',
-        });
+        // Update model signals with node data
+        this.nodeName.set(node.name || '');
+        this.dockerImage.set(node.properties.image || '');
+        this.startCommand.set(node.properties.start_command || '');
+        this.adapter.set(node.properties.adapters?.toString() || '');
+        this.macAddress.set(node.properties.mac_address || '');
+        this.memory.set(node.properties.memory?.toString() || '');
+        this.cpus.set(node.properties.cpus?.toString() || '');
+        this.consoleType.set(node.console_type || '');
+        this.auxType.set(node.aux_type || '');
+        this.consoleAutoStart.set(node.console_auto_start || false);
+        this.consoleResolution.set(node.properties.console_resolution || '');
+        this.consoleHttpPort.set(node.properties.console_http_port?.toString() || '');
+        this.consoleHttpPath.set(node.properties.console_http_path || '');
+        this.environment.set(node.properties.environment || '');
+        this.extraHosts.set(node.properties.extra_hosts || '');
+        const volumes = node.properties.extra_volumes;
+        this.extraVolumes.set(Array.isArray(volumes) ? volumes.join('\n') : (volumes || ''));
+        this.usage.set(node.properties.usage || '');
 
         this.getConfiguration();
         if (!this.node.properties.cpus) this.node.properties.cpus = 0.0;
@@ -154,10 +142,26 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   }
 
   configureCustomAdapters() {
+    // Generate adapter data from current node state
+    let adapters = this.node.custom_adapters || [];
+    if (adapters.length === 0) {
+      const count = parseInt(this.adapter(), 10) || 1;
+      adapters = Array.from({ length: count }, (_, i) => ({
+        adapter_number: i,
+        mac_address: '',
+      }));
+    }
     this.dialogRef = this.dialog.open(ConfigureCustomAdaptersDialogComponent, this.conf);
     let instance = this.dialogRef.componentInstance;
     instance.controller = this.controller;
-    instance.node = this.node;
+    instance.adapters.set(adapters);
+    instance.saveHandler = (updatedAdapters: any[]) => {
+      this.node.custom_adapters = updatedAdapters.map((a: any) => ({
+        ...a,
+        mac_address: a.mac_address || null,
+      }));
+      this.adapter.set(updatedAdapters.length.toString());
+    };
   }
 
   editNetworkConfiguration() {
@@ -168,41 +172,91 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   }
 
   onSaveClick() {
-    if (this.generalSettingsForm.valid) {
-      // Merge form values back into node
-      const formValues = this.generalSettingsForm.value;
-
-      this.node.name = formValues.name;
-      this.node.properties.start_command = formValues.startCommand;
-      this.node.properties.adapters = formValues.adapter;
-      this.node.properties.mac_address = formValues.mac_address;
-      this.node.properties.memory = formValues.memory;
-      this.node.properties.cpus = formValues.cpus;
-      this.node.console_type = formValues.console_type;
-      this.node.aux_type = formValues.aux_type;
-      this.node.console_auto_start = formValues.console_auto_start;
-      this.node.properties.console_resolution = formValues.console_resolution;
-      this.node.properties.console_http_port = formValues.consoleHttpPort;
-      this.node.properties.console_http_path = formValues.consoleHttpPath;
-      this.node.properties.environment = formValues.environment;
-      this.node.properties.extra_hosts = formValues.extra_hosts;
-      this.node.properties.extra_volumes = formValues.extra_volumes;
-      this.node.properties.usage = formValues.usage;
-
-      this.nodeService.updateNode(this.controller, this.node).subscribe({
-        next: () => {
-          this.toasterService.success(`Node ${this.node.name} updated.`);
-          this.onCancelClick();
-        },
-        error: (error: unknown) => {
-          const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
-          this.toasterService.error(errorMessage);
-          this.cd.markForCheck();
-        },
-      });
-    } else {
-      this.toasterService.error(`Fill all required fields.`);
+    // Validate name (required)
+    const nameValidation = this.validationService.validateName(this.nodeName());
+    if (!nameValidation.isValid) {
+      this.toasterService.error(nameValidation.errorMessage || 'Name is required');
+      return;
     }
+
+    // Validate adapters (0-99)
+    const adapterValidation = this.validationService.validateAdapters(this.adapter(), 99);
+    if (!adapterValidation.isValid) {
+      this.toasterService.error(adapterValidation.errorMessage);
+      return;
+    }
+
+    // Validate MAC address format if provided
+    const macValidation = this.validationService.validateMacAddress(this.macAddress());
+    if (!macValidation.isValid) {
+      this.toasterService.error(macValidation.errorMessage);
+      return;
+    }
+
+    // Validate memory (non-negative integer)
+    const memoryValidation = this.validationService.validateMemory(this.memory());
+    if (!memoryValidation.isValid) {
+      this.toasterService.error(memoryValidation.errorMessage);
+      return;
+    }
+
+    // Validate CPUs (non-negative number)
+    const cpusValidation = this.validationService.validateCpus(this.cpus());
+    if (!cpusValidation.isValid) {
+      this.toasterService.error(cpusValidation.errorMessage);
+      return;
+    }
+
+    // Validate console HTTP port (required)
+    if (!this.consoleHttpPort() || this.consoleHttpPort().trim() === '') {
+      this.toasterService.error('Console HTTP port is required');
+      return;
+    }
+
+    // Validate console HTTP path (required)
+    const httpPathValidation = this.validationService.validateConsoleHttpPath(this.consoleHttpPath());
+    if (!httpPathValidation.isValid) {
+      this.toasterService.error(httpPathValidation.errorMessage);
+      return;
+    }
+
+    // Validate environment variables format if provided
+    const envValidation = this.validationService.validateEnvironment(this.environment(), 'Advanced > Environment');
+    if (!envValidation.isValid) {
+      this.toasterService.error(envValidation.errorMessage);
+      return;
+    }
+
+    // Merge signal values back into node
+    this.node.name = this.nodeName();
+    this.node.properties.image = this.dockerImage();
+    this.node.properties.start_command = this.startCommand();
+    this.node.properties.adapters = parseInt(this.adapter(), 10) || 0;
+    this.node.properties.mac_address = this.macAddress();
+    this.node.properties.memory = parseInt(this.memory(), 10) || 0;
+    this.node.properties.cpus = parseFloat(this.cpus()) || 0;
+    this.node.console_type = this.consoleType();
+    this.node.aux_type = this.auxType();
+    this.node.console_auto_start = this.consoleAutoStart();
+    this.node.properties.console_resolution = this.consoleResolution();
+    this.node.properties.console_http_port = parseInt(this.consoleHttpPort(), 10) || undefined;
+    this.node.properties.console_http_path = this.consoleHttpPath();
+    this.node.properties.environment = this.environment();
+    this.node.properties.extra_hosts = this.extraHosts();
+    this.node.properties.extra_volumes = this.extraVolumes() ? this.extraVolumes().split('\n').filter((v) => v.trim()) : [] as any;
+    this.node.properties.usage = this.usage();
+
+    this.nodeService.updateNode(this.controller, this.node).subscribe({
+      next: () => {
+        this.toasterService.success(`Node ${this.node.name} updated.`);
+        this.onCancelClick();
+      },
+      error: (error: unknown) => {
+        const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
+        this.toasterService.error(errorMessage);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onCancelClick() {

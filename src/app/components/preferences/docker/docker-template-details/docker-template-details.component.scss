@@ -100,14 +100,26 @@
 /* =============================================
 // Form
 // ============================================= */
-.docker-details__form {
+.docker-details__form,
+.form-container {
   padding: 16px 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  .two-column-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+
+    .grid-span-2 {
+      grid-column: 1 / -1;
+    }
+  }
 }
 
-.docker-details__field {
+.docker-details__field,
+.form-field {
   width: 100%;
 }
 
@@ -124,6 +136,10 @@
   display: flex;
   align-items: flex-start;
   gap: 16px;
+
+  .form-field {
+    flex: 1;
+  }
 }
 
 .docker-details__symbol-btn {
@@ -211,12 +227,9 @@
     padding: 12px 16px;
   }
 
-  .docker-details__form {
+  .docker-details__form,
+  .form-container {
     padding: 16px;
-  }
-
-  .docker-details__field--full {
-    padding: 0;
   }
 
   .docker-details__symbol-row {

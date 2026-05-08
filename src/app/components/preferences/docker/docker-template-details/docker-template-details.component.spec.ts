@@ -11,6 +11,7 @@ import { ToasterService } from '@services/toaster.service';
 import { DialogConfigService } from '@services/dialog-config.service';
 import { Controller } from '@models/controller';
 import { DockerTemplate } from '@models/templates/docker-template';
+import { DockerValidationService } from '@services/validation';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -63,6 +64,9 @@ describe('DockerTemplateDetailsComponent', () => {
     environment: '',
     extra_hosts: '',
     image: 'nginx:latest',
+    memory: 0,
+    cpus: 0,
+    extra_volumes: [],
     name: 'Test Docker',
     start_command: '',
     symbol: 'docker',
@@ -132,6 +136,16 @@ describe('DockerTemplateDetailsComponent', () => {
       error: vi.fn(),
     };
 
+    const mockDockerValidationService = {
+      validateName: vi.fn().mockReturnValue({ isValid: true }),
+      validateAdapters: vi.fn().mockReturnValue({ isValid: true }),
+      validateMacAddress: vi.fn().mockReturnValue({ isValid: true }),
+      validateMemory: vi.fn().mockReturnValue({ isValid: true }),
+      validateCpus: vi.fn().mockReturnValue({ isValid: true }),
+      validateConsoleHttpPort: vi.fn().mockReturnValue({ isValid: true }),
+      validateEnvironment: vi.fn().mockReturnValue({ isValid: true }),
+    };
+
     await TestBed.configureTestingModule({
       imports: [DockerTemplateDetailsComponent, MatDialogModule, RouterModule],
       providers: [
@@ -143,6 +157,7 @@ describe('DockerTemplateDetailsComponent', () => {
         { provide: DockerConfigurationService, useValue: mockDockerConfigurationService },
         { provide: ControllerService, useValue: mockControllerService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: DockerValidationService, useValue: mockDockerValidationService },
       ],
     }).compileComponents();
 

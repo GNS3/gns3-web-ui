@@ -1,30 +1,46 @@
-<h1 mat-dialog-title>Configure custom adapters for node {{ node.name }}</h1>
+<h1 mat-dialog-title>Configure custom adapters{{ node ? ' for node ' + node.name : '' }}</h1>
+<div mat-dialog-content class="content">
+  <div class="adapter-form">
+    <div class="adapter-header">
+      <span class="adapter-header-label">Adapter</span>
+      <span class="adapter-header-field">Port name</span>
+      <span class="adapter-header-field">MAC address</span>
+      <span class="adapter-header-actions"></span>
+    </div>
 
-@if (node) {
-<div class="modal-form-container">
-  <div class="header">
-    <span class="column"> Adapter number </span>
-    <span class="column"> Port name </span>
+    @for (adapter of adapters(); track adapter.adapter_number; let i = $index) {
+    <div class="adapter-item">
+      <span class="adapter-label">Adapter {{ adapter.adapter_number }}</span>
+      <span class="adapter-port-name">eth{{ adapter.adapter_number }}</span>
+      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
+        <input
+          matInput
+          [value]="adapter.mac_address"
+          (input)="onMacAddressChange(adapter.adapter_number, $event.target.value)"
+          name="mac_address_{{ i }}"
+          placeholder="XX:XX:XX:XX:XX:XX"
+        />
+        @if (adapter.mac_address && !isMacAddressValid(adapter.mac_address)) {
+        <mat-error>Invalid MAC address format</mat-error>
+        }
+      </mat-form-field>
+      <button mat-icon-button matTooltip="Delete" (click)="removeAdapter(adapter.adapter_number)" class="adapter-actions">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+    }
   </div>
-
-  <div>
-    <mat-list>
-      @for (adapter of adapters(); track $index; let i = $index) {
-      <mat-list-item>
-        <div class="header">
-          <span class="column"> Adapter {{ adapter.adapter_number }} </span>
-          <span class="column">
-            <input matInput type="text" [value]="adapter.port_name" (input)="onPortNameChange(adapter.adapter_number, $event.target.value)" placeholder="Edit port name" />
-          </span>
-        </div>
-      </mat-list-item>
-      }
-    </mat-list>
+  <div class="add-adapter-row">
+    <button class="add-btn" mat-button (click)="addAdapter()">
+      <mat-icon>add</mat-icon>
+      Add adapter
+    </button>
+    <div class="info-note-text">
+      Deleting an adapter reduces the total number of adapters.
+    </div>
   </div>
 </div>
-}
-
-<div mat-dialog-actions>
-  <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCancelClick()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
 </div>
