@@ -34,12 +34,14 @@ import { AddQemuVmTemplateComponent } from '@components/preferences/qemu/add-qem
 import { CopyQemuVmTemplateComponent } from '@components/preferences/qemu/copy-qemu-vm-template/copy-qemu-vm-template.component';
 import { QemuVmTemplateDetailsComponent } from '@components/preferences/qemu/qemu-vm-template-details/qemu-vm-template-details.component';
 import { QemuVmTemplatesComponent } from '@components/preferences/qemu/qemu-vm-templates/qemu-vm-templates.component';
-import { AddVirtualBoxTemplateComponent } from '@components/preferences/virtual-box/add-virtual-box-template/add-virtual-box-template.component';
-import { VirtualBoxTemplateDetailsComponent } from '@components/preferences/virtual-box/virtual-box-template-details/virtual-box-template-details.component';
-import { VirtualBoxTemplatesComponent } from '@components/preferences/virtual-box/virtual-box-templates/virtual-box-templates.component';
-import { AddVmwareTemplateComponent } from '@components/preferences/vmware/add-vmware-template/add-vmware-template.component';
-import { VmwareTemplateDetailsComponent } from '@components/preferences/vmware/vmware-template-details/vmware-template-details.component';
-import { VmwareTemplatesComponent } from '@components/preferences/vmware/vmware-templates/vmware-templates.component';
+// VirtualBox support deprecated since 3.1.0
+// import { AddVirtualBoxTemplateComponent } from '@components/preferences/virtual-box/add-virtual-box-template/add-virtual-box-template.component';
+// import { VirtualBoxTemplateDetailsComponent } from '@components/preferences/virtual-box/virtual-box-template-details/virtual-box-template-details.component';
+// import { VirtualBoxTemplatesComponent } from '@components/preferences/virtual-box/virtual-box-templates/virtual-box-templates.component';
+// VMware support deprecated since 3.1.0
+// import { AddVmwareTemplateComponent } from '@components/preferences/vmware/add-vmware-template/add-vmware-template.component';
+// import { VmwareTemplateDetailsComponent } from '@components/preferences/vmware/vmware-template-details/vmware-template-details.component';
+// import { VmwareTemplatesComponent } from '@components/preferences/vmware/vmware-templates/vmware-templates.component';
 import { AddVpcsTemplateComponent } from '@components/preferences/vpcs/add-vpcs-template/add-vpcs-template.component';
 import { VpcsTemplateDetailsComponent } from '@components/preferences/vpcs/vpcs-template-details/vpcs-template-details.component';
 import { VpcsTemplatesComponent } from '@components/preferences/vpcs/vpcs-templates/vpcs-templates.component';
@@ -229,39 +231,41 @@ const routes: Routes = [
         canActivate: [LoginGuard],
       },
 
+      // VirtualBox support deprecated since 3.1.0 - routes removed
       // { path: 'controller/:controller_id/preferences/virtualbox', component: VirtualBoxPreferencesComponent },
-      {
-        path: 'controller/:controller_id/preferences/virtualbox/templates',
-        component: VirtualBoxTemplatesComponent,
-        canActivate: [LoginGuard],
-      },
-      {
-        path: 'controller/:controller_id/preferences/virtualbox/templates/:template_id',
-        component: VirtualBoxTemplateDetailsComponent,
-        canActivate: [LoginGuard],
-      },
-      {
-        path: 'controller/:controller_id/preferences/virtualbox/addtemplate',
-        component: AddVirtualBoxTemplateComponent,
-        canActivate: [LoginGuard],
-      },
+      // {
+      //   path: 'controller/:controller_id/preferences/virtualbox/templates',
+      //   component: VirtualBoxTemplatesComponent,
+      //   canActivate: [LoginGuard],
+      // },
+      // {
+      //   path: 'controller/:controller_id/preferences/virtualbox/templates/:template_id',
+      //   component: VirtualBoxTemplateDetailsComponent,
+      //   canActivate: [LoginGuard],
+      // },
+      // {
+      //   path: 'controller/:controller_id/preferences/virtualbox/addtemplate',
+      //   component: AddVirtualBoxTemplateComponent,
+      //   canActivate: [LoginGuard],
+      // },
 
+      // VMware support deprecated since 3.1.0 - routes removed
       // { path: 'controller/:controller_id/preferences/vmware', component: VmwarePreferencesComponent },
-      {
-        path: 'controller/:controller_id/preferences/vmware/templates',
-        component: VmwareTemplatesComponent,
-        canActivate: [LoginGuard],
-      },
-      {
-        path: 'controller/:controller_id/preferences/vmware/templates/:template_id',
-        component: VmwareTemplateDetailsComponent,
-        canActivate: [LoginGuard],
-      },
-      {
-        path: 'controller/:controller_id/preferences/vmware/addtemplate',
-        component: AddVmwareTemplateComponent,
-        canActivate: [LoginGuard],
-      },
+      // {
+      //   path: 'controller/:controller_id/preferences/vmware/templates',
+      //   component: VmwareTemplatesComponent,
+      //   canActivate: [LoginGuard],
+      // },
+      // {
+      //   path: 'controller/:controller_id/preferences/vmware/templates/:template_id',
+      //   component: VmwareTemplateDetailsComponent,
+      //   canActivate: [LoginGuard],
+      // },
+      // {
+      //   path: 'controller/:controller_id/preferences/vmware/addtemplate',
+      //   component: AddVmwareTemplateComponent,
+      //   canActivate: [LoginGuard],
+      // },
 
       {
         path: 'controller/:controller_id/preferences/docker/templates',

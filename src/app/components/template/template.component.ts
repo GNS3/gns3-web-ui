@@ -117,8 +117,8 @@ export class TemplateComponent implements OnInit, OnDestroy {
     'docker',
     'dynamips',
     'vpcs',
-    'virtualbox',
-    'vmware',
+    // 'virtualbox', // @deprecated Since 3.1.0 - VirtualBox support is being phased out
+    // 'vmware', // @deprecated Since 3.1.0 - VMware support is being phased out
     'iou',
     'qemu',
   ];

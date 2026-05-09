@@ -6,6 +6,13 @@ import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
 import { VirtualBoxVm } from '@models/virtualBox/virtual-box-vm';
 import { HttpController } from './http-controller.service';
 
+/**
+ * @deprecated
+ * VirtualBox support is deprecated and will be removed in a future version.
+ * This service is no longer maintained and should not be used for new projects.
+ *
+ * @deprecated Since 3.1.0 - VirtualBox support is being phased out
+ */
 @Injectable()
 export class VirtualBoxService {
   constructor(private httpController: HttpController) {}
