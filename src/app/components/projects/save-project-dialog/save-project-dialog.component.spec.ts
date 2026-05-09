@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ChangeDetectorRef } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 import { SaveProjectDialogComponent } from './save-project-dialog.component';
@@ -9,41 +8,61 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectNameValidator } from '../models/projectNameValidator';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest';
 
 describe('SaveProjectDialogComponent', () => {
-  let component: SaveProjectDialogComponent;
   let fixture: ComponentFixture<SaveProjectDialogComponent>;
+  let component: SaveProjectDialogComponent;
   let mockDialogRef: any;
   let mockProjectService: any;
   let mockNodesDataSource: any;
   let mockToasterService: any;
-  let mockChangeDetectorRef: any;
   let mockController: Controller;
   let mockProject: Project;
+  let mockValidator: any;
+
+  beforeAll(() => {
+    vi.useFakeTimers();
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
+  const createMockProject = (name: string, projectId: string = 'proj-123'): Project =>
+    ({
+      project_id: projectId,
+      name,
+      filename: `${name}.gns3`,
+      status: 'opened',
+      auto_close: true,
+      auto_open: false,
+      auto_start: false,
+      scene_width: 2000,
+      scene_height: 1000,
+      zoom: 100,
+      show_layers: false,
+      snap_to_grid: false,
+      show_grid: false,
+      grid_size: 75,
+      drawing_grid_size: 25,
+      show_interface_labels: false,
+      variables: [],
+      path: `/path/to/${name}`,
+      readonly: false,
+    } as Project);
 
   beforeEach(async () => {
-    mockDialogRef = {
-      close: vi.fn(),
-    };
+    vi.clearAllMocks();
 
+    mockDialogRef = { close: vi.fn() };
     mockProjectService = {
       list: vi.fn().mockReturnValue(of([])),
-      duplicate: vi.fn().mockReturnValue(of({})),
+      duplicate: vi.fn().mockReturnValue(of(createMockProject('New Project', 'proj2'))),
     };
-
-    mockNodesDataSource = {
-      getItems: vi.fn().mockReturnValue([]),
-    };
-
-    mockToasterService = {
-      error: vi.fn(),
-      success: vi.fn(),
-    };
-
-    mockChangeDetectorRef = {
-      markForCheck: vi.fn(),
-    };
+    mockNodesDataSource = { getItems: vi.fn().mockReturnValue([]) };
+    mockToasterService = { success: vi.fn(), error: vi.fn() };
+    mockValidator = { get: vi.fn().mockReturnValue(null) };
 
     mockController = {
       id: 1,
@@ -90,8 +109,7 @@ describe('SaveProjectDialogComponent', () => {
         { provide: ProjectService, useValue: mockProjectService },
         { provide: NodesDataSource, useValue: mockNodesDataSource },
         { provide: ToasterService, useValue: mockToasterService },
-        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
-        ProjectNameValidator,
+        { provide: ProjectNameValidator, useValue: mockValidator },
       ],
     }).compileComponents();
 
@@ -102,168 +120,157 @@ describe('SaveProjectDialogComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    vi.clearAllTimers();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
-  describe('Creation', () => {
+  describe('Basic functionality', () => {
     it('should create the component', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should have projectNameForm with projectName control', () => {
-      expect(component.projectNameForm).toBeTruthy();
-      expect(component.projectNameForm.controls['projectName']).toBeTruthy();
-    });
-
-    it('should have controller set', () => {
+    it('should have controller and project set', () => {
       expect(component.controller).toEqual(mockController);
-    });
-
-    it('should have project set', () => {
       expect(component.project).toEqual(mockProject);
     });
-  });
 
-  describe('form getter', () => {
-    it('should return form controls', () => {
-      const controls = component.form;
-      expect(controls['projectName']).toBeTruthy();
-    });
-  });
-
-  describe('onNoClick', () => {
-    it('should close the dialog', () => {
+    it('should close dialog when cancel is clicked', () => {
       component.onNoClick();
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
-  });
 
-  describe('onKeyDown', () => {
-    it('should call onAddClick when Enter key is pressed', () => {
-      const event = { key: 'Enter' };
-      const onAddClickSpy = vi.spyOn(component, 'onAddClick');
+    it('should trigger save project when Enter key is pressed', () => {
+      component.projectName.set('ValidProject');
+      mockProjectService.list.mockReturnValue(of([]));
 
-      component.onKeyDown(event);
+      component.onKeyDown({ key: 'Enter' } as KeyboardEvent);
 
-      expect(onAddClickSpy).toHaveBeenCalled();
+      expect(mockProjectService.list).toHaveBeenCalled();
     });
 
-    it('should not call onAddClick when other key is pressed', () => {
-      const event = { key: 'Escape' };
-      const onAddClickSpy = vi.spyOn(component, 'onAddClick');
-
-      component.onKeyDown(event);
-
-      expect(onAddClickSpy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('onAddClick', () => {
-    it('should return early when form is invalid', () => {
-      component.projectNameForm.controls['projectName'].setValue('');
-      component.projectNameForm.controls['projectName'].markAsTouched();
-
-      component.onAddClick();
+    it('should not trigger save project for non-Enter keys', () => {
+      component.projectName.set('ValidProject');
+      component.onKeyDown({ key: 'Escape' } as KeyboardEvent);
 
       expect(mockProjectService.list).not.toHaveBeenCalled();
     });
-
-    it('should call projectService.list with controller', () => {
-      component.projectNameForm.controls['projectName'].setValue('New Project');
-
-      component.onAddClick();
-
-      expect(mockProjectService.list).toHaveBeenCalledWith(mockController);
-    });
   });
 
-  describe('addProject', () => {
-    it('should call projectService.duplicate with correct parameters', () => {
-      component.projectNameForm.controls['projectName'].setValue('New Project');
-      const duplicatedProject = { ...mockProject, name: 'New Project', project_id: 'proj2' };
+  describe('Project creation', () => {
+    it('should duplicate project successfully and emit event', async () => {
+      const duplicatedProject = createMockProject('NewProject', 'proj2');
+      mockProjectService.list.mockReturnValue(of([]));
       mockProjectService.duplicate.mockReturnValue(of(duplicatedProject));
 
-      component.addProject();
+      component.projectName.set('NewProject');
+      component.onAddClick();
+      await vi.runAllTimersAsync();
 
-      expect(mockProjectService.duplicate).toHaveBeenCalledWith(mockController, mockProject.project_id, 'New Project');
-    });
-
-    it('should close dialog on successful duplicate', () => {
-      component.projectNameForm.controls['projectName'].setValue('New Project');
-      const duplicatedProject = { ...mockProject, name: 'New Project', project_id: 'proj2' };
-      mockProjectService.duplicate.mockReturnValue(of(duplicatedProject));
-
-      component.addProject();
-
+      expect(mockProjectService.duplicate).toHaveBeenCalledWith(mockController, 'proj1', 'NewProject');
+      expect(mockToasterService.success).toHaveBeenCalledWith('Project NewProject added');
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
 
-    it('should show success toaster on successful duplicate', () => {
-      component.projectNameForm.controls['projectName'].setValue('New Project');
-      const duplicatedProject = { ...mockProject, name: 'New Project', project_id: 'proj2' };
+    it('should emit onAddProject event after successful creation', async () => {
+      const duplicatedProject = createMockProject('NewProject', 'proj2');
+      mockProjectService.list.mockReturnValue(of([]));
       mockProjectService.duplicate.mockReturnValue(of(duplicatedProject));
 
-      component.addProject();
+      const emitSpy = vi.spyOn(component.onAddProject, 'emit');
+      component.projectName.set('NewProject');
+      component.onAddClick();
+      await vi.runAllTimersAsync();
 
-      expect(mockToasterService.success).toHaveBeenCalledWith('Project New Project added');
+      expect(emitSpy).toHaveBeenCalledWith('proj2');
+    });
+
+    it('should show error when project name already exists', async () => {
+      const existingProject = createMockProject('ExistingProject');
+      mockProjectService.list.mockReturnValue(of([existingProject]));
+
+      component.projectName.set('ExistingProject');
+      component.onAddClick();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Project with this name already exists.');
+      expect(mockProjectService.duplicate).not.toHaveBeenCalled();
+    });
+
+    it('should show error when running nodes exist', async () => {
+      mockProjectService.list.mockReturnValue(of([]));
+      mockNodesDataSource.getItems.mockReturnValue([
+        { status: 'started', node_type: 'vpcs' },
+      ]);
+
+      component.projectName.set('NewProject');
+      component.onAddClick();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Please stop all nodes in order to save project.');
+      expect(mockProjectService.duplicate).not.toHaveBeenCalled();
+    });
+
+    it('should not create project when name is empty', () => {
+      component.projectName.set('');
+      component.onAddClick();
+
+      expect(mockProjectService.list).not.toHaveBeenCalled();
+      expect(mockProjectService.duplicate).not.toHaveBeenCalled();
+    });
+
+    it('should not create project when name has invalid characters', () => {
+      mockValidator.get.mockReturnValue({ invalidName: true });
+      component.projectName.set('Invalid@Project#');
+      component.onAddClick();
+
+      expect(mockProjectService.list).not.toHaveBeenCalled();
+      expect(mockProjectService.duplicate).not.toHaveBeenCalled();
     });
   });
 
-  describe('error handling', () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-    });
+  describe('Error handling', () => {
+    it('should show error when duplicate fails', async () => {
+      mockProjectService.list.mockReturnValue(of([]));
+      mockProjectService.duplicate.mockReturnValue(throwError(() => ({ error: { message: 'Duplicate failed' } })));
 
-    it('should show error toaster when list fails with error.message', async () => {
-      mockProjectService.list.mockReturnValue(
-        throwError(() => ({ error: { message: 'List failed' } }))
-      );
-      component.projectNameForm.controls['projectName'].setValue('New Project');
-
+      component.projectName.set('NewProject');
       component.onAddClick();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('List failed');
-    });
-
-    it('should use fallback message when list error has no message', async () => {
-      mockProjectService.list.mockReturnValue(throwError(() => ({})));
-      component.projectNameForm.controls['projectName'].setValue('New Project');
-
-      component.onAddClick();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to list projects');
-    });
-
-    it('should show error toaster when duplicate fails with error.message', async () => {
-      mockProjectService.duplicate.mockReturnValue(
-        throwError(() => ({ error: { message: 'Duplicate failed' } }))
-      );
-      component.projectNameForm.controls['projectName'].setValue('New Project');
-
-      component.addProject();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Duplicate failed');
     });
 
-    it('should use fallback message when duplicate error has no message', async () => {
+    it('should show fallback error when duplicate has no error message', async () => {
+      mockProjectService.list.mockReturnValue(of([]));
       mockProjectService.duplicate.mockReturnValue(throwError(() => ({})));
-      component.projectNameForm.controls['projectName'].setValue('New Project');
 
-      component.addProject();
+      component.projectName.set('NewProject');
+      component.onAddClick();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to save project');
     });
 
-    it('should call markForCheck when duplicate fails', async () => {
-      mockProjectService.duplicate.mockReturnValue(
-        throwError(() => ({ error: { message: 'Duplicate failed' } }))
-      );
-      component.projectNameForm.controls['projectName'].setValue('New Project');
+    it('should show error when checking project list fails', async () => {
+      mockProjectService.list.mockReturnValue(throwError(() => ({ error: { message: 'List failed' } })));
 
-      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
-      component.addProject();
+      component.projectName.set('NewProject');
+      component.onAddClick();
+      await vi.runAllTimersAsync();
 
-      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockToasterService.error).toHaveBeenCalledWith('List failed');
+    });
+
+    it('should show fallback error when list fails with no message', async () => {
+      mockProjectService.list.mockReturnValue(throwError(() => ({})));
+
+      component.projectName.set('NewProject');
+      component.onAddClick();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to check project name');
     });
   });
 });
