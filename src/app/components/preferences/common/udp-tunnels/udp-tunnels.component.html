@@ -9,11 +9,11 @@
   </mat-form-field>
   <mat-form-field>
     <mat-label>Local port</mat-label>
-    <input matInput type="number" min="0" max="65535" [value]="newPortLport()" (input)="newPortLport.set(+$event.target.value)" />
+    <input matInput type="number" min="1" max="65535" [value]="newPortLport()" (input)="newPortLport.set(+$event.target.value)" />
   </mat-form-field>
   <mat-form-field>
     <mat-label>Remote port</mat-label>
-    <input matInput type="number" min="0" max="65535" [value]="newPortRport()" (input)="newPortRport.set(+$event.target.value)" />
+    <input matInput type="number" min="1" max="65535" [value]="newPortRport()" (input)="newPortRport.set(+$event.target.value)" />
   </mat-form-field>
 </div>
 <div class="udp-tunnels__add-btn">

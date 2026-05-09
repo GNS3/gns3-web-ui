@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
 
+/**
+ * @deprecated
+ * VMware support is deprecated and will be removed in a future version.
+ * This service is no longer maintained and should not be used for new projects.
+ *
+ * @deprecated Since 3.1.0 - VMware support is being phased out
+ */
 @Injectable()
 export class VmwareConfigurationService {
   getConsoleTypes() {

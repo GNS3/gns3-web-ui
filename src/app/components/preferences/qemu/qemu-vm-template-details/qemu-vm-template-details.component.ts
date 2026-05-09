@@ -7,17 +7,22 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
+import { QemuImage } from '@models/qemu/qemu-image';
+import { Image } from '@models/images';
 import { Controller } from '@models/controller';
 import { QemuTemplate } from '@models/templates/qemu-template';
 import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { QemuService } from '@services/qemu.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { ImageManagerService } from '@services/image-manager.service';
+import { QemuValidationService } from '@services/validation';
 import {
   CustomAdaptersComponent,
   CustomAdaptersDialogData,
@@ -43,6 +48,7 @@ import { DialogConfigService } from '@services/dialog-config.service';
     MatSelectModule,
     MatChipsModule,
     MatCheckboxModule,
+    MatAutocompleteModule,
   ],
 })
 export class QemuVmTemplateDetailsComponent implements OnInit {
@@ -55,6 +61,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
   private dialogConfig = inject(DialogConfigService);
+  private validationService = inject(QemuValidationService);
+  private imageManagerService = inject(ImageManagerService);
 
   controller: Controller;
   qemuTemplate: QemuTemplate;
@@ -68,6 +76,11 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   priorities: string[] = [];
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'mac_address', 'actions'];
   selectPlatform: string[] = [];
+  qemuImages: QemuImage[] = [];
+  filteredImages: QemuImage[] = [];
+  globalImages: Image[] = [];
+  filteredGlobalImages: Image[] = [];
+  filteredAdvancedImages: QemuImage[] = [];
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   // Section collapse states
@@ -121,6 +134,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   biosImage = model('');
   activateCpuThrottling = model(false);
   cpuThrottling = model(0);
+  maxcpus = model(1);
+  createConfigDisk = model(false);
   processPriority = model('');
   qemuPath = model('');
   options = model('');
@@ -141,6 +156,27 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         this.cd.markForCheck();
 
         this.getConfiguration();
+        this.qemuService.getImages(this.controller).subscribe({
+          next: (images: QemuImage[]) => {
+            this.qemuImages = images;
+            this.filteredImages = images;
+            this.filteredAdvancedImages = images;
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            this.toasterService.error(err.error?.message || err.message || 'Failed to load images');
+          },
+        });
+        this.imageManagerService.getImages(this.controller).subscribe({
+          next: (images: Image[]) => {
+            this.globalImages = images;
+            this.filteredGlobalImages = images;
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            this.toasterService.error(err.error?.message || err.message || 'Failed to load global images');
+          },
+        });
         this.qemuService.getTemplate(this.controller, template_id).subscribe({
           next: (qemuTemplate: QemuTemplate) => {
             this.qemuTemplate = qemuTemplate;
@@ -210,6 +246,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
       this.qemuTemplate.cpu_throttling !== undefined && this.qemuTemplate.cpu_throttling > 0
     );
     this.cpuThrottling.set(this.qemuTemplate.cpu_throttling || 0);
+    this.maxcpus.set(this.qemuTemplate.maxcpus || 1);
+    this.createConfigDisk.set(this.qemuTemplate.create_config_disk ?? false);
     this.processPriority.set(this.qemuTemplate.process_priority || '');
     this.qemuPath.set(this.qemuTemplate.qemu_path || '');
     this.options.set(this.qemuTemplate.options || '');
@@ -232,31 +270,67 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     this.priorities = this.configurationService.getPriorities();
   }
 
+  private uploadFile(file: File, signal: { set: (v: string) => void }) {
+    const filename = file.name;
+    this.imageManagerService.uploadedImage(this.controller, false, filename, file).subscribe({
+      next: () => {
+        signal.set(filename);
+        this.refreshGlobalImages();
+        this.toasterService.success(`Uploaded ${filename}`);
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        this.toasterService.error(err.error?.message || err.message || 'Failed to upload');
+      },
+    });
+  }
+
+  refreshGlobalImages() {
+    this.imageManagerService.getImages(this.controller).subscribe({
+      next: (images: Image[]) => {
+        this.globalImages = images;
+        this.filteredGlobalImages = images;
+        this.cd.markForCheck();
+      },
+    });
+  }
+
+  refreshQemuImages() {
+    this.qemuService.getImages(this.controller).subscribe({
+      next: (images: QemuImage[]) => {
+        this.qemuImages = images;
+        this.filteredImages = images;
+        this.filteredAdvancedImages = images;
+        this.cd.markForCheck();
+      },
+    });
+  }
+
   uploadCdromImageFile(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.cdromImage.set(input.files[0].name);
+      this.uploadFile(input.files[0], this.cdromImage);
     }
   }
 
   uploadInitrdFile(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.initrd.set(input.files[0].name);
+      this.uploadFile(input.files[0], this.initrd);
     }
   }
 
   uploadKernelImageFile(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.kernelImage.set(input.files[0].name);
+      this.uploadFile(input.files[0], this.kernelImage);
     }
   }
 
   uploadBiosFile(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.biosImage.set(input.files[0].name);
+      this.uploadFile(input.files[0], this.biosImage);
     }
   }
 
@@ -330,19 +404,46 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     });
   }
 
+  onCdromInput(event: Event) {
+    const value = (event.target as HTMLInputElement).value.toLowerCase();
+    const isoFiltered = this.globalImages.filter(
+      (img) => img.filename.toLowerCase().includes(value)
+    );
+    this.filteredGlobalImages = isoFiltered;
+  }
+
+  onAdvancedInput(event: Event) {
+    const value = (event.target as HTMLInputElement).value.toLowerCase();
+    this.filteredAdvancedImages = this.qemuImages.filter((img) =>
+      img.filename.toLowerCase().includes(value)
+    );
+  }
+
+  filterImages(event: Event): QemuImage[] {
+    const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
+    return this.qemuImages.filter((image) => image.filename.toLowerCase().includes(filterValue));
+  }
+
+  onHdaImageInput(event: Event) { this.filteredImages = this.filterImages(event); }
+  onHdbImageInput(event: Event) { this.filteredImages = this.filterImages(event); }
+  onHdcImageInput(event: Event) { this.filteredImages = this.filterImages(event); }
+  onHddImageInput(event: Event) { this.filteredImages = this.filterImages(event); }
+
   goBack() {
     this.router.navigate(['/controller', this.controller.id, 'preferences', 'qemu', 'templates']);
   }
 
   onSave() {
-    if (!this.templateName() || !this.defaultName() || !this.symbol()) {
-      const missingFields: string[] = [];
-      if (!this.templateName()) missingFields.push('Template name');
-      if (!this.defaultName()) missingFields.push('Default name format');
-      if (!this.symbol()) missingFields.push('Symbol');
-      this.toasterService.error(`Missing required fields: ${missingFields.join(', ')}`);
-      return;
-    }
+    const nameValidation = this.validationService.validateName(this.templateName());
+    if (!nameValidation.isValid) { this.toasterService.error(nameValidation.errorMessage); return; }
+    const portFormatValidation = this.validationService.validatePortNameFormat(this.portNameFormat());
+    if (!portFormatValidation.isValid) { this.toasterService.error(portFormatValidation.errorMessage); return; }
+    const firstNameValidation = this.validationService.validateFirstPortName(this.firstPortName());
+    if (!firstNameValidation.isValid) { this.toasterService.error(firstNameValidation.errorMessage); return; }
+    const segmentValidation = this.validationService.validatePortSegmentSize(this.portSegmentSize().toString());
+    if (!segmentValidation.isValid) { this.toasterService.error(segmentValidation.errorMessage); return; }
+    const macValidation = this.validationService.validateMacAddress(this.macAddress());
+    if (!macValidation.isValid) { this.toasterService.error(macValidation.errorMessage); return; }
 
     // Update qemuTemplate from model signals
     this.qemuTemplate.name = this.templateName();
@@ -382,6 +483,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     this.qemuTemplate.kernel_command_line = this.kernelCommandLine();
     this.qemuTemplate.bios_image = this.biosImage();
     this.qemuTemplate.cpu_throttling = this.activateCpuThrottling() ? this.cpuThrottling() : 0;
+    this.qemuTemplate.maxcpus = this.maxcpus();
+    this.qemuTemplate.create_config_disk = this.createConfigDisk();
     this.qemuTemplate.process_priority = this.processPriority();
     this.qemuTemplate.qemu_path = this.qemuPath();
     this.qemuTemplate.options = this.options();

@@ -8,6 +8,12 @@ export class PortsMapping {
   type?: string;
 }
 
+export interface NetworkInterface {
+  name: string;
+  special: boolean;
+  type: string;
+}
+
 export class Properties {
   adapter_type: string;
   adapters: number;
@@ -29,6 +35,7 @@ export class Properties {
   use_any_adapter: boolean;
   vmname: string;
   ports_mapping: PortsMapping[];
+  interfaces?: NetworkInterface[];
   mappings: any;
   bios_image: string;
   bios_image_md5sum?: any;
@@ -76,6 +83,8 @@ export class Properties {
   start_command: string;
   replicate_network_connection_state: boolean;
   memory: number;
+  maxcpus?: number;
+  create_config_disk?: boolean;
   tpm: boolean;
   uefi: boolean;
   slot0?: string;

@@ -11,6 +11,7 @@ import { ProgressService } from '../../../../common/progress/progress.service';
 import { DialogConfigService } from '@services/dialog-config.service';
 import { Controller } from '@models/controller';
 import { IosTemplate } from '@models/templates/ios-template';
+import { IosValidationService } from '@services/validation';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -28,6 +29,7 @@ describe('IosTemplateDetailsComponent', () => {
   let mockDialog: any;
   let mockRouter: any;
   let mockActivatedRoute: any;
+  let mockIosValidationService: any;
 
   let mockController: Controller;
   let mockIosTemplate: IosTemplate;
@@ -139,6 +141,17 @@ describe('IosTemplateDetailsComponent', () => {
       getMacAddrRegex: vi.fn().mockReturnValue(/^([0-9a-fA-F]{4}\.){2}[0-9a-fA-F]{4}$|^$/),
     };
 
+    mockIosValidationService = {
+      validateName: vi.fn().mockReturnValue({ isValid: true }),
+      validateImagePath: vi.fn().mockReturnValue({ isValid: true }),
+      validateRam: vi.fn().mockReturnValue({ isValid: true }),
+      validateRamForPlatform: vi.fn().mockReturnValue({ isValid: true }),
+      validateNvram: vi.fn().mockReturnValue({ isValid: true }),
+      validateNvramForPlatform: vi.fn().mockReturnValue({ isValid: true }),
+      validateMacAddress: vi.fn().mockReturnValue({ isValid: true }),
+      validateIdlepc: vi.fn().mockReturnValue({ isValid: true }),
+    };
+
     mockToasterService = {
       error: vi.fn(),
       success: vi.fn(),
@@ -171,6 +184,7 @@ describe('IosTemplateDetailsComponent', () => {
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: IosService, useValue: mockIosService },
         { provide: IosConfigurationService, useValue: mockIosConfigurationService },
+        { provide: IosValidationService, useValue: mockIosValidationService },
         { provide: ControllerService, useValue: mockControllerService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: ProgressService, useValue: mockProgressService },
@@ -267,9 +281,9 @@ describe('IosTemplateDetailsComponent', () => {
     it('should populate forms with template data', async () => {
       await component.ngOnInit();
       fixture.detectChanges();
-      expect(component.generalSettingsForm.get('templateName').value).toBe('Test IOS Router');
-      expect(component.generalSettingsForm.get('path').value).toBe('/path/to/ios/image.bin');
-      expect(component.memoryForm.get('ram').value).toBe(512);
+      expect(component.templateName()).toBe('Test IOS Router');
+      expect(component.imagePath()).toBe('/path/to/ios/image.bin');
+      expect(component.ram()).toBe('512');
     });
   });
 
@@ -489,7 +503,7 @@ describe('IosTemplateDetailsComponent', () => {
 
       component.generateBaseMAC();
 
-      expect(component.advancedForm.get('mac_addr').value).toMatch(/^([0-9a-f]{4}\.){2}[0-9a-f]{4}$/);
+      expect(component.baseMac()).toMatch(/^([0-9a-f]{4}\.){2}[0-9a-f]{4}$/);
     });
 
     it('should show success toaster', () => {
@@ -535,7 +549,7 @@ describe('IosTemplateDetailsComponent', () => {
       component.findIdlePC();
 
       expect(component.iosTemplate.idlepc).toBe('0x12345678');
-      expect(component.advancedForm.get('idlepc').value).toBe('0x12345678');
+      expect(component.idlepc()).toBe('0x12345678');
     });
 
     it('should show success toaster when idlepc is found', () => {
@@ -568,32 +582,20 @@ describe('IosTemplateDetailsComponent', () => {
   });
 
   describe('onSave', () => {
-    it('should not save if generalSettingsForm is invalid', () => {
-      fixture.detectChanges();
-      component.generalSettingsForm.get('templateName').setValue('');
-
-      component.onSave();
-
-      expect(mockIosService.saveTemplate).not.toHaveBeenCalled();
-      expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Missing required fields'));
+    beforeEach(() => {
+      component.iosTemplate = mockIosTemplate;
+      component.controller = mockController;
     });
 
-    it('should not save if memoryForm is invalid', () => {
+    it('should not save when name is empty', () => {
+      mockIosValidationService.validateName.mockReturnValue({ isValid: false, errorMessage: 'Name is required' });
       fixture.detectChanges();
-      component.memoryForm.get('ram').setValue('');
+      component.templateName.set('');
 
       component.onSave();
 
       expect(mockIosService.saveTemplate).not.toHaveBeenCalled();
-    });
-
-    it('should not save if advancedForm has invalid MAC address', () => {
-      fixture.detectChanges();
-      component.advancedForm.get('mac_addr').setValue('invalid-mac');
-
-      component.onSave();
-
-      expect(mockIosService.saveTemplate).not.toHaveBeenCalled();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Name is required');
     });
 
     it('should save template successfully when forms are valid', () => {
@@ -601,25 +603,9 @@ describe('IosTemplateDetailsComponent', () => {
       component.iosTemplate = mockIosTemplate;
       component.controller = mockController;
       // Populate forms with valid values
-      component.generalSettingsForm.patchValue({
-        templateName: 'Test IOS Router',
-        defaultName: '{name}-{0}',
-        symbol: 'router',
-        path: '/path/to/ios.bin',
-        initialConfig: 'startup-config.txt',
-      });
-      component.memoryForm.patchValue({
-        ram: 512,
-        nvram: 256,
-        disk0: 0,
-        disk1: 0,
-      });
-      component.advancedForm.patchValue({
-        systemId: '1',
-        idlemax: 0,
-        idlesleep: 30,
-        execarea: 64,
-      });
+      // Signals set by populateForms() or initialized from mock template;
+      // Signals set by populateForms() or initialized from mock template;
+      // Signals set by populateForms() or initialized from mock template;
 
       component.onSave();
 
@@ -630,26 +616,10 @@ describe('IosTemplateDetailsComponent', () => {
       fixture.detectChanges();
       component.iosTemplate = mockIosTemplate;
       component.controller = mockController;
-      // Populate forms with valid values
-      component.generalSettingsForm.patchValue({
-        templateName: 'Test IOS Router',
-        defaultName: '{name}-{0}',
-        symbol: 'router',
-        path: '/path/to/ios.bin',
-        initialConfig: 'startup-config.txt',
-      });
-      component.memoryForm.patchValue({
-        ram: 512,
-        nvram: 256,
-        disk0: 0,
-        disk1: 0,
-      });
-      component.advancedForm.patchValue({
-        systemId: '1',
-        idlemax: 0,
-        idlesleep: 30,
-        execarea: 64,
-      });
+      component.templateName.set('Test IOS Router');
+      component.imagePath.set('/path/to/ios.bin');
+      component.ram.set('512');
+      component.nvram.set('256');
 
       component.onSave();
 
@@ -660,51 +630,26 @@ describe('IosTemplateDetailsComponent', () => {
       fixture.detectChanges();
       component.iosTemplate = mockIosTemplate;
       component.controller = mockController;
-      // Populate forms with valid values first
-      component.generalSettingsForm.patchValue({
-        templateName: 'Test IOS Router',
-        defaultName: '{name}-{0}',
-        symbol: 'router',
-        path: '/path/to/ios.bin',
-        initialConfig: 'startup-config.txt',
-      });
-      component.memoryForm.patchValue({
-        ram: 512,
-        nvram: 256,
-        disk0: 0,
-        disk1: 0,
-      });
-      component.advancedForm.patchValue({
-        systemId: '1',
-        idlemax: 0,
-        idlesleep: 30,
-        execarea: 64,
-      });
+      component.templateName.set('Test IOS Router');
+      component.imagePath.set('/path/to/ios.bin');
+      component.ram.set('512');
+      component.nvram.set('256');
       const newName = 'Updated Router Name';
-      component.generalSettingsForm.get('templateName').setValue(newName);
+      component.templateName.set(newName);
 
       component.onSave();
 
       expect(component.iosTemplate.name).toBe(newName);
     });
 
-    it('should report all missing fields in error message', () => {
+    it('should report first validation error', () => {
+      mockIosValidationService.validateName.mockReturnValue({ isValid: false, errorMessage: 'Name is required' });
       fixture.detectChanges();
-      component.generalSettingsForm.get('templateName').setValue('');
-      component.generalSettingsForm.get('defaultName').setValue('');
-      component.generalSettingsForm.get('symbol').setValue('');
-      component.generalSettingsForm.get('path').setValue('');
-      component.generalSettingsForm.get('initialConfig').setValue('');
+      component.templateName.set('');
 
       component.onSave();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        expect.stringContaining('Template name') &&
-          expect.stringContaining('Default name format') &&
-          expect.stringContaining('Symbol') &&
-          expect.stringContaining('IOS image path') &&
-          expect.stringContaining('Initial startup-config')
-      );
+      expect(mockToasterService.error).toHaveBeenCalledWith('Name is required');
     });
   });
 
@@ -772,7 +717,7 @@ describe('IosTemplateDetailsComponent', () => {
 
       component.chooseSymbol();
 
-      expect(component.generalSettingsForm.get('symbol').value).toBe('new-symbol');
+      expect(component.symbol()).toBe('new-symbol');
     });
 
     it('should not update symbol when dialog returns null', () => {
@@ -784,17 +729,6 @@ describe('IosTemplateDetailsComponent', () => {
       component.chooseSymbol();
 
       expect(component.iosTemplate.symbol).toBe(originalSymbol);
-    });
-  });
-
-  describe('symbolChanged', () => {
-    it('should update iosTemplate.symbol', () => {
-      fixture.detectChanges();
-      component.iosTemplate = mockIosTemplate;
-
-      component.symbolChanged('updated-symbol');
-
-      expect(component.iosTemplate.symbol).toBe('updated-symbol');
     });
   });
 
@@ -831,8 +765,8 @@ describe('IosTemplateDetailsComponent', () => {
 
       component.populateForms();
 
-      expect(component.generalSettingsForm.get('templateName').value).toBe('New Name');
-      expect(component.generalSettingsForm.get('defaultName').value).toBe('{name}-{1}');
+      expect(component.templateName()).toBe('New Name');
+      expect(component.defaultName()).toBe('{name}-{1}');
     });
 
     it('should populate memoryForm with iosTemplate values', () => {
@@ -841,8 +775,8 @@ describe('IosTemplateDetailsComponent', () => {
 
       component.populateForms();
 
-      expect(component.memoryForm.get('ram').value).toBe(1024);
-      expect(component.memoryForm.get('nvram').value).toBe(512);
+      expect(component.ram()).toBe('1024');
+      expect(component.nvram()).toBe('512');
     });
 
     it('should populate advancedForm with iosTemplate values', () => {
@@ -851,8 +785,8 @@ describe('IosTemplateDetailsComponent', () => {
 
       component.populateForms();
 
-      expect(component.advancedForm.get('idlepc').value).toBe('0x87654321');
-      expect(component.advancedForm.get('mmap').value).toBe(false);
+      expect(component.idlepc()).toBe('0x87654321');
+      expect(component.mmap()).toBe(false);
     });
   });
 

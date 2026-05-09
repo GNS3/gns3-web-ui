@@ -16,6 +16,7 @@ import { BuiltInTemplatesConfigurationService } from '@services/built-in-templat
 import { BuiltInTemplatesService } from '@services/built-in-templates.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { ValidationService } from '@services/validation';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 import { DialogConfigService } from '@services/dialog-config.service';
 
@@ -43,6 +44,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   private builtInTemplatesService = inject(BuiltInTemplatesService);
   private toasterService = inject(ToasterService);
   private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
+  private validationService = inject(ValidationService);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
@@ -117,6 +119,13 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   }
 
   onSave() {
+    // Validate template name (required)
+    const nameValidation = this.validationService.required(this.templateName(), 'Template name');
+    if (!nameValidation.isValid) {
+      this.toasterService.error(nameValidation.errorMessage || 'Template name is required');
+      return;
+    }
+
     // Update ethernetHubTemplate from model signals
     this.ethernetHubTemplate.name = this.templateName();
     this.ethernetHubTemplate.default_name_format = this.defaultName();

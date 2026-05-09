@@ -4,33 +4,31 @@
   <div class="content">
     <div class="default-content">
       <mat-card>
-        <form [formGroup]="nameForm">
+        <div class="form-container">
           <mat-form-field class="form-field">
             <mat-label>Name</mat-label>
-            <input matInput type="text" formControlName="name" />
+            <input matInput type="text" [value]="nodeName()" (input)="nodeName.set($event.target.value)" />
           </mat-form-field>
-        </form>
+        </div>
 
-        <form [formGroup]="inputForm">
-          <div class="fr-switch__input-grid">
-            <mat-form-field class="form-field">
-              <mat-label>Source Port</mat-label>
-              <input matInput type="number" min="0" formControlName="sourcePort" />
-            </mat-form-field>
-            <mat-form-field class="form-field">
-              <mat-label>Destination Port</mat-label>
-              <input matInput type="number" min="0" formControlName="destinationPort" />
-            </mat-form-field>
-            <mat-form-field class="form-field">
-              <mat-label>Source DLCI</mat-label>
-              <input matInput type="number" min="1" formControlName="sourceDlci" />
-            </mat-form-field>
-            <mat-form-field class="form-field">
-              <mat-label>Destination DLCI</mat-label>
-              <input matInput type="number" min="1" formControlName="destinationDlci" />
-            </mat-form-field>
-          </div>
-        </form>
+        <div class="fr-switch__input-grid">
+          <mat-form-field class="form-field">
+            <mat-label>Source Port</mat-label>
+            <input matInput type="text" [value]="sourcePort()" (input)="sourcePort.set($event.target.value)" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <mat-label>Destination Port</mat-label>
+            <input matInput type="text" [value]="destinationPort()" (input)="destinationPort.set($event.target.value)" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <mat-label>Source DLCI</mat-label>
+            <input matInput type="text" [value]="sourceDlci()" (input)="sourceDlci.set($event.target.value)" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <mat-label>Destination DLCI</mat-label>
+            <input matInput type="text" [value]="destinationDlci()" (input)="destinationDlci.set($event.target.value)" />
+          </mat-form-field>
+        </div>
 
         <div class="fr-switch__add-btn">
           <button mat-button (click)="add()">Add</button>

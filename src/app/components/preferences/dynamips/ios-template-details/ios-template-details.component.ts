@@ -1,13 +1,6 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -25,6 +18,7 @@ import { IosConfigurationService } from '@services/ios-configuration.service';
 import { IosService } from '@services/ios.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { IosValidationService } from '@services/validation';
 import { ProgressService } from '../../../../common/progress/progress.service';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 import { DialogConfigService } from '@services/dialog-config.service';
@@ -38,7 +32,6 @@ import { DialogConfigService } from '@services/dialog-config.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     RouterModule,
     MatChipsModule,
     MatFormFieldModule,
@@ -55,13 +48,13 @@ export class IosTemplateDetailsComponent implements OnInit {
   private controllerService = inject(ControllerService);
   private iosService = inject(IosService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
   private iosConfigurationService = inject(IosConfigurationService);
   private progressService = inject(ProgressService);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
   private dialogConfig = inject(DialogConfigService);
+  private validationService = inject(IosValidationService);
 
   controller: Controller;
   iosTemplate: IosTemplate;
@@ -79,45 +72,33 @@ export class IosTemplateDetailsComponent implements OnInit {
   wicMatrix = {};
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  generalSettingsForm: UntypedFormGroup;
-  memoryForm: UntypedFormGroup;
-  advancedForm: UntypedFormGroup;
-
   // Section collapse states
-  generalSettingsExpanded: boolean = false;
-  memoryExpanded: boolean = false;
-  slotsExpanded: boolean = false;
-  advancedExpanded: boolean = false;
-  usageExpanded: boolean = false;
+  generalSettingsExpanded = false;
+  memoryExpanded = false;
+  slotsExpanded = false;
+  advancedExpanded = false;
+  usageExpanded = false;
 
-  constructor() {
-    this.generalSettingsForm = this.formBuilder.group({
-      templateName: new UntypedFormControl('', Validators.required),
-      defaultName: new UntypedFormControl('', Validators.required),
-      symbol: new UntypedFormControl('', Validators.required),
-      path: new UntypedFormControl('', Validators.required),
-      initialConfig: new UntypedFormControl('', Validators.required),
-    });
-
-    this.memoryForm = this.formBuilder.group({
-      ram: new UntypedFormControl('', Validators.required),
-      nvram: new UntypedFormControl('', Validators.required),
-      iomemory: new UntypedFormControl(''),
-      disk0: new UntypedFormControl('', Validators.required),
-      disk1: new UntypedFormControl('', Validators.required),
-    });
-
-    this.advancedForm = this.formBuilder.group({
-      systemId: new UntypedFormControl('', Validators.required),
-      idlemax: new UntypedFormControl('', Validators.required),
-      idlesleep: new UntypedFormControl('', Validators.required),
-      execarea: new UntypedFormControl('', Validators.required),
-      idlepc: new UntypedFormControl('', Validators.pattern(this.iosConfigurationService.getIdlepcRegex())),
-      mac_addr: new UntypedFormControl('', Validators.pattern(this.iosConfigurationService.getMacAddrRegex())),
-      mmap: new UntypedFormControl(true),
-      sparsemem: new UntypedFormControl(true),
-    });
-  }
+  // Model signals
+  readonly templateName = model('');
+  readonly defaultName = model('');
+  readonly symbol = model('');
+  readonly imagePath = model('');
+  readonly initialConfig = model('');
+  readonly ram = model('');
+  readonly nvram = model('');
+  readonly iomemory = model('');
+  readonly disk0 = model('');
+  readonly disk1 = model('');
+  readonly systemId = model('');
+  readonly idlemax = model('');
+  readonly idlesleep = model('');
+  readonly execArea = model('');
+  readonly idlepc = model('');
+  readonly baseMac = model('');
+  readonly mmap = model(true);
+  readonly sparsemem = model(true);
+  readonly usage = model('');
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -177,7 +158,7 @@ export class IosTemplateDetailsComponent implements OnInit {
         this.progressService.deactivate();
         if (result.idlepc !== null) {
           this.iosTemplate.idlepc = result.idlepc;
-          this.advancedForm.get('idlepc').setValue(result.idlepc);
+          this.idlepc.set(result.idlepc);
           this.toasterService.success(`Idle-PC value found: ${result.idlepc}`);
         }
       },
@@ -189,7 +170,6 @@ export class IosTemplateDetailsComponent implements OnInit {
   }
 
   generateBaseMAC() {
-    // Generate a random MAC address in format xxxx.xxxx.xxxx
     const hexChars = '0123456789abcdef';
     const randomBytes = new Uint8Array(6);
     crypto.getRandomValues(randomBytes);
@@ -201,12 +181,10 @@ export class IosTemplateDetailsComponent implements OnInit {
         const nibble = (randomBytes[byteIndex] >> (nibbleIndex * 4)) & 0x0f;
         mac += hexChars[nibble];
       }
-      if (i < 2) {
-        mac += '.';
-      }
+      if (i < 2) mac += '.';
     }
     this.iosTemplate.mac_addr = mac;
-    this.advancedForm.get('mac_addr').setValue(mac);
+    this.baseMac.set(mac);
     this.toasterService.success(`Base MAC generated: ${mac}`);
   }
 
@@ -227,31 +205,25 @@ export class IosTemplateDetailsComponent implements OnInit {
   }
 
   populateForms() {
-    this.generalSettingsForm.patchValue({
-      templateName: this.iosTemplate.name,
-      defaultName: this.iosTemplate.default_name_format,
-      symbol: this.iosTemplate.symbol,
-      path: this.iosTemplate.image,
-      initialConfig: this.iosTemplate.startup_config,
-    });
-
-    this.memoryForm.patchValue({
-      ram: this.iosTemplate.ram,
-      nvram: this.iosTemplate.nvram,
-      disk0: this.iosTemplate.disk0,
-      disk1: this.iosTemplate.disk1,
-    });
-
-    this.advancedForm.patchValue({
-      systemId: this.iosTemplate.system_id,
-      idlemax: this.iosTemplate.idlemax,
-      idlesleep: this.iosTemplate.idlesleep,
-      execarea: this.iosTemplate.exec_area,
-      idlepc: this.iosTemplate.idlepc,
-      mac_addr: this.iosTemplate.mac_addr,
-      mmap: this.iosTemplate.mmap,
-      sparsemem: this.iosTemplate.sparsemem,
-    });
+    this.templateName.set(this.iosTemplate.name || '');
+    this.defaultName.set(this.iosTemplate.default_name_format || '');
+    this.symbol.set(this.iosTemplate.symbol || '');
+    this.imagePath.set(this.iosTemplate.image || '');
+    this.initialConfig.set(this.iosTemplate.startup_config || '');
+    this.ram.set(this.iosTemplate.ram?.toString() || '');
+    this.nvram.set(this.iosTemplate.nvram?.toString() || '');
+    this.iomemory.set(this.iosTemplate.iomem?.toString() || '');
+    this.disk0.set(this.iosTemplate.disk0?.toString() || '');
+    this.disk1.set(this.iosTemplate.disk1?.toString() || '');
+    this.systemId.set(this.iosTemplate.system_id || '');
+    this.idlemax.set(this.iosTemplate.idlemax?.toString() || '');
+    this.idlesleep.set(this.iosTemplate.idlesleep?.toString() || '');
+    this.execArea.set(this.iosTemplate.exec_area?.toString() || '');
+    this.idlepc.set(this.iosTemplate.idlepc || '');
+    this.baseMac.set(this.iosTemplate.mac_addr || '');
+    this.mmap.set(this.iosTemplate.mmap ?? true);
+    this.sparsemem.set(this.iosTemplate.sparsemem ?? true);
+    this.usage.set(this.iosTemplate.usage || '');
   }
 
   saveSlotsData() {
@@ -281,91 +253,51 @@ export class IosTemplateDetailsComponent implements OnInit {
   }
 
   onSave() {
-    if (this.generalSettingsForm.invalid || this.memoryForm.invalid || this.advancedForm.invalid) {
-      const missingFields: string[] = [];
+    // Validate required fields
+    const nameValidation = this.validationService.validateName(this.templateName());
+    if (!nameValidation.isValid) { this.toasterService.error(nameValidation.errorMessage); return; }
+    const pathValidation = this.validationService.validateImagePath(this.imagePath());
+    if (!pathValidation.isValid) { this.toasterService.error(pathValidation.errorMessage); return; }
+    const platform = this.iosTemplate.platform;
+    const ramValidation = this.validationService.validateRamForPlatform(this.ram(), platform);
+    if (!ramValidation.isValid) { this.toasterService.error(ramValidation.errorMessage); return; }
+    const nvramValidation = this.validationService.validateNvramForPlatform(this.nvram(), platform);
+    if (!nvramValidation.isValid) { this.toasterService.error(nvramValidation.errorMessage); return; }
+    const macValidation = this.validationService.validateMacAddress(this.baseMac());
+    if (!macValidation.isValid) { this.toasterService.error(macValidation.errorMessage); return; }
+    const idlepcValidation = this.validationService.validateIdlepc(this.idlepc());
+    if (!idlepcValidation.isValid) { this.toasterService.error(idlepcValidation.errorMessage); return; }
 
-      // Check general settings form
-      if (this.generalSettingsForm.get('templateName').invalid) {
-        missingFields.push('Template name');
-      }
-      if (this.generalSettingsForm.get('defaultName').invalid) {
-        missingFields.push('Default name format');
-      }
-      if (this.generalSettingsForm.get('symbol').invalid) {
-        missingFields.push('Symbol');
-      }
-      if (this.generalSettingsForm.get('path').invalid) {
-        missingFields.push('IOS image path');
-      }
-      if (this.generalSettingsForm.get('initialConfig').invalid) {
-        missingFields.push('Initial startup-config');
-      }
+    this.saveSlotsData();
 
-      // Check memory form
-      if (this.memoryForm.get('ram').invalid) {
-        missingFields.push('RAM size');
-      }
-      if (this.memoryForm.get('nvram').invalid) {
-        missingFields.push('NVRAM size');
-      }
-      if (this.memoryForm.get('disk0').invalid) {
-        missingFields.push('PCMCIA disk0');
-      }
-      if (this.memoryForm.get('disk1').invalid) {
-        missingFields.push('PCMCIA disk1');
-      }
+    this.iosTemplate.name = this.templateName();
+    this.iosTemplate.default_name_format = this.defaultName();
+    this.iosTemplate.symbol = this.symbol();
+    this.iosTemplate.image = this.imagePath();
+    this.iosTemplate.startup_config = this.initialConfig();
+    this.iosTemplate.ram = parseInt(this.ram(), 10) || 0;
+    this.iosTemplate.nvram = parseInt(this.nvram(), 10) || 0;
+    this.iosTemplate.iomem = this.iomemory() ? parseInt(this.iomemory(), 10) : undefined;
+    this.iosTemplate.disk0 = parseInt(this.disk0(), 10) || 0;
+    this.iosTemplate.disk1 = parseInt(this.disk1(), 10) || 0;
+    this.iosTemplate.system_id = this.systemId();
+    this.iosTemplate.idlemax = parseInt(this.idlemax(), 10) || 0;
+    this.iosTemplate.idlesleep = parseInt(this.idlesleep(), 10) || 0;
+    this.iosTemplate.exec_area = parseInt(this.execArea(), 10) || 0;
+    this.iosTemplate.idlepc = this.idlepc();
+    this.iosTemplate.mac_addr = this.baseMac();
+    this.iosTemplate.mmap = this.mmap();
+    this.iosTemplate.sparsemem = this.sparsemem();
+    this.iosTemplate.usage = this.usage();
 
-      // Check advanced form
-      if (this.advancedForm.get('systemId').invalid) {
-        missingFields.push('System ID');
-      }
-      if (this.advancedForm.get('mac_addr').invalid) {
-        missingFields.push('Base MAC (format: xxxx.xxxx.xxxx)');
-      }
-      if (this.advancedForm.get('idlemax').invalid) {
-        missingFields.push('Idlemax');
-      }
-      if (this.advancedForm.get('idlesleep').invalid) {
-        missingFields.push('Idlesleep');
-      }
-      if (this.advancedForm.get('execarea').invalid) {
-        missingFields.push('Exec area');
-      }
-
-      this.toasterService.error(`Missing required fields: ${missingFields.join(', ')}`);
-    } else {
-      this.saveSlotsData();
-
-      // Update iosTemplate from form values
-      this.iosTemplate.name = this.generalSettingsForm.get('templateName').value;
-      this.iosTemplate.default_name_format = this.generalSettingsForm.get('defaultName').value;
-      this.iosTemplate.symbol = this.generalSettingsForm.get('symbol').value;
-      this.iosTemplate.image = this.generalSettingsForm.get('path').value;
-      this.iosTemplate.startup_config = this.generalSettingsForm.get('initialConfig').value;
-      this.iosTemplate.ram = this.memoryForm.get('ram').value;
-      this.iosTemplate.nvram = this.memoryForm.get('nvram').value;
-      this.iosTemplate.disk0 = this.memoryForm.get('disk0').value;
-      this.iosTemplate.disk1 = this.memoryForm.get('disk1').value;
-      this.iosTemplate.system_id = this.advancedForm.get('systemId').value;
-      this.iosTemplate.idlemax = this.advancedForm.get('idlemax').value;
-      this.iosTemplate.idlesleep = this.advancedForm.get('idlesleep').value;
-      this.iosTemplate.exec_area = this.advancedForm.get('execarea').value;
-      this.iosTemplate.idlepc = this.advancedForm.get('idlepc').value;
-      this.iosTemplate.mac_addr = this.advancedForm.get('mac_addr').value;
-      this.iosTemplate.mmap = this.advancedForm.get('mmap').value;
-      this.iosTemplate.sparsemem = this.advancedForm.get('sparsemem').value;
-
-      this.iosService.saveTemplate(this.controller, this.iosTemplate).subscribe({
-        next: (iosTemplate: IosTemplate) => {
-          this.toasterService.success('Changes saved');
-        },
-        error: (err) => {
-          const message = err.error?.message || err.message || 'Failed to save template';
-          this.toasterService.error(message);
-          this.cd.markForCheck();
-        },
-      });
-    }
+    this.iosService.saveTemplate(this.controller, this.iosTemplate).subscribe({
+      next: () => { this.toasterService.success('Changes saved'); },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to save template';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   goBack() {
@@ -374,24 +306,13 @@ export class IosTemplateDetailsComponent implements OnInit {
 
   chooseSymbol() {
     const dialogConfig = this.dialogConfig.openConfig('templateSymbol', {
-      autoFocus: false,
-      disableClose: false,
-      data: {
-        controller: this.controller,
-        symbol: this.iosTemplate.symbol,
-      },
+      autoFocus: false, disableClose: false,
+      data: { controller: this.controller, symbol: this.iosTemplate.symbol },
     });
     const dialogRef = this.dialog.open(TemplateSymbolDialogComponent, dialogConfig);
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.iosTemplate.symbol = result;
-        this.generalSettingsForm.get('symbol').setValue(result);
-      }
+      if (result) { this.iosTemplate.symbol = result; this.symbol.set(result); }
     });
-  }
-
-  symbolChanged(chosenSymbol: string) {
-    this.iosTemplate.symbol = chosenSymbol;
   }
 
   addTag(event: MatChipInputEvent): void {

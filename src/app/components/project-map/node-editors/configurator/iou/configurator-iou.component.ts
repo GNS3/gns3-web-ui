@@ -1,13 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -24,6 +17,7 @@ import { Controller } from '@models/controller';
 import { IouConfigurationService } from '@services/iou-configuration.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { IouValidationService } from '@services/validation';
 
 @Component({
   standalone: true,
@@ -34,7 +28,6 @@ import { ToasterService } from '@services/toaster.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     MatDialogModule,
     MatCardModule,
     MatTabsModule,
@@ -51,34 +44,26 @@ export class ConfiguratorDialogIouComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogIouComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
   private configurationService = inject(IouConfigurationService);
   private cd = inject(ChangeDetectorRef);
+  private validationService = inject(IouValidationService);
 
   controller: Controller;
   node: Node;
   name: string;
-  generalSettingsForm: UntypedFormGroup;
-  networkForm: UntypedFormGroup;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
 
-  constructor() {
-    this.generalSettingsForm = this.formBuilder.group({
-      name: new UntypedFormControl('', Validators.required),
-      console_type: new UntypedFormControl(''),
-      console_auto_start: new UntypedFormControl(false),
-      use_default_iou_values: new UntypedFormControl(true),
-      ram: new UntypedFormControl(''),
-      nvram: new UntypedFormControl(''),
-      usage: new UntypedFormControl(''),
-    });
-
-    this.networkForm = this.formBuilder.group({
-      ethernetAdapters: new UntypedFormControl('', Validators.required),
-      serialAdapters: new UntypedFormControl('', Validators.required),
-    });
-  }
+  // Model signals
+  readonly nodeName = model('');
+  readonly consoleType = model('');
+  readonly consoleAutoStart = model(false);
+  readonly useDefaultIouValues = model(true);
+  readonly ram = model('');
+  readonly nvram = model('');
+  readonly ethernetAdapters = model('');
+  readonly serialAdapters = model('');
+  readonly usage = model('');
 
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
@@ -86,22 +71,18 @@ export class ConfiguratorDialogIouComponent implements OnInit {
         this.node = node;
         this.name = node.name;
 
-        // Update form values with node data
-        this.generalSettingsForm.patchValue({
-          name: node.name,
-          console_type: node.console_type || '',
-          console_auto_start: node.console_auto_start || false,
-          use_default_iou_values:
-            node.properties.use_default_iou_values !== undefined ? node.properties.use_default_iou_values : true,
-          ram: node.properties.ram || '',
-          nvram: node.properties.nvram || '',
-          usage: node.properties.usage || '',
-        });
+        this.nodeName.set(node.name || '');
+        this.consoleType.set(node.console_type || '');
+        this.consoleAutoStart.set(node.console_auto_start || false);
+        this.useDefaultIouValues.set(
+          node.properties.use_default_iou_values !== undefined ? node.properties.use_default_iou_values : true
+        );
+        this.ram.set(node.properties.ram?.toString() || '');
+        this.nvram.set(node.properties.nvram?.toString() || '');
+        this.ethernetAdapters.set(node.properties.ethernet_adapters?.toString() || '');
+        this.serialAdapters.set(node.properties.serial_adapters?.toString() || '');
+        this.usage.set(node.properties.usage || '');
 
-        this.networkForm.patchValue({
-          ethernetAdapters: node.properties.ethernet_adapters,
-          serialAdapters: node.properties.serial_adapters,
-        });
         this.getConfiguration();
         if (!this.node.tags) {
           this.node.tags = [];
@@ -121,36 +102,35 @@ export class ConfiguratorDialogIouComponent implements OnInit {
   }
 
   onSaveClick() {
-    if (this.generalSettingsForm.valid && this.networkForm.valid) {
-      // Merge form values back into node
-      const formValues = this.generalSettingsForm.value;
+    // Validate required fields
+    const nameValidation = this.validationService.validateName(this.nodeName());
+    if (!nameValidation.isValid) { this.toasterService.error(nameValidation.errorMessage); return; }
+    const ethValidation = this.validationService.validateEthernetAdapters(this.ethernetAdapters());
+    if (!ethValidation.isValid) { this.toasterService.error(ethValidation.errorMessage); return; }
+    const serialValidation = this.validationService.validateSerialAdapters(this.serialAdapters());
+    if (!serialValidation.isValid) { this.toasterService.error(serialValidation.errorMessage); return; }
 
-      this.node.name = formValues.name;
-      this.node.console_type = formValues.console_type;
-      this.node.console_auto_start = formValues.console_auto_start;
-      this.node.properties.use_default_iou_values = formValues.use_default_iou_values;
-      this.node.properties.ram = formValues.ram;
-      this.node.properties.nvram = formValues.nvram;
-      this.node.properties.usage = formValues.usage;
+    this.node.name = this.nodeName();
+    this.node.console_type = this.consoleType();
+    this.node.console_auto_start = this.consoleAutoStart();
+    this.node.properties.use_default_iou_values = this.useDefaultIouValues();
+    this.node.properties.ram = parseInt(this.ram(), 10) || 0;
+    this.node.properties.nvram = parseInt(this.nvram(), 10) || 0;
+    this.node.properties.usage = this.usage();
+    this.node.properties.ethernet_adapters = parseInt(this.ethernetAdapters(), 10) || 0;
+    this.node.properties.serial_adapters = parseInt(this.serialAdapters(), 10) || 0;
 
-      // Sync network form values
-      this.node.properties.ethernet_adapters = this.networkForm.value.ethernetAdapters;
-      this.node.properties.serial_adapters = this.networkForm.value.serialAdapters;
-
-      this.nodeService.updateNode(this.controller, this.node).subscribe({
-        next: () => {
-          this.toasterService.success(`Node ${this.node.name} updated.`);
-          this.onCancelClick();
-        },
-        error: (error: unknown) => {
-          const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
-          this.toasterService.error(errorMessage);
-          this.cd.markForCheck();
-        },
-      });
-    } else {
-      this.toasterService.error(`Fill all required fields.`);
-    }
+    this.nodeService.updateNode(this.controller, this.node).subscribe({
+      next: () => {
+        this.toasterService.success(`Node ${this.node.name} updated.`);
+        this.onCancelClick();
+      },
+      error: (error: unknown) => {
+        const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
+        this.toasterService.error(errorMessage);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onCancelClick() {

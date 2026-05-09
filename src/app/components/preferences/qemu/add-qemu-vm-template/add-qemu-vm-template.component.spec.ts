@@ -98,6 +98,8 @@ describe('AddQemuVmTemplateComponent', () => {
       replicate_network_connection_state: true,
       tpm: false,
       uefi: false,
+      maxcpus: 1,
+      create_config_disk: false,
       tags: [],
     };
 

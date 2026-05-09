@@ -1,13 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
@@ -20,6 +13,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { ValidationService } from '@services/validation';
 
 @Component({
   standalone: true,
@@ -49,7 +43,6 @@ import { ToasterService } from '@services/toaster.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     MatDialogModule,
     MatCardModule,
     MatTableModule,
@@ -64,14 +57,12 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogSwitchComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
   private cd = inject(ChangeDetectorRef);
+  private validationService = inject(ValidationService);
 
   controller: Controller;
   node: Node;
   name: string;
-  nameForm: UntypedFormGroup;
-  inputForm: UntypedFormGroup;
   consoleTypes: string[] = [];
 
   nodeMappings = new Map<string, string>();
@@ -79,24 +70,19 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
   dataSource = [];
   displayedColumns = ['portIn', 'portOut', 'actions'];
 
-  constructor() {
-    this.nameForm = this.formBuilder.group({
-      name: new UntypedFormControl('', Validators.required),
-    });
-
-    this.inputForm = this.formBuilder.group({
-      sourcePort: new UntypedFormControl('', Validators.required),
-      sourceDlci: new UntypedFormControl('', Validators.required),
-      destinationPort: new UntypedFormControl('', Validators.required),
-      destinationDlci: new UntypedFormControl('', Validators.required),
-    });
-  }
+  // Model signals
+  readonly nodeName = model('');
+  readonly sourcePort = model('');
+  readonly sourceDlci = model('');
+  readonly destinationPort = model('');
+  readonly destinationDlci = model('');
 
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
       next: (node: Node) => {
         this.node = node;
         this.name = node.name;
+        this.nodeName.set(node.name || '');
 
         let mappings = node.properties.mappings;
         Object.keys(mappings).forEach((key) => {
@@ -122,31 +108,67 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
   }
 
   add() {
-    if (this.inputForm.valid) {
-      const formValues = this.inputForm.value;
-      let nodeMapping: NodeMapping = {
-        portIn: `${formValues.sourcePort}:${formValues.sourceDlci}`,
-        portOut: `${formValues.destinationPort}:${formValues.destinationDlci}`,
-      };
+    const sp = this.sourcePort();
+    const sd = this.sourceDlci();
+    const dp = this.destinationPort();
+    const dd = this.destinationDlci();
 
-      if (this.nodeMappingsDataSource.filter((n) => n.portIn === nodeMapping.portIn).length > 0) {
-        this.toasterService.error('Mapping already defined.');
-      } else {
-        this.nodeMappingsDataSource = this.nodeMappingsDataSource.concat([nodeMapping]);
-        this.clearUserInput();
-      }
+    // Validate source port: required + non-negative integer
+    const spRequired = this.validationService.required(sp, 'Source Port');
+    if (!spRequired.isValid) {
+      this.toasterService.error(spRequired.errorMessage);
+      return;
+    }
+    const spValid = this.validationService.validatePort(sp);
+    if (!spValid.isValid) {
+      this.toasterService.error('Source Port must be a non-negative integer');
+      return;
+    }
+
+    // Validate source DLCI: required
+    const sdRequired = this.validationService.required(sd, 'Source DLCI');
+    if (!sdRequired.isValid) {
+      this.toasterService.error(sdRequired.errorMessage);
+      return;
+    }
+
+    // Validate destination port: required + non-negative integer
+    const dpRequired = this.validationService.required(dp, 'Destination Port');
+    if (!dpRequired.isValid) {
+      this.toasterService.error(dpRequired.errorMessage);
+      return;
+    }
+    const dpValid = this.validationService.validatePort(dp);
+    if (!dpValid.isValid) {
+      this.toasterService.error('Destination Port must be a non-negative integer');
+      return;
+    }
+
+    // Validate destination DLCI: required
+    const ddRequired = this.validationService.required(dd, 'Destination DLCI');
+    if (!ddRequired.isValid) {
+      this.toasterService.error(ddRequired.errorMessage);
+      return;
+    }
+
+    let nodeMapping: NodeMapping = {
+      portIn: `${sp}:${sd}`,
+      portOut: `${dp}:${dd}`,
+    };
+
+    if (this.nodeMappingsDataSource.filter((n) => n.portIn === nodeMapping.portIn).length > 0) {
+      this.toasterService.error('Mapping already defined.');
     } else {
-      this.toasterService.error('Fill all required fields.');
+      this.nodeMappingsDataSource = this.nodeMappingsDataSource.concat([nodeMapping]);
+      this.clearUserInput();
     }
   }
 
   clearUserInput() {
-    this.inputForm.patchValue({
-      sourcePort: '',
-      sourceDlci: '',
-      destinationPort: '',
-      destinationDlci: '',
-    });
+    this.sourcePort.set('');
+    this.sourceDlci.set('');
+    this.destinationPort.set('');
+    this.destinationDlci.set('');
   }
 
   strMapToObj(strMap) {
@@ -158,30 +180,34 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
   }
 
   onSaveClick() {
-    if (this.nameForm.valid) {
-      this.nodeMappings.clear();
-      this.nodeMappingsDataSource.forEach((elem) => {
-        this.nodeMappings.set(elem.portIn, elem.portOut);
-      });
-
-      this.node.properties.mappings = Array.from(this.nodeMappings).reduce(
-        (obj, [key, value]) => Object.assign(obj, { [key]: value }),
-        {}
-      );
-
-      this.nodeService.updateNode(this.controller, this.node).subscribe({
-        next: () => {
-          this.toasterService.success(`Node ${this.node.name} updated.`);
-          this.onCancelClick();
-        },
-        error: (error: unknown) => {
-          const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
-          this.toasterService.error(errorMessage);
-        },
-      });
-    } else {
-      this.toasterService.error(`Fill all required fields.`);
+    // Validate name (required)
+    const nameValidation = this.validationService.required(this.nodeName(), 'Name');
+    if (!nameValidation.isValid) {
+      this.toasterService.error(nameValidation.errorMessage || 'Name is required');
+      return;
     }
+
+    this.node.name = this.nodeName();
+    this.nodeMappings.clear();
+    this.nodeMappingsDataSource.forEach((elem) => {
+      this.nodeMappings.set(elem.portIn, elem.portOut);
+    });
+
+    this.node.properties.mappings = Array.from(this.nodeMappings).reduce(
+      (obj, [key, value]) => Object.assign(obj, { [key]: value }),
+      {}
+    );
+
+    this.nodeService.updateNode(this.controller, this.node).subscribe({
+      next: () => {
+        this.toasterService.success(`Node ${this.node.name} updated.`);
+        this.onCancelClick();
+      },
+      error: (error: unknown) => {
+        const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
+        this.toasterService.error(errorMessage);
+      },
+    });
   }
 
   onCancelClick() {

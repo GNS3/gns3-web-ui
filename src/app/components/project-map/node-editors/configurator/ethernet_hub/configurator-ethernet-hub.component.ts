@@ -1,13 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,6 +14,7 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
+import { ValidationService } from '@services/validation';
 
 @Component({
   standalone: true,
@@ -31,7 +25,6 @@ import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     MatDialogModule,
     MatCardModule,
     MatFormFieldModule,
@@ -45,25 +38,21 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogEthernetHubComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
   private vpcsConfigurationService = inject(VpcsConfigurationService);
   private cd = inject(ChangeDetectorRef);
+  private validationService = inject(ValidationService);
 
   controller: Controller;
   node: Node;
   numberOfPorts: number;
-  inputForm: UntypedFormGroup;
   consoleTypes: string[] = [];
   categories = [];
   name: string;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  constructor() {
-    this.inputForm = this.formBuilder.group({
-      name: new UntypedFormControl('', Validators.required),
-      numberOfPorts: new UntypedFormControl(''),
-    });
-  }
+  // Model signals
+  readonly nodeName = model('');
+  readonly nodeNumberOfPorts = model('');
 
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
@@ -72,11 +61,9 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
         this.name = this.node.name;
         this.numberOfPorts = this.node.ports.length;
 
-        // Update form values with node data
-        this.inputForm.patchValue({
-          name: node.name,
-          numberOfPorts: this.node.ports.length,
-        });
+        // Update model signals with node data
+        this.nodeName.set(node.name || '');
+        this.nodeNumberOfPorts.set(this.node.ports.length.toString());
 
         this.getConfiguration();
         if (!this.node.tags) {
@@ -98,35 +85,48 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
   }
 
   onSaveClick() {
-    if (this.inputForm.valid) {
-      // Merge form values back into node
-      const formValues = this.inputForm.value;
-
-      this.node.name = formValues.name;
-      this.numberOfPorts = formValues.numberOfPorts;
-
-      this.node.properties.ports_mapping = [];
-      for (let i = 0; i < this.numberOfPorts; i++) {
-        this.node.properties.ports_mapping.push({
-          name: `Ethernet${i}`,
-          port_number: i,
-        });
-      }
-
-      this.nodeService.updateNode(this.controller, this.node).subscribe({
-        next: () => {
-          this.toasterService.success(`Node ${this.node.name} updated.`);
-          this.onCancelClick();
-        },
-        error: (error: unknown) => {
-          const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
-          this.toasterService.error(errorMessage);
-          this.cd.markForCheck();
-        },
-      });
-    } else {
-      this.toasterService.error(`Fill all required fields.`);
+    // Validate name (required)
+    const nameValidation = this.validationService.required(this.nodeName(), 'Name');
+    if (!nameValidation.isValid) {
+      this.toasterService.error(nameValidation.errorMessage || 'Name is required');
+      return;
     }
+
+    // Validate number of ports (non-negative integer)
+    const portsValue = this.nodeNumberOfPorts();
+    if (portsValue && portsValue.trim() !== '') {
+      const numValue = parseInt(portsValue, 10);
+      if (isNaN(numValue) || numValue < 0 || numValue !== parseFloat(portsValue)) {
+        this.toasterService.error('Number of ports must be a non-negative integer');
+        return;
+      }
+      this.numberOfPorts = numValue;
+    } else {
+      this.numberOfPorts = 0;
+    }
+
+    // Merge signal values back into node
+    this.node.name = this.nodeName();
+
+    this.node.properties.ports_mapping = [];
+    for (let i = 0; i < this.numberOfPorts; i++) {
+      this.node.properties.ports_mapping.push({
+        name: `Ethernet${i}`,
+        port_number: i,
+      });
+    }
+
+    this.nodeService.updateNode(this.controller, this.node).subscribe({
+      next: () => {
+        this.toasterService.success(`Node ${this.node.name} updated.`);
+        this.onCancelClick();
+      },
+      error: (error: unknown) => {
+        const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
+        this.toasterService.error(errorMessage);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onCancelClick() {

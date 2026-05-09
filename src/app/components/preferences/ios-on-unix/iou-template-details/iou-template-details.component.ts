@@ -19,6 +19,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 import { DialogConfigService } from '@services/dialog-config.service';
+import { IouValidationService } from '@services/validation';
 
 @Component({
   standalone: true,
@@ -49,6 +50,7 @@ export class IouTemplateDetailsComponent implements OnInit {
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
   private dialogConfig = inject(DialogConfigService);
+  private validationService = inject(IouValidationService);
 
   controller: Controller;
   iouTemplate: IouTemplate;
@@ -144,6 +146,12 @@ export class IouTemplateDetailsComponent implements OnInit {
   }
 
   onSave() {
+    // Validate required fields
+    const nameValidation = this.validationService.validateName(this.templateName());
+    if (!nameValidation.isValid) { this.toasterService.error(nameValidation.errorMessage); return; }
+    const pathValidation = this.validationService.validatePath(this.path());
+    if (!pathValidation.isValid) { this.toasterService.error(pathValidation.errorMessage); return; }
+
     // Update iouTemplate from model signals
     this.iouTemplate.name = this.templateName();
     this.iouTemplate.default_name_format = this.defaultName();

@@ -196,8 +196,9 @@ describe('TemplateComponent', () => {
       expect(component.templateTypes).toContain('vpcs');
       expect(component.templateTypes).toContain('dynamips');
       expect(component.templateTypes).toContain('qemu');
-      expect(component.templateTypes).toContain('virtualbox');
-      expect(component.templateTypes).toContain('vmware');
+      // VirtualBox and VMware deprecated since 3.1.0 - removed from templateTypes
+      // expect(component.templateTypes).toContain('virtualbox');
+      // expect(component.templateTypes).toContain('vmware');
       expect(component.templateTypes).toContain('iou');
     });
   });

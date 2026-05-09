@@ -11,15 +11,16 @@ import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { Controller } from '@models/controller';
 import { DockerTemplate } from '@models/templates/docker-template';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { DockerService } from '@services/docker.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { DockerValidationService } from '@services/validation';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 import { DialogConfigService } from '@services/dialog-config.service';
+import { ConfigureCustomAdaptersDialogComponent } from '../../../project-map/node-editors/configurator/docker/configure-custom-adapters/configure-custom-adapters.component';
 
 @Component({
   standalone: true,
@@ -45,6 +46,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
   private controllerService = inject(ControllerService);
   private dockerService = inject(DockerService);
   private toasterService = inject(ToasterService);
+  private validationService = inject(DockerValidationService);
   private configurationService = inject(DockerConfigurationService);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
@@ -64,7 +66,6 @@ export class DockerTemplateDetailsComponent implements OnInit {
   auxConsoleTypes: string[] = [];
   consoleResolutions: string[] = [];
   categories: any[] = [];
-  adapters: CustomAdapter[] = [];
   displayedColumns: string[] = ['adapter_number', 'port_name'];
 
   // Model signals for form fields
@@ -73,9 +74,12 @@ export class DockerTemplateDetailsComponent implements OnInit {
   category = model('');
   symbol = model('');
   tags = model<string[]>([]);
+  image = model('');
   startCommand = model('');
   macAddress = model('');
   adaptersCount = model(0);
+  memory = model(0);
+  cpus = model(0);
   consoleType = model('');
   auxConsoleType = model('');
   consoleAutoStart = model(false);
@@ -84,6 +88,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
   consoleHttpPath = model('');
   environment = model('');
   extraHosts = model('');
+  extraVolumes = model('');
   usage = model('');
 
   constructor() {}
@@ -106,6 +111,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
             this.category.set(dockerTemplate.category || '');
             this.symbol.set(dockerTemplate.symbol || '');
             this.tags.set(dockerTemplate.tags || []);
+            this.image.set(dockerTemplate.image || '');
             this.startCommand.set(dockerTemplate.start_command || '');
             this.macAddress.set(dockerTemplate.mac_address || '');
             this.adaptersCount.set(dockerTemplate.adapters || 0);
@@ -115,8 +121,11 @@ export class DockerTemplateDetailsComponent implements OnInit {
             this.consoleResolution.set(dockerTemplate.console_resolution || '');
             this.consoleHttpPort.set(dockerTemplate.console_http_port || 0);
             this.consoleHttpPath.set(dockerTemplate.console_http_path || '');
+            this.memory.set(dockerTemplate.memory || 0);
+            this.cpus.set(dockerTemplate.cpus || 0);
             this.environment.set(dockerTemplate.environment || '');
             this.extraHosts.set(dockerTemplate.extra_hosts || '');
+            this.extraVolumes.set((dockerTemplate.extra_volumes || []).join('\n'));
             this.usage.set(dockerTemplate.usage || '');
             this.cd.markForCheck();
           },
@@ -161,12 +170,71 @@ export class DockerTemplateDetailsComponent implements OnInit {
   }
 
   onSave() {
+    // Validate name (required)
+    const nameValidation = this.validationService.validateName(this.name());
+    if (!nameValidation.isValid) {
+      this.toasterService.error(nameValidation.errorMessage || 'Name is required');
+      return;
+    }
+
+    // Validate image (required)
+    const imageValidation = this.validationService.validateName(this.image());
+    if (!imageValidation.isValid) {
+      this.toasterService.error('Image is required');
+      return;
+    }
+
+    // Validate adapters (0-100 for templates)
+    const adapterValidation = this.validationService.validateAdapters(this.adaptersCount().toString(), 100);
+    if (!adapterValidation.isValid) {
+      this.toasterService.error(adapterValidation.errorMessage);
+      return;
+    }
+
+    // Validate MAC address format if provided
+    const macValidation = this.validationService.validateMacAddress(this.macAddress());
+    if (!macValidation.isValid) {
+      this.toasterService.error(macValidation.errorMessage);
+      return;
+    }
+
+    // Validate memory (non-negative integer)
+    const memoryValidation = this.validationService.validateMemory(this.memory().toString());
+    if (!memoryValidation.isValid) {
+      this.toasterService.error(memoryValidation.errorMessage);
+      return;
+    }
+
+    // Validate CPUs (non-negative number)
+    const cpusValidation = this.validationService.validateCpus(this.cpus().toString());
+    if (!cpusValidation.isValid) {
+      this.toasterService.error(cpusValidation.errorMessage);
+      return;
+    }
+
+    // Validate console HTTP port if provided
+    if (this.consoleHttpPort()) {
+      const portValidation = this.validationService.validateConsoleHttpPort(this.consoleHttpPort().toString());
+      if (!portValidation.isValid) {
+        this.toasterService.error(portValidation.errorMessage || 'Console HTTP port must be between 1 and 65535');
+        return;
+      }
+    }
+
+    // Validate environment variables format if provided
+    const envValidation = this.validationService.validateEnvironment(this.environment(), 'Advanced > Environment');
+    if (!envValidation.isValid) {
+      this.toasterService.error(envValidation.errorMessage);
+      return;
+    }
+
     // Update dockerTemplate from model signals
     this.dockerTemplate.name = this.name();
     this.dockerTemplate.default_name_format = this.defaultNameFormat();
     this.dockerTemplate.category = this.category();
     this.dockerTemplate.symbol = this.symbol();
     this.dockerTemplate.tags = this.tags();
+    this.dockerTemplate.image = this.image();
     this.dockerTemplate.start_command = this.startCommand();
     this.dockerTemplate.mac_address = this.macAddress();
     this.dockerTemplate.adapters = this.adaptersCount();
@@ -176,8 +244,11 @@ export class DockerTemplateDetailsComponent implements OnInit {
     this.dockerTemplate.console_resolution = this.consoleResolution();
     this.dockerTemplate.console_http_port = this.consoleHttpPort();
     this.dockerTemplate.console_http_path = this.consoleHttpPath();
+    this.dockerTemplate.memory = this.memory();
+    this.dockerTemplate.cpus = this.cpus();
     this.dockerTemplate.environment = this.environment();
     this.dockerTemplate.extra_hosts = this.extraHosts();
+    this.dockerTemplate.extra_volumes = this.extraVolumes() ? this.extraVolumes().split('\n').filter((v) => v.trim()) : [];
     this.dockerTemplate.usage = this.usage();
 
     this.dockerService.saveTemplate(this.controller, this.dockerTemplate).subscribe({
@@ -190,6 +261,38 @@ export class DockerTemplateDetailsComponent implements OnInit {
         this.cd.markForCheck();
       },
     });
+  }
+
+  editCustomAdapters() {
+    // Use existing custom_adapters, or generate from adaptersCount
+    let adapters = this.dockerTemplate.custom_adapters || [];
+    if (adapters.length === 0) {
+      adapters = Array.from({ length: this.adaptersCount() || 1 }, (_, i) => ({
+        adapter_number: i,
+        port_name: '',
+        adapter_type: '',
+      }) as any);
+    }
+    const dialogConfig = this.dialogConfig.openConfig('base', {
+      autoFocus: false,
+      panelClass: ['base-dialog-panel', 'docker-configurator-dialog-panel'],
+      disableClose: true,
+      data: {},
+    });
+    dialogConfig.data = {};
+    const dialogRef = this.dialog.open(ConfigureCustomAdaptersDialogComponent, {
+      ...dialogConfig,
+      data: {},
+    });
+    const instance = dialogRef.componentInstance;
+    instance.adapters.set(adapters);
+    instance.saveHandler = (updatedAdapters: any[]) => {
+      this.dockerTemplate.custom_adapters = updatedAdapters.map((a: any) => ({
+        ...a,
+        mac_address: a.mac_address || null,
+      })) as any;
+      this.adaptersCount.set(updatedAdapters.length);
+    };
   }
 
   chooseSymbol() {

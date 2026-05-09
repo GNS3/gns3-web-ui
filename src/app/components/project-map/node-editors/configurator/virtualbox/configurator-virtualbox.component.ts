@@ -31,6 +31,13 @@ import {
   CustomAdaptersDialogResult,
 } from '@components/preferences/common/custom-adapters/custom-adapters.component';
 
+/**
+ * @deprecated
+ * VirtualBox support is deprecated and will be removed in a future version.
+ * This configurator is no longer maintained and should not be used for new projects.
+ *
+ * @deprecated Since 3.1.0 - VirtualBox support is being phased out
+ */
 @Component({
   standalone: true,
   selector: 'app-configurator-virtualbox',

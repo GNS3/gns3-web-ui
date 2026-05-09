@@ -129,20 +129,35 @@
       </div>
       @if (ethernetExpanded) {
       <div class="cloud-nodes-details__form">
-        @for (port of portsMappingEthernet; track port) {
-        <div class="cloud-nodes-details__port-item">{{ port.name }}</div>
-        }
         <div class="cloud-nodes-details__add-row">
           <mat-form-field appearance="fill" class="cloud-nodes-details__field cloud-nodes-details__field--flex">
             <mat-label>Ethernet interface</mat-label>
-            <mat-select [value]="ethernetInterface()" (selectionChange)="ethernetInterface.set($event.value)">
-              @for (type of ethernetInterfaces; track type) {
-              <mat-option [value]="type">{{ type }}</mat-option>
-              }
-            </mat-select>
+            <input
+              matInput
+              [value]="ethernetInterface()"
+              (input)="ethernetInterface.set($event.target.value)"
+              type="text"
+              placeholder="Ethernet interface name"
+            />
           </mat-form-field>
           <button mat-button class="cloud-nodes-details__add-btn" (click)="onAddEthernetInterface()">Add</button>
         </div>
+        <table mat-table [dataSource]="portsMappingEthernet" class="cloud-nodes-details__table">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Interface</th>
+            <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button matTooltip="Delete interface" (click)="onDeleteEthernetInterface(element)">
+                <mat-icon aria-label="Delete interface">delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="ethernetDisplayColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: ethernetDisplayColumns"></tr>
+        </table>
       </div>
       }
     </section>
@@ -154,9 +169,6 @@
       </div>
       @if (tapExpanded) {
       <div class="cloud-nodes-details__form">
-        @for (port of portsMappingTap; track port) {
-        <div class="cloud-nodes-details__port-item">{{ port.name }}</div>
-        }
         <div class="cloud-nodes-details__add-row">
           <mat-form-field appearance="fill" class="cloud-nodes-details__field cloud-nodes-details__field--flex">
             <mat-label>TAP interface</mat-label>
@@ -170,6 +182,22 @@
           </mat-form-field>
           <button mat-button class="cloud-nodes-details__add-btn" (click)="onAddTapInterface()">Add</button>
         </div>
+        <table mat-table [dataSource]="portsMappingTap" class="cloud-nodes-details__table">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Interface</th>
+            <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button matTooltip="Delete interface" (click)="onDeleteTapInterface(element)">
+                <mat-icon aria-label="Delete interface">delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="tapDisplayColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: tapDisplayColumns"></tr>
+        </table>
       </div>
       }
     </section>
@@ -181,73 +209,83 @@
       </div>
       @if (udpExpanded) {
       <div class="cloud-nodes-details__form">
-        @if (dataSourceUdp.length) {
+        <div class="udp-tunnels__input-grid">
+          <mat-form-field appearance="fill">
+            <mat-label>Name</mat-label>
+            <input
+              matInput
+              [value]="newPortName()"
+              (input)="newPortName.set($event.target.value)"
+              type="text"
+              placeholder="Name"
+            />
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Remote host</mat-label>
+            <input
+              matInput
+              [value]="newPortRhost()"
+              (input)="newPortRhost.set($event.target.value)"
+              type="text"
+              placeholder="Remote host"
+            />
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Local port</mat-label>
+            <input
+              matInput
+              [value]="newPortLport()"
+              (input)="newPortLport.set(+$event.target.value)"
+              type="number"
+              min="1"
+              max="65535"
+              placeholder="Local port"
+            />
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Remote port</mat-label>
+            <input
+              matInput
+              [value]="newPortRport()"
+              (input)="newPortRport.set(+$event.target.value)"
+              type="number"
+              min="1"
+              max="65535"
+              placeholder="Remote port"
+            />
+          </mat-form-field>
+        </div>
+        <div class="udp-tunnels__add-btn">
+          <button mat-button (click)="onAddUdpInterface()">Add</button>
+        </div>
         <table mat-table [dataSource]="dataSourceUdp" class="cloud-nodes-details__table">
           <ng-container matColumnDef="name">
-            <th mat-header-cell matHeaderCellDef>Name</th>
-            <td mat-cell matCellDef="let element">{{ element.name }}</td>
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let element">{{ element.name }}</td>
           </ng-container>
           <ng-container matColumnDef="lport">
-            <th mat-header-cell matHeaderCellDef>Local port</th>
-            <td mat-cell matCellDef="let element">{{ element.lport }}</td>
+            <th mat-header-cell *matHeaderCellDef>Local port</th>
+            <td mat-cell *matCellDef="let element">{{ element.lport }}</td>
           </ng-container>
           <ng-container matColumnDef="rhost">
-            <th mat-header-cell matHeaderCellDef>Remote host</th>
-            <td mat-cell matCellDef="let element">{{ element.rhost }}</td>
+            <th mat-header-cell *matHeaderCellDef>Remote host</th>
+            <td mat-cell *matCellDef="let element">{{ element.rhost }}</td>
           </ng-container>
           <ng-container matColumnDef="rport">
-            <th mat-header-cell matHeaderCellDef>Remote port</th>
-            <td mat-cell matCellDef="let element">{{ element.rport }}</td>
+            <th mat-header-cell *matHeaderCellDef>Remote port</th>
+            <td mat-cell *matCellDef="let element">{{ element.rport }}</td>
           </ng-container>
-          <tr mat-header-row matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row matRowDef="let row; columns: displayedColumns;"></tr>
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button matTooltip="Delete port" (click)="deleteUdpInterface(element)">
+                <mat-icon aria-label="Delete port">delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayColumnsUdp"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayColumnsUdp"></tr>
         </table>
-        }
-        <mat-form-field appearance="fill" class="cloud-nodes-details__field">
-          <mat-label>Name</mat-label>
-          <input
-            matInput
-            [value]="newPortName()"
-            (input)="newPortName.set($event.target.value)"
-            type="text"
-            placeholder="Name"
-          />
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="cloud-nodes-details__field">
-          <mat-label>Local port</mat-label>
-          <input
-            matInput
-            [value]="newPortLport()"
-            (input)="newPortLport.set(+$event.target.value)"
-            type="number"
-            min="1"
-            max="65535"
-            placeholder="Local port"
-          />
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="cloud-nodes-details__field">
-          <mat-label>Remote host</mat-label>
-          <input
-            matInput
-            [value]="newPortRhost()"
-            (input)="newPortRhost.set($event.target.value)"
-            type="text"
-            placeholder="Remote host"
-          />
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="cloud-nodes-details__field">
-          <mat-label>Remote port</mat-label>
-          <input
-            matInput
-            [value]="newPortRport()"
-            (input)="newPortRport.set(+$event.target.value)"
-            type="number"
-            min="1"
-            max="65535"
-            placeholder="Remote port"
-          />
-        </mat-form-field>
-        <button mat-button class="cloud-nodes-details__add-btn" (click)="onAddUdpInterface()">Add</button>
       </div>
       }
     </section>

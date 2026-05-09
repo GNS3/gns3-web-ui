@@ -4,58 +4,50 @@
   <div class="content">
     <div class="default-content">
       <mat-card>
-        <form [formGroup]="nameForm">
+        <mat-form-field class="form-field">
+          <mat-label>Name</mat-label>
+          <input matInput type="text" [value]="nameSignal()" (input)="nameSignal.set($event.target.value)" />
+        </mat-form-field>
+        <mat-checkbox [checked]="useVpiOnly()" (change)="useVpiOnly.set($event.checked)"> Use VPI only (VP tunnel) </mat-checkbox>
+
+        <div class="atm-switch__input-grid">
           <mat-form-field class="form-field">
-            <mat-label>Name</mat-label>
-            <input matInput type="text" formControlName="name" />
+            <mat-label>Source Port</mat-label>
+            <input matInput type="text" [value]="sourcePort()" (input)="sourcePort.set($event.target.value)" />
           </mat-form-field>
-          <mat-checkbox formControlName="useVpiOnly"> Use VPI only (VP tunnel) </mat-checkbox>
-        </form>
+          <mat-form-field class="form-field">
+            <mat-label>Destination Port</mat-label>
+            <input matInput type="text" [value]="destinationPort()" (input)="destinationPort.set($event.target.value)" />
+          </mat-form-field>
+        </div>
 
-        <form [formGroup]="inputForm">
-          <div class="atm-switch__input-grid">
-            <mat-form-field class="form-field">
-              <mat-label>Source Port</mat-label>
-              <input matInput type="number" min="0" formControlName="sourcePort" />
-            </mat-form-field>
-            <mat-form-field class="form-field">
-              <mat-label>Destination Port</mat-label>
-              <input matInput type="number" min="0" formControlName="destinationPort" />
-            </mat-form-field>
-          </div>
-        </form>
+        <div class="atm-switch__input-grid">
+          <mat-form-field class="form-field">
+            <mat-label>Source VCI</mat-label>
+            <input matInput type="text" [value]="sourceVci()" (input)="sourceVci.set($event.target.value)" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <mat-label>Destination VCI</mat-label>
+            <input matInput type="text" [value]="destinationVci()" (input)="destinationVci.set($event.target.value)" />
+          </mat-form-field>
+        </div>
 
-        <form [formGroup]="inputForm">
-          <div class="atm-switch__input-grid">
-            <mat-form-field class="form-field">
-              <mat-label>Source VCI</mat-label>
-              <input matInput type="number" min="1" formControlName="sourceVci" />
-            </mat-form-field>
-            <mat-form-field class="form-field">
-              <mat-label>Destination VCI</mat-label>
-              <input matInput type="number" min="1" formControlName="destinationVci" />
-            </mat-form-field>
-          </div>
-        </form>
-
-        <form [formGroup]="abstractForm">
-          <div class="atm-switch__input-grid">
-            <mat-form-field class="form-field">
-              <mat-label>Source VPI</mat-label>
-              <input matInput type="number" min="1" formControlName="sourceVpi" />
-            </mat-form-field>
-            <mat-form-field class="form-field">
-              <mat-label>Destination VPI</mat-label>
-              <input matInput type="number" min="1" formControlName="destinationVpi" />
-            </mat-form-field>
-          </div>
-        </form>
+        <div class="atm-switch__input-grid">
+          <mat-form-field class="form-field">
+            <mat-label>Source VPI</mat-label>
+            <input matInput type="text" [value]="sourceVpi()" (input)="sourceVpi.set($event.target.value)" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <mat-label>Destination VPI</mat-label>
+            <input matInput type="text" [value]="destinationVpi()" (input)="destinationVpi.set($event.target.value)" />
+          </mat-form-field>
+        </div>
 
         <div class="atm-switch__add-btn">
           <button mat-button (click)="add()">Add</button>
         </div>
 
-        <table mat-table [dataSource]="nodeMappingsDataSource">
+        <table mat-table [dataSource]="nodeMappingsDataSource()">
           <ng-container matColumnDef="portIn">
             <th mat-header-cell *matHeaderCellDef>Source Port : VPI : VCI</th>
             <td mat-cell *matCellDef="let element">{{ element.portIn }}</td>

@@ -16,7 +16,10 @@ export class DockerTemplate {
   default_name_format: string;
   environment: string;
   extra_hosts: string;
+  extra_volumes: string[];
   image: string;
+  memory: number;
+  cpus: number;
   name: string;
   start_command: string;
   symbol: string;

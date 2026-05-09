@@ -82,14 +82,16 @@ import { CopyQemuVmTemplateComponent } from '@components/preferences/qemu/copy-q
 import { QemuPreferencesComponent } from '@components/preferences/qemu/qemu-preferences/qemu-preferences.component';
 import { QemuVmTemplateDetailsComponent } from '@components/preferences/qemu/qemu-vm-template-details/qemu-vm-template-details.component';
 import { QemuVmTemplatesComponent } from '@components/preferences/qemu/qemu-vm-templates/qemu-vm-templates.component';
-import { AddVirtualBoxTemplateComponent } from '@components/preferences/virtual-box/add-virtual-box-template/add-virtual-box-template.component';
-import { VirtualBoxPreferencesComponent } from '@components/preferences/virtual-box/virtual-box-preferences/virtual-box-preferences.component';
-import { VirtualBoxTemplateDetailsComponent } from '@components/preferences/virtual-box/virtual-box-template-details/virtual-box-template-details.component';
-import { VirtualBoxTemplatesComponent } from '@components/preferences/virtual-box/virtual-box-templates/virtual-box-templates.component';
-import { AddVmwareTemplateComponent } from '@components/preferences/vmware/add-vmware-template/add-vmware-template.component';
-import { VmwarePreferencesComponent } from '@components/preferences/vmware/vmware-preferences/vmware-preferences.component';
-import { VmwareTemplateDetailsComponent } from '@components/preferences/vmware/vmware-template-details/vmware-template-details.component';
-import { VmwareTemplatesComponent } from '@components/preferences/vmware/vmware-templates/vmware-templates.component';
+// VirtualBox support deprecated since 3.1.0
+// import { AddVirtualBoxTemplateComponent } from '@components/preferences/virtual-box/add-virtual-box-template/add-virtual-box-template.component';
+// import { VirtualBoxPreferencesComponent } from '@components/preferences/virtual-box/virtual-box-preferences/virtual-box-preferences.component';
+// import { VirtualBoxTemplateDetailsComponent } from '@components/preferences/virtual-box/virtual-box-template-details/virtual-box-template-details.component';
+// import { VirtualBoxTemplatesComponent } from '@components/preferences/virtual-box/virtual-box-templates/virtual-box-templates.component';
+// VMware support deprecated since 3.1.0
+// import { AddVmwareTemplateComponent } from '@components/preferences/vmware/add-vmware-template/add-vmware-template.component';
+// import { VmwarePreferencesComponent } from '@components/preferences/vmware/vmware-preferences/vmware-preferences.component';
+// import { VmwareTemplateDetailsComponent } from '@components/preferences/vmware/vmware-template-details/vmware-template-details.component';
+// import { VmwareTemplatesComponent } from '@components/preferences/vmware/vmware-templates/vmware-templates.component';
 import { AddVpcsTemplateComponent } from '@components/preferences/vpcs/add-vpcs-template/add-vpcs-template.component';
 import { VpcsPreferencesComponent } from '@components/preferences/vpcs/vpcs-preferences/vpcs-preferences.component';
 import { VpcsTemplateDetailsComponent } from '@components/preferences/vpcs/vpcs-template-details/vpcs-template-details.component';
@@ -168,8 +170,10 @@ import { ConfiguratorDialogNatComponent } from '@components/project-map/node-edi
 import { ConfiguratorDialogQemuComponent } from '@components/project-map/node-editors/configurator/qemu/configurator-qemu.component';
 import { QemuImageCreatorComponent } from '@components/project-map/node-editors/configurator/qemu/qemu-image-creator/qemu-image-creator.component';
 import { ConfiguratorDialogSwitchComponent } from '@components/project-map/node-editors/configurator/switch/configurator-switch.component';
-import { ConfiguratorDialogVirtualBoxComponent } from '@components/project-map/node-editors/configurator/virtualbox/configurator-virtualbox.component';
-import { ConfiguratorDialogVmwareComponent } from '@components/project-map/node-editors/configurator/vmware/configurator-vmware.component';
+// VirtualBox support deprecated since 3.1.0
+// import { ConfiguratorDialogVirtualBoxComponent } from '@components/project-map/node-editors/configurator/virtualbox/configurator-virtualbox.component';
+// VMware support deprecated since 3.1.0
+// import { ConfiguratorDialogVmwareComponent } from '@components/project-map/node-editors/configurator/vmware/configurator-vmware.component';
 import { ConfiguratorDialogVpcsComponent } from '@components/project-map/node-editors/configurator/vpcs/configurator-vpcs.component';
 import { NodeSelectInterfaceComponent } from '@components/project-map/node-select-interface/node-select-interface.component';
 import { NodesMenuComponent } from '@components/project-map/nodes-menu/nodes-menu.component';
@@ -270,10 +274,12 @@ import { ToasterService } from '@services/toaster.service';
 import { ToolsService } from '@services/tools.service';
 import { UpdatesService } from '@services/updates.service';
 import { VersionService } from '@services/version.service';
-import { VirtualBoxConfigurationService } from '@services/virtual-box-configuration.service';
-import { VirtualBoxService } from '@services/virtual-box.service';
-import { VmwareConfigurationService } from '@services/vmware-configuration.service';
-import { VmwareService } from '@services/vmware.service';
+// VirtualBox support deprecated since 3.1.0
+// import { VirtualBoxConfigurationService } from '@services/virtual-box-configuration.service';
+// import { VirtualBoxService } from '@services/virtual-box.service';
+// VMware support deprecated since 3.1.0
+// import { VmwareConfigurationService } from '@services/vmware-configuration.service';
+// import { VmwareService } from '@services/vmware.service';
 import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 import { VpcsService } from '@services/vpcs.service';
 import { NonNegativeValidator } from './validators/non-negative-validator';
@@ -532,8 +538,10 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     ConfiguratorDialogEthernetHubComponent,
     ConfiguratorDialogVpcsComponent,
     ConfiguratorDialogCloudComponent,
-    ConfiguratorDialogVmwareComponent,
-    ConfiguratorDialogVirtualBoxComponent,
+    // VMware support deprecated since 3.1.0
+    // ConfiguratorDialogVmwareComponent,
+    // VirtualBox support deprecated since 3.1.0
+    // ConfiguratorDialogVirtualBoxComponent,
     ConfiguratorDialogQemuComponent,
     ConfiguratorDialogIouComponent,
     ConfiguratorDialogIosComponent,
@@ -544,16 +552,18 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     QemuVmTemplateDetailsComponent,
     AddVpcsTemplateComponent,
     VpcsTemplateDetailsComponent,
-    AddVirtualBoxTemplateComponent,
-    VirtualBoxTemplateDetailsComponent,
+    // VirtualBox support deprecated since 3.1.0
+    // AddVirtualBoxTemplateComponent,
+    // VirtualBoxTemplateDetailsComponent,
     EthernetHubsAddTemplateComponent,
     EthernetHubsTemplateDetailsComponent,
     CloudNodesAddTemplateComponent,
     CloudNodesTemplateDetailsComponent,
     EthernetSwitchesAddTemplateComponent,
     EthernetSwitchesTemplateDetailsComponent,
-    AddVmwareTemplateComponent,
-    VmwareTemplateDetailsComponent,
+    // VMware support deprecated since 3.1.0
+    // AddVmwareTemplateComponent,
+    // VmwareTemplateDetailsComponent,
     AddIosTemplateComponent,
     AddDockerTemplateComponent,
     DockerTemplateDetailsComponent,
@@ -605,15 +615,20 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     DynamipsPreferencesComponent,
     PortsComponent,
     VpcsPreferencesComponent,
-    VmwarePreferencesComponent,
-    VirtualBoxPreferencesComponent,
+    // VMware support deprecated since 3.1.0
+    // VmwarePreferencesComponent,
+    // VirtualBox support deprecated since 3.1.0
+    // VirtualBoxPreferencesComponent,
     QemuPreferencesComponent,
     QemuVmTemplatesComponent,
     DeleteConfirmationDialogComponent,
     DeleteTemplateComponent,
     VpcsTemplatesComponent,
-    VirtualBoxTemplatesComponent,
-    VmwareTemplatesComponent,
+    // VirtualBox support deprecated since 3.1.0
+    // VirtualBoxTemplatesComponent,
+    // VMware support deprecated since 3.1.0
+    // VmwareTemplatesComponent,
+    DockerTemplatesComponent,
     DockerTemplatesComponent,
     IouTemplatesComponent,
     IosTemplatesComponent,
@@ -674,7 +689,8 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     QemuService,
     VpcsService,
     TemplateMocksService,
-    VirtualBoxService,
+    // VirtualBox support deprecated since 3.1.0
+    // VirtualBoxService,
     BuiltInTemplatesService,
     IosService,
     InstalledSoftwareService,
@@ -682,11 +698,13 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     PlatformService,
     IosConfigurationService,
     QemuConfigurationService,
-    VirtualBoxConfigurationService,
+    // VirtualBox support deprecated since 3.1.0
+    // VirtualBoxConfigurationService,
     VpcsConfigurationService,
     BuiltInTemplatesConfigurationService,
-    VmwareService,
-    VmwareConfigurationService,
+    // VMware support deprecated since 3.1.0
+    // VmwareService,
+    // VmwareConfigurationService,
     DockerService,
     DockerConfigurationService,
     IouService,

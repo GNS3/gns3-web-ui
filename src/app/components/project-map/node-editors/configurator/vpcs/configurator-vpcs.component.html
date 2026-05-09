@@ -4,11 +4,11 @@
   <div class="content">
     <div class="default-content">
       <mat-card class="matCard">
-        <form [formGroup]="inputForm">
+        <div class="form-container">
           <!-- Name field - full width -->
           <mat-form-field class="form-field">
             <mat-label>Name</mat-label>
-            <input matInput type="text" formControlName="name" />
+            <input matInput type="text" [value]="nodeName()" (input)="nodeName.set($event.target.value)" />
           </mat-form-field>
 
           <!-- Tags field - full width -->
@@ -34,7 +34,7 @@
           <!-- Console settings -->
           <mat-form-field class="form-field">
             <mat-label>Console type</mat-label>
-            <mat-select formControlName="console_type">
+            <mat-select [value]="consoleType()" (valueChange)="consoleType.set($event)">
               @for (type of consoleTypes; track type) {
               <mat-option [value]="type">
                 {{ type }}
@@ -43,8 +43,8 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-checkbox formControlName="console_auto_start"> Auto start console </mat-checkbox>
-        </form>
+          <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)"> Auto start console </mat-checkbox>
+        </div>
       </mat-card>
     </div>
   </div>

@@ -10,12 +10,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfiguratorDialogDockerComponent } from './configurator-docker.component';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
-import { NonNegativeValidator } from '../../../../../validators/non-negative-validator';
+import { DockerValidationService } from '@services/validation';
 import { Node, Properties } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { ChangeDetectorRef } from '@angular/core';
@@ -29,7 +28,7 @@ describe('ConfiguratorDialogDockerComponent', () => {
   let mockToasterService: any;
   let mockDockerConfigurationService: any;
   let mockDialog: any;
-  let mockNonNegativeValidator: any;
+  let mockDockerValidationService: any;
   let mockChangeDetectorRef: any;
 
   const createMockProperties = (): Properties => ({
@@ -121,8 +120,14 @@ describe('ConfiguratorDialogDockerComponent', () => {
 
     mockChangeDetectorRef = { markForCheck: vi.fn() };
 
-    mockNonNegativeValidator = {
-      get: null,
+    mockDockerValidationService = {
+      validateName: vi.fn().mockReturnValue({ isValid: true }),
+      validateAdapters: vi.fn().mockReturnValue({ isValid: true }),
+      validateMacAddress: vi.fn().mockReturnValue({ isValid: true }),
+      validateMemory: vi.fn().mockReturnValue({ isValid: true }),
+      validateCpus: vi.fn().mockReturnValue({ isValid: true }),
+      validateConsoleHttpPath: vi.fn().mockReturnValue({ isValid: true }),
+      validateEnvironment: vi.fn().mockReturnValue({ isValid: true }),
     };
 
     mockNodeService = {
@@ -154,8 +159,6 @@ describe('ConfiguratorDialogDockerComponent', () => {
         MatButtonModule,
         MatIconModule,
         MatCheckboxModule,
-        FormsModule,
-        ReactiveFormsModule,
       ],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
@@ -163,7 +166,7 @@ describe('ConfiguratorDialogDockerComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: DockerConfigurationService, useValue: mockDockerConfigurationService },
-        { provide: NonNegativeValidator, useValue: mockNonNegativeValidator },
+        { provide: DockerValidationService, useValue: mockDockerValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
@@ -190,15 +193,12 @@ describe('ConfiguratorDialogDockerComponent', () => {
       expect(component.consoleResolutions.length).toBeGreaterThan(0);
     });
 
-    it('should initialize generalSettingsForm with required fields', () => {
-      expect(component.generalSettingsForm.get('name')).toBeTruthy();
-      expect(component.generalSettingsForm.get('adapter')).toBeTruthy();
-      expect(component.generalSettingsForm.get('consoleHttpPort')).toBeTruthy();
-      expect(component.generalSettingsForm.get('consoleHttpPath')).toBeTruthy();
-    });
-
-    it('should have console_auto_start defaulting to false', () => {
-      expect(component.generalSettingsForm.get('console_auto_start')?.value).toBe(false);
+    it('should initialize model signals', () => {
+      expect(component.nodeName).toBeTruthy();
+      expect(component.adapter).toBeTruthy();
+      expect(component.consoleHttpPort).toBeTruthy();
+      expect(component.consoleHttpPath).toBeTruthy();
+      expect(component.consoleAutoStart()).toBe(false);
     });
   });
 
@@ -227,8 +227,8 @@ describe('ConfiguratorDialogDockerComponent', () => {
       expect(component.name).toBe(mockNode.name);
     });
 
-    it('should patch form with node properties', () => {
-      expect(component.generalSettingsForm.get('name')?.value).toBe(mockNode.name);
+    it('should populate model signals with node data', () => {
+      expect(component.nodeName()).toBe(mockNode.name);
     });
 
     it('should call getConfiguration after loading data', () => {
@@ -307,33 +307,45 @@ describe('ConfiguratorDialogDockerComponent', () => {
   });
 
   describe('onSaveClick', () => {
-    it('should show error toast when form is invalid', () => {
-      component.generalSettingsForm.get('name')?.setValue('');
+    beforeEach(() => {
+      mockDockerValidationService.validateName.mockReturnValue({ isValid: true });
+      mockDockerValidationService.validateAdapters.mockReturnValue({ isValid: true });
+      mockDockerValidationService.validateMacAddress.mockReturnValue({ isValid: true });
+      mockDockerValidationService.validateMemory.mockReturnValue({ isValid: true });
+      mockDockerValidationService.validateCpus.mockReturnValue({ isValid: true });
+      mockDockerValidationService.validateConsoleHttpPath.mockReturnValue({ isValid: true });
+      mockDockerValidationService.validateEnvironment.mockReturnValue({ isValid: true });
+    });
+
+    it('should show error toast when name is empty', () => {
+      mockDockerValidationService.validateName.mockReturnValue({
+        isValid: false,
+        errorMessage: 'Name is required',
+      });
+      component.nodeName.set('');
 
       component.onSaveClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields.');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Name is required');
       expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
 
-    it('should update node properties when form is valid', () => {
-      component.generalSettingsForm.patchValue({
-        name: 'Updated-Docker',
-        startCommand: '/bin/bash',
-        adapter: 2,
-        mac_address: '00:00:00:00:00:01',
-        memory: 1024,
-        cpus: 2,
-        console_type: 'vnc',
-        aux_type: 'telnet',
-        console_auto_start: true,
-        console_resolution: '1920x1080',
-        consoleHttpPort: '8080',
-        consoleHttpPath: '/',
-        extra_hosts: 'host1.local',
-        extra_volumes: '/data:/data',
-        usage: 'Test usage',
-      });
+    it('should update node properties when validation passes', () => {
+      component.nodeName.set('Updated-Docker');
+      component.startCommand.set('/bin/bash');
+      component.adapter.set('2');
+      component.macAddress.set('00:00:00:00:00:01');
+      component.memory.set('1024');
+      component.cpus.set('2');
+      component.consoleType.set('vnc');
+      component.auxType.set('telnet');
+      component.consoleAutoStart.set(true);
+      component.consoleResolution.set('1920x1080');
+      component.consoleHttpPort.set('8080');
+      component.consoleHttpPath.set('/');
+      component.extraHosts.set('host1.local');
+      component.extraVolumes.set('/data:/data');
+      component.usage.set('Test usage');
 
       component.onSaveClick();
 
@@ -347,20 +359,18 @@ describe('ConfiguratorDialogDockerComponent', () => {
       expect(component.node.aux_type).toBe('telnet');
       expect(component.node.console_auto_start).toBe(true);
       expect(component.node.properties.console_resolution).toBe('1920x1080');
-      expect(component.node.properties.console_http_port).toBe('8080');
+      expect(component.node.properties.console_http_port).toBe(8080);
       expect(component.node.properties.console_http_path).toBe('/');
       expect(component.node.properties.extra_hosts).toBe('host1.local');
-      expect(component.node.properties.extra_volumes).toBe('/data:/data');
+      expect(component.node.properties.extra_volumes).toEqual(['/data:/data']);
       expect(component.node.properties.usage).toBe('Test usage');
     });
 
     it('should call updateNode service with controller and node', () => {
-      component.generalSettingsForm.patchValue({
-        name: 'Docker-Updated',
-        adapter: 1,
-        consoleHttpPort: '80',
-        consoleHttpPath: '/path',
-      });
+      component.nodeName.set('Docker-Updated');
+      component.adapter.set('1');
+      component.consoleHttpPort.set('80');
+      component.consoleHttpPath.set('/path');
 
       component.onSaveClick();
 
@@ -368,12 +378,10 @@ describe('ConfiguratorDialogDockerComponent', () => {
     });
 
     it('should show success toast with node name on successful update', () => {
-      component.generalSettingsForm.patchValue({
-        name: 'Docker-Saved',
-        adapter: 1,
-        consoleHttpPort: '80',
-        consoleHttpPath: '/path',
-      });
+      component.nodeName.set('Docker-Saved');
+      component.adapter.set('1');
+      component.consoleHttpPort.set('80');
+      component.consoleHttpPath.set('/path');
 
       component.onSaveClick();
 
@@ -403,12 +411,10 @@ describe('ConfiguratorDialogDockerComponent', () => {
     it('should show error toast when updateNode fails', () => {
       mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
       const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
-      component.generalSettingsForm.patchValue({
-        name: 'Docker-Test',
-        adapter: 1,
-        consoleHttpPort: '80',
-        consoleHttpPath: '/path',
-      });
+      component.nodeName.set('Docker-Test');
+      component.adapter.set('1');
+      component.consoleHttpPort.set('80');
+      component.consoleHttpPath.set('/path');
 
       component.onSaveClick();
 

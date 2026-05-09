@@ -1,13 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
@@ -21,6 +14,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { AtmSwitchValidationService } from '@services/validation';
 
 @Component({
   standalone: true,
@@ -50,7 +44,6 @@ import { ToasterService } from '@services/toaster.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     MatDialogModule,
     MatCardModule,
     MatTableModule,
@@ -66,42 +59,32 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogAtmSwitchComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
-  private cd = inject(ChangeDetectorRef);
+  private validationService = inject(AtmSwitchValidationService);
 
   controller: Controller;
   node: Node;
   name: string;
-  nameForm: UntypedFormGroup;
-  inputForm: UntypedFormGroup;
-  abstractForm: UntypedFormGroup;
-  consoleTypes: string[] = [];
 
-  nodeMappings = new Map<string, string>();
-  nodeMappingsDataSource: NodeMapping[] = [];
-  dataSource = [];
-  displayedColumns = ['portIn', 'portOut', 'actions'];
+  // Model signals for form fields
+  readonly nameSignal = model('');
+  readonly useVpiOnly = model(false);
 
-  useVpiOnly: boolean = false;
+  // Input form fields
+  readonly sourcePort = model('');
+  readonly sourceVci = model('');
+  readonly destinationPort = model('');
+  readonly destinationVci = model('');
 
-  constructor() {
-    this.nameForm = this.formBuilder.group({
-      name: new UntypedFormControl('', Validators.required),
-      useVpiOnly: new UntypedFormControl(false),
-    });
+  // Abstract form fields
+  readonly sourceVpi = model('');
+  readonly destinationVpi = model('');
 
-    this.inputForm = this.formBuilder.group({
-      sourcePort: new UntypedFormControl('', Validators.required),
-      sourceVci: new UntypedFormControl('', Validators.required),
-      destinationPort: new UntypedFormControl('', Validators.required),
-      destinationVci: new UntypedFormControl('', Validators.required),
-    });
+  // Signals for data (automatic reactivity, no markForCheck needed)
+  readonly nodeMappings = signal<Map<string, string>>(new Map());
+  readonly nodeMappingsDataSource = signal<NodeMapping[]>([]);
+  readonly displayedColumns = ['portIn', 'portOut', 'actions'] as const;
 
-    this.abstractForm = this.formBuilder.group({
-      sourceVpi: new UntypedFormControl('', Validators.required),
-      destinationVpi: new UntypedFormControl('', Validators.required),
-    });
-  }
+  constructor() {}
 
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
@@ -109,83 +92,97 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
         this.node = node;
         this.name = node.name;
 
-        // Update form values with node data
-        this.nameForm.patchValue({
-          name: node.name,
-          useVpiOnly: false,
-        });
+        // Update model signals with node data
+        this.nameSignal.set(node.name);
+        this.useVpiOnly.set(false);
 
-        let mappings = node.properties.mappings;
+        // Update signals with mapping data (automatic UI update)
+        const mappings = node.properties.mappings;
+        const newMappings = new Map<string, string>();
         Object.keys(mappings).forEach((key) => {
-          this.nodeMappings.set(key, mappings[key]);
+          newMappings.set(key, mappings[key]);
         });
+        this.nodeMappings.set(newMappings);
 
-        this.nodeMappingsDataSource = Array.from(this.nodeMappings.entries()).map(([key, value]) => ({
-          portIn: key,
-          portOut: value,
-        }));
-        this.cd.markForCheck();
+        this.nodeMappingsDataSource.set(
+          Array.from(newMappings.entries()).map(([key, value]) => ({
+            portIn: key,
+            portOut: value,
+          }))
+        );
+        // No markForCheck needed - signals trigger automatic update
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load node';
         this.toasterService.error(message);
-        this.cd.markForCheck();
+        // No markForCheck needed - toasterService triggers update
       },
     });
   }
 
   delete(elem: NodeMapping) {
-    this.nodeMappingsDataSource = this.nodeMappingsDataSource.filter((n) => n !== elem);
-    this.cd.markForCheck();
+    this.nodeMappingsDataSource.set(this.nodeMappingsDataSource().filter((n) => n !== elem));
+    // No markForCheck needed - signal triggers automatic update
   }
 
   add() {
-    const inputValues = this.inputForm.value;
-    const abstractValues = this.abstractForm.value;
+    // Validate all input fields using validation service
+    const validationResult = this.validationService.validateMappingEntry(
+      this.sourcePort(),
+      this.sourceVci(),
+      this.destinationPort(),
+      this.destinationVci(),
+      this.sourceVpi(),
+      this.destinationVpi(),
+      this.useVpiOnly()
+    );
 
-    if (this.inputForm.valid) {
-      let nodeMapping: NodeMapping;
-      const useVpiOnly = this.nameForm.value.useVpiOnly;
-
-      if (!useVpiOnly) {
-        if (this.abstractForm.valid) {
-          nodeMapping = {
-            portIn: `${inputValues.sourcePort}:${abstractValues.sourceVpi}:${inputValues.sourceVci}`,
-            portOut: `${inputValues.destinationPort}:${abstractValues.destinationVpi}:${inputValues.destinationVci}`,
-          };
-
-          if (this.nodeMappingsDataSource.filter((n) => n.portIn === nodeMapping.portIn).length > 0) {
-            this.toasterService.error('Mapping already defined.');
-          } else {
-            this.nodeMappingsDataSource = this.nodeMappingsDataSource.concat([nodeMapping]);
-            this.clearUserInput();
-            this.cd.markForCheck();
-          }
-        } else {
-          this.toasterService.error('Fill all required fields.');
-        }
-      } else {
-        nodeMapping = {
-          portIn: `${inputValues.sourcePort}:${inputValues.sourceVci}`,
-          portOut: `${inputValues.destinationPort}:${inputValues.destinationVci}`,
-        };
-
-        if (this.nodeMappingsDataSource.filter((n) => n.portIn === nodeMapping.portIn).length > 0) {
-          this.toasterService.error('Mapping already defined.');
-        } else {
-          this.nodeMappingsDataSource = this.nodeMappingsDataSource.concat([nodeMapping]);
-          this.clearUserInput();
-          this.cd.markForCheck();
-        }
-      }
-    } else {
-      this.toasterService.error('Fill all required fields.');
+    if (!validationResult.isValid) {
+      this.toasterService.error(validationResult.errorMessage || 'Invalid input');
+      return;
     }
+
+    // Build mapping based on useVpiOnly mode
+    let nodeMapping: NodeMapping;
+
+    if (!this.useVpiOnly()) {
+      // VC format: port:vpi:vci
+      nodeMapping = {
+        portIn: `${this.sourcePort()}:${this.sourceVpi()}:${this.sourceVci()}`,
+        portOut: `${this.destinationPort()}:${this.destinationVpi()}:${this.destinationVci()}`,
+      };
+    } else {
+      // VP format: port:vci
+      nodeMapping = {
+        portIn: `${this.sourcePort()}:${this.sourceVci()}`,
+        portOut: `${this.destinationPort()}:${this.destinationVci()}`,
+      };
+    }
+
+    // Validate uniqueness
+    const uniqueValidation = this.validationService.validateUniqueMapping(
+      nodeMapping.portIn,
+      this.nodeMappingsDataSource()
+    );
+
+    if (!uniqueValidation.isValid) {
+      this.toasterService.error(uniqueValidation.errorMessage || 'Mapping already defined');
+      return;
+    }
+
+    // Add mapping
+    this.nodeMappingsDataSource.set([...this.nodeMappingsDataSource(), nodeMapping]);
+    this.clearUserInput();
+    // No markForCheck needed - signal triggers automatic update
   }
 
   clearUserInput() {
-    this.inputForm.reset();
-    this.abstractForm.reset();
+    this.sourcePort.set('');
+    this.sourceVci.set('');
+    this.destinationPort.set('');
+    this.destinationVci.set('');
+    this.sourceVpi.set('');
+    this.destinationVpi.set('');
   }
 
   strMapToObj(strMap) {
@@ -197,37 +194,37 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   }
 
   onSaveClick() {
-    if (this.nameForm.valid) {
-      // Merge form values back into node
-      const formValues = this.nameForm.value;
-
-      this.node.name = formValues.name;
-      this.useVpiOnly = formValues.useVpiOnly;
-
-      this.nodeMappings.clear();
-      this.nodeMappingsDataSource.forEach((elem) => {
-        this.nodeMappings.set(elem.portIn, elem.portOut);
-      });
-
-      this.node.properties.mappings = Array.from(this.nodeMappings).reduce(
-        (obj, [key, value]) => Object.assign(obj, { [key]: value }),
-        {}
-      );
-
-      this.nodeService.updateNode(this.controller, this.node).subscribe({
-        next: () => {
-          this.toasterService.success(`Node ${this.node.name} updated.`);
-          this.onCancelClick();
-        },
-        error: (error: unknown) => {
-          const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
-          this.toasterService.error(errorMessage);
-          this.cd.markForCheck();
-        },
-      });
-    } else {
-      this.toasterService.error(`Fill all required fields.`);
+    if (!this.nameSignal()) {
+      this.toasterService.error('Fill all required fields.');
+      return;
     }
+
+    // Merge model signals back into node
+    this.node.name = this.nameSignal();
+    // useVpiOnly is already tracked by the model signal
+
+    // Build mappings from signal data
+    const currentMappings = new Map<string, string>();
+    this.nodeMappingsDataSource().forEach((elem) => {
+      currentMappings.set(elem.portIn, elem.portOut);
+    });
+
+    this.node.properties.mappings = Array.from(currentMappings.entries()).reduce(
+      (obj, [key, value]) => Object.assign(obj, { [key]: value }),
+      {}
+    );
+
+    this.nodeService.updateNode(this.controller, this.node).subscribe({
+      next: () => {
+        this.toasterService.success(`Node ${this.node.name} updated.`);
+        this.onCancelClick();
+      },
+      error: (error: unknown) => {
+        const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
+        this.toasterService.error(errorMessage);
+        // No markForCheck needed - toasterService triggers update
+      },
+    });
   }
 
   onCancelClick() {

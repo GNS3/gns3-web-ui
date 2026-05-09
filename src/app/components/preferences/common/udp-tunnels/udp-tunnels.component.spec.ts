@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UdpTunnelsComponent } from './udp-tunnels.component';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
+import { ToasterService } from '@services/toaster.service';
+import { ValidationService } from '@services/validation';
 import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -8,6 +10,8 @@ describe('UdpTunnelsComponent', () => {
   let component: UdpTunnelsComponent;
   let fixture: ComponentFixture<UdpTunnelsComponent>;
   let mockBuiltInTemplatesConfigurationService: any;
+  let mockToasterService: any;
+  let mockValidationService: any;
 
   const mockEtherTypes = ['0x8100', '0x88A8', '0x9100'];
   const mockPortTypes = ['access', 'dot1q', 'qinq'];
@@ -20,10 +24,21 @@ describe('UdpTunnelsComponent', () => {
       getPortTypesForEthernetSwitches: vi.fn().mockReturnValue(mockPortTypes),
     };
 
+    mockToasterService = {
+      error: vi.fn(),
+      success: vi.fn(),
+    };
+
+    mockValidationService = {
+      required: vi.fn().mockReturnValue({ isValid: true }),
+    };
+
     await TestBed.configureTestingModule({
       imports: [UdpTunnelsComponent],
       providers: [
         { provide: BuiltInTemplatesConfigurationService, useValue: mockBuiltInTemplatesConfigurationService },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: ValidationService, useValue: mockValidationService },
       ],
     }).compileComponents();
 
@@ -71,10 +86,16 @@ describe('UdpTunnelsComponent', () => {
   });
 
   describe('onAddUdpInterface', () => {
+    beforeEach(() => {
+      mockValidationService.required.mockReturnValue({ isValid: true });
+    });
+
     it('should add new port to dataSourceUdp array', () => {
       const initialLength = component.dataSourceUdp.length;
       component.newPortName.set('test-port');
       component.newPortLport.set(8080);
+      component.newPortRhost.set('localhost');
+      component.newPortRport.set(9000);
 
       component.onAddUdpInterface();
 
@@ -96,23 +117,145 @@ describe('UdpTunnelsComponent', () => {
     it('should reset newPort signals to empty after adding', () => {
       component.newPortName.set('test');
       component.newPortLport.set(8080);
+      component.newPortRhost.set('localhost');
+      component.newPortRport.set(9000);
 
       component.onAddUdpInterface();
 
       expect(component.newPortName()).toBe('');
       expect(component.newPortLport()).toBe(0);
+      expect(component.newPortRhost()).toBe('');
+      expect(component.newPortRport()).toBe(0);
     });
 
     it('should preserve existing entries in dataSourceUdp', () => {
-      const existingPort: PortsMappingEntity = { name: 'existing', port_number: 1000 };
+      const existingPort: PortsMappingEntity = { name: 'existing', port_number: 1000, lport: 1000, rhost: 'localhost', rport: 2000, type: 'udp' };
       component.dataSourceUdp = [existingPort];
 
       component.newPortName.set('new-port');
       component.newPortLport.set(2000);
+      component.newPortRhost.set('remotehost');
+      component.newPortRport.set(3000);
       component.onAddUdpInterface();
 
       expect(component.dataSourceUdp).toContain(existingPort);
       expect(component.dataSourceUdp.length).toBe(2);
+    });
+
+    it('should show error when remote host is empty', () => {
+      mockValidationService.required.mockReturnValue({
+        isValid: false,
+        errorMessage: 'Remote host is required',
+      });
+      component.newPortName.set('test');
+      component.newPortLport.set(8080);
+      component.newPortRhost.set('');
+      component.newPortRport.set(9000);
+      const initialLength = component.dataSourceUdp.length;
+
+      component.onAddUdpInterface();
+
+      expect(component.dataSourceUdp.length).toBe(initialLength);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Remote host is required');
+    });
+
+    it('should show error when local port is 0', () => {
+      mockValidationService.required.mockReturnValue({ isValid: true });
+      component.newPortName.set('test');
+      component.newPortLport.set(0);
+      component.newPortRhost.set('localhost');
+      component.newPortRport.set(9000);
+      const initialLength = component.dataSourceUdp.length;
+
+      component.onAddUdpInterface();
+
+      expect(component.dataSourceUdp.length).toBe(initialLength);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Local port must be between 1 and 65535');
+    });
+
+    it('should show error when local port is below 1', () => {
+      mockValidationService.required.mockReturnValue({ isValid: true });
+      component.newPortName.set('test');
+      component.newPortLport.set(-1);
+      component.newPortRhost.set('localhost');
+      component.newPortRport.set(9000);
+      const initialLength = component.dataSourceUdp.length;
+
+      component.onAddUdpInterface();
+
+      expect(component.dataSourceUdp.length).toBe(initialLength);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Local port must be between 1 and 65535');
+    });
+
+    it('should show error when local port is above 65535', () => {
+      mockValidationService.required.mockReturnValue({ isValid: true });
+      component.newPortName.set('test');
+      component.newPortLport.set(65536);
+      component.newPortRhost.set('localhost');
+      component.newPortRport.set(9000);
+      const initialLength = component.dataSourceUdp.length;
+
+      component.onAddUdpInterface();
+
+      expect(component.dataSourceUdp.length).toBe(initialLength);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Local port must be between 1 and 65535');
+    });
+
+    it('should show error when remote port is 0', () => {
+      mockValidationService.required.mockReturnValue({ isValid: true });
+      component.newPortName.set('test');
+      component.newPortLport.set(8080);
+      component.newPortRhost.set('localhost');
+      component.newPortRport.set(0);
+      const initialLength = component.dataSourceUdp.length;
+
+      component.onAddUdpInterface();
+
+      expect(component.dataSourceUdp.length).toBe(initialLength);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Remote port must be between 1 and 65535');
+    });
+
+    it('should show error when remote port is below 1', () => {
+      mockValidationService.required.mockReturnValue({ isValid: true });
+      component.newPortName.set('test');
+      component.newPortLport.set(8080);
+      component.newPortRhost.set('localhost');
+      component.newPortRport.set(-1);
+      const initialLength = component.dataSourceUdp.length;
+
+      component.onAddUdpInterface();
+
+      expect(component.dataSourceUdp.length).toBe(initialLength);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Remote port must be between 1 and 65535');
+    });
+
+    it('should show error when remote port is above 65535', () => {
+      mockValidationService.required.mockReturnValue({ isValid: true });
+      component.newPortName.set('test');
+      component.newPortLport.set(8080);
+      component.newPortRhost.set('localhost');
+      component.newPortRport.set(65536);
+      const initialLength = component.dataSourceUdp.length;
+
+      component.onAddUdpInterface();
+
+      expect(component.dataSourceUdp.length).toBe(initialLength);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Remote port must be between 1 and 65535');
+    });
+
+    it('should accept valid port values at boundaries', () => {
+      mockValidationService.required.mockReturnValue({ isValid: true });
+      component.newPortName.set('test');
+      component.newPortLport.set(1);
+      component.newPortRhost.set('localhost');
+      component.newPortRport.set(65535);
+
+      component.onAddUdpInterface();
+
+      expect(component.dataSourceUdp.length).toBe(1);
+      expect(component.dataSourceUdp[0].lport).toBe(1);
+      expect(component.dataSourceUdp[0].rport).toBe(65535);
+      expect(mockToasterService.error).not.toHaveBeenCalled();
     });
   });
 

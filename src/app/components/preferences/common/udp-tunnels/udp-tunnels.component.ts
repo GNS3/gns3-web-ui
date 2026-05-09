@@ -8,6 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
+import { ToasterService } from '@services/toaster.service';
+import { ValidationService } from '@services/validation';
 
 @Component({
   selector: 'app-udp-tunnels',
@@ -55,6 +57,8 @@ export class UdpTunnelsComponent implements OnInit {
   readonly etherTypes = signal<string[]>([]);
 
   private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
+  private toasterService = inject(ToasterService);
+  private validationService = inject(ValidationService);
 
   ngOnInit() {
     this.getConfiguration();
@@ -66,6 +70,25 @@ export class UdpTunnelsComponent implements OnInit {
   }
 
   onAddUdpInterface() {
+    // Validate remote host (required)
+    const rhostValidation = this.validationService.required(this.newPortRhost(), 'Remote host');
+    if (!rhostValidation.isValid) {
+      this.toasterService.error(rhostValidation.errorMessage || 'Remote host is required');
+      return;
+    }
+
+    // Validate local port (1-65535, not 0)
+    if (this.newPortLport() < 1 || this.newPortLport() > 65535) {
+      this.toasterService.error('Local port must be between 1 and 65535');
+      return;
+    }
+
+    // Validate remote port (1-65535, not 0)
+    if (this.newPortRport() < 1 || this.newPortRport() > 65535) {
+      this.toasterService.error('Remote port must be between 1 and 65535');
+      return;
+    }
+
     const newPort: PortsMappingEntity = {
       name: this.newPortName(),
       lport: this.newPortLport(),

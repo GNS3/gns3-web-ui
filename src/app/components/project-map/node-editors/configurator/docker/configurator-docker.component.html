@@ -7,10 +7,10 @@
         @if (name) {
         <mat-tab-group>
           <mat-tab label="General settings">
-            <form [formGroup]="generalSettingsForm">
+            <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Name</mat-label>
-                <input matInput formControlName="name" type="text" />
+                <input matInput [value]="nodeName()" (input)="nodeName.set($event.target.value)" type="text" />
               </mat-form-field>
 
               <mat-form-field class="form-field tags-field">
@@ -33,35 +33,35 @@
               </mat-form-field>
 
               <mat-form-field class="form-field">
-                <mat-label>Start command</mat-label>
-                <input matInput formControlName="startCommand" type="text" />
+                <mat-label>Image</mat-label>
+                <input matInput [value]="dockerImage()" (input)="dockerImage.set($event.target.value)" type="text" />
               </mat-form-field>
 
               <div class="two-column-grid">
                 <mat-form-field class="form-field">
                   <mat-label>Adapters</mat-label>
-                  <input formControlName="adapter" matInput type="number" />
+                  <input [value]="adapter()" (input)="adapter.set($event.target.value)" matInput type="text" />
                 </mat-form-field>
 
                 <mat-form-field class="form-field">
                   <mat-label>Base MAC</mat-label>
-                  <input matInput formControlName="mac_address" type="text" />
+                  <input matInput [value]="macAddress()" (input)="macAddress.set($event.target.value)" type="text" />
                 </mat-form-field>
 
                 <mat-form-field class="form-field">
                   <mat-label>Maximum memory</mat-label>
-                  <input formControlName="memory" matInput type="number" min="0" />
+                  <input [value]="memory()" (input)="memory.set($event.target.value)" matInput type="text" min="0" />
                   <span matSuffix>MB</span>
                 </mat-form-field>
 
                 <mat-form-field class="form-field">
                   <mat-label>Maximum CPUs</mat-label>
-                  <input formControlName="cpus" matInput type="number" min="0" />
+                  <input [value]="cpus()" (input)="cpus.set($event.target.value)" matInput type="text" min="0" />
                 </mat-form-field>
 
                 <mat-form-field class="form-field">
                   <mat-label>Console type</mat-label>
-                  <mat-select formControlName="console_type">
+                  <mat-select [value]="consoleType()" (valueChange)="consoleType.set($event)">
                     @for (type of consoleTypes; track type) {
                     <mat-option [value]="type">
                       {{ type }}
@@ -72,7 +72,7 @@
 
                 <mat-form-field class="form-field">
                   <mat-label>Auxiliary console type</mat-label>
-                  <mat-select formControlName="aux_type">
+                  <mat-select [value]="auxType()" (valueChange)="auxType.set($event)">
                     @for (type of auxConsoleTypes; track type) {
                     <mat-option [value]="type">
                       {{ type }}
@@ -83,7 +83,7 @@
 
                 <mat-form-field class="form-field">
                   <mat-label>VNC console resolution</mat-label>
-                  <mat-select formControlName="console_resolution">
+                  <mat-select [value]="consoleResolution()" (valueChange)="consoleResolution.set($event)">
                     @for (resolution of consoleResolutions; track resolution) {
                     <mat-option [value]="resolution">
                       {{ resolution }}
@@ -94,52 +94,62 @@
 
                 <mat-form-field class="form-field">
                   <mat-label>HTTP port in the container</mat-label>
-                  <input formControlName="consoleHttpPort" matInput type="number" />
+                  <input [value]="consoleHttpPort()" (input)="consoleHttpPort.set($event.target.value)" matInput type="text" />
                 </mat-form-field>
 
                 <mat-form-field class="form-field grid-span-2">
                   <mat-label>HTTP path</mat-label>
-                  <input matInput formControlName="consoleHttpPath" type="text" />
+                  <input matInput [value]="consoleHttpPath()" (input)="consoleHttpPath.set($event.target.value)" type="text" />
                 </mat-form-field>
 
-                <mat-checkbox formControlName="console_auto_start" class="grid-span-2"> Auto start console </mat-checkbox>
+                <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)" class="grid-span-2"> Auto start console </mat-checkbox>
               </div>
 
-              <button mat-button class="form-field" (click)="editNetworkConfiguration()">
-                Edit network configuration
-              </button>
-            </form>
+              <div class="two-column-grid">
+                <button mat-button class="form-field" (click)="configureCustomAdapters()">
+                  Configure custom adapters
+                </button>
+                <button mat-button class="form-field" (click)="editNetworkConfiguration()">
+                  Edit network configuration
+                </button>
+              </div>
+            </div>
           </mat-tab>
 
           <mat-tab label="Advanced">
-            <form [formGroup]="generalSettingsForm">
+            <div class="form-container">
+              <h6>Start command</h6>
+              <mat-form-field class="form-field">
+                <mat-label>Start command</mat-label>
+                <textarea matInput [value]="startCommand()" (input)="startCommand.set($event.target.value)" placeholder='Command to run when the container starts (overrides image default CMD). E.g., python app.py, nginx -g "daemon off;"'></textarea>
+              </mat-form-field>
               <h6>Environment</h6>
               <mat-form-field class="form-field">
                 <mat-label>Environment variables</mat-label>
-                <textarea matInput formControlName="environment" placeholder="KEY1=value1&#10;KEY2=value2"></textarea>
+                <textarea matInput [value]="environment()" (input)="environment.set($event.target.value)" placeholder="Environment variables (one per line, KEY=VALUE format). Supports: %vm-name%, %vm-id%, %project-id%, %project-path%"></textarea>
               </mat-form-field>
 
               <h6>Extra hosts</h6>
               <mat-form-field class="form-field">
                 <mat-label>Extra hosts</mat-label>
-                <textarea matInput formControlName="extra_hosts"></textarea>
+                <textarea matInput [value]="extraHosts()" (input)="extraHosts.set($event.target.value)" placeholder="Hostname to IP mappings, one per line (e.g., gns3.com:192.168.100.10)"></textarea>
               </mat-form-field>
 
               <h6>Additional volumes</h6>
               <mat-form-field class="form-field">
                 <mat-label>Additional volumes</mat-label>
-                <textarea matInput formControlName="extra_volumes"></textarea>
+                <textarea matInput [value]="extraVolumes()" (input)="extraVolumes.set($event.target.value)" placeholder="Container directories to persist, one per line (e.g., /data&#10;/config)"></textarea>
               </mat-form-field>
-            </form>
+            </div>
           </mat-tab>
 
           <mat-tab label="Usage">
-            <form [formGroup]="generalSettingsForm">
+            <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Usage</mat-label>
-                <textarea matInput formControlName="usage"></textarea>
+                <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)"></textarea>
               </mat-form-field>
-            </form>
+            </div>
           </mat-tab>
         </mat-tab-group>
         }
