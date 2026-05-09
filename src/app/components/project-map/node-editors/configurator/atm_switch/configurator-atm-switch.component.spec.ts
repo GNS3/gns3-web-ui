@@ -6,7 +6,6 @@ import { ToasterService } from '@services/toaster.service';
 import { AtmSwitchValidationService } from '@services/validation';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
-import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
@@ -16,7 +15,6 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let mockNodeService: any;
   let mockToasterService: any;
-  let mockChangeDetectorRef: any;
   let mockValidationService: any;
 
   const mockController = { id: 1 } as unknown as Controller;
@@ -41,10 +39,6 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
       success: vi.fn(),
     };
 
-    mockChangeDetectorRef = {
-      markForCheck: vi.fn(),
-    };
-
     mockValidationService = {
       validateMappingEntry: vi.fn().mockReturnValue({ isValid: true }),
       validateUniqueMapping: vi.fn().mockReturnValue({ isValid: true }),
@@ -56,7 +50,6 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
-        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
         { provide: AtmSwitchValidationService, useValue: mockValidationService },
       ],
     }).compileComponents();
@@ -92,12 +85,12 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
       expect(component.displayedColumns).toEqual(['portIn', 'portOut', 'actions']);
     });
 
-    it('should initialize nodeMappings as Map', () => {
-      expect(component.nodeMappings).toBeInstanceOf(Map);
+    it('should initialize nodeMappings as signal containing Map', () => {
+      expect(component.nodeMappings()).toBeInstanceOf(Map);
     });
 
-    it('should initialize nodeMappingsDataSource as array', () => {
-      expect(Array.isArray(component.nodeMappingsDataSource)).toBe(true);
+    it('should initialize nodeMappingsDataSource as signal containing array', () => {
+      expect(Array.isArray(component.nodeMappingsDataSource())).toBe(true);
     });
 
     it('should load node data on init', () => {
@@ -105,14 +98,14 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
     });
 
     it('should populate nodeMappingsDataSource from node properties', () => {
-      expect(component.nodeMappingsDataSource.length).toBe(2);
-      expect(component.nodeMappingsDataSource).toContainEqual({ portIn: '0:0:1', portOut: '1:0:2' });
-      expect(component.nodeMappingsDataSource).toContainEqual({ portIn: '0:0:3', portOut: '1:0:4' });
+      expect(component.nodeMappingsDataSource().length).toBe(2);
+      expect(component.nodeMappingsDataSource()).toContainEqual({ portIn: '0:0:1', portOut: '1:0:2' });
+      expect(component.nodeMappingsDataSource()).toContainEqual({ portIn: '0:0:3', portOut: '1:0:4' });
     });
 
-    it('should populate nodeMappings Map from node properties', () => {
-      expect(component.nodeMappings.get('0:0:1')).toBe('1:0:2');
-      expect(component.nodeMappings.get('0:0:3')).toBe('1:0:4');
+    it('should populate nodeMappings signal with Map from node properties', () => {
+      expect(component.nodeMappings().get('0:0:1')).toBe('1:0:2');
+      expect(component.nodeMappings().get('0:0:3')).toBe('1:0:4');
     });
 
     it('should update nameSignal with node name', () => {
@@ -125,20 +118,20 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
   });
 
   describe('delete', () => {
-    it('should remove mapping from nodeMappingsDataSource', () => {
-      const elemToDelete = component.nodeMappingsDataSource[0];
-      const initialLength = component.nodeMappingsDataSource.length;
+    it('should remove mapping from nodeMappingsDataSource signal', () => {
+      const elemToDelete = component.nodeMappingsDataSource()[0];
+      const initialLength = component.nodeMappingsDataSource().length;
 
       component.delete(elemToDelete);
 
-      expect(component.nodeMappingsDataSource.length).toBe(initialLength - 1);
-      expect(component.nodeMappingsDataSource).not.toContainEqual(elemToDelete);
+      expect(component.nodeMappingsDataSource().length).toBe(initialLength - 1);
+      expect(component.nodeMappingsDataSource()).not.toContainEqual(elemToDelete);
     });
 
     it('should not affect other mappings when deleting', () => {
       component.delete({ portIn: '0:0:1', portOut: '1:0:2' });
 
-      expect(component.nodeMappingsDataSource).toContainEqual({ portIn: '0:0:3', portOut: '1:0:4' });
+      expect(component.nodeMappingsDataSource()).toContainEqual({ portIn: '0:0:3', portOut: '1:0:4' });
     });
   });
 
@@ -186,7 +179,7 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
 
       component.add();
 
-      expect(component.nodeMappingsDataSource).toContainEqual({
+      expect(component.nodeMappingsDataSource()).toContainEqual({
         portIn: '0:5:1',
         portOut: '1:10:2',
       });
@@ -201,7 +194,7 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
 
       component.add();
 
-      expect(component.nodeMappingsDataSource).toContainEqual({
+      expect(component.nodeMappingsDataSource()).toContainEqual({
         portIn: '0:32',
         portOut: '1:33',
       });
@@ -301,10 +294,10 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
     });
 
     it('should merge mappings into node properties', () => {
-      component.nodeMappingsDataSource = [
+      component.nodeMappingsDataSource.set([
         { portIn: '2:0:5', portOut: '3:0:6' },
         { portIn: '4:0:7', portOut: '5:0:8' },
-      ];
+      ]);
 
       component.onSaveClick();
 

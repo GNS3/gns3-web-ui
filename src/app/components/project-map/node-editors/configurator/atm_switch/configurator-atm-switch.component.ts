@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -59,7 +59,6 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogAtmSwitchComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
-  private cd = inject(ChangeDetectorRef);
   private validationService = inject(AtmSwitchValidationService);
 
   controller: Controller;
@@ -80,12 +79,10 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   readonly sourceVpi = model('');
   readonly destinationVpi = model('');
 
-  consoleTypes: string[] = [];
-
-  nodeMappings = new Map<string, string>();
-  nodeMappingsDataSource: NodeMapping[] = [];
-  dataSource = [];
-  displayedColumns = ['portIn', 'portOut', 'actions'];
+  // Signals for data (automatic reactivity, no markForCheck needed)
+  readonly nodeMappings = signal<Map<string, string>>(new Map());
+  readonly nodeMappingsDataSource = signal<NodeMapping[]>([]);
+  readonly displayedColumns = ['portIn', 'portOut', 'actions'] as const;
 
   constructor() {}
 
@@ -99,28 +96,33 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
         this.nameSignal.set(node.name);
         this.useVpiOnly.set(false);
 
-        let mappings = node.properties.mappings;
+        // Update signals with mapping data (automatic UI update)
+        const mappings = node.properties.mappings;
+        const newMappings = new Map<string, string>();
         Object.keys(mappings).forEach((key) => {
-          this.nodeMappings.set(key, mappings[key]);
+          newMappings.set(key, mappings[key]);
         });
+        this.nodeMappings.set(newMappings);
 
-        this.nodeMappingsDataSource = Array.from(this.nodeMappings.entries()).map(([key, value]) => ({
-          portIn: key,
-          portOut: value,
-        }));
-        this.cd.markForCheck();
+        this.nodeMappingsDataSource.set(
+          Array.from(newMappings.entries()).map(([key, value]) => ({
+            portIn: key,
+            portOut: value,
+          }))
+        );
+        // No markForCheck needed - signals trigger automatic update
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load node';
         this.toasterService.error(message);
-        this.cd.markForCheck();
+        // No markForCheck needed - toasterService triggers update
       },
     });
   }
 
   delete(elem: NodeMapping) {
-    this.nodeMappingsDataSource = this.nodeMappingsDataSource.filter((n) => n !== elem);
-    this.cd.markForCheck();
+    this.nodeMappingsDataSource.set(this.nodeMappingsDataSource().filter((n) => n !== elem));
+    // No markForCheck needed - signal triggers automatic update
   }
 
   add() {
@@ -160,7 +162,7 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
     // Validate uniqueness
     const uniqueValidation = this.validationService.validateUniqueMapping(
       nodeMapping.portIn,
-      this.nodeMappingsDataSource
+      this.nodeMappingsDataSource()
     );
 
     if (!uniqueValidation.isValid) {
@@ -169,9 +171,9 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
     }
 
     // Add mapping
-    this.nodeMappingsDataSource = this.nodeMappingsDataSource.concat([nodeMapping]);
+    this.nodeMappingsDataSource.set([...this.nodeMappingsDataSource(), nodeMapping]);
     this.clearUserInput();
-    this.cd.markForCheck();
+    // No markForCheck needed - signal triggers automatic update
   }
 
   clearUserInput() {
@@ -201,12 +203,13 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
     this.node.name = this.nameSignal();
     // useVpiOnly is already tracked by the model signal
 
-    this.nodeMappings.clear();
-    this.nodeMappingsDataSource.forEach((elem) => {
-      this.nodeMappings.set(elem.portIn, elem.portOut);
+    // Build mappings from signal data
+    const currentMappings = new Map<string, string>();
+    this.nodeMappingsDataSource().forEach((elem) => {
+      currentMappings.set(elem.portIn, elem.portOut);
     });
 
-    this.node.properties.mappings = Array.from(this.nodeMappings).reduce(
+    this.node.properties.mappings = Array.from(currentMappings.entries()).reduce(
       (obj, [key, value]) => Object.assign(obj, { [key]: value }),
       {}
     );
@@ -219,7 +222,7 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
       error: (error: unknown) => {
         const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
         this.toasterService.error(errorMessage);
-        this.cd.markForCheck();
+        // No markForCheck needed - toasterService triggers update
       },
     });
   }
