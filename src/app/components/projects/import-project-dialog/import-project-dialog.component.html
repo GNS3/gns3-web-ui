@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Import project</h1>
-@if (!isFirstStepCompleted) {
+@if (!isFirstStepCompleted()) {
 <div>
-  <form [formGroup]="projectNameForm" class="file-name-form">
+  <form class="file-name-form">
     <input
       type="file"
       accept=".gns3project, .gns3p"
@@ -23,21 +23,22 @@
       Choose file
     </button>
     <div class="input-row">
-      <mat-form-field [ngClass]="{ empty: !isDeleteVisible }" class="file-name-form-field">
+      <mat-form-field [ngClass]="{ empty: !isDeleteVisible() }" class="file-name-form-field">
         <input
           matInput
           type="text"
-          formControlName="projectName"
-          [ngClass]="{ 'is-invalid': form.projectName.errors }"
+          [value]="projectName()"
+          (input)="projectName.set($event.target.value)"
+          [ngClass]="{ 'is-invalid': hasInvalidCharacters() || (isNameEmpty() && submitted()) }"
           placeholder="Please enter name"
         />
-        @if (form.projectName.errors && form.projectName.errors.required) {
+        @if (isNameEmpty() && submitted()) {
         <mat-error>Project name is required</mat-error>
-        } @if (form.projectName.errors && form.projectName.errors.invalidName) {
+        } @if (hasInvalidCharacters()) {
         <mat-error>Project name is incorrect</mat-error>
         }
       </mat-form-field>
-      @if (isDeleteVisible) {
+      @if (isDeleteVisible()) {
       <button class="delete-button" matTooltip="Remove selected file" matTooltipPosition="above">
         <mat-icon color="primary" (click)="onDeleteClick()" class="delete-icon">clear</mat-icon>
       </button>
@@ -47,7 +48,7 @@
       <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
       <button
         mat-button
-        [disabled]="!isImportEnabled"
+        [disabled]="!isImportEnabled()"
         (click)="onImportClick()"
         tabindex="2"
         mat-raised-button
@@ -58,18 +59,15 @@
     </div>
   </form>
 </div>
-} @if (isFirstStepCompleted) {
+} @if (isFirstStepCompleted()) {
 <div>
-  <!-- <div class="progress">
-      <div class="progress-bar" role="progressbar" [ngStyle]="{ width: uploader.progress + '%' }"></div>
-    </div> -->
   <div class="result-message-box">
-    <span>{{ resultMessage }}</span>
+    <span>{{ resultMessage() }}</span>
   </div>
   <div mat-dialog-actions align="end">
     <button
       mat-button
-      [disabled]="!isFinishEnabled"
+      [disabled]="!isFinishEnabled()"
       (click)="onNoClick()"
       tabindex="2"
       mat-raised-button

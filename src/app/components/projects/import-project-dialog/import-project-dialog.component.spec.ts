@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ReactiveFormsModule } from '@angular/forms';
 import { ImportProjectDialogComponent } from './import-project-dialog.component';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
@@ -14,17 +13,16 @@ import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ImportProjectDialogComponent', () => {
-  let component: ImportProjectDialogComponent;
   let fixture: ComponentFixture<ImportProjectDialogComponent>;
-
+  let component: ImportProjectDialogComponent;
   let mockDialogRef: any;
   let mockMatSnackBar: any;
   let mockProjectService: any;
   let mockToasterService: any;
   let mockUploadServiceService: any;
-
   let mockController: Controller;
   let mockProject: Project;
+  let mockValidator: any;
 
   const createMockController = (): Controller =>
     ({
@@ -76,9 +74,7 @@ describe('ImportProjectDialogComponent', () => {
   };
 
   beforeEach(async () => {
-    mockDialogRef = {
-      close: vi.fn(),
-    };
+    mockDialogRef = { close: vi.fn() };
 
     mockMatSnackBar = {
       openFromComponent: vi.fn().mockReturnValue({ dismiss: vi.fn() }),
@@ -92,11 +88,7 @@ describe('ImportProjectDialogComponent', () => {
       getUploadPath: vi.fn().mockReturnValue('http://localhost:3080/v4/upload/project/uuid/name'),
     };
 
-    mockToasterService = {
-      warning: vi.fn(),
-      error: vi.fn(),
-      success: vi.fn(),
-    };
+    mockToasterService = { warning: vi.fn(), error: vi.fn(), success: vi.fn() };
 
     mockUploadServiceService = {
       processBarCount: vi.fn(),
@@ -104,28 +96,25 @@ describe('ImportProjectDialogComponent', () => {
       cancelFileUploading: vi.fn(),
     };
 
-    const mockProjectNameValidator = {
-      get: vi.fn().mockReturnValue(null),
-    };
+    mockValidator = { get: vi.fn().mockReturnValue(null) };
 
     mockController = createMockController();
     mockProject = createMockProject();
 
     await TestBed.configureTestingModule({
-      imports: [ImportProjectDialogComponent, MatDialogModule, ReactiveFormsModule],
+      imports: [ImportProjectDialogComponent, MatDialogModule],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: { controller: mockController, project: mockProject } },
         { provide: ProjectService, useValue: mockProjectService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: UploadServiceService, useValue: mockUploadServiceService },
-        { provide: ProjectNameValidator, useValue: mockProjectNameValidator },
+        { provide: ProjectNameValidator, useValue: mockValidator },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ImportProjectDialogComponent);
     component = fixture.componentInstance;
-    // Set controller as the real code does via instance.controller = this.controller
     component.controller = mockController;
     fixture.detectChanges();
   });
@@ -149,23 +138,15 @@ describe('ImportProjectDialogComponent', () => {
     });
 
     it('should initialize with default state', () => {
-      expect(component.isImportEnabled).toBe(false);
-      expect(component.isFinishEnabled).toBe(false);
-      expect(component.isDeleteVisible).toBe(false);
-      expect(component.isFirstStepCompleted).toBe(false);
-      expect(component.uploadProgress).toBe(0);
+      expect(component.isImportEnabled()).toBe(false);
+      expect(component.isFinishEnabled()).toBe(false);
+      expect(component.isDeleteVisible()).toBe(false);
+      expect(component.isFirstStepCompleted()).toBe(false);
+      expect(component.uploadProgress()).toBe(0);
     });
 
-    it('should initialize projectNameForm with validators', () => {
-      expect(component.projectNameForm).toBeDefined();
-      expect(component.projectNameForm.get('projectName')).toBeDefined();
-    });
-  });
-
-  describe('form getter', () => {
-    it('should return form controls', () => {
-      expect(component.form).toBeDefined();
-      expect(component.form.projectName).toBeDefined();
+    it('should initialize projectName with empty string', () => {
+      expect(component.projectName()).toBe('');
     });
   });
 
@@ -179,7 +160,7 @@ describe('ImportProjectDialogComponent', () => {
 
       component.uploadProjectFile(mockEvent);
 
-      expect(component.projectNameForm.controls['projectName'].value).toBe('myproject');
+      expect(component.projectName()).toBe('myproject');
     });
 
     it('should enable import button after file selection', () => {
@@ -191,7 +172,7 @@ describe('ImportProjectDialogComponent', () => {
 
       component.uploadProjectFile(mockEvent);
 
-      expect(component.isImportEnabled).toBe(true);
+      expect(component.isImportEnabled()).toBe(true);
     });
 
     it('should show delete button after file selection', () => {
@@ -203,13 +184,16 @@ describe('ImportProjectDialogComponent', () => {
 
       component.uploadProjectFile(mockEvent);
 
-      expect(component.isDeleteVisible).toBe(true);
+      expect(component.isDeleteVisible()).toBe(true);
     });
   });
 
   describe('onDeleteClick', () => {
-    it('should remove file from uploader queue', () => {
+    beforeEach(() => {
       component.uploader = createMockUploader();
+    });
+
+    it('should remove file from uploader queue', () => {
       component.uploader.queue = [{ remove: vi.fn() } as any];
 
       component.onDeleteClick();
@@ -218,30 +202,27 @@ describe('ImportProjectDialogComponent', () => {
     });
 
     it('should disable import button', () => {
-      component.uploader = createMockUploader();
-      component.isImportEnabled = true;
+      component.isImportEnabled.set(true);
 
       component.onDeleteClick();
 
-      expect(component.isImportEnabled).toBe(false);
+      expect(component.isImportEnabled()).toBe(false);
     });
 
     it('should hide delete button', () => {
-      component.uploader = createMockUploader();
-      component.isDeleteVisible = true;
+      component.isDeleteVisible.set(true);
 
       component.onDeleteClick();
 
-      expect(component.isDeleteVisible).toBe(false);
+      expect(component.isDeleteVisible()).toBe(false);
     });
 
     it('should clear project name field', () => {
-      component.uploader = createMockUploader();
-      component.projectNameForm.patchValue({ projectName: 'TestProject' });
+      component.projectName.set('TestProject');
 
       component.onDeleteClick();
 
-      expect(component.projectNameForm.controls['projectName'].value).toBe('');
+      expect(component.projectName()).toBe('');
     });
   });
 
@@ -266,35 +247,30 @@ describe('ImportProjectDialogComponent', () => {
   describe('onFinishClick', () => {
     it('should close dialog with false', () => {
       component.onFinishClick();
-
       expect(mockDialogRef.close).toHaveBeenCalledWith(false);
     });
   });
 
   describe('prepareUploadPath', () => {
-    it('should generate uuid for upload', () => {
+    beforeEach(() => {
       component.uploader = createMockUploader();
-      component.projectNameForm.patchValue({ projectName: 'TestProject' });
+      component.projectName.set('TestProject');
+    });
 
-      const result = component.prepareUploadPath();
+    it('should generate uuid for upload', () => {
+      component.prepareUploadPath();
 
-      expect(component.uuid).toBeDefined();
-      expect(component.uuid.length).toBe(36); // UUID format
+      expect(component.uuid()).toBeDefined();
+      expect(component.uuid().length).toBe(36); // UUID format
     });
 
     it('should call projectService.getUploadPath with correct parameters', () => {
-      component.uploader = createMockUploader();
-      component.projectNameForm.patchValue({ projectName: 'MyProject' });
-
       component.prepareUploadPath();
 
-      expect(mockProjectService.getUploadPath).toHaveBeenCalledWith(component.controller, component.uuid, 'MyProject');
+      expect(mockProjectService.getUploadPath).toHaveBeenCalledWith(component.controller, component.uuid(), 'TestProject');
     });
 
     it('should return upload URL from projectService', () => {
-      component.uploader = createMockUploader();
-      component.projectNameForm.patchValue({ projectName: 'TestProject' });
-
       const result = component.prepareUploadPath();
 
       expect(result).toBe('http://localhost:3080/v4/upload/project/uuid/name');
@@ -302,13 +278,23 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   describe('onImportClick with invalid form', () => {
-    it('should set submitted to true when form is invalid', () => {
-      component.projectNameForm.patchValue({ projectName: '' });
-      component.submitted = false;
+    it('should set submitted to true when name is empty', () => {
+      component.projectName.set('');
+      component.submitted.set(false);
 
       component.onImportClick();
 
-      expect(component.submitted).toBe(true);
+      expect(component.submitted()).toBe(true);
+    });
+
+    it('should set submitted to true when name has invalid characters', () => {
+      mockValidator.get.mockReturnValue({ invalidName: true });
+      component.projectName.set('Invalid@Name');
+      component.submitted.set(false);
+
+      component.onImportClick();
+
+      expect(component.submitted()).toBe(true);
     });
   });
 
@@ -318,10 +304,8 @@ describe('ImportProjectDialogComponent', () => {
     });
 
     it('should show error toaster when projectService.list fails', async () => {
-      mockProjectService.list.mockReturnValue(
-        throwError(() => ({ error: { message: 'List failed' } }))
-      );
-      component.projectNameForm.patchValue({ projectName: 'TestProject' });
+      mockProjectService.list.mockReturnValue(throwError(() => ({ error: { message: 'List failed' } })));
+      component.projectName.set('TestProject');
 
       component.onImportClick();
 
@@ -330,23 +314,11 @@ describe('ImportProjectDialogComponent', () => {
 
     it('should use fallback message when list error has no message', async () => {
       mockProjectService.list.mockReturnValue(throwError(() => ({})));
-      component.projectNameForm.patchValue({ projectName: 'TestProject' });
+      component.projectName.set('TestProject');
 
       component.onImportClick();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to list projects');
-    });
-
-    it('should call markForCheck when list fails', async () => {
-      mockProjectService.list.mockReturnValue(
-        throwError(() => ({ error: { message: 'List failed' } }))
-      );
-      component.projectNameForm.patchValue({ projectName: 'TestProject' });
-
-      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
-      component.onImportClick();
-
-      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });
