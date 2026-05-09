@@ -1,12 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, computed, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,7 +10,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ToasterService } from '@services/toaster.service';
 import { FileItem, FileUploader, ParsedResponseHeaders, FileUploadModule } from 'ng2-file-upload';
-import { v4 as uuid } from 'uuid';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ControllerResponse } from '@models/controllerResponse';
@@ -31,11 +24,10 @@ import { UploadingProcessbarComponent } from '../../../common/uploading-processb
   selector: 'app-import-project-dialog',
   templateUrl: 'import-project-dialog.component.html',
   styleUrls: ['import-project-dialog.component.scss'],
-  providers: [ProjectNameValidator],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
+    FormsModule,
     MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
@@ -49,33 +41,50 @@ import { UploadingProcessbarComponent } from '../../../common/uploading-processb
 export class ImportProjectDialogComponent implements OnInit {
   private dialog = inject(MatDialog);
   public dialogRef = inject(MatDialogRef<ImportProjectDialogComponent>);
-  private formBuilder = inject(UntypedFormBuilder);
   private projectService = inject(ProjectService);
   private projectNameValidator = inject(ProjectNameValidator);
   private toasterService = inject(ToasterService);
   private uploadServiceService = inject(UploadServiceService);
   private snackBar = inject(MatSnackBar);
-  private cd = inject(ChangeDetectorRef);
   readonly data = inject(MAT_DIALOG_DATA);
 
   uploader: FileUploader;
-  uploadProgress: number = 0;
   controller: Controller;
-  isImportEnabled: boolean = false;
-  isFinishEnabled: boolean = false;
-  isDeleteVisible: boolean = false;
-  resultMessage: string = 'The project is being imported... Please wait';
-  projectNameForm: UntypedFormGroup;
-  submitted: boolean = false;
-  isFirstStepCompleted: boolean = false;
-  uuid: string;
-  onImportProject = new EventEmitter<string>();
 
-  constructor() {
-    this.projectNameForm = this.formBuilder.group({
-      projectName: new UntypedFormControl(null, [Validators.required, this.projectNameValidator.get]),
-    });
-  }
+  readonly uploadProgress = signal(0);
+  readonly isImportEnabled = signal(false);
+  readonly isFinishEnabled = signal(false);
+  readonly isDeleteVisible = signal(false);
+  readonly resultMessage = signal('The project is being imported... Please wait');
+  readonly projectName = model('');
+  readonly submitted = signal(false);
+  readonly isFirstStepCompleted = signal(false);
+  readonly uuid = signal('');
+
+  readonly onImportProject = new EventEmitter<string>();
+
+  readonly isNameEmpty = computed(() => {
+    const name = this.projectName();
+    return !name || name.trim().length === 0;
+  });
+
+  readonly isNameValid = computed(() => {
+    const name = this.projectName();
+    if (this.isNameEmpty()) {
+      return false;
+    }
+    const validationError = this.projectNameValidator.get({ value: name });
+    return !validationError;
+  });
+
+  readonly hasInvalidCharacters = computed(() => {
+    const name = this.projectName();
+    if (this.isNameEmpty()) {
+      return false;
+    }
+    const validationError = this.projectNameValidator.get({ value: name });
+    return validationError?.invalidName === true;
+  });
 
   ngOnInit() {
     this.uploader = new FileUploader({ url: '' });
@@ -84,10 +93,9 @@ export class ImportProjectDialogComponent implements OnInit {
     };
 
     this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-      let controllerResponse: ControllerResponse = JSON.parse(response);
-      this.resultMessage = 'An error has occurred: ' + controllerResponse.message;
-      this.isFinishEnabled = true;
-      this.cd.markForCheck();
+      const controllerResponse: ControllerResponse = JSON.parse(response);
+      this.resultMessage.set('An error has occurred: ' + controllerResponse.message);
+      this.isFinishEnabled.set(true);
     };
 
     this.uploader.onCompleteItem = (
@@ -96,15 +104,14 @@ export class ImportProjectDialogComponent implements OnInit {
       status: number,
       headers: ParsedResponseHeaders
     ) => {
-      this.onImportProject.emit(this.uuid);
-      this.resultMessage = 'Project was imported succesfully!';
-      this.isFinishEnabled = true;
-      this.cd.markForCheck();
+      this.onImportProject.emit(this.uuid());
+      this.resultMessage.set('Project was imported succesfully!');
+      this.isFinishEnabled.set(true);
     };
+
     this.uploader.onProgressItem = (progress: any) => {
-      this.uploadProgress = progress['progress'];
-      this.uploadServiceService.processBarCount(this.uploadProgress);
-      this.cd.markForCheck();
+      this.uploadProgress.set(progress['progress']);
+      this.uploadServiceService.processBarCount(this.uploadProgress());
     };
 
     this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
@@ -114,47 +121,40 @@ export class ImportProjectDialogComponent implements OnInit {
     });
   }
 
-  get form() {
-    return this.projectNameForm.controls;
-  }
-
-  uploadProjectFile(event): void {
-    this.projectNameForm.controls['projectName'].setValue(event.target.files[0].name.split('.')[0]);
-    this.isImportEnabled = true;
-    this.isDeleteVisible = true;
-    this.cd.markForCheck();
+  uploadProjectFile(event: any): void {
+    this.projectName.set(event.target.files[0].name.split('.')[0]);
+    this.isImportEnabled.set(true);
+    this.isDeleteVisible.set(true);
   }
 
   onImportClick(): void {
-    if (this.projectNameForm.invalid) {
-      this.submitted = true;
+    if (!this.isNameValid()) {
+      this.submitted.set(true);
     } else {
       this.projectService.list(this.controller).subscribe({
         next: (projects: Project[]) => {
-          const projectName = this.projectNameForm.controls['projectName'].value;
-          let existingProject = projects.find((project) => project.name === projectName);
+          const projectName = this.projectName().trim();
+          const existingProject = projects.find((project) => project.name === projectName);
 
           if (existingProject) {
             this.openConfirmationDialog(existingProject);
           } else {
             this.importProject();
           }
-          this.cd.markForCheck();
         },
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to list projects';
           this.toasterService.error(message);
-          this.cd.markForCheck();
         },
       });
     }
   }
 
-  importProject() {
+  importProject(): void {
     const url = this.prepareUploadPath();
     this.uploader.queue.forEach((elem) => (elem.url = url));
     this.uploader.authToken = `Bearer ${this.controller.authToken}`;
-    this.isFirstStepCompleted = true;
+    this.isFirstStepCompleted.set(true);
     const itemToUpload = this.uploader.queue[0];
     this.uploader.uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent, {
@@ -163,7 +163,7 @@ export class ImportProjectDialogComponent implements OnInit {
     });
   }
 
-  openConfirmationDialog(existingProject: Project) {
+  openConfirmationDialog(existingProject: Project): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '300px',
       height: '150px',
@@ -186,18 +186,15 @@ export class ImportProjectDialogComponent implements OnInit {
               error: (err) => {
                 const message = err.error?.message || err.message || 'Failed to delete project';
                 this.toasterService.error(message);
-                this.cd.markForCheck();
               },
             });
           },
           error: (err) => {
             const message = err.error?.message || err.message || 'Failed to close project';
             this.toasterService.error(message);
-            this.cd.markForCheck();
           },
         });
       }
-      this.cd.markForCheck();
     });
   }
 
@@ -212,24 +209,23 @@ export class ImportProjectDialogComponent implements OnInit {
 
   onDeleteClick(): void {
     this.uploader.queue.pop();
-    this.isImportEnabled = false;
-    this.isDeleteVisible = false;
-    this.projectNameForm.controls['projectName'].setValue('');
-    this.cd.markForCheck();
+    this.isImportEnabled.set(false);
+    this.isDeleteVisible.set(false);
+    this.projectName.set('');
   }
 
   prepareUploadPath(): string {
-    this.uuid = uuid();
-    const projectName = this.projectNameForm.controls['projectName'].value;
-    return this.projectService.getUploadPath(this.controller, this.uuid, projectName);
+    this.uuid.set(crypto.randomUUID());
+    const projectName = this.projectName().trim();
+    return this.projectService.getUploadPath(this.controller, this.uuid(), projectName);
   }
 
-  cancelUploading() {
+  cancelUploading(): void {
     this.uploader.clearQueue();
     this.uploadServiceService.processBarCount(null);
     this.toasterService.warning('File upload cancelled');
     this.uploadServiceService.cancelFileUploading(false);
-    this.isFirstStepCompleted = false;
+    this.isFirstStepCompleted.set(false);
     this.uploader.cancelAll();
     this.dialogRef.close(true);
   }

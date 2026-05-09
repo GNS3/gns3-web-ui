@@ -1,22 +1,41 @@
 <h1 mat-dialog-title>Save project as</h1>
-<form [formGroup]="projectNameForm" class="file-name-form">
+<form class="file-name-form">
   <mat-form-field class="file-name-form-field">
+    <mat-label>Project name</mat-label>
     <input
       matInput
+      [value]="projectName()"
+      (input)="projectName.set($event.target.value)"
       (keydown)="onKeyDown($event)"
       type="text"
-      formControlName="projectName"
-      [ngClass]="{ 'is-invalid': form.projectName?.errors }"
+      [ngClass]="{ 'is-invalid': hasInvalidCharacters() || nameExistsError() }"
       placeholder="Please enter name"
+      [disabled]="isCheckingName()"
     />
-    @if (form.projectName?.touched && form.projectName?.errors && form.projectName?.errors.required) {
-    <mat-error>Project name is required</mat-error>
-    } @if (form.projectName?.touched && form.projectName?.errors && form.projectName?.errors.invalidName) {
+    @if (isCheckingName()) {
+    <mat-spinner matSuffix diameter="20"></mat-spinner>
+    }
+    @if (hasInvalidCharacters()) {
     <mat-error>Project name is incorrect</mat-error>
+    } @if (nameExistsError()) {
+    <mat-error>Project with this name already exists</mat-error>
     }
   </mat-form-field>
   <div mat-dialog-actions>
-    <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
-    <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary">Save project</button>
+    <button mat-button (click)="onNoClick()" color="accent" [disabled]="isCheckingName()">Cancel</button>
+    <button
+      mat-button
+      (click)="onAddClick()"
+      tabindex="2"
+      mat-raised-button
+      color="primary"
+      [disabled]="!isNameValid() || isCheckingName()"
+    >
+      @if (isCheckingName()) {
+      <span>Checking...</span>
+      } @else {
+      <span>Save project</span>
+      }
+    </button>
   </div>
 </form>

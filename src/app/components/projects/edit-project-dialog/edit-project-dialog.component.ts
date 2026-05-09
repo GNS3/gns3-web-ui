@@ -1,22 +1,15 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   OnInit,
-  Injectable,
   inject,
   viewChild,
   model,
+  signal,
+  computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -30,7 +23,6 @@ import { Project, ProjectVariable } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
-import { NonNegativeValidator } from '../../../validators/non-negative-validator';
 import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
 import { DeleteConfirmationDialogComponent } from '../../preferences/common/delete-confirmation-dialog/delete-confirmation-dialog.component';
 
@@ -43,7 +35,6 @@ import { DeleteConfirmationDialogComponent } from '../../preferences/common/dele
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
@@ -61,125 +52,120 @@ export class EditProjectDialogComponent implements OnInit {
 
   private dialogRef = inject(MatDialogRef<EditProjectDialogComponent>);
   private dialog = inject(MatDialog);
-  private formBuilder = inject(UntypedFormBuilder);
   private projectService = inject(ProjectService);
   private toasterService = inject(ToasterService);
-  private nonNegativeValidator = inject(NonNegativeValidator);
-  private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
   project: Project;
-  formGroup: UntypedFormGroup;
-  variableFormGroup: UntypedFormGroup;
-  projectVariables: ProjectVariable[];
 
-  displayedColumns: string[] = ['name', 'value', 'actions'];
-  variables: ProjectVariable[] = [];
+  readonly displayedColumns: string[] = ['name', 'value', 'actions'];
+  readonly variables = signal<ProjectVariable[]>([]);
 
+  // Form fields
+  readonly projectName = model('');
+  readonly width = model(0);
+  readonly height = model(0);
+  readonly nodeGridSize = model(25);
+  readonly drawingGridSize = model(25);
+
+  // Checkboxes (already model() signals)
   readonly auto_open = model(false);
   readonly auto_start = model(false);
   readonly auto_close = model(false);
   readonly show_interface_labels = model(false);
 
-  constructor() {
-    this.formGroup = this.formBuilder.group({
-      projectName: new UntypedFormControl('', [Validators.required]),
-      width: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
-      height: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
-      nodeGridSize: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
-      drawingGridSize: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
-    });
+  // Variable form fields
+  readonly variableName = model('');
+  readonly variableValue = model('');
 
-    this.variableFormGroup = this.formBuilder.group({
-      name: new UntypedFormControl('', [Validators.required]),
-      value: new UntypedFormControl('', [Validators.required]),
-    });
-  }
+  // Form validity
+  readonly isFormValid = computed(() => {
+    return this.projectName().trim().length > 0 && +this.width() >= 0 && +this.height() >= 0 && +this.nodeGridSize() >= 0 && +this.drawingGridSize() >= 0;
+  });
+
+  readonly isVariableFormValid = computed(() => {
+    return this.variableName().trim().length > 0 && this.variableValue().trim().length > 0;
+  });
 
   ngOnInit() {
-    this.formGroup.controls['projectName'].setValue(this.project.name);
-    this.formGroup.controls['width'].setValue(this.project.scene_width);
-    this.formGroup.controls['height'].setValue(this.project.scene_height);
-    this.formGroup.controls['nodeGridSize'].setValue(this.project.grid_size);
-    this.formGroup.controls['drawingGridSize'].setValue(this.project.drawing_grid_size);
+    this.projectName.set(this.project.name);
+    this.width.set(this.project.scene_width);
+    this.height.set(this.project.scene_height);
+    this.nodeGridSize.set(this.project.grid_size);
+    this.drawingGridSize.set(this.project.drawing_grid_size);
     if (this.project.variables) {
-      this.project.variables.forEach((n) => this.variables.push(n));
+      this.variables.set([...this.project.variables]);
     }
     this.auto_open.set(this.project.auto_open);
     this.auto_start.set(this.project.auto_start);
     this.auto_close.set(!this.project.auto_close);
     this.show_interface_labels.set(this.project.show_interface_labels);
-    this.cd.markForCheck();
   }
 
-  addVariable() {
-    if (this.variableFormGroup.valid) {
-      let variable: ProjectVariable = {
-        name: this.variableFormGroup.get('name').value,
-        value: this.variableFormGroup.get('value').value,
+  addVariable(): void {
+    if (this.isVariableFormValid()) {
+      const variable: ProjectVariable = {
+        name: this.variableName().trim(),
+        value: this.variableValue().trim(),
       };
-      this.variables = this.variables.concat([variable]);
-      this.cd.markForCheck();
+      this.variables.update((v) => v.concat([variable]));
     } else {
-      this.toasterService.error(`Fill all required fields with correct values.`);
+      this.toasterService.error('Fill all required fields with correct values.');
     }
   }
 
-  deleteVariable(variable: ProjectVariable) {
+  deleteVariable(variable: ProjectVariable): void {
     const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
       data: { templateName: variable.name },
       panelClass: 'base-dialog-panel',
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.variables = this.variables.filter((elem) => elem !== variable);
-        this.cd.markForCheck();
+        this.variables.update((v) => v.filter((elem) => elem !== variable));
       }
     });
   }
 
-  onNoClick() {
+  onNoClick(): void {
     this.dialogRef.close();
   }
 
-  onYesClick() {
-    if (this.formGroup.valid) {
-      this.project.name = this.formGroup.get('projectName').value;
-      this.project.scene_width = this.formGroup.get('width').value;
-      this.project.scene_height = this.formGroup.get('height').value;
-      this.project.drawing_grid_size = this.formGroup.get('drawingGridSize').value;
-      this.project.grid_size = this.formGroup.get('nodeGridSize').value;
-      this.project.variables = this.variables;
-
-      this.project.auto_open = this.auto_open();
-      this.project.auto_start = this.auto_start();
-      this.project.auto_close = !this.auto_close();
-      this.project.show_interface_labels = this.show_interface_labels();
-
-      this.projectService.update(this.controller, this.project).subscribe({
-        next: (updatedProject: Project) => {
-          this.projectService
-            .postReadmeFile(this.controller, this.project.project_id, this.editor().markdown())
-            .subscribe({
-              next: () => {
-                this.toasterService.success(`Project ${updatedProject.name} updated.`);
-                this.dialogRef.close(updatedProject);
-              },
-              error: (err) => {
-                const message = err.error?.message || err.message || 'Failed to update project readme';
-                this.toasterService.error(message);
-                this.cd.markForCheck();
-              },
-            });
-        },
-        error: (err) => {
-          const message = err.error?.message || err.message || 'Failed to update project';
-          this.toasterService.error(message);
-          this.cd.markForCheck();
-        },
-      });
-    } else {
-      this.toasterService.error(`Fill all required fields with correct values.`);
+  onYesClick(): void {
+    if (!this.isFormValid()) {
+      this.toasterService.error('Fill all required fields with correct values.');
+      return;
     }
+
+    this.project.name = this.projectName().trim();
+    this.project.scene_width = +this.width();
+    this.project.scene_height = +this.height();
+    this.project.drawing_grid_size = +this.drawingGridSize();
+    this.project.grid_size = +this.nodeGridSize();
+    this.project.variables = this.variables();
+    this.project.auto_open = this.auto_open();
+    this.project.auto_start = this.auto_start();
+    this.project.auto_close = !this.auto_close();
+    this.project.show_interface_labels = this.show_interface_labels();
+
+    this.projectService.update(this.controller, this.project).subscribe({
+      next: (updatedProject: Project) => {
+        this.projectService
+          .postReadmeFile(this.controller, this.project.project_id, this.editor()?.markdown() ?? '')
+          .subscribe({
+            next: () => {
+              this.toasterService.success(`Project ${updatedProject.name} updated.`);
+              this.dialogRef.close(updatedProject);
+            },
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to update project readme';
+              this.toasterService.error(message);
+            },
+          });
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to update project';
+        this.toasterService.error(message);
+      },
+    });
   }
 }

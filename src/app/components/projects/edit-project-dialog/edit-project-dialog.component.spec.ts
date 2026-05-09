@@ -1,21 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatTableModule } from '@angular/material/table';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
 import { EditProjectDialogComponent } from './edit-project-dialog.component';
 import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
-import { NonNegativeValidator } from '../../../validators/non-negative-validator';
-import { DeleteConfirmationDialogComponent } from '@components/preferences/common/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { Project, ProjectVariable } from '@models/project';
 import { Controller } from '@models/controller';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -77,17 +66,12 @@ describe('EditProjectDialogComponent', () => {
   }
 
   beforeEach(async () => {
-    mockDialogRef = {
-      close: vi.fn(),
-    };
+    mockDialogRef = { close: vi.fn() };
 
     mockDialogInstance = new MockMatDialog();
     dialogOpenMock = mockDialogInstance.open;
 
-    mockToastService = {
-      success: vi.fn(),
-      error: vi.fn(),
-    };
+    mockToastService = { success: vi.fn(), error: vi.fn() };
 
     mockProjectService = {
       getReadmeFile: vi.fn().mockReturnValue(of('')),
@@ -97,17 +81,7 @@ describe('EditProjectDialogComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [
-        ReactiveFormsModule,
-        FormsModule,
         MatDialogModule,
-        MatButtonModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatCheckboxModule,
-        MatTableModule,
-        MatIconModule,
-        MatTooltipModule,
-        MatTabsModule,
         EditProjectDialogComponent,
         ReadmeEditorComponent,
       ],
@@ -116,7 +90,6 @@ describe('EditProjectDialogComponent', () => {
         { provide: MatDialog, useValue: mockDialogInstance },
         { provide: ProjectService, useValue: mockProjectService },
         { provide: ToasterService, useValue: mockToastService },
-        NonNegativeValidator,
       ],
     }).compileComponents();
 
@@ -139,33 +112,23 @@ describe('EditProjectDialogComponent', () => {
       initializeComponent();
       expect(component).toBeTruthy();
     });
-
-    it('should have formGroup initialized', () => {
-      initializeComponent();
-      expect(component.formGroup).toBeDefined();
-    });
-
-    it('should have variableFormGroup initialized', () => {
-      initializeComponent();
-      expect(component.variableFormGroup).toBeDefined();
-    });
   });
 
   describe('ngOnInit', () => {
-    it('should populate form fields from project data', () => {
+    it('should populate signals from project data', () => {
       initializeComponent();
 
-      expect(component.formGroup.get('projectName')?.value).toBe(component.project.name);
-      expect(component.formGroup.get('width')?.value).toBe(component.project.scene_width);
-      expect(component.formGroup.get('height')?.value).toBe(component.project.scene_height);
-      expect(component.formGroup.get('nodeGridSize')?.value).toBe(component.project.grid_size);
-      expect(component.formGroup.get('drawingGridSize')?.value).toBe(component.project.drawing_grid_size);
+      expect(component.projectName()).toBe(component.project.name);
+      expect(component.width()).toBe(component.project.scene_width);
+      expect(component.height()).toBe(component.project.scene_height);
+      expect(component.nodeGridSize()).toBe(component.project.grid_size);
+      expect(component.drawingGridSize()).toBe(component.project.drawing_grid_size);
     });
 
-    it('should load project variables into variables array', () => {
+    it('should load project variables into variables signal', () => {
       initializeComponent();
 
-      expect(component.variables).toEqual(component.project.variables);
+      expect(component.variables()).toEqual(component.project.variables);
     });
 
     it('should set auto_close as negated project.auto_close', () => {
@@ -178,60 +141,48 @@ describe('EditProjectDialogComponent', () => {
   describe('addVariable', () => {
     it('should add variable to variables array when form is valid', () => {
       initializeComponent();
-      const initialLength = component.variables.length;
-      component.variableFormGroup.patchValue({ name: 'NEW_VAR', value: 'new_value' });
+      const initialLength = component.variables().length;
+      component.variableName.set('NEW_VAR');
+      component.variableValue.set('new_value');
 
       component.addVariable();
 
-      expect(component.variables.length).toBe(initialLength + 1);
-      expect(component.variables).toContainEqual({ name: 'NEW_VAR', value: 'new_value' });
+      expect(component.variables().length).toBe(initialLength + 1);
+      expect(component.variables()).toContainEqual({ name: 'NEW_VAR', value: 'new_value' });
     });
 
-    it('should preserve form values after adding variable (component does not reset form)', () => {
+    it('should show error toast when name is empty', () => {
       initializeComponent();
-      component.variableFormGroup.patchValue({ name: 'NEW_VAR', value: 'new_value' });
+      component.variableName.set('');
+      component.variableValue.set('some_value');
 
       component.addVariable();
 
-      // Component does not reset the form after adding
-      expect(component.variableFormGroup.get('name')?.value).toBe('NEW_VAR');
-      expect(component.variableFormGroup.get('value')?.value).toBe('new_value');
+      expect(mockToastService.error).toHaveBeenCalledWith('Fill all required fields with correct values.');
     });
 
-    it('should show error toast when form is invalid', () => {
+    it('should show error toast when value is empty', () => {
       initializeComponent();
-      component.variableFormGroup.patchValue({ name: '', value: '' });
+      component.variableName.set('SOME_NAME');
+      component.variableValue.set('');
 
       component.addVariable();
 
-      expect(mockToastService.error).toHaveBeenCalledWith(`Fill all required fields with correct values.`);
+      expect(mockToastService.error).toHaveBeenCalledWith('Fill all required fields with correct values.');
     });
 
-    it('should not add variable when name is empty', () => {
+    it('should not add variable when both fields are empty', () => {
       initializeComponent();
-      const initialLength = component.variables.length;
-      component.variableFormGroup.patchValue({ name: '', value: 'some_value' });
+      const initialLength = component.variables().length;
+      component.variableName.set('');
+      component.variableValue.set('');
 
       component.addVariable();
 
-      expect(component.variables.length).toBe(initialLength);
-    });
-
-    it('should not add variable when value is empty', () => {
-      initializeComponent();
-      const initialLength = component.variables.length;
-      component.variableFormGroup.patchValue({ name: 'SOME_NAME', value: '' });
-
-      component.addVariable();
-
-      expect(component.variables.length).toBe(initialLength);
+      expect(component.variables().length).toBe(initialLength);
     });
   });
 
-  // Dialog tests are skipped because MatDialog.open() creates actual DOM elements
-  // and requires full Angular testing module with all dialog dependencies.
-  // These behaviors would be better tested in an integration test.
-  // Reference: logged-user.component.spec.ts and template.component.spec.ts also skip dialog tests.
   describe('deleteVariable', () => {
     it('should be a function on the component', () => {
       initializeComponent();
@@ -242,7 +193,6 @@ describe('EditProjectDialogComponent', () => {
   describe('onNoClick', () => {
     it('should close the dialog', () => {
       initializeComponent();
-
       component.onNoClick();
 
       expect(mockDialogRef.close).toHaveBeenCalled();
@@ -253,7 +203,8 @@ describe('EditProjectDialogComponent', () => {
     it('should update project with form values', () => {
       initializeComponent();
 
-      component.formGroup.patchValue({ projectName: 'Updated Project', width: 2000 });
+      component.projectName.set('Updated Project');
+      component.width.set(2000);
       component.onYesClick();
 
       expect(component.project.name).toBe('Updated Project');
@@ -281,7 +232,7 @@ describe('EditProjectDialogComponent', () => {
 
       component.onYesClick();
 
-      expect(mockToastService.success).toHaveBeenCalledWith(`Project ${component.project.name} updated.`);
+      expect(mockToastService.success).toHaveBeenCalledWith('Project Test Project updated.');
     });
 
     it('should close dialog on successful update', () => {
@@ -292,18 +243,18 @@ describe('EditProjectDialogComponent', () => {
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
 
-    it('should show error toast when form is invalid', () => {
+    it('should show error toast when form is invalid (empty name)', () => {
       initializeComponent();
-      component.formGroup.patchValue({ projectName: '' });
+      component.projectName.set('');
 
       component.onYesClick();
 
-      expect(mockToastService.error).toHaveBeenCalledWith(`Fill all required fields with correct values.`);
+      expect(mockToastService.error).toHaveBeenCalledWith('Fill all required fields with correct values.');
     });
 
     it('should not call update when projectName is empty', () => {
       initializeComponent();
-      component.formGroup.patchValue({ projectName: '' });
+      component.projectName.set('');
 
       component.onYesClick();
 
@@ -352,18 +303,6 @@ describe('EditProjectDialogComponent', () => {
       component.onYesClick();
 
       expect(mockToastService.error).toHaveBeenCalledWith('Failed to update project');
-    });
-
-    it('should call markForCheck when update fails', async () => {
-      mockProjectService.update.mockReturnValue(
-        throwError(() => ({ error: { message: 'Update failed' } }))
-      );
-      initializeComponent();
-
-      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
-      component.onYesClick();
-
-      expect(cdrSpy).toHaveBeenCalled();
     });
 
     it('should show error toaster when postReadmeFile fails', async () => {

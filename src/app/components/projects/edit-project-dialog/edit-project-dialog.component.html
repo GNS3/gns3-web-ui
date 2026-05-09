@@ -3,32 +3,32 @@
 <div class="modal-form-container">
   <mat-tab-group>
     <mat-tab label="General">
-      <form [formGroup]="formGroup">
+      <form class="edit-project-form">
         <mat-form-field appearance="fill" class="form-field">
           <mat-label>Project name</mat-label>
-          <input matInput formControlName="projectName" placeholder="My Project" type="text" />
+          <input matInput [value]="projectName()" (input)="projectName.set($event.target.value)" placeholder="My Project" type="text" />
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="form-field">
           <mat-label>Scene width</mat-label>
-          <input matInput formControlName="width" placeholder="1000" type="number" />
+          <input matInput [value]="width()" (input)="width.set(+$event.target.value)" placeholder="1000" type="number" />
           <span matTextSuffix>px</span>
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="form-field">
           <mat-label>Scene height</mat-label>
-          <input matInput formControlName="height" placeholder="800" type="number" />
+          <input matInput [value]="height()" (input)="height.set(+$event.target.value)" placeholder="800" type="number" />
           <span matTextSuffix>px</span>
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="form-field">
           <mat-label>Node grid size</mat-label>
-          <input matInput formControlName="nodeGridSize" placeholder="25" type="number" />
+          <input matInput [value]="nodeGridSize()" (input)="nodeGridSize.set(+$event.target.value)" placeholder="25" type="number" />
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="form-field">
           <mat-label>Drawing grid size</mat-label>
-          <input matInput formControlName="drawingGridSize" placeholder="25" type="number" />
+          <input matInput [value]="drawingGridSize()" (input)="drawingGridSize.set(+$event.target.value)" placeholder="25" type="number" />
         </mat-form-field>
       </form>
 
@@ -56,21 +56,21 @@
     }
 
     <mat-tab label="Global variables">
-      <form [formGroup]="variableFormGroup">
+      <form class="edit-project-form">
         <mat-form-field appearance="fill" class="form-field">
           <mat-label>Name</mat-label>
-          <input matInput formControlName="name" placeholder="VARIABLE_NAME" type="text" />
+          <input matInput [value]="variableName()" (input)="variableName.set($event.target.value)" placeholder="VARIABLE_NAME" type="text" />
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="form-field">
           <mat-label>Value</mat-label>
-          <input matInput formControlName="value" placeholder="variable_value" type="text" />
+          <input matInput [value]="variableValue()" (input)="variableValue.set($event.target.value)" placeholder="variable_value" type="text" />
         </mat-form-field>
       </form>
       <button class="form-field" mat-button (click)="addVariable()" mat-raised-button color="primary">
         Add variable
       </button>
-      <table mat-table [dataSource]="variables">
+      <table mat-table [dataSource]="variables()">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Name</th>
           <td mat-cell *matCellDef="let element">{{ element.name }}</td>
