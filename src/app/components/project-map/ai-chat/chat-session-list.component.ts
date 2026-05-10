@@ -8,7 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
-import { ChatSession } from '@models/ai-chat.interface';
+import { ChatSession, isFaultInjectionSession } from '@models/ai-chat.interface';
 import { Controller } from '@models/controller';
 import { AiChatService } from '@services/ai-chat.service';
 import {
@@ -284,5 +284,14 @@ export class ChatSessionListComponent {
    */
   trackBySessionId(index: number, session: ChatSession): string {
     return session.thread_id;
+  }
+
+  /**
+   * Check if session is a fault injection session
+   * @param session Chat session
+   * @returns Whether this is a fault injection session
+   */
+  isFaultInjectionSession(session: ChatSession): boolean {
+    return isFaultInjectionSession(session);
   }
 }

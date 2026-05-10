@@ -81,6 +81,21 @@
   }
 }
 
+.gns3-chat-session-list__type-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.gns3-chat-session-list__fault-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  color: var(--mat-sys-error);
+  flex-shrink: 0;
+}
+
 .gns3-chat-session-list__pin-icon {
   fill: var(--mat-sys-primary);
   filter: drop-shadow(0 2px 4px color-mix(in srgb, var(--mat-sys-primary) 40%, transparent));

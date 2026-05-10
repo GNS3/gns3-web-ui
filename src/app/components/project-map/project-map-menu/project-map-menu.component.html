@@ -141,6 +141,16 @@
 >
   <span class="ai-icon">AI</span>
 </button>
+<button
+  matTooltip="Inject Fault"
+  matTooltipClass="custom-tooltip"
+  matTooltipPosition="left"
+  mat-icon-button
+  class="menu-button fault-inject-button"
+  (click)="openFaultInjection()"
+>
+  <mat-icon>bug_report</mat-icon>
+</button>
 <app-drawing-added
   [controller]="controller()"
   [project]="project()"

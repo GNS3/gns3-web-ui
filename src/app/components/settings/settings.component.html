@@ -125,6 +125,19 @@
             <button mat-raised-button (click)="checkForUpdates()" class="settings__update-button">
               Check for updates
             </button>
+            <button
+              mat-raised-button
+              (click)="checkForAiSkillsUpdates()"
+              class="settings__update-button"
+              [disabled]="isLoadingAiSkills()"
+              [matTooltip]="isLoadingAiSkills() ? 'Updating AI skills...' : ''"
+            >
+              @if (isLoadingAiSkills()) {
+              <mat-spinner diameter="20" class="settings__update-spinner"></mat-spinner>
+              } @else {
+              <span>Check for update AI skills</span>
+              }
+            </button>
           </div>
         </mat-expansion-panel>
       </mat-accordion>

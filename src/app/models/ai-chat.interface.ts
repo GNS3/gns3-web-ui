@@ -44,6 +44,14 @@ export interface ChatEvent {
 }
 
 /**
+ * Session metadata
+ */
+export interface SessionMetadata {
+  copilot_mode?: 'teaching_assistant' | 'lab_automation_assistant' | 'troubleshooting_injection';
+  [key: string]: any;
+}
+
+/**
  * Chat session
  */
 export interface ChatSession {
@@ -60,9 +68,30 @@ export interface ChatSession {
   last_message_at: string; // Last message time
   created_at: string; // Creation time
   updated_at: string; // Update time
-  metadata?: string; // Metadata JSON string
+  metadata?: SessionMetadata | string; // Metadata object or JSON string (legacy)
   stats?: string; // Additional statistics JSON string
   pinned: boolean; // Whether pinned
+}
+
+/**
+ * Get copilot mode from session metadata
+ */
+export function getSessionCopilotMode(session: ChatSession): 'teaching_assistant' | 'lab_automation_assistant' | 'troubleshooting_injection' | null {
+  if (!session.metadata) return null;
+
+  // Handle both object and string formats
+  const metadata = typeof session.metadata === 'string'
+    ? JSON.parse(session.metadata)
+    : session.metadata;
+
+  return metadata.copilot_mode || null;
+}
+
+/**
+ * Check if session is a fault injection session
+ */
+export function isFaultInjectionSession(session: ChatSession): boolean {
+  return getSessionCopilotMode(session) === 'troubleshooting_injection';
 }
 
 /**

@@ -671,4 +671,39 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       this.aiChatStore.minimizePanel();
     }
   }
+
+  /**
+   * Open fault injection dialog
+   */
+  public openFaultInjection() {
+    if (!this.project() || !this.controller()) {
+      return;
+    }
+
+    // Import dynamically to avoid circular dependencies
+    import('../fault-injection-dialog/fault-injection-dialog.component').then(({ FaultInjectionDialogComponent }) => {
+      const dialogRef = this.dialog.open(FaultInjectionDialogComponent, {
+        panelClass: ['base-dialog-panel', 'fault-injection-dialog-panel'],
+        backdropClass: 'fault-injection-backdrop',
+        autoFocus: false,
+        disableClose: true,
+        data: {
+          controller: this.controller(),
+          project: this.project(),
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          // Handle fault injection result
+          console.log('Fault injection completed:', result);
+
+          // Open AI Chat if requested
+          if (result.openAIChat) {
+            this.openAIChat();
+          }
+        }
+      });
+    });
+  }
 }
