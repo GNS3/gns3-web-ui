@@ -198,7 +198,7 @@ describe('AiChatService', () => {
 
       service.getSessions(mockController, 'project-123').subscribe();
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-123/chat/sessions');
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/copilot/projects/project-123/chat/sessions');
     });
 
     it('should return ChatSession array', async () => {
@@ -249,7 +249,7 @@ describe('AiChatService', () => {
 
       expect(mockHttpController.get).toHaveBeenCalledWith(
         mockController,
-        '/projects/project-123/chat/sessions/session-456/history'
+        '/copilot/projects/project-123/chat/sessions/session-456/history'
       );
     });
 
@@ -288,7 +288,7 @@ describe('AiChatService', () => {
 
       expect(mockHttpController.patch).toHaveBeenCalledWith(
         mockController,
-        '/projects/project-123/chat/sessions/session-456',
+        '/copilot/projects/project-123/chat/sessions/session-456',
         { title: 'New Title' }
       );
     });
@@ -327,7 +327,7 @@ describe('AiChatService', () => {
 
       expect(mockHttpController.delete).toHaveBeenCalledWith(
         mockController,
-        '/projects/project-123/chat/sessions/session-456'
+        '/copilot/projects/project-123/chat/sessions/session-456'
       );
     });
 
@@ -349,7 +349,7 @@ describe('AiChatService', () => {
 
       expect(mockHttpController.put).toHaveBeenCalledWith(
         mockController,
-        '/projects/project-123/chat/sessions/session-456/pin',
+        '/copilot/projects/project-123/chat/sessions/session-456/pin',
         null
       );
     });
@@ -388,8 +388,55 @@ describe('AiChatService', () => {
 
       expect(mockHttpController.delete).toHaveBeenCalledWith(
         mockController,
-        '/projects/project-123/chat/sessions/session-456/pin'
+        '/copilot/projects/project-123/chat/sessions/session-456/pin'
       );
+    });
+  });
+
+  describe('reloadSkills', () => {
+    it('should call httpController.post with correct URL', () => {
+      (mockHttpController.post as any).mockReturnValue(of(undefined));
+
+      service.reloadSkills(mockController).subscribe();
+
+      expect(mockHttpController.post).toHaveBeenCalledWith(
+        mockController,
+        '/copilot/reload/skills',
+        null
+      );
+    });
+
+    it('should return void', async () => {
+      (mockHttpController.post as any).mockReturnValue(of(undefined));
+
+      const result = await new Promise<void>((resolve) => {
+        service.reloadSkills(mockController).subscribe((r) => resolve(r));
+      });
+      expect(result).toBeUndefined();
+    });
+
+    it('should pass through errors', () => {
+      const error = new Error('Server error');
+      (mockHttpController.post as any).mockReturnValue(throwError(() => error));
+
+      service.reloadSkills(mockController).subscribe({
+        error: (err) => {
+          expect(err.message).toBe('Server error');
+        },
+      });
+    });
+
+    it('should log errors', () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const error = new Error('Test error');
+      (mockHttpController.post as any).mockReturnValue(throwError(() => error));
+
+      service.reloadSkills(mockController).subscribe({
+        error: () => {
+          expect(consoleSpy).toHaveBeenCalled();
+          consoleSpy.mockRestore();
+        },
+      });
     });
   });
 

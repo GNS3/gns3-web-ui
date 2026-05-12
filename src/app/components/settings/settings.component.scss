@@ -202,10 +202,21 @@ mat-radio-button {
 // ============================================= */
 .settings__update-section {
   padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .settings__update-button {
   width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .settings__update-spinner {
+    --mat-spinner-stroke-color: var(--mat-sys-on-primary);
+  }
 }
 
 /* =============================================

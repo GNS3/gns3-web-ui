@@ -23,18 +23,26 @@
       [class.gns3-chat-session-list__session--active]="session.thread_id === currentSessionId()"
       (click)="selectSession(session.thread_id)"
     >
-      <!-- Pin indicator -->
-      @if (session.pinned) {
-      <svg
-        class="gns3-chat-session-list__pin-icon gns3-chat-session-list__pin-animation"
-        xmlns="http://www.w3.org/2000/svg"
-        height="16"
-        width="16"
-        viewBox="0 0 24 24"
-      >
-        <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z" />
-      </svg>
-      }
+      <!-- Session type icons -->
+      <div class="gns3-chat-session-list__type-icons">
+        <!-- Fault injection indicator -->
+        @if (isFaultInjectionSession(session)) {
+        <mat-icon class="gns3-chat-session-list__fault-icon" title="Fault Injection Session">bug_report</mat-icon>
+        }
+
+        <!-- Pin indicator -->
+        @if (session.pinned) {
+        <svg
+          class="gns3-chat-session-list__pin-icon gns3-chat-session-list__pin-animation"
+          xmlns="http://www.w3.org/2000/svg"
+          height="16"
+          width="16"
+          viewBox="0 0 24 24"
+        >
+          <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z" />
+        </svg>
+        }
+      </div>
 
       <!-- Session text content -->
       <div class="gns3-chat-session-list__text">

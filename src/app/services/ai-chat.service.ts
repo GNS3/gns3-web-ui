@@ -34,8 +34,135 @@ export class AiChatService {
   ) {}
 
   /**
+   * Inject network fault (SSE stream)
+   * POST /v3/copilot/projects/{project_id}/chat/inject
+   * @param controller Controller
+   * @param projectId Project ID
+   * @param message Fault injection message
+   * @returns SSE event stream
+   */
+  injectFault(controller: Controller, projectId: string, message: string): Observable<ChatEvent> {
+    const url = `${this.getControllerUrl(controller)}/v3/copilot/projects/${projectId}/chat/inject`;
+
+    const authHeaders = this.getAuthHeaders(controller);
+    const headersObj: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    // Convert HttpHeaders to plain object
+    authHeaders.keys().forEach((key) => {
+      const value = authHeaders.get(key);
+      if (value) {
+        headersObj[key] = value;
+      }
+    });
+
+    return new Observable<ChatEvent>((observer) => {
+      fetch(url, {
+        method: 'POST',
+        headers: headersObj,
+        body: JSON.stringify({ message }),
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            let errorMessage = `HTTP error! status: ${response.status}`;
+            try {
+              const errorData = await response.json();
+              if (errorData.message) {
+                errorMessage = errorData.message;
+              }
+            } catch (e) {
+              if (response.statusText) {
+                errorMessage = response.statusText;
+              }
+            }
+            const error: any = new Error(errorMessage);
+            error.status = response.status;
+            error.statusText = response.statusText;
+            error.error = { message: errorMessage };
+            throw error;
+          }
+
+          if (!response.body) {
+            throw new Error('Response body is null');
+          }
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+
+          const processStream = async () => {
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
+
+                if (done) {
+                  observer.complete();
+                  break;
+                }
+
+                buffer += decoder.decode(value, { stream: true });
+
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                  if (line.startsWith('data: ')) {
+                    const data = line.slice(6).trim();
+
+                    if (data) {
+                      try {
+                        const event: ChatEvent = JSON.parse(data);
+
+                        if (event.type === 'heartbeat') {
+                          continue;
+                        }
+
+                        observer.next(event);
+
+                        if (event.type === 'done' || event.type === 'error') {
+                          observer.complete();
+                          break;
+                        }
+                      } catch (e) {
+                        console.error('Failed to parse SSE data:', data, e);
+                      }
+                    }
+                  }
+                }
+
+                if (observer.closed) {
+                  break;
+                }
+              }
+            } catch (error) {
+              console.error('Stream processing error:', error);
+              observer.error(error);
+            } finally {
+              reader.cancel();
+            }
+          };
+
+          processStream();
+        })
+        .catch((error) => {
+          console.error('Fetch error:', error);
+          observer.error(error);
+        });
+
+      return () => {
+        // Cleanup function
+      };
+    }).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
    * Stream chat
-   * POST /v3/projects/{project_id}/chat/stream
+   * POST /v3/copilot/projects/{project_id}/chat/stream
    * @param controller Controller
    * @param projectId Project ID
    * @param request Chat request
@@ -45,7 +172,7 @@ export class AiChatService {
     this.currentProjectId = projectId;
     this.isStreaming.next(true);
 
-    const url = `${this.getControllerUrl(controller)}/v3/projects/${projectId}/chat/stream`;
+    const url = `${this.getControllerUrl(controller)}/v3/copilot/projects/${projectId}/chat/stream`;
 
     const authHeaders = this.getAuthHeaders(controller);
     const headersObj: Record<string, string> = {
@@ -184,13 +311,13 @@ export class AiChatService {
 
   /**
    * Get sessions list
-   * GET /projects/{project_id}/chat/sessions
+   * GET /copilot/projects/{project_id}/chat/sessions
    * @param controller Controller
    * @param projectId Project ID
    * @returns Sessions list
    */
   getSessions(controller: Controller, projectId: string): Observable<ChatSession[]> {
-    return this.httpController.get<ChatSession[]>(controller, `/projects/${projectId}/chat/sessions`).pipe(
+    return this.httpController.get<ChatSession[]>(controller, `/copilot/projects/${projectId}/chat/sessions`).pipe(
       catchError((error) => {
         console.error('Failed to get sessions:', error);
         // Pass through the original error - it contains the server response
@@ -201,7 +328,7 @@ export class AiChatService {
 
   /**
    * Get session history
-   * GET /projects/{project_id}/chat/sessions/{session_id}/history
+   * GET /copilot/projects/{project_id}/chat/sessions/{session_id}/history
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
@@ -217,7 +344,7 @@ export class AiChatService {
     const params = limit ? { limit } : undefined;
 
     return this.httpController
-      .get<ConversationHistory>(controller, `/projects/${projectId}/chat/sessions/${sessionId}/history`)
+      .get<ConversationHistory>(controller, `/copilot/projects/${projectId}/chat/sessions/${sessionId}/history`)
       .pipe(
         catchError((error) => {
           console.error('Failed to get session history:', error);
@@ -228,7 +355,7 @@ export class AiChatService {
 
   /**
    * Rename session
-   * PATCH /projects/{project_id}/chat/sessions/{session_id}
+   * PATCH /copilot/projects/{project_id}/chat/sessions/{session_id}
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
@@ -239,7 +366,7 @@ export class AiChatService {
     const request: RenameSessionRequest = { title };
 
     return this.httpController
-      .patch<ChatSession>(controller, `/projects/${projectId}/chat/sessions/${sessionId}`, request)
+      .patch<ChatSession>(controller, `/copilot/projects/${projectId}/chat/sessions/${sessionId}`, request)
       .pipe(
         catchError((error) => {
           console.error('Failed to rename session:', error);
@@ -250,14 +377,14 @@ export class AiChatService {
 
   /**
    * Delete session
-   * DELETE /projects/{project_id}/chat/sessions/{session_id}
+   * DELETE /copilot/projects/{project_id}/chat/sessions/{session_id}
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
    * @returns void
    */
   deleteSession(controller: Controller, projectId: string, sessionId: string): Observable<void> {
-    return this.httpController.delete<void>(controller, `/projects/${projectId}/chat/sessions/${sessionId}`).pipe(
+    return this.httpController.delete<void>(controller, `/copilot/projects/${projectId}/chat/sessions/${sessionId}`).pipe(
       catchError((error) => {
         console.error('Failed to delete session:', error);
         return throwError(() => error);
@@ -267,7 +394,7 @@ export class AiChatService {
 
   /**
    * Pin session
-   * PUT /projects/{project_id}/chat/sessions/{session_id}/pin
+   * PUT /copilot/projects/{project_id}/chat/sessions/{session_id}/pin
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
@@ -275,7 +402,7 @@ export class AiChatService {
    */
   pinSession(controller: Controller, projectId: string, sessionId: string): Observable<ChatSession> {
     return this.httpController
-      .put<ChatSession>(controller, `/projects/${projectId}/chat/sessions/${sessionId}/pin`, null)
+      .put<ChatSession>(controller, `/copilot/projects/${projectId}/chat/sessions/${sessionId}/pin`, null)
       .pipe(
         catchError((error) => {
           console.error('Failed to pin session:', error);
@@ -286,7 +413,7 @@ export class AiChatService {
 
   /**
    * Unpin session
-   * DELETE /projects/{project_id}/chat/sessions/{session_id}/pin
+   * DELETE /copilot/projects/{project_id}/chat/sessions/{session_id}/pin
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
@@ -294,7 +421,7 @@ export class AiChatService {
    */
   unpinSession(controller: Controller, projectId: string, sessionId: string): Observable<ChatSession> {
     return this.httpController
-      .delete<ChatSession>(controller, `/projects/${projectId}/chat/sessions/${sessionId}/pin`)
+      .delete<ChatSession>(controller, `/copilot/projects/${projectId}/chat/sessions/${sessionId}/pin`)
       .pipe(
         catchError((error) => {
           console.error('Failed to unpin session:', error);
@@ -313,14 +440,14 @@ export class AiChatService {
 
   /**
    * Abort chat session
-   * POST /v3/projects/{project_id}/chat/sessions/{session_id}/abort
+   * POST /v3/copilot/projects/{project_id}/chat/sessions/{session_id}/abort
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
    * @returns void
    */
   abortChat(controller: Controller, projectId: string, sessionId: string): Observable<void> {
-    return this.httpController.post<void>(controller, `/projects/${projectId}/chat/sessions/${sessionId}/abort`, null).pipe(
+    return this.httpController.post<void>(controller, `/copilot/projects/${projectId}/chat/sessions/${sessionId}/abort`, null).pipe(
       catchError((error) => {
         console.error('Failed to abort chat:', error);
         return throwError(() => error);
@@ -342,6 +469,21 @@ export class AiChatService {
   resetCurrentSession(): void {
     this.currentSessionId = null;
     this.currentProjectId = null;
+  }
+
+  /**
+   * Hot reload skills and prompts
+   * POST /v3/copilot/reload/skills
+   * @param controller Controller
+   * @returns void
+   */
+  reloadSkills(controller: Controller): Observable<void> {
+    return this.httpController.post<void>(controller, '/copilot/reload/skills', null).pipe(
+      catchError((error) => {
+        console.error('Failed to reload skills:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   /**

@@ -1,22 +1,27 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute } from '@angular/router';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { Settings, SettingsService } from '@services/settings.service';
 import { ConsoleService } from '@services/settings/console.service';
 import { ThemeService, PrebuiltTheme } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
 import { UpdatesService } from '@services/updates.service';
+import { ControllerService } from '@services/controller.service';
+import { AiChatService } from '@services/ai-chat.service';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
-  imports: [CommonModule, FormsModule, MatExpansionModule, MatCheckboxModule, MatButtonModule, MatRadioModule],
+  imports: [CommonModule, FormsModule, MatExpansionModule, MatCheckboxModule, MatButtonModule, MatRadioModule, MatProgressSpinnerModule, MatTooltipModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsComponent implements OnInit {
@@ -26,6 +31,9 @@ export class SettingsComponent implements OnInit {
   public mapSettingsService = inject(MapSettingsService);
   public updatesService = inject(UpdatesService);
   private cdr = inject(ChangeDetectorRef);
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private aiChatService = inject(AiChatService);
 
   settings: Settings;
   readonly integrateLinksLabelsToLinks = model(false);
@@ -33,6 +41,7 @@ export class SettingsComponent implements OnInit {
   readonly openConsolesInWidget = model(false);
   readonly crashReports = model(false);
   readonly anonymousStatistics = model(false);
+  readonly isLoadingAiSkills = signal(false);
   mapTheme: string;
   currentTheme: PrebuiltTheme;
   availableThemes = this.themeService.availableThemes;
@@ -95,5 +104,29 @@ export class SettingsComponent implements OnInit {
 
   checkForUpdates() {
     window.open('https://gns3.com/software');
+  }
+
+  checkForAiSkillsUpdates() {
+    const controllerId = this.route.snapshot.paramMap.get('controller_id');
+    if (!controllerId) {
+      this.toaster.error('Controller not found');
+      return;
+    }
+
+    this.isLoadingAiSkills.set(true);
+
+    this.controllerService.get(+controllerId).then((controller) => {
+      this.aiChatService.reloadSkills(controller).subscribe({
+        next: () => {
+          this.toaster.success('AI skills reloaded successfully');
+          this.isLoadingAiSkills.set(false);
+        },
+        error: (error) => {
+          const message = error?.error?.message || error?.message || 'Failed to reload AI skills';
+          this.toaster.error(message);
+          this.isLoadingAiSkills.set(false);
+        },
+      });
+    });
   }
 }

@@ -108,6 +108,20 @@ button.mat-mdc-icon-button {
   font-weight: 900;
 }
 
+/* Fault Injection Button */
+.fault-inject-button {
+  mat-icon {
+    color: var(--mat-sys-error);
+  }
+}
+
+.fault-inject-button:hover {
+  mat-icon {
+    color: var(--mat-sys-error);
+    filter: drop-shadow(0 0 8px var(--mat-sys-error));
+  }
+}
+
 /* Menu button hover effect */
 .menu-button {
   transition: transform 100ms ease;

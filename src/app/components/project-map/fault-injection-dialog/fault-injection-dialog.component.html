@@ -1,0 +1,110 @@
+<h2 mat-dialog-title class="fault-injection-title">
+  <mat-icon class="fault-injection-icon">bug_report</mat-icon>
+  <span>Fault Injection</span>
+</h2>
+
+<div mat-dialog-content class="fault-injection-content">
+  <!-- Confirmation Step -->
+  @if (showConfirm()) {
+    <div class="confirm-panel">
+      <mat-icon class="confirm-panel__icon">warning</mat-icon>
+      <p class="confirm-panel__title">Ready to inject a network fault?</p>
+
+      <!-- Fault type selection -->
+      <div class="fault-type-selector">
+        <p class="fault-type-selector__label">Number of faults to inject</p>
+        <mat-button-toggle-group
+          [(value)]="faultType"
+          class="fault-type-selector__group"
+          hideSingleSelectionIndicator="true"
+        >
+          <mat-button-toggle [value]="1" class="fault-type-btn">1</mat-button-toggle>
+          <mat-button-toggle [value]="2" class="fault-type-btn">2</mat-button-toggle>
+          <mat-button-toggle [value]="3" class="fault-type-btn">3</mat-button-toggle>
+          <mat-button-toggle [value]="'random'" class="fault-type-btn">Random</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+      <p class="confirm-panel__desc">
+        This will inject a simulated network fault into your topology for troubleshooting practice.
+        Make sure you have saved your current work.
+      </p>
+      <p class="confirm-panel__desc">
+        The fault injection process will analyze your topology, select an appropriate fault,
+        and apply it automatically. You'll be able to see the details in AI Chat.
+      </p>
+    </div>
+  }
+
+  <!-- Animation Area -->
+  @if (!showConfirm() || isInjecting() || completed()) {
+    <div class="animation-area" [class.injecting]="isInjecting()">
+      <img
+        src="assets/gns3_icon.svg"
+        alt="GNS3"
+        class="gns3-logo"
+      />
+    </div>
+
+    <!-- Status Text -->
+    @if (isInjecting()) {
+      <p class="status-main">{{ currentStep() || 'Injecting fault...' }}</p>
+      <p class="status-sub">Agent is working</p>
+    }
+
+    <!-- Completion Message -->
+    @if (completed() && !isInjecting()) {
+      <div class="completion-message" [class.success]="completionStatus() === 'success'" [class.error]="completionStatus() === 'error'" [class.aborted]="completionStatus() === 'aborted'">
+        <mat-icon class="completion-icon">{{ completionStatus() === 'success' ? 'check_circle' : completionStatus() === 'aborted' ? 'cancel' : 'error' }}</mat-icon>
+        <div class="completion-content">
+          <p class="completion-title">{{ completionTitle() }}</p>
+          <p class="completion-text">Check the AI Chat panel for detailed execution history and tool results.</p>
+        </div>
+      </div>
+    }
+
+    <!-- Progress Events -->
+    @if (isInjecting() && displayedEvents().length > 0) {
+      <div class="events-section">
+        <h3>Progress</h3>
+        <div class="events-list">
+          @for (event of displayedEvents(); track trackByEventId($index, event)) {
+            <div class="event" [class.success]="event.type === 'success'" [class.error]="event.type === 'error'">
+              <mat-icon>{{ getEventIcon(event.type) }}</mat-icon>
+              <div class="event-content">
+                <p class="event-msg">{{ event.message }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>
+
+<div mat-dialog-actions align="end">
+  @if (showConfirm()) {
+    <button mat-button (click)="onCancelConfirm()">Cancel</button>
+    <button mat-raised-button color="warn" (click)="onConfirmInject()">
+      <mat-icon>bug_report</mat-icon>
+      <span>Confirm & Inject</span>
+    </button>
+  } @if (isInjecting()) {
+    <button mat-button (click)="onAbort()">Abort</button>
+  } @if (!showConfirm() && !isInjecting() && !completed()) {
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="warn" (click)="onInject()">
+      <mat-icon>bug_report</mat-icon>
+      <span>Inject Fault</span>
+    </button>
+  } @if (completed() && !isInjecting()) {
+    <button mat-button (click)="onViewDetails()">
+      <mat-icon>chat</mat-icon>
+      <span>View in AI Chat</span>
+    </button>
+    <button mat-raised-button color="primary" (click)="onClose()">
+      <mat-icon>check</mat-icon>
+      <span>Done</span>
+    </button>
+  }
+</div>

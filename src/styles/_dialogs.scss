@@ -1203,3 +1203,20 @@ h2[mat-dialog-title] {
     padding: 12px 16px;
   }
 }
+
+/* =============================================
+// Fault Injection Dialog Panel
+// Custom dialog for fault injection feature
+// Inherits from base-dialog-panel
+// ============================================= */
+.fault-injection-dialog-panel {
+  max-width: 600px;
+  width: 90vw;
+}
+
+/* Full-screen backdrop overlay during injection */
+.fault-injection-backdrop {
+  backdrop-filter: blur(6px);
+  background: color-mix(in srgb, var(--mat-sys-scrim) 40%, transparent);
+  transition: all 0.3s ease;
+}

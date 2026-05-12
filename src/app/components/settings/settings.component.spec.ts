@@ -1,10 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { SettingsComponent } from './settings.component';
 import { SettingsService, Settings } from '@services/settings.service';
 import { ThemeService, PrebuiltTheme } from '@services/theme.service';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { ToasterService } from '@services/toaster.service';
 import { UpdatesService } from '@services/updates.service';
+import { ControllerService } from '@services/controller.service';
+import { AiChatService } from '@services/ai-chat.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('SettingsComponent', () => {
@@ -16,6 +19,9 @@ describe('SettingsComponent', () => {
   let mockMapSettingsService: any;
   let mockToasterService: any;
   let mockUpdatesService: any;
+  let mockControllerService: any;
+  let mockAiChatService: any;
+  let mockActivatedRoute: any;
   let windowOpenSpy: ReturnType<typeof vi.spyOn>;
 
   const mockSettings: Settings = {
@@ -80,6 +86,29 @@ describe('SettingsComponent', () => {
 
     mockUpdatesService = {};
 
+    mockControllerService = {
+      get: vi.fn().mockResolvedValue({
+        controller_id: 1,
+      }),
+    };
+
+    mockAiChatService = {
+      reloadSkills: vi.fn().mockReturnValue({
+        subscribe: vi.fn().mockImplementation((callbacks) => {
+          callbacks.next();
+          callbacks.complete();
+        }),
+      }),
+    };
+
+    mockActivatedRoute = {
+      snapshot: {
+        paramMap: {
+          get: vi.fn().mockReturnValue('1'),
+        },
+      },
+    };
+
     await TestBed.configureTestingModule({
       imports: [SettingsComponent],
       providers: [
@@ -88,6 +117,9 @@ describe('SettingsComponent', () => {
         { provide: MapSettingsService, useValue: mockMapSettingsService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: UpdatesService, useValue: mockUpdatesService },
+        { provide: ControllerService, useValue: mockControllerService },
+        { provide: AiChatService, useValue: mockAiChatService },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],
     }).compileComponents();
 

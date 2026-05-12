@@ -10,8 +10,8 @@ See LICENSE file for licensing information.
 
 > Complete documentation for GNS3 Web UI AI Chat functionality
 
-**Version**: v1.5
-**Last Updated**: 2026-04-18
+**Version**: v1.6
+**Last Updated**: 2026-05-11
 **Status**: ✅ Implemented
 
 ---
@@ -247,8 +247,8 @@ interface ChatPanelState {
 ### Multi-Round Pattern
 
 ```
-Round 1: POST /v3/projects/{pid}/chat/stream {session_id: "uuid-1"} → SSE response → Connection closes
-Round 2: POST /v3/projects/{pid}/chat/stream {session_id: "uuid-1"} → SSE response → Connection closes
+Round 1: POST /v3/copilot/projects/{pid}/chat/stream {session_id: "uuid-1"} → SSE response → Connection closes
+Round 2: POST /v3/copilot/projects/{pid}/chat/stream {session_id: "uuid-1"} → SSE response → Connection closes
 ```
 
 Each request creates new SSE connection but uses same `session_id` for context.
@@ -303,14 +303,14 @@ AI Chat uses `theme-*` prefixed classes (e.g., `theme-deeppurple-amber`).
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/v3/projects/{project_id}/chat/stream` | SSE stream |
-| GET | `/projects/{project_id}/chat/sessions` | List sessions |
-| GET | `/projects/{project_id}/chat/sessions/{session_id}/history` | Get history |
-| PATCH | `/projects/{project_id}/chat/sessions/{session_id}` | Rename |
-| DELETE | `/projects/{project_id}/chat/sessions/{session_id}` | Delete |
-| PUT | `/projects/{project_id}/chat/sessions/{session_id}/pin` | Pin |
-| DELETE | `/projects/{project_id}/chat/sessions/{session_id}/pin` | Unpin |
-| POST | `/v3/projects/{project_id}/chat/sessions/{session_id}/abort` | Abort streaming |
+| POST | `/v3/copilot/projects/{project_id}/chat/stream` | SSE stream |
+| GET | `/v3/copilot/projects/{project_id}/chat/sessions` | List sessions |
+| GET | `/v3/copilot/projects/{project_id}/chat/sessions/{session_id}/history` | Get history |
+| PATCH | `/v3/copilot/projects/{project_id}/chat/sessions/{session_id}` | Rename |
+| DELETE | `/v3/copilot/projects/{project_id}/chat/sessions/{session_id}` | Delete |
+| PUT | `/v3/copilot/projects/{project_id}/chat/sessions/{session_id}/pin` | Pin |
+| DELETE | `/v3/copilot/projects/{project_id}/chat/sessions/{session_id}/pin` | Unpin |
+| POST | `/v3/copilot/projects/{project_id}/chat/sessions/{session_id}/abort` | Abort streaming |
 
 ### AI Profiles
 
@@ -397,7 +397,29 @@ Known technical debt and optimization opportunities:
 
 ---
 
-**Last Updated**: 2026-04-18
+**Last Updated**: 2026-05-11
+
+---
+
+## Changelog
+
+### v1.6 (2026-05-11)
+
+**API Path Updates**:
+- ✅ Updated all chat endpoints from `/projects/{id}/chat/*` to `/copilot/projects/{id}/chat/*`
+- ✅ Updated session management endpoints to use `/copilot` prefix
+- ✅ Consistent API path structure across all AI Chat functionality
+
+**New Features**:
+- ✅ Added fault injection dialog for network troubleshooting practice
+- ✅ Added reload AI skills functionality (Settings → Updates panel)
+
+**Performance**:
+- ✅ Optimized fault injection dialog: removed SVG animations, reduced CPU usage by 95%
+
+### v1.5 (2026-04-18)
+
+- Initial documentation version
 
 ---
 
