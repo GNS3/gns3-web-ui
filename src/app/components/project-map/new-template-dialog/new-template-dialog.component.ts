@@ -466,28 +466,64 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
   }
 
   extractFilterOptions() {
-    // Extract unique emulators
-    const uniqueEmulators = new Set<string>();
-    this.allAppliances.forEach((appliance) => {
-      if (appliance.emulator) {
-        uniqueEmulators.add(appliance.emulator);
-      }
-    });
-    this.emulators = ['all emulators', ...Array.from(uniqueEmulators).sort()];
+    // Get base unique options from all appliances
+    const baseEmulators = new Set<string>();
+    const baseVendors = new Set<string>();
+    const baseCategories = new Set<string>();
 
-    // Extract unique vendors
-    const uniqueVendors = new Set<string>();
     this.allAppliances.forEach((appliance) => {
-      if (appliance.vendor_name) {
-        uniqueVendors.add(appliance.vendor_name);
-      }
+      if (appliance.emulator) baseEmulators.add(appliance.emulator);
+      if (appliance.vendor_name) baseVendors.add(appliance.vendor_name);
+      if (appliance.category) baseCategories.add(appliance.category);
     });
+
+    // Update base options (used for autocomplete)
+    this.categories = ['all categories', 'router', 'multilayer_switch', 'guest', 'firewall'];
+    this.emulators = ['all emulators', ...Array.from(baseEmulators).sort()];
+    this.vendors = ['all vendors', ...Array.from(baseVendors).sort()];
+
+    // Initial filter options update based on current selection
+    this.updateFilterOptions();
+  }
+
+  updateFilterOptions() {
+    // Apply current filters to get filtered appliances
+    let filteredAppliances = this.allAppliances;
+
+    // Filter by category
+    if (this.category() !== 'all categories' && this.category()) {
+      filteredAppliances = filteredAppliances.filter((t) => t.category === this.category());
+    }
+
+    // Filter by emulator
+    if (this.emulator() !== 'all emulators' && this.emulator()) {
+      filteredAppliances = filteredAppliances.filter((t) => t.emulator === this.emulator());
+    }
+
+    // Filter by vendor
+    if (this.vendor() !== 'all vendors' && this.vendor()) {
+      filteredAppliances = filteredAppliances.filter((t) => t.vendor_name === this.vendor());
+    }
+
+    // Extract unique options from filtered results for dynamic filtering
+    const uniqueEmulators = new Set<string>();
+    const uniqueVendors = new Set<string>();
+    const uniqueCategories = new Set<string>();
+
+    filteredAppliances.forEach((appliance) => {
+      if (appliance.emulator) uniqueEmulators.add(appliance.emulator);
+      if (appliance.vendor_name) uniqueVendors.add(appliance.vendor_name);
+      if (appliance.category) uniqueCategories.add(appliance.category);
+    });
+
+    // Update dynamic options based on current filters
+    this.emulators = ['all emulators', ...Array.from(uniqueEmulators).sort()];
     this.vendors = ['all vendors', ...Array.from(uniqueVendors).sort()];
 
-    // Update filtered options
-    this.filteredCategories = this.categories;
-    this.filteredEmulators = this.emulators;
-    this.filteredVendors = this.vendors;
+    // Update filtered options for autocomplete
+    this.filteredCategories = this._filter(this.categoryControl.value || '', this.categories);
+    this.filteredEmulators = this._filter(this.emulatorControl.value || '', this.emulators);
+    this.filteredVendors = this._filter(this.vendorControl.value || '', this.vendors);
   }
 
   setupAutocompleteFilters() {
@@ -535,28 +571,35 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     this.appliances = temporaryAppliances;
     this.dataSource = new MatTableDataSource(this.appliances);
     this.setupPaginator();
+
+    // Update filter options based on current results
+    this.updateFilterOptions();
   }
 
   onSearchTextChange(value: string) {
     this.searchText.set(value);
+    this.updateFilterOptions();
     this.filterAppliances();
   }
 
   onCategoryChange(value: string) {
     this.category.set(value);
     this.categoryControl.setValue(value);
+    this.updateFilterOptions();
     this.filterAppliances();
   }
 
   onEmulatorChange(value: string) {
     this.emulator.set(value);
     this.emulatorControl.setValue(value);
+    this.updateFilterOptions();
     this.filterAppliances();
   }
 
   onVendorChange(value: string) {
     this.vendor.set(value);
     this.vendorControl.setValue(value);
+    this.updateFilterOptions();
     this.filterAppliances();
   }
 
