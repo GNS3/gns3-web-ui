@@ -12,7 +12,6 @@ import { ToasterService } from '@services/toaster.service';
   standalone: true,
   selector: 'app-add-image-dialog',
   templateUrl: './add-image-dialog.component.html',
-  styleUrls: ['./add-image-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatRadioModule],
 })
@@ -21,14 +20,12 @@ export class AddImageDialogComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
 
-  controller: Controller;
   isInstallAppliance: boolean = false;
   install_appliance: boolean = false;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<AddImageDialogComponent>) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public controller: Controller, public dialogRef: MatDialogRef<AddImageDialogComponent>) {}
 
   ngOnInit() {
-    this.controller = this.data;
     this.cd.markForCheck();
   }
 
@@ -47,7 +44,7 @@ export class AddImageDialogComponent implements OnInit {
     this.dialogRef.close(true);
   }
 
-  selectInstallApplianceOption(ev: any) {
+  selectInstallApplianceOption(ev: { value: boolean }) {
     this.install_appliance = ev.value === true;
     this.cd.markForCheck();
   }
