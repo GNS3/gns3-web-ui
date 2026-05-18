@@ -771,7 +771,7 @@ h2[mat-dialog-title] {
   }
 }
 
-// Add Image Dialog - 600px x 550px
+// Add Image Dialog - 600px
 .add-image-dialog-panel {
   --mat-dialog-container-max-width: 600px;
 
@@ -779,12 +779,45 @@ h2[mat-dialog-title] {
   .mat-mdc-dialog-container {
     width: 600px;
     max-width: 600px;
-    max-height: 550px;
   }
 
   .mat-mdc-dialog-content {
-    max-height: calc(550px - 140px);
-    overflow-y: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  /* Dialog hint */
+  .add-image-dialog-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .add-image-dialog-hint-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+  }
+
+  /* File input */
+  .add-image-dialog-file-input {
+    display: none;
+  }
+
+  /* Radio button spacing */
+  mat-radio-button {
+    margin-bottom: 8px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 480px) {
+    mat-dialog-container,
+    .mat-mdc-dialog-container {
+      min-width: 300px;
+    }
   }
 }
 
