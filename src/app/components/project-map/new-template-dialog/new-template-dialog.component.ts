@@ -35,6 +35,8 @@ import { UploadServiceService } from '../../../common/uploading-processbar/uploa
 import { environment } from 'environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
@@ -51,6 +53,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FileUploadModule } from 'ng2-file-upload';
 
 @Component({
@@ -85,7 +88,10 @@ import { FileUploadModule } from 'ng2-file-upload';
     MatExpansionModule,
     MatIconModule,
     MatMenuModule,
+    MatAutocompleteModule,
     FileUploadModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
 })
 export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
@@ -114,6 +120,16 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
   public vendors: string[] = ['all vendors'];
   readonly vendor = model('all vendors');
   public displayedColumns: string[] = ['name', 'emulator', 'vendor', 'actions'];
+
+  // Form controls for autocomplete
+  categoryControl = new FormControl('all categories');
+  emulatorControl = new FormControl('all emulators');
+  vendorControl = new FormControl('all vendors');
+
+  // Filtered options for autocomplete
+  filteredCategories: string[] = [];
+  filteredEmulators: string[] = [];
+  filteredVendors: string[] = [];
 
   public dataSource: MatTableDataSource<Appliance>;
 
@@ -146,6 +162,9 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
   private uploadServiceService = inject(UploadServiceService);
 
   ngOnInit() {
+    // Setup autocomplete filtering
+    this.setupAutocompleteFilters();
+
     this.applianceService.getAppliances(this.controller).subscribe({
       next: (appliances) => {
         this.appliances = appliances;
@@ -464,6 +483,33 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
       }
     });
     this.vendors = ['all vendors', ...Array.from(uniqueVendors).sort()];
+
+    // Update filtered options
+    this.filteredCategories = this.categories;
+    this.filteredEmulators = this.emulators;
+    this.filteredVendors = this.vendors;
+  }
+
+  setupAutocompleteFilters() {
+    // Category filter
+    this.categoryControl.valueChanges.subscribe((value) => {
+      this.filteredCategories = this._filter(value || '', this.categories);
+    });
+
+    // Emulator filter
+    this.emulatorControl.valueChanges.subscribe((value) => {
+      this.filteredEmulators = this._filter(value || '', this.emulators);
+    });
+
+    // Vendor filter
+    this.vendorControl.valueChanges.subscribe((value) => {
+      this.filteredVendors = this._filter(value || '', this.vendors);
+    });
+  }
+
+  private _filter(value: string, options: string[]): string[] {
+    const filterValue = value.toLowerCase();
+    return options.filter((option) => option.toLowerCase().includes(filterValue));
   }
 
   filterAppliances() {
@@ -498,16 +544,19 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
 
   onCategoryChange(value: string) {
     this.category.set(value);
+    this.categoryControl.setValue(value);
     this.filterAppliances();
   }
 
   onEmulatorChange(value: string) {
     this.emulator.set(value);
+    this.emulatorControl.setValue(value);
     this.filterAppliances();
   }
 
   onVendorChange(value: string) {
     this.vendor.set(value);
+    this.vendorControl.setValue(value);
     this.filterAppliances();
   }
 

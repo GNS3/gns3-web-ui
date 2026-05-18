@@ -61,26 +61,32 @@
   // ============================================= */
   &__table-header {
     display: flex;
+    flex-direction: column;
     gap: 16px;
     margin-bottom: 16px;
+  }
+
+  &__filter-row {
+    display: flex;
+    width: 100%;
+  }
+
+  &__filter-controls-row {
+    display: flex;
+    gap: 16px;
     flex-wrap: wrap;
   }
 
   &__filter-field {
     flex: 1;
-    min-width: 200px;
+    width: 100%;
   }
 
-  &__category-field {
-    width: 180px;
-  }
-
-  &__emulator-field {
-    width: 180px;
-  }
-
+  &__category-field,
+  &__emulator-field,
   &__vendor-field {
-    width: 180px;
+    flex: 1;
+    min-width: 160px;
   }
 
   /* =============================================
@@ -439,12 +445,11 @@
       max-height: 50vh;
     }
 
-    &__table-header {
+    &__filter-controls-row {
       flex-direction: column;
       gap: 12px;
     }
 
-    &__filter-field,
     &__category-field,
     &__emulator-field,
     &__vendor-field {
