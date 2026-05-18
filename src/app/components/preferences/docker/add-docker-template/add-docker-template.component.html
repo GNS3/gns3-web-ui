@@ -161,6 +161,7 @@
                 type="text"
                 [value]="environment()"
                 (input)="environment.set($event.target.value)"
+                placeholder="Environment variables (one per line, KEY=VALUE format). Supports: %vm-name%, %vm-id%, %project-id%, %project-path%"
               ></textarea>
             </mat-form-field>
           </div>
