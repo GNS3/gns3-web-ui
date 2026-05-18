@@ -80,6 +80,12 @@
   &__filter-field {
     flex: 1;
     width: 100%;
+
+    button mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
   }
 
   &__category-field,
@@ -87,6 +93,12 @@
   &__vendor-field {
     flex: 1;
     min-width: 160px;
+
+    button mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
   }
 
   /* =============================================

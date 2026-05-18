@@ -603,6 +603,32 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     this.filterAppliances();
   }
 
+  clearFilter() {
+    this.searchText.set('');
+    this.filterAppliances();
+  }
+
+  clearCategoryFilter() {
+    this.category.set('all categories');
+    this.categoryControl.setValue('');
+    this.updateFilterOptions();
+    this.filterAppliances();
+  }
+
+  clearEmulatorFilter() {
+    this.emulator.set('all emulators');
+    this.emulatorControl.setValue('');
+    this.updateFilterOptions();
+    this.filterAppliances();
+  }
+
+  clearVendorFilter() {
+    this.vendor.set('all vendors');
+    this.vendorControl.setValue('');
+    this.updateFilterOptions();
+    this.filterAppliances();
+  }
+
   setAction(action: string) {
     this.action = action;
     if (action === 'install') {
