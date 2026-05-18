@@ -61,16 +61,44 @@
   // ============================================= */
   &__table-header {
     display: flex;
+    flex-direction: column;
     gap: 16px;
     margin-bottom: 16px;
   }
 
-  &__filter-field {
-    flex: 1;
+  &__filter-row {
+    display: flex;
+    width: 100%;
   }
 
-  &__category-field {
-    width: 180px;
+  &__filter-controls-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  &__filter-field {
+    flex: 1;
+    width: 100%;
+
+    button mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
+  }
+
+  &__category-field,
+  &__emulator-field,
+  &__vendor-field {
+    flex: 1;
+    min-width: 160px;
+
+    button mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
   }
 
   /* =============================================
@@ -429,12 +457,14 @@
       max-height: 50vh;
     }
 
-    &__table-header {
+    &__filter-controls-row {
       flex-direction: column;
       gap: 12px;
     }
 
-    &__category-field {
+    &__category-field,
+    &__emulator-field,
+    &__vendor-field {
       width: 100%;
     }
 

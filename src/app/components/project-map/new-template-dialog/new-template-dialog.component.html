@@ -28,19 +28,64 @@
     <mat-dialog-content class="new-template__content">
       @if (action === 'install') {
       <div class="new-template__table-header">
-        <mat-form-field appearance="fill" class="new-template__filter-field">
-          <mat-label>Filter</mat-label>
-          <input matInput [value]="searchText()" (input)="onSearchTextChange($event.target.value)" />
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="new-template__category-field">
-          <mat-label>Category</mat-label>
-          <mat-select [value]="category()" (selectionChange)="onCategoryChange($event.value)">
-            @for (cat of categories; track cat) {
-            <mat-option [value]="cat">{{ cat }}</mat-option>
+        <div class="new-template__filter-row">
+          <mat-form-field appearance="fill" class="new-template__filter-field">
+            <mat-label>Filter</mat-label>
+            <input matInput [value]="searchText()" (input)="onSearchTextChange($event.target.value)" />
+            @if (searchText()) {
+            <button mat-icon-button matSuffix (click)="clearFilter()">
+              <mat-icon>close</mat-icon>
+            </button>
             }
-          </mat-select>
-        </mat-form-field>
+          </mat-form-field>
+        </div>
+
+        <div class="new-template__filter-controls-row">
+          <mat-form-field appearance="fill" class="new-template__category-field">
+            <mat-label>Category</mat-label>
+            <input matInput [formControl]="categoryControl" [matAutocomplete]="categoryAuto" />
+            @if (categoryControl.value) {
+            <button mat-icon-button matSuffix (click)="clearCategoryFilter()">
+              <mat-icon>close</mat-icon>
+            </button>
+            }
+            <mat-autocomplete #categoryAuto="matAutocomplete" (optionSelected)="onCategoryChange($event.option.value)">
+              @for (cat of filteredCategories; track cat) {
+              <mat-option [value]="cat">{{ cat }}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="new-template__emulator-field">
+            <mat-label>Emulator</mat-label>
+            <input matInput [formControl]="emulatorControl" [matAutocomplete]="emulatorAuto" />
+            @if (emulatorControl.value) {
+            <button mat-icon-button matSuffix (click)="clearEmulatorFilter()">
+              <mat-icon>close</mat-icon>
+            </button>
+            }
+            <mat-autocomplete #emulatorAuto="matAutocomplete" (optionSelected)="onEmulatorChange($event.option.value)">
+              @for (emu of filteredEmulators; track emu) {
+              <mat-option [value]="emu">{{ emu }}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="new-template__vendor-field">
+            <mat-label>Vendor</mat-label>
+            <input matInput [formControl]="vendorControl" [matAutocomplete]="vendorAuto" />
+            @if (vendorControl.value) {
+            <button mat-icon-button matSuffix (click)="clearVendorFilter()">
+              <mat-icon>close</mat-icon>
+            </button>
+            }
+            <mat-autocomplete #vendorAuto="matAutocomplete" (optionSelected)="onVendorChange($event.option.value)">
+              @for (v of filteredVendors; track v) {
+              <mat-option [value]="v">{{ v }}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
       </div>
 
       <div class="new-template__table-container">

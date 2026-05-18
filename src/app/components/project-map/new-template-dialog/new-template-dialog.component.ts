@@ -35,6 +35,8 @@ import { UploadServiceService } from '../../../common/uploading-processbar/uploa
 import { environment } from 'environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
@@ -51,6 +53,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FileUploadModule } from 'ng2-file-upload';
 
 @Component({
@@ -85,7 +88,10 @@ import { FileUploadModule } from 'ng2-file-upload';
     MatExpansionModule,
     MatIconModule,
     MatMenuModule,
+    MatAutocompleteModule,
     FileUploadModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
 })
 export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
@@ -109,7 +115,21 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
 
   public categories: string[] = ['all categories', 'router', 'multilayer_switch', 'guest', 'firewall'];
   readonly category = model('all categories');
+  public emulators: string[] = ['all emulators'];
+  readonly emulator = model('all emulators');
+  public vendors: string[] = ['all vendors'];
+  readonly vendor = model('all vendors');
   public displayedColumns: string[] = ['name', 'emulator', 'vendor', 'actions'];
+
+  // Form controls for autocomplete
+  categoryControl = new FormControl('all categories');
+  emulatorControl = new FormControl('all emulators');
+  vendorControl = new FormControl('all vendors');
+
+  // Filtered options for autocomplete
+  filteredCategories: string[] = [];
+  filteredEmulators: string[] = [];
+  filteredVendors: string[] = [];
 
   public dataSource: MatTableDataSource<Appliance>;
 
@@ -142,6 +162,9 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
   private uploadServiceService = inject(UploadServiceService);
 
   ngOnInit() {
+    // Setup autocomplete filtering
+    this.setupAutocompleteFilters();
+
     this.applianceService.getAppliances(this.controller).subscribe({
       next: (appliances) => {
         this.appliances = appliances;
@@ -152,6 +175,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
           if (appliance.qemu) appliance.emulator = 'Qemu';
         });
         this.allAppliances = appliances;
+        this.extractFilterOptions();
         this.dataSource = new MatTableDataSource(this.allAppliances);
         this.setupPaginator();
         this.changeDetectorRef.markForCheck();
@@ -234,6 +258,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
         if (appliance.qemu) appliance.emulator = 'Qemu';
       });
       this.allAppliances = appliances;
+      this.extractFilterOptions();
       this.dataSource = new MatTableDataSource(this.allAppliances);
       this.setupPaginator();
     });
@@ -248,6 +273,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
           if (appliance.qemu) appliance.emulator = 'Qemu';
         });
         this.allAppliances = appliances;
+        this.extractFilterOptions();
         this.dataSource = new MatTableDataSource(this.allAppliances);
         this.setupPaginator();
         this.changeDetectorRef.markForCheck();
@@ -439,28 +465,167 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     fileReader.readAsText(file);
   }
 
+  extractFilterOptions() {
+    // Get base unique options from all appliances
+    const baseEmulators = new Set<string>();
+    const baseVendors = new Set<string>();
+    const baseCategories = new Set<string>();
+
+    this.allAppliances.forEach((appliance) => {
+      if (appliance.emulator) baseEmulators.add(appliance.emulator);
+      if (appliance.vendor_name) baseVendors.add(appliance.vendor_name);
+      if (appliance.category) baseCategories.add(appliance.category);
+    });
+
+    // Update base options (used for autocomplete)
+    this.categories = ['all categories', 'router', 'multilayer_switch', 'guest', 'firewall'];
+    this.emulators = ['all emulators', ...Array.from(baseEmulators).sort()];
+    this.vendors = ['all vendors', ...Array.from(baseVendors).sort()];
+
+    // Initial filter options update based on current selection
+    this.updateFilterOptions();
+  }
+
+  updateFilterOptions() {
+    // Apply current filters to get filtered appliances
+    let filteredAppliances = this.allAppliances;
+
+    // Filter by category
+    if (this.category() !== 'all categories' && this.category()) {
+      filteredAppliances = filteredAppliances.filter((t) => t.category === this.category());
+    }
+
+    // Filter by emulator
+    if (this.emulator() !== 'all emulators' && this.emulator()) {
+      filteredAppliances = filteredAppliances.filter((t) => t.emulator === this.emulator());
+    }
+
+    // Filter by vendor
+    if (this.vendor() !== 'all vendors' && this.vendor()) {
+      filteredAppliances = filteredAppliances.filter((t) => t.vendor_name === this.vendor());
+    }
+
+    // Extract unique options from filtered results for dynamic filtering
+    const uniqueEmulators = new Set<string>();
+    const uniqueVendors = new Set<string>();
+    const uniqueCategories = new Set<string>();
+
+    filteredAppliances.forEach((appliance) => {
+      if (appliance.emulator) uniqueEmulators.add(appliance.emulator);
+      if (appliance.vendor_name) uniqueVendors.add(appliance.vendor_name);
+      if (appliance.category) uniqueCategories.add(appliance.category);
+    });
+
+    // Update dynamic options based on current filters
+    this.emulators = ['all emulators', ...Array.from(uniqueEmulators).sort()];
+    this.vendors = ['all vendors', ...Array.from(uniqueVendors).sort()];
+
+    // Update filtered options for autocomplete
+    this.filteredCategories = this._filter(this.categoryControl.value || '', this.categories);
+    this.filteredEmulators = this._filter(this.emulatorControl.value || '', this.emulators);
+    this.filteredVendors = this._filter(this.vendorControl.value || '', this.vendors);
+  }
+
+  setupAutocompleteFilters() {
+    // Category filter
+    this.categoryControl.valueChanges.subscribe((value) => {
+      this.filteredCategories = this._filter(value || '', this.categories);
+    });
+
+    // Emulator filter
+    this.emulatorControl.valueChanges.subscribe((value) => {
+      this.filteredEmulators = this._filter(value || '', this.emulators);
+    });
+
+    // Vendor filter
+    this.vendorControl.valueChanges.subscribe((value) => {
+      this.filteredVendors = this._filter(value || '', this.vendors);
+    });
+  }
+
+  private _filter(value: string, options: string[]): string[] {
+    const filterValue = value.toLowerCase();
+    return options.filter((option) => option.toLowerCase().includes(filterValue));
+  }
+
   filterAppliances() {
     let temporaryAppliances = this.allAppliances.filter((item) => {
       return item.name.toLowerCase().includes(this.searchText().toLowerCase());
     });
 
-    if (this.category() === 'all categories' || !this.category()) {
-      this.appliances = temporaryAppliances;
-    } else {
-      this.appliances = temporaryAppliances.filter((t) => t.category === this.category());
+    // Filter by category
+    if (this.category() !== 'all categories' && this.category()) {
+      temporaryAppliances = temporaryAppliances.filter((t) => t.category === this.category());
     }
 
+    // Filter by emulator
+    if (this.emulator() !== 'all emulators' && this.emulator()) {
+      temporaryAppliances = temporaryAppliances.filter((t) => t.emulator === this.emulator());
+    }
+
+    // Filter by vendor
+    if (this.vendor() !== 'all vendors' && this.vendor()) {
+      temporaryAppliances = temporaryAppliances.filter((t) => t.vendor_name === this.vendor());
+    }
+
+    this.appliances = temporaryAppliances;
     this.dataSource = new MatTableDataSource(this.appliances);
     this.setupPaginator();
+
+    // Update filter options based on current results
+    this.updateFilterOptions();
   }
 
   onSearchTextChange(value: string) {
     this.searchText.set(value);
+    this.updateFilterOptions();
     this.filterAppliances();
   }
 
   onCategoryChange(value: string) {
     this.category.set(value);
+    this.categoryControl.setValue(value);
+    this.updateFilterOptions();
+    this.filterAppliances();
+  }
+
+  onEmulatorChange(value: string) {
+    this.emulator.set(value);
+    this.emulatorControl.setValue(value);
+    this.updateFilterOptions();
+    this.filterAppliances();
+  }
+
+  onVendorChange(value: string) {
+    this.vendor.set(value);
+    this.vendorControl.setValue(value);
+    this.updateFilterOptions();
+    this.filterAppliances();
+  }
+
+  clearFilter() {
+    this.searchText.set('');
+    this.filterAppliances();
+  }
+
+  clearCategoryFilter() {
+    this.category.set('all categories');
+    this.categoryControl.setValue('');
+    this.updateFilterOptions();
+    this.filterAppliances();
+  }
+
+  clearEmulatorFilter() {
+    this.emulator.set('all emulators');
+    this.emulatorControl.setValue('');
+    this.updateFilterOptions();
+    this.filterAppliances();
+  }
+
+  clearVendorFilter() {
+    this.vendor.set('all vendors');
+    this.vendorControl.setValue('');
+    this.updateFilterOptions();
     this.filterAppliances();
   }
 
