@@ -63,13 +63,23 @@
     display: flex;
     gap: 16px;
     margin-bottom: 16px;
+    flex-wrap: wrap;
   }
 
   &__filter-field {
     flex: 1;
+    min-width: 200px;
   }
 
   &__category-field {
+    width: 180px;
+  }
+
+  &__emulator-field {
+    width: 180px;
+  }
+
+  &__vendor-field {
     width: 180px;
   }
 
@@ -434,7 +444,10 @@
       gap: 12px;
     }
 
-    &__category-field {
+    &__filter-field,
+    &__category-field,
+    &__emulator-field,
+    &__vendor-field {
       width: 100%;
     }
 

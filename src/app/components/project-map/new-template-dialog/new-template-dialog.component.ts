@@ -109,6 +109,10 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
 
   public categories: string[] = ['all categories', 'router', 'multilayer_switch', 'guest', 'firewall'];
   readonly category = model('all categories');
+  public emulators: string[] = ['all emulators'];
+  readonly emulator = model('all emulators');
+  public vendors: string[] = ['all vendors'];
+  readonly vendor = model('all vendors');
   public displayedColumns: string[] = ['name', 'emulator', 'vendor', 'actions'];
 
   public dataSource: MatTableDataSource<Appliance>;
@@ -152,6 +156,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
           if (appliance.qemu) appliance.emulator = 'Qemu';
         });
         this.allAppliances = appliances;
+        this.extractFilterOptions();
         this.dataSource = new MatTableDataSource(this.allAppliances);
         this.setupPaginator();
         this.changeDetectorRef.markForCheck();
@@ -234,6 +239,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
         if (appliance.qemu) appliance.emulator = 'Qemu';
       });
       this.allAppliances = appliances;
+      this.extractFilterOptions();
       this.dataSource = new MatTableDataSource(this.allAppliances);
       this.setupPaginator();
     });
@@ -248,6 +254,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
           if (appliance.qemu) appliance.emulator = 'Qemu';
         });
         this.allAppliances = appliances;
+        this.extractFilterOptions();
         this.dataSource = new MatTableDataSource(this.allAppliances);
         this.setupPaginator();
         this.changeDetectorRef.markForCheck();
@@ -439,17 +446,47 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     fileReader.readAsText(file);
   }
 
+  extractFilterOptions() {
+    // Extract unique emulators
+    const uniqueEmulators = new Set<string>();
+    this.allAppliances.forEach((appliance) => {
+      if (appliance.emulator) {
+        uniqueEmulators.add(appliance.emulator);
+      }
+    });
+    this.emulators = ['all emulators', ...Array.from(uniqueEmulators).sort()];
+
+    // Extract unique vendors
+    const uniqueVendors = new Set<string>();
+    this.allAppliances.forEach((appliance) => {
+      if (appliance.vendor_name) {
+        uniqueVendors.add(appliance.vendor_name);
+      }
+    });
+    this.vendors = ['all vendors', ...Array.from(uniqueVendors).sort()];
+  }
+
   filterAppliances() {
     let temporaryAppliances = this.allAppliances.filter((item) => {
       return item.name.toLowerCase().includes(this.searchText().toLowerCase());
     });
 
-    if (this.category() === 'all categories' || !this.category()) {
-      this.appliances = temporaryAppliances;
-    } else {
-      this.appliances = temporaryAppliances.filter((t) => t.category === this.category());
+    // Filter by category
+    if (this.category() !== 'all categories' && this.category()) {
+      temporaryAppliances = temporaryAppliances.filter((t) => t.category === this.category());
     }
 
+    // Filter by emulator
+    if (this.emulator() !== 'all emulators' && this.emulator()) {
+      temporaryAppliances = temporaryAppliances.filter((t) => t.emulator === this.emulator());
+    }
+
+    // Filter by vendor
+    if (this.vendor() !== 'all vendors' && this.vendor()) {
+      temporaryAppliances = temporaryAppliances.filter((t) => t.vendor_name === this.vendor());
+    }
+
+    this.appliances = temporaryAppliances;
     this.dataSource = new MatTableDataSource(this.appliances);
     this.setupPaginator();
   }
@@ -461,6 +498,16 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
 
   onCategoryChange(value: string) {
     this.category.set(value);
+    this.filterAppliances();
+  }
+
+  onEmulatorChange(value: string) {
+    this.emulator.set(value);
+    this.filterAppliances();
+  }
+
+  onVendorChange(value: string) {
+    this.vendor.set(value);
     this.filterAppliances();
   }
 

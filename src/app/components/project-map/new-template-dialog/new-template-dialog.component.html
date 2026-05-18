@@ -41,6 +41,24 @@
             }
           </mat-select>
         </mat-form-field>
+
+        <mat-form-field appearance="fill" class="new-template__emulator-field">
+          <mat-label>Emulator</mat-label>
+          <mat-select [value]="emulator()" (selectionChange)="onEmulatorChange($event.value)">
+            @for (emu of emulators; track emu) {
+            <mat-option [value]="emu">{{ emu }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="new-template__vendor-field">
+          <mat-label>Vendor</mat-label>
+          <mat-select [value]="vendor()" (selectionChange)="onVendorChange($event.value)">
+            @for (v of vendors; track v) {
+            <mat-option [value]="v">{{ v }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
       </div>
 
       <div class="new-template__table-container">
