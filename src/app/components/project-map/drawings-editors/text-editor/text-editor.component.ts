@@ -236,15 +236,6 @@ export class TextEditorDialogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  changeFillOpacity(value: string) {
-    const opacity = parseFloat(value);
-    if (!isNaN(opacity) && opacity >= 0 && opacity <= 1) {
-      this.element.fill_opacity = opacity;
-      this.renderer.setStyle(this.textArea().nativeElement, 'opacity', opacity);
-      this.cdr.markForCheck();
-    }
-  }
-
   changeFontFamily(event: any) {
     this.element.font_family = event.value;
     this.renderer.setStyle(this.textArea().nativeElement, 'font-family', event.value);
