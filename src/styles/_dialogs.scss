@@ -981,14 +981,32 @@ h2[mat-dialog-title] {
   }
 }
 
-// Edit Text Action - 300px
+// Edit Text Action - 700px (text editor with multiple columns)
 .edit-text-action-dialog-panel {
-  --mat-dialog-container-max-width: 300px;
+  --mat-dialog-container-max-width: 700px;
 
   mat-dialog-container,
   .mat-mdc-dialog-container {
-    width: 300px;
-    max-width: 300px;
+    width: 700px;
+    max-width: 700px;
+  }
+
+  /* Grid layout for form controls - 2 rows x 3 columns */
+  .text-editor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px 24px;
+    margin-bottom: 16px;
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Full width textarea */
+  .text-editor-textarea {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 }
 
