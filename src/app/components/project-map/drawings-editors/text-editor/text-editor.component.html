@@ -1,75 +1,89 @@
 <h1 mat-dialog-title>Text editor</h1>
 
-<div class="modal-form-container">
-  <mat-form-field class="form-field">
-    <mat-label>Fill color</mat-label>
-    <input matInput type="color" [value]="element.fill" (input)="changeTextColor($event.target.value)" />
-  </mat-form-field>
+<div mat-dialog-content>
+  <div class="text-editor-grid">
+    <!-- Column 1: Color Settings -->
+    <div class="text-editor-column">
+      <mat-form-field>
+        <mat-label>Fill color</mat-label>
+        <input matInput type="color" [value]="element.fill" (input)="changeTextColor($event.target.value)" />
+      </mat-form-field>
 
-  <div class="opacity-control">
-    <label>Fill opacity</label>
-    <div class="opacity-slider-container">
-      <input type="range" class="opacity-slider" [value]="element.fill_opacity" (input)="changeFillOpacity($event.target.value)" min="0" max="1" step="0.1" />
-      <span class="opacity-value">{{ element.fill_opacity | number:'1.1' }}</span>
+      <div class="opacity-control">
+        <label>Fill opacity</label>
+        <div class="opacity-slider-container">
+          <input type="range" class="opacity-slider" [value]="element.fill_opacity" (input)="changeFillOpacity($event.target.value)" min="0" max="1" step="0.1" />
+          <span class="opacity-value">{{ element.fill_opacity | number:'1.1' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 2: Font Settings -->
+    <div class="text-editor-column">
+      <mat-form-field>
+        <mat-label>Font family</mat-label>
+        <mat-select [(value)]="element.font_family" (selectionChange)="changeFontFamily($event)">
+          <mat-option value="TypeWriter">TypeWriter</mat-option>
+          <mat-option value="Arial">Arial</mat-option>
+          <mat-option value="Courier New">Courier New</mat-option>
+          <mat-option value="Times New Roman">Times New Roman</mat-option>
+          <mat-option value="Helvetica">Helvetica</mat-option>
+          <mat-option value="Verdana">Verdana</mat-option>
+          <mat-option value="Georgia">Georgia</mat-option>
+          <mat-option value="Comic Sans MS">Comic Sans MS</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Font size</mat-label>
+        <input matInput type="number" [value]="element.font_size" (input)="changeFontSize($event.target.value)" min="1" max="200" step="0.5" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Font weight</mat-label>
+        <mat-select [(value)]="element.font_weight" (selectionChange)="changeFontWeight($event)">
+          <mat-option value="normal">Normal</mat-option>
+          <mat-option value="bold">Bold</mat-option>
+          <mat-option value="lighter">Lighter</mat-option>
+          <mat-option value="bolder">Bolder</mat-option>
+          <mat-option value="100">100 (Thin)</mat-option>
+          <mat-option value="200">200 (Extra Light)</mat-option>
+          <mat-option value="300">300 (Light)</mat-option>
+          <mat-option value="400">400 (Normal)</mat-option>
+          <mat-option value="500">500 (Medium)</mat-option>
+          <mat-option value="600">600 (Semi Bold)</mat-option>
+          <mat-option value="700">700 (Bold)</mat-option>
+          <mat-option value="800">800 (Extra Bold)</mat-option>
+          <mat-option value="900">900 (Black)</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Column 3: Other Settings -->
+    <div class="text-editor-column">
+      <mat-form-field>
+        <mat-label>Text decoration</mat-label>
+        <mat-select [(value)]="element.text_decoration" (selectionChange)="changeTextDecoration($event)">
+          <mat-option value="none">None</mat-option>
+          <mat-option value="underline">Underline</mat-option>
+          <mat-option value="line-through">Line Through</mat-option>
+          <mat-option value="overline">Overline</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <form [formGroup]="formGroup">
+        <mat-form-field>
+          <mat-label>Rotation</mat-label>
+          <input formControlName="rotation" matInput type="text" />
+        </mat-form-field>
+      </form>
+    </div>
+
+    <!-- Full width textarea -->
+    <div class="text-editor-textarea">
+      <textarea #textArea id="textArea" class="text" [value]="element.text" (input)="onTextChange($event.target.value)" [readonly]="!isTextEditable"></textarea>
     </div>
   </div>
-
-  <mat-form-field class="form-field">
-    <mat-label>Font family</mat-label>
-    <mat-select [(value)]="element.font_family" (selectionChange)="changeFontFamily($event)">
-      <mat-option value="TypeWriter">TypeWriter</mat-option>
-      <mat-option value="Arial">Arial</mat-option>
-      <mat-option value="Courier New">Courier New</mat-option>
-      <mat-option value="Times New Roman">Times New Roman</mat-option>
-      <mat-option value="Helvetica">Helvetica</mat-option>
-      <mat-option value="Verdana">Verdana</mat-option>
-      <mat-option value="Georgia">Georgia</mat-option>
-      <mat-option value="Comic Sans MS">Comic Sans MS</mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field class="form-field">
-    <mat-label>Font size</mat-label>
-    <input matInput type="number" [value]="element.font_size" (input)="changeFontSize($event.target.value)" min="1" max="200" step="0.5" />
-  </mat-form-field>
-
-  <mat-form-field class="form-field">
-    <mat-label>Font weight</mat-label>
-    <mat-select [(value)]="element.font_weight" (selectionChange)="changeFontWeight($event)">
-      <mat-option value="normal">Normal</mat-option>
-      <mat-option value="bold">Bold</mat-option>
-      <mat-option value="lighter">Lighter</mat-option>
-      <mat-option value="bolder">Bolder</mat-option>
-      <mat-option value="100">100 (Thin)</mat-option>
-      <mat-option value="200">200 (Extra Light)</mat-option>
-      <mat-option value="300">300 (Light)</mat-option>
-      <mat-option value="400">400 (Normal)</mat-option>
-      <mat-option value="500">500 (Medium)</mat-option>
-      <mat-option value="600">600 (Semi Bold)</mat-option>
-      <mat-option value="700">700 (Bold)</mat-option>
-      <mat-option value="800">800 (Extra Bold)</mat-option>
-      <mat-option value="900">900 (Black)</mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field class="form-field">
-    <mat-label>Text decoration</mat-label>
-    <mat-select [(value)]="element.text_decoration" (selectionChange)="changeTextDecoration($event)">
-      <mat-option value="none">None</mat-option>
-      <mat-option value="underline">Underline</mat-option>
-      <mat-option value="line-through">Line Through</mat-option>
-      <mat-option value="overline">Overline</mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <form [formGroup]="formGroup">
-    <mat-form-field class="form-field">
-      <mat-label>Rotation</mat-label>
-      <input formControlName="rotation" matInput type="text" />
-    </mat-form-field>
-  </form>
-
-  <textarea #textArea id="textArea" class="text" [value]="element.text" (input)="onTextChange($event.target.value)" [readonly]="!isTextEditable"></textarea>
 </div>
 
 <div mat-dialog-actions>
