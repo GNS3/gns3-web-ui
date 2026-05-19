@@ -2,5 +2,25 @@
  * GNS3 Edit Project Dialog Component Styles
  *
  * Main dialog styles are now in src/styles/_dialogs.scss
- * This file is kept for component-specific styles if needed
+ * This file contains component-specific styles for the General tab layout
  */
+
+/* =============================================
+// Two-column form grid layout
+// ============================================= */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 24px;
+  margin-bottom: 16px;
+
+  /* Full-width field in the grid */
+  &__full {
+    grid-column: 1 / -1;
+  }
+
+  /* Make form fields full width within their grid cells */
+  mat-form-field {
+    width: 100%;
+  }
+}

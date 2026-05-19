@@ -78,6 +78,10 @@ export class EditProjectDialogComponent implements OnInit {
   readonly variableName = model('');
   readonly variableValue = model('');
 
+  // Readme editing state
+  readonly isReadmeEditing = signal(false);
+  readonly selectedTab = signal(0);
+
   // Form validity
   readonly isFormValid = computed(() => {
     return this.projectName().trim().length > 0 && +this.width() >= 0 && +this.height() >= 0 && +this.nodeGridSize() >= 0 && +this.drawingGridSize() >= 0;
@@ -100,6 +104,14 @@ export class EditProjectDialogComponent implements OnInit {
     this.auto_start.set(this.project.auto_start);
     this.auto_close.set(!this.project.auto_close);
     this.show_interface_labels.set(this.project.show_interface_labels);
+  }
+
+  onReadmeEditingChange(isEditing: boolean) {
+    this.isReadmeEditing.set(isEditing);
+  }
+
+  onTabChange(event: any) {
+    this.selectedTab.set(event.index);
   }
 
   addVariable(): void {
