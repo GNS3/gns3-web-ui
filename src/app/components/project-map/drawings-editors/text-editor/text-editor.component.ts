@@ -232,6 +232,15 @@ export class TextEditorDialogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
+  changeFontSize(value: string) {
+    const fontSize = parseFloat(value);
+    if (!isNaN(fontSize) && fontSize > 0) {
+      this.element.font_size = fontSize;
+      this.renderer.setStyle(this.textArea().nativeElement, 'font-size', `${fontSize}pt`);
+      this.cdr.markForCheck();
+    }
+  }
+
   onTextChange(value: string) {
     this.element.text = value;
     this.cdr.markForCheck();
