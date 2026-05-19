@@ -38,7 +38,7 @@
       <input matInput min="0" type="number" [value]="element.height" (input)="onHeightChange(+$event.target.value)" />
     </mat-form-field>
     } @if (element.rx !== undefined) {
-    <mat-form-field class="form-field">
+    <mat-form-field class="form-field full-width">
       <mat-label>Corner radius</mat-label>
       <input matInput type="number" min="0" max="100" [value]="element.rx" (input)="onRxChange(+$event.target.value)" />
     </mat-form-field>
@@ -83,7 +83,7 @@
     }
 
     @if (element.line_drawing_type === undefined || element.line_drawing_type === 'straight') {
-    <mat-form-field class="form-field">
+    <mat-form-field class="form-field full-width">
       <mat-label>Rotation</mat-label>
       <input matInput formControlName="rotation" type="number" />
     </mat-form-field>
