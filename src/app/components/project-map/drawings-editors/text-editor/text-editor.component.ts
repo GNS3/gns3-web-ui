@@ -20,6 +20,8 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
 import { DrawingToMapDrawingConverter } from '../../../../cartography/converters/map/drawing-to-map-drawing-converter';
 import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../../cartography/datasources/drawings-datasource';
@@ -52,6 +54,8 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatSelectModule,
+    MatOptionModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -232,6 +236,21 @@ export class TextEditorDialogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
+  changeFillOpacity(value: string) {
+    const opacity = parseFloat(value);
+    if (!isNaN(opacity) && opacity >= 0 && opacity <= 1) {
+      this.element.fill_opacity = opacity;
+      this.renderer.setStyle(this.textArea().nativeElement, 'opacity', opacity);
+      this.cdr.markForCheck();
+    }
+  }
+
+  changeFontFamily(event: any) {
+    this.element.font_family = event.value;
+    this.renderer.setStyle(this.textArea().nativeElement, 'font-family', event.value);
+    this.cdr.markForCheck();
+  }
+
   changeFontSize(value: string) {
     const fontSize = parseFloat(value);
     if (!isNaN(fontSize) && fontSize > 0) {
@@ -239,6 +258,18 @@ export class TextEditorDialogComponent implements OnInit {
       this.renderer.setStyle(this.textArea().nativeElement, 'font-size', `${fontSize}pt`);
       this.cdr.markForCheck();
     }
+  }
+
+  changeFontWeight(event: any) {
+    this.element.font_weight = event.value;
+    this.renderer.setStyle(this.textArea().nativeElement, 'font-weight', event.value);
+    this.cdr.markForCheck();
+  }
+
+  changeTextDecoration(event: any) {
+    this.element.text_decoration = event.value;
+    this.renderer.setStyle(this.textArea().nativeElement, 'text-decoration', event.value);
+    this.cdr.markForCheck();
   }
 
   onTextChange(value: string) {

@@ -61,3 +61,57 @@ input[type='color']::-webkit-color-swatch {
 .form-field {
   width: 100%;
 }
+
+.opacity-control {
+  width: 100%;
+  margin-bottom: 16px;
+
+  label {
+    display: block;
+    font-size: 12px;
+    color: var(--mat-sys-on-surface);
+    margin-bottom: 8px;
+  }
+
+  .opacity-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .opacity-slider {
+    flex: 1;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--mat-sys-surface-container-highest);
+    border-radius: 3px;
+    outline: none;
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--mat-sys-primary);
+      cursor: pointer;
+    }
+
+    &::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--mat-sys-primary);
+      cursor: pointer;
+      border: none;
+    }
+  }
+
+  .opacity-value {
+    min-width: 40px;
+    text-align: right;
+    font-size: 14px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
