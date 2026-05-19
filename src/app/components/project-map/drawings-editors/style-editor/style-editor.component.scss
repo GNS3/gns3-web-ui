@@ -45,15 +45,29 @@ input[type='color']::-webkit-color-swatch {
 }
 
 .modal-form-container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
   padding: 16px;
+  max-width: 600px;
 }
 
-.modal-form-container > * {
-  width: 100%;
+.modal-form-container form {
+  display: contents;
 }
 
 .form-field {
   width: 100%;
+}
+
+/* Full-width fields */
+.form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Responsive: single column on small screens */
+@media (max-width: 500px) {
+  .modal-form-container {
+    grid-template-columns: 1fr;
+  }
 }
