@@ -141,6 +141,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
   uploadProgress: number = 0;
   uploadingImageName: string = '';
   isUploading: boolean = false;
+  isUpdatingAppliances: boolean = false;
 
   readonly paginator = viewChild(MatPaginator);
   readonly stepper = viewChild<MatStepper>('stepper');
@@ -363,17 +364,20 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
   }
 
   updateAppliances() {
+    this.isUpdatingAppliances = true;
     this.progressService.activate();
     this.applianceService.updateAppliances(this.controller).subscribe({
       next: (appliances) => {
         this.appliances = appliances;
         this.progressService.deactivate();
+        this.isUpdatingAppliances = false;
         this.toasterService.success('Appliances are up-to-date.');
         this.changeDetectorRef.markForCheck();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to update appliances';
         this.progressService.deactivate();
+        this.isUpdatingAppliances = false;
         this.toasterService.error(message);
         this.changeDetectorRef.markForCheck();
       },

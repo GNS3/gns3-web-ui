@@ -430,6 +430,18 @@
     padding: 4px 8px;
     font-size: 12px;
   }
+
+  &__update-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 200px;
+    justify-content: center;
+
+    mat-spinner {
+      display: inline-block;
+    }
+  }
 }
 
 // Progress spinner animation
