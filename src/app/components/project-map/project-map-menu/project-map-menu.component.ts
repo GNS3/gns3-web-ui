@@ -616,6 +616,15 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
   private readImageFile(fileInput) {
     let file: File = fileInput.files[0];
+    if (!file) return;
+
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    if (fileExtension === 'svg') {
+      this.toaster.error('SVG images are not supported. Please use PNG, JPG, GIF or BMP format.');
+      this.cdr.markForCheck();
+      return;
+    }
+
     let fileReader: FileReader = new FileReader();
     let imageToUpload = new Image();
 
