@@ -1,19 +1,45 @@
-<mat-tab-group selectedIndex="1">
-  <mat-tab label="Edit">
-    <textarea
-      class="editorWrapper"
-      matInput
-      type="text"
-      [value]="markdown()"
-      (input)="markdown.set($event.target.value)"
-    ></textarea>
-  </mat-tab>
-
-  <mat-tab label="Preview">
+<!-- Preview mode -->
+@if (!isEditing()) {
+  <div class="readme-preview-container">
     @if (markdown()) {
     <div class="textWrapper markdown-body">
       <markdown [data]="markdown()"></markdown>
     </div>
+    } @else {
+    <div class="readme-empty-state">
+      <mat-icon class="readme-empty-icon">description</mat-icon>
+      <p class="readme-empty-text">No README content yet. Click Edit to add one.</p>
+    </div>
     }
-  </mat-tab>
-</mat-tab-group>
+  </div>
+}
+
+<!-- Edit mode -->
+@if (isEditing()) {
+  <div class="readme-edit-container">
+    <div class="editor-header">
+      <mat-label class="editor-label">Edit README (Markdown)</mat-label>
+      @if (saveStatus() !== 'idle') {
+      <div class="save-status" [class.save-status--saving]="saveStatus() === 'saving'" [class.save-status--saved]="saveStatus() === 'saved'" [class.save-status--error]="saveStatus() === 'error'">
+        @if (saveStatus() === 'saving') {
+        <mat-icon class="save-status-icon">sync</mat-icon>
+        <span>Saving...</span>
+        } @if (saveStatus() === 'saved') {
+        <mat-icon class="save-status-icon">check_circle</mat-icon>
+        <span>Saved</span>
+        } @if (saveStatus() === 'error') {
+        <mat-icon class="save-status-icon">error</mat-icon>
+        <span>Save failed</span>
+        }
+      </div>
+      }
+    </div>
+    <textarea
+      class="editorWrapper"
+      [value]="markdown()"
+      (input)="onMarkdownInput($event)"
+      placeholder="Write your project README in Markdown format..."
+    ></textarea>
+    <p class="editor-hint">Changes are auto-saved 2 seconds after you stop typing</p>
+  </div>
+}

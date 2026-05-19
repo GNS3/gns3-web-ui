@@ -1,35 +1,41 @@
 <h1 mat-dialog-title>Edit project</h1>
 
 <div class="modal-form-container">
-  <mat-tab-group>
+  <mat-tab-group (selectedTabChange)="onTabChange($event)">
     <mat-tab label="General">
       <form class="edit-project-form">
-        <mat-form-field appearance="fill" class="form-field">
-          <mat-label>Project name</mat-label>
-          <input matInput [value]="projectName()" (input)="projectName.set($event.target.value)" placeholder="My Project" type="text" />
-        </mat-form-field>
+        <!-- Two-column grid layout for form fields -->
+        <div class="form-grid">
+          <!-- Project name - full width -->
+          <mat-form-field appearance="fill" class="form-grid__full">
+            <mat-label>Project name</mat-label>
+            <input matInput [value]="projectName()" (input)="projectName.set($event.target.value)" placeholder="My Project" type="text" />
+          </mat-form-field>
 
-        <mat-form-field appearance="fill" class="form-field">
-          <mat-label>Scene width</mat-label>
-          <input matInput [value]="width()" (input)="width.set(+$event.target.value)" placeholder="1000" type="number" />
-          <span matTextSuffix>px</span>
-        </mat-form-field>
+          <!-- Scene dimensions - paired -->
+          <mat-form-field appearance="fill">
+            <mat-label>Scene width</mat-label>
+            <input matInput [value]="width()" (input)="width.set(+$event.target.value)" placeholder="1000" type="number" />
+            <span matTextSuffix>px</span>
+          </mat-form-field>
 
-        <mat-form-field appearance="fill" class="form-field">
-          <mat-label>Scene height</mat-label>
-          <input matInput [value]="height()" (input)="height.set(+$event.target.value)" placeholder="800" type="number" />
-          <span matTextSuffix>px</span>
-        </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Scene height</mat-label>
+            <input matInput [value]="height()" (input)="height.set(+$event.target.value)" placeholder="800" type="number" />
+            <span matTextSuffix>px</span>
+          </mat-form-field>
 
-        <mat-form-field appearance="fill" class="form-field">
-          <mat-label>Node grid size</mat-label>
-          <input matInput [value]="nodeGridSize()" (input)="nodeGridSize.set(+$event.target.value)" placeholder="25" type="number" />
-        </mat-form-field>
+          <!-- Grid sizes - paired -->
+          <mat-form-field appearance="fill">
+            <mat-label>Node grid size</mat-label>
+            <input matInput [value]="nodeGridSize()" (input)="nodeGridSize.set(+$event.target.value)" placeholder="25" type="number" />
+          </mat-form-field>
 
-        <mat-form-field appearance="fill" class="form-field">
-          <mat-label>Drawing grid size</mat-label>
-          <input matInput [value]="drawingGridSize()" (input)="drawingGridSize.set(+$event.target.value)" placeholder="25" type="number" />
-        </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Drawing grid size</mat-label>
+            <input matInput [value]="drawingGridSize()" (input)="drawingGridSize.set(+$event.target.value)" placeholder="25" type="number" />
+          </mat-form-field>
+        </div>
       </form>
 
       <mat-checkbox [checked]="auto_open()" (change)="auto_open.set($event.checked)">
@@ -51,7 +57,7 @@
 
     @if (controller && project) {
     <mat-tab label="Readme">
-      <app-readme-editor #editor [controller]="controller" [project]="project"></app-readme-editor>
+      <app-readme-editor #editor [controller]="controller" [project]="project" (isEditingChange)="onReadmeEditingChange($event)"></app-readme-editor>
     </mat-tab>
     }
 
@@ -103,6 +109,22 @@
 </div>
 
 <div mat-dialog-actions>
+  <!-- Default buttons (General and Global variables tabs) -->
+  @if (selectedTab() !== 1) {
   <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
   <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  }
+
+  <!-- Readme tab buttons -->
+  @if (selectedTab() === 1) {
+  <!-- Editing mode (auto-save enabled, only Cancel button to revert) -->
+  @if (isReadmeEditing()) {
+  <button mat-button (click)="editor()?.cancelEdit()">Cancel</button>
+  } @else {
+  <!-- Preview mode -->
+  <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
+  <button mat-button (click)="editor()?.enterEditMode()">Edit</button>
+  <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  }
+  }
 </div>
