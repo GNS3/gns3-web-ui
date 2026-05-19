@@ -991,22 +991,16 @@ h2[mat-dialog-title] {
     max-width: 700px;
   }
 
-  /* Grid layout for form controls */
+  /* Grid layout for form controls - 2 rows x 3 columns */
   .text-editor-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    gap: 16px 24px;
     margin-bottom: 16px;
 
     @media (max-width: 640px) {
       grid-template-columns: 1fr;
     }
-  }
-
-  .text-editor-column {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
   }
 
   /* Full width textarea */
