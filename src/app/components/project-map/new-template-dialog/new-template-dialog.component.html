@@ -143,7 +143,14 @@
     <mat-dialog-actions class="new-template__actions">
       <button mat-button matStepperPrevious>Back</button>
       @if (action === 'install') {
-      <button mat-button (click)="updateAppliances()">Update from online registry</button>
+      <button mat-button class="new-template__update-button" (click)="updateAppliances()" [disabled]="isUpdatingAppliances">
+        @if (isUpdatingAppliances) {
+        <mat-spinner diameter="20"></mat-spinner>
+        <span>Updating...</span>
+        } @else {
+        <span>Update from online registry</span>
+        }
+      </button>
       }
       <button mat-button (click)="onCloseClick()">Cancel</button>
     </mat-dialog-actions>
