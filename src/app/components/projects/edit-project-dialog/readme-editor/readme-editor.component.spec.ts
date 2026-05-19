@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, signal } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import { of, throwError, Subject } from 'rxjs';
 import { ReadmeEditorComponent } from './readme-editor.component';
 import { ProjectService } from '@services/project.service';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 describe('ReadmeEditorComponent', () => {
   let component: ReadmeEditorComponent;
@@ -63,6 +63,7 @@ describe('ReadmeEditorComponent', () => {
 
     mockProjectService = {
       getReadmeFile: vi.fn(),
+      postReadmeFile: vi.fn().mockReturnValue(of({})),
     };
 
     // Create component using Object.create to bypass constructor
@@ -89,6 +90,24 @@ describe('ReadmeEditorComponent', () => {
 
     // Initialize markdown signal
     (component as any).markdown = signal('');
+
+    // Initialize RxJS Subject for auto-save (missing from constructor bypass)
+    (component as any).markdownChange$ = new Subject<string>();
+    (component as any).destroy$ = new Subject<void>();
+    (component as any).isEditing = signal(false);
+    (component as any).saveStatus = signal<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  });
+
+  afterEach(() => {
+    // Clean up subscriptions
+    if ((component as any).markdownChangeSubscription) {
+      (component as any).markdownChangeSubscription.unsubscribe();
+    }
+    if ((component as any).destroy$) {
+      (component as any).destroy$.next();
+      (component as any).destroy$.complete();
+    }
+    vi.clearAllMocks();
   });
 
   describe('initialization', () => {
@@ -151,6 +170,48 @@ describe('ReadmeEditorComponent', () => {
       component.markdown.set('# Content');
       component.markdown.set('');
       expect(component.markdown()).toBe('');
+    });
+  });
+
+  describe('edit mode', () => {
+    beforeEach(() => {
+      // Initialize isEditingChange output
+      (component as any).isEditingChange = {
+        emit: vi.fn(),
+      };
+    });
+
+    it('should enter edit mode when enterEditMode is called', () => {
+      component.enterEditMode();
+      expect((component as any).isEditing()).toBe(true);
+      expect((component as any).isEditingChange.emit).toHaveBeenCalledWith(true);
+    });
+
+    it('should exit edit mode when cancelEdit is called', () => {
+      (component as any).isEditing.set(true);
+      component.cancelEdit();
+      expect((component as any).isEditing()).toBe(false);
+      expect((component as any).isEditingChange.emit).toHaveBeenCalledWith(false);
+    });
+
+    it('should trigger auto-save on markdown input', () => {
+      mockProjectService.postReadmeFile.mockReturnValue(of({}));
+
+      const mockEvent = {
+        target: { value: '# New content' },
+      } as unknown as Event;
+
+      component.onMarkdownInput(mockEvent);
+
+      expect(component.markdown()).toBe('# New content');
+      // Auto-save is debounced, so we need to wait for it
+    });
+  });
+
+  describe('ngOnDestroy', () => {
+    it('should clean up subscriptions', () => {
+      component.ngOnDestroy();
+      expect((component as any).destroy$.isStopped).toBe(true);
     });
   });
 });
