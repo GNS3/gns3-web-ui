@@ -165,12 +165,12 @@ export class DrawingWidget implements Widget {
           .attr('cx', 0)
           .attr('cy', 0)
           .attr('r', 5)
-          .attr('fill', 'blue');
+          .attr('fill', UNLOCKED_ICON_COLOR);
 
         group.append<SVGLineElement>('line')
           .attr('class', 'rotation-handle-stem')
           .attr('pointer-events', 'none')
-          .attr('stroke', 'red')
+          .attr('stroke', LOCKED_ICON_COLOR)
           .attr('stroke-width', '2')
           .attr('stroke-dasharray', '4 2')
           .attr('x1', 0)
@@ -184,7 +184,7 @@ export class DrawingWidget implements Widget {
           .attr('cx', handleX)
           .attr('cy', handleY)
           .attr('r', 8)
-          .attr('fill', 'red')
+          .attr('fill', LOCKED_ICON_COLOR)
           .attr('cursor', 'grab');
       });
 
