@@ -433,7 +433,7 @@ g.drawing_body.drawing_selected .rotation-handle-stem {
 
 g.drawing_body.drawing_selected .rotation-handle-knob {
   fill: var(--mat-sys-primary);
-  stroke: var(--gns3-bright-text, #ffffff);
+  stroke: var(--gns3-bright-text);
   stroke-width: 2;
 }
 
