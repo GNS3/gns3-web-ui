@@ -154,22 +154,21 @@ export class DrawingWidget implements Widget {
       .filter((d: MapDrawing) => d.element instanceof RectElement || d.element instanceof EllipseElement)
       .each(function (d: MapDrawing) {
         const group = select(this);
-        const cx = d.element instanceof EllipseElement ? d.element.cx : d.element.width / 2;
-        const topY = d.element instanceof EllipseElement ? d.element.cy - d.element.ry : 0;
-        const handleY = topY - 30;
+        const handleX = d.element.width + 30;
+        const handleY = -30;
 
         group.append<SVGLineElement>('line')
           .attr('class', 'rotation-handle-stem')
           .attr('pointer-events', 'none')
-          .attr('x1', cx)
-          .attr('y1', topY)
-          .attr('x2', cx)
+          .attr('x1', d.element.width)
+          .attr('y1', 0)
+          .attr('x2', handleX)
           .attr('y2', handleY);
 
         group.append<SVGCircleElement>('circle')
           .attr('class', 'rotation-handle-knob')
           .attr('pointer-events', 'all')
-          .attr('cx', cx)
+          .attr('cx', handleX)
           .attr('cy', handleY)
           .attr('r', 8)
           .attr('cursor', 'grab');
