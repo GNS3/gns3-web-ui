@@ -157,11 +157,17 @@ export class DrawingWidget implements Widget {
         const handleX = d.element.width + 30;
         const handleY = -30;
 
+        const centerX = d.element instanceof EllipseElement ? d.element.cx : d.element.width / 2;
+        const centerY = d.element instanceof EllipseElement ? d.element.cy : d.element.height / 2;
+
         group.append<SVGLineElement>('line')
           .attr('class', 'rotation-handle-stem')
           .attr('pointer-events', 'none')
-          .attr('x1', d.element.width)
-          .attr('y1', 0)
+          .attr('stroke', 'red')
+          .attr('stroke-width', '2')
+          .attr('stroke-dasharray', '4 2')
+          .attr('x1', centerX)
+          .attr('y1', centerY)
           .attr('x2', handleX)
           .attr('y2', handleY);
 
@@ -171,6 +177,7 @@ export class DrawingWidget implements Widget {
           .attr('cx', handleX)
           .attr('cy', handleY)
           .attr('r', 8)
+          .attr('fill', 'red')
           .attr('cursor', 'grab');
       });
 
