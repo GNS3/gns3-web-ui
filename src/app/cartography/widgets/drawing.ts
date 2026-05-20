@@ -150,6 +150,7 @@ export class DrawingWidget implements Widget {
     // Rotation handle — only for rectangle and ellipse shapes, and only when selected
     drawing_body_merge.select('.rotation-handle-stem').remove();
     drawing_body_merge.select('.rotation-handle-knob').remove();
+    drawing_body_merge.select('.rotation-center-point').remove();
     drawing_body_merge
       .filter((d: MapDrawing) => (d.element instanceof RectElement || d.element instanceof EllipseElement) && this.selectionManager.isSelected(d))
       .each(function (d: MapDrawing) {
@@ -157,8 +158,14 @@ export class DrawingWidget implements Widget {
         const handleX = d.element.width + 30;
         const handleY = -30;
 
-        const centerX = d.element instanceof EllipseElement ? d.element.cx : d.element.width / 2;
-        const centerY = d.element instanceof EllipseElement ? d.element.cy : d.element.height / 2;
+        // Rotation center point (top-left corner)
+        group.append<SVGCircleElement>('circle')
+          .attr('class', 'rotation-center-point')
+          .attr('pointer-events', 'none')
+          .attr('cx', 0)
+          .attr('cy', 0)
+          .attr('r', 5)
+          .attr('fill', 'blue');
 
         group.append<SVGLineElement>('line')
           .attr('class', 'rotation-handle-stem')
@@ -166,8 +173,8 @@ export class DrawingWidget implements Widget {
           .attr('stroke', 'red')
           .attr('stroke-width', '2')
           .attr('stroke-dasharray', '4 2')
-          .attr('x1', centerX)
-          .attr('y1', centerY)
+          .attr('x1', 0)
+          .attr('y1', 0)
           .attr('x2', handleX)
           .attr('y2', handleY);
 
