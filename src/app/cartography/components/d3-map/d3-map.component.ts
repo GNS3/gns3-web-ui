@@ -368,8 +368,22 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphDataManager.setNodes(this.nodes());
     this.graphDataManager.setLinks(this.links());
     this.graphDataManager.setDrawings(this.drawings());
+
+    // Save current origin before getSize() potentially changes it — when new
+    // content extends beyond the current canvas boundary getSize() grows the
+    // canvas and shifts centerX/Y, which would make every visible element jump.
+    const savedCenterX = this.context.centerX;
+    const savedCenterY = this.context.centerY;
+
     // Recalculate after setNodes/Drawings so graphDataManager has current positions.
     this.context.size = this.getSize();
+
+    // Restore origin to prevent visual canvas shifting. The size is updated to
+    // accommodate new content, but the <g> transform origin stays stable so
+    // existing elements don't jump (same pattern as node-drag locking).
+    this.context.centerX = savedCenterX;
+    this.context.centerY = savedCenterY;
+
     this.graphLayout.draw(this.svg, this.context);
     this.textEditor().activateTextEditingForDrawings();
     this.textEditor().activateTextEditingForNodeLabels();
