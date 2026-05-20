@@ -34,20 +34,45 @@ export class DrawingResizedComponent implements OnInit, OnDestroy {
 
   onDrawingResized(resizedEvent: ResizedDataEvent<MapDrawing>) {
     const drawing = this.drawingsDataSource.get(resizedEvent.datum.id);
-    let svgString = this.mapDrawingToSvgConverter.convert(resizedEvent.datum);
 
-    this.drawingService
-      .updateSizeAndPosition(this.controller(), drawing, resizedEvent.x, resizedEvent.y, svgString)
-      .subscribe({
-        next: (controllerDrawing: Drawing) => {
-          this.drawingsDataSource.update(controllerDrawing);
-        },
-        error: (err) => {
-          const message = err.error?.message || err.message || 'Failed to update drawing size';
-          this.toasterService.error(message);
-          this.cdr.markForCheck();
-        },
-      });
+    // Check if this is a rotation event (has rotation field)
+    const isRotation = resizedEvent.rotation !== undefined;
+
+    if (isRotation) {
+      // Rotation: use update() method which includes rotation
+      drawing.rotation = resizedEvent.rotation;
+      let svgString = this.mapDrawingToSvgConverter.convert(resizedEvent.datum);
+      drawing.svg = svgString;
+
+      this.drawingService
+        .update(this.controller(), drawing)
+        .subscribe({
+          next: (controllerDrawing: Drawing) => {
+            this.drawingsDataSource.update(controllerDrawing);
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to update drawing rotation';
+            this.toasterService.error(message);
+            this.cdr.markForCheck();
+          },
+        });
+    } else {
+      // Resize: use updateSizeAndPosition() method
+      let svgString = this.mapDrawingToSvgConverter.convert(resizedEvent.datum);
+
+      this.drawingService
+        .updateSizeAndPosition(this.controller(), drawing, resizedEvent.x, resizedEvent.y, svgString)
+        .subscribe({
+          next: (controllerDrawing: Drawing) => {
+            this.drawingsDataSource.update(controllerDrawing);
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to update drawing size';
+            this.toasterService.error(message);
+            this.cdr.markForCheck();
+          },
+        });
+    }
   }
 
   ngOnDestroy() {

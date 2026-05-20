@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { select } from 'd3-selection';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { SelectionManager } from '../managers/selection-manager';
 import { EllipseElement } from '../models/drawings/ellipse-element';
@@ -145,6 +146,34 @@ export class DrawingWidget implements Widget {
         .attr('r', 2)
         .attr('fill', BADGE_OUTLINE_COLOR);
     }
+
+    // Rotation handle — only for rectangle and ellipse shapes
+    drawing_body_merge.select('.rotation-handle-stem').remove();
+    drawing_body_merge.select('.rotation-handle-knob').remove();
+    drawing_body_merge
+      .filter((d: MapDrawing) => d.element instanceof RectElement || d.element instanceof EllipseElement)
+      .each(function (d: MapDrawing) {
+        const group = select(this);
+        const cx = d.element instanceof EllipseElement ? d.element.cx : d.element.width / 2;
+        const topY = d.element instanceof EllipseElement ? d.element.cy - d.element.ry : 0;
+        const handleY = topY - 30;
+
+        group.append<SVGLineElement>('line')
+          .attr('class', 'rotation-handle-stem')
+          .attr('pointer-events', 'none')
+          .attr('x1', cx)
+          .attr('y1', topY)
+          .attr('x2', cx)
+          .attr('y2', handleY);
+
+        group.append<SVGCircleElement>('circle')
+          .attr('class', 'rotation-handle-knob')
+          .attr('pointer-events', 'all')
+          .attr('cx', cx)
+          .attr('cy', handleY)
+          .attr('r', 8)
+          .attr('cursor', 'grab');
+      });
 
     drawing_body_merge
       .select<SVGAElement>('line.top')

@@ -437,6 +437,33 @@ export class DrawingsWidget implements Widget {
         }
       }
     });
+
+    // Rotation drag behavior
+    let rotateDrag = drag()
+      .on('start', () => {
+        document.body.style.cursor = 'grabbing';
+      })
+      .on('drag', (event: any, datum: MapDrawing) => {
+        const cx = datum.element instanceof EllipseElement ? datum.element.cx : datum.element.width / 2;
+        const cy = datum.element instanceof EllipseElement ? datum.element.cy : datum.element.height / 2;
+        const centerX = datum.x + cx;
+        const centerY = datum.y + cy;
+
+        const mouseX = event.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
+        const mouseY = event.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
+
+        const angle = Math.atan2(mouseY - centerY, mouseX - centerX) * (180 / Math.PI) + 90;
+        datum.rotation = Math.round(angle);
+        this.redrawDrawing(view, datum);
+      })
+      .on('end', (event: any, datum: MapDrawing) => {
+        document.body.style.cursor = 'initial';
+        const evt = this.createResizingEvent(datum);
+        evt.rotation = datum.rotation;
+        this.resizingFinished.emit(evt);
+      });
+
+    merge.select<SVGCircleElement>('circle.rotation-handle-knob').call(rotateDrag);
   }
 
   private createResizingEvent(datum: MapDrawing) {
