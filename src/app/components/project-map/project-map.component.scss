@@ -414,6 +414,29 @@ path.curve_element.selected {
   fill: none;
 }
 
+/* Rotation handle — hidden by default, shown on selection */
+g.drawing_body .rotation-handle-stem,
+g.drawing_body .rotation-handle-knob {
+  visibility: hidden;
+}
+
+g.drawing_body.drawing_selected .rotation-handle-stem,
+g.drawing_body.drawing_selected .rotation-handle-knob {
+  visibility: visible;
+}
+
+g.drawing_body.drawing_selected .rotation-handle-stem {
+  stroke: var(--mat-sys-primary);
+  stroke-width: 2;
+  stroke-dasharray: 4 2;
+}
+
+g.drawing_body.drawing_selected .rotation-handle-knob {
+  fill: var(--mat-sys-primary);
+  stroke: var(--gns3-bright-text);
+  stroke-width: 2;
+}
+
 g.node text,
 .noselect {
   -webkit-touch-callout: none;

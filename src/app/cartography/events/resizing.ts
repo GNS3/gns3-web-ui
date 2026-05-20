@@ -4,4 +4,5 @@ export class ResizingEnd<T> {
   public y: number;
   public width: number;
   public height: number;
+  public rotation?: number;
 }

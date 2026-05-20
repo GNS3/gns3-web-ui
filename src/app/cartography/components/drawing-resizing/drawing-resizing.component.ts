@@ -23,7 +23,7 @@ export class DrawingResizingComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.resizingFinished = this.drawingsWidget.resizingFinished.subscribe((evt: ResizingEnd<MapDrawing>) => {
       this.drawingsEventSource.resized.emit(
-        new ResizedDataEvent<MapDrawing>(evt.datum, evt.x, evt.y, evt.width, evt.height)
+        new ResizedDataEvent<MapDrawing>(evt.datum, evt.x, evt.y, evt.width, evt.height, evt.rotation)
       );
     });
   }

@@ -437,6 +437,49 @@ export class DrawingsWidget implements Widget {
         }
       }
     });
+
+    // Rotation drag behavior
+    let startAngle = 0;
+    let startRotation = 0;
+
+    let rotateDrag = drag()
+      .on('start', (event: any, datum: MapDrawing) => {
+        document.body.style.cursor = 'grabbing';
+
+        const mouseX = event.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
+        const mouseY = event.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
+
+        startAngle = Math.atan2(mouseY - datum.y, mouseX - datum.x) * (180 / Math.PI);
+        startRotation = datum.rotation || 0;
+      })
+      .on('drag', (event: any, datum: MapDrawing) => {
+        const mouseX = event.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
+        const mouseY = event.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
+
+        const currentAngle = Math.atan2(mouseY - datum.y, mouseX - datum.x) * (180 / Math.PI);
+
+        // 计算角度差，正确处理边界跨越
+        let deltaAngle = currentAngle - startAngle;
+        if (deltaAngle > 180) deltaAngle -= 360;
+        if (deltaAngle < -180) deltaAngle += 360;
+
+        let newRotation = startRotation + deltaAngle;
+
+        // 规范化到 [-359, 360] 范围
+        while (newRotation > 360) newRotation -= 360;
+        while (newRotation < -359) newRotation += 360;
+
+        datum.rotation = Math.round(newRotation);
+        this.redrawDrawing(view, datum);
+      })
+      .on('end', (event: any, datum: MapDrawing) => {
+        document.body.style.cursor = 'initial';
+        const evt = this.createResizingEvent(datum);
+        evt.rotation = datum.rotation;
+        this.resizingFinished.emit(evt);
+      });
+
+    merge.select<SVGCircleElement>('circle.rotation-handle-knob').call(rotateDrag);
   }
 
   private createResizingEvent(datum: MapDrawing) {

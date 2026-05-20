@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { select } from 'd3-selection';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { SelectionManager } from '../managers/selection-manager';
 import { EllipseElement } from '../models/drawings/ellipse-element';
@@ -145,6 +146,47 @@ export class DrawingWidget implements Widget {
         .attr('r', 2)
         .attr('fill', BADGE_OUTLINE_COLOR);
     }
+
+    // Rotation handle — only for rectangle and ellipse shapes, and only when selected
+    drawing_body_merge.select('.rotation-handle-stem').remove();
+    drawing_body_merge.select('.rotation-handle-knob').remove();
+    drawing_body_merge.select('.rotation-center-point').remove();
+    drawing_body_merge
+      .filter((d: MapDrawing) => (d.element instanceof RectElement || d.element instanceof EllipseElement) && this.selectionManager.isSelected(d))
+      .each(function (d: MapDrawing) {
+        const group = select(this);
+        const handleX = d.element.width + 30;
+        const handleY = -30;
+
+        // Rotation center point (top-left corner)
+        group.append<SVGCircleElement>('circle')
+          .attr('class', 'rotation-center-point')
+          .attr('pointer-events', 'none')
+          .attr('cx', 0)
+          .attr('cy', 0)
+          .attr('r', 5)
+          .attr('fill', UNLOCKED_ICON_COLOR);
+
+        group.append<SVGLineElement>('line')
+          .attr('class', 'rotation-handle-stem')
+          .attr('pointer-events', 'none')
+          .attr('stroke', LOCKED_ICON_COLOR)
+          .attr('stroke-width', '2')
+          .attr('stroke-dasharray', '4 2')
+          .attr('x1', 0)
+          .attr('y1', 0)
+          .attr('x2', handleX)
+          .attr('y2', handleY);
+
+        group.append<SVGCircleElement>('circle')
+          .attr('class', 'rotation-handle-knob')
+          .attr('pointer-events', 'all')
+          .attr('cx', handleX)
+          .attr('cy', handleY)
+          .attr('r', 8)
+          .attr('fill', LOCKED_ICON_COLOR)
+          .attr('cursor', 'grab');
+      });
 
     drawing_body_merge
       .select<SVGAElement>('line.top')
