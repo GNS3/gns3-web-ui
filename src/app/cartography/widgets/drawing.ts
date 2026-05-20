@@ -147,11 +147,11 @@ export class DrawingWidget implements Widget {
         .attr('fill', BADGE_OUTLINE_COLOR);
     }
 
-    // Rotation handle — only for rectangle and ellipse shapes
+    // Rotation handle — only for rectangle and ellipse shapes, and only when selected
     drawing_body_merge.select('.rotation-handle-stem').remove();
     drawing_body_merge.select('.rotation-handle-knob').remove();
     drawing_body_merge
-      .filter((d: MapDrawing) => d.element instanceof RectElement || d.element instanceof EllipseElement)
+      .filter((d: MapDrawing) => (d.element instanceof RectElement || d.element instanceof EllipseElement) && this.selectionManager.isSelected(d))
       .each(function (d: MapDrawing) {
         const group = select(this);
         const handleX = d.element.width + 30;
