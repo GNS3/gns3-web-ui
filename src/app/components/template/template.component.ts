@@ -341,9 +341,12 @@ export class TemplateComponent implements OnInit, OnDestroy {
     const pageX = this.lastPageX();
     const pageY = this.lastPageY();
 
-    // Use scene dimensions as fallback for context size
-    const centerX = this.context.size.width > 0 ? this.context.size.width / 2 : this.project().scene_width / 2;
-    const centerY = this.context.size.height > 0 ? this.context.size.height / 2 : this.project().scene_height / 2;
+    // Use the same origin as the SVG <g> canvas transform (getZeroZeroTransformationPoint)
+    // to ensure consistent screen-to-world coordinate conversion. This prevents
+    // the canvas from shifting when getSize() recalculates centerX/Y after node creation.
+    const origin = this.context.getZeroZeroTransformationPoint();
+    const centerX = this.context.size.width > 0 ? origin.x : this.project().scene_width / 2;
+    const centerY = this.context.size.height > 0 ? origin.y : this.project().scene_height / 2;
 
     // Convert screen coordinates to world coordinates using D3 transformation
     const worldX = (pageX - (centerX + this.context.transformation.x)) / this.context.transformation.k;
