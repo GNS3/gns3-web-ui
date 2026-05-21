@@ -58,7 +58,15 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked, Af
   ngAfterViewChecked(): void {
     // Scroll to bottom if needed and auto-scroll is enabled
     if (this.shouldScrollToBottom && this.autoScroll()) {
-      this.scrollToBottom();
+      // Use requestAnimationFrame to scroll immediately during render
+      // This creates the effect of messages "growing from bottom"
+      requestAnimationFrame(() => {
+        this.scrollToBottom();
+        // Double-check in next frame to ensure final position is correct
+        requestAnimationFrame(() => {
+          this.scrollToBottom();
+        });
+      });
       this.shouldScrollToBottom = false;
     }
   }
@@ -66,6 +74,12 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked, Af
   ngAfterViewInit(): void {
     // Setup code block collapse functionality
     this.setupCodeBlockCollapse();
+
+    // Initialize scroll position to bottom for new conversations
+    const messageContainer = this.messageContainer().nativeElement;
+    if (messageContainer && this.messages().length === 0) {
+      messageContainer.scrollTop = 0;
+    }
   }
 
   /**
