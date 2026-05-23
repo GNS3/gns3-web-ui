@@ -121,7 +121,7 @@ export class PacketFiltersDialogComponent implements OnInit {
 
   onResetClick() {
     this.link.filters = {
-      bpf: [],
+      bpf: [''],
       corrupt: [0],
       delay: [0, 0],
       frequency_drop: [0],
