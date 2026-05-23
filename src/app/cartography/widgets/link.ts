@@ -119,6 +119,13 @@ export class LinkWidget implements Widget {
       .attr('width', '48px')
       .attr('height', '48px')
       .attr('transform', (link) => {
+        // For freeform links, use control_offset as the center position
+        // Icon size is 20x20, scaled to 10x10, so subtract 5 to get top-left corner
+        if (link.link_style?.link_type === 'freeform' && link.link_style?.control_offset) {
+          return `translate (${link.link_style.control_offset[0] - 5}, ${
+            link.link_style.control_offset[1] - 5
+          }) scale(0.5)`;
+        }
         return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
           (link.source.y + link.target.y) / 2 + 24
         }) scale(0.5)`;
@@ -141,6 +148,13 @@ export class LinkWidget implements Widget {
       })
       .attr('class', 'pause-icon')
       .attr('transform', (link) => {
+        // For freeform links, use control_offset as the center position
+        // Icon size is 20x20, scaled to 10x10, so subtract 5 to get top-left corner
+        if (link.link_style?.link_type === 'freeform' && link.link_style?.control_offset) {
+          return `translate (${link.link_style.control_offset[0] - 5}, ${
+            link.link_style.control_offset[1] - 5
+          }) scale(0.5)`;
+        }
         return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
           (link.source.y + link.target.y) / 2 + 24
         }) scale(0.5)`;
@@ -247,6 +261,14 @@ export class LinkWidget implements Widget {
               const filterCaptureIcon = linkGroup.select<SVGGElement>('g.filter-capture-icon');
               if (!filterCaptureIcon.empty()) {
                 filterCaptureIcon.attr('transform', `translate (${controlX - 5}, ${controlY - 5}) scale(0.5)`);
+              }
+              const filterIcon = linkGroup.select<SVGGElement>('g.filter-icon');
+              if (!filterIcon.empty()) {
+                filterIcon.attr('transform', `translate (${controlX - 5}, ${controlY - 5}) scale(0.5)`);
+              }
+              const pauseIcon = linkGroup.select<SVGGElement>('g.pause-icon');
+              if (!pauseIcon.empty()) {
+                pauseIcon.attr('transform', `translate (${controlX - 5}, ${controlY - 5}) scale(0.5)`);
               }
 
               // Store mouse position directly as control_offset
