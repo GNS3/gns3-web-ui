@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { Filter } from '@models/filter';
 import { FilterDescription } from '@models/filter-description';
@@ -25,7 +24,6 @@ import { ToasterService } from '@services/toaster.service';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    MatTabsModule,
     MatButtonModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,7 +49,7 @@ export class PacketFiltersDialogComponent implements OnInit {
       next: (link: Link) => {
         this.link = link;
         this.filters = {
-          bpf: [],
+          bpf: [''],
           corrupt: [0],
           delay: [0, 0],
           frequency_drop: [0],
@@ -59,7 +57,7 @@ export class PacketFiltersDialogComponent implements OnInit {
         };
 
         if (this.link.filters) {
-          this.filters.bpf = this.link.filters.bpf ? this.link.filters.bpf : [];
+          this.filters.bpf = this.link.filters.bpf ? this.link.filters.bpf : [''];
           this.filters.corrupt = this.link.filters.corrupt ? this.link.filters.corrupt : [0];
           this.filters.delay = this.link.filters.delay ? this.link.filters.delay : [0, 0];
           this.filters.frequency_drop = this.link.filters.frequency_drop ? this.link.filters.frequency_drop : [0];
@@ -123,7 +121,7 @@ export class PacketFiltersDialogComponent implements OnInit {
 
   onResetClick() {
     this.link.filters = {
-      bpf: [],
+      bpf: [''],
       corrupt: [0],
       delay: [0, 0],
       frequency_drop: [0],

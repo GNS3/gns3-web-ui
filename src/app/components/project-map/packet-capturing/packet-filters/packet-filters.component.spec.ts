@@ -168,7 +168,7 @@ describe('PacketFiltersDialogComponent', () => {
       component.ngOnInit();
 
       expect(component.filters).toEqual({
-        bpf: [],
+        bpf: [''],
         corrupt: [0],
         delay: [0, 0],
         frequency_drop: [0],
@@ -220,7 +220,7 @@ describe('PacketFiltersDialogComponent', () => {
       component.onResetClick();
 
       expect(component.link.filters).toEqual({
-        bpf: [],
+        bpf: [''],
         corrupt: [0],
         delay: [0, 0],
         frequency_drop: [0],
@@ -336,7 +336,7 @@ describe('PacketFiltersDialogComponent', () => {
       mockLinkService.updateLink.mockReturnValue(throwError(() => new Error('Failed to reset filters')));
       const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
       component.link = createMockLink();
-      component.filters = { bpf: [], corrupt: [0], delay: [0, 0], frequency_drop: [0], packet_loss: [0] };
+      component.filters = { bpf: [''], corrupt: [0], delay: [0, 0], frequency_drop: [0], packet_loss: [0] };
 
       component.onResetClick();
 
