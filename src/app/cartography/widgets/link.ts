@@ -7,6 +7,7 @@ import { LinksEventSource } from '../events/links-event-source';
 import { MultiLinkCalculatorHelper } from '../helpers/multi-link-calculator-helper';
 import { SelectionManager } from '../managers/selection-manager';
 import { MapLink } from '../models/map/map-link';
+import { MapLinksDataSource } from '../datasources/map-datasource';
 import { SVGSelection } from '../models/types';
 import { InterfaceLabelWidget } from './interface-label';
 import { InterfaceStatusWidget } from './interface-status';
@@ -26,8 +27,22 @@ export class LinkWidget implements Widget {
     private selectionManager: SelectionManager,
     private ethernetLinkWidget: EthernetLinkWidget,
     private serialLinkWidget: SerialLinkWidget,
-    private linksEventSource: LinksEventSource
-  ) {}
+    private linksEventSource: LinksEventSource,
+    private mapLinksDataSource: MapLinksDataSource
+  ) {
+    this.mapLinksDataSource.itemChanged.subscribe((mapLink: MapLink) => {
+      this.updateFilterIconsVisibility(mapLink);
+    });
+  }
+
+  private updateFilterIconsVisibility(mapLink: MapLink) {
+    const show = mapLink.show_filters_icon !== false;
+    select('svg')
+      .selectAll<SVGGElement, MapLink>('g.link_body')
+      .filter((d) => d && d.id === mapLink.id)
+      .selectAll('.capture-icon, .filter-capture-icon, .filter-icon, .pause-icon')
+      .style('display', show ? null : 'none');
+  }
 
   public draw(view: SVGSelection) {
     const link_body = view.selectAll<SVGGElement, MapLink>('g.link_body').data((l) => [l]);

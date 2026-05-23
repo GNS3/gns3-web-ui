@@ -5,6 +5,8 @@ import { Link } from '@models/link';
 import { Controller } from '@models/controller';
 import { LinkService } from '@services/link.service';
 import { ToasterService } from '@services/toaster.service';
+import { MapLinksDataSource } from '../../../../../cartography/datasources/map-datasource';
+import { LinksDataSource } from '../../../../../cartography/datasources/links-datasource';
 
 @Component({
   selector: 'app-toggle-show-filters-icon-action',
@@ -15,6 +17,8 @@ import { ToasterService } from '@services/toaster.service';
 export class ToggleShowFiltersIconActionComponent {
   private linkService = inject(LinkService);
   private toasterService = inject(ToasterService);
+  private linksDataSource = inject(LinksDataSource);
+  private mapLinksDataSource = inject(MapLinksDataSource);
 
   readonly controller = input<Controller>(undefined);
   readonly link = input<Link>(undefined);
@@ -36,6 +40,14 @@ export class ToggleShowFiltersIconActionComponent {
       next: (updatedLink) => {
         // Update the local signal with the server response
         this.showFiltersIcon.set(updatedLink.show_filters_icon !== undefined ? updatedLink.show_filters_icon : newValue);
+        // Update LinksDataSource for data consistency
+        this.linksDataSource.update(updatedLink);
+        // Update MapLinksDataSource to trigger LinkWidget icon update
+        const mapLink = this.mapLinksDataSource.get(updatedLink.link_id);
+        if (mapLink) {
+          mapLink.show_filters_icon = newValue;
+          this.mapLinksDataSource.update(mapLink);
+        }
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to toggle filter icon visibility';
