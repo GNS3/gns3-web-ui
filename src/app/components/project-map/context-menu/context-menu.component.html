@@ -125,6 +125,12 @@
     ></app-packet-filters-action>
     } @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 &&
     linkNodes.length === 0) {
+    <app-toggle-show-filters-icon-action
+      [controller]="controller"
+      [link]="links[0]"
+    ></app-toggle-show-filters-icon-action>
+    } @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 &&
+    linkNodes.length === 0) {
     <app-resume-link-action [controller]="controller" [link]="links[0]"></app-resume-link-action>
     } @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 &&
     linkNodes.length === 0) {

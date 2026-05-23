@@ -62,7 +62,7 @@ export class LinkService {
   }
 
   updateLink(controller: Controller, link: Link) {
-    const payload: Pick<Partial<Link>, 'nodes' | 'filters' | 'suspend'> = {};
+    const payload: Pick<Partial<Link>, 'nodes' | 'filters' | 'suspend' | 'show_filters_icon'> = {};
 
     if (link.nodes !== undefined) {
       payload.nodes = link.nodes;
@@ -72,6 +72,9 @@ export class LinkService {
     }
     if (link.suspend !== undefined) {
       payload.suspend = link.suspend;
+    }
+    if (link.show_filters_icon !== undefined) {
+      payload.show_filters_icon = link.show_filters_icon;
     }
 
     return this.httpController.put<Link>(controller, `/projects/${link.project_id}/links/${link.link_id}`, payload);

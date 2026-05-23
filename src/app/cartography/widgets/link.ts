@@ -43,6 +43,7 @@ export class LinkWidget implements Widget {
     link_body
       .filter((l) => {
         return (
+          l.show_filters_icon !== false &&
           l.capturing &&
           !l.suspend &&
           !(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)
@@ -74,6 +75,7 @@ export class LinkWidget implements Widget {
     link_body
       .filter((l) => {
         return (
+          l.show_filters_icon !== false &&
           l.capturing &&
           !l.suspend &&
           (l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)
@@ -105,6 +107,7 @@ export class LinkWidget implements Widget {
     link_body
       .filter((l) => {
         return (
+          l.show_filters_icon !== false &&
           !l.capturing &&
           !l.suspend &&
           (l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)
@@ -139,7 +142,7 @@ export class LinkWidget implements Widget {
     link_body.select('.pause-icon').remove();
     link_body
       .filter((l) => {
-        return l.suspend;
+        return l.show_filters_icon !== false && l.suspend;
       })
       .append<SVGGElement>('g')
       .on('contextmenu', (event: any, datum: MapLink) => {
