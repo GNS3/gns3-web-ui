@@ -40,7 +40,7 @@ export class LinkWidget implements Widget {
     select('svg')
       .selectAll<SVGGElement, MapLink>('g.link_body')
       .filter((d) => d && d.id === mapLink.id)
-      .selectAll('.capture-icon, .filter-capture-icon, .filter-icon, .pause-icon')
+      .selectAll('.filter-capture-icon, .filter-icon')
       .style('display', show ? null : 'none');
   }
 
@@ -58,7 +58,6 @@ export class LinkWidget implements Widget {
     link_body
       .filter((l) => {
         return (
-          l.show_filters_icon !== false &&
           l.capturing &&
           !l.suspend &&
           !(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)
@@ -157,7 +156,7 @@ export class LinkWidget implements Widget {
     link_body.select('.pause-icon').remove();
     link_body
       .filter((l) => {
-        return l.show_filters_icon !== false && l.suspend;
+        return l.suspend;
       })
       .append<SVGGElement>('g')
       .on('contextmenu', (event: any, datum: MapLink) => {

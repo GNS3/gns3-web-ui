@@ -14,7 +14,7 @@ export class Link {
   project_id: string;
   suspend: boolean;
   link_style?: LinkStyle;
-  show_filters_icon: boolean = true; // Control visibility of filter icons on the link
+  show_filters_icon: boolean; // Control visibility of filter icons on the link (from server)
   wireshark: boolean; // true for Web Wireshark, false for traditional Wireshark
 
   distance: number; // this is not from controller
