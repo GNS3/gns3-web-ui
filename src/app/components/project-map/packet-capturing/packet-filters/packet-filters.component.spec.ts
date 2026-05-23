@@ -45,6 +45,7 @@ const createMockLink = (filters?: Filter): Link => ({
   target: {} as any,
   x: 0,
   y: 0,
+  show_filters_icon: true,
 });
 
 const mockFilterDescription: FilterDescription[] = [

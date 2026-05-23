@@ -160,6 +160,7 @@ describe('TopologySummaryComponent', () => {
     target: mockNode,
     x: 0,
     y: 0,
+    show_filters_icon: true,
   };
 
   beforeEach(async () => {

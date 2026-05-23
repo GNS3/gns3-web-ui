@@ -201,6 +201,7 @@ describe('ContextMenuComponent', () => {
     target: createMockNode({ node_id: 'node-456' }),
     x: 0,
     y: 0,
+    show_filters_icon: true,
     ...overrides,
   });
 
