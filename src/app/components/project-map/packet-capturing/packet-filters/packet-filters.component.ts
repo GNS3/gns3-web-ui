@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { Filter } from '@models/filter';
 import { FilterDescription } from '@models/filter-description';
@@ -25,7 +24,6 @@ import { ToasterService } from '@services/toaster.service';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    MatTabsModule,
     MatButtonModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

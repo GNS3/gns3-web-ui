@@ -1,72 +1,21 @@
 /**
  * GNS3 Packet Filters Component Styles
- * Using MD3 CSS variables
+ *
+ * Follows project dialog design language defined in src/styles/_dialogs.scss
+ * Uses Material Design 3 appearance="fill" for form fields
  */
 
-.spacer {
-  flex-grow: 1;
+// Form field spacing
+mat-form-field {
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
-.content {
-  height: 260px;
-}
-
-.item {
-  height: 25px;
-  font-size: 14px;
-  margin-bottom: 8px;
-}
-
-.item-name {
-  margin-bottom: 8px;
-}
-
-.item-value {
-  width: 100%;
-  margin-bottom: 8px;
-}
-
-.input-field {
-  width: 100%;
-  margin-top: 8px;
-}
-
-.divider {
-  width: fit-content;
-  flex: 1 1 auto;
-}
-
-.input-color {
-  padding: 0px;
-  border-width: 0px;
-  width: 100%;
-  background-color: transparent;
-  outline: none;
-}
-
-input:focus {
-  outline: none;
-}
-
-input[type='color'] {
-  -webkit-appearance: none;
-  border: none;
-  height: 25px;
-}
-
-input[type='color']::-webkit-color-swatch-wrapper {
-  padding: 0;
-}
-
-input[type='color']::-webkit-color-swatch {
-  border: none;
-}
-
-.modal-form-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-form-container > * {
+// Full width fields for consistent layout
+.full-width-field {
   width: 100%;
 }
+
