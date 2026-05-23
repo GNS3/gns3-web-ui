@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, signal, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { Link } from '@models/link';
@@ -14,7 +14,7 @@ import { LinksDataSource } from '../../../../../cartography/datasources/links-da
   imports: [MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ToggleShowFiltersIconActionComponent implements OnInit {
+export class ToggleShowFiltersIconActionComponent {
   private linkService = inject(LinkService);
   private toasterService = inject(ToasterService);
   private linksDataSource = inject(LinksDataSource);
@@ -23,33 +23,26 @@ export class ToggleShowFiltersIconActionComponent implements OnInit {
   readonly controller = input<Controller>(undefined);
   readonly link = input<Link>(undefined);
 
-  // Pure signal for state tracking
-  readonly showFiltersIcon = signal<boolean>(true);
-
-  ngOnInit() {
-    // Initialize from link input (server data)
+  // Read from data source (source of truth)
+  get showFiltersIcon(): boolean {
     const link = this.link();
-    if (link) {
-      this.showFiltersIcon.set(link.show_filters_icon);
-    }
+    if (!link) return true;
+
+    // Always read from data source to get the latest state
+    const currentLink = this.linksDataSource.get(link.link_id);
+    return currentLink?.show_filters_icon ?? true;
   }
 
   toggleShowFiltersIcon() {
     const link = this.link();
     if (!link) return;
 
-    const currentValue = this.showFiltersIcon();
+    const currentValue = this.showFiltersIcon;
     const newValue = !currentValue;
 
     this.linkService.updateLink(this.controller(), { ...link, show_filters_icon: newValue }).subscribe({
       next: (updatedLink) => {
-        // Update signal from server response (triggers automatic UI update)
-        this.showFiltersIcon.set(updatedLink.show_filters_icon);
-
-        // Update the original link object
-        link.show_filters_icon = updatedLink.show_filters_icon;
-
-        // Update data sources
+        // Update data sources (this triggers LinksDataSource.itemChanged)
         this.linksDataSource.update(updatedLink);
         const mapLink = this.mapLinksDataSource.get(updatedLink.link_id);
         if (mapLink) {

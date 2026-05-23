@@ -1,6 +1,7 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, OnDestroy } from '@angular/core';
 import { drag, D3DragEvent } from 'd3-drag';
 import { select } from 'd3-selection';
+import { Subscription } from 'rxjs';
 
 import { LinkContextMenu } from '../events/event-source';
 import { LinksEventSource } from '../events/links-event-source';
@@ -17,8 +18,9 @@ import { StyleTranslator } from './links/style-translator';
 import { Widget } from './widget';
 
 @Injectable()
-export class LinkWidget implements Widget {
+export class LinkWidget implements Widget, OnDestroy {
   public onContextMenu = new EventEmitter<LinkContextMenu>();
+  private subscription: Subscription;
 
   constructor(
     private multiLinkCalculatorHelper: MultiLinkCalculatorHelper,
@@ -30,9 +32,15 @@ export class LinkWidget implements Widget {
     private linksEventSource: LinksEventSource,
     private mapLinksDataSource: MapLinksDataSource
   ) {
-    this.mapLinksDataSource.itemChanged.subscribe((mapLink: MapLink) => {
+    this.subscription = this.mapLinksDataSource.itemChanged.subscribe((mapLink: MapLink) => {
       this.updateFilterIconsVisibility(mapLink);
     });
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   private updateFilterIconsVisibility(mapLink: MapLink) {
