@@ -5,9 +5,22 @@
  * Uses Material Design 3 appearance="fill" for form fields
  */
 
-// Form field spacing
-mat-form-field {
+// Two-column grid layout for filters - compact sizing for 500px dialog
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 16px;
   margin-bottom: 16px;
+}
+
+// Limit form field width to prevent overly wide inputs
+.form-grid-column mat-form-field {
+  max-width: 220px;
+}
+
+// Form field spacing - more compact
+mat-form-field {
+  margin-bottom: 12px;
 
   &:last-child {
     margin-bottom: 0;

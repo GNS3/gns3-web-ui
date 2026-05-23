@@ -2,35 +2,41 @@
 
 @if (this.filters) {
 <div mat-dialog-content>
-  <mat-form-field appearance="fill" class="full-width-field">
-    <mat-label>Frequency drop</mat-label>
-    <input matInput type="number" [value]="filters.frequency_drop[0]" (input)="onFrequencyDropChange(+$event.target.value)" />
-    <span matSuffix>packets</span>
-  </mat-form-field>
+  <div class="form-grid">
+    <div class="form-grid-column">
+      <mat-form-field appearance="fill" class="full-width-field">
+        <mat-label>Frequency drop</mat-label>
+        <input matInput type="number" [value]="filters.frequency_drop[0]" (input)="onFrequencyDropChange(+$event.target.value)" />
+        <span matSuffix>packets</span>
+      </mat-form-field>
 
-  <mat-form-field appearance="fill" class="full-width-field">
-    <mat-label>Packet loss</mat-label>
-    <input matInput type="number" [value]="filters.packet_loss[0]" (input)="onPacketLossChange(+$event.target.value)" />
-    <span matSuffix>%</span>
-  </mat-form-field>
+      <mat-form-field appearance="fill" class="full-width-field">
+        <mat-label>Packet loss</mat-label>
+        <input matInput type="number" [value]="filters.packet_loss[0]" (input)="onPacketLossChange(+$event.target.value)" />
+        <span matSuffix>%</span>
+      </mat-form-field>
 
-  <mat-form-field appearance="fill" class="full-width-field">
-    <mat-label>Delay latency</mat-label>
-    <input matInput type="number" [value]="filters.delay[0]" (input)="onDelayLatencyChange(+$event.target.value)" />
-    <span matSuffix>ms</span>
-  </mat-form-field>
+      <mat-form-field appearance="fill" class="full-width-field">
+        <mat-label>Corrupt</mat-label>
+        <input matInput type="number" [value]="filters.corrupt[0]" (input)="onCorruptChange(+$event.target.value)" />
+        <span matSuffix>%</span>
+      </mat-form-field>
+    </div>
 
-  <mat-form-field appearance="fill" class="full-width-field">
-    <mat-label>Delay jitter</mat-label>
-    <input matInput type="number" [value]="filters.delay[1]" (input)="onDelayJitterChange(+$event.target.value)" />
-    <span matSuffix>ms</span>
-  </mat-form-field>
+    <div class="form-grid-column">
+      <mat-form-field appearance="fill" class="full-width-field">
+        <mat-label>Delay latency</mat-label>
+        <input matInput type="number" [value]="filters.delay[0]" (input)="onDelayLatencyChange(+$event.target.value)" />
+        <span matSuffix>ms</span>
+      </mat-form-field>
 
-  <mat-form-field appearance="fill" class="full-width-field">
-    <mat-label>Corrupt</mat-label>
-    <input matInput type="number" [value]="filters.corrupt[0]" (input)="onCorruptChange(+$event.target.value)" />
-    <span matSuffix>%</span>
-  </mat-form-field>
+      <mat-form-field appearance="fill" class="full-width-field">
+        <mat-label>Delay jitter</mat-label>
+        <input matInput type="number" [value]="filters.delay[1]" (input)="onDelayJitterChange(+$event.target.value)" />
+        <span matSuffix>ms</span>
+      </mat-form-field>
+    </div>
+  </div>
 
   <mat-form-field appearance="fill" class="full-width-field">
     <mat-label>Berkeley Packet Filter (BPF)</mat-label>
