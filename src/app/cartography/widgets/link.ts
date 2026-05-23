@@ -60,7 +60,7 @@ export class LinkWidget implements Widget {
         return (
           l.capturing &&
           !l.suspend &&
-          !(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)
+          (l.show_filters_icon === false || !(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss))
         );
       })
       .append<SVGGElement>('g')

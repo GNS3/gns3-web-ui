@@ -176,3 +176,59 @@ After fix, verify:
 2. Load topology
 3. Right-click link → should show "Show filter icons"
 4. Click to toggle → should show "Hide filter icons"
+
+## Icon Display Logic
+
+### Icon Types
+
+1. **`.capture-icon`**: Pure capture icon (only shows capture, no filter indicators)
+2. **`.filter-capture-icon`**: Merged capture+filter icon (shows both capture and filters)
+3. **`.filter-icon`**: Pure filter icon (only shows filters, not capturing)
+4. **`.pause-icon`**: Pause icon (link is suspended)
+
+### Display Conditions
+
+**`.capture-icon`** displays when:
+- Has capture (`l.capturing`)
+- Not suspended (`!l.suspend`)
+- **AND** one of:
+  - `show_filters_icon === false` (regardless of filters)
+  - `show_filters_icon === true` **AND** no filters
+
+Code:
+```typescript
+l.capturing && 
+!l.suspend && 
+(l.show_filters_icon === false || !(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss))
+```
+
+**`.filter-capture-icon`** displays when:
+- `show_filters_icon !== false` (true or undefined)
+- Has capture
+- Not suspended
+- **AND** has packet filters
+
+Code:
+```typescript
+l.show_filters_icon !== false && 
+l.capturing && 
+!l.suspend && 
+(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)
+```
+
+### All Scenarios
+
+| Scenario | show_filters_icon | Capturing | Has Filters | capture-icon | filter-capture-icon |
+|----------|-------------------|-----------|-------------|--------------|---------------------|
+| 1 | false | ✅ | ❌ | ✅ Display | - |
+| 2 | false | ✅ | ✅ | ✅ Display | ❌ Hidden (show_filters_icon condition) |
+| 3 | true | ✅ | ❌ | ✅ Display | - |
+| 4 | true | ✅ | ✅ | ❌ Hidden | ✅ Display |
+
+### Key Design Principle
+
+When `show_filters_icon = false`, the user wants to **hide filter indicators** while still showing capture status. Therefore:
+- Scenario 2: Shows pure capture icon (filters hidden)
+- Scenario 4: Shows nothing (capture hidden because filters exist but are hidden)
+
+This ensures users see the appropriate icon based on their `show_filters_icon` preference.
