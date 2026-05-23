@@ -49,7 +49,7 @@ export class PacketFiltersDialogComponent implements OnInit {
       next: (link: Link) => {
         this.link = link;
         this.filters = {
-          bpf: [],
+          bpf: [''],
           corrupt: [0],
           delay: [0, 0],
           frequency_drop: [0],
@@ -57,7 +57,7 @@ export class PacketFiltersDialogComponent implements OnInit {
         };
 
         if (this.link.filters) {
-          this.filters.bpf = this.link.filters.bpf ? this.link.filters.bpf : [];
+          this.filters.bpf = this.link.filters.bpf ? this.link.filters.bpf : [''];
           this.filters.corrupt = this.link.filters.corrupt ? this.link.filters.corrupt : [0];
           this.filters.delay = this.link.filters.delay ? this.link.filters.delay : [0, 0];
           this.filters.frequency_drop = this.link.filters.frequency_drop ? this.link.filters.frequency_drop : [0];

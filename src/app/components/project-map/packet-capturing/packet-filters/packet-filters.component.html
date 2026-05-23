@@ -40,7 +40,10 @@
 
   <mat-form-field appearance="fill" class="full-width-field">
     <mat-label>Berkeley Packet Filter (BPF)</mat-label>
-    <textarea matInput [value]="filters.bpf[0]" (input)="onBpfChange($event.target.value)"></textarea>
+    <textarea matInput rows="4" placeholder="Examples:
+tcp port 80
+host 192.168.1.1
+tcp dst port 443 and src portrange 1024-65535" [value]="filters.bpf[0]" (input)="onBpfChange($event.target.value)"></textarea>
   </mat-form-field>
 </div>
 }
