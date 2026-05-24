@@ -127,6 +127,7 @@ import { MoveLayerDownActionComponent } from '@components/project-map/context-me
 import { MoveLayerUpActionComponent } from '@components/project-map/context-menu/actions/move-layer-up-action/move-layer-up-action.component';
 import { OpenFileExplorerActionComponent } from '@components/project-map/context-menu/actions/open-file-explorer/open-file-explorer-action.component';
 import { PacketFiltersActionComponent } from '@components/project-map/context-menu/actions/packet-filters-action/packet-filters-action.component';
+import { ToggleShowFiltersIconActionComponent } from '@components/project-map/context-menu/actions/toggle-show-filters-icon-action/toggle-show-filters-icon-action.component';
 import { ReloadNodeActionComponent } from '@components/project-map/context-menu/actions/reload-node-action/reload-node-action.component';
 import { ResumeLinkActionComponent } from '@components/project-map/context-menu/actions/resume-link-action/resume-link-action.component';
 import { ResetLinkActionComponent } from '@components/project-map/context-menu/actions/reset-link/reset-link-action.component';
@@ -488,6 +489,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     OpenFileExplorerActionComponent,
     ChangeSymbolActionComponent,
     PacketFiltersActionComponent,
+    ToggleShowFiltersIconActionComponent,
     ConfigActionComponent,
     AlignHorizontallyActionComponent,
     AlignVerticallyActionComponent,

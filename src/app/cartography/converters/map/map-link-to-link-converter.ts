@@ -20,6 +20,7 @@ export class MapLinkToLinkConverter implements Converter<MapLink, Link> {
     link.nodes = mapLink.nodes.map((mapLinkNode) => this.mapLinkNodeToMapLinkNode.convert(mapLinkNode));
     link.project_id = mapLink.projectId;
     link.suspend = mapLink.suspend;
+    link.show_filters_icon = mapLink.show_filters_icon;
     link.wireshark = mapLink.wireshark;
     return link;
   }

@@ -82,6 +82,7 @@ describe('EditLinkStyleActionComponent', () => {
       type: 1,
       link_type: 'straight',
     } as LinkStyle,
+    show_filters_icon: true,
   });
 
   beforeEach(async () => {

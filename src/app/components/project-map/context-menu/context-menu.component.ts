@@ -43,6 +43,7 @@ import { StartWebWiresharkInlineActionComponent } from './actions/start-web-wire
 import { PacketFiltersActionComponent } from './actions/packet-filters-action/packet-filters-action.component';
 import { ResumeLinkActionComponent } from './actions/resume-link-action/resume-link-action.component';
 import { SuspendLinkActionComponent } from './actions/suspend-link/suspend-link-action.component';
+import { ToggleShowFiltersIconActionComponent } from './actions/toggle-show-filters-icon-action/toggle-show-filters-icon-action.component';
 import { ResetLinkActionComponent } from './actions/reset-link/reset-link-action.component';
 import { EditLinkStyleActionComponent } from './actions/edit-link-style-action/edit-link-style-action.component';
 import { LockActionComponent } from './actions/lock-action/lock-action.component';
@@ -89,6 +90,7 @@ import { AlignVerticallyActionComponent } from './actions/align_vertically/align
     PacketFiltersActionComponent,
     ResumeLinkActionComponent,
     SuspendLinkActionComponent,
+    ToggleShowFiltersIconActionComponent,
     ResetLinkActionComponent,
     EditLinkStyleActionComponent,
     LockActionComponent,

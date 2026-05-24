@@ -32,6 +32,7 @@ describe('ResumeLinkActionComponent', () => {
       target: null as any,
       x: 0,
       y: 0,
+      show_filters_icon: true,
     };
     return Object.assign({}, defaults, overrides);
   };

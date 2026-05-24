@@ -39,6 +39,7 @@ export class LinkToMapLinkConverter implements Converter<Link, MapLink> {
     );
     mapLink.projectId = link.project_id;
     mapLink.suspend = link.suspend;
+    mapLink.show_filters_icon = link.show_filters_icon;
     mapLink.wireshark = link.wireshark;
     return mapLink;
   }

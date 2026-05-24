@@ -1,12 +1,14 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, OnDestroy } from '@angular/core';
 import { drag, D3DragEvent } from 'd3-drag';
 import { select } from 'd3-selection';
+import { Subscription } from 'rxjs';
 
 import { LinkContextMenu } from '../events/event-source';
 import { LinksEventSource } from '../events/links-event-source';
 import { MultiLinkCalculatorHelper } from '../helpers/multi-link-calculator-helper';
 import { SelectionManager } from '../managers/selection-manager';
 import { MapLink } from '../models/map/map-link';
+import { MapLinksDataSource } from '../datasources/map-datasource';
 import { SVGSelection } from '../models/types';
 import { InterfaceLabelWidget } from './interface-label';
 import { InterfaceStatusWidget } from './interface-status';
@@ -16,8 +18,9 @@ import { StyleTranslator } from './links/style-translator';
 import { Widget } from './widget';
 
 @Injectable()
-export class LinkWidget implements Widget {
+export class LinkWidget implements Widget, OnDestroy {
   public onContextMenu = new EventEmitter<LinkContextMenu>();
+  private subscription: Subscription;
 
   constructor(
     private multiLinkCalculatorHelper: MultiLinkCalculatorHelper,
@@ -26,8 +29,28 @@ export class LinkWidget implements Widget {
     private selectionManager: SelectionManager,
     private ethernetLinkWidget: EthernetLinkWidget,
     private serialLinkWidget: SerialLinkWidget,
-    private linksEventSource: LinksEventSource
-  ) {}
+    private linksEventSource: LinksEventSource,
+    private mapLinksDataSource: MapLinksDataSource
+  ) {
+    this.subscription = this.mapLinksDataSource.itemChanged.subscribe((mapLink: MapLink) => {
+      this.updateFilterIconsVisibility(mapLink);
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  private updateFilterIconsVisibility(mapLink: MapLink) {
+    const show = mapLink.show_filters_icon !== false;
+    select('svg')
+      .selectAll<SVGGElement, MapLink>('g.link_body')
+      .filter((d) => d && d.id === mapLink.id)
+      .selectAll('.filter-capture-icon, .filter-icon')
+      .style('display', show ? null : 'none');
+  }
 
   public draw(view: SVGSelection) {
     const link_body = view.selectAll<SVGGElement, MapLink>('g.link_body').data((l) => [l]);
@@ -45,7 +68,7 @@ export class LinkWidget implements Widget {
         return (
           l.capturing &&
           !l.suspend &&
-          !(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)
+          (l.show_filters_icon === false || !(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss))
         );
       })
       .append<SVGGElement>('g')
@@ -74,6 +97,7 @@ export class LinkWidget implements Widget {
     link_body
       .filter((l) => {
         return (
+          l.show_filters_icon !== false &&
           l.capturing &&
           !l.suspend &&
           (l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)
@@ -105,6 +129,7 @@ export class LinkWidget implements Widget {
     link_body
       .filter((l) => {
         return (
+          l.show_filters_icon !== false &&
           !l.capturing &&
           !l.suspend &&
           (l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)

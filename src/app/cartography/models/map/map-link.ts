@@ -14,6 +14,7 @@ export class MapLink implements Indexed {
   nodes: MapLinkNode[];
   projectId: string;
   suspend: boolean;
+  show_filters_icon: boolean; // Control visibility of filter icons on the link (from server)
   link_style?: LinkStyle;
   wireshark: boolean; // true for Web Wireshark, false for traditional Wireshark
 

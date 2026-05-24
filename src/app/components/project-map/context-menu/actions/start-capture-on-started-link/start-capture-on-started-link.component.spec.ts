@@ -27,6 +27,7 @@ describe('StartCaptureOnStartedLinkActionComponent', () => {
       target: {} as any,
       x: 0,
       y: 0,
+      show_filters_icon: true,
     };
     return Object.assign({}, defaults, overrides);
   };
