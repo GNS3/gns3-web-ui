@@ -102,6 +102,7 @@ describe('WebWiresharkInlineComponent', () => {
 
     mockProject = {
       project_id: 'project-123',
+      created_by: '',
     } as Project;
 
     mockLink = {

@@ -30,6 +30,7 @@ describe('PacketCaptureService', () => {
     mockProject = {
       project_id: 'project-123',
       name: 'Test Project',
+      created_by: '',
     } as Project;
 
     mockLink = {

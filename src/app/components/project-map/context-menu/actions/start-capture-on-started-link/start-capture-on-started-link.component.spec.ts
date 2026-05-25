@@ -45,6 +45,7 @@ describe('StartCaptureOnStartedLinkActionComponent', () => {
     scene_height: 1000,
     scene_width: 1000,
     status: 'opened',
+    created_by: '',
     readonly: false,
     show_interface_labels: false,
     show_layers: false,

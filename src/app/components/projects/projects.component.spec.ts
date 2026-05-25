@@ -50,8 +50,8 @@ describe('ProjectsComponent', () => {
   } as Controller;
 
   const mockProjects: Project[] = [
-    { project_id: 'proj1', name: 'Project A', status: 'closed' } as Project,
-    { project_id: 'proj2', name: 'Project B', status: 'opened' } as Project,
+    { project_id: 'proj1', name: 'Project A', status: 'closed', created_by: '' } as Project,
+    { project_id: 'proj2', name: 'Project B', status: 'opened', created_by: '' } as Project,
   ];
 
   const mockSettings: Settings = {
@@ -157,7 +157,7 @@ describe('ProjectsComponent', () => {
 
     it('should have displayedColumns with correct values', () => {
       fixture.detectChanges();
-      expect(component.displayedColumns).toEqual(['select', 'name', 'actions', 'delete']);
+      expect(component.displayedColumns).toEqual(['select', 'name', 'created_by', 'actions', 'delete']);
     });
 
     it('should have currentYear set to current year', () => {

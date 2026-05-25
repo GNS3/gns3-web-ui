@@ -33,6 +33,7 @@ describe('AddBlankProjectDialogComponent', () => {
       name,
       filename: `${name}.gns3`,
       status: 'closed',
+      created_by: '',
       auto_close: true,
       auto_open: false,
       auto_start: false,

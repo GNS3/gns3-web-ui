@@ -42,6 +42,7 @@ describe('HttpConsoleActionComponent', () => {
     filename: '',
     path: '',
     status: 'opened',
+    created_by: '',
     auto_start: false,
     auto_close: false,
     auto_open: false,

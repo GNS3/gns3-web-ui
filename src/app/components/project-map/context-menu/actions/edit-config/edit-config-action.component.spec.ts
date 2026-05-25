@@ -36,6 +36,7 @@ describe('EditConfigActionComponent', () => {
     ({
       project_id: 'test-project-id',
       name: 'Test Project',
+      created_by: '',
       path: '/path/to/project',
     } as Project);
 

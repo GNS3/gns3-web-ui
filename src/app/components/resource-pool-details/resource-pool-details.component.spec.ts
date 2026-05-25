@@ -47,6 +47,7 @@ describe('ResourcePoolDetailsComponent', () => {
       name,
       filename: `${name}.gns3`,
       status: 'opened' as const,
+      created_by: '',
       auto_close: true,
       auto_open: false,
       auto_start: false,

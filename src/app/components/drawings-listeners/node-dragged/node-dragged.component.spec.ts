@@ -52,6 +52,7 @@ describe('NodeDraggedComponent', () => {
     scene_height: 1000,
     scene_width: 1000,
     status: 'opened',
+      created_by: '',
     show_interface_labels: true,
     show_layers: true,
     show_grid: true,
