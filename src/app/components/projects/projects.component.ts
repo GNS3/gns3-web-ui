@@ -60,7 +60,7 @@ export class ProjectsComponent implements OnInit {
   controller: Controller;
   projectDatabase = new ProjectDatabase();
   dataSource: ProjectDataSource;
-  displayedColumns = ['select', 'name', 'actions', 'delete'];
+  displayedColumns = ['select', 'name', 'created_by', 'actions', 'delete'];
   settings: Settings;
   project: Project;
   readonly searchText = model('');

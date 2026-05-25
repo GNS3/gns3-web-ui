@@ -63,6 +63,11 @@
           </mat-cell>
         </ng-container>
 
+        <ng-container matColumnDef="created_by">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Created By </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.created_by }} </mat-cell>
+        </ng-container>
+
         <ng-container matColumnDef="actions">
           <mat-header-cell *matHeaderCellDef class="projects__cell--actions"> Actions </mat-header-cell>
           <mat-cell class="projects__cell--actions" *matCellDef="let row">
