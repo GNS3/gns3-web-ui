@@ -13,7 +13,7 @@ Please use GNS3 WebUI bundled in `gns3server` and `gns3`.
 
 ### Branches policy
 
-**Current branch**: `master-3.0` (Angular 21 Zoneless)
+**Current branch**: `3.1` (Angular 21 Zoneless)
 
 This is the active development branch using Angular 21 Zoneless framework.
 
