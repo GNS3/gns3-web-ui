@@ -14,6 +14,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, 
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatIconModule } from '@angular/material/icon';
 import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
@@ -22,7 +23,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-management',
   templateUrl: './management.component.html',
   styleUrl: './management.component.scss',
-  imports: [CommonModule, RouterModule, MatTabsModule],
+  imports: [CommonModule, RouterModule, MatTabsModule, MatIconModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManagementComponent implements OnInit {
@@ -33,7 +34,13 @@ export class ManagementComponent implements OnInit {
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
-  readonly links = signal(['users', 'groups', 'roles', 'pools', 'ACL']);
+  readonly links = signal([
+    { label: 'Users', icon: 'people', route: 'users' },
+    { label: 'Groups', icon: 'group', route: 'groups' },
+    { label: 'Roles', icon: 'badge', route: 'roles' },
+    { label: 'Pools', icon: 'folder_special', route: 'pools' },
+    { label: 'ACL', icon: 'security', route: 'ACL' },
+  ]);
 
   constructor() {}
 
