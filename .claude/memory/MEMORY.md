@@ -10,3 +10,7 @@ Project-specific memory and context for GNS3 Web UI.
 ## Error Handling & UI
 
 - [Newline Rendering in Error Messages](newline-rendering-in-error-messages.md) — How to properly render `\n` in MatSnackBar and bottom sheets using `white-space: pre-line`
+
+## Dialogs
+
+- [Add User Dialog Fixes](add-user-dialog-fixes.md) — Layout, autocomplete UX, chip selection, and scrollbar fixes

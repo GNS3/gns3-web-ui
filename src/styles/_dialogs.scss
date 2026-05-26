@@ -842,14 +842,19 @@ h2[mat-dialog-title] {
 // User/Role/Group Management Dialogs
 // ============================================= */
 
-// Add User Dialog - 400px
+// Add User Dialog - 600px (2-column form layout)
 .add-user-dialog-panel {
-  --mat-dialog-container-max-width: 400px;
+  --mat-dialog-container-max-width: 600px;
 
   mat-dialog-container,
   .mat-mdc-dialog-container {
-    width: 400px;
-    max-width: 400px;
+    width: 600px;
+    max-width: 600px;
+  }
+
+  .mat-mdc-dialog-content {
+    overflow: visible;
+    flex: none;
   }
 }
 

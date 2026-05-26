@@ -10,16 +10,19 @@
  *
  * Author: Sylvain MATHIEU, Elise LEBEAU
  */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { UserService } from '@services/user.service';
 import { Controller } from '@models/controller';
 import { User } from '@models/users/user';
@@ -44,6 +47,9 @@ import { HttpErrorResponse } from '@angular/common/http';
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatChipsModule,
     MatFormFieldModule,
     MatInputModule,
     MatCheckboxModule,
@@ -61,10 +67,15 @@ export class AddUserDialogComponent implements OnInit {
   addUserForm: UntypedFormGroup;
   controller: Controller;
 
+  hidePassword = true;
+  hideConfirmPassword = true;
+
   groups: Group[] = [];
   groupsToAdd: Set<Group> = new Set([]);
   autocompleteControl = new UntypedFormControl();
   filteredGroups: Observable<Group[]>;
+
+  @ViewChild(MatAutocompleteTrigger) autocompleteTrigger: MatAutocompleteTrigger;
 
   constructor() {}
 
@@ -79,7 +90,7 @@ export class AddUserDialogComponent implements OnInit {
         full_name: new UntypedFormControl(),
         email: new UntypedFormControl(
           null,
-          [Validators.email, Validators.required],
+          [Validators.email, Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/), Validators.required],
           [userEmailAsyncValidator(this.controller, this.userService)]
         ),
         password: new UntypedFormControl(null, [
@@ -115,12 +126,10 @@ export class AddUserDialogComponent implements OnInit {
     });
   }
 
-  private _filter(value: string): Group[] {
-    if (typeof value === 'string') {
-      const filterValue = value.toLowerCase();
+  private _filter(value: string | null | Group): Group[] {
+    const filterValue = typeof value === 'string' ? value.toLowerCase() : '';
 
-      return this.groups.filter((option) => option.name.toLowerCase().includes(filterValue));
-    }
+    return this.groups.filter((option) => option.name.toLowerCase().includes(filterValue));
   }
 
   get form() {
@@ -166,8 +175,17 @@ export class AddUserDialogComponent implements OnInit {
     this.groupsToAdd.delete(group);
   }
 
+  openGroupPanel() {
+    this.autocompleteControl.setValue('', { emitEvent: true });
+    if (this.autocompleteTrigger) {
+      this.autocompleteTrigger.openPanel();
+    }
+  }
+
   selectedGroup(value: any) {
     this.groupsToAdd.add(value);
+    // Clear input to allow selecting another group
+    this.autocompleteControl.reset();
   }
 
   displayFn(value): string {

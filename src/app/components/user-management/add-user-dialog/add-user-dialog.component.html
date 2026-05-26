@@ -1,22 +1,24 @@
 <h1 mat-dialog-title>Create new user</h1>
 <form [formGroup]="addUserForm">
   <div mat-dialog-content>
-    <mat-form-field appearance="fill" class="full-width-field">
-      <mat-label>Username</mat-label>
-      <input matInput type="text" formControlName="username" placeholder="Username" />
-      @if (form.username?.touched && form.username?.errors && form.username?.errors.required) {
-      <mat-error>Username is required</mat-error>
-      } @if (form.username?.errors && form.username?.errors.pattern) {
-      <mat-error>Username is incorrect</mat-error>
-      } @if (form.username?.errors && form.username?.errors.userExists) {
-      <mat-error>User with this username exists</mat-error>
-      }
-    </mat-form-field>
+    <div class="form-row">
+      <mat-form-field appearance="fill">
+        <mat-label>Username</mat-label>
+        <input matInput type="text" formControlName="username" placeholder="Username" />
+        @if (form.username?.touched && form.username?.errors && form.username?.errors.required) {
+        <mat-error>Username is required</mat-error>
+        } @if (form.username?.errors && form.username?.errors.pattern) {
+        <mat-error>Username is incorrect</mat-error>
+        } @if (form.username?.errors && form.username?.errors.userExists) {
+        <mat-error>User with this username exists</mat-error>
+        }
+      </mat-form-field>
 
-    <mat-form-field appearance="fill" class="full-width-field">
-      <mat-label>Full name</mat-label>
-      <input matInput type="text" formControlName="full_name" placeholder="Full name" />
-    </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Full name</mat-label>
+        <input matInput type="text" formControlName="full_name" placeholder="Full name" />
+      </mat-form-field>
+    </div>
 
     <mat-form-field appearance="fill" class="full-width-field">
       <mat-label>Email</mat-label>
@@ -24,25 +26,29 @@
       @if (form.email?.touched && form.email?.errors && form.email?.errors.required) {
       <mat-error>Email is required</mat-error>
       } @if (form.email?.errors && form.email?.errors.email) {
-      <mat-error>Email is invalid</mat-error>
+      <mat-error>Email must include a valid domain (e.g., user@example.com)</mat-error>
       }
     </mat-form-field>
 
-    <mat-form-field appearance="fill" class="full-width-field">
-      <mat-label>Password</mat-label>
-      <input matInput type="password" formControlName="password" placeholder="Password" />
-      @if (form.password?.touched && form.password?.errors) {
-      <mat-error>A password between 6 and 100 characters is required.</mat-error>
-      }
-    </mat-form-field>
+    <div class="form-row">
+      <mat-form-field appearance="fill">
+        <mat-label>Password</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Password" />
+        <mat-icon matSuffix (click)="hidePassword = !hidePassword" style="cursor: pointer; font-size: 18px;">{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        @if (form.password?.touched && form.password?.errors) {
+        <mat-error>A password between 6 and 100 characters is required.</mat-error>
+        }
+      </mat-form-field>
 
-    <mat-form-field appearance="fill" class="full-width-field">
-      <mat-label>Confirm Password</mat-label>
-      <input matInput type="password" formControlName="confirmPassword" placeholder="Confirm Password" />
-      @if (form.confirmPassword?.touched && form.confirmPassword?.errors) {
-      <mat-error>Password and Confirm password must be the same.</mat-error>
-      }
-    </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Confirm Password</mat-label>
+        <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword" placeholder="Confirm Password" />
+        <mat-icon matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" style="cursor: pointer; font-size: 18px;">{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        @if (form.confirmPassword?.touched && form.confirmPassword?.errors) {
+        <mat-error>Password and Confirm password must be the same.</mat-error>
+        }
+      </mat-form-field>
+    </div>
 
     <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
     <mat-divider class="my-2"></mat-divider>
@@ -50,7 +56,7 @@
 
     <mat-form-field appearance="fill" class="full-width-field">
       <mat-label>Groups</mat-label>
-      <input type="text" matInput [matAutocomplete]="auto" [formControl]="autocompleteControl" />
+      <input type="text" matInput [matAutocomplete]="auto" [formControl]="autocompleteControl" (click)="openGroupPanel()" #groupInput />
       <mat-autocomplete
         #auto="matAutocomplete"
         [displayWith]="displayFn"
@@ -64,16 +70,16 @@
       </mat-autocomplete>
     </mat-form-field>
 
-    <div class="groups">
+    <mat-chip-set>
       @for (group of groupsToAdd; track group.name) {
-      <div>
-        <div class="groupList">
-          <div>{{ group.name }}</div>
-          <mat-icon (click)="deleteGroup(group)">delete</mat-icon>
-        </div>
-      </div>
+      <mat-chip (removed)="deleteGroup(group)">
+        {{ group.name }}
+        <button matChipRemove>
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip>
       }
-    </div>
+    </mat-chip-set>
   </div>
 
   <div mat-dialog-actions align="end">
