@@ -29,11 +29,7 @@
           <button mat-icon-button disabled></button>
           {{ node.name }}
           <button mat-icon-button (click)="endpointSelection(node)">
-            @if (!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint) {
-            <mat-icon class="align-middle" style="color: var(--mat-sys-outline)">panorama_fish_eye</mat-icon>
-            } @if (selectedEndpoint && node.endpoint === selectedEndpoint.endpoint) {
-            <mat-icon class="align-middle">check_circle</mat-icon>
-            }
+            <mat-icon>{{ selectedEndpoint && node.endpoint === selectedEndpoint.endpoint ? 'check_circle' : 'panorama_fish_eye' }}</mat-icon>
           </button>
         </div>
       </cdk-nested-tree-node>
@@ -47,11 +43,7 @@
           </button>
           {{ node.name }}
           <button mat-icon-button (click)="endpointSelection(node)">
-            @if (!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint) {
-            <mat-icon class="align-middle" style="color: var(--mat-sys-outline)">panorama_fish_eye</mat-icon>
-            } @if (selectedEndpoint && node.endpoint === selectedEndpoint.endpoint) {
-            <mat-icon class="align-middle">check_circle</mat-icon>
-            }
+            <mat-icon>{{ selectedEndpoint && node.endpoint === selectedEndpoint.endpoint ? 'check_circle' : 'panorama_fish_eye' }}</mat-icon>
           </button>
         </div>
 

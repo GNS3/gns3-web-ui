@@ -112,8 +112,35 @@
   display: block;
 }
 
+.ace-form__tree-node > div {
+  line-height: 32px;
+}
+
+.ace-form__tree-node > div > * {
+  vertical-align: middle;
+}
+
 .ace-form__tree-node .ace-form__tree-node {
   padding-left: 40px;
+}
+
+.ace-form__tree-node button.mat-mdc-icon-button {
+  height: 32px;
+  width: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+.ace-form__tree-node button.mat-mdc-icon-button .mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.selected button.mat-mdc-icon-button .mat-icon {
+  color: var(--mat-sys-error);
 }
 
 .ace-form__checkbox-row {
