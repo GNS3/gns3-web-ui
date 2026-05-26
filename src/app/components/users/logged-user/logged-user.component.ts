@@ -9,6 +9,7 @@ import { ToasterService } from '@services/toaster.service';
 import { User } from '@models/users/user';
 import { Controller } from '@models/controller';
 import { ChangeUserPasswordComponent } from '@components/user-management/user-detail/change-user-password/change-user-password.component';
+import { AiProfileDialogComponent } from '@components/user-management/ai-profile-dialog/ai-profile-dialog.component';
 
 @Component({
   selector: 'app-logged-user',
@@ -43,6 +44,14 @@ export class LoggedUserComponent implements OnInit {
     this.dialog.open<ChangeUserPasswordComponent>(ChangeUserPasswordComponent, {
       panelClass: ['base-dialog-panel', 'change-user-password-dialog-panel'],
       data: { user: this.user(), controller: this.controller, self_update: true },
+    });
+  }
+
+  openAiProfile() {
+    this.dialog.open(AiProfileDialogComponent, {
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      autoFocus: false,
+      data: { user: this.user(), controller: this.controller },
     });
   }
 
