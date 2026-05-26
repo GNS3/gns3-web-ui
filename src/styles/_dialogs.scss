@@ -445,6 +445,11 @@
     width: 1000px;
     max-width: 1000px;
   }
+
+  .mat-mdc-dialog-content {
+    overflow: visible;
+    flex: none;
+  }
 }
 
 /* =============================================
@@ -1094,6 +1099,11 @@ h2[mat-dialog-title] {
   .mat-mdc-dialog-container {
     width: 1000px;
     max-width: 1000px;
+  }
+
+  .mat-mdc-dialog-content {
+    overflow: visible;
+    flex: none;
   }
 }
 

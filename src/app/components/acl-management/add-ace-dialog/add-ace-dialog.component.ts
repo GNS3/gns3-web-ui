@@ -11,7 +11,7 @@
  * Author: Sylvain MATHIEU, Elise LEBEAU
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -23,6 +23,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatTreeModule } from '@angular/material/tree';
 import { CdkTreeModule, NestedTreeControl } from '@angular/cdk/tree';
 import { ArrayDataSource } from '@angular/cdk/collections';
@@ -38,9 +39,10 @@ import { User } from '@models/users/user';
 import { Role } from '@models/api/role';
 import { RoleService } from '@services/role.service';
 import { ResourcePoolsService } from '@services/resource-pools.service';
+import { Observable } from 'rxjs';
+import { startWith, map } from 'rxjs/operators';
 import { ResourcePool } from '@models/resourcePools/ResourcePool';
 import { EndpointNode, EndpointTreeAdapter } from '@components/acl-management/add-ace-dialog/EndpointTreeAdapter';
-import { AutocompleteComponent } from '@components/acl-management/add-ace-dialog/autocomplete/autocomplete.component';
 
 @Component({
   standalone: true,
@@ -60,9 +62,9 @@ import { AutocompleteComponent } from '@components/acl-management/add-ace-dialog
     MatTooltipModule,
     MatInputModule,
     MatSelectModule,
+    MatAutocompleteModule,
     MatTreeModule,
     CdkTreeModule,
-    AutocompleteComponent,
   ],
 })
 export class AddAceDialogComponent implements OnInit {
@@ -85,10 +87,21 @@ export class AddAceDialogComponent implements OnInit {
   selectedResourcePool: ResourcePool;
   showResourcePools: boolean = false;
 
+  @ViewChild('userTrigger', { read: MatAutocompleteTrigger }) userAutoTrigger: MatAutocompleteTrigger;
+  @ViewChild('groupTrigger', { read: MatAutocompleteTrigger }) groupAutoTrigger: MatAutocompleteTrigger;
+  @ViewChild('roleTrigger', { read: MatAutocompleteTrigger }) roleAutoTrigger: MatAutocompleteTrigger;
+
   endpoints: Endpoint[];
   selectedEndpoint: Endpoint;
   filteredEndpoint: Endpoint[] = [];
   endpointTypes: string[];
+
+  userAutocompleteControl = new UntypedFormControl();
+  groupAutocompleteControl = new UntypedFormControl();
+  roleAutocompleteControl = new UntypedFormControl();
+  filteredUsers: Observable<User[]>;
+  filteredGroups: Observable<Group[]>;
+  filteredRoles: Observable<Role[]>;
 
   groups: Group[] = [];
   selectedGroup: Group;
@@ -118,6 +131,14 @@ export class AddAceDialogComponent implements OnInit {
       propagate: new UntypedFormControl(true),
     });
 
+    // Clear selections when switching between user/group type
+    this.addAceForm.get('type').valueChanges.subscribe(() => {
+      this.selectedUser = null;
+      this.selectedGroup = null;
+      this.userAutocompleteControl.reset();
+      this.groupAutocompleteControl.reset();
+    });
+
     // Load resource pools
     this.resourcePoolsService.getAll(this.controller).subscribe({
       next: (pools: ResourcePool[]) => {
@@ -134,6 +155,10 @@ export class AddAceDialogComponent implements OnInit {
     this.groupService.getGroups(this.controller).subscribe({
       next: (groups: Group[]) => {
         this.groups = groups;
+        this.filteredGroups = this.groupAutocompleteControl.valueChanges.pipe(
+          startWith(''),
+          map((value) => this._filter(value, groups))
+        );
         this.cd.markForCheck();
       },
       error: (err) => {
@@ -145,6 +170,10 @@ export class AddAceDialogComponent implements OnInit {
     this.userService.list(this.controller).subscribe({
       next: (users: User[]) => {
         this.users = users;
+        this.filteredUsers = this.userAutocompleteControl.valueChanges.pipe(
+          startWith(''),
+          map((value) => this._filterUser(value, users))
+        );
         this.cd.markForCheck();
       },
       error: (err) => {
@@ -156,6 +185,10 @@ export class AddAceDialogComponent implements OnInit {
     this.roleService.get(this.controller).subscribe({
       next: (roles: Role[]) => {
         this.roles = roles;
+        this.filteredRoles = this.roleAutocompleteControl.valueChanges.pipe(
+          startWith(''),
+          map((value) => this._filterRole(value, roles))
+        );
         this.cd.markForCheck();
       },
       error: (err) => {
@@ -228,44 +261,67 @@ export class AddAceDialogComponent implements OnInit {
   }
 
   _filter(value: string, data: any): any {
-    if (typeof value === 'string' && data) {
-      const filterValue = value.toLowerCase();
-
+    const filterValue = typeof value === 'string' ? value.toLowerCase() : '';
+    if (data) {
       return data.filter((option) => option.name.toLowerCase().includes(filterValue));
     }
     return [];
   }
 
   _filterUser(value: string, users: User[]): User[] {
-    if (typeof value === 'string' && users) {
-      const filterValue = value.toLowerCase();
-
+    const filterValue = typeof value === 'string' ? value.toLowerCase() : '';
+    if (users) {
       return users.filter(
         (option) =>
           (option.full_name?.toLowerCase().includes(filterValue) ?? false) ||
           option.username.toLowerCase().includes(filterValue)
       );
     }
+    return [];
   }
 
   _filterRole(value: string, roles: Role[]) {
-    if (typeof value === 'string' && roles) {
-      const filterValue = value.toLowerCase();
-
+    const filterValue = typeof value === 'string' ? value.toLowerCase() : '';
+    if (roles) {
       return roles.filter((option) => option.name.toLowerCase().includes(filterValue));
     }
+    return [];
   }
 
   userSelection(value: any) {
     this.selectedUser = value;
+    this.userAutocompleteControl.setValue(value);
   }
 
   groupSelection(value: any) {
     this.selectedGroup = value;
+    this.groupAutocompleteControl.setValue(value);
   }
 
   roleSelection(value: any) {
     this.selectedRole = value;
+    this.roleAutocompleteControl.setValue(value);
+  }
+
+  openUserPanel() {
+    this.userAutocompleteControl.setValue('');
+    if (this.userAutoTrigger) {
+      this.userAutoTrigger.openPanel();
+    }
+  }
+
+  openGroupPanel() {
+    this.groupAutocompleteControl.setValue('');
+    if (this.groupAutoTrigger) {
+      this.groupAutoTrigger.openPanel();
+    }
+  }
+
+  openRolePanel() {
+    this.roleAutocompleteControl.setValue('');
+    if (this.roleAutoTrigger) {
+      this.roleAutoTrigger.openPanel();
+    }
   }
 
   endpointSelection(value: EndpointNode) {
