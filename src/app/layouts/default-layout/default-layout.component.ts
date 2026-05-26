@@ -13,6 +13,7 @@ import { ProjectService } from '@services/project.service';
 import { filter, Subscription } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
 import { NewTemplateDialogComponent } from '@components/project-map/new-template-dialog/new-template-dialog.component';
+import { LoggedUserComponent } from '@components/users/logged-user/logged-user.component';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 import { ControllerManagementService } from '@services/controller-management.service';
@@ -128,6 +129,14 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     }
     // If no param found in tree, check root params
     return child.snapshot.paramMap.get(paramName);
+  }
+
+  openLoggedUserDialog() {
+    this.dialog.open(LoggedUserComponent, {
+      panelClass: ['base-dialog-panel'],
+      autoFocus: false,
+      data: { controllerId: +this.controllerId },
+    });
   }
 
   goToDocumentation() {
