@@ -14,12 +14,14 @@ import { filter, Subscription } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
 import { NewTemplateDialogComponent } from '@components/project-map/new-template-dialog/new-template-dialog.component';
 import { LoggedUserComponent } from '@components/users/logged-user/logged-user.component';
+import { AiProfileDialogComponent } from '@components/user-management/ai-profile-dialog/ai-profile-dialog.component';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 import { ControllerManagementService } from '@services/controller-management.service';
 import { ControllerService } from '@services/controller.service';
 import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
 import { ToasterService } from '@services/toaster.service';
+import { UserService } from '@services/user.service';
 import { ConnectionManagerService } from '@services/connection-manager.service';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -64,6 +66,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
   private controllerManagement = inject(ControllerManagementService);
   private toasterService = inject(ToasterService);
+  private userService = inject(UserService);
   private progressService = inject(ProgressService);
   private dialog = inject(MatDialog);
   public router = inject(Router);
@@ -136,6 +139,18 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       panelClass: ['base-dialog-panel'],
       autoFocus: false,
       data: { controllerId: +this.controllerId },
+    });
+  }
+
+  openAiProfileDialog() {
+    this.controllerService.get(+this.controllerId).then((controller: Controller) => {
+      this.userService.getInformationAboutLoggedUser(controller).subscribe((user) => {
+        this.dialog.open(AiProfileDialogComponent, {
+          panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+          autoFocus: false,
+          data: { user, controller },
+        });
+      });
     });
   }
 

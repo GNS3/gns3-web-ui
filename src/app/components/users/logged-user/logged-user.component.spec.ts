@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChangeDetectionStrategy } from '@angular/core';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { UserService } from '@services/user.service';
@@ -59,17 +58,15 @@ describe('LoggedUserComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [LoggedUserComponent, MatDialogModule, RouterModule.forRoot([])],
+      imports: [LoggedUserComponent, MatDialogModule],
       providers: [
         {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: {
-                get: vi.fn().mockReturnValue('1'),
-              },
-            },
-          },
+          provide: MAT_DIALOG_DATA,
+          useValue: { controllerId: 1 },
+        },
+        {
+          provide: MatDialogRef,
+          useValue: { close: vi.fn() },
         },
         {
           provide: ControllerService,
