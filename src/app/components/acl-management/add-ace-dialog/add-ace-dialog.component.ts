@@ -269,14 +269,19 @@ export class AddAceDialogComponent implements OnInit {
   }
 
   endpointSelection(value: EndpointNode) {
-    const endp: Endpoint = {
-      endpoint: value.endpoint,
-      endpoint_type: value.endpoint_type,
-      name: value.name,
-    };
-    this.selectedEndpoint = endp;
-    // Clear resource pool selection when an endpoint is selected
-    this.selectedResourcePool = null;
+    // Toggle selection: if clicking the same endpoint, deselect it
+    if (this.selectedEndpoint && this.selectedEndpoint.endpoint === value.endpoint) {
+      this.selectedEndpoint = null;
+    } else {
+      const endp: Endpoint = {
+        endpoint: value.endpoint,
+        endpoint_type: value.endpoint_type,
+        name: value.name,
+      };
+      this.selectedEndpoint = endp;
+      // Clear resource pool selection when an endpoint is selected
+      this.selectedResourcePool = null;
+    }
   }
 
   hasChild = (_: number, node: EndpointNode) => !!node.children && node.children.length > 0;
@@ -293,8 +298,13 @@ export class AddAceDialogComponent implements OnInit {
   }
 
   resourcePoolSelection(pool: ResourcePool) {
-    this.selectedResourcePool = pool;
-    // Clear endpoint selection when a resource pool is selected
-    this.selectedEndpoint = null;
+    // Toggle selection: if clicking the same pool, deselect it
+    if (this.selectedResourcePool && this.selectedResourcePool.resource_pool_id === pool.resource_pool_id) {
+      this.selectedResourcePool = null;
+    } else {
+      this.selectedResourcePool = pool;
+      // Clear endpoint selection when a resource pool is selected
+      this.selectedEndpoint = null;
+    }
   }
 }
