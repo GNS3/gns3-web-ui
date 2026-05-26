@@ -14,3 +14,4 @@ Project-specific memory and context for GNS3 Web UI.
 ## Dialogs
 
 - [Add User Dialog Fixes](add-user-dialog-fixes.md) — Layout, autocomplete UX, chip selection, and scrollbar fixes
+- [Dialog Input Patterns](dialog-input-patterns.md) — Autocomplete single-select, chip multi-select, and scrollbar prevention patterns
