@@ -32,6 +32,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
@@ -62,6 +63,7 @@ import { AceFilterPipe } from '@filters/ace-filter.pipe';
     MatCheckboxModule,
     MatButtonModule,
     MatIconModule,
+    MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
     MatDialogModule,
