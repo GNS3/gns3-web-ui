@@ -1,6 +1,28 @@
 <h1 mat-dialog-title>Create new ACE</h1>
 <form [formGroup]="addAceForm" class="ace-form">
   <div class="ace-form__tree-panel">
+    <!-- Toggle button for endpoints/resource pools -->
+    <div class="ace-form__toggle-buttons">
+      <button
+        mat-button
+        [class.active]="!showResourcePools"
+        (click)="showResourcePools = false"
+        matTooltip="All endpoints"
+      >
+        All Endpoints
+      </button>
+      <button
+        mat-button
+        [class.active]="showResourcePools"
+        (click)="showResourcePools = true"
+        matTooltip="Resource pools"
+      >
+        Resource Pools
+      </button>
+    </div>
+
+    @if (!showResourcePools) {
+    <!-- Endpoints Tree -->
     <cdk-tree [dataSource]="treeDataSource" [treeControl]="treeControl">
       <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="ace-form__tree-node">
         <div [class.selected]="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
@@ -38,6 +60,26 @@
         </div>
       </cdk-nested-tree-node>
     </cdk-tree>
+    } @else {
+    <!-- Resource Pools List -->
+    <div class="ace-form__resource-pools">
+      @for (pool of resourcePools; track pool.resource_pool_id) {
+      <div
+        class="ace-form__pool-item"
+        [class.selected]="selectedResourcePool && selectedResourcePool.resource_pool_id === pool.resource_pool_id"
+        (click)="resourcePoolSelection(pool)"
+      >
+        <mat-icon class="pool-icon">folder</mat-icon>
+        <span class="pool-name">{{ pool.name }}</span>
+        @if (selectedResourcePool && selectedResourcePool.resource_pool_id === pool.resource_pool_id) {
+        <mat-icon class="check-icon">check_circle</mat-icon>
+        } @else {
+        <mat-icon class="select-icon">panorama_fish_eye</mat-icon>
+        }
+      </div>
+      }
+    </div>
+    }
   </div>
   <mat-divider [vertical]="true" class="ace-form__divider"></mat-divider>
 

@@ -20,6 +20,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTreeModule } from '@angular/material/tree';
@@ -36,6 +37,8 @@ import { GroupService } from '@services/group.service';
 import { User } from '@models/users/user';
 import { Role } from '@models/api/role';
 import { RoleService } from '@services/role.service';
+import { ResourcePoolsService } from '@services/resource-pools.service';
+import { ResourcePool } from '@models/resourcePools/ResourcePool';
 import { EndpointNode, EndpointTreeAdapter } from '@components/acl-management/add-ace-dialog/EndpointTreeAdapter';
 import { AutocompleteComponent } from '@components/acl-management/add-ace-dialog/autocomplete/autocomplete.component';
 
@@ -54,6 +57,7 @@ import { AutocompleteComponent } from '@components/acl-management/add-ace-dialog
     MatDividerModule,
     MatFormFieldModule,
     MatIconModule,
+    MatTooltipModule,
     MatInputModule,
     MatSelectModule,
     MatTreeModule,
@@ -67,6 +71,7 @@ export class AddAceDialogComponent implements OnInit {
   private userService = inject(UserService);
   private groupService = inject(GroupService);
   private roleService = inject(RoleService);
+  private resourcePoolsService = inject(ResourcePoolsService);
   private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
 
@@ -74,6 +79,11 @@ export class AddAceDialogComponent implements OnInit {
   addAceForm: UntypedFormGroup;
   allowed: boolean = true;
   types = Object.values(AceType);
+
+  // Resource pools
+  resourcePools: ResourcePool[] = [];
+  selectedResourcePool: ResourcePool;
+  showResourcePools: boolean = false;
 
   endpoints: Endpoint[];
   selectedEndpoint: Endpoint;
@@ -107,6 +117,20 @@ export class AddAceDialogComponent implements OnInit {
       role_id: new UntypedFormControl(),
       propagate: new UntypedFormControl(true),
     });
+
+    // Load resource pools
+    this.resourcePoolsService.getAll(this.controller).subscribe({
+      next: (pools: ResourcePool[]) => {
+        this.resourcePools = pools;
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load resource pools';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
+
     this.groupService.getGroups(this.controller).subscribe({
       next: (groups: Group[]) => {
         this.groups = groups;
@@ -151,10 +175,17 @@ export class AddAceDialogComponent implements OnInit {
   }
 
   onAddClick() {
-    if (!this.selectedEndpoint || !this.selectedRole) {
+    // Check if either endpoint or resource pool is selected
+    if (!this.selectedEndpoint && !this.selectedResourcePool) {
+      this.toasterService.error('Please select an endpoint or a resource pool');
+      return;
+    }
+    if (!this.selectedRole) {
+      this.toasterService.error('Please select a role');
       return;
     }
     if (!this.selectedUser && !this.selectedGroup) {
+      this.toasterService.error('Please select a user or group');
       return;
     }
 
@@ -162,7 +193,7 @@ export class AddAceDialogComponent implements OnInit {
       ace_type: this.form.type.value,
       allowed: this.allowed,
       group_id: this.form.type.value === AceType.group ? this.selectedGroup.user_group_id : null,
-      path: this.selectedEndpoint.endpoint,
+      path: this.selectedEndpoint ? this.selectedEndpoint.endpoint : `/pools/${this.selectedResourcePool.resource_pool_id}`,
       propagate: this.form.propagate.value,
       role_id: this.selectedRole.role_id,
       user_id: this.form.type.value === AceType.user ? this.selectedUser.user_id : null,
@@ -244,7 +275,26 @@ export class AddAceDialogComponent implements OnInit {
       name: value.name,
     };
     this.selectedEndpoint = endp;
+    // Clear resource pool selection when an endpoint is selected
+    this.selectedResourcePool = null;
   }
 
   hasChild = (_: number, node: EndpointNode) => !!node.children && node.children.length > 0;
+
+  toggleResourcePoolsView() {
+    this.showResourcePools = !this.showResourcePools;
+    if (this.showResourcePools) {
+      // Clear endpoint selection when switching to resource pools
+      this.selectedEndpoint = null;
+    } else {
+      // Clear resource pool selection when switching to endpoints
+      this.selectedResourcePool = null;
+    }
+  }
+
+  resourcePoolSelection(pool: ResourcePool) {
+    this.selectedResourcePool = pool;
+    // Clear endpoint selection when a resource pool is selected
+    this.selectedEndpoint = null;
+  }
 }
