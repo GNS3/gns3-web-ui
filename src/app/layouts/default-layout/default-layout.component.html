@@ -42,7 +42,7 @@
         <mat-icon>help</mat-icon>
         <span>Help</span>
       </button>
-      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['/controller', controllerId, 'loggeduser']">
+      <button mat-menu-item [disabled]="!controllerId" (click)="openLoggedUserDialog()">
         <mat-icon>person</mat-icon>
         <span>User info</span>
       </button>

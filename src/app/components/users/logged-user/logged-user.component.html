@@ -1,38 +1,33 @@
-<div class="logged-user">
-  <header class="logged-user__header">
-    <h1 class="logged-user__title">Logged in user info</h1>
-  </header>
+<h2 mat-dialog-title>Logged in user info</h2>
 
-  <main class="logged-user__content">
-    @if (user()) {
-    <section class="logged-user__card">
-      <div class="logged-user__info">
-        <div class="logged-user__info-row">
-          <span class="logged-user__info-label">Username:</span>
-          <span class="logged-user__info-value">{{ user().username }}</span>
-        </div>
-        <div class="logged-user__info-row">
-          <span class="logged-user__info-label">Full name:</span>
-          <span class="logged-user__info-value">{{ user().full_name }}</span>
-        </div>
-        <div class="logged-user__info-row">
-          <span class="logged-user__info-label">Email:</span>
-          <span class="logged-user__info-value">{{ user().email }}</span>
-        </div>
-      </div>
+<mat-dialog-content>
+  @if (user(); as userData) {
+  <div class="logged-user__info">
+    <div class="logged-user__info-row">
+      <span class="logged-user__info-label">Username:</span>
+      <span class="logged-user__info-value">{{ userData.username }}</span>
+    </div>
+    <div class="logged-user__info-row">
+      <span class="logged-user__info-label">Full name:</span>
+      <span class="logged-user__info-value">{{ userData.full_name }}</span>
+    </div>
+    <div class="logged-user__info-row">
+      <span class="logged-user__info-label">Email:</span>
+      <span class="logged-user__info-value">{{ userData.email }}</span>
+    </div>
+  </div>
+  }
+</mat-dialog-content>
 
-      <div class="logged-user__actions">
-        <button mat-raised-button color="primary" class="logged-user__button" (click)="changePassword()">
-          Change password
-        </button>
-        <button mat-raised-button color="primary" class="logged-user__button" (click)="openAiProfile()">
-          AI Profile
-        </button>
-        <button mat-raised-button color="primary" class="logged-user__button" (click)="copyToken()">
-          Click to copy access token
-        </button>
-      </div>
-    </section>
-    }
-  </main>
-</div>
+<mat-dialog-actions class="logged-user__actions" align="end">
+  <button mat-raised-button color="primary" (click)="changePassword()">
+    Change password
+  </button>
+  <button mat-raised-button color="primary" (click)="openAiProfile()">
+    AI Profile
+  </button>
+  <button mat-raised-button color="primary" (click)="copyToken()">
+    Copy access token
+  </button>
+  <button mat-button (click)="close()">Close</button>
+</mat-dialog-actions>
