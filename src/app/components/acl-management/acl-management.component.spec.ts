@@ -10,6 +10,7 @@ import { AclManagementComponent } from './acl-management.component';
 import { ControllerService } from '@services/controller.service';
 import { AclService } from '@services/acl.service';
 import { ToasterService } from '@services/toaster.service';
+import { ResourcePoolsService } from '@services/resource-pools.service';
 import { Controller } from '@models/controller';
 import { ACE, AceType } from '@models/api/ACE';
 import { Endpoint, RessourceType } from '@models/api/endpoint';
@@ -129,6 +130,7 @@ describe('AclManagementComponent', () => {
         { provide: ToasterService, useValue: mockToasterService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: ResourcePoolsService, useValue: { getAll: vi.fn().mockReturnValue(of([])) } },
       ],
     }).compileComponents();
 
@@ -352,22 +354,22 @@ describe('AclManagementComponent', () => {
       expect(result).toBe('Project 1');
     });
 
-    it('should return empty string when no match found', () => {
+    it('should return path when no match found in endpoints', () => {
       component.endpoints.set(mockEndpoints);
       fixture.detectChanges();
 
       const result = component.getNameByUuidFromEndpoint('nonexistent');
 
-      expect(result).toBe('');
+      expect(result).toBe('nonexistent');
     });
 
-    it('should return empty string when endpoints is empty', () => {
+    it('should return path when endpoints is empty', () => {
       component.endpoints.set([]);
       fixture.detectChanges();
 
       const result = component.getNameByUuidFromEndpoint('uuid1');
 
-      expect(result).toBe('');
+      expect(result).toBe('uuid1');
     });
   });
 
