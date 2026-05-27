@@ -12,7 +12,10 @@ export class ProjectsFilter implements PipeTransform {
 
     searchText = searchText.toLowerCase();
     return items.projectDatabase.data.filter((item) => {
-      return item.filename.toLowerCase().includes(searchText);
+      // Search in both project name and created_by fields
+      const nameMatch = item.name?.toLowerCase().includes(searchText);
+      const createdByMatch = item.created_by?.toLowerCase().includes(searchText);
+      return nameMatch || createdByMatch;
     });
   }
 }
