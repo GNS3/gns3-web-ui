@@ -38,7 +38,7 @@
         <ng-container matColumnDef="select">
           <mat-header-cell *matHeaderCellDef>
             <mat-checkbox
-              (change)="$event ? selectAllImages() : null"
+              (change)="$event.checked ? allChecked() : unChecked()"
               [checked]="selection.hasValue() && isAllSelected()"
               [indeterminate]="selection.hasValue() && !isAllSelected()"
             >
