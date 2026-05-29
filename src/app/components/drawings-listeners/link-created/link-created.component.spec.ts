@@ -127,7 +127,7 @@ describe('LinkCreatedComponent', () => {
     };
 
     mockController = { name: 'local' } as Controller;
-    mockProject = { project_id: 'proj1' } as Project;
+    mockProject = { project_id: 'proj1', created_by: '' } as Project;
 
     mockSourceNode = createMapNode({ id: 'source', x: 0, y: 0, width: 50, height: 50 });
     mockTargetNode = createMapNode({ id: 'target', x: 100, y: 100, width: 50, height: 50 });

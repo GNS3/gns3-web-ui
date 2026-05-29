@@ -80,6 +80,7 @@ describe('ProjectService', () => {
       grid_size: 75,
       drawing_grid_size: 50,
       status: 'opened',
+      created_by: '',
       readonly: false,
     } as unknown as Project;
 

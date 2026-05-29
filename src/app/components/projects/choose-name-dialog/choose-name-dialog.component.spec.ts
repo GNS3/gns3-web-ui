@@ -39,6 +39,7 @@ describe('ChooseNameDialogComponent', () => {
       name: 'Original Project Name',
       filename: 'test.gns3',
       status: 'opened',
+      created_by: '',
       auto_close: true,
       auto_open: false,
       auto_start: false,

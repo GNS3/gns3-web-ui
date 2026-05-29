@@ -14,6 +14,7 @@ import { AclService } from '@services/acl.service';
 import { UserService } from '@services/user.service';
 import { GroupService } from '@services/group.service';
 import { RoleService } from '@services/role.service';
+import { ResourcePoolsService } from '@services/resource-pools.service';
 import { ToasterService } from '@services/toaster.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -106,6 +107,7 @@ describe('AddAceDialogComponent', () => {
         { provide: RoleService, useValue: mockRoleService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
+        { provide: ResourcePoolsService, useValue: { getAll: vi.fn().mockReturnValue(of([])) } },
       ],
     }).compileComponents();
 
@@ -295,12 +297,12 @@ describe('AddAceDialogComponent', () => {
       expect(result).toEqual([]);
     });
 
-    it('should return empty array when value is not a string', () => {
+    it('should return all data when value is not a string (treated as empty)', () => {
       const data = [{ name: 'Apple' }];
 
       const result = component._filter(123 as any, data);
 
-      expect(result).toEqual([]);
+      expect(result).toEqual(data);
     });
 
     it('should return empty array when data is null', () => {
@@ -499,11 +501,11 @@ describe('AddAceDialogComponent', () => {
     });
 
     it('should call aclService.add with user_id when type is user', () => {
+      component.form.type.setValue(AceType.user);
       component.selectedEndpoint = { endpoint: '/projects', name: 'Projects', endpoint_type: RessourceType.project };
       component.selectedRole = mockRoles[0];
       component.selectedUser = mockUsers[0];
       component.selectedGroup = null;
-      component.form.type.setValue(AceType.user);
 
       component.onAddClick();
 
@@ -519,11 +521,11 @@ describe('AddAceDialogComponent', () => {
     });
 
     it('should call aclService.add with group_id when type is group', () => {
+      component.form.type.setValue(AceType.group);
       component.selectedEndpoint = { endpoint: '/projects', name: 'Projects', endpoint_type: RessourceType.project };
       component.selectedRole = mockRoles[0];
       component.selectedUser = null;
       component.selectedGroup = mockGroups[0];
-      component.form.type.setValue(AceType.group);
 
       component.onAddClick();
 

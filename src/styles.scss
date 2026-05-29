@@ -78,6 +78,9 @@
     color: var(--mat-sys-on-primary);
     border-radius: 8px;
   }
+  .mat-mdc-snack-bar-label {
+    white-space: pre-line;
+  }
 }
 
 .snackabar-warning {
@@ -86,6 +89,9 @@
     color: var(--mat-sys-on-tertiary);
     border-radius: 8px;
   }
+  .mat-mdc-snack-bar-label {
+    white-space: pre-line;
+  }
 }
 
 .snackabar-error {
@@ -93,6 +99,9 @@
     background-color: var(--mat-sys-error);
     color: var(--mat-sys-on-error);
     border-radius: 8px;
+  }
+  .mat-mdc-snack-bar-label {
+    white-space: pre-line;
   }
 }
 

@@ -57,7 +57,6 @@ import { LoginGuard } from './guards/login-guard';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ControllerResolve } from '@resolvers/controller-resolve';
 import { UserManagementComponent } from '@components/user-management/user-management.component';
-import { LoggedUserComponent } from '@components/users/logged-user/logged-user.component';
 import { ImageManagerComponent } from '@components/image-manager/image-manager.component';
 import { ManagementComponent } from '@components/management/management.component';
 import { GroupManagementComponent } from '@components/group-management/group-management.component';
@@ -81,7 +80,6 @@ const routes: Routes = [
       { path: 'controllers', component: ControllersComponent },
       { path: '', redirectTo: 'controllers', pathMatch: 'full' },
       { path: 'bundled', component: BundledControllerFinderComponent },
-      { path: 'controller/:controller_id/loggeduser', component: LoggedUserComponent },
       { path: 'controller/:controller_id/image-manager', component: ImageManagerComponent },
       {
         path: 'controller/:controller_id/projects',

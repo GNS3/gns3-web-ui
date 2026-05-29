@@ -50,6 +50,7 @@ describe('NodeService', () => {
       snap_to_grid: false,
       grid_size: 75,
       status: 'opened',
+      created_by: '',
     } as Project;
 
     // Mock Node

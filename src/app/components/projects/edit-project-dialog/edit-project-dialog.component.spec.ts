@@ -53,6 +53,7 @@ describe('EditProjectDialogComponent', () => {
     filename: '',
     path: '',
     status: '',
+    created_by: '',
     readonly: false,
     show_layers: false,
     show_grid: false,

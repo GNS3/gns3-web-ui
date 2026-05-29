@@ -69,7 +69,13 @@ describe('ManagementComponent', () => {
   });
 
   it('should have links signal with correct tabs', () => {
-    expect(component.links()).toEqual(['users', 'groups', 'roles', 'pools', 'ACL']);
+    expect(component.links()).toEqual([
+      { label: 'Users', icon: 'people', route: 'users' },
+      { label: 'Groups', icon: 'group', route: 'groups' },
+      { label: 'Roles', icon: 'badge', route: 'roles' },
+      { label: 'Pools', icon: 'folder_special', route: 'pools' },
+      { label: 'ACL', icon: 'security', route: 'ACL' },
+    ]);
   });
 
   it('should fetch controller on init', () => {

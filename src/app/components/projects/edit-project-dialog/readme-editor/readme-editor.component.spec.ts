@@ -32,6 +32,7 @@ describe('ReadmeEditorComponent', () => {
       variables: [],
       path: '/path/to/project',
       status: 'opened',
+      created_by: '',
       readonly: false,
       drawing_grid_size: 25,
     } as Project);

@@ -89,6 +89,7 @@ describe('DrawingAddedComponent', () => {
       snap_to_grid: false,
       drawing_grid_size: 50,
       status: 'opened',
+      created_by: '',
       auto_close: true,
       auto_open: false,
       auto_start: false,

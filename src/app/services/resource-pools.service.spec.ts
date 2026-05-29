@@ -214,7 +214,7 @@ describe('ResourcePoolsService', () => {
   describe('addResource', () => {
     it('should call httpController.put with pool and project IDs', async () => {
       const pool: ResourcePool = { resource_pool_id: 'pool-1', name: 'Pool' } as ResourcePool;
-      const project: Project = { project_id: 'proj-1', name: 'Project' } as Project;
+      const project: Project = { project_id: 'proj-1', name: 'Project', created_by: '' } as Project;
       mockHttpController.put.mockReturnValue(of({}));
 
       await firstValueFrom(service.addResource(mockController, pool, project));
@@ -224,7 +224,7 @@ describe('ResourcePoolsService', () => {
 
     it('should return Observable with addResource response', async () => {
       const pool: ResourcePool = { resource_pool_id: 'pool-1', name: 'Pool' } as ResourcePool;
-      const project: Project = { project_id: 'proj-1', name: 'Project' } as Project;
+      const project: Project = { project_id: 'proj-1', name: 'Project', created_by: '' } as Project;
       const response = { allocated: true };
       mockHttpController.put.mockReturnValue(of(response));
 
@@ -235,7 +235,7 @@ describe('ResourcePoolsService', () => {
 
     it('should emit error when addResource fails', async () => {
       const pool: ResourcePool = { resource_pool_id: 'pool-1', name: 'Pool' } as ResourcePool;
-      const project: Project = { project_id: 'proj-1', name: 'Project' } as Project;
+      const project: Project = { project_id: 'proj-1', name: 'Project', created_by: '' } as Project;
       const error = new Error('Resource allocation failed');
       mockHttpController.put.mockReturnValue(throwError(() => error));
 
@@ -282,9 +282,9 @@ describe('ResourcePoolsService', () => {
   describe('getFreeResources', () => {
     it('should call projectService.list and filter out allocated resources', async () => {
       const projects: Project[] = [
-        { project_id: 'proj-1', name: 'Project 1' } as Project,
-        { project_id: 'proj-2', name: 'Project 2' } as Project,
-        { project_id: 'proj-3', name: 'Project 3' } as Project,
+        { project_id: 'proj-1', name: 'Project 1', created_by: '' } as Project,
+        { project_id: 'proj-2', name: 'Project 2', created_by: '' } as Project,
+        { project_id: 'proj-3', name: 'Project 3', created_by: '' } as Project,
       ];
       const pools: ResourcePool[] = [{ resource_pool_id: 'pool-1', name: 'Pool 1' } as ResourcePool];
       const allocatedResources: Resource[] = [{ resource_id: 'proj-2', name: 'Resource for proj-2' } as Resource];
@@ -303,8 +303,8 @@ describe('ResourcePoolsService', () => {
     // causing the observable chain to never emit a value.
     it.skip('should return all projects when no resources are allocated', async () => {
       const projects: Project[] = [
-        { project_id: 'proj-1', name: 'Project 1' } as Project,
-        { project_id: 'proj-2', name: 'Project 2' } as Project,
+        { project_id: 'proj-1', name: 'Project 1', created_by: '' } as Project,
+        { project_id: 'proj-2', name: 'Project 2', created_by: '' } as Project,
       ];
       const pools: ResourcePool[] = [];
 
@@ -319,7 +319,7 @@ describe('ResourcePoolsService', () => {
     });
 
     it('should return empty array when all projects are allocated', async () => {
-      const projects: Project[] = [{ project_id: 'proj-1', name: 'Project 1' } as Project];
+      const projects: Project[] = [{ project_id: 'proj-1', name: 'Project 1', created_by: '' } as Project];
       const pools: ResourcePool[] = [{ resource_pool_id: 'pool-1', name: 'Pool 1' } as ResourcePool];
       const allocatedResources: Resource[] = [{ resource_id: 'proj-1', name: 'Resource for proj-1' } as Resource];
 

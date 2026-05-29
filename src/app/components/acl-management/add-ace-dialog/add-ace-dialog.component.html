@@ -1,17 +1,35 @@
 <h1 mat-dialog-title>Create new ACE</h1>
 <form [formGroup]="addAceForm" class="ace-form">
   <div class="ace-form__tree-panel">
+    <!-- Toggle button for endpoints/resource pools -->
+    <div class="ace-form__toggle-buttons">
+      <button
+        mat-button
+        [class.active]="!showResourcePools"
+        (click)="showResourcePools = false"
+        matTooltip="All endpoints"
+      >
+        All Endpoints
+      </button>
+      <button
+        mat-button
+        [class.active]="showResourcePools"
+        (click)="showResourcePools = true"
+        matTooltip="Resource pools"
+      >
+        Resource Pools
+      </button>
+    </div>
+
+    @if (!showResourcePools) {
+    <!-- Endpoints Tree -->
     <cdk-tree [dataSource]="treeDataSource" [treeControl]="treeControl">
       <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="ace-form__tree-node">
         <div [class.selected]="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
           <button mat-icon-button disabled></button>
           {{ node.name }}
           <button mat-icon-button (click)="endpointSelection(node)">
-            @if (!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint) {
-            <mat-icon class="align-middle" style="color: var(--mat-sys-outline)">panorama_fish_eye</mat-icon>
-            } @if (selectedEndpoint && node.endpoint === selectedEndpoint.endpoint) {
-            <mat-icon class="align-middle">check_circle</mat-icon>
-            }
+            <mat-icon>{{ selectedEndpoint && node.endpoint === selectedEndpoint.endpoint ? 'check_circle' : 'panorama_fish_eye' }}</mat-icon>
           </button>
         </div>
       </cdk-nested-tree-node>
@@ -25,11 +43,7 @@
           </button>
           {{ node.name }}
           <button mat-icon-button (click)="endpointSelection(node)">
-            @if (!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint) {
-            <mat-icon class="align-middle" style="color: var(--mat-sys-outline)">panorama_fish_eye</mat-icon>
-            } @if (selectedEndpoint && node.endpoint === selectedEndpoint.endpoint) {
-            <mat-icon class="align-middle">check_circle</mat-icon>
-            }
+            <mat-icon>{{ selectedEndpoint && node.endpoint === selectedEndpoint.endpoint ? 'check_circle' : 'panorama_fish_eye' }}</mat-icon>
           </button>
         </div>
 
@@ -38,46 +52,72 @@
         </div>
       </cdk-nested-tree-node>
     </cdk-tree>
+    } @else {
+    <!-- Resource Pools List -->
+    <div class="ace-form__resource-pools">
+      @for (pool of resourcePools; track pool.resource_pool_id) {
+      <div
+        class="ace-form__pool-item"
+        [class.selected]="selectedResourcePool && selectedResourcePool.resource_pool_id === pool.resource_pool_id"
+        (click)="resourcePoolSelection(pool)"
+      >
+        <mat-icon class="pool-icon">folder</mat-icon>
+        <span class="pool-name">{{ pool.name }}</span>
+        @if (selectedResourcePool && selectedResourcePool.resource_pool_id === pool.resource_pool_id) {
+        <mat-icon class="check-icon">check_circle</mat-icon>
+        } @else {
+        <mat-icon class="select-icon">panorama_fish_eye</mat-icon>
+        }
+      </div>
+      }
+    </div>
+    }
   </div>
   <mat-divider [vertical]="true" class="ace-form__divider"></mat-divider>
 
   <div class="ace-form__selection-panel">
-    <div class="typeSelect">
-      <mat-select placeholder="User/Group" formControlName="type">
+    <mat-form-field>
+      <mat-label>Type</mat-label>
+      <mat-select formControlName="type">
         @for (t of types; track t) {
         <mat-option [value]="t">{{ t.charAt(0).toUpperCase() + t.slice(1) }}</mat-option>
         }
       </mat-select>
-    </div>
+    </mat-form-field>
 
     @if (form.type.value === 'user') {
-    <app-autocomplete
-      [data]="users"
-      [eltType]="'Users'"
-      [displayFn]="displayFnUser"
-      [filterFn]="_filterUser"
-      (selectionChange)="userSelection($event)"
-    >
-    </app-autocomplete>
+    <mat-form-field>
+      <mat-label>User</mat-label>
+      <input type="text" matInput [matAutocomplete]="userAuto" [formControl]="userAutocompleteControl" #userTrigger="matAutocompleteTrigger" (click)="openUserPanel()" />
+      <mat-autocomplete #userAuto="matAutocomplete" [displayWith]="displayFnUser" (optionSelected)="userSelection($event.option.value)">
+        @for (user of filteredUsers | async; track user.user_id) {
+        <mat-option [value]="user">
+          {{ user.username }}{{ user.full_name ? ' - ' + user.full_name : '' }}
+        </mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
     } @if (form.type.value === 'group') {
-    <app-autocomplete
-      [data]="groups"
-      [eltType]="'Groups'"
-      [displayFn]="displayFn"
-      [filterFn]="_filter"
-      (selectionChange)="groupSelection($event)"
-    >
-    </app-autocomplete>
+    <mat-form-field>
+      <mat-label>Group</mat-label>
+      <input type="text" matInput [matAutocomplete]="groupAuto" [formControl]="groupAutocompleteControl" #groupTrigger="matAutocompleteTrigger" (click)="openGroupPanel()" />
+      <mat-autocomplete #groupAuto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="groupSelection($event.option.value)">
+        @for (group of filteredGroups | async; track group.name) {
+        <mat-option [value]="group">{{ group.name }}</mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
     }
 
-    <app-autocomplete
-      [data]="roles"
-      [eltType]="'Roles'"
-      [displayFn]="displayFn"
-      [filterFn]="_filter"
-      (selectionChange)="roleSelection($event)"
-    >
-    </app-autocomplete>
+    <mat-form-field>
+      <mat-label>Role</mat-label>
+      <input type="text" matInput [matAutocomplete]="roleAuto" [formControl]="roleAutocompleteControl" #roleTrigger="matAutocompleteTrigger" (click)="openRolePanel()" />
+      <mat-autocomplete #roleAuto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="roleSelection($event.option.value)">
+        @for (role of filteredRoles | async; track role.role_id) {
+        <mat-option [value]="role">{{ role.name }}</mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
 
     <div class="ace-form__checkbox-row">
       <div class="ace-form__checkbox-left">

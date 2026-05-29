@@ -38,6 +38,7 @@ describe('PacketFiltersActionComponent', () => {
     project_id: 'project-1',
     name: 'Test Project',
     status: 'opened',
+      created_by: '',
     path: '/path/to/project',
   } as Project;
 

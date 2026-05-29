@@ -1,21 +1,12 @@
+.form-row {
+  display: flex;
+  gap: 16px;
+
+  mat-form-field {
+    flex: 1;
+  }
+}
+
 .full-width-field {
   width: 100%;
-}
-
-.button-div {
-  float: right;
-}
-
-.groupList {
-  display: flex;
-  margin: 10px;
-  justify-content: space-between;
-  flex: 1 1 auto;
-}
-
-.groups {
-  display: flex;
-  min-height: 40px;
-  overflow: auto;
-  flex-direction: column;
 }

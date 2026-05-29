@@ -1,8 +1,6 @@
 .ace-form {
   display: flex;
   width: 100%;
-  height: 400px;
-  overflow-x: hidden;
   padding: 0 16px;
 }
 
@@ -12,6 +10,83 @@
   min-width: 0;
   max-height: 400px;
   color: var(--mat-sys-on-surface);
+  display: flex;
+  flex-direction: column;
+}
+
+.ace-form__toggle-buttons {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  button {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.6;
+    transition: opacity 200ms;
+
+    &.active {
+      opacity: 1;
+      background-color: var(--mat-sys-secondary-container);
+      color: var(--mat-sys-on-surface);
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+.ace-form__resource-pools {
+  padding: 8px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.ace-form__pool-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 200ms;
+
+  &:hover {
+    background-color: var(--mat-sys-hover-state-layer-color);
+  }
+
+  &.selected {
+    background-color: var(--mat-sys-secondary-container);
+  }
+
+  .pool-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--mat-sys-primary);
+  }
+
+  .pool-name {
+    flex: 1;
+    font-size: 14px;
+  }
+
+  .check-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--mat-sys-primary);
+  }
+
+  .select-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--mat-sys-outline);
+  }
 }
 
 .ace-form__divider {
@@ -29,12 +104,6 @@
   overflow-x: hidden;
 }
 
-.typeSelect {
-  height: 25px;
-  margin-left: 5px;
-  margin-right: 5px;
-}
-
 .example-tree-invisible {
   display: none;
 }
@@ -43,8 +112,35 @@
   display: block;
 }
 
+.ace-form__tree-node > div {
+  line-height: 32px;
+}
+
+.ace-form__tree-node > div > * {
+  vertical-align: middle;
+}
+
 .ace-form__tree-node .ace-form__tree-node {
   padding-left: 40px;
+}
+
+.ace-form__tree-node button.mat-mdc-icon-button {
+  height: 32px;
+  width: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+.ace-form__tree-node button.mat-mdc-icon-button .mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.selected button.mat-mdc-icon-button .mat-icon {
+  color: var(--mat-sys-error);
 }
 
 .ace-form__checkbox-row {

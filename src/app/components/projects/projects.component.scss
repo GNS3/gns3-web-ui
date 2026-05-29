@@ -97,6 +97,29 @@
     0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
   transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: fadeInSlideIn 0.4s ease-out 0.15s both;
+  // Virtual scrolling requires fixed height
+  height: calc(100vh - 600px);
+  min-height: 300px;
+}
+
+// Virtual scroll viewport styles
+cdk-virtual-scroll-viewport {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+// Fix table width for virtual scrolling
+.mat-table {
+  width: 100%;
+  min-width: 100%;
+}
+
+// Fixed row height for virtual scrolling
+.mat-row {
+  height: 72px;
+  min-height: 72px;
+  box-sizing: border-box;
 }
 
 // Material table internal DOM styling
@@ -152,8 +175,9 @@ mat-cell {
   color: var(--mat-sys-on-surface);
 }
 
-// Name column - left align
-mat-cell[mat-column='name'] {
+// Name column - left align, wider
+.mat-column-name {
+  flex: 3;
   justify-content: flex-start;
   font-weight: 500;
 }

@@ -34,6 +34,7 @@ describe('WebConsoleComponent', () => {
     project_id: 'project-1',
     name: 'Test Project',
     status: 'opened',
+      created_by: '',
   } as Project;
 
   const mockNode: GNS3Node = {

@@ -32,6 +32,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
@@ -46,6 +47,8 @@ import { AclService } from '@services/acl.service';
 import { AddAceDialogComponent } from '@components/acl-management/add-ace-dialog/add-ace-dialog.component';
 import { DeleteAceDialogComponent } from '@components/acl-management/delete-ace-dialog/delete-ace-dialog.component';
 import { Endpoint } from '@models/api/endpoint';
+import { ResourcePool } from '@models/resourcePools/ResourcePool';
+import { ResourcePoolsService } from '@services/resource-pools.service';
 import { AceFilterPipe } from '@filters/ace-filter.pipe';
 
 @Component({
@@ -62,6 +65,7 @@ import { AceFilterPipe } from '@filters/ace-filter.pipe';
     MatCheckboxModule,
     MatButtonModule,
     MatIconModule,
+    MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
     MatDialogModule,
@@ -75,6 +79,7 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
   private controllerService = inject(ControllerService);
   private toasterService = inject(ToasterService);
   public aclService = inject(AclService);
+  private resourcePoolsService = inject(ResourcePoolsService);
   public dialog = inject(MatDialog);
   private cdr = inject(ChangeDetectorRef);
 
@@ -88,6 +93,7 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
   readonly isReady = signal(false);
   readonly searchText = model('');
   readonly endpoints = signal<Endpoint[]>([]);
+  readonly resourcePools = signal<ResourcePool[]>([]);
 
   constructor() {}
 
@@ -102,6 +108,16 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
         },
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to load endpoints';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
+      });
+      this.resourcePoolsService.getAll(controller).subscribe({
+        next: (pools: ResourcePool[]) => {
+          this.resourcePools.set(pools);
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to load resource pools';
           this.toasterService.error(message);
           this.cdr.markForCheck();
         },
@@ -221,14 +237,26 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
       });
   }
 
-  getNameByUuidFromEndpoint(uuid: string): string {
+  getNameByUuidFromEndpoint(path: string): string {
+    // Check if the path is a resource pool path (/pools/{pool_id})
+    const poolMatch = path.match(/^\/pools\/(.+)$/);
+    if (poolMatch) {
+      const poolId = poolMatch[1];
+      const pool = this.resourcePools().find((p) => p.resource_pool_id === poolId);
+      if (pool) {
+        return `Resource pool "${pool.name}"`;
+      }
+      return `Resource pool (${poolId.slice(0, 8)}...)`;
+    }
+
+    // Otherwise, look up in endpoints
     if (this.endpoints()) {
-      const elt = this.endpoints().filter((endpoint: Endpoint) => endpoint.endpoint.includes(uuid));
+      const elt = this.endpoints().filter((endpoint: Endpoint) => endpoint.endpoint.includes(path));
       if (elt.length >= 1) {
         return elt[0].name;
       }
     }
 
-    return '';
+    return path;
   }
 }

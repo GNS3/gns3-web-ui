@@ -31,6 +31,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
 import { version } from '../../version';
 
@@ -52,6 +53,7 @@ import { version } from '../../version';
     MatInputModule,
     MatCheckboxModule,
     MatProgressSpinnerModule,
+    ScrollingModule,
     ProjectsFilter,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,7 +62,7 @@ export class ProjectsComponent implements OnInit {
   controller: Controller;
   projectDatabase = new ProjectDatabase();
   dataSource: ProjectDataSource;
-  displayedColumns = ['select', 'name', 'actions', 'delete'];
+  displayedColumns = ['select', 'name', 'created_by', 'actions', 'delete'];
   settings: Settings;
   project: Project;
   readonly searchText = model('');

@@ -88,6 +88,7 @@ describe('WebConsoleInlineComponent', () => {
 
     mockProject = {
       project_id: 'project-123',
+      created_by: '',
     } as Project;
 
     mockNode = {

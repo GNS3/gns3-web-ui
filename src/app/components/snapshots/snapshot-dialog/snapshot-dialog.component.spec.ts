@@ -86,6 +86,7 @@ describe('SnapshotDialogComponent', () => {
       project_id: 'proj-1',
       name: 'Test Project',
       status: 'opened',
+      created_by: '',
       filename: 'test.gns3',
       auto_close: true,
       auto_open: false,

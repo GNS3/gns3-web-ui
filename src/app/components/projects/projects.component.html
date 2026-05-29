@@ -25,7 +25,7 @@
         <mat-icon matPrefix>search</mat-icon>
         <input
           matInput
-          placeholder="Search projects"
+          placeholder="Search by name or created by"
           [value]="searchText()"
           (input)="searchText.set($event.target.value)"
         />
@@ -34,11 +34,12 @@
 
     <!-- Projects Table -->
     <div class="projects__table-container">
-      <mat-table #table [dataSource]="dataSource | projectsfilter : searchText()" matSort>
+      <cdk-virtual-scroll-viewport itemSize="72" minBufferPx="400" maxBufferPx="800">
+        <mat-table #table [dataSource]="dataSource | projectsfilter : searchText()" matSort>
         <ng-container matColumnDef="select">
           <mat-header-cell *matHeaderCellDef>
             <mat-checkbox
-              (change)="$event ? selectAllImages() : null"
+              (change)="$event.checked ? allChecked() : unChecked()"
               [checked]="selection.hasValue() && isAllSelected()"
               [indeterminate]="selection.hasValue() && !isAllSelected()"
             >
@@ -61,6 +62,11 @@
               {{ row.name }}
             </a>
           </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="created_by">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Created By </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.created_by }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="actions">
@@ -130,6 +136,7 @@
         <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
       </mat-table>
+    </cdk-virtual-scroll-viewport>
     </div>
 
     <!-- Footer -->
