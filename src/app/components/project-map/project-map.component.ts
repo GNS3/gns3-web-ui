@@ -509,7 +509,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
             this.projectService.open(this.controller, this.project.project_id);
             this.title.setTitle(this.project.name);
-            this.isInterfaceLabelVisible = this.mapSettingsService.showInterfaceLabels;
+
+            // Initialize visibility settings from project or fallback to localStorage/defaults
+            this.isInterfaceLabelVisible = this.project.show_interface_labels ??
+                                           this.mapSettingsService.showInterfaceLabels ??
+                                           true;
+            this.layersVisibility = this.project.show_layers ??
+                                   localStorage.getItem('layersVisibility') === 'true' ??
+                                   false;
+            this.gridVisibility = this.project.show_grid ??
+                                  localStorage.getItem('gridVisibility') === 'true' ??
+                                  false;
+
             this.toggleShowTopologySummary(this.mapSettingsService.isTopologySummaryVisible);
             const lockKey = `itemLockStatusVisibility_${this.project.project_id}`;
             this.itemLockStatusVisibility = localStorage.getItem(lockKey) === 'true';
@@ -960,9 +971,26 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public toggleShowInterfaceLabels(enabled: boolean) {
+    const previousValue = this.project.show_interface_labels;
+    this.project.show_interface_labels = enabled;
     this.isInterfaceLabelVisible = enabled;
     this.mapSettingsService.toggleShowInterfaceLabels(this.isInterfaceLabelVisible);
     this.mapSettingsService.mapRenderedEmitter.emit(true);
+
+    this.projectService.update(this.controller, this.project).subscribe(
+      (project: Project) => {
+        this.project.show_interface_labels = project.show_interface_labels;
+        this.isInterfaceLabelVisible = project.show_interface_labels;
+        this.cd.markForCheck();
+      },
+      () => {
+        this.project.show_interface_labels = previousValue;
+        this.isInterfaceLabelVisible = previousValue;
+        this.mapSettingsService.toggleShowInterfaceLabels(this.isInterfaceLabelVisible);
+        this.mapSettingsService.mapRenderedEmitter.emit(true);
+        this.toasterService.error('Cannot update project settings');
+      }
+    );
   }
 
   public toggleShowConsole(visible: boolean) {
@@ -1266,14 +1294,33 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public toggleLayers(visible: boolean) {
+    const previousValue = this.project.show_layers;
+    this.project.show_layers = visible;
     this.layersVisibility = visible;
     this.mapSettingsService.toggleLayers(visible);
-    if (this.layersVisibility) {
+
+    if (visible) {
       localStorage.setItem('layersVisibility', 'true');
     } else {
       localStorage.removeItem('layersVisibility');
     }
+
     this.mapChild().applyMapSettingsChanges();
+
+    this.projectService.update(this.controller, this.project).subscribe(
+      (project: Project) => {
+        this.project.show_layers = project.show_layers;
+        this.layersVisibility = project.show_layers;
+        this.cd.markForCheck();
+      },
+      () => {
+        this.project.show_layers = previousValue;
+        this.layersVisibility = previousValue;
+        this.mapSettingsService.toggleLayers(this.layersVisibility);
+        this.mapChild().applyMapSettingsChanges();
+        this.toasterService.error('Cannot update project settings');
+      }
+    );
   }
 
   public toggleItemLockStatus(visible: boolean) {
@@ -1293,14 +1340,33 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public toggleGrid(visible: boolean) {
+    const previousValue = this.project.show_grid;
+    this.project.show_grid = visible;
     this.gridVisibility = visible;
-    if (this.gridVisibility) {
+
+    if (visible) {
       localStorage.setItem('gridVisibility', 'true');
     } else {
       localStorage.removeItem('gridVisibility');
     }
-    this.mapChild().gridVisibility.set(this.gridVisibility ? 1 : 0);
+
+    this.mapChild().gridVisibility.set(visible ? 1 : 0);
     this.mapChild().applyMapSettingsChanges();
+
+    this.projectService.update(this.controller, this.project).subscribe(
+      (project: Project) => {
+        this.project.show_grid = project.show_grid;
+        this.gridVisibility = project.show_grid;
+        this.cd.markForCheck();
+      },
+      () => {
+        this.project.show_grid = previousValue;
+        this.gridVisibility = previousValue;
+        this.mapChild().gridVisibility.set(previousValue ? 1 : 0);
+        this.mapChild().applyMapSettingsChanges();
+        this.toasterService.error('Cannot update project settings');
+      }
+    );
   }
 
   public toggleSnapToGrid(enabled: boolean) {
