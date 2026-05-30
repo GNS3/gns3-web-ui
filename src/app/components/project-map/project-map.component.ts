@@ -730,6 +730,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpMapCallbacks() {
+    // Sync visibility settings from project to d3-map component
+    if (this.mapChild()) {
+      this.mapChild().gridVisibility.set(this.gridVisibility ? 1 : 0);
+    }
+
     if (!this.readonly) {
       this.toolsService.selectionToolActivation(true);
     }
