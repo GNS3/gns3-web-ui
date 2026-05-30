@@ -24,3 +24,15 @@
     width: 100%;
   }
 }
+
+/* =============================================
+// Loading spinner in Apply button
+// ============================================= */
+button[disabled] {
+  mat-spinner {
+    display: inline-block;
+    margin: 0;
+    vertical-align: middle;
+    --mat-mdc-progress-spinner-circle-color: var(--mat-sys-on-primary);
+  }
+}

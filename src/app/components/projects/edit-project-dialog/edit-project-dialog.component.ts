@@ -19,12 +19,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Project, ProjectVariable } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
 import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
 import { DeleteConfirmationDialogComponent } from '../../preferences/common/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { ConfirmationDialogComponent, ConfirmationDialogData } from '../../dialogs/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   standalone: true,
@@ -44,6 +46,7 @@ import { DeleteConfirmationDialogComponent } from '../../preferences/common/dele
     MatIconModule,
     MatTooltipModule,
     MatTabsModule,
+    MatProgressSpinnerModule,
     ReadmeEditorComponent,
   ],
 })
@@ -81,6 +84,10 @@ export class EditProjectDialogComponent implements OnInit {
   // Readme editing state
   readonly isReadmeEditing = signal(false);
   readonly selectedTab = signal(0);
+  readonly isApplying = signal(false);
+
+  // Store original variables for comparison
+  private originalVariables: ProjectVariable[] = [];
 
   // Form validity
   readonly isFormValid = computed(() => {
@@ -99,6 +106,7 @@ export class EditProjectDialogComponent implements OnInit {
     this.drawingGridSize.set(this.project.drawing_grid_size);
     if (this.project.variables) {
       this.variables.set([...this.project.variables]);
+      this.originalVariables = [...this.project.variables];
     }
     this.auto_open.set(this.project.auto_open);
     this.auto_start.set(this.project.auto_start);
@@ -138,6 +146,33 @@ export class EditProjectDialogComponent implements OnInit {
     });
   }
 
+  /**
+   * Check if variables have changed (added or deleted)
+   */
+  hasVariablesChanged(): boolean {
+    const currentVariables = this.variables();
+
+    // Check if count differs
+    if (currentVariables.length !== this.originalVariables.length) {
+      return true;
+    }
+
+    // Check if variables are the same (order doesn't matter)
+    const currentSorted = [...currentVariables].sort((a, b) => a.name.localeCompare(b.name));
+    const originalSorted = [...this.originalVariables].sort((a, b) => a.name.localeCompare(b.name));
+
+    for (let i = 0; i < currentSorted.length; i++) {
+      if (
+        currentSorted[i].name !== originalSorted[i].name ||
+        currentSorted[i].value !== originalSorted[i].value
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
@@ -148,6 +183,38 @@ export class EditProjectDialogComponent implements OnInit {
       return;
     }
 
+    // Check if variables have changed and show confirmation dialog
+    if (this.hasVariablesChanged()) {
+      const dialogData: ConfirmationDialogData = {
+        title: 'Global Variables Changed',
+        message: 'Adding or deleting project global variables will cause the GNS3 server to rebuild docker containers in the project to apply the new variables. Do you want to continue?',
+        confirmButtonText: 'Yes, apply',
+        cancelButtonText: 'No, cancel',
+      };
+
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: dialogData,
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          // User confirmed, show loading and apply changes
+          this.isApplying.set(true);
+          this.applyChanges();
+        }
+      });
+    } else {
+      // No variable changes, apply directly
+      this.isApplying.set(true);
+      this.applyChanges();
+    }
+  }
+
+  /**
+   * Apply project changes to the server
+   */
+  private applyChanges(): void {
     this.project.name = this.projectName().trim();
     this.project.scene_width = +this.width();
     this.project.scene_height = +this.height();
@@ -166,17 +233,20 @@ export class EditProjectDialogComponent implements OnInit {
           .subscribe({
             next: () => {
               this.toasterService.success(`Project ${updatedProject.name} updated.`);
+              this.isApplying.set(false);
               this.dialogRef.close(updatedProject);
             },
             error: (err) => {
               const message = err.error?.message || err.message || 'Failed to update project readme';
               this.toasterService.error(message);
+              this.isApplying.set(false);
             },
           });
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to update project';
         this.toasterService.error(message);
+        this.isApplying.set(false);
       },
     });
   }

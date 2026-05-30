@@ -112,7 +112,14 @@
   <!-- Default buttons (General and Global variables tabs) -->
   @if (selectedTab() !== 1) {
   <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying()">
+    @if (isApplying()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    }
+    @if (!isApplying()) {
+      Apply
+    }
+  </button>
   }
 
   <!-- Readme tab buttons -->
@@ -124,7 +131,14 @@
   <!-- Preview mode -->
   <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
   <button mat-button (click)="editor()?.enterEditMode()">Edit</button>
-  <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying()">
+    @if (isApplying()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    }
+    @if (!isApplying()) {
+      Apply
+    }
+  </button>
   }
   }
 </div>
