@@ -13,12 +13,12 @@ export class Project {
   scene_width: number;
   status: string;
   readonly: boolean;
-  show_interface_labels: boolean;
-  show_layers: boolean;
-  show_grid: boolean;
-  snap_to_grid: boolean;
+  show_interface_labels?: boolean;
+  show_layers?: boolean;
+  show_grid?: boolean;
+  snap_to_grid?: boolean;
   variables: ProjectVariable[];
-  zoom: number;
+  zoom?: number;
   supplier?: Supplier;
 }
 

@@ -515,11 +515,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
                                            this.mapSettingsService.showInterfaceLabels ??
                                            true;
             this.layersVisibility = this.project.show_layers ??
-                                   localStorage.getItem('layersVisibility') === 'true' ??
-                                   false;
+                                   localStorage.getItem('layersVisibility') === 'true';
             this.gridVisibility = this.project.show_grid ??
-                                  localStorage.getItem('gridVisibility') === 'true' ??
-                                  false;
+                                  localStorage.getItem('gridVisibility') === 'true';
 
             this.toggleShowTopologySummary(this.mapSettingsService.isTopologySummaryVisible);
             const lockKey = `itemLockStatusVisibility_${this.project.project_id}`;
