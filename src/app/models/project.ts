@@ -18,6 +18,13 @@ export class Project {
   show_grid: boolean;
   snap_to_grid: boolean;
   variables: ProjectVariable[];
+  zoom: number;
+  supplier?: Supplier;
+}
+
+export class Supplier {
+  logo: string;
+  url: string;
 }
 
 export class ProjectVariable {
