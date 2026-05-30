@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { of, throwError, Observable } from 'rxjs';
 import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { EditProjectDialogComponent } from './edit-project-dialog.component';
 import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
@@ -61,9 +61,11 @@ describe('EditProjectDialogComponent', () => {
   });
 
   class MockMatDialog {
-    open = vi.fn().mockReturnValue({
+    open = vi.fn().mockImplementation((config: any) => ({
       afterClosed: vi.fn().mockReturnValue(of(true)),
-    });
+      componentInstance: null,
+      config: config,
+    }));
   }
 
   beforeEach(async () => {
@@ -132,6 +134,12 @@ describe('EditProjectDialogComponent', () => {
       expect(component.variables()).toEqual(component.project.variables);
     });
 
+    it('should store original variables for comparison', () => {
+      initializeComponent();
+
+      expect(component['originalVariables']).toEqual(component.project.variables);
+    });
+
     it('should set auto_close as negated project.auto_close', () => {
       initializeComponent();
 
@@ -191,6 +199,76 @@ describe('EditProjectDialogComponent', () => {
     });
   });
 
+  describe('hasVariablesChanged', () => {
+    it('should be a function on the component', () => {
+      initializeComponent();
+      expect(typeof component.hasVariablesChanged).toBe('function');
+    });
+
+    it('should return false when variables have not changed', () => {
+      initializeComponent();
+
+      expect(component.hasVariablesChanged()).toBe(false);
+    });
+
+    it('should return true when a variable is added', () => {
+      initializeComponent();
+      component['variables'].update((vars) => [
+        ...vars,
+        { name: 'NEW_VAR', value: 'new_value' },
+      ]);
+
+      expect(component.hasVariablesChanged()).toBe(true);
+    });
+
+    it('should return true when a variable is removed', () => {
+      initializeComponent();
+      component['variables'].set([{ name: 'VAR1', value: 'value1' }]);
+
+      expect(component.hasVariablesChanged()).toBe(true);
+    });
+
+    it('should return true when a variable value is changed', () => {
+      initializeComponent();
+      component['variables'].set([
+        { name: 'VAR1', value: 'changed_value' },
+        { name: 'VAR2', value: 'value2' },
+      ]);
+
+      expect(component.hasVariablesChanged()).toBe(true);
+    });
+
+    it('should return true when a variable name is changed', () => {
+      initializeComponent();
+      component['variables'].set([
+        { name: 'CHANGED_VAR', value: 'value1' },
+        { name: 'VAR2', value: 'value2' },
+      ]);
+
+      expect(component.hasVariablesChanged()).toBe(true);
+    });
+
+    it('should return false when variables are the same but in different order', () => {
+      initializeComponent();
+      component['variables'].set([
+        { name: 'VAR2', value: 'value2' },
+        { name: 'VAR1', value: 'value1' },
+      ]);
+
+      expect(component.hasVariablesChanged()).toBe(false);
+    });
+
+    it('should return true when project has no variables initially', () => {
+      component.project = createMockProject();
+      component.project.variables = [];
+      initializeComponent();
+
+      component['variables'].set([{ name: 'NEW_VAR', value: 'new_value' }]);
+
+      expect(component.hasVariablesChanged()).toBe(true);
+    });
+  });
+
   describe('onNoClick', () => {
     it('should close the dialog', () => {
       initializeComponent();
@@ -201,7 +279,7 @@ describe('EditProjectDialogComponent', () => {
   });
 
   describe('onYesClick', () => {
-    it('should update project with form values', () => {
+    it('should update project with form values when variables unchanged', () => {
       initializeComponent();
 
       component.projectName.set('Updated Project');
@@ -212,7 +290,16 @@ describe('EditProjectDialogComponent', () => {
       expect(component.project.scene_width).toBe(2000);
     });
 
-    it('should call projectService.update with controller and project', () => {
+    it('should set isApplying and apply changes when variables unchanged', () => {
+      initializeComponent();
+
+      component.onYesClick();
+
+      // Should call the update service
+      expect(mockProjectService.update).toHaveBeenCalledWith(mockController, component.project);
+    });
+
+    it('should call projectService.update when variables unchanged', () => {
       initializeComponent();
 
       component.onYesClick();
@@ -234,6 +321,14 @@ describe('EditProjectDialogComponent', () => {
       component.onYesClick();
 
       expect(mockToastService.success).toHaveBeenCalledWith('Project Test Project updated.');
+    });
+
+    it('should set isApplying to false on successful update', () => {
+      initializeComponent();
+
+      component.onYesClick();
+
+      expect(component.isApplying()).toBe(false);
     });
 
     it('should close dialog on successful update', () => {
@@ -286,7 +381,7 @@ describe('EditProjectDialogComponent', () => {
       vi.clearAllMocks();
     });
 
-    it('should show error toaster when update fails with error.message', async () => {
+    it('should show error toaster and reset isApplying when update fails with error.message', async () => {
       mockProjectService.update.mockReturnValue(
         throwError(() => ({ error: { message: 'Update failed' } }))
       );
@@ -295,6 +390,7 @@ describe('EditProjectDialogComponent', () => {
       component.onYesClick();
 
       expect(mockToastService.error).toHaveBeenCalledWith('Update failed');
+      expect(component.isApplying()).toBe(false);
     });
 
     it('should use fallback message when update error has no message', async () => {
@@ -304,9 +400,10 @@ describe('EditProjectDialogComponent', () => {
       component.onYesClick();
 
       expect(mockToastService.error).toHaveBeenCalledWith('Failed to update project');
+      expect(component.isApplying()).toBe(false);
     });
 
-    it('should show error toaster when postReadmeFile fails', async () => {
+    it('should show error toaster and reset isApplying when postReadmeFile fails', async () => {
       mockProjectService.update.mockReturnValue(of(createMockProject()));
       mockProjectService.postReadmeFile.mockReturnValue(
         throwError(() => ({ error: { message: 'Readme failed' } }))
@@ -316,6 +413,7 @@ describe('EditProjectDialogComponent', () => {
       component.onYesClick();
 
       expect(mockToastService.error).toHaveBeenCalledWith('Readme failed');
+      expect(component.isApplying()).toBe(false);
     });
   });
 });

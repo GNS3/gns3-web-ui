@@ -96,8 +96,11 @@ export class ProjectService {
       scene_width: project.scene_width,
       scene_height: project.scene_height,
       snap_to_grid: project.snap_to_grid,
+      show_grid: project.show_grid,
       show_interface_labels: project.show_interface_labels,
+      show_layers: project.show_layers,
       variables: project.variables,
+      zoom: project.zoom,
     });
   }
 

@@ -923,8 +923,17 @@ describe('ProjectMapComponent', () => {
   });
 
   describe('Toggle Show Interface Labels', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
     it('should toggle interface labels visibility', () => {
       component.isInterfaceLabelVisible = false;
+
+      // Mock update to return project with updated show_interface_labels
+      mockProjectService.update.mockReturnValue(
+        of({ ...mockProject, show_interface_labels: true })
+      );
 
       component.toggleShowInterfaceLabels(true);
 
