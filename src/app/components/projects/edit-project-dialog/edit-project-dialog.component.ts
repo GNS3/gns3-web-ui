@@ -187,7 +187,7 @@ export class EditProjectDialogComponent implements OnInit {
     if (this.hasVariablesChanged()) {
       const dialogData: ConfirmationDialogData = {
         title: 'Global Variables Changed',
-        message: 'Adding or deleting project global variables will cause the GNS3 server to rebuild docker containers in the project to apply the new variables. Do you want to continue?',
+        message: 'Adding or deleting project global variables will cause the GNS3 server to rebuild docker containers in the project to apply the new variables. If containers are running, this operation may take approximately 5-10 seconds. Do you want to continue?',
         confirmButtonText: 'Yes, apply',
         cancelButtonText: 'No, cancel',
       };
