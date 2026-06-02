@@ -43,17 +43,8 @@ export class VncConsoleService {
     // Get WebSocket URL (already includes token)
     const wsUrl = this.buildVncWebSocketUrl(controller, node);
 
-    // Build page parameters
-    const params = new URLSearchParams({
-      ws_url: wsUrl,
-      node_name: node.name,
-      node_id: node.node_id,
-      project_id: node.project_id,
-      autoconnect: '1',
-    });
-
     // Return path to standalone HTML page using relative path
-    return `assets/vnc-console/index.html?${params.toString()}`;
+    return `assets/vnc-console/index.html?ws_url=${encodeURIComponent(wsUrl)}&node_name=${encodeURIComponent(node.name)}&node_id=${encodeURIComponent(node.node_id)}&project_id=${encodeURIComponent(node.project_id)}&autoconnect=1`;
   }
 
   /**

@@ -117,7 +117,7 @@ describe('VncConsoleService', () => {
 
     it.each([
       { param: 'ws_url=', expected: 'ws%3A%2F%2F' },
-      { param: 'node_name=', expected: 'Test+VNC+Node' },
+      { param: 'node_name=', expected: 'Test%20VNC%20Node' },
       { param: 'node_id=', expected: 'node-1' },
       { param: 'project_id=', expected: 'project-1' },
       { param: 'autoconnect=', expected: '1' },
@@ -126,6 +126,21 @@ describe('VncConsoleService', () => {
 
       expect(url).toContain(param);
       expect(url).toContain(expected);
+    });
+
+    it('should URL-encode node metadata query parameters', () => {
+      const encodedNode = {
+        ...mockNode,
+        name: 'Node 1 & QA',
+        project_id: 'project/1',
+        node_id: 'node?1',
+      } as Node;
+
+      const url = service.buildVncConsolePageUrl(mockController, encodedNode);
+
+      expect(url).toContain('node_name=Node%201%20%26%20QA');
+      expect(url).toContain('project_id=project%2F1');
+      expect(url).toContain('node_id=node%3F1');
     });
   });
 
