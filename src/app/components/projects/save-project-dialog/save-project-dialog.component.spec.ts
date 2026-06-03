@@ -4,7 +4,6 @@ import { of, throwError } from 'rxjs';
 import { SaveProjectDialogComponent } from './save-project-dialog.component';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
-import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectNameValidator } from '../models/projectNameValidator';
@@ -15,7 +14,6 @@ describe('SaveProjectDialogComponent', () => {
   let component: SaveProjectDialogComponent;
   let mockDialogRef: any;
   let mockProjectService: any;
-  let mockNodesDataSource: any;
   let mockToasterService: any;
   let mockController: Controller;
   let mockProject: Project;
@@ -61,7 +59,6 @@ describe('SaveProjectDialogComponent', () => {
       list: vi.fn().mockReturnValue(of([])),
       duplicate: vi.fn().mockReturnValue(of(createMockProject('New Project', 'proj2'))),
     };
-    mockNodesDataSource = { getItems: vi.fn().mockReturnValue([]) };
     mockToasterService = { success: vi.fn(), error: vi.fn() };
     mockValidator = { get: vi.fn().mockReturnValue(null) };
 
@@ -109,7 +106,6 @@ describe('SaveProjectDialogComponent', () => {
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: ProjectService, useValue: mockProjectService },
-        { provide: NodesDataSource, useValue: mockNodesDataSource },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: ProjectNameValidator, useValue: mockValidator },
       ],
@@ -197,20 +193,6 @@ describe('SaveProjectDialogComponent', () => {
       await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Project with this name already exists.');
-      expect(mockProjectService.duplicate).not.toHaveBeenCalled();
-    });
-
-    it('should show error when running nodes exist', async () => {
-      mockProjectService.list.mockReturnValue(of([]));
-      mockNodesDataSource.getItems.mockReturnValue([
-        { status: 'started', node_type: 'vpcs' },
-      ]);
-
-      component.projectName.set('NewProject');
-      component.onAddClick();
-      await vi.runAllTimersAsync();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Please stop all nodes in order to save project.');
       expect(mockProjectService.duplicate).not.toHaveBeenCalled();
     });
 

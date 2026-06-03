@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { v4 as uuid } from 'uuid';
 import { ToasterService } from '@services/toaster.service';
 import { FileItem, FileUploader, ParsedResponseHeaders, FileUploadModule } from 'ng2-file-upload';
 import { Project } from '@models/project';
@@ -215,7 +216,7 @@ export class ImportProjectDialogComponent implements OnInit {
   }
 
   prepareUploadPath(): string {
-    this.uuid.set(crypto.randomUUID());
+    this.uuid.set(uuid());
     const projectName = this.projectName().trim();
     return this.projectService.getUploadPath(this.controller, this.uuid(), projectName);
   }
