@@ -271,10 +271,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         });
 
         this.nodes = nodes;
-        this.restoreHideManagementLinks();
-        this.restoreHiddenLinksNodes();
         this.nodesWithHiddenLinks = this.nodesWithHiddenLinks.filter((nodeId) => nodes.some((node) => node.node_id === nodeId));
-        this.persistHideManagementLinks();
         this.persistHiddenLinksNodes();
         this.updateVisibleLinks();
         if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
@@ -569,8 +566,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           return this.projectService.drawings(this.server, project.project_id);
         })
       )
-      .subscribe((drawings: Drawing[]) => {
+          .subscribe((drawings: Drawing[]) => {
         this.drawingsDataSource.set(drawings);
+
+        this.restoreHideManagementLinks();
+        this.restoreHiddenLinksNodes();
+        this.persistHideManagementLinks();
+        this.persistHiddenLinksNodes();
+        this.updateVisibleLinks();
 
         this.setUpMapCallbacks();
         this.setUpProjectWS(project);
