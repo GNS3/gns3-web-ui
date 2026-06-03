@@ -271,8 +271,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         });
 
         this.nodes = nodes;
-        this.nodesWithHiddenLinks = this.nodesWithHiddenLinks.filter((nodeId) => nodes.some((node) => node.node_id === nodeId));
-        this.persistHiddenLinksNodes();
         this.updateVisibleLinks();
         if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
         this.mapChangeDetectorRef.detectChanges();
@@ -571,6 +569,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
         this.restoreHideManagementLinks();
         this.restoreHiddenLinksNodes();
+        this.nodesWithHiddenLinks = this.nodesWithHiddenLinks.filter((nodeId) => this.nodes.some((node) => node.node_id === nodeId));
         this.persistHideManagementLinks();
         this.persistHiddenLinksNodes();
         this.updateVisibleLinks();
