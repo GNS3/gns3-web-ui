@@ -324,18 +324,28 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.nodesWithHiddenLinks = nodeIds;
     this.persistHiddenLinksNodes();
     this.updateVisibleLinks();
+    this.cd.detectChanges();
     this.mapChangeDetectorRef.detectChanges();
   }
 
   updateVisibleLinks() {
     if (!this.hideManagementLinks || this.nodesWithHiddenLinks.length === 0) {
       this.visibleLinks = this.links;
+      this.refreshVisibleLinks();
       return;
     }
 
     this.visibleLinks = this.links.filter((link) => {
       return !link.nodes.some((node) => this.nodesWithHiddenLinks.includes(node.node_id));
     });
+    this.refreshVisibleLinks();
+  }
+
+  refreshVisibleLinks() {
+    if (this.mapChild) {
+      this.mapChild.links = this.visibleLinks;
+      this.mapChild.applyMapSettingsChanges();
+    }
   }
 
   getHideManagementLinksStorageKey() {
@@ -392,6 +402,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }
 
     this.updateVisibleLinks();
+    this.cd.detectChanges();
     this.mapChangeDetectorRef.detectChanges();
   }
 
@@ -573,6 +584,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.persistHideManagementLinks();
         this.persistHiddenLinksNodes();
         this.updateVisibleLinks();
+        this.cd.detectChanges();
+        this.mapChangeDetectorRef.detectChanges();
+
+        if (this.hideManagementLinks && this.nodesWithHiddenLinks.length === 0) {
+          this.openHideManagementLinksDialog();
+        }
 
         this.setUpMapCallbacks();
         this.setUpProjectWS(project);

@@ -5,15 +5,13 @@
     <input matInput placeholder="Search devices" [(ngModel)]="searchText" (ngModelChange)="filterNodes()" />
   </mat-form-field>
 
-  <mat-selection-list class="nodes-list">
-    <mat-list-option
-      *ngFor="let node of filteredNodes"
-      [selected]="isSelected(node.node_id)"
-      (selectionChange)="toggleNode(node.node_id, $event.source.selected)"
-    >
-      {{ node.name }}
-    </mat-list-option>
-  </mat-selection-list>
+  <mat-form-field class="devices-field">
+    <mat-select placeholder="Devices" multiple [(ngModel)]="selectedNodeIds">
+      <mat-option *ngFor="let node of filteredNodes" [value]="node.node_id">{{ node.name }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div class="selection-count">{{ selectedNodeIds.length }} selected</div>
 </div>
 
 <div mat-dialog-actions>

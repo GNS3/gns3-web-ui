@@ -34,20 +34,6 @@ export class HideManagementLinksDialogComponent implements OnInit {
     this.filteredNodes = this.nodes.filter((node) => node.name.toLowerCase().includes(search));
   }
 
-  toggleNode(nodeId: string, selected: boolean) {
-    if (selected && !this.selectedNodeIds.includes(nodeId)) {
-      this.selectedNodeIds.push(nodeId);
-    }
-
-    if (!selected) {
-      this.selectedNodeIds = this.selectedNodeIds.filter((id) => id !== nodeId);
-    }
-  }
-
-  isSelected(nodeId: string) {
-    return this.selectedNodeIds.includes(nodeId);
-  }
-
   onCancelClick() {
     this.dialogRef.close();
   }
