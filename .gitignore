@@ -12,6 +12,7 @@
 /scripts/build
 /scripts/dist
 /env
+/.local-node18
 
 # dependencies
 /node_modules

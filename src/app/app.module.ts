@@ -144,6 +144,7 @@ import { StyleEditorDialogComponent } from './components/project-map/drawings-ed
 import { TextEditorDialogComponent } from './components/project-map/drawings-editors/text-editor/text-editor.component';
 import { HelpDialogComponent } from './components/project-map/help-dialog/help-dialog.component';
 import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/node-created-label-styles-fixer';
+import { HideManagementLinksDialogComponent } from './components/project-map/hide-management-links-dialog/hide-management-links-dialog.component';
 import { ImportApplianceComponent } from './components/project-map/import-appliance/import-appliance.component';
 import { InfoDialogComponent } from './components/project-map/info-dialog/info-dialog.component';
 import { LogConsoleComponent } from './components/project-map/log-console/log-console.component';
@@ -447,6 +448,7 @@ import { RotationValidator } from './validators/rotation-validator';
     ConsoleWrapperComponent,
     HttpConsoleNewTabActionComponent,
     WebConsoleFullWindowComponent,
+    HideManagementLinksDialogComponent,
     NewTemplateDialogComponent,
     ChangeHostnameActionComponent,
     ChangeHostnameDialogComponent,
@@ -594,6 +596,7 @@ import { RotationValidator } from './validators/rotation-validator';
     ConfigDialogComponent,
     AdbutlerComponent,
     NewTemplateDialogComponent,
+    HideManagementLinksDialogComponent,
     ChangeHostnameDialogComponent,
     ApplianceInfoDialogComponent,
     ConfigureCustomAdaptersDialogComponent,

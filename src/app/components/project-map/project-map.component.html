@@ -5,7 +5,7 @@
     [project]="project"
     [symbols]="symbols"
     [nodes]="nodes"
-    [links]="links"
+    [links]="visibleLinks"
     [drawings]="drawings"
     [width]="project.scene_width"
     [height]="project.scene_height"
@@ -22,7 +22,7 @@
     *ngIf="settings.angular_map"
     [symbols]="symbols"
     [nodes]="nodes"
-    [links]="links"
+    [links]="visibleLinks"
     [drawings]="drawings"
     [width]="project.scene_width"
     [height]="project.scene_height"
@@ -171,6 +171,9 @@
         ><br />
         <mat-checkbox [ngModel]="symbolScaling" (change)="toggleSymbolScaling($event.checked)">
           Scale symbols </mat-checkbox
+        ><br />
+        <mat-checkbox [ngModel]="hideManagementLinks" (change)="toggleHideManagementLinks($event.checked)">
+          Hide Management Link </mat-checkbox
         ><br />
       </div>
     </mat-menu>

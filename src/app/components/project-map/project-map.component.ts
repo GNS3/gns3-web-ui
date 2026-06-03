@@ -78,6 +78,7 @@ import { NodeAddedEvent } from '../template/template-list-dialog/template-list-d
 import { TopologySummaryComponent } from '../topology-summary/topology-summary.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
+import { HideManagementLinksDialogComponent } from './hide-management-links-dialog/hide-management-links-dialog.component';
 import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 
@@ -90,6 +91,7 @@ import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.com
 export class ProjectMapComponent implements OnInit, OnDestroy {
   public nodes: Node[] = [];
   public links: Link[] = [];
+  public visibleLinks: Link[] = [];
   public drawings: Drawing[] = [];
   public symbols: Symbol[] = [];
   public project: Project;
@@ -105,6 +107,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public gridVisibility: boolean = false;
   public toolbarVisibility: boolean = true;
   public symbolScaling: boolean = true;
+  public hideManagementLinks: boolean = false;
+  public nodesWithHiddenLinks: string[] = [];
+  private readonly hideManagementLinksStorageKeyPrefix = 'hideManagementLinks';
+  private readonly hiddenLinksStorageKeyPrefix = 'hiddenLinksConnectedTo';
   private instance: ComponentRef<TopologySummaryComponent>;
 
   tools = {
@@ -212,8 +218,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.settings = this.settingsService.getAll();
     this.symbolScaling = this.mapSettingsService.getSymbolScaling();
-    this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
+    this.isConsoleVisible = localStorage.getItem('showConsole') === 'true' ? true : false;
+    this.mapSettingsService.toggleLogConsole(this.isConsoleVisible);
     this.mapSettingsService.logConsoleSubject.subscribe((value) => (this.isConsoleVisible = value));
+    this.isTopologySummaryVisible = localStorage.getItem('showTopologySummary') === 'false' ? false : true;
+    this.mapSettingsService.toggleTopologySummary(this.isTopologySummaryVisible);
     this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
     this.layersVisibility = localStorage.getItem('layersVisibility') === 'true' ? true : false;
     this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? true : false;
@@ -262,6 +271,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         });
 
         this.nodes = nodes;
+        this.restoreHideManagementLinks();
+        this.restoreHiddenLinksNodes();
+        this.nodesWithHiddenLinks = this.nodesWithHiddenLinks.filter((nodeId) => nodes.some((node) => node.node_id === nodeId));
+        this.persistHideManagementLinks();
+        this.persistHiddenLinksNodes();
+        this.updateVisibleLinks();
         if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
         this.mapChangeDetectorRef.detectChanges();
       })
@@ -270,6 +285,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.projectMapSubscription.add(
       this.linksDataSource.changes.subscribe((links: Link[]) => {
         this.links = links;
+        this.updateVisibleLinks();
         this.mapChangeDetectorRef.detectChanges();
       })
     );
@@ -306,6 +322,106 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         node.width = newDimensions.width;
         node.height = newDimensions.height;
       }
+    });
+  }
+
+  updateHiddenLinksNodes(nodeIds: string[]) {
+    this.nodesWithHiddenLinks = nodeIds;
+    this.persistHiddenLinksNodes();
+    this.updateVisibleLinks();
+    this.mapChangeDetectorRef.detectChanges();
+  }
+
+  updateVisibleLinks() {
+    if (!this.hideManagementLinks || this.nodesWithHiddenLinks.length === 0) {
+      this.visibleLinks = this.links;
+      return;
+    }
+
+    this.visibleLinks = this.links.filter((link) => {
+      return !link.nodes.some((node) => this.nodesWithHiddenLinks.includes(node.node_id));
+    });
+  }
+
+  getHideManagementLinksStorageKey() {
+    return `${this.hideManagementLinksStorageKeyPrefix}-${this.project.project_id}`;
+  }
+
+  getHiddenLinksStorageKey() {
+    return `${this.hiddenLinksStorageKeyPrefix}-${this.project.project_id}`;
+  }
+
+  restoreHideManagementLinks() {
+    if (!this.project) return;
+
+    this.hideManagementLinks = localStorage.getItem(this.getHideManagementLinksStorageKey()) === 'true';
+  }
+
+  persistHideManagementLinks() {
+    if (!this.project) return;
+
+    localStorage.setItem(this.getHideManagementLinksStorageKey(), this.hideManagementLinks ? 'true' : 'false');
+  }
+
+  restoreHiddenLinksNodes() {
+    if (!this.project) return;
+
+    const hiddenNodes = localStorage.getItem(this.getHiddenLinksStorageKey());
+    if (!hiddenNodes) return;
+
+    try {
+      this.nodesWithHiddenLinks = JSON.parse(hiddenNodes);
+    } catch (error) {
+      this.nodesWithHiddenLinks = [];
+      localStorage.removeItem(this.getHiddenLinksStorageKey());
+    }
+  }
+
+  persistHiddenLinksNodes() {
+    if (!this.project) return;
+
+    if (this.nodesWithHiddenLinks.length === 0) {
+      localStorage.removeItem(this.getHiddenLinksStorageKey());
+      return;
+    }
+
+    localStorage.setItem(this.getHiddenLinksStorageKey(), JSON.stringify(this.nodesWithHiddenLinks));
+  }
+
+  toggleHideManagementLinks(enabled: boolean) {
+    this.hideManagementLinks = enabled;
+    this.persistHideManagementLinks();
+
+    if (enabled) {
+      this.openHideManagementLinksDialog();
+    }
+
+    this.updateVisibleLinks();
+    this.mapChangeDetectorRef.detectChanges();
+  }
+
+  openHideManagementLinksDialog() {
+    const dialogRef = this.dialog.open(HideManagementLinksDialogComponent, {
+      width: '420px',
+      autoFocus: false,
+      data: {
+        nodes: this.nodes,
+        selectedNodeIds: this.nodesWithHiddenLinks,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((nodeIds: string[]) => {
+      if (!nodeIds) {
+        if (this.nodesWithHiddenLinks.length === 0) {
+          this.hideManagementLinks = false;
+          this.persistHideManagementLinks();
+          this.updateVisibleLinks();
+          this.mapChangeDetectorRef.detectChanges();
+        }
+        return;
+      }
+
+      this.updateHiddenLinksNodes(nodeIds);
     });
   }
 
@@ -487,44 +603,51 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const onLinkContextMenu = this.linkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.pageY, eventLink.event.pageX);
+      const position = this.getContextMenuPosition(eventLink.event);
+      this.contextMenu.openMenuForListOfElements([], [], [], [link], position.top, position.left);
     });
 
     const onEthernetLinkContextMenu = this.ethernetLinkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.pageY, eventLink.event.pageX);
+      const position = this.getContextMenuPosition(eventLink.event);
+      this.contextMenu.openMenuForListOfElements([], [], [], [link], position.top, position.left);
     });
 
     const onSerialLinkContextMenu = this.serialLinkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.pageY, eventLink.event.pageX);
+      const position = this.getContextMenuPosition(eventLink.event);
+      this.contextMenu.openMenuForListOfElements([], [], [], [link], position.top, position.left);
     });
 
     const onNodeContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       const node = this.mapNodeToNode.convert(eventNode.node);
-      this.contextMenu.openMenuForNode(node, eventNode.event.pageY, eventNode.event.pageX);
+      const position = this.getContextMenuPosition(eventNode.event);
+      this.contextMenu.openMenuForNode(node, position.top, position.left);
     });
 
     const onDrawingContextMenu = this.drawingsWidget.onContextMenu.subscribe((eventDrawing: DrawingContextMenu) => {
       const drawing = this.mapDrawingToDrawing.convert(eventDrawing.drawing);
-      this.contextMenu.openMenuForDrawing(drawing, eventDrawing.event.pageY, eventDrawing.event.pageX);
+      const position = this.getContextMenuPosition(eventDrawing.event);
+      this.contextMenu.openMenuForDrawing(drawing, position.top, position.left);
     });
 
     const onLabelContextMenu = this.labelWidget.onContextMenu.subscribe((eventLabel: LabelContextMenu) => {
       const label = this.mapLabelToLabel.convert(eventLabel.label);
       const node = this.nodes.find((n) => n.node_id === eventLabel.label.nodeId);
-      this.contextMenu.openMenuForLabel(label, node, eventLabel.event.screenY - 60, eventLabel.event.screenX);
+      const position = this.getContextMenuPosition(eventLabel.event);
+      this.contextMenu.openMenuForLabel(label, node, position.top, position.left);
     });
 
     const onInterfaceLabelContextMenu = this.interfaceLabelWidget.onContextMenu.subscribe(
       (eventInterfaceLabel: InterfaceLabelContextMenu) => {
         const linkNode = this.mapLinkNodeToLinkNode.convert(eventInterfaceLabel.interfaceLabel);
         const link = this.links.find((l) => l.link_id === eventInterfaceLabel.interfaceLabel.linkId);
+        const position = this.getContextMenuPosition(eventInterfaceLabel.event);
         this.contextMenu.openMenuForInterfaceLabel(
           linkNode,
           link,
-          eventInterfaceLabel.event.pageY,
-          eventInterfaceLabel.event.pageX
+          position.top,
+          position.left
         );
       }
     );
@@ -550,7 +673,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         }
       });
 
-      this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, event.pageY, event.pageX);
+      const position = this.getContextMenuPosition(event);
+      this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, position.top, position.left);
     });
 
     this.projectMapSubscription.add(onLinkContextMenu);
@@ -562,6 +686,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.projectMapSubscription.add(onLabelContextMenu);
     this.projectMapSubscription.add(onInterfaceLabelContextMenu);
     this.mapChangeDetectorRef.detectChanges();
+  }
+
+  getContextMenuPosition(event: MouseEvent) {
+    return {
+      top: event.clientY,
+      left: event.clientX,
+    };
   }
 
   onNodeCreation(nodeAddedEvent: NodeAddedEvent) {
@@ -827,11 +958,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toggleShowConsole(visible: boolean) {
     this.isConsoleVisible = visible;
     this.mapSettingsService.toggleLogConsole(this.isConsoleVisible);
+    localStorage.setItem('showConsole', this.isConsoleVisible ? 'true' : 'false');
   }
 
   public toggleShowTopologySummary(visible: boolean) {
     this.isTopologySummaryVisible = visible;
     this.mapSettingsService.toggleTopologySummary(this.isTopologySummaryVisible);
+    localStorage.setItem('showTopologySummary', this.isTopologySummaryVisible ? 'true' : 'false');
     this.lazyLoadTopologySummary();
   }
 

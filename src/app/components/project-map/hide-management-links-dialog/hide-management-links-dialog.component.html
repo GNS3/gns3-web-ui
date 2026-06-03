@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>Hide Management Link</h1>
+
+<div mat-dialog-content class="hide-management-links-dialog">
+  <mat-form-field class="search-field">
+    <input matInput placeholder="Search devices" [(ngModel)]="searchText" (ngModelChange)="filterNodes()" />
+  </mat-form-field>
+
+  <mat-selection-list class="nodes-list">
+    <mat-list-option
+      *ngFor="let node of filteredNodes"
+      [selected]="isSelected(node.node_id)"
+      (selectionChange)="toggleNode(node.node_id, $event.source.selected)"
+    >
+      {{ node.name }}
+    </mat-list-option>
+  </mat-selection-list>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
+  <button mat-button (click)="onApplyClick()" mat-raised-button color="primary">Apply</button>
+</div>
