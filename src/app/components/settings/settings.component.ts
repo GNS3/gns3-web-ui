@@ -1,13 +1,22 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  OnInit,
+  inject,
+  model,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
-import { MatRadioModule } from '@angular/material/radio';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { ActivatedRoute, CanDeactivateFn } from '@angular/router';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { Settings, SettingsService } from '@services/settings.service';
 import { ConsoleService } from '@services/settings/console.service';
@@ -16,16 +25,39 @@ import { ToasterService } from '@services/toaster.service';
 import { UpdatesService } from '@services/updates.service';
 import { ControllerService } from '@services/controller.service';
 import { AiChatService } from '@services/ai-chat.service';
+import { InterfaceDensity, InterfaceDensityService } from '@services/interface-density.service';
+
+type SettingsCategory = 'general' | 'appearance' | 'workspace' | 'console' | 'privacy' | 'updates' | 'ai';
+type SettingsField =
+  | 'crashReports'
+  | 'anonymousStatistics'
+  | 'integrateLinkLabels'
+  | 'openReadme'
+  | 'openConsolesInWidget'
+  | 'consoleCommand'
+  | 'theme'
+  | 'mapTheme'
+  | 'interfaceDensity';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
-  imports: [CommonModule, FormsModule, MatExpansionModule, MatCheckboxModule, MatButtonModule, MatRadioModule, MatProgressSpinnerModule, MatTooltipModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSlideToggleModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsComponent implements OnInit {
   private settingsService = inject(SettingsService);
+  private consoleService = inject(ConsoleService);
   private toaster = inject(ToasterService);
   private themeService = inject(ThemeService);
   public mapSettingsService = inject(MapSettingsService);
@@ -34,6 +66,7 @@ export class SettingsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private aiChatService = inject(AiChatService);
+  private interfaceDensityService = inject(InterfaceDensityService);
 
   settings: Settings;
   readonly integrateLinksLabelsToLinks = model(false);
@@ -41,7 +74,21 @@ export class SettingsComponent implements OnInit {
   readonly openConsolesInWidget = model(false);
   readonly crashReports = model(false);
   readonly anonymousStatistics = model(false);
+  readonly consoleCommand = model('');
   readonly isLoadingAiSkills = signal(false);
+  readonly isDirty = signal(false);
+  readonly activeCategory = signal<SettingsCategory>('general');
+  readonly interfaceDensity = signal<InterfaceDensity>('normal');
+  readonly categories: { id: SettingsCategory; label: string; icon: string }[] = [
+    { id: 'general', label: 'General', icon: 'tune' },
+    { id: 'appearance', label: 'Appearance', icon: 'palette' },
+    { id: 'workspace', label: 'Project workspace', icon: 'account_tree' },
+    { id: 'console', label: 'Console', icon: 'terminal' },
+    { id: 'privacy', label: 'Privacy and diagnostics', icon: 'shield' },
+    { id: 'updates', label: 'Updates', icon: 'system_update' },
+    { id: 'ai', label: 'AI', icon: 'auto_awesome' },
+  ];
+  private readonly dirtyFields = new Set<SettingsField>();
   mapTheme: string;
   currentTheme: PrebuiltTheme;
   availableThemes = this.themeService.availableThemes;
@@ -74,32 +121,128 @@ export class SettingsComponent implements OnInit {
     this.openConsolesInWidget.set(this.mapSettingsService.openConsolesInWidget);
     this.crashReports.set(this.settings.crash_reports);
     this.anonymousStatistics.set(this.settings.anonymous_statistics);
+    this.consoleCommand.set(this.consoleService.command);
     this.mapTheme = this.themeService.savedMapTheme;
     this.currentTheme = this.themeService.getCurrentTheme();
+    this.interfaceDensity.set(this.interfaceDensityService.getDensity());
     this.cdr.markForCheck();
   }
 
-  save() {
-    this.settings.crash_reports = this.crashReports();
-    this.settings.anonymous_statistics = this.anonymousStatistics();
-    this.settingsService.setAll(this.settings);
-    this.toaster.success('Settings have been saved.');
+  selectCategory(category: SettingsCategory): void {
+    this.activeCategory.set(category);
+  }
 
-    this.mapSettingsService.toggleIntegrateInterfaceLabels(this.integrateLinksLabelsToLinks());
-    this.mapSettingsService.toggleOpenReadme(this.openReadme());
-    this.mapSettingsService.toggleOpenConsolesInWidget(this.openConsolesInWidget());
+  setCrashReports(enabled: boolean): void {
+    if (this.crashReports() === enabled) return;
+    this.crashReports.set(enabled);
+    this.markDirty('crashReports');
+  }
+
+  setAnonymousStatistics(enabled: boolean): void {
+    if (this.anonymousStatistics() === enabled) return;
+    this.anonymousStatistics.set(enabled);
+    this.markDirty('anonymousStatistics');
+  }
+
+  setIntegrateLinkLabels(enabled: boolean): void {
+    if (this.integrateLinksLabelsToLinks() === enabled) return;
+    this.integrateLinksLabelsToLinks.set(enabled);
+    this.markDirty('integrateLinkLabels');
+  }
+
+  setOpenReadme(enabled: boolean): void {
+    if (this.openReadme() === enabled) return;
+    this.openReadme.set(enabled);
+    this.markDirty('openReadme');
+  }
+
+  setOpenConsolesInWidget(enabled: boolean): void {
+    if (this.openConsolesInWidget() === enabled) return;
+    this.openConsolesInWidget.set(enabled);
+    this.markDirty('openConsolesInWidget');
+  }
+
+  setConsoleCommand(command: string): void {
+    if (this.consoleCommand() === command) return;
+    this.consoleCommand.set(command);
+    this.markDirty('consoleCommand');
   }
 
   setTheme(theme: PrebuiltTheme) {
-    this.themeService.setTheme(theme);
+    if (this.currentTheme === theme) return;
     this.currentTheme = theme;
+    this.markDirty('theme');
     this.cdr.markForCheck();
   }
 
   setMapTheme(theme: string) {
+    if (this.mapTheme === theme) return;
     this.mapTheme = theme;
-    this.themeService.setMapTheme(theme as 'light' | 'dark' | 'auto');
+    this.markDirty('mapTheme');
     this.cdr.markForCheck();
+  }
+
+  setInterfaceDensity(density: InterfaceDensity): void {
+    if (this.interfaceDensity() === density) return;
+    this.interfaceDensity.set(density);
+    this.markDirty('interfaceDensity');
+  }
+
+  saveSettings(): void {
+    this.settings = {
+      ...this.settings,
+      crash_reports: this.crashReports(),
+      anonymous_statistics: this.anonymousStatistics(),
+      console_command: this.consoleCommand(),
+    };
+    if (
+      this.dirtyFields.has('crashReports') ||
+      this.dirtyFields.has('anonymousStatistics') ||
+      this.dirtyFields.has('consoleCommand')
+    ) {
+      this.settingsService.setAll(this.settings);
+    }
+    if (this.dirtyFields.has('consoleCommand')) {
+      this.consoleService.command = this.consoleCommand();
+    }
+    if (this.dirtyFields.has('integrateLinkLabels')) {
+      this.mapSettingsService.toggleIntegrateInterfaceLabels(this.integrateLinksLabelsToLinks());
+    }
+    if (this.dirtyFields.has('openReadme')) {
+      this.mapSettingsService.toggleOpenReadme(this.openReadme());
+    }
+    if (this.dirtyFields.has('openConsolesInWidget')) {
+      this.mapSettingsService.toggleOpenConsolesInWidget(this.openConsolesInWidget());
+    }
+    if (this.dirtyFields.has('theme')) {
+      this.themeService.setTheme(this.currentTheme);
+    }
+    if (this.dirtyFields.has('mapTheme')) {
+      this.themeService.setMapTheme(this.mapTheme as 'light' | 'dark' | 'auto');
+    }
+    if (this.dirtyFields.has('interfaceDensity')) {
+      this.interfaceDensityService.setDensity(this.interfaceDensity());
+    }
+    this.dirtyFields.clear();
+    this.isDirty.set(false);
+    this.toaster.success('Settings saved');
+  }
+
+  private markDirty(field: SettingsField): void {
+    this.dirtyFields.add(field);
+    this.isDirty.set(true);
+  }
+
+  canDeactivate(): boolean {
+    return !this.isDirty() || window.confirm('You have unsaved settings. Leave without saving them?');
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    if (this.isDirty()) {
+      event.preventDefault();
+      event.returnValue = '';
+    }
   }
 
   checkForUpdates() {
@@ -130,3 +273,5 @@ export class SettingsComponent implements OnInit {
     });
   }
 }
+
+export const canDeactivateSettings: CanDeactivateFn<SettingsComponent> = (component) => component.canDeactivate();

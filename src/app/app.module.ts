@@ -276,6 +276,7 @@ import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
 import { ToolsService } from '@services/tools.service';
 import { UpdatesService } from '@services/updates.service';
+import { InterfaceDensityService } from '@services/interface-density.service';
 import { VersionService } from '@services/version.service';
 // VirtualBox support deprecated since 3.1.0
 // import { VirtualBoxConfigurationService } from '@services/virtual-box-configuration.service';
@@ -739,6 +740,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     Title,
     ApplianceService,
     UpdatesService,
+    InterfaceDensityService,
     LoginService,
     UserService,
   ],

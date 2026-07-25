@@ -1,150 +1,328 @@
 <div class="settings">
-  <div class="settings__header">
-    <h1 class="settings__title">Settings</h1>
-  </div>
+  <header class="settings__header">
+    <div>
+      <h1 class="settings__title">Settings</h1>
+    </div>
+  </header>
 
-  <div class="settings__content">
-    <div class="settings__card">
-      <mat-accordion>
-        <mat-expansion-panel [expanded]="true">
-          <mat-expansion-panel-header>
-            <mat-panel-title> Local settings </mat-panel-title>
-            <mat-panel-description> Customize your local settings </mat-panel-description>
-          </mat-expansion-panel-header>
+  <div class="settings__layout">
+    <nav class="settings__categories" aria-label="Settings categories">
+      @for (category of categories; track category.id) {
+      <button
+        type="button"
+        class="settings__category"
+        [class.settings__category--active]="activeCategory() === category.id"
+        [attr.aria-current]="activeCategory() === category.id ? 'page' : null"
+        (click)="selectCategory(category.id)"
+      >
+        <mat-icon>{{ category.icon }}</mat-icon>
+        <span>{{ category.label }}</span>
+      </button>
+      }
+    </nav>
 
-          <div class="settings__checkbox-group">
-            <mat-checkbox [checked]="crashReports()" (change)="crashReports.set($event.checked)">Send anonymous crash reports</mat-checkbox>
-            <mat-checkbox [checked]="integrateLinksLabelsToLinks()" (change)="integrateLinksLabelsToLinks.set($event.checked)">Integrate link labels to links</mat-checkbox>
-            <mat-checkbox [checked]="openReadme()" (change)="openReadme.set($event.checked)">Automatically open project README files</mat-checkbox>
-            <mat-checkbox [checked]="anonymousStatistics()" (change)="anonymousStatistics.set($event.checked)">Send anonymous usage statistics</mat-checkbox>
-            <mat-checkbox [checked]="openConsolesInWidget()" (change)="openConsolesInWidget.set($event.checked)"
-              >Open consoles in the widget instead of in new tabs after clicking start consoles for all
-              nodes</mat-checkbox
-            >
+    <main class="settings__content">
+      @switch (activeCategory()) { @case ('general') {
+      <section class="settings__panel" aria-labelledby="general-settings-title">
+        <div class="settings__panel-header">
+          <span class="settings__eyebrow">Local preferences</span>
+          <h2 id="general-settings-title">General</h2>
+          <p>Choose how project information is presented when you open a workspace.</p>
+        </div>
+        <div class="settings__setting-list">
+          <div class="settings__setting-row">
+            <div class="settings__setting-copy">
+              <h3>Open project README automatically</h3>
+              <p>Show the project README when opening a project that contains one.</p>
+            </div>
+            <mat-slide-toggle
+              [checked]="openReadme()"
+              (change)="setOpenReadme($event.checked)"
+              aria-label="Open project README automatically"
+            ></mat-slide-toggle>
           </div>
-        </mat-expansion-panel>
+        </div>
+      </section>
+      } @case ('appearance') {
+      <section class="settings__panel" aria-labelledby="appearance-settings-title">
+        <div class="settings__panel-header">
+          <span class="settings__eyebrow">Display</span>
+          <h2 id="appearance-settings-title">Appearance</h2>
+          <p>Choose the appearance of the application and topology canvas.</p>
+        </div>
 
-        <mat-expansion-panel [expanded]="false">
-          <mat-expansion-panel-header>
-            <mat-panel-title> Theme settings </mat-panel-title>
-            <mat-panel-description> Customize theme settings </mat-panel-description>
-          </mat-expansion-panel-header>
-
-          <div class="settings__theme-section">
-            <label class="settings__label">Global theme</label>
-            <mat-radio-group [value]="currentTheme" (change)="setTheme($event.value)" class="settings__radio-group">
-              <div class="settings__theme-group">
-                <span class="settings__theme-group-label">Light</span>
-                @for (theme of lightThemes; track theme.key) {
-                <mat-radio-button [value]="theme.key">
-                  <span class="settings__theme-option">
-                    <span class="settings__theme-swatch" [style.background]="theme.primaryColor"></span>
-                    <span class="settings__theme-name">{{ theme.label }}</span>
-                  </span>
-                </mat-radio-button>
-                }
-              </div>
-              <div class="settings__theme-group">
-                <span class="settings__theme-group-label">Dark</span>
-                @for (theme of darkThemes; track theme.key) {
-                <mat-radio-button [value]="theme.key">
-                  <span class="settings__theme-option">
-                    <span class="settings__theme-swatch" [style.background]="theme.primaryColor"></span>
-                    <span class="settings__theme-name">{{ theme.label }}</span>
-                  </span>
-                </mat-radio-button>
-                }
-              </div>
-            </mat-radio-group>
+        <div class="settings__theme-section">
+          <div class="settings__section-heading">
+            <h3>Interface density</h3>
+            <p>Choose the vertical spacing used by controls inside dialog boxes.</p>
           </div>
-
-          <div class="settings__theme-section settings__theme-section--map">
-            <label class="settings__label">Project map background</label>
-            <mat-radio-group
-              [value]="mapTheme"
-              (change)="setMapTheme($event.value)"
-              class="settings__map-background-group"
+          <div class="settings__density-options" role="radiogroup" aria-label="Interface density">
+            <button
+              type="button"
+              role="radio"
+              class="settings__density-option"
+              [class.settings__density-option--selected]="interfaceDensity() === 'normal'"
+              [attr.aria-checked]="interfaceDensity() === 'normal'"
+              (click)="setInterfaceDensity('normal')"
             >
-              @if (autoMapBackground) {
-              <div class="settings__map-background-auto">
-                <mat-radio-button [value]="autoMapBackground.key">
-                  <span class="settings__theme-option">
-                    <span class="settings__theme-swatch settings__theme-swatch--auto"></span>
-                    <span class="settings__theme-name">{{ autoMapBackground.label }}</span>
-                  </span>
-                </mat-radio-button>
-              </div>
+              <mat-icon>density_medium</mat-icon>
+              <span><strong>Normal</strong><small>Standard vertical spacing</small></span>
+              @if (interfaceDensity() === 'normal') {
+              <mat-icon class="settings__density-check">check_circle</mat-icon>
               }
-              <div class="settings__map-background-row">
-                <div class="settings__theme-group">
-                  <span class="settings__theme-group-label">Light</span>
-                  @for (bg of lightMapBackgrounds; track bg.key) {
-                  <mat-radio-button [value]="bg.key">
-                    <span class="settings__theme-option">
-                      <span
-                        class="settings__theme-swatch settings__theme-swatch--bg"
-                        [style.background]="bg.background"
-                        [style.color]="bg.textColor"
-                      >
-                        <span class="settings__theme-swatch-text">A</span>
-                      </span>
-                      <span class="settings__theme-name">{{ bg.label }}</span>
-                    </span>
-                  </mat-radio-button>
-                  }
-                </div>
-                <div class="settings__theme-group">
-                  <span class="settings__theme-group-label">Dark</span>
-                  @for (bg of darkMapBackgrounds; track bg.key) {
-                  <mat-radio-button [value]="bg.key">
-                    <span class="settings__theme-option">
-                      <span
-                        class="settings__theme-swatch settings__theme-swatch--bg"
-                        [style.background]="bg.background"
-                        [style.color]="bg.textColor"
-                      >
-                        <span class="settings__theme-swatch-text">A</span>
-                      </span>
-                      <span class="settings__theme-name">{{ bg.label }}</span>
-                    </span>
-                  </mat-radio-button>
-                  }
-                </div>
-              </div>
-            </mat-radio-group>
-          </div>
-        </mat-expansion-panel>
-
-        <mat-expansion-panel [expanded]="false">
-          <mat-expansion-panel-header>
-            <mat-panel-title> Updates </mat-panel-title>
-            <mat-panel-description> Check for updates </mat-panel-description>
-          </mat-expansion-panel-header>
-
-          <div class="settings__update-section">
-            <button mat-raised-button (click)="checkForUpdates()" class="settings__update-button">
-              Check for updates
             </button>
             <button
-              mat-raised-button
-              (click)="checkForAiSkillsUpdates()"
-              class="settings__update-button"
-              [disabled]="isLoadingAiSkills()"
-              [matTooltip]="isLoadingAiSkills() ? 'Updating AI skills...' : ''"
+              type="button"
+              role="radio"
+              class="settings__density-option"
+              [class.settings__density-option--selected]="interfaceDensity() === 'compact'"
+              [attr.aria-checked]="interfaceDensity() === 'compact'"
+              (click)="setInterfaceDensity('compact')"
             >
-              @if (isLoadingAiSkills()) {
-              <mat-spinner diameter="20" class="settings__update-spinner"></mat-spinner>
-              } @else {
-              <span>Check for update AI skills</span>
+              <mat-icon>density_small</mat-icon>
+              <span><strong>Compact</strong><small>Reduced vertical spacing</small></span>
+              @if (interfaceDensity() === 'compact') {
+              <mat-icon class="settings__density-check">check_circle</mat-icon>
               }
             </button>
           </div>
-        </mat-expansion-panel>
-      </mat-accordion>
-    </div>
+        </div>
 
-    <div class="settings__actions">
-      <button mat-raised-button color="primary" (click)="save()" class="settings__save-button">Save settings</button>
-    </div>
+        <div class="settings__theme-section">
+          <div class="settings__section-heading">
+            <h3>Application theme</h3>
+            <p>Controls application surfaces, navigation, text, and components.</p>
+          </div>
+          <div class="settings__theme-grid" role="radiogroup" aria-label="Application theme">
+            @for (theme of availableThemes; track theme.key) {
+            <button
+              type="button"
+              role="radio"
+              class="settings__theme-tile"
+              [class.settings__theme-tile--selected]="currentTheme === theme.key"
+              [attr.aria-checked]="currentTheme === theme.key"
+              (click)="setTheme(theme.key)"
+            >
+              <span class="settings__theme-preview" [class.settings__theme-preview--dark]="theme.type === 'dark'">
+                <span class="settings__theme-preview-bar" [style.background]="theme.primaryColor"></span>
+                <span class="settings__theme-preview-body">
+                  <span [style.background]="theme.primaryColor"></span>
+                  <span></span>
+                  <span></span>
+                </span>
+              </span>
+              <span class="settings__tile-label">
+                <span>
+                  <strong>{{ theme.label }}</strong>
+                  <small>{{ theme.type | titlecase }}</small>
+                </span>
+                @if (currentTheme === theme.key) {
+                <mat-icon>check_circle</mat-icon>
+                }
+              </span>
+            </button>
+            }
+          </div>
+        </div>
+
+        <div class="settings__theme-section">
+          <div class="settings__section-heading">
+            <h3>Project canvas background</h3>
+            <p>Choose a background optimized for topology diagrams and labels.</p>
+          </div>
+          <div
+            class="settings__theme-grid settings__theme-grid--map"
+            role="radiogroup"
+            aria-label="Project canvas background"
+          >
+            @for (background of availableMapBackgrounds; track background.key) {
+            <button
+              type="button"
+              role="radio"
+              class="settings__theme-tile"
+              [class.settings__theme-tile--selected]="mapTheme === background.key"
+              [attr.aria-checked]="mapTheme === background.key"
+              (click)="setMapTheme(background.key)"
+            >
+              <span
+                class="settings__map-preview"
+                [class.settings__map-preview--auto]="background.key === 'auto'"
+                [style.background]="background.key === 'auto' ? null : background.background"
+                [style.color]="background.textColor"
+              >
+                <span class="settings__map-node"></span>
+                <span class="settings__map-link"></span>
+                <span class="settings__map-node settings__map-node--right"></span>
+              </span>
+              <span class="settings__tile-label">
+                <span>
+                  <strong>{{ background.label }}</strong>
+                  <small>{{
+                    background.key === 'auto' ? 'Uses application theme' : (background.type | titlecase)
+                  }}</small>
+                </span>
+                @if (mapTheme === background.key) {
+                <mat-icon>check_circle</mat-icon>
+                }
+              </span>
+            </button>
+            }
+          </div>
+        </div>
+      </section>
+      } @case ('workspace') {
+      <section class="settings__panel" aria-labelledby="workspace-settings-title">
+        <div class="settings__panel-header">
+          <span class="settings__eyebrow">Topology editor</span>
+          <h2 id="workspace-settings-title">Project workspace</h2>
+          <p>Configure how topology information is rendered on the project canvas.</p>
+        </div>
+        <div class="settings__setting-list">
+          <div class="settings__setting-row">
+            <div class="settings__setting-copy">
+              <h3>Integrate interface labels with links</h3>
+              <p>Keep interface labels visually attached to their corresponding links.</p>
+            </div>
+            <mat-slide-toggle
+              [checked]="integrateLinksLabelsToLinks()"
+              (change)="setIntegrateLinkLabels($event.checked)"
+              aria-label="Integrate interface labels with links"
+            ></mat-slide-toggle>
+          </div>
+        </div>
+      </section>
+      } @case ('console') {
+      <section class="settings__panel" aria-labelledby="console-settings-title">
+        <div class="settings__panel-header">
+          <span class="settings__eyebrow">Terminal behavior</span>
+          <h2 id="console-settings-title">Console</h2>
+          <p>Choose where consoles open and customize the external console command.</p>
+        </div>
+        <div class="settings__setting-list">
+          <div class="settings__setting-row">
+            <div class="settings__setting-copy">
+              <h3>Open consoles inside the workspace</h3>
+              <p>Use the built-in console widget instead of opening a new browser tab.</p>
+            </div>
+            <mat-slide-toggle
+              [checked]="openConsolesInWidget()"
+              (change)="setOpenConsolesInWidget($event.checked)"
+              aria-label="Open consoles inside the workspace"
+            ></mat-slide-toggle>
+          </div>
+
+          <div class="settings__setting-row settings__setting-row--stacked">
+            <div class="settings__setting-copy">
+              <h3>External console command</h3>
+              <p>Set the command used when launching an external console.</p>
+            </div>
+            <mat-form-field appearance="outline" class="settings__console-field">
+              <mat-label>Console command</mat-label>
+              <textarea
+                matInput
+                rows="3"
+                [value]="consoleCommand()"
+                (input)="setConsoleCommand($event.target.value)"
+              ></textarea>
+            </mat-form-field>
+            <div class="settings__variables">
+              <code>%h</code> host <code>%p</code> port <code>%s</code> serial path <code>%d</code> title
+              <code>%i</code> project UUID <code>%c</code> controller URL
+            </div>
+          </div>
+        </div>
+      </section>
+      } @case ('privacy') {
+      <section class="settings__panel" aria-labelledby="privacy-settings-title">
+        <div class="settings__panel-header">
+          <span class="settings__eyebrow">Data preferences</span>
+          <h2 id="privacy-settings-title">Privacy and diagnostics</h2>
+          <p>Control optional diagnostic information shared to improve GNS3.</p>
+        </div>
+        <div class="settings__setting-list">
+          <div class="settings__setting-row">
+            <div class="settings__setting-copy">
+              <h3>Anonymous crash reports</h3>
+              <p>Send diagnostic data after a crash without including personal information.</p>
+            </div>
+            <mat-slide-toggle
+              [checked]="crashReports()"
+              (change)="setCrashReports($event.checked)"
+              aria-label="Send anonymous crash reports"
+            ></mat-slide-toggle>
+          </div>
+          <div class="settings__setting-row">
+            <div class="settings__setting-copy">
+              <h3>Anonymous usage statistics</h3>
+              <p>Share aggregate feature usage to help prioritize improvements.</p>
+            </div>
+            <mat-slide-toggle
+              [checked]="anonymousStatistics()"
+              (change)="setAnonymousStatistics($event.checked)"
+              aria-label="Send anonymous usage statistics"
+            ></mat-slide-toggle>
+          </div>
+        </div>
+      </section>
+      } @case ('updates') {
+      <section class="settings__panel" aria-labelledby="update-settings-title">
+        <div class="settings__panel-header">
+          <span class="settings__eyebrow">Application</span>
+          <h2 id="update-settings-title">Updates</h2>
+          <p>Open the GNS3 download page to check for a newer application release.</p>
+        </div>
+        <div class="settings__action-card">
+          <div>
+            <mat-icon>system_update</mat-icon>
+            <div>
+              <h3>GNS3 application updates</h3>
+              <p>Compare your installed version with the latest available release.</p>
+            </div>
+          </div>
+          <button mat-stroked-button (click)="checkForUpdates()">Check for updates</button>
+        </div>
+      </section>
+      } @case ('ai') {
+      <section class="settings__panel" aria-labelledby="ai-settings-title">
+        <div class="settings__panel-header">
+          <span class="settings__eyebrow">Assistant</span>
+          <h2 id="ai-settings-title">AI</h2>
+          <p>Manage the controller-provided skills used by the project AI assistant.</p>
+        </div>
+        <div class="settings__action-card">
+          <div>
+            <mat-icon>auto_awesome</mat-icon>
+            <div>
+              <h3>AI skills</h3>
+              <p>Reload the latest available skills from the connected controller.</p>
+            </div>
+          </div>
+          <button
+            mat-stroked-button
+            (click)="checkForAiSkillsUpdates()"
+            [disabled]="isLoadingAiSkills()"
+            [matTooltip]="isLoadingAiSkills() ? 'Updating AI skills\u2026' : ''"
+          >
+            @if (isLoadingAiSkills()) {
+            <mat-spinner diameter="18"></mat-spinner>
+            <span>Reloading\u2026</span>
+            } @else {
+            <span>Reload skills</span>
+            }
+          </button>
+        </div>
+      </section>
+      } }
+    </main>
   </div>
+
+  <footer class="settings__footer">
+    @if (isDirty()) {
+    <span class="settings__unsaved-status" role="status">Unsaved changes</span>
+    }
+    <button mat-flat-button color="primary" type="button" (click)="saveSettings()" [disabled]="!isDirty()">
+      <mat-icon>save</mat-icon>
+      Save Settings
+    </button>
+  </footer>
 </div>

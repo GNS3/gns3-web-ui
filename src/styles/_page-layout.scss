@@ -1,0 +1,83 @@
+/**
+ * Reusable structural mixins for management and configuration pages.
+ *
+ * The mixins preserve Material theme colors and component behavior while
+ * keeping common dimensions, spacing, surfaces, and page motion consistent.
+ */
+
+@mixin page-host {
+  display: block;
+  width: 100%;
+  background: transparent;
+}
+
+@mixin page-frame($max-width, $padding) {
+  width: 100%;
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: $padding;
+  box-sizing: border-box;
+}
+
+@mixin page-title {
+  margin: 0;
+  color: var(--mat-sys-on-surface);
+  font-size: 32px;
+  font-weight: 500;
+}
+
+@mixin back-button {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--gns3-radius-control);
+  color: var(--mat-sys-on-surface);
+  transition: background-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  }
+}
+
+@mixin surface {
+  overflow: hidden;
+  border-radius: var(--gns3-radius-surface);
+  background: var(--mat-sys-surface);
+  border: var(--gns3-surface-border);
+  box-shadow: none;
+}
+
+@mixin table-surface {
+  @include surface;
+  width: 100%;
+}
+
+@mixin action-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--gns3-space-3);
+}
+
+@mixin empty-state {
+  @include surface;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+@mixin status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gns3-space-2);
+  padding: 6px 14px;
+  border-radius: var(--gns3-radius-round);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+@mixin page-motion($delay: 0ms) {
+  // Page entry is intentionally static. Motion is reserved for state changes.
+  animation: none;
+}
