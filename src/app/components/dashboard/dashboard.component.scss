@@ -1,0 +1,295 @@
+/**
+ * GNS3 Dashboard Component Styles
+ * Using MD3 CSS variables only — no hardcoded colors, no !important
+ * Fluid design supporting layout-xl (>=1920px)
+ */
+
+/* =============================================
+// Dashboard Container
+// ============================================= */
+.dashboard {
+  padding: 24px 32px 32px;
+  max-width: 1600px;
+  margin: 0 auto;
+  min-height: 100%;
+}
+
+/* =============================================
+// Loading State
+// ============================================= */
+.dashboard__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 80px 0;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 14px;
+}
+
+/* =============================================
+// Page Header
+// ============================================= */
+.dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.dashboard__title {
+  font-size: 26px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--mat-sys-on-surface);
+}
+
+.dashboard__title-icon {
+  color: var(--mat-sys-primary);
+}
+
+
+
+/* =============================================
+// Section Headers
+// ============================================= */
+.dashboard__section {
+  margin-bottom: 32px;
+}
+
+.dashboard__section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.dashboard__section-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--mat-sys-on-surface);
+
+  mat-icon {
+    color: var(--mat-sys-primary);
+  }
+}
+
+
+
+/* =============================================
+// Footer
+// ============================================= */
+.dashboard__footer {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.dashboard__footer-version {
+  text-align: right;
+}
+
+/* =============================================
+// Responsive
+// ============================================= */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 16px;
+  }
+
+  .dashboard__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard__resource-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard__sysinfo-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* =============================================
+// System Information (Quasar-inspired)
+// ============================================= */
+.dashboard__sysinfo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.dashboard__sysinfo-card {
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.dashboard__sysinfo-label {
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dashboard__sysinfo-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+
+/* =============================================
+// Resource Usage (Quasar-inspired circular gauges)
+// ============================================= */
+.dashboard__resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.dashboard__resource-card {
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.dashboard__resource-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.dashboard__progress-circle {
+  width: 160px;
+  height: 160px;
+}
+
+.dashboard__progress-fill {
+  transition: stroke-dasharray 0.5s ease;
+}
+
+.dashboard__progress-text {
+  font-size: 26px;
+  font-weight: 700;
+  fill: var(--mat-sys-on-surface);
+}
+
+.dashboard__resource-sub {
+  font-size: 11px;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+}
+
+/* =============================================
+// Running Nodes (Quasar-inspired)
+// ============================================= */
+.dashboard__nodes-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.dashboard__node-card {
+  flex: 1 1 0;
+  min-width: 140px;
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.dashboard__node-card:hover {
+  border-color: var(--mat-sys-primary);
+  transform: translateY(-2px);
+}
+
+.dashboard__node-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.dashboard__node-count {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--mat-sys-primary);
+  line-height: 1.1;
+}
+
+.dashboard__node-label {
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+@media (max-width: 1100px) {
+  .dashboard__node-card {
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard__node-card {
+    min-width: 100px;
+  }
+}
+
+.dashboard__sysinfo-status {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 8px;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.dashboard__sysinfo-status--online {
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-primary);
+}
+
+.dashboard__sysinfo-status--offline {
+  background: color-mix(in srgb, var(--mat-sys-error) 15%, transparent);
+  color: var(--mat-sys-error);
+}

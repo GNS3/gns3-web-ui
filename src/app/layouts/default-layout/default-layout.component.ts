@@ -6,11 +6,13 @@ import {
   OnDestroy,
   OnInit,
   inject,
+  signal,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ProjectService } from '@services/project.service';
 import { filter, Subscription } from 'rxjs';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { ProgressService } from '../../common/progress/progress.service';
 import { NewTemplateDialogComponent } from '@components/project-map/new-template-dialog/new-template-dialog.component';
 import { LoggedUserComponent } from '@components/users/logged-user/logged-user.component';
@@ -20,6 +22,7 @@ import { ApiKeyManagementDialogData } from '@components/api-key-management/api-k
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 import { ControllerManagementService } from '@services/controller-management.service';
+import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
 import { ToasterService } from '@services/toaster.service';
@@ -31,6 +34,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -46,6 +51,8 @@ import { CommonModule } from '@angular/common';
     MatIconModule,
     MatMenuModule,
     MatTooltipModule,
+    MatSidenavModule,
+    MatListModule,
     ProgressComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -65,6 +72,11 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public project: Project;
   private projectMapSubscription: Subscription = new Subscription();
 
+  // Sidebar state
+  readonly sidenavOpened = signal(true);
+  readonly isSmallScreen = signal(false);
+  readonly sidebarMode = signal<'side' | 'over'>('side');
+
   private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
   private controllerManagement = inject(ControllerManagementService);
   private toasterService = inject(ToasterService);
@@ -77,6 +89,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   private projectService = inject(ProjectService);
   private cd = inject(ChangeDetectorRef);
   private connectionManager = inject(ConnectionManagerService);
+  private breakpointObserver = inject(BreakpointObserver);
 
   ngOnInit() {
     // Use filter and proper subscription for NavigationEnd
@@ -116,6 +129,24 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
     // stop controllers only when in Electron (not applicable for web)
     this.shouldStopControllersOnClosing = false;
+
+    // Responsive sidebar: observe small screen breakpoints
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).subscribe((state) => {
+      const small = state.matches;
+      this.isSmallScreen.set(small);
+      if (small) {
+        this.sidenavOpened.set(false);
+        this.sidebarMode.set('over');
+      } else {
+        this.sidenavOpened.set(true);
+        this.sidebarMode.set('side');
+      }
+      this.cd.markForCheck();
+    });
+  }
+
+  toggleSidenav() {
+    this.sidenavOpened.update((v) => !v);
   }
 
   /**

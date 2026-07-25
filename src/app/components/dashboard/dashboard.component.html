@@ -1,0 +1,149 @@
+<div class="dashboard">
+  <!-- Loading State -->
+  @if (isLoading()) {
+  <div class="dashboard__loading">
+    <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+    <span>Loading dashboard...</span>
+  </div>
+  } @else {
+  <!-- ===== Page Header ===== -->
+  <div class="dashboard__header">
+    <h1 class="dashboard__title">
+      <mat-icon class="dashboard__title-icon">home</mat-icon>
+      Dashboard
+    </h1>
+  </div>
+
+  <!-- ===== System Information ===== -->
+  @if (activeController()) {
+  <div class="dashboard__section">
+    <div class="dashboard__section-header">
+      <h2 class="dashboard__section-title">
+        <mat-icon>info</mat-icon>
+        System Information
+      </h2>
+    </div>
+    <div class="dashboard__sysinfo-grid">
+      <div class="dashboard__sysinfo-card">
+        <div class="dashboard__sysinfo-label">GNS3 version</div>
+        <div class="dashboard__sysinfo-value">{{ gns3Version() || appVersion() }}</div>
+      </div>
+      <div class="dashboard__sysinfo-card">
+        <div class="dashboard__sysinfo-label">Hostname</div>
+        <div class="dashboard__sysinfo-value">{{ resourceStats() ? (activeController()?.name || 'N/A') : 'N/A' }}</div>
+      </div>
+      <div class="dashboard__sysinfo-card">
+        <div class="dashboard__sysinfo-label">Controller Name</div>
+        <div class="dashboard__sysinfo-value">
+          {{ activeController()?.name || 'GNS3 Controller' }}
+          <span class="dashboard__sysinfo-status" [class.dashboard__sysinfo-status--online]="getControllerStatus(activeController()) === 'running'"
+            [class.dashboard__sysinfo-status--offline]="getControllerStatus(activeController()) !== 'running'">
+            {{ getControllerStatus(activeController()) === 'running' ? 'Online' : 'Offline' }}
+          </span>
+        </div>
+      </div>
+      <div class="dashboard__sysinfo-card">
+        <div class="dashboard__sysinfo-label">Total Projects</div>
+        <div class="dashboard__sysinfo-value">{{ projectsCount() }}</div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Resource Usage Section (full width) -->
+  @if (resourceStats()) {
+  <div class="dashboard__section">
+    <div class="dashboard__section-header">
+      <h2 class="dashboard__section-title">
+        <mat-icon>monitoring</mat-icon>
+        Resource Usage
+      </h2>
+    </div>
+    <div class="dashboard__resource-grid">
+      <!-- CPU Usage -->
+      <div class="dashboard__resource-card">
+        <div class="dashboard__resource-title">CPU Usage</div>
+        <svg viewBox="0 0 140 140" class="dashboard__progress-circle">
+          <circle cx="70" cy="70" r="64" fill="none" stroke="var(--mat-sys-surface-container-high)" stroke-width="12"/>
+          <circle cx="70" cy="70" r="64" fill="none" stroke="var(--mat-sys-primary)" stroke-width="12"
+            [attr.stroke-dasharray]="(resourceStats()?.cpu_usage_percent || 0) * 4.02 + ', 402'"
+            stroke-linecap="butt" transform="rotate(-90 70 70)" class="dashboard__progress-fill"/>
+          <text x="70" y="66" text-anchor="middle" dominant-baseline="middle"
+            class="dashboard__progress-text">{{ resourceStats()?.cpu_usage_percent || 0 }}%</text>
+        </svg>
+      </div>
+      <!-- Memory Usage -->
+      <div class="dashboard__resource-card">
+        <div class="dashboard__resource-title">Memory Usage</div>
+        <svg viewBox="0 0 140 140" class="dashboard__progress-circle">
+          <circle cx="70" cy="70" r="64" fill="none" stroke="var(--mat-sys-surface-container-high)" stroke-width="12"/>
+          <circle cx="70" cy="70" r="64" fill="none" stroke="var(--mat-sys-secondary)" stroke-width="12"
+            [attr.stroke-dasharray]="(resourceStats()?.memory_usage_percent || 0) * 4.02 + ', 402'"
+            stroke-linecap="butt" transform="rotate(-90 70 70)" class="dashboard__progress-fill"/>
+          <text x="70" y="66" text-anchor="middle" dominant-baseline="middle"
+            class="dashboard__progress-text">{{ resourceStats()?.memory_usage_percent || 0 }}%</text>
+        </svg>
+        <div class="dashboard__resource-sub">
+          {{ formatBytes(resourceStats()?.memory_used || 0) }} of {{ formatBytes(resourceStats()?.memory_total || 0) }}
+        </div>
+      </div>
+      <!-- Disk Usage -->
+      <div class="dashboard__resource-card">
+        <div class="dashboard__resource-title">Disk Usage</div>
+        <svg viewBox="0 0 140 140" class="dashboard__progress-circle">
+          <circle cx="70" cy="70" r="64" fill="none" stroke="var(--mat-sys-surface-container-high)" stroke-width="12"/>
+          <circle cx="70" cy="70" r="64" fill="none" stroke="var(--mat-sys-tertiary)" stroke-width="12"
+            [attr.stroke-dasharray]="(resourceStats()?.disk_usage_percent || 0) * 4.02 + ', 402'"
+            stroke-linecap="butt" transform="rotate(-90 70 70)" class="dashboard__progress-fill"/>
+          <text x="70" y="66" text-anchor="middle" dominant-baseline="middle"
+            class="dashboard__progress-text">{{ resourceStats()?.disk_usage_percent || 0 }}%</text>
+        </svg>
+      </div>
+      <!-- Swap Usage -->
+      <div class="dashboard__resource-card">
+        <div class="dashboard__resource-title">Swap Usage</div>
+        <svg viewBox="0 0 140 140" class="dashboard__progress-circle">
+          <circle cx="70" cy="70" r="64" fill="none" stroke="var(--mat-sys-surface-container-high)" stroke-width="12"/>
+          <circle cx="70" cy="70" r="64" fill="none" stroke="var(--mat-sys-error)" stroke-width="12"
+            [attr.stroke-dasharray]="(resourceStats()?.swap_usage_percent || 0) * 4.02 + ', 402'"
+            stroke-linecap="butt" transform="rotate(-90 70 70)" class="dashboard__progress-fill"/>
+          <text x="70" y="66" text-anchor="middle" dominant-baseline="middle"
+            class="dashboard__progress-text">{{ resourceStats()?.swap_usage_percent || 0 }}%</text>
+        </svg>
+        <div class="dashboard__resource-sub">
+          {{ formatBytes(resourceStats()?.swap_used || 0) }} of {{ formatBytes(resourceStats()?.swap_total || 0) }}
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Running Nodes Section (full width) -->
+  @if ((statistics()?.nodes?.total ?? 0) > 0) {
+  <div class="dashboard__section">
+    <div class="dashboard__section-header">
+      <h2 class="dashboard__section-title">
+        <mat-icon>memory</mat-icon>
+        Running Nodes
+      </h2>
+    </div>
+    <div class="dashboard__nodes-grid">
+      @for (type of nodeTypeOrder; track type) {
+        @if (runningNodesByType()[type] !== undefined) {
+        <div class="dashboard__node-card">
+          <div class="dashboard__node-title">{{ formatNodeType(type) }}</div>
+          <div class="dashboard__node-count">{{ runningNodesByType()[type] }}</div>
+          <div class="dashboard__node-label">running</div>
+        </div>
+        }
+      }
+    </div>
+  </div>
+  }
+
+  <!-- ===== Footer ===== -->
+  <div class="dashboard__footer">
+    <span class="dashboard__footer-version">GNS3 Web UI v{{ appVersion() }}</span>
+  </div>
+  }
+</div>

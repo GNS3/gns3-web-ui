@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1000px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 24px 20px 16px;
   animation: fadeInSlideIn 0.4s ease-out;
@@ -74,7 +74,7 @@
   justify-content: center;
   margin: 16px auto;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1600px;
   padding: 0 20px;
   animation: fadeInSlideIn 0.4s ease-out 0.05s both;
 }
@@ -90,7 +90,7 @@
   border-radius: 16px;
   overflow: hidden;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1600px;
   margin: 0 auto;
   background: var(--mat-sys-surface);
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
