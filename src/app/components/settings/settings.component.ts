@@ -37,7 +37,13 @@ type SettingsField =
   | 'consoleCommand'
   | 'theme'
   | 'mapTheme'
-  | 'interfaceDensity';
+  | 'interfaceDensity'
+  | 'defaultSceneWidth'
+  | 'defaultSceneHeight'
+  | 'defaultGridSize'
+  | 'defaultDrawingGridSize'
+  | 'defaultShowGrid'
+  | 'defaultSnapToGrid';
 
 @Component({
   selector: 'app-settings',
@@ -79,6 +85,19 @@ export class SettingsComponent implements OnInit {
   readonly isDirty = signal(false);
   readonly activeCategory = signal<SettingsCategory>('general');
   readonly interfaceDensity = signal<InterfaceDensity>('normal');
+
+  // Default project-workspace values — seeded from MapSettingsService
+  // (localStorage-backed, the same store the GNS3 desktop GUI persists
+  // these per-user workspace defaults to) and written back to it on save.
+  // Defaults shown here mirror the GNS3 server project defaults
+  // (scene_width 2000, scene_height 1000, grid_size 75, drawing_grid_size 25,
+  // show_grid false, snap_to_grid false) — see Project model / fixtures.
+  readonly defaultSceneWidth = model(2000);
+  readonly defaultSceneHeight = model(1000);
+  readonly defaultGridSize = model(75);
+  readonly defaultDrawingGridSize = model(25);
+  readonly defaultShowGrid = model(false);
+  readonly defaultSnapToGrid = model(false);
   readonly categories: { id: SettingsCategory; label: string; icon: string }[] = [
     { id: 'general', label: 'General', icon: 'tune' },
     { id: 'appearance', label: 'Appearance', icon: 'palette' },
@@ -125,6 +144,16 @@ export class SettingsComponent implements OnInit {
     this.mapTheme = this.themeService.savedMapTheme;
     this.currentTheme = this.themeService.getCurrentTheme();
     this.interfaceDensity.set(this.interfaceDensityService.getDensity());
+
+    // Project-workspace defaults — seeded from the localStorage-backed
+    // MapSettingsService (the same store existing workspace prefs use).
+    this.defaultSceneWidth.set(this.mapSettingsService.getDefaultSceneWidth());
+    this.defaultSceneHeight.set(this.mapSettingsService.getDefaultSceneHeight());
+    this.defaultGridSize.set(this.mapSettingsService.getDefaultGridSize());
+    this.defaultDrawingGridSize.set(this.mapSettingsService.getDefaultDrawingGridSize());
+    this.defaultShowGrid.set(this.mapSettingsService.getDefaultShowGrid());
+    this.defaultSnapToGrid.set(this.mapSettingsService.getDefaultSnapToGrid());
+
     this.cdr.markForCheck();
   }
 
@@ -188,6 +217,46 @@ export class SettingsComponent implements OnInit {
     this.markDirty('interfaceDensity');
   }
 
+  setDefaultSceneWidth(value: number): void {
+    const v = Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
+    if (this.defaultSceneWidth() === v) return;
+    this.defaultSceneWidth.set(v);
+    this.markDirty('defaultSceneWidth');
+  }
+
+  setDefaultSceneHeight(value: number): void {
+    const v = Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
+    if (this.defaultSceneHeight() === v) return;
+    this.defaultSceneHeight.set(v);
+    this.markDirty('defaultSceneHeight');
+  }
+
+  setDefaultGridSize(value: number): void {
+    const v = Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
+    if (this.defaultGridSize() === v) return;
+    this.defaultGridSize.set(v);
+    this.markDirty('defaultGridSize');
+  }
+
+  setDefaultDrawingGridSize(value: number): void {
+    const v = Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
+    if (this.defaultDrawingGridSize() === v) return;
+    this.defaultDrawingGridSize.set(v);
+    this.markDirty('defaultDrawingGridSize');
+  }
+
+  setDefaultShowGrid(enabled: boolean): void {
+    if (this.defaultShowGrid() === enabled) return;
+    this.defaultShowGrid.set(enabled);
+    this.markDirty('defaultShowGrid');
+  }
+
+  setDefaultSnapToGrid(enabled: boolean): void {
+    if (this.defaultSnapToGrid() === enabled) return;
+    this.defaultSnapToGrid.set(enabled);
+    this.markDirty('defaultSnapToGrid');
+  }
+
   saveSettings(): void {
     this.settings = {
       ...this.settings,
@@ -223,6 +292,31 @@ export class SettingsComponent implements OnInit {
     if (this.dirtyFields.has('interfaceDensity')) {
       this.interfaceDensityService.setDensity(this.interfaceDensity());
     }
+
+    // Project-workspace defaults — persisted to localStorage via
+    // MapSettingsService (same store existing workspace prefs like
+    // openReadme / integrateLinkLabelsToLinks use). The GNS3 web-friendly
+    // controller has no /settings endpoint with Graphicsview, so these
+    // defaults live client-side and seed new projects when created.
+    if (this.dirtyFields.has('defaultSceneWidth')) {
+      this.mapSettingsService.setDefaultSceneWidth(this.defaultSceneWidth());
+    }
+    if (this.dirtyFields.has('defaultSceneHeight')) {
+      this.mapSettingsService.setDefaultSceneHeight(this.defaultSceneHeight());
+    }
+    if (this.dirtyFields.has('defaultGridSize')) {
+      this.mapSettingsService.setDefaultGridSize(this.defaultGridSize());
+    }
+    if (this.dirtyFields.has('defaultDrawingGridSize')) {
+      this.mapSettingsService.setDefaultDrawingGridSize(this.defaultDrawingGridSize());
+    }
+    if (this.dirtyFields.has('defaultShowGrid')) {
+      this.mapSettingsService.setDefaultShowGrid(this.defaultShowGrid());
+    }
+    if (this.dirtyFields.has('defaultSnapToGrid')) {
+      this.mapSettingsService.setDefaultSnapToGrid(this.defaultSnapToGrid());
+    }
+
     this.dirtyFields.clear();
     this.isDirty.set(false);
     this.toaster.success('Settings saved');

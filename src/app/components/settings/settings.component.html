@@ -175,7 +175,7 @@
         <div class="settings__panel-header">
           <span class="settings__eyebrow">Topology editor</span>
           <h2 id="workspace-settings-title">Project workspace</h2>
-          <p>Configure how topology information is rendered on the project canvas.</p>
+          <p>Configure how topology information is rendered on the project canvas and defaults used for new projects.</p>
         </div>
         <div class="settings__setting-list">
           <div class="settings__setting-row">
@@ -187,6 +187,103 @@
               [checked]="integrateLinksLabelsToLinks()"
               (change)="setIntegrateLinkLabels($event.checked)"
               aria-label="Integrate interface labels with links"
+            ></mat-slide-toggle>
+          </div>
+
+          <div class="settings__setting-row settings__setting-row--stacked">
+            <div class="settings__section-heading">
+              <h3>Default topology size</h3>
+              <p>Canvas dimensions applied to new projects (in pixels).</p>
+            </div>
+            <div class="settings__inline-fields">
+              <mat-form-field appearance="outline" class="settings__inline-field">
+                <mat-label>Width</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  [value]="defaultSceneWidth()"
+                  (input)="setDefaultSceneWidth(+$event.target.value)"
+                />
+                <span matSuffix>px</span>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="settings__inline-field">
+                <mat-label>Height</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  [value]="defaultSceneHeight()"
+                  (input)="setDefaultSceneHeight(+$event.target.value)"
+                />
+                <span matSuffix>px</span>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="settings__setting-row settings__setting-row--stacked">
+            <div class="settings__section-heading">
+              <h3>Default node and drawing grid size</h3>
+              <p>
+                Grid spacing in pixels — <strong>node grid</strong> aligns nodes when snap is on, <strong>drawing grid</strong>
+                aligns drawings and shapes. These seed new projects.
+              </p>
+            </div>
+            <div class="settings__inline-fields">
+              <mat-form-field appearance="outline" class="settings__inline-field">
+                <mat-label>Node grid size</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  [value]="defaultGridSize()"
+                  (input)="setDefaultGridSize(+$event.target.value)"
+                />
+                <span matSuffix>px</span>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="settings__inline-field">
+                <mat-label>Drawing grid size</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  [value]="defaultDrawingGridSize()"
+                  (input)="setDefaultDrawingGridSize(+$event.target.value)"
+                />
+                <span matSuffix>px</span>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="settings__setting-row">
+            <div class="settings__setting-copy">
+              <h3>Show grid on new projects</h3>
+              <p>Display the grid pattern on the canvas when a project is created.</p>
+            </div>
+            <mat-slide-toggle
+              [checked]="defaultShowGrid()"
+              (change)="setDefaultShowGrid($event.checked)"
+              aria-label="Show grid on new projects"
+            ></mat-slide-toggle>
+          </div>
+
+          <div class="settings__setting-row">
+            <div class="settings__setting-copy">
+              <h3>Snap to grid on new projects</h3>
+              <p>Align dragged nodes to the nearest grid intersection when a project is created.</p>
+            </div>
+            <mat-slide-toggle
+              [checked]="defaultSnapToGrid()"
+              (change)="setDefaultSnapToGrid($event.checked)"
+              aria-label="Snap to grid on new projects"
             ></mat-slide-toggle>
           </div>
         </div>

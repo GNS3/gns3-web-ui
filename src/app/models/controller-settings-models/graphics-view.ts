@@ -7,7 +7,7 @@ export class GraphicsView {
   draw_rectangle_selected_item: boolean;
   grid_size: number;
   scene_height: number;
-  scene_width: 2000;
+  scene_width: number;
   show_grid: boolean;
   show_interface_labels: boolean;
   show_interface_labels_on_new_project: boolean;

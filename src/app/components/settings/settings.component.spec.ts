@@ -7,6 +7,7 @@ import { MapSettingsService } from '@services/mapsettings.service';
 import { ToasterService } from '@services/toaster.service';
 import { UpdatesService } from '@services/updates.service';
 import { ControllerService } from '@services/controller.service';
+import { InterfaceDensityService } from '@services/interface-density.service';
 import { AiChatService } from '@services/ai-chat.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -20,6 +21,7 @@ describe('SettingsComponent', () => {
   let mockToasterService: any;
   let mockUpdatesService: any;
   let mockControllerService: any;
+  let mockInterfaceDensityService: any;
   let mockAiChatService: any;
   let mockActivatedRoute: any;
   let windowOpenSpy: ReturnType<typeof vi.spyOn>;
@@ -78,6 +80,18 @@ describe('SettingsComponent', () => {
       toggleIntegrateInterfaceLabels: vi.fn(),
       toggleOpenReadme: vi.fn(),
       toggleOpenConsolesInWidget: vi.fn(),
+      getDefaultSceneWidth: vi.fn().mockReturnValue(2000),
+      setDefaultSceneWidth: vi.fn(),
+      getDefaultSceneHeight: vi.fn().mockReturnValue(1000),
+      setDefaultSceneHeight: vi.fn(),
+      getDefaultGridSize: vi.fn().mockReturnValue(75),
+      setDefaultGridSize: vi.fn(),
+      getDefaultDrawingGridSize: vi.fn().mockReturnValue(25),
+      setDefaultDrawingGridSize: vi.fn(),
+      getDefaultShowGrid: vi.fn().mockReturnValue(false),
+      setDefaultShowGrid: vi.fn(),
+      getDefaultSnapToGrid: vi.fn().mockReturnValue(false),
+      setDefaultSnapToGrid: vi.fn(),
     };
 
     mockToasterService = {
@@ -90,6 +104,11 @@ describe('SettingsComponent', () => {
       get: vi.fn().mockResolvedValue({
         controller_id: 1,
       }),
+    };
+
+    mockInterfaceDensityService = {
+      getDensity: vi.fn().mockReturnValue('normal'),
+      setDensity: vi.fn(),
     };
 
     mockAiChatService = {
@@ -118,6 +137,7 @@ describe('SettingsComponent', () => {
         { provide: ToasterService, useValue: mockToasterService },
         { provide: UpdatesService, useValue: mockUpdatesService },
         { provide: ControllerService, useValue: mockControllerService },
+        { provide: InterfaceDensityService, useValue: mockInterfaceDensityService },
         { provide: AiChatService, useValue: mockAiChatService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],
@@ -215,6 +235,65 @@ describe('SettingsComponent', () => {
       expect(mockMapSettingsService.toggleIntegrateInterfaceLabels).toHaveBeenCalledWith(false);
       expect(mockMapSettingsService.toggleOpenReadme).toHaveBeenCalledWith(true);
       expect(mockMapSettingsService.toggleOpenConsolesInWidget).toHaveBeenCalledWith(true);
+    });
+
+    it('should persist workspace defaults via MapSettingsService when a default changes', () => {
+      // Toggle a controller-backed default dirty so saveSettings writes
+      // it through MapSettingsService (the workspace-defaults persistence
+      // layer — same store existing workspace prefs use).
+      component.setDefaultShowGrid(true);
+      component.setDefaultSnapToGrid(true);
+      component.setDefaultSceneWidth(2200);
+      component.saveSettings();
+
+      expect(mockMapSettingsService.setDefaultShowGrid).toHaveBeenCalledWith(true);
+      expect(mockMapSettingsService.setDefaultSnapToGrid).toHaveBeenCalledWith(true);
+      expect(mockMapSettingsService.setDefaultSceneWidth).toHaveBeenCalledWith(2200);
+    });
+
+    it('should persist default drawing grid size via MapSettingsService (local prefs)', () => {
+      component.setDefaultDrawingGridSize(40);
+      component.saveSettings();
+      expect(mockMapSettingsService.setDefaultDrawingGridSize).toHaveBeenCalledWith(40);
+    });
+  });
+
+  describe('workspace defaults setters', () => {
+    it('setDefaultSceneWidth should update the model and mark dirty', () => {
+      component.setDefaultSceneWidth(1700);
+      expect(component.defaultSceneWidth()).toBe(1700);
+      expect(component.isDirty()).toBe(true);
+    });
+
+    it('setDefaultSceneHeight should clamp non-negative integers', () => {
+      component.setDefaultSceneHeight(-50 as any);
+      expect(component.defaultSceneHeight()).toBe(0);
+    });
+
+    it('setDefaultGridSize should round to nearest integer', () => {
+      component.setDefaultGridSize(73.6);
+      expect(component.defaultGridSize()).toBe(74);
+    });
+
+    it('setDefaultShowGrid should update the model', () => {
+      component.setDefaultShowGrid(true);
+      expect(component.defaultShowGrid()).toBe(true);
+    });
+
+    it('setDefaultSnapToGrid should update the model', () => {
+      component.setDefaultSnapToGrid(true);
+      expect(component.defaultSnapToGrid()).toBe(true);
+    });
+
+    it('ngOnInit should seed defaults from MapSettingsService', () => {
+      // Mock getters return scene_width=2000, scene_height=1000, grid_size=75,
+      // drawing_grid_size=25, show_grid=false, snap_to_grid=false (set above).
+      expect(component.defaultSceneWidth()).toBe(2000);
+      expect(component.defaultSceneHeight()).toBe(1000);
+      expect(component.defaultGridSize()).toBe(75);
+      expect(component.defaultDrawingGridSize()).toBe(25);
+      expect(component.defaultShowGrid()).toBe(false);
+      expect(component.defaultSnapToGrid()).toBe(false);
     });
   });
 

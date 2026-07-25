@@ -12,6 +12,7 @@ import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
+import { MapSettingsService } from '@services/mapsettings.service';
 import { ProjectNameValidator } from '../models/projectNameValidator';
 
 @Component({
@@ -36,6 +37,7 @@ export class AddBlankProjectDialogComponent {
   private readonly router = inject(Router);
   private readonly projectService = inject(ProjectService);
   private readonly toasterService = inject(ToasterService);
+  private readonly mapSettingsService = inject(MapSettingsService);
   private readonly projectNameValidator = inject(ProjectNameValidator);
 
   // Input data (passed from parent)
@@ -123,10 +125,32 @@ export class AddBlankProjectDialogComponent {
 
     this.projectService.add(this.controller, this.projectName().trim(), this.uuid()).subscribe({
       next: (project: Project) => {
-        this.dialogRef.close();
-        this.toasterService.success(`Project ${project.name} added`);
-        this.router.navigate(['/controller', this.controller.id, 'project', project.project_id]);
-        this.onAddProject.emit(project.project_id);
+        // Apply the user's saved project-workspace defaults to the freshly
+        // created project (scene size, grid sizes, show/snap flags). These
+        // are persisted client-side by the Settings → Project workspace
+        // section via MapSettingsService; the GNS3 server has no /settings
+        // endpoint with Graphicsview, so we mirror them onto each new
+        // project at creation time.
+        project.scene_width = this.mapSettingsService.getDefaultSceneWidth();
+        project.scene_height = this.mapSettingsService.getDefaultSceneHeight();
+        project.grid_size = this.mapSettingsService.getDefaultGridSize();
+        project.drawing_grid_size = this.mapSettingsService.getDefaultDrawingGridSize();
+        project.show_grid = this.mapSettingsService.getDefaultShowGrid();
+        project.snap_to_grid = this.mapSettingsService.getDefaultSnapToGrid();
+
+        this.projectService.update(this.controller, project).subscribe({
+          error: () => {
+            // Updating the defaults is best-effort — the project is already
+            // created and navigable; surface a non-blocking warning.
+            this.toasterService.error('Project created, but workspace defaults were not applied');
+          },
+          complete: () => {
+            this.dialogRef.close();
+            this.toasterService.success(`Project ${project.name} added`);
+            this.router.navigate(['/controller', this.controller.id, 'project', project.project_id]);
+            this.onAddProject.emit(project.project_id);
+          },
+        });
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Cannot create new project';

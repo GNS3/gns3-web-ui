@@ -424,6 +424,17 @@
   width: 100%;
 }
 
+.settings__inline-fields {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.settings__inline-field {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
 .settings__variables {
   display: flex;
   flex-wrap: wrap;
