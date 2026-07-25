@@ -304,16 +304,16 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #fafafa;
-  border: 1px solid color-mix(in srgb, #000 14%, transparent);
+  background: var(--mat-sys-surface-container-lowest);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
   border-radius: 7px;
 
   &--dark {
-    background: #282a2e;
-    border-color: color-mix(in srgb, #fff 18%, transparent);
+    background: var(--mat-sys-surface-container-highest);
+    border-color: color-mix(in srgb, var(--mat-sys-on-surface) 18%, transparent);
 
     .settings__theme-preview-body span:not(:first-child) {
-      background: #5f6368;
+      background: var(--mat-sys-outline-variant);
     }
   }
 }
@@ -339,7 +339,7 @@
     }
 
     &:not(:first-child) {
-      background: #d7d9dc;
+      background: var(--mat-sys-surface-container-high);
     }
   }
 }
