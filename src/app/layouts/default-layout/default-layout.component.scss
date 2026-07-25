@@ -178,6 +178,12 @@
 }
 
 .toolbar-primary {
+  /* Denser top app bar — overrides Material's default
+     `--mat-toolbar-standard-height` (64px) and mobile height (56px) scopes
+     locally to this toolbar via CSS custom-property inheritance. */
+  --mat-toolbar-standard-height: 52px;
+  --mat-toolbar-mobile-height: 48px;
+
   background-color: var(--mat-sys-primary);
   color: var(--mat-sys-white);
 
@@ -189,14 +195,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 40px;
-    width: 40px;
-    border-radius: 20px;
-    margin: 2px 0;
+    height: 34px;
+    width: 34px;
+    border-radius: 17px;
+    margin: 1px 0;
     transition: transform 100ms ease;
 
     mat-icon {
       color: var(--mat-sys-on-primary);
+      width: 20px;
+      height: 20px;
+      font-size: 20px;
     }
   }
 
@@ -214,21 +223,22 @@
   }
 }
 
-/* Toolbar brand */
+/* Toolbar brand — tuned for the denser 52px toolbar */
 .toolbar__brand {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  margin: 0 16px 0 4px;
+  margin: 0 12px 0 4px;
   color: var(--mat-sys-on-primary);
   letter-spacing: -0.3px;
+  line-height: 1;
 }
 
 .toolbar__brand-icon {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 
 /* =============================================

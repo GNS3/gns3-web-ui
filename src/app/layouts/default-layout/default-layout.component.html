@@ -17,6 +17,7 @@
       <!-- Main Menu -->
       <div class="sidebar__section-title">Main Menu</div>
       <mat-nav-list class="sidebar__nav">
+        @if (controllerId) {
         <a
           mat-list-item
           class="sidebar__nav-item"
@@ -41,12 +42,23 @@
           mat-list-item
           class="sidebar__nav-item"
           routerLinkActive="active"
+          [routerLink]="['/controller', controllerId, 'image-manager']"
+          (click)="isSmallScreen() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>image</mat-icon>
+          <span matListItemTitle>Image manager</span>
+        </a>
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
           [routerLink]="['/controller', controllerId, 'preferences']"
           (click)="isSmallScreen() && sidenav.close()"
         >
           <mat-icon matListItemIcon>settings_applications</mat-icon>
           <span matListItemTitle>Templates</span>
         </a>
+        }
         <a
           mat-list-item
           class="sidebar__nav-item"
@@ -57,6 +69,7 @@
           <mat-icon matListItemIcon>developer_board</mat-icon>
           <span matListItemTitle>Controllers</span>
         </a>
+        @if (controllerId) {
         <a
           mat-list-item
           class="sidebar__nav-item"
@@ -67,6 +80,7 @@
           <mat-icon matListItemIcon>settings</mat-icon>
           <span matListItemTitle>Settings</span>
         </a>
+        }
       </mat-nav-list>
 
       <!-- Support Section -->
