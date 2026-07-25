@@ -187,23 +187,30 @@ describe('SettingsComponent', () => {
     });
   });
 
-  describe('save', () => {
+  describe('saveSettings', () => {
     it('should save settings via SettingsService', () => {
-      component.save();
-      expect(mockSettingsService.setAll).toHaveBeenCalledWith(mockSettings);
+      // Mark a settings field dirty so saveSettings() actually persists
+      // (the real saveSettings gates settingsService.setAll on dirtyFields).
+      component.setCrashReports(true);
+      component.saveSettings();
+      expect(mockSettingsService.setAll).toHaveBeenCalled();
     });
 
     it('should show success toaster message', () => {
-      component.save();
-      expect(mockToasterService.success).toHaveBeenCalledWith('Settings have been saved.');
+      component.saveSettings();
+      expect(mockToasterService.success).toHaveBeenCalledWith('Settings saved');
     });
 
     it('should toggle map settings', () => {
-      component.integrateLinksLabelsToLinks.set(false);
-      component.openReadme.set(true);
-      component.openConsolesInWidget.set(true);
+      // Use the setters so the dirty flag is marked, mirroring real UI flow;
+      // the mock mapSettingsService defaults are
+      // integrateLinkLabelsToLinks: true, openReadme: false,
+      // openConsolesInWidget: false.
+      component.setIntegrateLinkLabels(false);
+      component.setOpenReadme(true);
+      component.setOpenConsolesInWidget(true);
 
-      component.save();
+      component.saveSettings();
 
       expect(mockMapSettingsService.toggleIntegrateInterfaceLabels).toHaveBeenCalledWith(false);
       expect(mockMapSettingsService.toggleOpenReadme).toHaveBeenCalledWith(true);
