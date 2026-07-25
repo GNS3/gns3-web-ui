@@ -8,6 +8,7 @@ import { ToasterService } from '@services/toaster.service';
 import { UpdatesService } from '@services/updates.service';
 import { ControllerService } from '@services/controller.service';
 import { InterfaceDensityService } from '@services/interface-density.service';
+import { ConsoleService } from '@services/settings/console.service';
 import { AiChatService } from '@services/ai-chat.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -22,6 +23,7 @@ describe('SettingsComponent', () => {
   let mockUpdatesService: any;
   let mockControllerService: any;
   let mockInterfaceDensityService: any;
+  let mockConsoleService: any;
   let mockAiChatService: any;
   let mockActivatedRoute: any;
   let windowOpenSpy: ReturnType<typeof vi.spyOn>;
@@ -111,6 +113,12 @@ describe('SettingsComponent', () => {
       setDensity: vi.fn(),
     };
 
+    // ConsoleService is injected to read/write the external console command
+    // (Settings → Console section). Simple getter/setter pair is enough.
+    mockConsoleService = {
+      command: 'telnet',
+    };
+
     mockAiChatService = {
       reloadSkills: vi.fn().mockReturnValue({
         subscribe: vi.fn().mockImplementation((callbacks) => {
@@ -138,6 +146,7 @@ describe('SettingsComponent', () => {
         { provide: UpdatesService, useValue: mockUpdatesService },
         { provide: ControllerService, useValue: mockControllerService },
         { provide: InterfaceDensityService, useValue: mockInterfaceDensityService },
+        { provide: ConsoleService, useValue: mockConsoleService },
         { provide: AiChatService, useValue: mockAiChatService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],
@@ -211,7 +220,9 @@ describe('SettingsComponent', () => {
     it('should save settings via SettingsService', () => {
       // Mark a settings field dirty so saveSettings() actually persists
       // (the real saveSettings gates settingsService.setAll on dirtyFields).
-      component.setCrashReports(true);
+      // Mock Settings.crash_reports defaults to true, so flip to false to
+      // force a real value change (setCrashReports early-returns on no-op).
+      component.setCrashReports(false);
       component.saveSettings();
       expect(mockSettingsService.setAll).toHaveBeenCalled();
     });
@@ -298,9 +309,14 @@ describe('SettingsComponent', () => {
   });
 
   describe('setTheme', () => {
-    it('should call themeService.setTheme with the selected theme', () => {
+    it('should call themeService.setTheme with the selected theme on save', () => {
+      // setTheme only marks dirty; themeService.setTheme is dispatched from
+      // saveSettings() (gated on dirtyFields.has('theme')). The mock
+      // currentTheme defaults to 'deeppurple-amber', so picking a different
+      // theme forces a real change through the early-return guard.
       const newTheme: PrebuiltTheme = 'pink-bluegrey';
       component.setTheme(newTheme);
+      component.saveSettings();
       expect(mockThemeService.setTheme).toHaveBeenCalledWith(newTheme);
     });
 
@@ -317,8 +333,11 @@ describe('SettingsComponent', () => {
       expect(component.mapTheme).toBe('dark');
     });
 
-    it('should call themeService.setMapTheme', () => {
+    it('should call themeService.setMapTheme on save', () => {
+      // mapTheme dispatch is deferred to saveSettings(); the mock
+      // savedMapTheme defaults to 'auto', so 'dark' forces a real change.
       component.setMapTheme('dark');
+      component.saveSettings();
       expect(mockThemeService.setMapTheme).toHaveBeenCalledWith('dark');
     });
   });
