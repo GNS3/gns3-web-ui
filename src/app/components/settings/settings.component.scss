@@ -542,3 +542,126 @@
     width: 100%;
   }
 }
+
+/* =============================================
+// Interface density — compact mode
+//
+// Driven by `<html data-density="compact">` (set by
+// InterfaceDensityService). Tightens every Settings section element:
+// panel headers, setting rows, theme tiles, density option tiles,
+// section headings, and action-card, so the Settings page itself
+// reflects the same compact spacing as the rest of the app.
+// ============================================= */
+:host-context([data-density='compact']) {
+  .settings__layout {
+    gap: 14px;
+  }
+
+  .settings__category {
+    padding: 0 10px;
+    min-height: 40px;
+    gap: 10px;
+    font-size: 12px;
+  }
+
+  .settings__panel {
+    border-radius: var(--mat-sys-corner-medium);
+  }
+
+  .settings__panel-header {
+    padding: 16px 20px 12px;
+
+    h2 {
+      margin: 2px 0 2px;
+      font-size: 20px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 12px;
+    }
+  }
+
+  .settings__eyebrow {
+    font-size: 9px;
+  }
+
+  .settings__setting-list {
+    padding: 0 20px;
+  }
+
+  .settings__setting-row {
+    padding: 11px 0;
+    gap: 20px;
+  }
+
+  .settings__setting-copy,
+  .settings__section-heading,
+  .settings__action-card {
+    h3 {
+      margin: 0 0 2px;
+      font-size: 13px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 11px;
+    }
+  }
+
+  .settings__theme-section {
+    padding: 16px 20px 18px;
+  }
+
+  .settings__section-heading {
+    margin-bottom: 10px;
+  }
+
+  .settings__density-options {
+    gap: 8px;
+  }
+
+  .settings__density-option {
+    padding: 8px 10px;
+    gap: 10px;
+
+    strong {
+      font-size: 12px;
+    }
+
+    small {
+      font-size: 10px;
+    }
+  }
+
+  .settings__theme-grid {
+    gap: 8px;
+  }
+
+  .settings__theme-tile {
+    padding: 6px;
+  }
+
+  .settings__theme-preview-body {
+    padding: 7px;
+    gap: 5px;
+  }
+
+  .settings__tile-label {
+    padding: 6px 2px 0;
+
+    strong {
+      font-size: 11px;
+    }
+
+    small {
+      font-size: 9px;
+    }
+  }
+
+  .settings__action-card {
+    margin: 18px;
+    padding: 12px;
+    gap: 14px;
+  }
+}

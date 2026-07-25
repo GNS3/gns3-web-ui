@@ -178,12 +178,10 @@
 }
 
 .toolbar-primary {
-  /* Denser top app bar — overrides Material's default
-     `--mat-toolbar-standard-height` (64px) and mobile height (56px) scopes
-     locally to this toolbar via CSS custom-property inheritance. */
-  --mat-toolbar-standard-height: 52px;
-  --mat-toolbar-mobile-height: 48px;
-
+  /* Standard Angular Material 21 toolbar height applies by default
+     (`--mat-toolbar-standard-height: 64px` from mat-toolbar tokens).
+     Denser heights are enabled under `[data-density='compact']` via the
+     `:host-context` block at the bottom of this file. */
   background-color: var(--mat-sys-primary);
   color: var(--mat-sys-white);
 
@@ -195,17 +193,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 34px;
-    width: 34px;
-    border-radius: 17px;
-    margin: 1px 0;
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
+    margin: 2px 0;
     transition: transform 100ms ease;
 
     mat-icon {
       color: var(--mat-sys-on-primary);
-      width: 20px;
-      height: 20px;
-      font-size: 20px;
     }
   }
 
@@ -223,22 +218,21 @@
   }
 }
 
-/* Toolbar brand — tuned for the denser 52px toolbar */
+/* Toolbar brand */
 .toolbar__brand {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
-  margin: 0 12px 0 4px;
+  margin: 0 16px 0 4px;
   color: var(--mat-sys-on-primary);
   letter-spacing: -0.3px;
-  line-height: 1;
 }
 
 .toolbar__brand-icon {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 }
 
 /* =============================================
@@ -273,5 +267,106 @@
 @media (min-width: 1920px) {
   .sidebar {
     width: 260px;
+  }
+}
+
+/* =============================================
+// Interface density — compact mode
+//
+// Driven by `<html data-density="compact">` (set by
+// InterfaceDensityService) and consumed here via the
+// Angular `:host-context()` selector. Standard Material 21
+// densities remain in effect for `data-density="normal"` (the
+// default), so the app complies with Material guidelines out
+// of the box and only opts into a denser layout on user request.
+//
+// Toolbar height tokens overridden here correspond to Material 21's
+// own density-scale -3 values (52px / 44px) — see
+// @angular/material/toolbar/_m3-toolbar.scss `get-density-tokens`.
+// ============================================= */
+:host-context([data-density='compact']) {
+  .toolbar-primary {
+    --mat-toolbar-standard-height: 52px;
+    --mat-toolbar-mobile-height: 44px;
+  }
+
+  .toolbar-primary .gns3-button {
+    height: 34px;
+    width: 34px;
+    border-radius: 17px;
+    margin: 1px 0;
+
+    mat-icon {
+      width: 20px;
+      height: 20px;
+      font-size: 20px;
+    }
+  }
+
+  .toolbar__brand {
+    font-size: 15px;
+    margin: 0 12px 0 4px;
+    line-height: 1;
+  }
+
+  .toolbar__brand-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* —— Denser sidebar navigation in compact mode —— */
+  .sidebar__brand {
+    padding: 10px 16px;
+    margin-bottom: 4px;
+  }
+
+  .sidebar__brand-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .sidebar__brand-text {
+    font-size: 16px;
+  }
+
+  .sidebar__section-title {
+    padding: 8px 16px 4px;
+  }
+
+  .sidebar__nav {
+    padding: 0 6px;
+  }
+
+  .sidebar__nav-item {
+    /* mat-list-item default lineheight is 48px (Material spec); compact
+       density uses Material's -1 list density (40px). */
+    --mat-list-list-item-one-line-container-height: 40px;
+
+    margin: 1px 0;
+
+    mat-icon {
+      width: 20px;
+      height: 20px;
+      font-size: 20px;
+    }
+  }
+
+  .sidebar__divider {
+    margin: 8px 16px;
+  }
+
+  .sidebar__user-profile {
+    padding: 10px 16px;
+  }
+
+  .sidebar__user-avatar {
+    width: 30px;
+    height: 30px;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
   }
 }
