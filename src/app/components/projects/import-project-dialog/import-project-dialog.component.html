@@ -11,26 +11,15 @@
       ng2FileSelect
       [uploader]="uploader"
     />
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="file.click()"
-      matTooltip="Import your .gns3p or .gns3project file"
-      matTooltipClass="custom-tooltip"
-      class="file-button"
-    >
-      <mat-icon>attach_file</mat-icon>
-      Choose file
-    </button>
     <div class="input-row">
-      <mat-form-field [ngClass]="{ empty: !isDeleteVisible() }" class="file-name-form-field">
+      <mat-form-field class="file-name-form-field" subscriptSizing="dynamic">
         <input
           matInput
           type="text"
           [value]="projectName()"
           (input)="projectName.set($event.target.value)"
           [ngClass]="{ 'is-invalid': hasInvalidCharacters() || (isNameEmpty() && submitted()) }"
-          placeholder="Please enter name"
+          placeholder="Enter project name"
         />
         @if (isNameEmpty() && submitted()) {
         <mat-error>Project name is required</mat-error>
@@ -38,6 +27,17 @@
         <mat-error>Project name is incorrect</mat-error>
         }
       </mat-form-field>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="file.click()"
+        matTooltip="Import your .gns3p or .gns3project file"
+        matTooltipClass="custom-tooltip"
+        class="file-button"
+      >
+        <mat-icon>attach_file</mat-icon>
+        Choose file
+      </button>
       @if (isDeleteVisible()) {
       <button class="delete-button" matTooltip="Remove selected file" matTooltipPosition="above">
         <mat-icon color="primary" (click)="onDeleteClick()" class="delete-icon">clear</mat-icon>

@@ -8,22 +8,21 @@
 }
 
 .file-button {
-  width: calc(100% - 48px);
   height: 48px;
-  margin-top: 16px;
-  margin-bottom: 16px;
-  margin-left: 24px;
-  margin-right: 24px;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   text-transform: none;
   letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: center;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
+  padding: 0 16px;
 
   &:hover:not([disabled]) {
     transform: translateY(-2px);
@@ -48,11 +47,9 @@
 }
 
 .file-name-form-field {
-  width: 100%;
-}
-
-.empty {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
+  align-self: center;
 }
 
 .delete-button {

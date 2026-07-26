@@ -4,6 +4,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
   model,
   OnInit,
@@ -15,11 +16,14 @@ import { FormsModule } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
+import { MatSelectModule } from '@angular/material/select';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
-import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProgressService } from '../../common/progress/progress.service';
 import { Project } from '@models/project';
+import { ProjectStatistics } from '@models/project-statistics';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 import { NotificationService, ProjectNotification } from '@services/notification.service';
@@ -34,14 +38,14 @@ import { ConfirmationDeleteAllProjectsComponent } from './confirmation-delete-al
 import { EditProjectDialogComponent } from './edit-project-dialog/edit-project-dialog.component';
 import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
 import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ScrollingModule } from '@angular/cdk/scrolling';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { version } from '../../version';
 
 @Component({
@@ -55,6 +59,7 @@ import { version } from '../../version';
     MatBottomSheetModule,
     MatDialogModule,
     MatSortModule,
+    MatSelectModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -62,7 +67,8 @@ import { version } from '../../version';
     MatInputModule,
     MatCheckboxModule,
     MatProgressSpinnerModule,
-    ScrollingModule,
+    MatPaginatorModule,
+    MatTooltipModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -70,24 +76,73 @@ export class ProjectsComponent implements OnInit {
   controller: Controller;
   settings: Settings;
   project: Project;
-  displayedColumns = ['select', 'name', 'created_by', 'actions', 'delete'];
+  displayedColumns = ['select', 'name', 'created_by', 'status', 'actions', 'delete'];
   public readonly version = version;
   public readonly currentYear = new Date().getFullYear();
   isAllDelete = false;
   selection = new SelectionModel<Project>(true, []);
 
   readonly sort = viewChild<MatSort>(MatSort);
+  readonly paginator = viewChild<MatPaginator>(MatPaginator);
   readonly searchText = model('');
 
   // ── Signal state ──────────────────────────────────────────────
   private _projects = signal<Project[]>([]);
-  private _sortActive = signal<string>('name');
+  readonly sortActive = signal<string>('name');
   private _sortDirection = signal<'asc' | 'desc' | ''>('asc');
   private _loadingProjects = signal<Set<string>>(new Set());
+
+  // ── View mode (list / grid) ───────────────────────────────────
+  readonly viewMode = signal<'list' | 'grid'>('list');
+
+  // ── Selected project for details panel ────────────────────────
+  readonly selectedProject = signal<Project | null>(null);
+  readonly projectStats = signal<ProjectStatistics | null>(null);
+  readonly projectDescription = signal('');
+
+  // ── Status filter ─────────────────────────────────────────────
+  readonly filterStatus = signal<string>('all');
+
+  // ── Pagination ───────────────────────────────────────────────
+  readonly pageSizeOptions = [5, 10, 25, 50, 100];
+
+  /**
+   * Mirror of the paginator's `pageIndex`/`pageSize` as signals so the grid
+   * view (which does not use MatTableDataSource) can react to page changes.
+   * Updated from {@link onPageChange} whenever `mat-paginator` emits a `page`
+   * event. Initial `pageSize` of 25 also restricts the default number of
+   * visible projects, mirroring the Image Manager table behavior.
+   */
+  private _pageIndex = signal(0);
+  private _pageSize = signal(25);
+
+  onPageChange(event: PageEvent): void {
+    this._pageIndex.set(event.pageIndex);
+    this._pageSize.set(event.pageSize);
+  }
+
+  /** Reset paginator to first page when filters, sort, or search change */
+  private _resetPageOnFilter = effect(
+    () => {
+      this.searchText();
+      this.filterStatus();
+      this.sortActive();
+      this._sortDirection();
+      // Keep the grid-view pagination signal in sync and reset the
+      // MatTableDataSource paginator back to the first page for list view.
+      this._pageIndex.set(0);
+      const paginator = this.paginator();
+      if (paginator) {
+        paginator.firstPage();
+      }
+    },
+    { allowSignalWrites: true },
+  );
 
   // ── Derived: sorted + filtered display data ───────────────────
   readonly displayProjects = computed(() => {
     const search = this.searchText()?.toLowerCase() || '';
+    const statusFilter = this.filterStatus();
     let projects = this._projects();
 
     // Filter by name or created_by
@@ -99,8 +154,13 @@ export class ProjectsComponent implements OnInit {
       );
     }
 
+    // Filter by status
+    if (statusFilter !== 'all') {
+      projects = projects.filter(p => p.status === statusFilter);
+    }
+
     // Sort
-    const active = this._sortActive();
+    const active = this.sortActive();
     const direction = this._sortDirection();
     if (active && direction) {
       projects = [...projects].sort((a, b) => {
@@ -115,9 +175,30 @@ export class ProjectsComponent implements OnInit {
     return projects;
   });
 
-  // Bridge to mat-table (material table accepts Observable<T[]>)
-  private _displayProjects$ = toObservable(this.displayProjects);
-  readonly dataSource = this._displayProjects$;
+  /** Paginated slice for grid view — reads paginator-synced signals */
+  readonly paginatedProjects = computed(() => {
+    const all = this.displayProjects();
+    const pageIndex = this._pageIndex();
+    const pageSize = this._pageSize();
+    const start = pageIndex * pageSize;
+    return all.slice(start, start + pageSize);
+  });
+
+  // MatTableDataSource for the list-view table (handles pagination automatically)
+  readonly tableDataSource = new MatTableDataSource<Project>([]);
+
+  /** Keep tableDataSource.data in sync with the filtered/sorted list */
+  private _syncTableData = effect(() => {
+    this.tableDataSource.data = this.displayProjects();
+  });
+
+  /** Connect paginator once it becomes available */
+  private _connectPaginator = effect(() => {
+    const paginator = this.paginator();
+    if (paginator) {
+      this.tableDataSource.paginator = paginator;
+    }
+  });
 
   // ── Dependencies ──────────────────────────────────────────────
   private destroyRef = inject(DestroyRef);
@@ -162,8 +243,66 @@ export class ProjectsComponent implements OnInit {
 
   // ── Sort handler (called from template matSortChange) ─────────
   onSortChange(sortState: Sort) {
-    this._sortActive.set(sortState.active);
+    this.sortActive.set(sortState.active);
     this._sortDirection.set(sortState.direction);
+  }
+
+  // ── Sort by dropdown handler ──────────────────────────────────
+  onSortByChange(field: string) {
+    this.sortActive.set(field);
+    this._sortDirection.set('asc');
+  }
+
+  // ── View mode toggle ──────────────────────────────────────────
+  toggleView(mode: 'list' | 'grid') {
+    this.viewMode.set(mode);
+  }
+
+  // ── Project selection for details panel ───────────────────────
+  selectProject(project: Project) {
+    this.selectedProject.set(project);
+    this.projectStats.set(null);
+    this.projectDescription.set('');
+    this.loadProjectStats(project);
+    this.loadProjectDescription(project);
+  }
+
+  closeDetails() {
+    this.selectedProject.set(null);
+    this.projectStats.set(null);
+    this.projectDescription.set('');
+  }
+
+  private loadProjectStats(project: Project) {
+    this.projectService.getStatistics(this.controller, project.project_id).subscribe({
+      next: (stats: ProjectStatistics) => {
+        if (this.selectedProject()?.project_id === project.project_id) {
+          this.projectStats.set(stats);
+        }
+      },
+      error: () => {
+        // Stats are not critical, silently ignore errors
+        if (this.selectedProject()?.project_id === project.project_id) {
+          this.projectStats.set(null);
+        }
+      },
+    });
+  }
+
+  private loadProjectDescription(project: Project) {
+    this.projectService.getReadmeFile(this.controller, project.project_id).subscribe({
+      next: (readme: string | null) => {
+        if (this.selectedProject()?.project_id === project.project_id) {
+          this.projectDescription.set(readme?.trim() || '');
+        }
+      },
+      error: () => {
+        // A README is optional; an absent file should not affect the panel.
+        if (this.selectedProject()?.project_id === project.project_id) {
+          this.projectDescription.set('');
+        }
+      },
+    });
   }
 
   // ── Data fetching ─────────────────────────────────────────────
@@ -320,6 +459,9 @@ export class ProjectsComponent implements OnInit {
     instance.project = project;
     dialogRef.afterClosed().subscribe(() => {
       this.refresh();
+      if (this.selectedProject()?.project_id === project.project_id) {
+        this.loadProjectDescription(project);
+      }
     });
   }
 

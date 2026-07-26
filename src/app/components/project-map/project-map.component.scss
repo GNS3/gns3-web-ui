@@ -7,6 +7,10 @@
 // Reusable Shadow Classes
 // Standardized shadow effects using GNS3 opacity variables
 // ============================================= */
+:host {
+  --gns3-project-titlebar-height: 56px;
+}
+
 .shadow-subtle {
   box-shadow: 0 1px 3px color-mix(in srgb, var(--mat-sys-shadow) var(--gns3-shadow-opacity-light), transparent);
 }
@@ -110,7 +114,8 @@ g.node:hover {
   top: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  height: var(--gns3-project-titlebar-height);
+  box-sizing: border-box;
   padding: 0 16px;
   background-color: var(--mat-sys-primary);
   color: var(--mat-sys-on-primary);
@@ -194,7 +199,7 @@ g.node:hover {
 
 #project-toolbar {
   position: fixed;
-  top: 64px;
+  top: var(--gns3-project-titlebar-height);
   left: 0;
   width: 56px;
   margin: 16px;
@@ -281,6 +286,30 @@ g.node:hover {
 
     &:first-child {
       border: none;
+    }
+  }
+}
+
+:host-context([data-density='compact']) {
+  --gns3-project-titlebar-height: 48px;
+
+  #project-titlebar {
+    padding: 0 12px;
+
+    .menu-button-group {
+      height: 36px;
+    }
+
+    .menu-button {
+      width: 36px;
+      height: 36px;
+      margin: 0 6px;
+      border-radius: 18px;
+    }
+
+    .primary-controls {
+      padding-right: 12px;
+      margin-right: 12px;
     }
   }
 }
