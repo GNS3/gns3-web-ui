@@ -92,6 +92,18 @@ $theme-configs: (
     )
   );
 
+  // Material density scale -2 maps to the compact dimensions used by GNS3:
+  // form fields 48px, table header 48px, table rows/footer 44px, and
+  // one-line list items 40px. Keeping this in the theme makes every Material
+  // component respond consistently instead of relying on page-level fixes.
+  $compact-theme: mat.define-theme(
+    (
+      density: (
+        scale: -2,
+      ),
+    )
+  );
+
   :root.#{$class-name} {
     @include mat.all-component-themes($theme);
     @include mat.system-level-colors($theme);
@@ -101,6 +113,27 @@ $theme-configs: (
   .cdk-overlay-container.#{$class-name},
   html.#{$class-name} .cdk-overlay-container {
     @include mat.all-component-themes($theme);
+  }
+
+  :root.#{$class-name}[data-density='compact'] {
+    @include mat.all-component-densities($compact-theme);
+
+    // Material hides filled-field labels at density -2. GNS3 forms use
+    // those labels as essential field names, so retain them and fit the
+    // normal 24px content line into the requested 48px container.
+    --mat-form-field-filled-label-display: block;
+    --mat-form-field-filled-with-label-container-padding-top: 20px;
+    --mat-form-field-filled-with-label-container-padding-bottom: 4px;
+  }
+
+  // Overlay content has normal-density tokens applied directly to its
+  // container above, so it needs an equally explicit compact override.
+  html[data-density='compact'] .cdk-overlay-container.#{$class-name},
+  html.#{$class-name}[data-density='compact'] .cdk-overlay-container {
+    @include mat.all-component-densities($compact-theme);
+    --mat-form-field-filled-label-display: block;
+    --mat-form-field-filled-with-label-container-padding-top: 20px;
+    --mat-form-field-filled-with-label-container-padding-bottom: 4px;
   }
 }
 
