@@ -28,7 +28,11 @@ import { DialogConfigService } from '@services/dialog-config.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-cloud-nodes-template-details',
   templateUrl: './cloud-nodes-template-details.component.html',
-  styleUrls: ['./cloud-nodes-template-details.component.scss', '../../../preferences.component.scss'],
+  styleUrls: [
+    './cloud-nodes-template-details.component.scss',
+    '../../../preferences.component.scss',
+    '../../../common/template-edit-page.scss',
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -73,6 +77,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   tapExpanded = false;
   udpExpanded = false;
   usageExpanded = false;
+  activeSection = 'general';
 
   // Model signals for form fields
   name = model('');
@@ -154,28 +159,20 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'cloud-nodes']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences']);
   }
 
   toggleSection(section: string) {
     switch (section) {
-      case 'general':
-        this.generalExpanded = !this.generalExpanded;
-        break;
-      case 'ethernet':
-        this.ethernetExpanded = !this.ethernetExpanded;
-        break;
-      case 'tap':
-        this.tapExpanded = !this.tapExpanded;
-        break;
-      case 'udp':
-        this.udpExpanded = !this.udpExpanded;
-        break;
-      case 'usage':
-        this.usageExpanded = !this.usageExpanded;
-        break;
+      case 'general': this.generalExpanded = !this.generalExpanded; break;
+      case 'ethernet': this.ethernetExpanded = !this.ethernetExpanded; break;
+      case 'tap': this.tapExpanded = !this.tapExpanded; break;
+      case 'udp': this.udpExpanded = !this.udpExpanded; break;
+      case 'usage': this.usageExpanded = !this.usageExpanded; break;
     }
   }
+
+  selectSection(section: string): void { this.activeSection = section; }
 
   getConfiguration() {
     this.categories = this.builtInTemplatesConfigurationService.getCategoriesForCloudNodes();
@@ -317,10 +314,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
     }
 
     // Validate console type
-    const consoleTypeValidation = this.validationService.validateConsoleType(
-      this.consoleType(),
-      this.consoleTypes
-    );
+    const consoleTypeValidation = this.validationService.validateConsoleType(this.consoleType(), this.consoleTypes);
     if (!consoleTypeValidation.isValid) {
       this.toasterService.error(consoleTypeValidation.errorMessage || 'Invalid console type');
       return;
@@ -365,7 +359,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
     this.builtInTemplatesService.saveTemplate(this.controller, this.cloudNodeTemplate).subscribe({
       next: () => {
         this.toasterService.success('Changes saved');
-        this.cd.markForCheck();
+        this.goBack();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to save template';

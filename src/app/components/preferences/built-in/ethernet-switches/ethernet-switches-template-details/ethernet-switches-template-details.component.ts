@@ -25,7 +25,11 @@ import { DialogConfigService } from '@services/dialog-config.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ethernet-switches-template-details',
   templateUrl: './ethernet-switches-template-details.component.html',
-  styleUrls: ['./ethernet-switches-template-details.component.scss', '../../../preferences.component.scss'],
+  styleUrls: [
+    './ethernet-switches-template-details.component.scss',
+    '../../../preferences.component.scss',
+    '../../../common/template-edit-page.scss',
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -70,6 +74,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   generalSettingsExpanded = model(false);
   portsExpanded = model(false);
   usageExpanded = model(false);
+  activeSection = 'general';
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -119,7 +124,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'ethernet-switches']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences']);
   }
 
   onSave() {
@@ -140,7 +145,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
     this.builtInTemplatesService.saveTemplate(this.controller, this.ethernetSwitchTemplate).subscribe({
       next: () => {
         this.toasterService.success('Changes saved');
-        this.cd.markForCheck();
+        this.goBack();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to save template';
@@ -193,15 +198,11 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
 
   toggleSection(section: string): void {
     switch (section) {
-      case 'general':
-        this.generalSettingsExpanded.set(!this.generalSettingsExpanded());
-        break;
-      case 'ports':
-        this.portsExpanded.set(!this.portsExpanded());
-        break;
-      case 'usage':
-        this.usageExpanded.set(!this.usageExpanded());
-        break;
+      case 'general': this.generalSettingsExpanded.set(!this.generalSettingsExpanded()); break;
+      case 'ports': this.portsExpanded.set(!this.portsExpanded()); break;
+      case 'usage': this.usageExpanded.set(!this.usageExpanded()); break;
     }
   }
+
+  selectSection(section: string): void { this.activeSection = section; }
 }

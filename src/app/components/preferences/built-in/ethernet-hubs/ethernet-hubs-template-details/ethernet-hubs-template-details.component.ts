@@ -25,7 +25,11 @@ import { DialogConfigService } from '@services/dialog-config.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ethernet-hubs-template-details',
   templateUrl: './ethernet-hubs-template-details.component.html',
-  styleUrls: ['./ethernet-hubs-template-details.component.scss', '../../../preferences.component.scss'],
+  styleUrls: [
+    './ethernet-hubs-template-details.component.scss',
+    '../../../preferences.component.scss',
+    '../../../common/template-edit-page.scss',
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -68,6 +72,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   // Section collapse states
   generalSettingsExpanded = model(false);
   usageExpanded = model(false);
+  activeSection = 'general';
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -115,7 +120,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'ethernet-hubs']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences']);
   }
 
   onSave() {
@@ -146,7 +151,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
     this.builtInTemplatesService.saveTemplate(this.controller, this.ethernetHubTemplate).subscribe({
       next: () => {
         this.toasterService.success('Changes saved');
-        this.cd.markForCheck();
+        this.goBack();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to save template';
@@ -199,12 +204,10 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
 
   toggleSection(section: string): void {
     switch (section) {
-      case 'general':
-        this.generalSettingsExpanded.set(!this.generalSettingsExpanded());
-        break;
-      case 'usage':
-        this.usageExpanded.set(!this.usageExpanded());
-        break;
+      case 'general': this.generalSettingsExpanded.set(!this.generalSettingsExpanded()); break;
+      case 'usage': this.usageExpanded.set(!this.usageExpanded()); break;
     }
   }
+
+  selectSection(section: string): void { this.activeSection = section; }
 }

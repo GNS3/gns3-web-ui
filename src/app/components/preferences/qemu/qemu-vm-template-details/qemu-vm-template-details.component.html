@@ -1,15 +1,34 @@
 <div class="qemu-template-details">
   <header class="qemu-template-details__header">
-    @if (controller) {
-    <button class="qemu-template-details__back-btn" (click)="goBack()" mat-icon-button>
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    }
-    <h1 class="qemu-template-details__title">QEMU VM template configuration</h1>
+    <div class="qemu-template-details__heading-row">
+      <div>
+        <div class="qemu-template-details__breadcrumb">
+          <button type="button" mat-button (click)="goBack()">Templates</button><mat-icon>chevron_right</mat-icon
+          ><span>Edit</span>
+        </div>
+        <h1 class="qemu-template-details__title">
+          Edit template
+          <span class="template-edit-legacy-label">QEMU VM template configuration</span>
+        </h1>
+      </div>
+      <div class="qemu-template-details__header-actions">
+        <button type="button" mat-stroked-button (click)="goBack()">Back to templates</button>
+      </div>
+    </div>
   </header>
 
   @if (qemuTemplate) {
   <main class="qemu-template-details__content">
+    <nav class="template-edit-tabs" aria-label="Template settings">
+      <button type="button" [class.is-active]="activeSection === 'general'" (click)="selectSection('general')">
+        General settings
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'hdd'" (click)="selectSection('hdd')">HDD</button>
+      <button type="button" [class.is-active]="activeSection === 'cddvd'" (click)="selectSection('cddvd')">CD/DVD</button>
+      <button type="button" [class.is-active]="activeSection === 'network'" (click)="selectSection('network')">Network</button>
+      <button type="button" [class.is-active]="activeSection === 'advanced'" (click)="selectSection('advanced')">Advanced</button>
+      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
+    </nav>
     <section class="qemu-template-details__form-card">
       <div class="qemu-template-details__section-header" (click)="toggleSection('general')">
         <h3 class="qemu-template-details__section-title">General settings</h3>
@@ -17,16 +36,28 @@
           generalSettingsExpanded ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
-      @if (generalSettingsExpanded) {
+      @if (activeSection === 'general') {
       <form class="qemu-template-details__form">
         <div class="two-column-grid">
           <mat-form-field appearance="fill" class="qemu-template-details__field">
             <mat-label>Template name</mat-label>
-            <input matInput [value]="templateName()" (input)="templateName.set($event.target.value)" type="text" placeholder="Template name" />
+            <input
+              matInput
+              [value]="templateName()"
+              (input)="templateName.set($event.target.value)"
+              type="text"
+              placeholder="Template name"
+            />
           </mat-form-field>
           <mat-form-field appearance="fill" class="qemu-template-details__field">
             <mat-label>Default name format</mat-label>
-            <input matInput [value]="defaultName()" (input)="defaultName.set($event.target.value)" type="text" placeholder="Default name format" />
+            <input
+              matInput
+              [value]="defaultName()"
+              (input)="defaultName.set($event.target.value)"
+              type="text"
+              placeholder="Default name format"
+            />
           </mat-form-field>
         </div>
 
@@ -41,7 +72,13 @@
           </mat-form-field>
           <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
             <mat-label>Symbol</mat-label>
-            <input matInput [value]="symbol()" (input)="symbol.set($event.target.value)" type="text" placeholder="Symbol" />
+            <input
+              matInput
+              [value]="symbol()"
+              (input)="symbol.set($event.target.value)"
+              type="text"
+              placeholder="Symbol"
+            />
           </mat-form-field>
           <button mat-button class="qemu-template-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
         </div>
@@ -137,7 +174,7 @@
           hddExpanded ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
-      @if (hddExpanded) {
+      @if (activeSection === 'hdd') {
       <div class="qemu-template-details__disk-grid">
         <div class="qemu-template-details__disk-item">
           <h4 class="qemu-template-details__disk-title">HDA (Primary Master)</h4>
@@ -285,7 +322,7 @@
           cdDvdExpanded ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
-      @if (cdDvdExpanded) {
+      @if (activeSection === 'cddvd') {
       <div class="qemu-template-details__file-row">
         <input
           type="file"
@@ -329,7 +366,7 @@
           networkExpanded ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
-      @if (networkExpanded) {
+      @if (activeSection === 'network') {
       <form class="qemu-template-details__form">
         <mat-form-field appearance="fill" class="qemu-template-details__field">
           <mat-label>Adapters</mat-label>
@@ -417,7 +454,7 @@
           advancedExpanded ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
-      @if (advancedExpanded) {
+      @if (activeSection === 'advanced') {
       <div class="qemu-template-details__form">
         <div class="qemu-template-details__subsection">
           <h4 class="qemu-template-details__subsection-title">Linux boot specific settings</h4>
@@ -605,12 +642,20 @@
             >Enable the Trusted Platform Module (TPM)</mat-checkbox
           >
           <mat-checkbox [checked]="uefi()" (change)="uefi.set($event.checked)">Enable the UEFI boot mode</mat-checkbox>
-          <div class="two-column-grid" style="margin-top: 12px;">
+          <div class="two-column-grid" style="margin-top: 12px">
             <mat-form-field appearance="fill" class="qemu-template-details__field">
               <mat-label>Max CPUs (hot-plug)</mat-label>
-              <input matInput [value]="maxcpus()" (input)="maxcpus.set(+$event.target.value)" type="text" placeholder="Max CPUs" />
+              <input
+                matInput
+                [value]="maxcpus()"
+                (input)="maxcpus.set(+$event.target.value)"
+                type="text"
+                placeholder="Max CPUs"
+              />
             </mat-form-field>
-            <mat-checkbox [checked]="createConfigDisk()" (change)="createConfigDisk.set($event.checked)">Auto-create config disk</mat-checkbox>
+            <mat-checkbox [checked]="createConfigDisk()" (change)="createConfigDisk.set($event.checked)"
+              >Auto-create config disk</mat-checkbox
+            >
           </div>
         </div>
       </div>
@@ -624,7 +669,7 @@
           usageExpanded ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
-      @if (usageExpanded) {
+      @if (activeSection === 'usage') {
       <div class="preferences__usage-form">
         <mat-form-field appearance="fill" class="preferences__usage-field--full">
           <mat-label>Usage notes</mat-label>

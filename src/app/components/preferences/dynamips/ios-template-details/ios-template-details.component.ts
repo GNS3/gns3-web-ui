@@ -28,7 +28,11 @@ import { DialogConfigService } from '@services/dialog-config.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ios-template-details',
   templateUrl: './ios-template-details.component.html',
-  styleUrls: ['./ios-template-details.component.scss', '../../preferences.component.scss'],
+  styleUrls: [
+    './ios-template-details.component.scss',
+    '../../preferences.component.scss',
+    '../../common/template-edit-page.scss',
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -78,6 +82,7 @@ export class IosTemplateDetailsComponent implements OnInit {
   slotsExpanded = false;
   advancedExpanded = false;
   usageExpanded = false;
+  activeSection = 'general';
 
   // Model signals
   readonly templateName = model('');
@@ -255,18 +260,36 @@ export class IosTemplateDetailsComponent implements OnInit {
   onSave() {
     // Validate required fields
     const nameValidation = this.validationService.validateName(this.templateName());
-    if (!nameValidation.isValid) { this.toasterService.error(nameValidation.errorMessage); return; }
+    if (!nameValidation.isValid) {
+      this.toasterService.error(nameValidation.errorMessage);
+      return;
+    }
     const pathValidation = this.validationService.validateImagePath(this.imagePath());
-    if (!pathValidation.isValid) { this.toasterService.error(pathValidation.errorMessage); return; }
+    if (!pathValidation.isValid) {
+      this.toasterService.error(pathValidation.errorMessage);
+      return;
+    }
     const platform = this.iosTemplate.platform;
     const ramValidation = this.validationService.validateRamForPlatform(this.ram(), platform);
-    if (!ramValidation.isValid) { this.toasterService.error(ramValidation.errorMessage); return; }
+    if (!ramValidation.isValid) {
+      this.toasterService.error(ramValidation.errorMessage);
+      return;
+    }
     const nvramValidation = this.validationService.validateNvramForPlatform(this.nvram(), platform);
-    if (!nvramValidation.isValid) { this.toasterService.error(nvramValidation.errorMessage); return; }
+    if (!nvramValidation.isValid) {
+      this.toasterService.error(nvramValidation.errorMessage);
+      return;
+    }
     const macValidation = this.validationService.validateMacAddress(this.baseMac());
-    if (!macValidation.isValid) { this.toasterService.error(macValidation.errorMessage); return; }
+    if (!macValidation.isValid) {
+      this.toasterService.error(macValidation.errorMessage);
+      return;
+    }
     const idlepcValidation = this.validationService.validateIdlepc(this.idlepc());
-    if (!idlepcValidation.isValid) { this.toasterService.error(idlepcValidation.errorMessage); return; }
+    if (!idlepcValidation.isValid) {
+      this.toasterService.error(idlepcValidation.errorMessage);
+      return;
+    }
 
     this.saveSlotsData();
 
@@ -291,7 +314,10 @@ export class IosTemplateDetailsComponent implements OnInit {
     this.iosTemplate.usage = this.usage();
 
     this.iosService.saveTemplate(this.controller, this.iosTemplate).subscribe({
-      next: () => { this.toasterService.success('Changes saved'); },
+      next: () => {
+        this.toasterService.success('Changes saved');
+        this.goBack();
+      },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to save template';
         this.toasterService.error(message);
@@ -301,17 +327,21 @@ export class IosTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'dynamips', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences']);
   }
 
   chooseSymbol() {
     const dialogConfig = this.dialogConfig.openConfig('templateSymbol', {
-      autoFocus: false, disableClose: false,
+      autoFocus: false,
+      disableClose: false,
       data: { controller: this.controller, symbol: this.iosTemplate.symbol },
     });
     const dialogRef = this.dialog.open(TemplateSymbolDialogComponent, dialogConfig);
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) { this.iosTemplate.symbol = result; this.symbol.set(result); }
+      if (result) {
+        this.iosTemplate.symbol = result;
+        this.symbol.set(result);
+      }
     });
   }
 
@@ -344,21 +374,13 @@ export class IosTemplateDetailsComponent implements OnInit {
 
   toggleSection(section: string): void {
     switch (section) {
-      case 'general':
-        this.generalSettingsExpanded = !this.generalSettingsExpanded;
-        break;
-      case 'memory':
-        this.memoryExpanded = !this.memoryExpanded;
-        break;
-      case 'slots':
-        this.slotsExpanded = !this.slotsExpanded;
-        break;
-      case 'advanced':
-        this.advancedExpanded = !this.advancedExpanded;
-        break;
-      case 'usage':
-        this.usageExpanded = !this.usageExpanded;
-        break;
+      case 'general': this.generalSettingsExpanded = !this.generalSettingsExpanded; break;
+      case 'memory': this.memoryExpanded = !this.memoryExpanded; break;
+      case 'slots': this.slotsExpanded = !this.slotsExpanded; break;
+      case 'advanced': this.advancedExpanded = !this.advancedExpanded; break;
+      case 'usage': this.usageExpanded = !this.usageExpanded; break;
     }
   }
+
+  selectSection(section: string): void { this.activeSection = section; }
 }

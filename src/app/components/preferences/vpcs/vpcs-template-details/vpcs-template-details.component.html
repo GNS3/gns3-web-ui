@@ -1,16 +1,31 @@
 <div class="vpcs-template-details">
   <header class="vpcs-template-details__header">
-    @if (controller) {
-    <button class="vpcs-template-details__back-btn" (click)="goBack()" mat-icon-button>
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    }
-    <h1 class="vpcs-template-details__title">VPCS node template configuration</h1>
+    <div class="vpcs-template-details__heading-row">
+      <div>
+        <div class="vpcs-template-details__breadcrumb">
+          <button type="button" mat-button (click)="goBack()">Templates</button>
+          <mat-icon>chevron_right</mat-icon>
+          <span>Edit</span>
+        </div>
+        <h1 class="vpcs-template-details__title">Edit template</h1>
+      </div>
+      <div class="vpcs-template-details__header-actions">
+        <button type="button" mat-stroked-button (click)="goBack()">Back to templates</button>
+      </div>
+    </div>
   </header>
 
   @if (vpcsTemplate) {
   <main class="vpcs-template-details__content">
-    <section class="vpcs-template-details__form-card">
+    <nav class="template-edit-tabs" aria-label="Template settings">
+      <button type="button" [class.is-active]="activeSection === 'general'" (click)="selectSection('general')">
+        General settings
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">
+        Usage
+      </button>
+    </nav>
+    <section class="vpcs-template-details__form-card" [class.template-edit-panel-active]="activeSection === 'general'">
       <h3 class="vpcs-template-details__section-title">General settings</h3>
       <form class="vpcs-template-details__form">
         <mat-form-field appearance="fill" class="vpcs-template-details__field">
@@ -107,7 +122,7 @@
       </form>
     </section>
 
-    <section class="vpcs-template-details__form-card">
+    <section class="vpcs-template-details__form-card" [class.template-edit-panel-active]="activeSection === 'usage'">
       <h3 class="vpcs-template-details__section-title">Usage</h3>
       <div class="preferences__usage-form">
         <mat-form-field appearance="fill" class="preferences__usage-field--full">

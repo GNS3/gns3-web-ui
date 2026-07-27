@@ -1,0 +1,395 @@
+/* Shared visual language for the type-specific template editors. */
+:host {
+  display: block;
+  width: 100%;
+  background: transparent;
+}
+
+.template-edit-legacy-label,
+.template-edit-legacy-control {
+  display: none;
+}
+
+[class$='__header'] {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px 24px 14px;
+}
+
+[class$='__breadcrumb'] {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  color: var(--mat-sys-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+[class$='__breadcrumb'] button {
+  min-height: 28px;
+  padding: 0 4px;
+  color: inherit;
+  font: inherit;
+}
+
+[class$='__breadcrumb'] mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+[class$='__heading-row'] {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  width: 100%;
+}
+
+[class$='__title'] {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: var(--mat-sys-on-surface);
+  font-size: 32px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+[class$='__header-actions'] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+[class$='__header-actions'] button {
+  min-height: 44px;
+  border-radius: 10px;
+  padding: 0 18px;
+}
+
+[class$='__header-actions'] button[color='primary'] {
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--mat-sys-primary) 24%, transparent);
+}
+
+[class$='__back-btn'] {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+[class$='__content'] {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  align-items: start;
+  gap: 22px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px 32px;
+}
+
+.template-edit-tabs {
+  display: flex;
+  grid-column: 1;
+  grid-row: 1;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 65%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--mat-sys-primary-container) 18%, var(--mat-sys-surface));
+}
+
+.template-edit-tabs button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 44px;
+  border: 0;
+  border-radius: 9px;
+  padding: 0 12px;
+  color: var(--mat-sys-on-surface-variant);
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.template-edit-tabs button:hover {
+  background: color-mix(in srgb, var(--mat-sys-primary-container) 35%, transparent);
+}
+
+.template-edit-tabs button.is-active {
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
+}
+
+[class$='__content'] > [class*='__form-card'] {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+[class$='__content'] > [class*='__form-card']:not(:has(> :nth-child(2))) {
+  display: none;
+}
+
+.vpcs-template-details__form-card:not(.template-edit-panel-active) {
+  display: none;
+}
+
+[class*='__form-card'] {
+  margin: 0 0 18px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 65%, transparent);
+  border-radius: 16px;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 16%, transparent);
+}
+
+[class$='__section-header'] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  box-sizing: border-box;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background: color-mix(in srgb, var(--mat-sys-primary-container) 28%, var(--mat-sys-surface));
+  cursor: default;
+}
+
+[class$='__expand-icon'] {
+  display: none;
+}
+
+[class$='__section-title'] {
+  margin: 0;
+  color: var(--mat-sys-on-surface);
+  font-size: 21px;
+  font-weight: 650;
+}
+
+[class$='__form'],
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+/* Keep QEMU's nested Advanced subsections on the same horizontal grid as its
+   General settings form, regardless of component stylesheet order. */
+.qemu-template-details__form {
+  padding-inline: 24px;
+}
+
+.qemu-template-details__subsection {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.two-column-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+[class$='__field'],
+.form-field {
+  width: 100%;
+}
+
+[class$='__actions'] {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 4px 0 8px;
+}
+
+[class$='__content'] > [class$='__actions'] {
+  grid-column: 2;
+  justify-content: flex-end;
+}
+
+[class$='__save-btn'],
+[class$='__cancel-btn'] {
+  min-height: 48px;
+  height: 48px;
+  border-radius: 12px;
+  padding-inline: 20px;
+  font-size: 15px;
+  font-weight: 550;
+  text-transform: none;
+}
+
+button[class$='__save-btn'] {
+  color: var(--mat-sys-on-primary);
+  background-color: var(--mat-sys-primary);
+  border: 1px solid var(--mat-sys-primary);
+}
+
+button[class$='__cancel-btn'] {
+  color: var(--mat-sys-on-secondary-container);
+  background-color: var(--mat-sys-secondary-container);
+  border: 1px solid var(--mat-sys-outline-variant);
+}
+
+/* Usage is a free-form description, so it should use the complete editor
+   panel width instead of inheriting the compact field sizing from the other
+   controls. */
+.preferences__usage-form {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 24px;
+}
+
+.preferences__usage-field--full {
+  display: block;
+  width: 100%;
+}
+
+.preferences__usage-field--full textarea.mat-mdc-input-element {
+  width: 100%;
+  min-height: 140px;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+/* File pickers inside a form already inherit the form's horizontal inset.
+   Removing their nested inset keeps Advanced fields aligned with General
+   fields while leaving standalone disk/image rows unchanged. */
+[class*='__form'] [class*='__file-row'] {
+  padding-inline: 0;
+}
+
+[class*='__file-row'] {
+  align-items: flex-start;
+}
+
+button[class*='__browse-btn'] {
+  margin-top: 0;
+}
+
+[class$='__symbol-row'] {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+[class$='__symbol-row'] [class$='__field'] {
+  flex: 1;
+}
+
+:host-context([data-density='compact']) {
+  [class$='__header'] {
+    padding-block: 16px 10px;
+  }
+
+  [class$='__title'] {
+    font-size: 27px;
+  }
+
+  [class$='__heading-row'] {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  [class$='__header-actions'] {
+    width: 100%;
+  }
+
+  [class$='__header-actions'] button {
+    flex: 1;
+  }
+
+  [class$='__section-header'] {
+    min-height: 52px;
+    padding-block: 8px;
+  }
+
+  [class$='__form'],
+  .form-container {
+    gap: 12px;
+    padding: 16px;
+  }
+
+  [class$='__save-btn'],
+  [class$='__cancel-btn'] {
+    min-height: 40px;
+    height: 40px;
+  }
+
+  .preferences__usage-form {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  [class$='__header'] {
+    padding-inline: 16px;
+  }
+
+  [class$='__content'] {
+    padding-inline: 16px;
+    grid-template-columns: 1fr;
+  }
+
+  .template-edit-tabs {
+    grid-column: 1;
+    grid-row: auto;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .template-edit-tabs button {
+    flex: 0 0 auto;
+  }
+
+  [class$='__content'] > [class*='__form-card'] {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .two-column-grid {
+    grid-template-columns: 1fr;
+  }
+
+  [class$='__symbol-row'] {
+    flex-direction: column;
+  }
+
+  [class$='__actions'] {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  [class$='__actions'] button {
+    width: auto;
+  }
+
+  [class$='__content'] > [class$='__actions'] {
+    grid-column: 1;
+  }
+
+  .preferences__usage-form {
+    padding: 16px;
+  }
+
+  [class$='__save-btn'],
+  [class$='__cancel-btn'] {
+    width: auto;
+  }
+}

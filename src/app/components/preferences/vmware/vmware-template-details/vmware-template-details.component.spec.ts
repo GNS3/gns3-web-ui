@@ -215,8 +215,6 @@ describe('VmwareTemplateDetailsComponent', () => {
       '/controller',
       mockController.id,
       'preferences',
-      'vmware',
-      'templates',
     ]);
   });
 

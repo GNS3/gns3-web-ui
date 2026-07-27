@@ -28,7 +28,11 @@ import { ConfigureCustomAdaptersDialogComponent } from '../../../project-map/nod
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-docker-template-details',
   templateUrl: './docker-template-details.component.html',
-  styleUrls: ['./docker-template-details.component.scss', '../../preferences.component.scss'],
+  styleUrls: [
+    './docker-template-details.component.scss',
+    '../../preferences.component.scss',
+    '../../common/template-edit-page.scss',
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -62,6 +66,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
   generalSettingsExpanded = false;
   advancedExpanded = false;
   usageExpanded = false;
+  activeSection = 'general';
 
   consoleTypes: string[] = [];
   auxConsoleTypes: string[] = [];
@@ -154,22 +159,18 @@ export class DockerTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'docker', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences']);
   }
 
   toggleSection(section: string) {
     switch (section) {
-      case 'general':
-        this.generalSettingsExpanded = !this.generalSettingsExpanded;
-        break;
-      case 'advanced':
-        this.advancedExpanded = !this.advancedExpanded;
-        break;
-      case 'usage':
-        this.usageExpanded = !this.usageExpanded;
-        break;
+      case 'general': this.generalSettingsExpanded = !this.generalSettingsExpanded; break;
+      case 'advanced': this.advancedExpanded = !this.advancedExpanded; break;
+      case 'usage': this.usageExpanded = !this.usageExpanded; break;
     }
   }
+
+  selectSection(section: string): void { this.activeSection = section; }
 
   onSave() {
     // Validate name (required)
@@ -250,12 +251,17 @@ export class DockerTemplateDetailsComponent implements OnInit {
     this.dockerTemplate.cpus = this.cpus();
     this.dockerTemplate.environment = this.environment();
     this.dockerTemplate.extra_hosts = this.extraHosts();
-    this.dockerTemplate.extra_volumes = this.extraVolumes() ? this.extraVolumes().split('\n').filter((v) => v.trim()) : [];
+    this.dockerTemplate.extra_volumes = this.extraVolumes()
+      ? this.extraVolumes()
+          .split('\n')
+          .filter((v) => v.trim())
+      : [];
     this.dockerTemplate.usage = this.usage();
 
     this.dockerService.saveTemplate(this.controller, this.dockerTemplate).subscribe({
-      next: (savedTemplate: DockerTemplate) => {
+      next: () => {
         this.toasterService.success('Changes saved');
+        this.goBack();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to save template';
@@ -295,11 +301,15 @@ export class DockerTemplateDetailsComponent implements OnInit {
     // Use existing custom_adapters, or generate from adaptersCount
     let adapters = this.dockerTemplate.custom_adapters || [];
     if (adapters.length === 0) {
-      adapters = Array.from({ length: this.adaptersCount() || 1 }, (_, i) => ({
-        adapter_number: i,
-        port_name: '',
-        adapter_type: '',
-      }) as any);
+      adapters = Array.from(
+        { length: this.adaptersCount() || 1 },
+        (_, i) =>
+          ({
+            adapter_number: i,
+            port_name: '',
+            adapter_type: '',
+          } as any)
+      );
     }
     const dialogConfig = this.dialogConfig.openConfig('base', {
       autoFocus: false,

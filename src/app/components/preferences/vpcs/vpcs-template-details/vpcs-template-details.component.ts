@@ -26,7 +26,11 @@ import { DialogConfigService } from '@services/dialog-config.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-vpcs-template-details',
   templateUrl: './vpcs-template-details.component.html',
-  styleUrls: ['./vpcs-template-details.component.scss', '../../preferences.component.scss'],
+  styleUrls: [
+    './vpcs-template-details.component.scss',
+    '../../preferences.component.scss',
+    '../../common/template-edit-page.scss',
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -57,6 +61,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   categories = [];
+  activeSection: 'general' | 'usage' = 'general';
 
   // Model signals for form fields
   templateName = model('');
@@ -122,7 +127,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'vpcs', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences']);
   }
 
   onSave() {
@@ -148,9 +153,9 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     this.vpcsTemplate.usage = this.usage();
 
     this.vpcsService.saveTemplate(this.controller, this.vpcsTemplate).subscribe({
-      next: (vpcsTemplate: VpcsTemplate) => {
+      next: () => {
         this.toasterService.success('Changes saved');
-        this.cd.markForCheck();
+        this.goBack();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to save VPCS template';
@@ -199,5 +204,9 @@ export class VpcsTemplateDetailsComponent implements OnInit {
       newTags.splice(index, 1);
       this.tags.set(newTags);
     }
+  }
+
+  selectSection(section: 'general' | 'usage'): void {
+    this.activeSection = section;
   }
 }

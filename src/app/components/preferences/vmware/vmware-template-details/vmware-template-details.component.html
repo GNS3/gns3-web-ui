@@ -1,15 +1,42 @@
 <div class="vmware-template-details">
   <header class="vmware-template-details__header">
+    <div class="vmware-template-details__heading-row">
+      <div>
+        <div class="vmware-template-details__breadcrumb">
+          <button type="button" mat-button (click)="goBack()">Templates</button><mat-icon>chevron_right</mat-icon
+          ><span>Edit</span>
+        </div>
+        <h1 class="vmware-template-details__title">
+          Edit template
+          <span class="template-edit-legacy-label">VMware VM template configuration</span>
+        </h1>
+      </div>
+      <div class="vmware-template-details__header-actions">
+        <button type="button" mat-stroked-button (click)="goBack()">Back to templates</button>
+      </div>
+    </div>
     @if (controller) {
-    <button class="vmware-template-details__back-btn" (click)="goBack()" mat-icon-button>
+    <button
+      class="vmware-template-details__back-btn template-edit-legacy-control"
+      (click)="goBack()"
+      mat-icon-button
+      aria-hidden="true"
+      tabindex="-1"
+    >
       <mat-icon>arrow_back</mat-icon>
     </button>
     }
-    <h1 class="vmware-template-details__title">VMware VM template configuration</h1>
   </header>
 
   @if (vmwareTemplate) {
   <main class="vmware-template-details__content">
+    <nav class="template-edit-tabs" aria-label="Template settings">
+      <button type="button" [class.is-active]="activeSection === 'general'" (click)="selectSection('general')">
+        General settings
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'network'" (click)="selectSection('network')">Network</button>
+      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
+    </nav>
     <section class="vmware-template-details__form-card">
       <div class="vmware-template-details__section-header" (click)="toggleSection('general')">
         <h3 class="vmware-template-details__section-title">General settings</h3>
@@ -17,7 +44,7 @@
           generalSettingsExpanded ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
-      @if (generalSettingsExpanded) {
+      @if (activeSection === 'general') {
       <form class="vmware-template-details__form">
         <mat-form-field appearance="fill" class="vmware-template-details__field">
           <mat-label>Template name</mat-label>
@@ -128,7 +155,7 @@
           networkExpanded ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
-      @if (networkExpanded) {
+      @if (activeSection === 'network') {
       <form class="vmware-template-details__form">
         <mat-form-field appearance="fill" class="vmware-template-details__field">
           <mat-label>Adapters</mat-label>
@@ -205,7 +232,7 @@
           usageExpanded ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
-      @if (usageExpanded) {
+      @if (activeSection === 'usage') {
       <div class="preferences__usage-form">
         <mat-form-field appearance="fill" class="preferences__usage-field--full">
           <mat-label>Usage notes</mat-label>

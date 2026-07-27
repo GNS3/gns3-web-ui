@@ -252,8 +252,6 @@ describe('IouTemplateDetailsComponent', () => {
         '/controller',
         mockController.id,
         'preferences',
-        'iou',
-        'templates',
       ]);
     });
   });

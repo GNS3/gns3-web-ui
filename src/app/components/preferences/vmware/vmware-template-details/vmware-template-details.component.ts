@@ -31,7 +31,11 @@ import { DialogConfigService } from '@services/dialog-config.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-vmware-template-details',
   templateUrl: './vmware-template-details.component.html',
-  styleUrls: ['./vmware-template-details.component.scss', '../../preferences.component.scss'],
+  styleUrls: [
+    './vmware-template-details.component.scss',
+    '../../preferences.component.scss',
+    '../../common/template-edit-page.scss',
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -69,6 +73,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
   generalSettingsExpanded: boolean = false;
   networkExpanded: boolean = false;
   usageExpanded: boolean = false;
+  activeSection = 'general';
 
   // Model signals for form fields
   templateName = model('');
@@ -157,7 +162,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'vmware', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences']);
   }
 
   onSave() {
@@ -196,10 +201,8 @@ export class VmwareTemplateDetailsComponent implements OnInit {
     this.vmwareService.saveTemplate(this.controller, this.vmwareTemplate).subscribe({
       next: (vmwareTemplate: VmwareTemplate) => {
         this.toasterService.success('Changes saved');
-        // Update local template with server response to reflect changes immediately
         this.vmwareTemplate = vmwareTemplate;
-        this.initFormFromTemplate();
-        this.cd.markForCheck();
+        this.goBack();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to save VMware template';
@@ -317,15 +320,11 @@ export class VmwareTemplateDetailsComponent implements OnInit {
 
   toggleSection(section: string): void {
     switch (section) {
-      case 'general':
-        this.generalSettingsExpanded = !this.generalSettingsExpanded;
-        break;
-      case 'network':
-        this.networkExpanded = !this.networkExpanded;
-        break;
-      case 'usage':
-        this.usageExpanded = !this.usageExpanded;
-        break;
+      case 'general': this.generalSettingsExpanded = !this.generalSettingsExpanded; break;
+      case 'network': this.networkExpanded = !this.networkExpanded; break;
+      case 'usage': this.usageExpanded = !this.usageExpanded; break;
     }
   }
+
+  selectSection(section: string): void { this.activeSection = section; }
 }

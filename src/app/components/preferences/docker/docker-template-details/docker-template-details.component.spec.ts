@@ -273,7 +273,7 @@ describe('DockerTemplateDetailsComponent', () => {
 
       component.goBack();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 1, 'preferences', 'docker', 'templates']);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 1, 'preferences']);
     });
   });
 

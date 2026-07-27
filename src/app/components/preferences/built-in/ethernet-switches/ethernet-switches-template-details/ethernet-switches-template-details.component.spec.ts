@@ -251,8 +251,6 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
         '/controller',
         mockController.id,
         'preferences',
-        'builtin',
-        'ethernet-switches',
       ]);
     });
   });

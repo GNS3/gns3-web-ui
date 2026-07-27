@@ -1,15 +1,32 @@
 <div class="ios-details">
   <header class="ios-details__header">
-    @if (controller) {
-    <button class="ios-details__back-btn" (click)="goBack()" mat-icon-button>
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    }
-    <h1 class="ios-details__title">IOS router template configuration</h1>
+    <div class="ios-details__heading-row">
+      <div>
+        <div class="ios-details__breadcrumb">
+          <button type="button" mat-button (click)="goBack()">Templates</button><mat-icon>chevron_right</mat-icon
+          ><span>Edit</span>
+        </div>
+        <h1 class="ios-details__title">Edit template</h1>
+      </div>
+      <div class="ios-details__header-actions">
+        <button type="button" mat-stroked-button (click)="goBack()">Back to templates</button>
+      </div>
+    </div>
   </header>
 
   @if (iosTemplate) {
   <main class="ios-details__content">
+    <nav class="template-edit-tabs" aria-label="Template settings">
+      <button type="button" [class.is-active]="activeSection === 'general'" (click)="selectSection('general')">
+        General settings
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'memory'" (click)="selectSection('memory')">
+        Memories and disks
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'slots'" (click)="selectSection('slots')">Slots</button>
+      <button type="button" [class.is-active]="activeSection === 'advanced'" (click)="selectSection('advanced')">Advanced</button>
+      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
+    </nav>
     <section class="ios-details__form-card">
       <div class="ios-details__section-header" (click)="toggleSection('general')">
         <h3 class="ios-details__section-title">General settings</h3>
@@ -17,16 +34,28 @@
           generalSettingsExpanded ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
-      @if (generalSettingsExpanded) {
+      @if (activeSection === 'general') {
       <div class="ios-details__form">
         <div class="two-column-grid">
           <mat-form-field appearance="fill" class="ios-details__field">
             <mat-label>Template name</mat-label>
-            <input matInput type="text" [value]="templateName()" (input)="templateName.set($event.target.value)" placeholder="Template name" />
+            <input
+              matInput
+              type="text"
+              [value]="templateName()"
+              (input)="templateName.set($event.target.value)"
+              placeholder="Template name"
+            />
           </mat-form-field>
           <mat-form-field appearance="fill" class="ios-details__field">
             <mat-label>Default name format</mat-label>
-            <input matInput type="text" [value]="defaultName()" (input)="defaultName.set($event.target.value)" placeholder="Default name format" />
+            <input
+              matInput
+              type="text"
+              [value]="defaultName()"
+              (input)="defaultName.set($event.target.value)"
+              placeholder="Default name format"
+            />
           </mat-form-field>
         </div>
 
@@ -41,7 +70,13 @@
           </mat-form-field>
           <mat-form-field appearance="fill" class="ios-details__field ios-details__field--flex">
             <mat-label>Symbol</mat-label>
-            <input matInput type="text" [value]="symbol()" (input)="symbol.set($event.target.value)" placeholder="Symbol" />
+            <input
+              matInput
+              type="text"
+              [value]="symbol()"
+              (input)="symbol.set($event.target.value)"
+              placeholder="Symbol"
+            />
           </mat-form-field>
           <button mat-button class="ios-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
         </div>
@@ -68,24 +103,47 @@
             </mat-chip>
             }
           </mat-chip-grid>
-          <input matInput placeholder="Add tags" [matChipInputFor]="chipList"
-            [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="addTag($event)" />
+          <input
+            matInput
+            placeholder="Add tags"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="addTag($event)"
+          />
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="ios-details__field">
           <mat-label>IOS image path</mat-label>
-          <input matInput type="text" [value]="imagePath()" (input)="imagePath.set($event.target.value)" placeholder="IOS image path" />
+          <input
+            matInput
+            type="text"
+            [value]="imagePath()"
+            (input)="imagePath.set($event.target.value)"
+            placeholder="IOS image path"
+          />
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="ios-details__field">
           <mat-label>Initial startup-config</mat-label>
-          <input matInput type="text" [value]="initialConfig()" (input)="initialConfig.set($event.target.value)" placeholder="Initial startup-config" />
+          <input
+            matInput
+            type="text"
+            [value]="initialConfig()"
+            (input)="initialConfig.set($event.target.value)"
+            placeholder="Initial startup-config"
+          />
           <mat-hint>Filename only (e.g. ios-startup-config.txt)</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="ios-details__field">
           <mat-label>Initial private-config</mat-label>
-          <input matInput type="text" [value]="iosTemplate.private_config" (input)="iosTemplate.private_config = $event.target.value" placeholder="Initial private-config" />
+          <input
+            matInput
+            type="text"
+            [value]="iosTemplate.private_config"
+            (input)="iosTemplate.private_config = $event.target.value"
+            placeholder="Initial private-config"
+          />
           <mat-hint>Filename only (e.g. ios-private-config.txt)</mat-hint>
         </mat-form-field>
 
@@ -108,7 +166,12 @@
           </mat-form-field>
         </div>
 
-        <mat-checkbox class="ios-details__checkbox" [checked]="iosTemplate.console_auto_start" (change)="iosTemplate.console_auto_start = $event.checked">Auto start console</mat-checkbox>
+        <mat-checkbox
+          class="ios-details__checkbox"
+          [checked]="iosTemplate.console_auto_start"
+          (change)="iosTemplate.console_auto_start = $event.checked"
+          >Auto start console</mat-checkbox
+        >
       </div>
       }
     </section>
@@ -118,19 +181,35 @@
         <h3 class="ios-details__section-title">Memories and disks</h3>
         <mat-icon class="ios-details__expand-icon">{{ memoryExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
       </div>
-      @if (memoryExpanded) {
+      @if (activeSection === 'memory') {
       <div class="ios-details__form">
         <h6 class="ios-details__section-subtitle">Memory</h6>
         <div class="ios-details__adapters">
           <mat-form-field appearance="fill" class="ios-details__field">
             <mat-label>RAM size</mat-label>
-            <input matInput type="text" min="32" step="32" [value]="ram()" (input)="ram.set($event.target.value)" placeholder="RAM size" />
+            <input
+              matInput
+              type="text"
+              min="32"
+              step="32"
+              [value]="ram()"
+              (input)="ram.set($event.target.value)"
+              placeholder="RAM size"
+            />
             <span matSuffix>MB</span>
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="ios-details__field">
             <mat-label>NVRAM size</mat-label>
-            <input matInput type="text" min="32" step="32" [value]="nvram()" (input)="nvram.set($event.target.value)" placeholder="NVRAM size" />
+            <input
+              matInput
+              type="text"
+              min="32"
+              step="32"
+              [value]="nvram()"
+              (input)="nvram.set($event.target.value)"
+              placeholder="NVRAM size"
+            />
             <span matSuffix>KB</span>
           </mat-form-field>
 
@@ -143,7 +222,8 @@
               min="0"
               max="100"
               step="5"
-              [value]="iomemory()" (input)="iomemory.set($event.target.value)"
+              [value]="iomemory()"
+              (input)="iomemory.set($event.target.value)"
               placeholder="I/O memory"
             />
             <mat-hint>Percentage of RAM for I/O memory</mat-hint>
@@ -155,12 +235,28 @@
         <div class="ios-details__adapters">
           <mat-form-field appearance="fill" class="ios-details__field">
             <mat-label>PCMCIA disk0</mat-label>
-            <input matInput type="text" min="0" step="4" [value]="disk0()" (input)="disk0.set($event.target.value)" placeholder="PCMCIA disk0" />
+            <input
+              matInput
+              type="text"
+              min="0"
+              step="4"
+              [value]="disk0()"
+              (input)="disk0.set($event.target.value)"
+              placeholder="PCMCIA disk0"
+            />
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="ios-details__field">
             <mat-label>PCMCIA disk1</mat-label>
-            <input matInput type="text" min="0" step="4" [value]="disk1()" (input)="disk1.set($event.target.value)" placeholder="PCMCIA disk1" />
+            <input
+              matInput
+              type="text"
+              min="0"
+              step="4"
+              [value]="disk1()"
+              (input)="disk1.set($event.target.value)"
+              placeholder="PCMCIA disk1"
+            />
           </mat-form-field>
         </div>
 
@@ -174,7 +270,7 @@
         <h3 class="ios-details__section-title">Slots</h3>
         <mat-icon class="ios-details__expand-icon">{{ slotsExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
       </div>
-      @if (slotsExpanded) {
+      @if (activeSection === 'slots') {
       <div class="ios-details__form">
         <h6 class="ios-details__section-subtitle">Adapters</h6>
         <div class="ios-details__adapters">
@@ -228,17 +324,29 @@
         <h3 class="ios-details__section-title">Advanced</h3>
         <mat-icon class="ios-details__expand-icon">{{ advancedExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
       </div>
-      @if (advancedExpanded) {
+      @if (activeSection === 'advanced') {
       <div class="ios-details__form">
         <mat-form-field appearance="fill" class="ios-details__field">
           <mat-label>System ID</mat-label>
-          <input matInput type="text" [value]="systemId()" (input)="systemId.set($event.target.value)" placeholder="System ID" />
+          <input
+            matInput
+            type="text"
+            [value]="systemId()"
+            (input)="systemId.set($event.target.value)"
+            placeholder="System ID"
+          />
         </mat-form-field>
 
         <div class="ios-details__symbol-row">
           <mat-form-field appearance="fill" class="ios-details__field ios-details__field--flex">
             <mat-label>Base MAC (format: xxxx.xxxx.xxxx)</mat-label>
-            <input matInput type="text" [value]="baseMac()" (input)="baseMac.set($event.target.value)" placeholder="Base MAC" />
+            <input
+              matInput
+              type="text"
+              [value]="baseMac()"
+              (input)="baseMac.set($event.target.value)"
+              placeholder="Base MAC"
+            />
             <mat-hint>Example: aaaa.bbbb.cccc (leave empty to let the server allocate a MAC address).</mat-hint>
           </mat-form-field>
           <button mat-button class="ios-details__action-btn" (click)="generateBaseMAC()">Generate Base MAC</button>
@@ -247,7 +355,13 @@
         <div class="ios-details__symbol-row">
           <mat-form-field appearance="fill" class="ios-details__field ios-details__field--flex">
             <mat-label>Idle-PC</mat-label>
-            <input matInput type="text" [value]="idlepc()" (input)="idlepc.set($event.target.value)" placeholder="Idle-PC" />
+            <input
+              matInput
+              type="text"
+              [value]="idlepc()"
+              (input)="idlepc.set($event.target.value)"
+              placeholder="Idle-PC"
+            />
           </mat-form-field>
           <button mat-button class="ios-details__action-btn" (click)="findIdlePC()">Idle-PC finder</button>
         </div>
@@ -255,21 +369,49 @@
         <div class="three-column-grid">
           <mat-form-field appearance="fill" class="ios-details__field">
             <mat-label>Idlemax</mat-label>
-            <input matInput type="text" min="100" step="100" [value]="idlemax()" (input)="idlemax.set($event.target.value)" placeholder="Idlemax" />
+            <input
+              matInput
+              type="text"
+              min="100"
+              step="100"
+              [value]="idlemax()"
+              (input)="idlemax.set($event.target.value)"
+              placeholder="Idlemax"
+            />
           </mat-form-field>
           <mat-form-field appearance="fill" class="ios-details__field">
             <mat-label>Idlesleep</mat-label>
-            <input matInput type="text" min="1" step="10" [value]="idlesleep()" (input)="idlesleep.set($event.target.value)" placeholder="Idlesleep" />
+            <input
+              matInput
+              type="text"
+              min="1"
+              step="10"
+              [value]="idlesleep()"
+              (input)="idlesleep.set($event.target.value)"
+              placeholder="Idlesleep"
+            />
           </mat-form-field>
           <mat-form-field appearance="fill" class="ios-details__field">
             <mat-label>Exec area</mat-label>
-            <input matInput type="text" min="0" step="4" [value]="execArea()" (input)="execArea.set($event.target.value)" placeholder="Exec area" />
+            <input
+              matInput
+              type="text"
+              min="0"
+              step="4"
+              [value]="execArea()"
+              (input)="execArea.set($event.target.value)"
+              placeholder="Exec area"
+            />
           </mat-form-field>
         </div>
 
         <div class="two-column-grid">
-          <mat-checkbox class="ios-details__checkbox" [checked]="mmap()" (change)="mmap.set($event.checked)">Enable mmap support</mat-checkbox>
-          <mat-checkbox class="ios-details__checkbox" [checked]="sparsemem()" (change)="sparsemem.set($event.checked)">Enable sparse memory support</mat-checkbox>
+          <mat-checkbox class="ios-details__checkbox" [checked]="mmap()" (change)="mmap.set($event.checked)"
+            >Enable mmap support</mat-checkbox
+          >
+          <mat-checkbox class="ios-details__checkbox" [checked]="sparsemem()" (change)="sparsemem.set($event.checked)"
+            >Enable sparse memory support</mat-checkbox
+          >
         </div>
       </div>
       }
@@ -280,7 +422,7 @@
         <h3 class="ios-details__section-title">Usage</h3>
         <mat-icon class="ios-details__expand-icon">{{ usageExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
       </div>
-      @if (usageExpanded) {
+      @if (activeSection === 'usage') {
       <div class="preferences__usage-form">
         <mat-form-field appearance="fill" class="preferences__usage-field--full">
           <mat-label>Usage</mat-label>

@@ -265,8 +265,6 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
         '/controller',
         component.controller.id,
         'preferences',
-        'virtualbox',
-        'templates',
       ]);
     });
   });

@@ -664,8 +664,6 @@ describe('IosTemplateDetailsComponent', () => {
         '/controller',
         mockController.id,
         'preferences',
-        'dynamips',
-        'templates',
       ]);
     });
   });

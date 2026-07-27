@@ -244,8 +244,6 @@ describe('VpcsTemplateDetailsComponent', () => {
         '/controller',
         mockController.id,
         'preferences',
-        'vpcs',
-        'templates',
       ]);
     });
   });

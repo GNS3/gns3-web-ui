@@ -31,7 +31,11 @@ import { DialogConfigService } from '@services/dialog-config.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-virtual-box-template-details',
   templateUrl: './virtual-box-template-details.component.html',
-  styleUrls: ['./virtual-box-template-details.component.scss', '../../preferences.component.scss'],
+  styleUrls: [
+    './virtual-box-template-details.component.scss',
+    '../../preferences.component.scss',
+    '../../common/template-edit-page.scss',
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -68,6 +72,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   generalSettingsExpanded = true;
   networkExpanded = false;
   usageExpanded = false;
+  activeSection = 'general';
 
   // Model signals for form fields
   templateName = model('');
@@ -159,17 +164,13 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
 
   toggleSection(section: string) {
     switch (section) {
-      case 'general':
-        this.generalSettingsExpanded = !this.generalSettingsExpanded;
-        break;
-      case 'network':
-        this.networkExpanded = !this.networkExpanded;
-        break;
-      case 'usage':
-        this.usageExpanded = !this.usageExpanded;
-        break;
+      case 'general': this.generalSettingsExpanded = !this.generalSettingsExpanded; break;
+      case 'network': this.networkExpanded = !this.networkExpanded; break;
+      case 'usage': this.usageExpanded = !this.usageExpanded; break;
     }
   }
+
+  selectSection(section: string): void { this.activeSection = section; }
 
   openCustomAdaptersDialog() {
     // Generate complete adapter list for display
@@ -237,7 +238,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'virtualbox', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences']);
   }
 
   onSave() {
@@ -277,10 +278,8 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     this.virtualBoxService.saveTemplate(this.controller, this.virtualBoxTemplate).subscribe({
       next: (virtualBoxTemplate: VirtualBoxTemplate) => {
         this.toasterService.success('Changes saved');
-        // Update local template with server response to reflect changes immediately
         this.virtualBoxTemplate = virtualBoxTemplate;
-        this.initFormFromTemplate();
-        this.cd.markForCheck();
+        this.goBack();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to save VirtualBox template';

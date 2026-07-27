@@ -299,8 +299,6 @@ describe('QemuVmTemplateDetailsComponent', () => {
       '/controller',
       mockController.id,
       'preferences',
-      'qemu',
-      'templates',
     ]);
   });
 

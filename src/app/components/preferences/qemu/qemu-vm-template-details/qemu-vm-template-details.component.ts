@@ -36,7 +36,11 @@ import { DialogConfigService } from '@services/dialog-config.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-qemu-virtual-machine-template-details',
   templateUrl: './qemu-vm-template-details.component.html',
-  styleUrls: ['./qemu-vm-template-details.component.scss', '../../preferences.component.scss'],
+  styleUrls: [
+    './qemu-vm-template-details.component.scss',
+    '../../preferences.component.scss',
+    '../../common/template-edit-page.scss',
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -90,6 +94,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   networkExpanded = false;
   advancedExpanded = false;
   usageExpanded = false;
+  activeSection = 'general';
 
   // Model signals for form fields
   templateName = model('');
@@ -158,7 +163,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         this.getConfiguration();
         this.qemuService.getImages(this.controller).subscribe({
           next: (images: QemuImage[]) => {
-            const unique = images.filter((img, idx, arr) => arr.findIndex(i => i.filename === img.filename) === idx);
+            const unique = images.filter((img, idx, arr) => arr.findIndex((i) => i.filename === img.filename) === idx);
             this.qemuImages = unique;
             this.filteredImages = unique;
             this.filteredAdvancedImages = unique;
@@ -299,7 +304,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   refreshQemuImages() {
     this.qemuService.getImages(this.controller).subscribe({
       next: (images: QemuImage[]) => {
-        const unique = images.filter((img, idx, arr) => arr.findIndex(i => i.filename === img.filename) === idx);
+        const unique = images.filter((img, idx, arr) => arr.findIndex((i) => i.filename === img.filename) === idx);
         this.qemuImages = unique;
         this.filteredImages = unique;
         this.filteredAdvancedImages = unique;
@@ -408,17 +413,13 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
   onCdromInput(event: Event) {
     const value = (event.target as HTMLInputElement).value.toLowerCase();
-    const isoFiltered = this.globalImages.filter(
-      (img) => img.filename.toLowerCase().includes(value)
-    );
+    const isoFiltered = this.globalImages.filter((img) => img.filename.toLowerCase().includes(value));
     this.filteredGlobalImages = isoFiltered;
   }
 
   onAdvancedInput(event: Event) {
     const value = (event.target as HTMLInputElement).value.toLowerCase();
-    this.filteredAdvancedImages = this.qemuImages.filter((img) =>
-      img.filename.toLowerCase().includes(value)
-    );
+    this.filteredAdvancedImages = this.qemuImages.filter((img) => img.filename.toLowerCase().includes(value));
   }
 
   filterImages(event: Event): QemuImage[] {
@@ -426,26 +427,49 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     return this.qemuImages.filter((image) => image.filename.toLowerCase().includes(filterValue));
   }
 
-  onHdaImageInput(event: Event) { this.filteredImages = this.filterImages(event); }
-  onHdbImageInput(event: Event) { this.filteredImages = this.filterImages(event); }
-  onHdcImageInput(event: Event) { this.filteredImages = this.filterImages(event); }
-  onHddImageInput(event: Event) { this.filteredImages = this.filterImages(event); }
+  onHdaImageInput(event: Event) {
+    this.filteredImages = this.filterImages(event);
+  }
+  onHdbImageInput(event: Event) {
+    this.filteredImages = this.filterImages(event);
+  }
+  onHdcImageInput(event: Event) {
+    this.filteredImages = this.filterImages(event);
+  }
+  onHddImageInput(event: Event) {
+    this.filteredImages = this.filterImages(event);
+  }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'qemu', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences']);
   }
 
   onSave() {
     const nameValidation = this.validationService.validateName(this.templateName());
-    if (!nameValidation.isValid) { this.toasterService.error(nameValidation.errorMessage); return; }
+    if (!nameValidation.isValid) {
+      this.toasterService.error(nameValidation.errorMessage);
+      return;
+    }
     const portFormatValidation = this.validationService.validatePortNameFormat(this.portNameFormat());
-    if (!portFormatValidation.isValid) { this.toasterService.error(portFormatValidation.errorMessage); return; }
+    if (!portFormatValidation.isValid) {
+      this.toasterService.error(portFormatValidation.errorMessage);
+      return;
+    }
     const firstNameValidation = this.validationService.validateFirstPortName(this.firstPortName());
-    if (!firstNameValidation.isValid) { this.toasterService.error(firstNameValidation.errorMessage); return; }
+    if (!firstNameValidation.isValid) {
+      this.toasterService.error(firstNameValidation.errorMessage);
+      return;
+    }
     const segmentValidation = this.validationService.validatePortSegmentSize(this.portSegmentSize().toString());
-    if (!segmentValidation.isValid) { this.toasterService.error(segmentValidation.errorMessage); return; }
+    if (!segmentValidation.isValid) {
+      this.toasterService.error(segmentValidation.errorMessage);
+      return;
+    }
     const macValidation = this.validationService.validateMacAddress(this.macAddress());
-    if (!macValidation.isValid) { this.toasterService.error(macValidation.errorMessage); return; }
+    if (!macValidation.isValid) {
+      this.toasterService.error(macValidation.errorMessage);
+      return;
+    }
 
     // Update qemuTemplate from model signals
     this.qemuTemplate.name = this.templateName();
@@ -502,10 +526,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     this.qemuService.saveTemplate(this.controller, this.qemuTemplate).subscribe({
       next: (savedTemplate: QemuTemplate) => {
         this.toasterService.success('Changes saved');
-        // Update local template with server response to reflect changes immediately
         this.qemuTemplate = savedTemplate;
-        this.initFormFromTemplate();
-        this.cd.markForCheck();
+        this.goBack();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to save QEMU template';
@@ -558,24 +580,14 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
   toggleSection(section: string): void {
     switch (section) {
-      case 'general':
-        this.generalSettingsExpanded = !this.generalSettingsExpanded;
-        break;
-      case 'hdd':
-        this.hddExpanded = !this.hddExpanded;
-        break;
-      case 'cddvd':
-        this.cdDvdExpanded = !this.cdDvdExpanded;
-        break;
-      case 'network':
-        this.networkExpanded = !this.networkExpanded;
-        break;
-      case 'advanced':
-        this.advancedExpanded = !this.advancedExpanded;
-        break;
-      case 'usage':
-        this.usageExpanded = !this.usageExpanded;
-        break;
+      case 'general': this.generalSettingsExpanded = !this.generalSettingsExpanded; break;
+      case 'hdd': this.hddExpanded = !this.hddExpanded; break;
+      case 'cddvd': this.cdDvdExpanded = !this.cdDvdExpanded; break;
+      case 'network': this.networkExpanded = !this.networkExpanded; break;
+      case 'advanced': this.advancedExpanded = !this.advancedExpanded; break;
+      case 'usage': this.usageExpanded = !this.usageExpanded; break;
     }
   }
+
+  selectSection(section: string): void { this.activeSection = section; }
 }

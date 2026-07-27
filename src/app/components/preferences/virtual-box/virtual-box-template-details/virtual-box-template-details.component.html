@@ -1,15 +1,28 @@
 <div class="virtualbox-details">
   <header class="virtualbox-details__header">
-    @if (controller) {
-    <button class="virtualbox-details__back-btn" (click)="goBack()" mat-icon-button>
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    }
-    <h1 class="virtualbox-details__title">VirtualBox VM template configuration</h1>
+    <div class="virtualbox-details__heading-row">
+      <div>
+        <div class="virtualbox-details__breadcrumb">
+          <button type="button" mat-button (click)="goBack()">Templates</button><mat-icon>chevron_right</mat-icon
+          ><span>Edit</span>
+        </div>
+        <h1 class="virtualbox-details__title">Edit template</h1>
+      </div>
+      <div class="virtualbox-details__header-actions">
+        <button type="button" mat-stroked-button (click)="goBack()">Back to templates</button>
+      </div>
+    </div>
   </header>
 
   @if (virtualBoxTemplate) {
   <main class="virtualbox-details__content">
+    <nav class="template-edit-tabs" aria-label="Template settings">
+      <button type="button" [class.is-active]="activeSection === 'general'" (click)="selectSection('general')">
+        General settings
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'network'" (click)="selectSection('network')">Network</button>
+      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
+    </nav>
     <section class="virtualbox-details__form-card">
       <div class="virtualbox-details__section-header" (click)="toggleSection('general')">
         <h3 class="virtualbox-details__section-title">General settings</h3>
@@ -17,7 +30,7 @@
           generalSettingsExpanded ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
-      @if (generalSettingsExpanded) {
+      @if (activeSection === 'general') {
       <form class="virtualbox-details__form">
         <mat-form-field appearance="fill" class="virtualbox-details__field">
           <mat-label>Template name</mat-label>
@@ -141,7 +154,7 @@
           networkExpanded ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
-      @if (networkExpanded) {
+      @if (activeSection === 'network') {
       <form class="virtualbox-details__form">
         <mat-form-field appearance="fill" class="virtualbox-details__field">
           <mat-label>Adapters</mat-label>
@@ -211,11 +224,9 @@
     <section class="virtualbox-details__form-card">
       <div class="virtualbox-details__section-header" (click)="toggleSection('usage')">
         <h3 class="virtualbox-details__section-title">Usage</h3>
-        <mat-icon class="virtualbox-details__expand-icon">{{
-          usageExpanded ? 'expand_less' : 'expand_more'
-        }}</mat-icon>
+        <mat-icon class="virtualbox-details__expand-icon">{{ usageExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
       </div>
-      @if (usageExpanded) {
+      @if (activeSection === 'usage') {
       <div class="preferences__usage-form">
         <mat-form-field appearance="fill" class="preferences__usage-field--full">
           <mat-label>Usage</mat-label>

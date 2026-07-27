@@ -26,7 +26,11 @@ import { IouValidationService } from '@services/validation';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-iou-template-details',
   templateUrl: './iou-template-details.component.html',
-  styleUrls: ['./iou-template-details.component.scss', '../../preferences.component.scss'],
+  styleUrls: [
+    './iou-template-details.component.scss',
+    '../../preferences.component.scss',
+    '../../common/template-edit-page.scss',
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -83,6 +87,7 @@ export class IouTemplateDetailsComponent implements OnInit {
   generalSettingsExpanded = model(false);
   networkExpanded = model(false);
   usageExpanded = model(false);
+  activeSection = 'general';
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -142,15 +147,21 @@ export class IouTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'iou', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences']);
   }
 
   onSave() {
     // Validate required fields
     const nameValidation = this.validationService.validateName(this.templateName());
-    if (!nameValidation.isValid) { this.toasterService.error(nameValidation.errorMessage); return; }
+    if (!nameValidation.isValid) {
+      this.toasterService.error(nameValidation.errorMessage);
+      return;
+    }
     const pathValidation = this.validationService.validatePath(this.path());
-    if (!pathValidation.isValid) { this.toasterService.error(pathValidation.errorMessage); return; }
+    if (!pathValidation.isValid) {
+      this.toasterService.error(pathValidation.errorMessage);
+      return;
+    }
 
     // Update iouTemplate from model signals
     this.iouTemplate.name = this.templateName();
@@ -172,15 +183,16 @@ export class IouTemplateDetailsComponent implements OnInit {
     this.iouTemplate.tags = this.tags();
 
     this.iouService.saveTemplate(this.controller, this.iouTemplate).subscribe({
-        next: () => {
-          this.toasterService.success('Changes saved');
-        },
-        error: (err) => {
-          const message = err.error?.message || err.message || 'Failed to save IOU template';
-          this.toasterService.error(message);
-          this.cd.markForCheck();
-        },
-      });
+      next: () => {
+        this.toasterService.success('Changes saved');
+        this.goBack();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to save IOU template';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   uploadImageFile(event: Event) {
@@ -233,15 +245,11 @@ export class IouTemplateDetailsComponent implements OnInit {
 
   toggleSection(section: string): void {
     switch (section) {
-      case 'general':
-        this.generalSettingsExpanded.set(!this.generalSettingsExpanded());
-        break;
-      case 'network':
-        this.networkExpanded.set(!this.networkExpanded());
-        break;
-      case 'usage':
-        this.usageExpanded.set(!this.usageExpanded());
-        break;
+      case 'general': this.generalSettingsExpanded.set(!this.generalSettingsExpanded()); break;
+      case 'network': this.networkExpanded.set(!this.networkExpanded()); break;
+      case 'usage': this.usageExpanded.set(!this.usageExpanded()); break;
     }
   }
+
+  selectSection(section: string): void { this.activeSection = section; }
 }

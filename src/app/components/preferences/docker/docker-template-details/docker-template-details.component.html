@@ -1,15 +1,28 @@
 <div class="docker-details">
   <header class="docker-details__header">
-    @if (controller) {
-    <button class="docker-details__back-btn" (click)="goBack()" mat-icon-button>
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    }
-    <h1 class="docker-details__title">Docker container template configuration</h1>
+    <div class="docker-details__heading-row">
+      <div>
+        <div class="docker-details__breadcrumb">
+          <button type="button" mat-button (click)="goBack()">Templates</button><mat-icon>chevron_right</mat-icon
+          ><span>Edit</span>
+        </div>
+        <h1 class="docker-details__title">Edit template</h1>
+      </div>
+      <div class="docker-details__header-actions">
+        <button type="button" mat-stroked-button (click)="goBack()">Back to templates</button>
+      </div>
+    </div>
   </header>
 
   @if (dockerTemplate) {
   <main class="docker-details__content">
+    <nav class="template-edit-tabs" aria-label="Template settings">
+      <button type="button" [class.is-active]="activeSection === 'general'" (click)="selectSection('general')">
+        General settings
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'advanced'" (click)="selectSection('advanced')">Advanced</button>
+      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
+    </nav>
     <section class="docker-details__form-card">
       <div class="docker-details__section-header" (click)="toggleSection('general')">
         <h3 class="docker-details__section-title">General settings</h3>
@@ -17,7 +30,7 @@
           generalSettingsExpanded ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
-      @if (generalSettingsExpanded) {
+      @if (activeSection === 'general') {
       <form class="form-container">
         <div class="two-column-grid">
           <mat-form-field class="form-field">
@@ -202,11 +215,15 @@
               placeholder="HTTP path"
             />
           </mat-form-field>
-          <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)" class="grid-span-2"> Auto start console </mat-checkbox>
+          <mat-checkbox
+            [checked]="consoleAutoStart()"
+            (change)="consoleAutoStart.set($event.checked)"
+            class="grid-span-2"
+          >
+            Auto start console
+          </mat-checkbox>
         </div>
-        <button mat-button class="form-field" (click)="editCustomAdapters()">
-          Edit network configuration
-        </button>
+        <button mat-button class="form-field" (click)="editCustomAdapters()">Edit network configuration</button>
       </form>
       }
     </section>
@@ -216,7 +233,7 @@
         <h3 class="docker-details__section-title">Advanced</h3>
         <mat-icon class="docker-details__expand-icon">{{ advancedExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
       </div>
-      @if (advancedExpanded) {
+      @if (activeSection === 'advanced') {
       <div class="form-container">
         <h6 class="docker-details__section-subtitle">Start command</h6>
         <mat-form-field class="form-field">
@@ -271,7 +288,7 @@
         <h3 class="docker-details__section-title">Usage</h3>
         <mat-icon class="docker-details__expand-icon">{{ usageExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
       </div>
-      @if (usageExpanded) {
+      @if (activeSection === 'usage') {
       <div class="preferences__usage-form">
         <mat-form-field class="preferences__usage-field--full">
           <mat-label>Usage</mat-label>
