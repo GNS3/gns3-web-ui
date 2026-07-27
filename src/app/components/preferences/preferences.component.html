@@ -1,75 +1,550 @@
-<div class="preferences">
-  <header class="preferences__header">
-    <button class="preferences__back-btn" routerLink="/controller/{{ controllerId }}/projects" mat-icon-button>
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <h1 class="preferences__title">Template preferences</h1>
-  </header>
+<div class="templates-page">
+  <div class="templates-page__content">
+    <header class="templates-page__header">
+      <div class="templates-page__heading">
+        <div>
+          <h1 class="templates-page__title">Templates</h1>
+        </div>
+      </div>
 
-  <main class="preferences__content">
-    <nav class="preferences__nav-list">
-      <a mat-list-item routerLink="/controller/{{ controllerId }}/preferences/builtin" class="preferences__nav-item">
-        <mat-icon class="preferences__nav-icon">settings</mat-icon>
+      @if (controller) {
+      <div class="templates-page__header-actions">
+        <button mat-stroked-button class="templates-page__refresh" (click)="loadTemplates()">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
+        <button mat-raised-button color="primary" class="templates-page__new" [matMenuTriggerFor]="newTemplateMenu">
+          <mat-icon>add</mat-icon>
+          New Template
+          <mat-icon iconPositionEnd>arrow_drop_down</mat-icon>
+        </button>
+      </div>
+
+      <mat-menu #newTemplateMenu="matMenu">
+        <a mat-menu-item [routerLink]="['/controller', controller.id, 'preferences', 'qemu', 'addtemplate']">
+          <mat-icon>memory</mat-icon>
+          <span>QEMU VM</span>
+        </a>
+        <a mat-menu-item [routerLink]="['/controller', controller.id, 'preferences', 'docker', 'addtemplate']">
+          <mat-icon>deployed_code</mat-icon>
+          <span>Docker container</span>
+        </a>
+        <a
+          mat-menu-item
+          [routerLink]="['/controller', controller.id, 'preferences', 'dynamips', 'templates', 'addtemplate']"
+        >
+          <mat-icon>router</mat-icon>
+          <span>Dynamips router</span>
+        </a>
+        <a mat-menu-item [routerLink]="['/controller', controller.id, 'preferences', 'iou', 'addtemplate']">
+          <mat-icon>lan</mat-icon>
+          <span>IOS on Unix</span>
+        </a>
+        <a mat-menu-item [routerLink]="['/controller', controller.id, 'preferences', 'vpcs', 'addtemplate']">
+          <mat-icon>computer</mat-icon>
+          <span>VPCS</span>
+        </a>
+        <button mat-menu-item [matMenuTriggerFor]="builtInTemplateMenu">
+          <mat-icon>settings_ethernet</mat-icon>
+          <span>Built-in node</span>
+        </button>
+      </mat-menu>
+
+      <mat-menu #builtInTemplateMenu="matMenu">
+        <a
+          mat-menu-item
+          [routerLink]="['/controller', controller.id, 'preferences', 'builtin', 'ethernet-hubs', 'addtemplate']"
+        >
+          <mat-icon>device_hub</mat-icon>
+          <span>Ethernet hub</span>
+        </a>
+        <a
+          mat-menu-item
+          [routerLink]="['/controller', controller.id, 'preferences', 'builtin', 'ethernet-switches', 'addtemplate']"
+        >
+          <mat-icon>settings_ethernet</mat-icon>
+          <span>Ethernet switch</span>
+        </a>
+        <a
+          mat-menu-item
+          [routerLink]="['/controller', controller.id, 'preferences', 'builtin', 'cloud-nodes', 'addtemplate']"
+        >
+          <mat-icon>cloud</mat-icon>
+          <span>Cloud node</span>
+        </a>
+      </mat-menu>
+      }
+    </header>
+
+    <nav class="templates-page__scopes" aria-label="Template scope">
+      <button
+        type="button"
+        class="templates-page__scope"
+        [class.templates-page__scope--active]="selectedScope() === 'all'"
+        (click)="setScope('all')"
+      >
+        All Templates
+        <span>{{ templates().length }}</span>
+      </button>
+      <button
+        type="button"
+        class="templates-page__scope"
+        [class.templates-page__scope--active]="selectedScope() === 'custom'"
+        (click)="setScope('custom')"
+      >
+        Custom
+        <span>{{ customTemplateCount() }}</span>
+      </button>
+      <button
+        type="button"
+        class="templates-page__scope"
+        [class.templates-page__scope--active]="selectedScope() === 'builtin'"
+        (click)="setScope('builtin')"
+      >
         Built-in
-      </a>
-      <a
-        mat-list-item
-        routerLink="/controller/{{ controllerId }}/preferences/dynamips/templates"
-        class="preferences__nav-item"
-      >
-        <mat-icon class="preferences__nav-icon">router</mat-icon>
-        Dynamips
-      </a>
-      <a
-        mat-list-item
-        routerLink="/controller/{{ controllerId }}/preferences/iou/templates"
-        class="preferences__nav-item"
-      >
-        <mat-icon class="preferences__nav-icon">keyboard</mat-icon>
-        IOS on Unix
-      </a>
-      <a
-        mat-list-item
-        routerLink="/controller/{{ controllerId }}/preferences/vpcs/templates"
-        class="preferences__nav-item"
-      >
-        <mat-icon class="preferences__nav-icon">computer</mat-icon>
-        VPCS
-      </a>
-      <a
-        mat-list-item
-        routerLink="/controller/{{ controllerId }}/preferences/qemu/templates"
-        class="preferences__nav-item"
-      >
-        <mat-icon class="preferences__nav-icon">memory</mat-icon>
-        QEMU
-      </a>
-      <!-- VirtualBox support deprecated since 3.1.0 -->
-      <!-- <a
-        mat-list-item
-        routerLink="/controller/{{ controllerId }}/preferences/virtualbox/templates"
-        class="preferences__nav-item"
-      >
-        <mat-icon class="preferences__nav-icon">desktop_windows</mat-icon>
-        VirtualBox
-      </a> -->
-      <!-- VMware support deprecated since 3.1.0 -->
-      <!-- <a
-        mat-list-item
-        routerLink="/controller/{{ controllerId }}/preferences/vmware/templates"
-        class="preferences__nav-item"
-      >
-        <mat-icon class="preferences__nav-icon">devices</mat-icon>
-        VMware
-      </a> -->
-      <a
-        mat-list-item
-        routerLink="/controller/{{ controllerId }}/preferences/docker/templates"
-        class="preferences__nav-item"
-      >
-        <mat-icon class="preferences__nav-icon">dns</mat-icon>
-        Docker
-      </a>
+        <span>{{ builtinTemplateCount() }}</span>
+      </button>
     </nav>
-  </main>
+
+    <section class="templates-page__toolbar">
+      <mat-form-field class="templates-page__search" subscriptSizing="dynamic">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          placeholder="Search templates by name, type, category, or tag"
+          [value]="searchText()"
+          (input)="setSearch($event.target.value)"
+        />
+      </mat-form-field>
+
+      <div class="templates-page__toolbar-actions">
+        <mat-form-field class="templates-page__filter" subscriptSizing="dynamic">
+          <mat-label>Template type</mat-label>
+          <mat-select [value]="selectedType()" (valueChange)="setType($event)">
+            <mat-option value="all">All types</mat-option>
+            @for (type of templateTypes(); track type) {
+            <mat-option [value]="type">{{ templateTypeLabel(type) }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="templates-page__sort" subscriptSizing="dynamic">
+          <mat-label>Sort by</mat-label>
+          <mat-select [value]="sortActive()" (valueChange)="onSortByChange($event)">
+            <mat-option value="name">Name</mat-option>
+            <mat-option value="template_type">Type</mat-option>
+            <mat-option value="category">Category</mat-option>
+            <mat-option value="compute_id">Compute</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="templates-page__view-toggle" aria-label="Template view">
+          <button
+            mat-icon-button
+            class="templates-page__view-button"
+            [class.templates-page__view-button--active]="viewMode() === 'list'"
+            (click)="setViewMode('list')"
+            matTooltip="List view"
+            aria-label="List view"
+          >
+            <mat-icon>view_list</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            class="templates-page__view-button"
+            [class.templates-page__view-button--active]="viewMode() === 'grid'"
+            (click)="setViewMode('grid')"
+            matTooltip="Grid view"
+            aria-label="Grid view"
+          >
+            <mat-icon>grid_view</mat-icon>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <main class="templates-page__main">
+      @if (loading()) {
+      <div class="templates-page__loading">
+        <mat-progress-spinner diameter="42" mode="indeterminate" />
+        <span>Loading templates…</span>
+      </div>
+      } @else { @if (viewMode() === 'list') {
+      <div class="templates-page__table-container">
+        <mat-table
+          [dataSource]="paginatedTemplates()"
+          [trackBy]="trackTemplate"
+          matSort
+          [matSortActive]="sortActive()"
+          [matSortDirection]="sortDirection()"
+          (matSortChange)="onSortChange($event)"
+        >
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+            <mat-cell *matCellDef="let template">
+              <div class="templates-page__name-cell">
+                <span class="templates-page__symbol templates-page__symbol--small">
+                  @if (getSymbolSource(template); as source) {
+                  <img [src]="source" [alt]="template.name + ' symbol'" />
+                  } @else {
+                  <mat-icon>{{ templateTypeIcon(template.template_type) }}</mat-icon>
+                  }
+                </span>
+                <span class="templates-page__name-copy">
+                  <strong>{{ template.name }}</strong>
+                </span>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="template_type">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
+            <mat-cell *matCellDef="let template">
+              <span class="templates-page__type-badge">{{ templateTypeLabel(template.template_type) }}</span>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="category">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
+            <mat-cell *matCellDef="let template">{{ template.category || 'Uncategorized' }}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="compute_id">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Compute</mat-header-cell>
+            <mat-cell *matCellDef="let template">{{ template.compute_id || 'local' }}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="builtin">
+            <mat-header-cell *matHeaderCellDef>Source</mat-header-cell>
+            <mat-cell *matCellDef="let template">
+              <span
+                class="templates-page__source-badge"
+                [class.templates-page__source-badge--builtin]="template.builtin"
+              >
+                {{ template.builtin ? 'Built-in' : 'Custom' }}
+              </span>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+            <mat-cell *matCellDef="let template">
+              <div class="templates-page__actions-cell">
+                <button
+                  mat-icon-button
+                  class="templates-page__action templates-page__action--details"
+                  (click)="$event.stopPropagation(); selectTemplate(template)"
+                  matTooltip="View template details"
+                  [attr.aria-label]="'View details for ' + template.name"
+                >
+                  <mat-icon>info</mat-icon>
+                </button>
+                @if (canConfigure(template)) {
+                <button
+                  mat-icon-button
+                  class="templates-page__action templates-page__action--edit"
+                  (click)="$event.stopPropagation(); configureTemplate(template)"
+                  matTooltip="Configure template"
+                  [attr.aria-label]="'Configure ' + template.name"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                } @if (canDuplicate(template)) {
+                <button
+                  mat-icon-button
+                  class="templates-page__action templates-page__action--duplicate"
+                  (click)="$event.stopPropagation(); duplicateTemplate(template)"
+                  matTooltip="Duplicate template"
+                  [attr.aria-label]="'Duplicate ' + template.name"
+                >
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+                } @if (!template.builtin) {
+                <button
+                  mat-icon-button
+                  class="templates-page__action templates-page__action--delete"
+                  (click)="$event.stopPropagation(); deleteTemplate(template, deleteComponent)"
+                  matTooltip="Delete template"
+                  [attr.aria-label]="'Delete ' + template.name"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+                }
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" />
+          <mat-row
+            *matRowDef="let template; columns: displayedColumns"
+            [class.templates-page__row--selected]="selectedTemplate()?.template_id === template.template_id"
+            (click)="selectTemplate(template)"
+          />
+        </mat-table>
+
+        @if (filteredTemplates().length) {
+        <div class="templates-page__table-footer">
+          <mat-paginator
+            [length]="filteredTemplates().length"
+            [pageIndex]="pageIndex()"
+            [pageSize]="pageSize()"
+            [pageSizeOptions]="pageSizeOptions"
+            (page)="onPageChange($event)"
+            showFirstLastButtons
+          />
+        </div>
+        } @else {
+        <ng-container *ngTemplateOutlet="emptyState" />
+        }
+      </div>
+      } @if (viewMode() === 'grid') {
+      <div class="templates-page__grid" [class.templates-page__grid--with-details]="selectedTemplate()">
+        @for (template of paginatedTemplates(); track template.template_id) {
+        <article
+          class="templates-page__card"
+          [class.templates-page__card--selected]="selectedTemplate()?.template_id === template.template_id"
+          (click)="selectTemplate(template)"
+        >
+          <div class="templates-page__card-header">
+            <span class="templates-page__symbol">
+              @if (getSymbolSource(template); as source) {
+              <img [src]="source" [alt]="template.name + ' symbol'" />
+              } @else {
+              <mat-icon>{{ templateTypeIcon(template.template_type) }}</mat-icon>
+              }
+            </span>
+            <span class="templates-page__source-badge" [class.templates-page__source-badge--builtin]="template.builtin">
+              {{ template.builtin ? 'Built-in' : 'Custom' }}
+            </span>
+          </div>
+
+          <div class="templates-page__card-body">
+            <h3 [matTooltip]="template.name">{{ template.name }}</h3>
+            <span class="templates-page__type-badge">{{ templateTypeLabel(template.template_type) }}</span>
+            <dl>
+              @if (template.tags?.length) {
+              <div class="templates-page__card-tags-row">
+                <dt>Tags</dt>
+                <dd class="templates-page__card-tags" aria-label="Template tags">
+                  @for (tag of template.tags; track tag) {
+                  <span class="templates-page__tag">{{ tag }}</span>
+                  }
+                </dd>
+              </div>
+              }
+              <div>
+                <dt>Category</dt>
+                <dd>{{ template.category || 'Uncategorized' }}</dd>
+              </div>
+              <div>
+                <dt>Compute</dt>
+                <dd>{{ template.compute_id || 'local' }}</dd>
+              </div>
+              <div>
+                <dt>Resources</dt>
+                <dd [matTooltip]="getResourceSummary(template)">{{ getResourceSummary(template) }}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="templates-page__card-actions">
+            <button
+              mat-icon-button
+              class="templates-page__action templates-page__action--details"
+              (click)="$event.stopPropagation(); selectTemplate(template)"
+              matTooltip="View template details"
+              [attr.aria-label]="'View details for ' + template.name"
+            >
+              <mat-icon>info</mat-icon>
+            </button>
+            @if (canConfigure(template)) {
+            <button
+              mat-icon-button
+              class="templates-page__action templates-page__action--edit"
+              (click)="$event.stopPropagation(); configureTemplate(template)"
+              matTooltip="Configure template"
+              [attr.aria-label]="'Configure ' + template.name"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            } @if (canDuplicate(template)) {
+            <button
+              mat-icon-button
+              class="templates-page__action templates-page__action--duplicate"
+              (click)="$event.stopPropagation(); duplicateTemplate(template)"
+              matTooltip="Duplicate template"
+              [attr.aria-label]="'Duplicate ' + template.name"
+            >
+              <mat-icon>content_copy</mat-icon>
+            </button>
+            } @if (!template.builtin) {
+            <button
+              mat-icon-button
+              class="templates-page__action templates-page__action--delete"
+              (click)="$event.stopPropagation(); deleteTemplate(template, deleteComponent)"
+              matTooltip="Delete template"
+              [attr.aria-label]="'Delete ' + template.name"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+            }
+          </div>
+        </article>
+        } @empty {
+        <ng-container *ngTemplateOutlet="emptyState" />
+        } @if (filteredTemplates().length) {
+        <mat-paginator
+          class="templates-page__grid-paginator"
+          [length]="filteredTemplates().length"
+          [pageIndex]="pageIndex()"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+        />
+        }
+      </div>
+      } @if (selectedTemplate(); as template) {
+      <aside class="templates-page__details" aria-label="Template details">
+        <div class="templates-page__details-header">
+          <div class="templates-page__details-heading">
+            <span class="templates-page__symbol templates-page__symbol--small">
+              @if (getSymbolSource(template); as source) {
+              <img [src]="source" [alt]="template.name + ' symbol'" />
+              } @else {
+              <mat-icon>{{ templateTypeIcon(template.template_type) }}</mat-icon>
+              }
+            </span>
+            <div class="templates-page__details-title-line">
+              <h2 [matTooltip]="template.name">{{ template.name }}</h2>
+              <span class="templates-page__type-badge">{{ templateTypeLabel(template.template_type) }}</span>
+            </div>
+          </div>
+          <button mat-icon-button (click)="closeDetails()" matTooltip="Close details" aria-label="Close details">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="templates-page__details-body">
+          @if (template.usage) {
+          <section class="templates-page__description">
+            <span>Description</span>
+            <p>{{ template.usage }}</p>
+          </section>
+          }
+
+          <div class="templates-page__detail-row">
+            <mat-icon>category</mat-icon>
+            <span>Category</span>
+            <strong>{{ template.category || 'Uncategorized' }}</strong>
+          </div>
+          <div class="templates-page__detail-row">
+            <mat-icon>dns</mat-icon>
+            <span>Compute</span>
+            <strong>{{ template.compute_id || 'local' }}</strong>
+          </div>
+          <div class="templates-page__detail-row">
+            <mat-icon>badge</mat-icon>
+            <span>Source</span>
+            <strong>{{ template.builtin ? 'Built-in' : 'Custom' }}</strong>
+          </div>
+          <div class="templates-page__detail-row">
+            <mat-icon>drive_file_rename_outline</mat-icon>
+            <span>Name format</span>
+            <strong class="templates-page__mono">{{ template.default_name_format || '—' }}</strong>
+          </div>
+          @if (template.node_type) {
+          <div class="templates-page__detail-row">
+            <mat-icon>account_tree</mat-icon>
+            <span>Node type</span>
+            <strong>{{ template.node_type }}</strong>
+          </div>
+          } @if (template.console_type) {
+          <div class="templates-page__detail-row">
+            <mat-icon>terminal</mat-icon>
+            <span>Console</span>
+            <strong>{{ template.console_type }}</strong>
+          </div>
+          }
+          <div class="templates-page__detail-row">
+            <mat-icon>memory</mat-icon>
+            <span>Resources</span>
+            <strong>{{ getResourceSummary(template) }}</strong>
+          </div>
+          @if (getImageName(template); as imageName) {
+          <div class="templates-page__detail-row templates-page__detail-row--stacked">
+            <mat-icon>hard_drive</mat-icon>
+            <span>Image</span>
+            <strong class="templates-page__path">{{ imageName }}</strong>
+          </div>
+          }
+          <div class="templates-page__detail-row templates-page__detail-row--stacked">
+            <mat-icon>image</mat-icon>
+            <span>Symbol</span>
+            <strong class="templates-page__path">{{ template.symbol || '—' }}</strong>
+          </div>
+          <div class="templates-page__detail-row templates-page__detail-row--stacked">
+            <mat-icon>fingerprint</mat-icon>
+            <span>Template ID</span>
+            <strong class="templates-page__mono">{{ template.template_id }}</strong>
+          </div>
+
+          @if (template.tags?.length) {
+          <div class="templates-page__detail-row templates-page__tags">
+            <mat-icon>sell</mat-icon>
+            <span>Tags</span>
+            <div aria-label="Template tags">
+              @for (tag of template.tags; track tag) {
+              <span class="templates-page__tag">{{ tag }}</span>
+              }
+            </div>
+          </div>
+          }
+        </div>
+
+        @if (!template.builtin) {
+        <div class="templates-page__details-actions">
+          @if (canConfigure(template)) {
+          <button
+            mat-stroked-button
+            class="templates-page__details-action templates-page__details-action--edit"
+            (click)="configureTemplate(template)"
+          >
+            <mat-icon>edit</mat-icon>
+            Configure
+          </button>
+          } @if (canDuplicate(template)) {
+          <button
+            mat-stroked-button
+            class="templates-page__details-action templates-page__details-action--duplicate"
+            (click)="duplicateTemplate(template)"
+          >
+            <mat-icon>content_copy</mat-icon>
+            Duplicate
+          </button>
+          }
+          <button
+            mat-stroked-button
+            class="templates-page__details-action templates-page__details-action--delete"
+            (click)="deleteTemplate(template, deleteComponent)"
+          >
+            <mat-icon>delete</mat-icon>
+            Delete
+          </button>
+        </div>
+        }
+      </aside>
+      } }
+    </main>
+  </div>
 </div>
+
+<ng-template #emptyState>
+  <div class="templates-page__empty">
+    <mat-icon>dashboard_customize</mat-icon>
+    <h3>No templates found</h3>
+    <p>Try changing the search, scope, or template-type filter.</p>
+  </div>
+</ng-template>
+
+<app-delete-template #deleteComponent [controller]="controller" (deleteEvent)="onTemplateDeleted($event)" />

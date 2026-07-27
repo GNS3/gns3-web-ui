@@ -1,29 +1,102 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, provideRouter } from '@angular/router';
+import { Controller } from '@models/controller';
+import { Template } from '@models/template';
+import { ControllerService } from '@services/controller.service';
+import { SymbolService } from '@services/symbol.service';
+import { TemplateService } from '@services/template.service';
+import { ToasterService } from '@services/toaster.service';
+import { of } from 'rxjs';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PreferencesComponent } from './preferences.component';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('PreferencesComponent', () => {
   let component: PreferencesComponent;
   let fixture: ComponentFixture<PreferencesComponent>;
-  let mockActivatedRoute: any;
+  let router: Router;
+  let mockTemplateService: { list: ReturnType<typeof vi.fn>; deleteTemplate: ReturnType<typeof vi.fn> };
+
+  const controller = {
+    id: 1,
+    name: 'Local controller',
+    host: 'localhost',
+    port: 3080,
+    protocol: 'http:',
+  } as Controller;
+
+  const templates: Template[] = [
+    {
+      template_id: 'qemu-1',
+      builtin: false,
+      category: 'router',
+      compute_id: 'local',
+      default_name_format: 'Router-{0}',
+      name: 'Edge Router',
+      node_type: 'qemu',
+      symbol: 'router.svg',
+      template_type: 'qemu',
+      tags: ['edge'],
+    },
+    {
+      template_id: 'docker-1',
+      builtin: false,
+      category: 'guest',
+      compute_id: 'local',
+      default_name_format: 'Web-{0}',
+      name: 'Web Server',
+      node_type: 'docker',
+      symbol: 'docker.svg',
+      template_type: 'docker',
+      tags: ['server'],
+    },
+    {
+      template_id: 'switch-1',
+      builtin: true,
+      category: 'switch',
+      compute_id: 'local',
+      default_name_format: 'Switch-{0}',
+      name: 'Ethernet Switch',
+      node_type: 'ethernet_switch',
+      symbol: 'switch.svg',
+      template_type: 'ethernet_switch',
+    },
+  ];
 
   beforeEach(async () => {
-    mockActivatedRoute = {
-      snapshot: {
-        paramMap: {
-          get: vi.fn().mockReturnValue('test-controller-id'),
-        },
-      },
+    mockTemplateService = {
+      list: vi.fn().mockReturnValue(of(templates)),
+      deleteTemplate: vi.fn().mockReturnValue(of({})),
     };
 
     await TestBed.configureTestingModule({
       imports: [PreferencesComponent],
-      providers: [{ provide: ActivatedRoute, useValue: mockActivatedRoute }],
+      providers: [
+        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: {
+                get: vi.fn().mockReturnValue('1'),
+              },
+            },
+          },
+        },
+        { provide: ControllerService, useValue: { get: vi.fn().mockResolvedValue(controller) } },
+        { provide: TemplateService, useValue: mockTemplateService },
+        {
+          provide: SymbolService,
+          useValue: { getSymbolBlobUrl: vi.fn().mockReturnValue(of('blob:http://localhost/template-symbol')) },
+        },
+        { provide: ToasterService, useValue: { error: vi.fn(), success: vi.fn() } },
+      ],
     }).compileComponents();
 
+    router = TestBed.inject(Router);
     fixture = TestBed.createComponent(PreferencesComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
+    await fixture.whenStable();
     fixture.detectChanges();
   });
 
@@ -31,68 +104,96 @@ describe('PreferencesComponent', () => {
     fixture.destroy();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('loads templates for the current controller', () => {
+    expect(component.controllerId).toBe('1');
+    expect(mockTemplateService.list).toHaveBeenCalledWith(controller);
+    expect(component.templates()).toHaveLength(3);
+    expect(component.loading()).toBe(false);
   });
 
-  it('should have empty controllerId before ngOnInit', () => {
-    const newFixture = TestBed.createComponent(PreferencesComponent);
-    const newComponent = newFixture.componentInstance;
-    expect(newComponent.controllerId).toBe('');
-  });
-
-  it('should extract controllerId from route params on ngOnInit', () => {
-    expect(component.controllerId).toBe('test-controller-id');
-  });
-
-  it('should display back button', () => {
+  it('renders the unified Templates heading and toolbar', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    const backButton = compiled.querySelector('button');
-    expect(backButton).toBeTruthy();
+    expect(compiled.querySelector('h1')?.textContent).toContain('Templates');
+    expect(compiled.querySelector('.templates-page__toolbar')).toBeTruthy();
+    expect(compiled.querySelector('mat-table')).toBeTruthy();
   });
 
-  it('should display preferences title', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const title = compiled.querySelector('h1');
-    expect(title?.textContent).toContain('Template preferences');
+  it('defaults to list view and 25 templates per page', () => {
+    expect(component.viewMode()).toBe('list');
+    expect(component.pageSize()).toBe(25);
+    expect(component.paginatedTemplates()).toHaveLength(3);
   });
 
-  it('should display navigation links for each preference category', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const navLinks = compiled.querySelectorAll('a');
-    expect(navLinks.length).toBeGreaterThan(0);
+  it('switches between list and grid view', () => {
+    component.setViewMode('grid');
+    fixture.detectChanges();
+
+    expect(component.viewMode()).toBe('grid');
+    expect(fixture.nativeElement.querySelectorAll('.templates-page__card')).toHaveLength(3);
+    expect(fixture.nativeElement.querySelector('.templates-page__card-tags-row dt')?.textContent).toContain('Tags');
+    expect(fixture.nativeElement.querySelector('.templates-page__card-tags')?.textContent).toContain('edge');
+
+    component.setViewMode('list');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('mat-table')).toBeTruthy();
   });
 
-  it('should have routerLink including controllerId in navigation links', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const firstNavLink = compiled.querySelector('a');
-    expect(firstNavLink?.getAttribute('href')).toContain('test-controller-id');
+  it('filters by search text, type, and ownership scope', () => {
+    component.setSearch('server');
+    expect(component.filteredTemplates().map((template) => template.name)).toEqual(['Web Server']);
+
+    component.setSearch('');
+    component.setType('qemu');
+    expect(component.filteredTemplates().map((template) => template.name)).toEqual(['Edge Router']);
+
+    component.setType('all');
+    component.setScope('builtin');
+    expect(component.filteredTemplates().map((template) => template.name)).toEqual(['Ethernet Switch']);
   });
 
-  it('should display Built-in preference link', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const linksText = compiled.querySelectorAll('a.mat-mdc-list-item');
-    const hasBuiltIn = Array.from(linksText).some((link) => link.textContent?.includes('Built-in'));
-    expect(hasBuiltIn).toBe(true);
+  it('opens and closes details for a selected template', () => {
+    component.selectTemplate(templates[0]);
+    fixture.detectChanges();
+
+    expect(component.selectedTemplate()?.template_id).toBe('qemu-1');
+    expect(fixture.nativeElement.querySelector('.templates-page__details')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.templates-page__tags > span')?.textContent).toContain('Tags');
+    expect(fixture.nativeElement.querySelector('.templates-page__tags')?.textContent).toContain('edge');
+
+    component.closeDetails();
+    expect(component.selectedTemplate()).toBeNull();
   });
 
-  it('should display Dynamips preference link', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const linksText = compiled.querySelectorAll('a.mat-mdc-list-item');
-    const hasDynamips = Array.from(linksText).some((link) => link.textContent?.includes('Dynamips'));
-    expect(hasDynamips).toBe(true);
+  it('uses existing type-specific configuration routes', () => {
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+    component.configureTemplate(templates[0]);
+
+    expect(navigate).toHaveBeenCalledWith(['/controller', 1, 'preferences', 'qemu', 'templates', 'qemu-1']);
   });
 
-  it('should display Docker preference link', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const linksText = compiled.querySelectorAll('a.mat-mdc-list-item');
-    const hasDocker = Array.from(linksText).some((link) => link.textContent?.includes('Docker'));
-    expect(hasDocker).toBe(true);
+  it('only enables duplicate and destructive actions for supported custom templates', () => {
+    expect(component.canDuplicate(templates[0])).toBe(true);
+    expect(component.canConfigure(templates[0])).toBe(true);
+    expect(component.canDuplicate(templates[2])).toBe(false);
+    expect(component.canConfigure(templates[2])).toBe(false);
   });
 
-  it('should use OnPush change detection strategy', () => {
-    // OnPush is set via ChangeDetectionStrategy.OnPush decorator
-    // This is verified by the component being compiled with OnPush
-    expect(component).toBeTruthy();
+  it('delegates custom-template deletion to the existing confirmation workflow', () => {
+    const deleteItem = vi.fn();
+
+    component.deleteTemplate(templates[0], { deleteItem } as any);
+    component.deleteTemplate(templates[2], { deleteItem } as any);
+
+    expect(deleteItem).toHaveBeenCalledTimes(1);
+    expect(deleteItem).toHaveBeenCalledWith('Edge Router', 'qemu-1');
+  });
+
+  it('provides readable type labels and resource summaries', () => {
+    expect(component.templateTypeLabel('ethernet_switch')).toBe('Ethernet Switch');
+    expect(component.templateTypeLabel('custom_emulator')).toBe('Custom Emulator');
+    expect(component.getResourceSummary({ ...templates[0], ram: 1024, cpus: 2, adapters: 4 } as any)).toBe(
+      '1024 MB RAM · 2 CPUs · 4 adapters'
+    );
   });
 });
