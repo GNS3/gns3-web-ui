@@ -313,6 +313,54 @@ describe('ControllerDataSource', () => {
       expect(emittedValue?.[1].name).toBe('BController');
       expect(emittedValue?.[2].name).toBe('ZController');
     });
+
+    it('should filter controllers by the selected status', () => {
+      dataSource.setStatusFilter('running');
+      let emittedValue: Controller[] | undefined;
+      dataSource.connect().subscribe((data) => {
+        emittedValue = data;
+      });
+
+      controllerDatabase.dataChange.next([
+        createController({ id: 1, name: 'Online', status: 'running' }),
+        createController({ id: 2, name: 'Offline', status: 'stopped' }),
+      ]);
+
+      expect(emittedValue?.map((controller) => controller.name)).toEqual(['Online']);
+      expect(dataSource.filteredLength.value).toBe(1);
+    });
+
+    it('should paginate filtered controllers with 25 items by default', () => {
+      let emittedValue: Controller[] | undefined;
+      dataSource.connect().subscribe((data) => {
+        emittedValue = data;
+      });
+      const controllers = Array.from({ length: 30 }, (_, index) =>
+        createController({ id: index + 1, name: `Controller ${index + 1}` })
+      );
+
+      controllerDatabase.dataChange.next(controllers);
+
+      expect(emittedValue).toHaveLength(25);
+      expect(dataSource.filteredLength.value).toBe(30);
+    });
+
+    it('should emit the requested pagination page', () => {
+      let emittedValue: Controller[] | undefined;
+      dataSource.connect().subscribe((data) => {
+        emittedValue = data;
+      });
+      controllerDatabase.dataChange.next(
+        Array.from({ length: 30 }, (_, index) =>
+          createController({ id: index + 1, name: `Controller ${index + 1}` })
+        )
+      );
+
+      dataSource.setPage({ pageIndex: 1, pageSize: 25, length: 30 });
+
+      expect(emittedValue).toHaveLength(5);
+      expect(emittedValue?.[0].id).toBe(26);
+    });
   });
 
   describe('disconnect', () => {

@@ -9,9 +9,9 @@ import {
   ViewChild,
   inject,
   model,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSort, MatSortable, MatSortModule } from '@angular/material/sort';
@@ -20,16 +20,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { Router, RouterModule } from '@angular/router';
 import { BehaviorSubject, interval, merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Controller, ControllerProtocol } from '@models/controller';
 import { ControllerManagementService } from '@services/controller-management.service';
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
-import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
@@ -43,7 +44,6 @@ import { version } from '../../version';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    FormsModule,
     RouterModule,
     MatDialogModule,
     MatSortModule,
@@ -53,8 +53,10 @@ import { version } from '../../version';
     MatIconModule,
     MatButtonModule,
     MatBottomSheetModule,
-    MatMenuModule,
     MatTooltipModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
   ],
 })
 export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -64,15 +66,18 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   private controllerManagement = inject(ControllerManagementService);
   private changeDetector = inject(ChangeDetectorRef);
   private bottomSheet = inject(MatBottomSheet);
-  private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private themeService = inject(ThemeService);
   private toasterService = inject(ToasterService);
 
   dataSource: ControllerDataSource | null = null;
   displayedColumns = ['id', 'name', 'status', 'location', 'ip', 'port', 'actions'];
   controllerStatusSubscription: Subscription;
   readonly searchText = model('');
+  readonly statusFilter = model('all');
+  readonly loading = signal(true);
+  readonly pageIndex = signal(0);
+  readonly pageSize = signal(25);
+  readonly pageSizeOptions = [5, 10, 25, 50, 100];
   private readonly minStartingDisplayMs = 700;
   private readonly statusRefreshIntervalMs = 5000;
   private startingTimestamps: Map<string, number> = new Map();
@@ -86,6 +91,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor() {}
 
   getControllers() {
+    this.loading.set(true);
     const runningControllerNames = this.controllerManagement.getRunningControllers();
 
     this.controllerService.findAll().then(
@@ -105,7 +111,9 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         });
 
+        this.resetPage();
         this.controllerDatabase.addControllers(controllers);
+        this.loading.set(false);
         this.changeDetector.markForCheck();
 
         controllers.forEach((controller) => {
@@ -113,6 +121,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       },
       (err) => {
+        this.loading.set(false);
         const message = err.error?.message || err.message || 'Failed to load controllers';
         this.toasterService.error(message);
         this.changeDetector.markForCheck();
@@ -149,16 +158,19 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
         if (controllerStatus.status === 'starting') {
           controller.status = 'starting';
           this.startingTimestamps.set(controller.name, Date.now());
+          this.controllerDatabase.update(controller);
           this.changeDetector.markForCheck();
         }
         if (controllerStatus.status === 'stopped') {
           controller.status = 'stopped';
           this.startingTimestamps.delete(controller.name);
+          this.controllerDatabase.update(controller);
           this.changeDetector.markForCheck();
         }
         if (controllerStatus.status === 'errored') {
           controller.status = 'stopped';
           this.startingTimestamps.delete(controller.name);
+          this.controllerDatabase.update(controller);
           this.changeDetector.markForCheck();
         }
         if (controllerStatus.status === 'started') {
@@ -287,6 +299,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
       if (result) {
         this.controllerService.delete(controller).then(
           () => {
+            this.resetPage();
             this.controllerDatabase.remove(controller);
             this.changeDetector.markForCheck();
           },
@@ -322,18 +335,62 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onSearchChange(value: string) {
     this.searchText.set(value);
+    this.resetPage();
     if (this.dataSource) {
       this.dataSource.setFilter(value);
     }
   }
 
-  isLightThemeEnabled() {
-    return this.themeService.getActualTheme() === 'light';
+  onStatusFilterChange(value: string) {
+    this.statusFilter.set(value);
+    this.resetPage();
+    this.dataSource?.setStatusFilter(value);
   }
+
+  onSortByChange(value: string) {
+    if (!this.sort) {
+      return;
+    }
+    this.sort.active = value;
+    this.sort.direction = 'asc';
+    this.sort.sortChange.emit({ active: value, direction: 'asc' });
+    this.resetPage();
+  }
+
+  onSortChange() {
+    this.resetPage();
+  }
+
+  onPageEvent(event: PageEvent) {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+    this.dataSource?.setPage(event);
+  }
+
+  trackController(_index: number, controller: Controller) {
+    return controller.id;
+  }
+
+  private resetPage() {
+    this.pageIndex.set(0);
+    this.dataSource?.setPage({
+      pageIndex: 0,
+      pageSize: this.pageSize(),
+      length: this.dataSource.filteredLength.value,
+    });
+  }
+
 }
 
 export class ControllerDataSource extends DataSource<Controller> {
   private filterChange: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private statusFilterChange: BehaviorSubject<string> = new BehaviorSubject<string>('all');
+  private pageChange = new BehaviorSubject<PageEvent>({
+    pageIndex: 0,
+    pageSize: 25,
+    length: 0,
+  });
+  readonly filteredLength = new BehaviorSubject<number>(0);
 
   constructor(private controllerDatabase: ControllerDatabase, private sort: MatSort) {
     super();
@@ -341,13 +398,30 @@ export class ControllerDataSource extends DataSource<Controller> {
 
   setFilter(filter: string) {
     this.filterChange.next((filter || '').trim().toLowerCase());
+    this.resetPage();
+  }
+
+  setStatusFilter(status: string) {
+    this.statusFilterChange.next(status || 'all');
+    this.resetPage();
+  }
+
+  setPage(event: PageEvent) {
+    this.pageChange.next(event);
   }
 
   connect(): Observable<Controller[]> {
-    return merge(this.controllerDatabase.dataChange, this.sort.sortChange, this.filterChange).pipe(
+    return merge(
+      this.controllerDatabase.dataChange,
+      this.sort.sortChange,
+      this.filterChange,
+      this.statusFilterChange,
+      this.pageChange
+    ).pipe(
       map(() => {
         let data = this.controllerDatabase.data.slice();
         const filter = this.filterChange.value;
+        const statusFilter = this.statusFilterChange.value;
 
         if (filter) {
           data = data.filter((controller: Controller) => {
@@ -365,22 +439,37 @@ export class ControllerDataSource extends DataSource<Controller> {
           });
         }
 
-        if (!this.sort.active || this.sort.direction === '') {
-          return data;
+        if (statusFilter !== 'all') {
+          data = data.filter((controller) => (controller.status || 'stopped') === statusFilter);
         }
 
-        return data.sort((a, b) => {
-          const propertyA = a[this.sort.active] !== undefined ? a[this.sort.active] : '';
-          const propertyB = b[this.sort.active] !== undefined ? b[this.sort.active] : '';
+        if (this.sort.active && this.sort.direction !== '') {
+          data.sort((a, b) => {
+            const propertyA = a[this.sort.active] !== undefined ? a[this.sort.active] : '';
+            const propertyB = b[this.sort.active] !== undefined ? b[this.sort.active] : '';
 
-          const valueA = isNaN(+propertyA) ? propertyA : +propertyA;
-          const valueB = isNaN(+propertyB) ? propertyB : +propertyB;
+            const valueA = isNaN(+propertyA) ? propertyA : +propertyA;
+            const valueB = isNaN(+propertyB) ? propertyB : +propertyB;
 
-          return (valueA < valueB ? -1 : 1) * (this.sort.direction === 'asc' ? 1 : -1);
-        });
+            return (valueA < valueB ? -1 : 1) * (this.sort.direction === 'asc' ? 1 : -1);
+          });
+        }
+
+        this.filteredLength.next(data.length);
+        const pageSize = this.pageChange.value.pageSize;
+        const lastPageIndex = Math.max(Math.ceil(data.length / pageSize) - 1, 0);
+        const pageIndex = Math.min(this.pageChange.value.pageIndex, lastPageIndex);
+        const start = pageIndex * pageSize;
+        return data.slice(start, start + pageSize);
       })
     );
   }
 
   disconnect() {}
+
+  private resetPage() {
+    if (this.pageChange.value.pageIndex !== 0) {
+      this.pageChange.next({ ...this.pageChange.value, pageIndex: 0 });
+    }
+  }
 }

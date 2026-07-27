@@ -1,189 +1,215 @@
-<div class="controllers">
-  <div class="controllers__header">
-    <!-- GNS3 Logo and Title -->
-    <div class="controllers__header-content">
-      @if (!isLightThemeEnabled()) {
-      <mat-icon class="controllers__logo-icon" svgIcon="gns3"></mat-icon>
-      } @if (isLightThemeEnabled()) {
-      <mat-icon class="controllers__logo-icon" svgIcon="gns3black"></mat-icon>
-      }
-      <h1>Controllers</h1>
+<div class="controllers-page">
+  <header class="controllers-page__header">
+    <div class="controllers-page__heading">
+      <h1 class="controllers-page__title">Controllers</h1>
     </div>
-  </div>
 
-  <div class="controllers__content">
-    <!-- Search -->
-    <form class="controllers__search-form">
-      <mat-form-field class="controllers__search">
-        <mat-icon matPrefix>search</mat-icon>
-        <input
-          matInput
-          placeholder="Search controllers"
-          [value]="searchText()"
-          (input)="onSearchChange($event.target.value)"
-        />
-      </mat-form-field>
-    </form>
-
-    <!-- Empty State -->
-    <div
-      class="controllers__empty-state"
-      [class.controllers__empty-state--hidden]="controllerDatabase && controllerDatabase.data.length > 0"
-    >
-      <mat-icon>cloud_off</mat-icon>
-      <h3>No controllers found</h3>
-      <p>Add a controller to get started with GNS3</p>
-      <button mat-raised-button color="primary" (click)="createModal()">
+    <div class="controllers-page__header-actions">
+      <button mat-stroked-button class="controllers-page__button" (click)="getControllers()" [disabled]="loading()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+      <button mat-raised-button color="primary" class="controllers-page__button" (click)="createModal()">
         <mat-icon>add</mat-icon>
         Add Controller
       </button>
     </div>
+  </header>
 
-    <!-- Controllers Table -->
+  <section class="controllers-page__toolbar">
+    <mat-form-field class="controllers-page__search" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        placeholder="Search by name, host, location, port, or status"
+        [value]="searchText()"
+        (input)="onSearchChange($event.target.value)"
+      />
+    </mat-form-field>
+
+    <div class="controllers-page__toolbar-actions">
+      <mat-form-field class="controllers-page__filter" subscriptSizing="dynamic">
+        <mat-label>Status</mat-label>
+        <mat-select [value]="statusFilter()" (valueChange)="onStatusFilterChange($event)">
+          <mat-option value="all">All statuses</mat-option>
+          <mat-option value="running">Running</mat-option>
+          <mat-option value="starting">Starting</mat-option>
+          <mat-option value="stopped">Stopped</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="controllers-page__sort" subscriptSizing="dynamic">
+        <mat-label>Sort by</mat-label>
+        <mat-select [value]="sort?.active || 'id'" (valueChange)="onSortByChange($event)">
+          <mat-option value="id">ID</mat-option>
+          <mat-option value="name">Name</mat-option>
+          <mat-option value="status">Status</mat-option>
+          <mat-option value="location">Location</mat-option>
+          <mat-option value="host">Host</mat-option>
+          <mat-option value="port">Port</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </section>
+
+  <main class="controllers-page__main">
     <div
-      class="controllers__table-container"
-      [class.controllers__table-container--hidden]="!controllerDatabase || controllerDatabase.data.length === 0"
+      class="controllers-page__table-container"
+      [class.controllers-page__table-container--loading]="loading()"
     >
-      <mat-table #table [dataSource]="dataSource" matSort>
-        <!-- ID Column (hidden on mobile) -->
+      @if (loading()) {
+      <div class="controllers-page__loading">
+        <mat-progress-spinner diameter="42" mode="indeterminate" />
+        <span>Loading controllers…</span>
+      </div>
+      }
+      <mat-table
+        #table
+        [dataSource]="dataSource"
+        [trackBy]="trackController"
+        matSort
+        (matSortChange)="onSortChange()"
+      >
         <ng-container matColumnDef="id">
-          <mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile"> ID </mat-header-cell>
-          <mat-cell *matCellDef="let row" class="hide-mobile"> {{ row.id }} </mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+          <mat-cell *matCellDef="let controller">{{ controller.id }}</mat-cell>
         </ng-container>
 
-        <!-- Name Column -->
         <ng-container matColumnDef="name">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            @if (getControllerStatus(row) === 'running') {
-            <a [routerLink]="['/controller', row.id, 'projects']" class="controllers__link">
-              {{ row.name }}
-            </a>
-            } @else {
-            <span class="controllers__name--inactive">{{ row.name }}</span>
-            }
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+          <mat-cell *matCellDef="let controller">
+            <div class="controllers-page__name-cell">
+              <span class="controllers-page__controller-icon">
+                <mat-icon>dns</mat-icon>
+              </span>
+              <div class="controllers-page__name-copy">
+                @if (getControllerStatus(controller) === 'running') {
+                <a [routerLink]="['/controller', controller.id, 'projects']">{{ controller.name }}</a>
+                } @else {
+                <strong>{{ controller.name }}</strong>
+                }
+              </div>
+            </div>
           </mat-cell>
         </ng-container>
 
-        <!-- Status Column (with icon) -->
         <ng-container matColumnDef="status">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            @switch (getControllerStatus(row)) { @case ('running') {
-            <div class="controllers__status-indicator controllers__status--running">
-              <span class="controllers__status-dot"></span>
-              <span>Running</span>
-            </div>
-            } @case ('starting') {
-            <div class="controllers__status-indicator controllers__status--starting">
-              <span class="controllers__status-dot"></span>
-              <span>Starting</span>
-            </div>
-            } @default {
-            <div class="controllers__status-indicator controllers__status--stopped">
-              <span class="controllers__status-dot"></span>
-              <span>Stopped</span>
-            </div>
-            } }
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+          <mat-cell *matCellDef="let controller">
+            <span
+              class="controllers-page__status"
+              [class.controllers-page__status--running]="getControllerStatus(controller) === 'running'"
+              [class.controllers-page__status--starting]="getControllerStatus(controller) === 'starting'"
+            >
+              <span></span>
+              {{ getControllerStatus(controller) | titlecase }}
+            </span>
           </mat-cell>
         </ng-container>
 
-        <!-- Location Column -->
         <ng-container matColumnDef="location">
-          <mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile"> Location </mat-header-cell>
-          <mat-cell *matCellDef="let row" class="hide-mobile"> {{ row.location }} </mat-cell>
-        </ng-container>
-
-        <!-- Host Column -->
-        <ng-container matColumnDef="ip">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Host </mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            <span class="hide-desktop">{{ row.host }}:{{ row.port }}</span>
-            <span class="hide-mobile">{{ row.host }}</span>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Location</mat-header-cell>
+          <mat-cell *matCellDef="let controller">
+            <span class="controllers-page__location">
+              <mat-icon>{{ controller.location === 'local' ? 'computer' : 'cloud' }}</mat-icon>
+              {{ controller.location | titlecase }}
+            </span>
           </mat-cell>
         </ng-container>
 
-        <!-- Port Column (hidden on mobile) -->
-        <ng-container matColumnDef="port">
-          <mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile"> Port </mat-header-cell>
-          <mat-cell *matCellDef="let row" class="hide-mobile"> {{ row.port }} </mat-cell>
+        <ng-container matColumnDef="ip">
+          <mat-header-cell *matHeaderCellDef mat-sort-header="host">Host</mat-header-cell>
+          <mat-cell *matCellDef="let controller">
+            <span class="controllers-page__host" [matTooltip]="controller.host">{{ controller.host }}</span>
+          </mat-cell>
         </ng-container>
 
-        <!-- Actions Column -->
+        <ng-container matColumnDef="port">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Port</mat-header-cell>
+          <mat-cell *matCellDef="let controller">{{ controller.port }}</mat-cell>
+        </ng-container>
+
         <ng-container matColumnDef="actions">
-          <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            <div class="controllers__actions-cell">
-              <!-- Primary Action: Go to Projects (only for running controllers) -->
-              @if (getControllerStatus(row) === 'running') {
-              <button mat-icon-button color="primary" class="primary-action-btn" (click)="openProjects(row)">
+          <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+          <mat-cell *matCellDef="let controller">
+            <div class="controllers-page__actions-cell">
+              @if (getControllerStatus(controller) === 'running') {
+              <button
+                mat-icon-button
+                class="controllers-page__action controllers-page__action--open"
+                (click)="openProjects(controller)"
+                matTooltip="Open projects"
+                [attr.aria-label]="'Open projects on ' + controller.name"
+              >
                 <mat-icon>folder_open</mat-icon>
               </button>
               }
-
-              <!-- Edit Controller -->
-              <button mat-icon-button (click)="editController(row)">
+              <button
+                mat-icon-button
+                class="controllers-page__action controllers-page__action--edit"
+                (click)="editController(controller)"
+                matTooltip="Edit controller"
+                [attr.aria-label]="'Edit ' + controller.name"
+              >
                 <mat-icon>edit</mat-icon>
               </button>
-
-              <!-- Delete Controller -->
-              <button mat-icon-button color="warn" (click)="deleteController(row)">
+              <button
+                mat-icon-button
+                class="controllers-page__action controllers-page__action--delete"
+                (click)="deleteController(controller)"
+                matTooltip="Delete controller"
+                [attr.aria-label]="'Delete ' + controller.name"
+              >
                 <mat-icon>delete</mat-icon>
               </button>
             </div>
           </mat-cell>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" />
         <mat-row
-          *matRowDef="let row; columns: displayedColumns"
-          [class.controllers__row--running]="getControllerStatus(row) === 'running'"
-          [class.controllers__row--starting]="getControllerStatus(row) === 'starting'"
-          [class.controllers__row--stopped]="getControllerStatus(row) === 'stopped'"
-        ></mat-row>
+          *matRowDef="let controller; columns: displayedColumns"
+          [class.controllers-page__row--running]="getControllerStatus(controller) === 'running'"
+        />
       </mat-table>
-    </div>
 
-    <!-- Add Controller Button -->
-    <div
-      class="controllers__buttons-bar"
-      [class.controllers__buttons-bar--hidden]="!controllerDatabase || controllerDatabase.data.length === 0"
-    >
-      <button mat-raised-button class="controllers__button" color="primary" (click)="createModal()">
-        <mat-icon>add</mat-icon>
-        Add Controller
-      </button>
-    </div>
-
-    <!-- Version Footer -->
-    <footer class="controllers__footer">
-      <div class="controllers__footer-content">
-        <div class="controllers__footer-info">GNS3 Web-UI &copy;2018-{{ currentYear }} v{{ version }}</div>
-        <div class="controllers__footer-social">
-          <a
-            class="controllers__footer-social-link"
-            href="https://github.com/GNS3"
-            target="_blank"
-            rel="noopener noreferrer"
-            matTooltip="GitHub"
-          >
-            <mat-icon class="controllers__footer-icon" svgIcon="github"></mat-icon>
-          </a>
-          <a
-            class="controllers__footer-social-link"
-            href="https://www.gns3.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            matTooltip="Website"
-          >
-            @if (!isLightThemeEnabled()) {
-            <mat-icon class="controllers__footer-icon" svgIcon="gns3"></mat-icon>
-            } @if (isLightThemeEnabled()) {
-            <mat-icon class="controllers__footer-icon" svgIcon="gns3black"></mat-icon>
-            }
-          </a>
-        </div>
+      @if (!loading() && (dataSource?.filteredLength | async) > 0) {
+      <div class="controllers-page__table-footer">
+        <mat-paginator
+          [length]="(dataSource?.filteredLength | async) || 0"
+          [pageIndex]="pageIndex()"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onPageEvent($event)"
+          showFirstLastButtons
+          aria-label="Select controllers page"
+        />
       </div>
-    </footer>
-  </div>
+      } @else if (!loading()) {
+      <div class="controllers-page__empty">
+        <mat-icon>dns</mat-icon>
+        <h3>No controllers found</h3>
+        <p>Try changing the search or status filter, or add a controller.</p>
+        @if (!searchText() && statusFilter() === 'all') {
+        <button mat-raised-button color="primary" class="controllers-page__button" (click)="createModal()">
+          <mat-icon>add</mat-icon>
+          Add Controller
+        </button>
+        }
+      </div>
+      }
+    </div>
+  </main>
+
+  <footer class="controllers-page__footer">
+    <span>GNS3 Web-UI &copy;2018-{{ currentYear }} v{{ version }}</span>
+    <div>
+      <a href="https://github.com/GNS3" target="_blank" rel="noopener noreferrer" matTooltip="GNS3 on GitHub">
+        <mat-icon svgIcon="github"></mat-icon>
+      </a>
+      <a href="https://www.gns3.com/" target="_blank" rel="noopener noreferrer" matTooltip="GNS3 website">
+        <mat-icon>language</mat-icon>
+      </a>
+    </div>
+  </footer>
 </div>

@@ -203,6 +203,7 @@
   padding: 4px 8px;
   border-radius: 12px;
   color: var(--mat-sys-on-primary);
+  --mat-text-button-label-text-color: var(--mat-sys-on-primary);
   line-height: normal;
 
   &:hover {
@@ -240,6 +241,7 @@
   font-size: 14px;
   font-weight: 600;
   line-height: 36px;
+  color: var(--mat-sys-on-primary);
   text-overflow: ellipsis;
   vertical-align: middle;
   white-space: nowrap;

@@ -1,573 +1,463 @@
-/**
- * GNS3 Controllers Component Styles
- * BEM naming applied, Material theme variables used
- * Design language unified with login page
- *
- * Note: Material table internal DOM (mat-row, mat-cell, etc.) requires
- * direct element selectors for visual effects (hover, zebra striping, row borders).
- * This is a known limitation of Angular Material's styling system.
- * These styles follow all other rules: no forbidden CSS patterns, Material variables, BEM naming.
- */
-
 :host {
   display: block;
   width: 100%;
-  // Background moved to default-layout, keep transparent here
   background: transparent;
 }
 
-/* =============================================
-// Header
-// ============================================= */
-.controllers__header {
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 32px 20px 16px;
-  animation: fadeInSlideIn 0.4s ease-out;
+.controllers-page {
+  animation: controllers-fade-in 0.4s ease-out;
 }
 
-.controllers__header-content {
+.controllers-page__header,
+.controllers-page__toolbar,
+.controllers-page__main,
+.controllers-page__footer {
+  max-width: 1600px;
+  margin-inline: auto;
+}
+
+.controllers-page__header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
-  animation: fadeIn 0.5s ease-out;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px 20px 16px;
 }
 
-.controllers__logo-icon {
-  font-size: 72px;
-  width: 72px;
-  height: 72px;
+.controllers-page__heading,
+.controllers-page__header-actions,
+.controllers-page__toolbar,
+.controllers-page__toolbar-actions,
+.controllers-page__actions-cell,
+.controllers-page__footer,
+.controllers-page__footer > div {
   display: flex;
   align-items: center;
-  justify-content: center;
-  line-height: 1;
-  overflow: visible;
 }
 
-.controllers__header {
-  h1 {
-    font-size: 32px;
-    font-weight: 500;
-    color: var(--mat-sys-on-surface);
-    margin: 0;
-    padding-bottom: 8px;
-  }
+.controllers-page__title {
+  margin: 0;
+  color: var(--mat-sys-on-surface);
+  font-size: 32px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-/* =============================================
-// Content
-// ============================================= */
-.controllers__content {
-  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+.controllers-page__header-actions {
+  gap: 12px;
 }
 
-/* =============================================
-// Buttons Bar
-// ============================================= */
-.controllers__buttons-bar {
-  padding-top: 0;
-  display: flex;
-  justify-content: flex-end;
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 0 20px 20px;
-}
-
-.controllers__buttons-bar--hidden {
-  display: none;
-}
-
-.controllers__button {
-  margin: 12px 0;
+button.controllers-page__button {
   height: 48px;
   border-radius: 12px;
-  font-size: 16px;
+  padding-inline: 18px;
+  font-size: 15px;
   font-weight: 500;
+  letter-spacing: 0.3px;
   text-transform: none;
-  letter-spacing: 0.5px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 
   &:hover:not([disabled]) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
-  }
-
-  &:active:not([disabled]) {
-    transform: translateY(0);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
   }
 }
 
-/* =============================================
-// Search
-// ============================================= */
-.controllers__search-form {
+.controllers-page__toolbar {
+  gap: 16px;
+  padding: 0 20px 8px;
+}
+
+.controllers-page__search {
+  flex: 1;
+  min-width: 260px;
+}
+
+.controllers-page__toolbar-actions {
+  flex: 0 0 auto;
+  gap: 12px;
+}
+
+.controllers-page__filter,
+.controllers-page__sort {
+  width: 160px;
+}
+
+.controllers-page__main {
+  padding: 0 20px 20px;
+}
+
+.controllers-page__loading {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  margin: 16px auto;
-  width: 100%;
-  max-width: 1600px;
-  padding: 0 20px;
-  animation: fadeInSlideIn 0.4s ease-out 0.05s both;
-}
-
-.controllers__search {
-  width: 100%;
-}
-
-/* =============================================
-// Table Styles
-// ============================================= */
-.controllers__table-container {
-  border-radius: 16px; // Unified with login page
-  overflow: hidden;
-  width: 100%;
-  max-width: 1600px;
-  margin: 0 auto;
+  min-height: 320px;
+  gap: 14px;
+  color: var(--mat-sys-on-surface-variant);
   background: var(--mat-sys-surface);
-  // Unified card shadows
+}
+
+.controllers-page__table-container {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--mat-sys-surface);
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
     0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
-  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: fadeInSlideIn 0.4s ease-out 0.15s both;
 }
 
-.controllers__table-container--hidden {
-  display: none;
+.controllers-page__table-container--loading {
+  min-height: 320px;
 }
 
-// Material table internal DOM styling - necessary for visual effects
-// Angular Material does not provide CSS hooks for these features
-mat-row {
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: default;
-  position: relative;
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
-    transform: scale(1.002); // Subtle scale effect
-  }
-
-  // Row left border indicator - Running state
-  &.controllers__row--running {
-    border-left: 3px solid var(--mat-sys-primary);
-
-    &:hover {
-      background-color: color-mix(in srgb, var(--mat-sys-primary) 4%, transparent);
-    }
-  }
-
-  // Row left border indicator - Starting state
-  &.controllers__row--starting {
-    border-left: 3px solid var(--mat-sys-secondary);
-
-    &:hover {
-      background-color: color-mix(in srgb, var(--mat-sys-secondary) 4%, transparent);
-    }
-  }
-
-  // Row left border indicator - Stopped state
-  &.controllers__row--stopped {
-    border-left: 3px solid var(--mat-sys-outline-variant);
-
-    &:hover {
-      background-color: color-mix(in srgb, var(--mat-sys-outline-variant) 6%, transparent);
-    }
-  }
+mat-table {
+  width: 100%;
+  min-width: 900px;
 }
 
-// Zebra striping - even rows
-mat-row:nth-child(even) {
-  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 1%, transparent);
+.mat-mdc-row,
+.mat-row {
+  height: var(--mat-table-row-item-container-height);
+  min-height: var(--mat-table-row-item-container-height);
 }
 
-mat-row:nth-child(even):hover {
-  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent);
-}
-
-// Header row styles
-.mat-header-row {
+.mat-header-row,
+.mat-mdc-header-row {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--mat-sys-surface);
+  background: color-mix(in srgb, var(--mat-sys-primary-container) 72%, var(--mat-sys-surface));
+  --mat-sort-arrow-color: var(--mat-sys-on-primary-container);
 
   mat-header-cell {
+    color: var(--mat-sys-on-primary-container);
     font-size: 13px;
-    font-weight: 600;
-    color: var(--mat-sys-on-surface-variant);
+    font-weight: 650;
     letter-spacing: 0.5px;
     text-transform: uppercase;
   }
 }
 
-.mat-table-sticky {
-  top: 0;
-}
+mat-row {
+  border-left: 3px solid var(--mat-sys-outline-variant);
+  transition: background-color 180ms ease;
 
-// Cell spacing and alignment
-mat-header-cell,
-mat-cell {
-  justify-content: center;
-  padding: 0 16px;
-}
-
-mat-cell {
-  font-size: 14px;
-  color: var(--mat-sys-on-surface);
-}
-
-// Name column - left align
-mat-cell[mat-column='name'] {
-  justify-content: flex-start;
-  font-weight: 500;
-}
-
-// Non-running name - secondary color
-.controllers__name--inactive {
-  color: var(--mat-sys-on-surface-variant);
-  transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    color: var(--mat-sys-on-surface);
-  }
-}
-
-// Status column - center align
-mat-cell[mat-column='status'] {
-  justify-content: center;
-}
-
-// Actions column - right align
-mat-cell[mat-column='actions'],
-mat-header-cell[mat-column='actions'] {
-  justify-content: flex-end;
-  padding: 0 16px;
-}
-
-mat-cell[mat-column='actions'] {
-  overflow: visible;
-}
-
-/* =============================================
-// Status Indicator
-// ============================================= */
-.controllers__status-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
-  transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), color 200ms cubic-bezier(0.4, 0, 0.2, 1),
-    transform 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  animation: status-fade-in 300ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  // Default: Gray/Neutral (Stopped state)
-  background-color: var(--mat-sys-surface-container-highest);
-  color: var(--mat-sys-on-surface-variant);
-  border: 1px solid var(--mat-sys-outline-variant);
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
-  }
-}
-
-.controllers__status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--mat-sys-on-surface-variant);
-  transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-// Running: Green/Success
-.controllers__status--running {
-  background-color: var(--mat-sys-primary-container);
-  color: var(--mat-sys-on-primary-container);
-  border: 1px solid var(--mat-sys-primary);
-
-  .controllers__status-dot {
-    background-color: var(--mat-sys-primary);
-    animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  &:nth-child(even) {
+    background: color-mix(in srgb, var(--mat-sys-on-surface) 1%, transparent);
   }
 
   &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-primary) 20%, var(--mat-sys-primary-container));
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
+    background: color-mix(in srgb, var(--mat-sys-primary) 5%, transparent);
   }
 }
 
-// Starting: Orange/Secondary
-.controllers__status--starting {
-  background-color: var(--mat-sys-secondary-container);
-  color: var(--mat-sys-on-secondary-container);
-  border: 1px solid var(--mat-sys-secondary);
-
-  .controllers__status-dot {
-    background-color: var(--mat-sys-secondary);
-    animation: pulse-orange 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-secondary) 20%, var(--mat-sys-secondary-container));
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-secondary) 25%, transparent);
-  }
+mat-row.controllers-page__row--running {
+  border-left-color: var(--mat-sys-primary);
 }
 
-// Stopped: uses base class styles
-
-@keyframes status-fade-in {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes pulse-green {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.15);
-  }
-}
-
-@keyframes pulse-orange {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.15);
-  }
-}
-
-/* =============================================
-// Table Link
-// ============================================= */
-.controllers__link {
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  display: inline-block;
-  transform-origin: left center;
-  color: var(--mat-sys-primary);
-  text-decoration: none;
-  font-weight: 500;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: currentColor;
-    transition: width 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  &:hover {
-    color: color-mix(in srgb, var(--mat-sys-primary) 80%, black);
-    transform: translateY(-2px);
-
-    &::after {
-      width: 100%;
-    }
-  }
-}
-
-/* =============================================
-// Action Buttons
-// ============================================= */
-.controllers__actions-cell {
+mat-cell,
+mat-header-cell {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  min-height: inherit;
+  overflow: hidden;
+  color: var(--mat-sys-on-surface);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mat-column-id {
+  flex: 0 0 7%;
+  min-width: 72px;
+  justify-content: center;
+}
+
+.mat-column-name {
+  flex: 0 0 25%;
+  min-width: 250px;
+  justify-content: center;
+}
+
+.mat-column-status {
+  flex: 0 0 14%;
+  min-width: 110px;
+  justify-content: center;
+}
+
+.mat-column-location {
+  flex: 0 0 14%;
+  min-width: 125px;
+  justify-content: center;
+}
+
+.mat-column-ip {
+  flex: 0 0 16%;
+  min-width: 155px;
+  justify-content: center;
+}
+
+.mat-column-port {
+  flex: 0 0 10%;
+  min-width: 85px;
+  justify-content: center;
+}
+
+.mat-column-actions {
+  flex: 0 0 14%;
+  min-width: 150px;
+  box-sizing: border-box;
+  justify-content: center;
+  padding-right: 0;
+}
+
+mat-header-cell .mat-sort-header-container {
+  justify-content: center;
+}
+
+.controllers-page__name-cell {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 12px;
+  justify-content: center;
+}
+
+.controllers-page__controller-icon {
+  display: grid;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--mat-sys-on-primary-container);
+  background: color-mix(in srgb, var(--mat-sys-primary-container) 82%, var(--mat-sys-surface));
+
+  mat-icon {
+    width: 21px;
+    height: 21px;
+    font-size: 21px;
+  }
+}
+
+.controllers-page__name-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+
+  a,
+  strong,
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  a,
+  strong {
+    color: var(--mat-sys-on-surface);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  a {
+    color: var(--mat-sys-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+}
+
+.controllers-page__status,
+.controllers-page__location {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.controllers-page__status {
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 18px;
+  background: var(--mat-sys-surface-container-highest);
+  color: var(--mat-sys-on-surface-variant);
+
+  > span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
+
+.controllers-page__status--running {
+  border-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
+}
+
+.controllers-page__status--starting {
+  border-color: var(--mat-sys-secondary);
+  color: var(--mat-sys-on-secondary-container);
+  background: var(--mat-sys-secondary-container);
+}
+
+.controllers-page__location {
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 16px;
+  color: var(--mat-sys-secondary);
+  background: color-mix(in srgb, var(--mat-sys-secondary) 10%, transparent);
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+}
+
+.controllers-page__host {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.controllers-page__actions-cell {
   gap: 4px;
 }
 
-// Icon buttons - Material Design 3 style
-button[mat-icon-button] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+button.controllers-page__action {
+  --controller-action-color: var(--mat-sys-on-surface-variant);
   width: 32px;
   height: 32px;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 50%;
+  color: var(--controller-action-color);
   --mat-icon-button-state-layer-size: 32px;
   --mat-icon-button-icon-size: 20px;
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background-color: var(--mat-icon-button-state-layer);
-    opacity: 0;
-    transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  &:hover::before {
-    opacity: var(--mat-icon-button-hover-state-layer-opacity);
-  }
-
-  &:active::before {
-    opacity: var(--mat-icon-button-pressed-state-layer-opacity);
-  }
-
   mat-icon {
-    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    z-index: 1;
+    color: var(--controller-action-color);
+    transition: transform 150ms ease;
   }
 
   &:hover mat-icon {
     transform: scale(1.15);
   }
+}
 
-  &:active mat-icon {
-    transform: scale(0.95);
+button.controllers-page__action--open {
+  --controller-action-color: var(--mat-sys-secondary);
+}
+
+button.controllers-page__action--edit {
+  --controller-action-color: var(--mat-sys-primary);
+}
+
+button.controllers-page__action--delete {
+  --controller-action-color: var(--mat-sys-error);
+}
+
+.controllers-page__table-footer {
+  display: flex;
+  align-items: center;
+  min-height: var(--mat-table-footer-container-height);
+  padding: 0 12px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  background: color-mix(in srgb, var(--mat-sys-primary-container) 20%, var(--mat-sys-surface-container));
+
+  mat-paginator {
+    width: 100%;
+    --mat-paginator-container-background-color: transparent;
+    --mat-paginator-container-size: var(--mat-table-footer-container-height);
   }
 }
 
-// Primary action button (Projects/Open) - uses primary theme color
-.primary-action-btn {
-  margin-right: 4px;
-
-  &::before {
-    background-color: var(--mat-sys-primary);
-  }
-
-  &:hover::before {
-    opacity: 0.12;
-  }
-
-  &:hover mat-icon {
-    color: var(--mat-sys-primary);
-  }
-}
-
-// Start controller button - uses success/green
-button[mat-icon-button]:has(.mat-icon[aria-label*='Start']) {
-  &::before {
-    background-color: var(--mat-sys-tertiary);
-  }
-
-  &:hover::before {
-    opacity: 0.12;
-  }
-
-  &:hover mat-icon {
-    color: var(--mat-sys-tertiary);
-  }
-}
-
-// Stop controller button - uses warning/orange
-button[mat-icon-button]:has(.mat-icon[aria-label*='Stop']) {
-  &::before {
-    background-color: var(--mat-sys-error);
-  }
-
-  &:hover::before {
-    opacity: 0.12;
-  }
-
-  &:hover mat-icon {
-    color: var(--mat-sys-error);
-  }
-}
-
-// Delete button - uses error/warn theme color
-button[color='warn'] {
-  &::before {
-    background-color: var(--mat-sys-error);
-  }
-
-  &:hover::before {
-    opacity: 0.12;
-  }
-
-  &:hover mat-icon {
-    color: var(--mat-sys-error);
-  }
-}
-
-/* =============================================
-// Empty State
-// ============================================= */
-.controllers__empty-state {
+.controllers-page__empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 64px 32px;
+  min-height: 240px;
+  padding: 32px;
+  color: var(--mat-sys-on-surface-variant);
   text-align: center;
-  margin: 20px auto;
-  max-width: 1000px;
-  border-radius: 16px;
-  background: var(--mat-sys-surface);
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
-    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
-  animation: fadeInSlideIn 0.4s ease-out 0.2s both;
-}
 
-.controllers__empty-state--hidden {
-  display: none;
-}
-
-.controllers__empty-state {
-  // Only style the main empty state icon, not icons inside buttons
   > mat-icon {
-    font-size: 64px;
-    width: 64px;
-    height: 64px;
-    margin-bottom: 16px;
-    opacity: 0.4;
-    color: var(--mat-sys-on-surface-variant);
+    width: 48px;
+    height: 48px;
+    font-size: 48px;
+    opacity: 0.55;
   }
 
   h3 {
-    font-size: 20px;
-    font-weight: 500;
-    margin: 0 0 8px 0;
+    margin: 12px 0 0;
     color: var(--mat-sys-on-surface);
+    font-size: 17px;
   }
 
   p {
+    margin: 5px 0 16px;
     font-size: 14px;
-    color: color-mix(in srgb, var(--mat-sys-on-surface) 60%, transparent);
-    margin: 0 0 24px 0;
-  }
-
-  // Unified button style in empty state
-  button {
-    height: 48px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 500;
-    padding: 0 24px;
   }
 }
 
-/* =============================================
-// Animations
-// ============================================= */
-@keyframes fadeInSlideIn {
+.controllers-page__footer {
+  justify-content: space-between;
+  padding: 4px 20px 20px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 12px;
+
+  > div {
+    gap: 10px;
+  }
+
+  a {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--mat-sys-on-surface-variant);
+
+    &:hover {
+      color: var(--mat-sys-primary);
+      background: var(--mat-sys-surface-container-high);
+    }
+  }
+
+  mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+  }
+}
+
+:host-context([data-density='compact']) {
+  button.controllers-page__button {
+    min-height: 40px;
+    height: 40px;
+  }
+
+  .controllers-page__controller-icon {
+    flex-basis: 34px;
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@keyframes controllers-fade-in {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -575,147 +465,55 @@ button[color='warn'] {
   }
 }
 
-/* =============================================
-// Footer
-// ============================================= */
-.controllers__footer {
-  padding: 24px 20px;
-  color: var(--mat-sys-on-surface-variant);
-  font-size: 14px;
-  opacity: 0.7;
-}
-
-.controllers__footer-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1000px;
-  margin: 0 auto;
-  gap: 16px;
-}
-
-.controllers__footer-info {
-  flex: 1;
-}
-
-.controllers__footer-social {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.controllers__footer-social-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  color: var(--mat-sys-on-surface-variant);
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
-    color: var(--mat-sys-primary);
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-.controllers__footer-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  overflow: visible;
-}
-
-/* =============================================
-// Responsive Design
-// ============================================= */
-@media (max-width: 768px) {
-  .controllers__header-content {
-    gap: 12px;
-  }
-
-  .controllers__logo-icon {
-    font-size: 48px;
-    width: 48px;
-    height: 48px;
-  }
-
-  .controllers__header {
-    padding: 24px 16px 12px;
-
-    h1 {
-      font-size: 24px;
-    }
-  }
-
-  .controllers__button {
-    margin: 8px 0;
-    width: 100%;
-    height: 44px;
-    font-size: 15px;
-  }
-
-  .controllers__actions-cell {
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-
-  .primary-action-btn {
-    margin-right: 4px;
-  }
-
-  // Hide less important columns on mobile
-  .hide-mobile {
-    display: none;
-  }
-
-  // Show combined host:port on mobile only
-  .hide-desktop {
-    display: inline;
-  }
-
-  // Adjust status indicator for mobile
-  .controllers__status-indicator {
-    padding: 4px 10px;
-    font-size: 12px;
-  }
-
-  mat-cell {
-    padding: 0 12px;
-    font-size: 13px;
-  }
-
-  .controllers__empty-state {
-    margin: 16px;
-    padding: 48px 24px;
-  }
-
-  .controllers__footer {
-    padding: 16px;
-    font-size: 12px;
-  }
-
-  .controllers__footer-content {
+@media (max-width: 900px) {
+  .controllers-page__header,
+  .controllers-page__toolbar {
+    align-items: stretch;
     flex-direction: column;
-    gap: 12px;
-    text-align: center;
+  }
+
+  .controllers-page__header-actions,
+  .controllers-page__toolbar-actions {
+    width: 100%;
+  }
+
+  .controllers-page__filter,
+  .controllers-page__sort {
+    flex: 1;
+    width: auto;
   }
 }
 
-@media (min-width: 769px) {
-  // Hide combined host:port on desktop
-  .hide-desktop {
-    display: none;
+@media (max-width: 600px) {
+  .controllers-page__header {
+    padding: 20px 16px 12px;
+  }
+
+  .controllers-page__toolbar,
+  .controllers-page__main,
+  .controllers-page__footer {
+    padding-inline: 16px;
+  }
+
+  .controllers-page__title {
+    font-size: 25px;
+  }
+
+  .controllers-page__header-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  button.controllers-page__button {
+    width: 100%;
+  }
+
+  .controllers-page__toolbar-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .controllers-page__footer {
+    gap: 12px;
   }
 }
