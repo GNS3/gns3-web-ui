@@ -165,7 +165,7 @@
         <button
           mat-button
           class="toolbar__account"
-          [matMenuTriggerFor]="accountMenu"
+          [matMenuTriggerFor]="userMenu"
           aria-label="Open user account menu"
         >
           <span class="toolbar__account-avatar">
@@ -177,7 +177,7 @@
         }
 
         <!-- Logged-in user account menu -->
-        <mat-menu #accountMenu="matMenu">
+        <mat-menu #userMenu="matMenu">
           <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'systemstatus']">
             <mat-icon>info</mat-icon>
             <span>System status</span>
