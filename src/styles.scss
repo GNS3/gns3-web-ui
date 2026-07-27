@@ -118,6 +118,59 @@
   width: 100%;
 }
 
+/*
+ * Search, filter, and sort controls use a consistent rounded shape across
+ * management pages. The selectors intentionally target semantic field
+ * classes so regular data-entry forms retain their existing appearance.
+ */
+:where(mat-form-field[class*='search'], mat-form-field[class*='filter'], mat-form-field[class*='sort']) {
+  --mat-form-field-filled-container-shape: 12px;
+  --mat-form-field-outlined-container-shape: 0;
+}
+
+:where(
+    mat-form-field[class*='search'],
+    mat-form-field[class*='filter'],
+    mat-form-field[class*='sort']
+  ).mat-form-field-appearance-fill
+  .mat-mdc-text-field-wrapper {
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+}
+
+:where(
+    mat-form-field[class*='search'],
+    mat-form-field[class*='filter'],
+    mat-form-field[class*='sort']
+  ).mat-form-field-appearance-outline
+  .mdc-notched-outline__leading {
+  border-radius: 12px 0 0;
+}
+
+:where(
+    mat-form-field[class*='search'],
+    mat-form-field[class*='filter'],
+    mat-form-field[class*='sort']
+  ).mat-form-field-appearance-outline
+  .mdc-notched-outline__trailing {
+  border-radius: 0 12px 0 0;
+}
+
+/*
+ * Data-table headers need clear separation from the page in every theme.
+ * `surface-container-highest` remains neutral in the Azure dark theme while
+ * the primary inset accent and sort arrow retain the active theme identity.
+ */
+html body .mat-mdc-table .mat-mdc-header-row {
+  background: var(--mat-sys-surface-container-highest);
+  box-shadow: inset 0 -2px var(--mat-sys-primary);
+  --mat-sort-arrow-color: var(--mat-sys-primary);
+}
+
+html body .mat-mdc-table .mat-mdc-header-row .mat-mdc-header-cell {
+  color: var(--mat-sys-on-surface);
+}
+
 app-root {
   width: 100%;
   height: 100%; // Changed to 100%, relative to html/body

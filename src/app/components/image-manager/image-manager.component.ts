@@ -23,7 +23,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionDialogComponent } from '@components/dialogs/question-dialog/question-dialog.component';
 import { Controller } from '@models/controller';
 import { Image } from '@models/images';
@@ -45,7 +45,6 @@ type ImageSortDirection = 'asc' | 'desc' | '';
   styleUrl: './image-manager.component.scss',
   imports: [
     CommonModule,
-    RouterModule,
     FormsModule,
     MatDialogModule,
     MatSortModule,

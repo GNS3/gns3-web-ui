@@ -30,15 +30,6 @@
   gap: 12px;
 }
 
-.image-manager__back-btn {
-  flex: 0 0 auto;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  color: var(--mat-sys-on-surface);
-  --mat-icon-button-state-layer-size: 48px;
-}
-
 .image-manager__title {
   margin: 0;
   color: var(--mat-sys-on-surface);
@@ -108,7 +99,7 @@ button.image-manager__button--danger {
   display: flex;
   align-items: center;
   gap: 2px;
-  padding: 2px;
+  padding: 4px 2px;
   border-radius: 8px;
   background: var(--mat-sys-surface-container-high);
 }
@@ -336,12 +327,12 @@ button.image-manager__action-button {
   }
 }
 
-.image-manager__action-button--details {
+button.image-manager__action-button--details {
   --image-action-color: var(--mat-sys-secondary);
 }
 
-.image-manager__action-button--delete,
-.image-manager__action-button--cancel {
+button.image-manager__action-button--delete,
+button.image-manager__action-button--cancel {
   --image-action-color: var(--mat-sys-error);
 }
 
@@ -676,7 +667,6 @@ button.image-manager__details-action {
     height: 40px;
   }
 
-  .image-manager__back-btn,
   button.image-manager__view-toggle-btn {
     width: 40px;
     height: 40px;
