@@ -3,6 +3,10 @@
  * Using MD3 CSS variables only
  */
 
+:host {
+  --layout-header-height: 64px;
+}
+
 /* =============================================
 // Layout Container (Drawer)
 // ============================================= */
@@ -16,6 +20,7 @@
 // ============================================= */
 .sidebar {
   width: 240px;
+  border-radius: 0;
   background: var(--mat-sys-surface-container-low);
   border-right: 1px solid var(--mat-sys-outline-variant);
 }
@@ -30,20 +35,28 @@
 .sidebar__brand {
   display: flex;
   align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: var(--layout-header-height);
+  min-height: var(--layout-header-height);
   gap: 10px;
-  padding: 16px 20px;
+  padding: 0 20px;
   border-bottom: 1px solid var(--mat-sys-outline-variant);
   margin-bottom: 8px;
 }
 
 .sidebar__brand-icon {
-  width: 28px;
-  height: 28px;
-  color: var(--mat-sys-primary);
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  padding: 5px;
+  border-radius: 10px;
+  color: var(--mat-sys-on-primary);
+  background: var(--mat-sys-primary);
 }
 
 .sidebar__brand-text {
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 600;
   color: var(--mat-sys-on-surface);
   letter-spacing: -0.3px;
@@ -184,6 +197,8 @@
      `:host-context` block at the bottom of this file. */
   background-color: var(--mat-sys-primary);
   color: var(--mat-sys-white);
+  height: var(--layout-header-height);
+  min-height: var(--layout-header-height);
 
   button mat-icon {
     color: var(--mat-sys-on-primary);
@@ -258,10 +273,6 @@
   .sidebar {
     width: 200px;
   }
-
-  .toolbar__brand {
-    display: none;
-  }
 }
 
 @media (min-width: 1920px) {
@@ -285,6 +296,8 @@
 // @angular/material/toolbar/_m3-toolbar.scss `get-density-tokens`.
 // ============================================= */
 :host-context([data-density='compact']) {
+  --layout-header-height: 52px;
+
   .toolbar-primary {
     --mat-toolbar-standard-height: 52px;
     --mat-toolbar-mobile-height: 44px;
@@ -316,17 +329,18 @@
 
   /* —— Denser sidebar navigation in compact mode —— */
   .sidebar__brand {
-    padding: 10px 16px;
+    padding: 0 16px;
     margin-bottom: 4px;
   }
 
   .sidebar__brand-icon {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
+    padding: 4px;
   }
 
   .sidebar__brand-text {
-    font-size: 16px;
+    font-size: 24px;
   }
 
   .sidebar__section-title {
@@ -368,5 +382,15 @@
       width: 16px;
       height: 16px;
     }
+  }
+}
+
+@media (max-width: 599px) {
+  :host {
+    --layout-header-height: 56px;
+  }
+
+  :host-context([data-density='compact']) {
+    --layout-header-height: 44px;
   }
 }

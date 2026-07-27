@@ -17,6 +17,16 @@
       <!-- Main Menu -->
       <div class="sidebar__section-title">Main Menu</div>
       <mat-nav-list class="sidebar__nav">
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
+          [routerLink]="['/controllers']"
+          (click)="isSmallScreen() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>developer_board</mat-icon>
+          <span matListItemTitle>Controllers</span>
+        </a>
         @if (controllerId) {
         <a
           mat-list-item
@@ -59,16 +69,6 @@
           <span matListItemTitle>Templates</span>
         </a>
         }
-        <a
-          mat-list-item
-          class="sidebar__nav-item"
-          routerLinkActive="active"
-          [routerLink]="['/controllers']"
-          (click)="isSmallScreen() && sidenav.close()"
-        >
-          <mat-icon matListItemIcon>developer_board</mat-icon>
-          <span matListItemTitle>Controllers</span>
-        </a>
         @if (controllerId) {
         <a
           mat-list-item
@@ -155,10 +155,12 @@
         </button>
 
         <!-- GNS3 brand -->
+        @if (!sidenavOpened()) {
         <span class="toolbar__brand">
           <mat-icon svgIcon="gns3" class="toolbar__brand-icon"></mat-icon>
           GNS3
         </span>
+        }
 
         @if (!recentlyOpenedProjectId && controllerIdProjectList) {
         <button mat-button (click)="listProjects()">Projects</button>
