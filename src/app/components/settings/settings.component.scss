@@ -16,6 +16,9 @@
 
 .settings__title {
   @include page.page-title;
+  font-size: 32px;
+  font-weight: 650;
+  line-height: 1.2;
 }
 
 .settings__layout {
@@ -68,10 +71,17 @@
   background: transparent;
   color: var(--mat-sys-on-surface-variant);
   font: inherit;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
   text-align: left;
+
+  span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
   mat-icon {
     width: 20px;
@@ -108,9 +118,9 @@
   overflow: hidden;
   color: var(--mat-sys-on-surface);
   background: var(--mat-sys-surface);
-  border: 1px solid var(--mat-sys-outline-variant);
-  border-radius: 14px;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 65%, transparent);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 16%, transparent);
 }
 
 .settings__panel-header {
@@ -119,9 +129,9 @@
 
   h2 {
     margin: 2px 0 4px;
-    font-size: 24px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-size: 21px;
+    font-weight: 650;
+    line-height: 1.2;
   }
 
   p {
@@ -169,14 +179,14 @@
 .settings__action-card {
   h3 {
     margin: 0 0 4px;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
   }
 
   p {
     margin: 0;
     color: var(--mat-sys-on-surface-variant);
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.5;
   }
 }
@@ -229,13 +239,13 @@
   }
 
   strong {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 600;
   }
 
   small {
     color: var(--mat-sys-on-surface-variant);
-    font-size: 11px;
+    font-size: 12px;
   }
 
   &:hover {
@@ -398,17 +408,17 @@
     flex-direction: column;
   }
 
-  strong {
-    overflow: hidden;
-    font-size: 12px;
+    strong {
+      overflow: hidden;
+      font-size: 14px;
     font-weight: 600;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  small {
-    color: var(--mat-sys-on-surface-variant);
-    font-size: 10px;
+    small {
+      color: var(--mat-sys-on-surface-variant);
+      font-size: 11px;
   }
 
   mat-icon {
@@ -572,11 +582,11 @@
     padding: 0 10px;
     min-height: 40px;
     gap: 10px;
-    font-size: 12px;
+    font-size: 16px;
   }
 
   .settings__panel {
-    border-radius: var(--mat-sys-corner-medium);
+    border-radius: 16px;
   }
 
   .settings__panel-header {
@@ -611,12 +621,12 @@
   .settings__action-card {
     h3 {
       margin: 0 0 2px;
-      font-size: 13px;
+      font-size: 16px;
     }
 
     p {
       margin: 0;
-      font-size: 11px;
+      font-size: 14px;
     }
   }
 
@@ -637,11 +647,11 @@
     gap: 10px;
 
     strong {
-      font-size: 12px;
+      font-size: 16px;
     }
 
     small {
-      font-size: 10px;
+      font-size: 12px;
     }
   }
 
@@ -662,11 +672,11 @@
     padding: 6px 2px 0;
 
     strong {
-      font-size: 11px;
+      font-size: 14px;
     }
 
     small {
-      font-size: 9px;
+      font-size: 11px;
     }
   }
 
