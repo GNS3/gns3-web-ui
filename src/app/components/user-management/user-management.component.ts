@@ -3,84 +3,124 @@
  * Version: 3
  * SPDX-FileCopyrightText: Copyright (c) 2022 Orange Business Services
  * SPDX-License-Identifier: GPL-3.0-or-later
- *
- * This software is distributed under the GPL-3.0 or any later version,
- * the text of which is available at https://www.gnu.org/licenses/gpl-3.0.txt
- * or see the "LICENSE" file for more details.
- *
- * Author: Sylvain MATHIEU, Elise LEBEAU
  */
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  QueryList,
-  ViewChildren,
-  inject,
-  signal,
-  computed,
-  AfterViewInit,
-  model,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Location } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Controller } from '@models/controller';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { ActivatedRoute } from '@angular/router';
+import { SelectionModel } from '@angular/cdk/collections';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Controller } from '@models/controller';
+import { User } from '@models/users/user';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 import { UserService } from '@services/user.service';
 import { ProgressService } from '../../common/progress/progress.service';
-import { User } from '@models/users/user';
-import { SelectionModel } from '@angular/cdk/collections';
-import { AddUserDialogComponent } from '@components/user-management/add-user-dialog/add-user-dialog.component';
-import { DeleteUserDialogComponent } from '@components/user-management/delete-user-dialog/delete-user-dialog.component';
-import { ToasterService } from '@services/toaster.service';
-import { MatTableDataSource } from '@angular/material/table';
-import { ControllerService } from '@services/controller.service';
-import { UserFilterPipe } from '@filters/user-filter.pipe';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {
-  UserDetailDialogComponent,
-  UserDetailDialogData,
-} from '@components/user-management/user-detail-dialog/user-detail-dialog.component';
-import {
-  AiProfileDialogComponent,
-  AiProfileDialogData,
-} from '@components/user-management/ai-profile-dialog/ai-profile-dialog.component';
+import { AddUserDialogComponent } from './add-user-dialog/add-user-dialog.component';
+import { AiProfileDialogComponent, AiProfileDialogData } from './ai-profile-dialog/ai-profile-dialog.component';
+import { DeleteUserDialogComponent } from './delete-user-dialog/delete-user-dialog.component';
+import { UserDetailDialogComponent, UserDetailDialogData } from './user-detail-dialog/user-detail-dialog.component';
+
+type UserViewMode = 'list' | 'grid';
+type UserScope = 'all' | 'active' | 'administrators';
+type UserStatusFilter = 'all' | 'active' | 'inactive';
+type UserSortDirection = 'asc' | 'desc' | '';
 
 @Component({
   standalone: true,
   selector: 'app-user-management',
   templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.scss'],
+  styleUrl: './user-management.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    FormsModule,
-    RouterModule,
-    MatTableModule,
-    MatCheckboxModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatButtonModule,
-    MatIconModule,
-    MatPaginator,
-    MatSortModule,
+    MatCheckboxModule,
     MatDialogModule,
-    UserFilterPipe,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatPaginatorModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
+    MatSortModule,
+    MatTableModule,
+    MatTooltipModule,
   ],
 })
-export class UserManagementComponent implements OnInit, AfterViewInit {
+export class UserManagementComponent implements OnInit {
+  controller: Controller;
+  readonly users = signal<User[]>([]);
+  readonly loading = signal(true);
+  readonly searchText = signal('');
+  readonly selectedScope = signal<UserScope>('all');
+  readonly statusFilter = signal<UserStatusFilter>('all');
+  readonly viewMode = signal<UserViewMode>('list');
+  readonly selectedUser = signal<User | null>(null);
+  readonly sortActive = signal<keyof User>('username');
+  readonly sortDirection = signal<UserSortDirection>('asc');
+  readonly pageIndex = signal(0);
+  readonly pageSize = signal(25);
+  readonly pageSizeOptions = [5, 10, 25, 50, 100];
+  readonly displayedColumns = ['select', 'username', 'full_name', 'email', 'role', 'is_active', 'actions'];
+  readonly selection = new SelectionModel<User>(true, []);
+
+  readonly filteredUsers = computed(() => {
+    const search = this.searchText().trim().toLowerCase();
+    const scope = this.selectedScope();
+    const status = this.statusFilter();
+    let users = this.users();
+
+    if (scope === 'active') {
+      users = users.filter((user) => user.is_active);
+    } else if (scope === 'administrators') {
+      users = users.filter((user) => user.is_superadmin);
+    }
+
+    if (status !== 'all') {
+      users = users.filter((user) => user.is_active === (status === 'active'));
+    }
+
+    if (search) {
+      users = users.filter((user) =>
+        [user.username, user.full_name, user.email, this.roleLabel(user)]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(search))
+      );
+    }
+
+    const active = this.sortActive();
+    const direction = this.sortDirection();
+    if (!direction) {
+      return users;
+    }
+
+    return [...users].sort((left, right) => {
+      const a = this.sortValue(left, active);
+      const b = this.sortValue(right, active);
+      return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }) * (direction === 'asc' ? 1 : -1);
+    });
+  });
+
+  readonly paginatedUsers = computed(() => {
+    const start = this.pageIndex() * this.pageSize();
+    return this.filteredUsers().slice(start, start + this.pageSize());
+  });
+
+  readonly activeUserCount = computed(() => this.users().filter((user) => user.is_active).length);
+  readonly administratorCount = computed(() => this.users().filter((user) => user.is_superadmin).length);
+
   private route = inject(ActivatedRoute);
   private userService = inject(UserService);
   private progressService = inject(ProgressService);
@@ -90,177 +130,255 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   private location = inject(Location);
   private cd = inject(ChangeDetectorRef);
 
-  controller: Controller;
-  dataSource = new MatTableDataSource<User>();
-  displayedColumns = ['select', 'username', 'full_name', 'email', 'is_active', 'last_login', 'updated_at', 'actions'];
-  selection = new SelectionModel<User>(true, []);
-  readonly searchText = model('');
+  ngOnInit(): void {
+    const controllerId =
+      this.route.snapshot.paramMap.get('controller_id') ??
+      this.route.parent?.snapshot.paramMap.get('controller_id') ??
+      '';
 
-  @ViewChildren('usersPaginator') usersPaginator: QueryList<MatPaginator>;
-  @ViewChildren('usersSort') usersSort: QueryList<MatSort>;
-  isReady = false;
-
-  ngOnInit() {
-    const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
-    this.controllerService
-      .get(+controllerId)
-      .then(
-        (controller: Controller) => {
-          this.controller = controller;
-          this.refresh();
-        },
-        (err) => {
-          const message = err.error?.message || err.message || 'Failed to load controller';
-          this.toasterService.error(message);
-          this.location.back();
-        }
-      );
-  }
-
-  ngAfterViewInit() {
-    this.usersPaginator.changes.subscribe((comps: QueryList<MatPaginator>) => {
-      this.dataSource.paginator = comps.first;
-    });
-    this.usersSort.changes.subscribe((comps: QueryList<MatSort>) => {
-      this.dataSource.sort = comps.first;
-    });
-
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      switch (property) {
-        case 'username':
-        case 'full_name':
-        case 'email':
-          return item[property] ? item[property].toLowerCase() : '';
-        default:
-          return item[property];
+    this.controllerService.get(Number.parseInt(controllerId, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.refresh();
+      },
+      (err) => {
+        this.loading.set(false);
+        this.toasterService.error(err.error?.message || err.message || 'Failed to load controller');
+        this.location.back();
+        this.cd.markForCheck();
       }
-    };
+    );
   }
 
-  refresh() {
+  refresh(): void {
+    if (!this.controller) {
+      return;
+    }
+
+    this.loading.set(true);
     this.userService.list(this.controller).subscribe({
       next: (users: User[]) => {
-        this.isReady = true;
-        this.dataSource.data = users;
+        this.users.set(users || []);
+        this.loading.set(false);
+        this.selection.clear();
+        this.refreshSelectedUser();
+        this.ensureValidPage();
         this.cd.markForCheck();
       },
       error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to load users';
+        this.loading.set(false);
         this.progressService.setError(err);
-        this.toasterService.error(message);
+        this.toasterService.error(err.error?.message || err.message || 'Failed to load users');
         this.location.back();
+        this.cd.markForCheck();
       },
     });
   }
 
-  addUser() {
+  setScope(scope: UserScope): void {
+    this.selectedScope.set(scope);
+    this.resetPage();
+  }
+
+  setSearch(value: string): void {
+    this.searchText.set(value);
+    this.resetPage();
+  }
+
+  setStatusFilter(value: UserStatusFilter): void {
+    this.statusFilter.set(value);
+    this.resetPage();
+  }
+
+  setViewMode(mode: UserViewMode): void {
+    this.viewMode.set(mode);
+  }
+
+  onSortByChange(active: keyof User): void {
+    this.sortActive.set(active);
+    if (!this.sortDirection()) {
+      this.sortDirection.set('asc');
+    }
+    this.resetPage();
+  }
+
+  onSortChange(sort: Sort): void {
+    this.sortActive.set((sort.active || 'username') as keyof User);
+    this.sortDirection.set(sort.direction);
+    this.resetPage();
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+  }
+
+  selectUser(user: User): void {
+    this.selectedUser.set(user);
+    this.userService.get(this.controller, user.user_id).subscribe({
+      next: (latestUser) => {
+        if (this.selectedUser()?.user_id === latestUser.user_id) {
+          this.selectedUser.set(latestUser);
+          this.cd.markForCheck();
+        }
+      },
+      error: (err) => {
+        this.toasterService.error(err.error?.message || err.message || 'Failed to load user details');
+        this.cd.markForCheck();
+      },
+    });
+  }
+
+  closeDetails(): void {
+    this.selectedUser.set(null);
+  }
+
+  addUser(): void {
     const dialogRef = this.dialog.open(AddUserDialogComponent, {
       panelClass: ['base-dialog-panel', 'add-user-dialog-panel'],
       autoFocus: false,
       disableClose: true,
     });
-    let instance = dialogRef.componentInstance;
-    instance.controller = this.controller;
-    dialogRef.afterClosed().subscribe(() => this.refresh());
+    dialogRef.componentInstance.controller = this.controller;
+    dialogRef.afterClosed().subscribe((changed) => {
+      if (changed !== false) {
+        this.refresh();
+      }
+    });
   }
 
-  onDelete(user: User) {
+  openUserDetailDialog(user: User): void {
+    this.userService.get(this.controller, user.user_id).subscribe({
+      next: (userData: User) => {
+        const data: UserDetailDialogData = { user: userData, controller: this.controller };
+        this.dialog
+          .open(UserDetailDialogComponent, {
+            panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+            data,
+            disableClose: false,
+          })
+          .afterClosed()
+          .subscribe(() => this.refresh());
+      },
+      error: (err) => {
+        this.toasterService.error(err.error?.message || err.message || 'Failed to load user data');
+        this.cd.markForCheck();
+      },
+    });
+  }
+
+  openAiProfileDialog(user: User): void {
+    const data: AiProfileDialogData = { user, controller: this.controller };
+    this.dialog.open(AiProfileDialogComponent, {
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      data,
+      disableClose: false,
+    });
+  }
+
+  onDelete(user: User): void {
     this.dialog
       .open(DeleteUserDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
         data: { users: [user] },
       })
       .afterClosed()
-      .subscribe((isDeletedConfirm) => {
-        if (isDeletedConfirm) {
-          this.userService.delete(this.controller, user.user_id).subscribe({
-            next: () => {
-              this.refresh();
-            },
-            error: (err) => {
-              const message = err.error?.message || err.message || `Failed to delete user ${user.username}`;
-              this.toasterService.error(message);
-              this.cd.markForCheck();
-            },
-          });
+      .subscribe((confirmed) => {
+        if (!confirmed) {
+          return;
         }
+        this.userService.delete(this.controller, user.user_id).subscribe({
+          next: () => {
+            if (this.selectedUser()?.user_id === user.user_id) {
+              this.closeDetails();
+            }
+            this.refresh();
+          },
+          error: (err) => {
+            this.toasterService.error(err.error?.message || err.message || `Failed to delete user ${user.username}`);
+            this.cd.markForCheck();
+          },
+        });
       });
   }
 
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
-  }
-
-  masterToggle() {
-    this.isAllSelected() ? this.selection.clear() : this.dataSource.data.forEach((row) => this.selection.select(row));
-  }
-
-  deleteMultiple() {
+  deleteMultiple(): void {
+    const users = [...this.selection.selected];
     this.dialog
       .open(DeleteUserDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { users: this.selection.selected },
+        data: { users },
       })
       .afterClosed()
-      .subscribe((isDeletedConfirm) => {
-        if (isDeletedConfirm) {
-          this.selection.selected.forEach((user: User) => {
-            this.userService.delete(this.controller, user.user_id).subscribe({
-              next: () => {
-                this.refresh();
-              },
-              error: (err) => {
-                const message = err.error?.message || err.message || `Failed to delete user ${user.username}`;
-                this.toasterService.error(message);
-                this.cd.markForCheck();
-              },
-            });
-          });
-          this.selection.clear();
+      .subscribe((confirmed) => {
+        if (!confirmed) {
+          return;
         }
+        users.forEach((user) => {
+          this.userService.delete(this.controller, user.user_id).subscribe({
+            next: () => this.refresh(),
+            error: (err) => {
+              this.toasterService.error(err.error?.message || err.message || `Failed to delete user ${user.username}`);
+              this.cd.markForCheck();
+            },
+          });
+        });
       });
   }
 
-  openUserDetailDialog(user: User) {
-    // Re-fetch user data to ensure we have the latest
-    this.userService.get(this.controller, user.user_id).subscribe({
-      next: (userData: User) => {
-        const dialogData: UserDetailDialogData = {
-          user: userData,
-          controller: this.controller,
-        };
-
-        this.dialog
-          .open(UserDetailDialogComponent, {
-            panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
-            data: dialogData,
-            disableClose: false,
-          })
-          .afterClosed()
-          .subscribe(() => {
-            this.refresh();
-          });
-      },
-      error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to load user data';
-        this.toasterService.error(message);
-        this.cd.markForCheck();
-      },
-    });
+  isAllSelected(): boolean {
+    const visibleUsers = this.filteredUsers();
+    return visibleUsers.length > 0 && visibleUsers.every((user) => this.selection.isSelected(user));
   }
 
-  openAiProfileDialog(user: User) {
-    const dialogData: AiProfileDialogData = {
-      user: user,
-      controller: this.controller,
-    };
+  masterToggle(): void {
+    if (this.isAllSelected()) {
+      this.filteredUsers().forEach((user) => this.selection.deselect(user));
+    } else {
+      this.filteredUsers().forEach((user) => this.selection.select(user));
+    }
+  }
 
-    this.dialog.open(AiProfileDialogComponent, {
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
-      data: dialogData,
-      disableClose: false,
-    });
+  roleLabel(user: User): string {
+    return user.is_superadmin ? 'Administrator' : 'Standard user';
+  }
+
+  userInitials(user: User): string {
+    const source = user.full_name?.trim() || user.username;
+    return source
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join('');
+  }
+
+  trackUser(_index: number, user: User): string {
+    return user.user_id;
+  }
+
+  private sortValue(user: User, property: keyof User): string {
+    if (property === 'is_active' || property === 'is_superadmin') {
+      return user[property] ? '1' : '0';
+    }
+    return String(user[property] ?? '').toLowerCase();
+  }
+
+  private resetPage(): void {
+    this.pageIndex.set(0);
+  }
+
+  private ensureValidPage(): void {
+    const lastPage = Math.max(Math.ceil(this.filteredUsers().length / this.pageSize()) - 1, 0);
+    if (this.pageIndex() > lastPage) {
+      this.pageIndex.set(lastPage);
+    }
+  }
+
+  private refreshSelectedUser(): void {
+    const selectedId = this.selectedUser()?.user_id;
+    if (!selectedId) {
+      return;
+    }
+    this.selectedUser.set(this.users().find((user) => user.user_id === selectedId) ?? null);
   }
 }

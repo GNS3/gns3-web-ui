@@ -21,6 +21,7 @@ import { ApiKeyManagementDialogComponent } from '@components/api-key-management/
 import { ApiKeyManagementDialogData } from '@components/api-key-management/api-key-management-dialog.component';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
+import { User } from '@models/users/user';
 import { ControllerManagementService } from '@services/controller-management.service';
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
@@ -76,6 +77,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   readonly sidenavOpened = signal(true);
   readonly isSmallScreen = signal(false);
   readonly sidebarMode = signal<'side' | 'over'>('side');
+  readonly isAdministrator = signal(false);
 
   private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
   private controllerManagement = inject(ControllerManagementService);
@@ -254,8 +256,23 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     return false;
   }
   getData() {
+    this.isAdministrator.set(false);
     this.controllerService.get(+this.controllerId).then((controller: Controller) => {
       this.controller = controller;
+      if (!controller) {
+        this.cd.markForCheck();
+        return;
+      }
+      this.userService.getInformationAboutLoggedUser(controller).subscribe({
+        next: (user: User) => {
+          this.isAdministrator.set(Boolean(user.is_superadmin));
+          this.cd.markForCheck();
+        },
+        error: () => {
+          this.isAdministrator.set(false);
+          this.cd.markForCheck();
+        },
+      });
     });
   }
 

@@ -222,6 +222,7 @@ import { SearchFilter } from '@filters/searchFilter.pipe';
 import { TemplateFilter } from '@filters/templateFilter.pipe';
 import { ConsoleGuard } from './guards/console-guard';
 import { LoginGuard } from './guards/login-guard';
+import { AdministratorGuard } from './guards/administrator-guard';
 import { ProjectWebServiceHandler } from './handlers/project-web-service-handler';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { MATERIAL_IMPORTS } from './material.imports';
@@ -736,6 +737,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     XpraConsoleService,
     ControllerResolve,
     LoginGuard,
+    AdministratorGuard,
     ConsoleGuard,
     Title,
     ApplianceService,

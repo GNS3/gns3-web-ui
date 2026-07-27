@@ -80,6 +80,18 @@
           <mat-icon matListItemIcon>settings</mat-icon>
           <span matListItemTitle>Settings</span>
         </a>
+        @if (isAdministrator()) {
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
+          [routerLink]="['/controller', controllerId, 'management', 'users']"
+          (click)="isSmallScreen() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>manage_accounts</mat-icon>
+          <span matListItemTitle>User management</span>
+        </a>
+        }
         }
       </mat-nav-list>
 
@@ -170,14 +182,6 @@
           <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'settings']">
             <mat-icon>settings</mat-icon>
             <span>Settings</span>
-          </button>
-          <button
-            mat-menu-item
-            [disabled]="!controllerId"
-            [routerLink]="['controller', controllerId, 'management', 'users']"
-          >
-            <mat-icon>groups</mat-icon>
-            <span>Management</span>
           </button>
           <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'help']">
             <mat-icon>help</mat-icon>

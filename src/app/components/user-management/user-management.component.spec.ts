@@ -1,136 +1,103 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UserManagementComponent } from './user-management.component';
-import { UserService } from '@services/user.service';
-import { ControllerService } from '@services/controller.service';
-import { ProgressService } from '../../common/progress/progress.service';
-import { ToasterService } from '@services/toaster.service';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatTableModule } from '@angular/material/table';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatSortModule } from '@angular/material/sort';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { UserFilterPipe } from '@filters/user-filter.pipe';
 import { Location } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
-import { User } from '@models/users/user';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Controller } from '@models/controller';
-import { ChangeDetectorRef } from '@angular/core';
+import { User } from '@models/users/user';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
+import { UserService } from '@services/user.service';
+import { ProgressService } from '../../common/progress/progress.service';
+import { UserManagementComponent } from './user-management.component';
 
 describe('UserManagementComponent', () => {
   let component: UserManagementComponent;
   let fixture: ComponentFixture<UserManagementComponent>;
-  let mockUserService: any;
-  let mockControllerService: any;
-  let mockProgressService: any;
-  let mockToasterService: any;
-  let mockDialog: any;
-  let mockLocation: any;
-  let mockDialogRef: any;
+  let userService: {
+    list: ReturnType<typeof vi.fn>;
+    get: ReturnType<typeof vi.fn>;
+    delete: ReturnType<typeof vi.fn>;
+  };
+  let controllerService: { get: ReturnType<typeof vi.fn> };
+  let toasterService: { error: ReturnType<typeof vi.fn> };
+  let progressService: { setError: ReturnType<typeof vi.fn> };
+  let dialog: { open: ReturnType<typeof vi.fn> };
+  let location: { back: ReturnType<typeof vi.fn> };
 
-  const mockController: Controller = {
+  const controller = {
     id: 1,
     name: 'Test Controller',
     host: 'localhost',
     port: 3080,
     protocol: 'http:',
-    authToken: 'test-token',
+    authToken: 'token',
     tokenExpired: false,
-    location: 'local' as const,
-    path: '/',
-    ubridge_path: '/usr/local/bin/ubridge',
-    status: 'running' as const,
-    username: 'admin',
-    password: 'password',
-  };
+  } as Controller;
 
-  const createMockUser = (overrides: Partial<User> = {}): User =>
-    ({
-      user_id: 'user-1',
-      username: 'testuser',
-      full_name: 'Test User',
-      email: 'test@example.com',
-      is_active: true,
-      last_login: null,
-      updated_at: '2024-01-01',
-      ...overrides,
-    } as User);
+  const createUser = (overrides: Partial<User> = {}): User => ({
+    user_id: 'user-1',
+    username: 'alice',
+    full_name: 'Alice Example',
+    email: 'alice@example.com',
+    is_active: true,
+    is_superadmin: false,
+    created_at: '2026-01-01T10:00:00Z',
+    updated_at: '2026-01-02T10:00:00Z',
+    last_login: '2026-01-03T10:00:00Z',
+    ...overrides,
+  });
 
   beforeEach(async () => {
-    vi.clearAllMocks();
+    const users = [
+      createUser(),
+      createUser({
+        user_id: 'user-2',
+        username: 'admin',
+        full_name: 'Server Administrator',
+        email: 'admin@example.com',
+        is_superadmin: true,
+      }),
+      createUser({
+        user_id: 'user-3',
+        username: 'disabled',
+        full_name: '',
+        email: '',
+        is_active: false,
+      }),
+    ];
 
-    mockDialogRef = {
-      afterClosed: vi.fn().mockReturnValue(of(true)),
-      componentInstance: {},
-    };
-
-    mockDialog = {
-      open: vi.fn().mockReturnValue(mockDialogRef),
-    };
-
-    mockUserService = {
-      list: vi.fn().mockReturnValue(of([createMockUser(), createMockUser({ user_id: 'user-2', username: 'admin' })])),
-      get: vi.fn().mockReturnValue(of(createMockUser())),
+    userService = {
+      list: vi.fn().mockReturnValue(of(users)),
+      get: vi.fn().mockImplementation((_controller, userId) => of(users.find((user) => user.user_id === userId))),
       delete: vi.fn().mockReturnValue(of(null)),
     };
-
-    mockControllerService = {
-      get: vi.fn().mockResolvedValue(mockController),
-    };
-
-    mockProgressService = {
-      setError: vi.fn(),
-    };
-
-    mockToasterService = {
-      error: vi.fn(),
-    };
-
-    mockLocation = {
-      back: vi.fn(),
-      subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }),
+    controllerService = { get: vi.fn().mockResolvedValue(controller) };
+    toasterService = { error: vi.fn() };
+    progressService = { setError: vi.fn() };
+    location = { back: vi.fn() };
+    dialog = {
+      open: vi.fn().mockReturnValue({
+        componentInstance: {},
+        afterClosed: vi.fn().mockReturnValue(of(false)),
+      }),
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        UserManagementComponent,
-        MatDialogModule,
-        MatTableModule,
-        MatCheckboxModule,
-        MatSortModule,
-        MatPaginatorModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatIconModule,
-        MatProgressSpinnerModule,
-        UserFilterPipe,
-        RouterModule,
-      ],
+      imports: [UserManagementComponent],
       providers: [
-        { provide: UserService, useValue: mockUserService },
-        { provide: ControllerService, useValue: mockControllerService },
-        { provide: ProgressService, useValue: mockProgressService },
-        { provide: ToasterService, useValue: mockToasterService },
-        { provide: MatDialog, useValue: mockDialog },
-        { provide: Location, useValue: mockLocation },
-        { provide: ChangeDetectorRef, useValue: { markForCheck: vi.fn() } },
+        { provide: UserService, useValue: userService },
+        { provide: ControllerService, useValue: controllerService },
+        { provide: ToasterService, useValue: toasterService },
+        { provide: ProgressService, useValue: progressService },
+        { provide: MatDialog, useValue: dialog },
+        { provide: Location, useValue: location },
         {
           provide: ActivatedRoute,
           useValue: {
-            parent: {
-              snapshot: {
-                paramMap: {
-                  get: vi.fn().mockReturnValue('1'),
-                },
-              },
-            },
+            snapshot: { paramMap: { get: vi.fn().mockReturnValue(null) } },
+            parent: { snapshot: { paramMap: { get: vi.fn().mockReturnValue('1') } } },
           },
         },
       ],
@@ -138,269 +105,90 @@ describe('UserManagementComponent', () => {
 
     fixture = TestBed.createComponent(UserManagementComponent);
     component = fixture.componentInstance;
-    component.controller = mockController;
+    component['dialog'] = dialog as unknown as MatDialog;
+    fixture.detectChanges();
+    await fixture.whenStable();
     fixture.detectChanges();
   });
 
-  afterEach(() => {
-    if (fixture) {
-      fixture.destroy();
-    }
+  it('loads users from the existing users API', () => {
+    expect(controllerService.get).toHaveBeenCalledWith(1);
+    expect(userService.list).toHaveBeenCalledWith(controller);
+    expect(component.users()).toHaveLength(3);
+    expect(component.loading()).toBe(false);
   });
 
-  describe('component creation', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
-    it('should have dataSource', () => {
-      expect(component.dataSource).toBeDefined();
-    });
-
-    it('should have selection model', () => {
-      expect(component.selection).toBeDefined();
-    });
-
-    it('should have displayedColumns', () => {
-      expect(component.displayedColumns).toContain('select');
-      expect(component.displayedColumns).toContain('username');
-      expect(component.displayedColumns).toContain('actions');
-    });
+  it('defaults pagination to 25 items', () => {
+    expect(component.pageSize()).toBe(25);
+    expect(component.pageSizeOptions).toContain(25);
   });
 
-  describe('ngOnInit', () => {
-    it('should show error and navigate back when controllerService.get fails', async () => {
-      (mockControllerService.get as any).mockRejectedValue({ error: { message: 'Controller not found' } });
+  it('filters by search text, active scope, and administrator scope', () => {
+    component.setSearch('server');
+    expect(component.filteredUsers().map((user) => user.username)).toEqual(['admin']);
 
-      const newFixture = TestBed.createComponent(UserManagementComponent);
-      const newComponent = newFixture.componentInstance;
-      newFixture.detectChanges();
-      await newFixture.whenStable();
+    component.setSearch('');
+    component.setScope('active');
+    expect(component.filteredUsers()).toHaveLength(2);
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('Controller not found');
-      expect(mockLocation.back).toHaveBeenCalled();
-    });
-
-    it('should use fallback message when controller error has no message', async () => {
-      (mockControllerService.get as any).mockRejectedValue({});
-
-      const newFixture = TestBed.createComponent(UserManagementComponent);
-      const newComponent = newFixture.componentInstance;
-      newFixture.detectChanges();
-      await newFixture.whenStable();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
-    });
+    component.setScope('administrators');
+    expect(component.filteredUsers().map((user) => user.username)).toEqual(['admin']);
   });
 
-  describe('refresh', () => {
-    it('should fetch users and update dataSource', () => {
-      const users = [createMockUser(), createMockUser({ user_id: 'user-2' })];
-      (mockUserService.list as any).mockReturnValue(of(users));
-
-      component.refresh();
-      fixture.detectChanges();
-
-      expect(mockUserService.list).toHaveBeenCalledWith(mockController);
-      expect(component.dataSource.data).toEqual(users);
-      expect(component.isReady).toBe(true);
-    });
-
-    it('should handle error when fetching users fails', () => {
-      const error = { error: { message: 'Network error' } };
-      (mockUserService.list as any).mockReturnValue(throwError(() => error));
-
-      component.refresh();
-      fixture.detectChanges();
-
-      expect(mockProgressService.setError).toHaveBeenCalledWith(error);
-      expect(mockToasterService.error).toHaveBeenCalledWith('Network error');
-      expect(mockLocation.back).toHaveBeenCalled();
-    });
-
-    it('should use fallback message when error has no message', () => {
-      (mockUserService.list as any).mockReturnValue(throwError(() => ({})));
-
-      component.refresh();
-      fixture.detectChanges();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load users');
-    });
+  it('supports list and grid views', () => {
+    expect(component.viewMode()).toBe('list');
+    component.setViewMode('grid');
+    fixture.detectChanges();
+    expect(component.viewMode()).toBe('grid');
+    expect(fixture.nativeElement.querySelector('.users-page__grid')).toBeTruthy();
   });
 
-  describe('addUser', () => {
-    it('should open add user dialog', () => {
-      // Dialog components require full dependency graph - tested in integration tests
-      expect(component.addUser).toBeDefined();
-    });
+  it('selects a user and refreshes the detail record', () => {
+    const user = component.users()[0];
+    component.selectUser(user);
+
+    expect(userService.get).toHaveBeenCalledWith(controller, user.user_id);
+    expect(component.selectedUser()?.username).toBe('alice');
   });
 
-  describe('onDelete', () => {
-    it('should open delete user dialog', () => {
-      // Dialog components require full dependency graph - tested in integration tests
-      expect(component.onDelete).toBeDefined();
-    });
+  it('selects and clears all currently filtered users', () => {
+    component.setScope('administrators');
+    component.masterToggle();
+    expect(component.selection.selected.map((user) => user.username)).toEqual(['admin']);
 
-    it('should show error when delete fails with error.error.message', async () => {
-      const user = createMockUser();
-      const mockDialogRef = {
-        afterClosed: vi.fn().mockReturnValue(of(true)),
-      };
-      component['dialog'] = {
-        open: vi.fn().mockReturnValue(mockDialogRef),
-      } as any;
-      (mockUserService.delete as any).mockReturnValue(
-        throwError(() => ({ error: { message: 'Delete failed' } }))
-      );
-
-      component.onDelete(user);
-      await vi.runAllTimersAsync();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Delete failed');
-    });
-
-    it('should use fallback message when delete error has no message', async () => {
-      const user = createMockUser();
-      const mockDialogRef = {
-        afterClosed: vi.fn().mockReturnValue(of(true)),
-      };
-      component['dialog'] = {
-        open: vi.fn().mockReturnValue(mockDialogRef),
-      } as any;
-      (mockUserService.delete as any).mockReturnValue(throwError(() => ({})));
-
-      component.onDelete(user);
-      await vi.runAllTimersAsync();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete user testuser');
-    });
+    component.masterToggle();
+    expect(component.selection.isEmpty()).toBe(true);
   });
 
-  describe('isAllSelected', () => {
-    it('should return true when all rows are selected', () => {
-      component.dataSource.data = [createMockUser({ user_id: '1' }), createMockUser({ user_id: '2' })];
-      component.selection.select(component.dataSource.data[0], component.dataSource.data[1]);
+  it('opens the edit dialog with freshly fetched user data', () => {
+    const user = component.users()[0];
+    component.openUserDetailDialog(user);
 
-      expect(component.isAllSelected()).toBe(true);
-    });
-
-    it('should return false when not all rows are selected', () => {
-      component.dataSource.data = [createMockUser({ user_id: '1' }), createMockUser({ user_id: '2' })];
-      component.selection.select(component.dataSource.data[0]);
-
-      expect(component.isAllSelected()).toBe(false);
-    });
-
-    it('should return true when dataSource is empty', () => {
-      component.dataSource.data = [];
-
-      expect(component.isAllSelected()).toBe(true);
-    });
+    expect(userService.get).toHaveBeenCalledWith(controller, user.user_id);
+    expect(dialog.open).toHaveBeenCalled();
   });
 
-  describe('masterToggle', () => {
-    it('should select all rows when none are selected', () => {
-      component.dataSource.data = [createMockUser({ user_id: '1' }), createMockUser({ user_id: '2' })];
-
-      component.masterToggle();
-
-      expect(component.selection.selected.length).toBe(2);
+  it('deletes a confirmed user and reloads the list', () => {
+    dialog.open.mockReturnValue({
+      afterClosed: vi.fn().mockReturnValue(of(true)),
     });
+    const user = component.users()[0];
 
-    it('should clear selection when all rows are selected', () => {
-      component.dataSource.data = [createMockUser({ user_id: '1' }), createMockUser({ user_id: '2' })];
-      component.selection.select(component.dataSource.data[0], component.dataSource.data[1]);
+    component.onDelete(user);
 
-      component.masterToggle();
-
-      expect(component.selection.selected.length).toBe(0);
-    });
+    expect(userService.delete).toHaveBeenCalledWith(controller, user.user_id);
+    expect(userService.list).toHaveBeenCalledTimes(2);
   });
 
-  describe('deleteMultiple', () => {
-    it('should open delete dialog for selected users', () => {
-      // Dialog components require full dependency graph - tested in integration tests
-      expect(component.deleteMultiple).toBeDefined();
-    });
+  it('reports user-list errors without leaving the loading state active', () => {
+    const error = { error: { message: 'Users unavailable' } };
+    userService.list.mockReturnValue(throwError(() => error));
 
-    it('should show error when delete fails with error.error.message', async () => {
-      const users = [createMockUser({ user_id: 'user-1' })];
-      Object.defineProperty(component.selection, 'selected', {
-        value: users,
-        writable: true,
-      });
-      const mockDialogRef = {
-        afterClosed: vi.fn().mockReturnValue(of(true)),
-      };
-      component['dialog'] = {
-        open: vi.fn().mockReturnValue(mockDialogRef),
-      } as any;
-      (mockUserService.delete as any).mockReturnValue(
-        throwError(() => ({ error: { message: 'Delete failed' } }))
-      );
+    component.refresh();
 
-      component.deleteMultiple();
-      await vi.runAllTimersAsync();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Delete failed');
-    });
-
-    it('should use fallback message when delete error has no message', async () => {
-      const users = [createMockUser({ user_id: 'user-1' })];
-      Object.defineProperty(component.selection, 'selected', {
-        value: users,
-        writable: true,
-      });
-      const mockDialogRef = {
-        afterClosed: vi.fn().mockReturnValue(of(true)),
-      };
-      component['dialog'] = {
-        open: vi.fn().mockReturnValue(mockDialogRef),
-      } as any;
-      (mockUserService.delete as any).mockReturnValue(throwError(() => ({})));
-
-      component.deleteMultiple();
-      await vi.runAllTimersAsync();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete user testuser');
-    });
-  });
-
-  describe('openUserDetailDialog', () => {
-    it('should show error when fetching user data fails with error.error.message', () => {
-      const user = createMockUser();
-      const error = { error: { message: 'Failed to load' } };
-      (mockUserService.get as any).mockReturnValue(throwError(() => error));
-
-      component.openUserDetailDialog(user);
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load');
-    });
-
-    it('should use fallback message when error has no message', () => {
-      const user = createMockUser();
-      (mockUserService.get as any).mockReturnValue(throwError(() => ({})));
-
-      component.openUserDetailDialog(user);
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load user data');
-    });
-
-    it('should call markForCheck when fetching user data fails', () => {
-      const user = createMockUser();
-      (mockUserService.get as any).mockReturnValue(throwError(() => ({ error: { message: 'Failed' } })));
-
-      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
-      component.openUserDetailDialog(user);
-
-      expect(cdrSpy).toHaveBeenCalled();
-    });
-  });
-
-  describe('openAiProfileDialog', () => {
-    it('should open AI profile dialog', () => {
-      // Dialog components require full dependency graph - tested in integration tests
-      expect(component.openAiProfileDialog).toBeDefined();
-    });
+    expect(component.loading()).toBe(false);
+    expect(progressService.setError).toHaveBeenCalledWith(error);
+    expect(toasterService.error).toHaveBeenCalledWith('Users unavailable');
+    expect(location.back).toHaveBeenCalled();
   });
 });

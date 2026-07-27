@@ -1,122 +1,420 @@
-@if (isReady) {
-<header class="user-management__header">
-  <h1 class="user-management__title">Users</h1>
-  <div class="user-management__actions">
+<div class="users-page">
+  <header class="users-page__header">
+    <div>
+      <h2 class="users-page__title">Users</h2>
+      <p class="users-page__subtitle">Manage controller access and user accounts</p>
+    </div>
+    <div class="users-page__header-actions">
+      <button mat-stroked-button class="users-page__refresh" (click)="refresh()" [disabled]="loading()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+      <button
+        mat-stroked-button
+        class="users-page__bulk-delete"
+        [disabled]="selection.isEmpty()"
+        (click)="deleteMultiple()"
+      >
+        <mat-icon>delete</mat-icon>
+        Delete selected
+      </button>
+      <button mat-raised-button color="primary" class="users-page__add" (click)="addUser()">
+        <mat-icon>person_add</mat-icon>
+        Add user
+      </button>
+    </div>
+  </header>
+
+  <nav class="users-page__scopes" aria-label="User scope">
     <button
-      mat-raised-button
-      color="primary"
-      class="user-management__button"
-      [disabled]="selection.selected.length === 0"
-      (click)="deleteMultiple()"
+      type="button"
+      class="users-page__scope"
+      [class.users-page__scope--active]="selectedScope() === 'all'"
+      (click)="setScope('all')"
     >
-      Delete Users
+      All users <span>{{ users().length }}</span>
     </button>
-    <button mat-raised-button color="primary" class="user-management__button" (click)="addUser()">Add User</button>
+    <button
+      type="button"
+      class="users-page__scope"
+      [class.users-page__scope--active]="selectedScope() === 'active'"
+      (click)="setScope('active')"
+    >
+      Active <span>{{ activeUserCount() }}</span>
+    </button>
+    <button
+      type="button"
+      class="users-page__scope"
+      [class.users-page__scope--active]="selectedScope() === 'administrators'"
+      (click)="setScope('administrators')"
+    >
+      Administrators <span>{{ administratorCount() }}</span>
+    </button>
+  </nav>
+
+  <section class="users-page__toolbar">
+    <mat-form-field class="users-page__search" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        placeholder="Search users by name, username, email, or role"
+        [value]="searchText()"
+        (input)="setSearch($event.target.value)"
+      />
+    </mat-form-field>
+
+    <div class="users-page__toolbar-actions">
+      <mat-form-field class="users-page__filter" subscriptSizing="dynamic">
+        <mat-label>Status</mat-label>
+        <mat-select [value]="statusFilter()" (valueChange)="setStatusFilter($event)">
+          <mat-option value="all">All statuses</mat-option>
+          <mat-option value="active">Active</mat-option>
+          <mat-option value="inactive">Inactive</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="users-page__sort" subscriptSizing="dynamic">
+        <mat-label>Sort by</mat-label>
+        <mat-select [value]="sortActive()" (valueChange)="onSortByChange($event)">
+          <mat-option value="username">Username</mat-option>
+          <mat-option value="full_name">Full name</mat-option>
+          <mat-option value="email">Email</mat-option>
+          <mat-option value="last_login">Last login</mat-option>
+          <mat-option value="updated_at">Last updated</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="users-page__view-toggle" aria-label="User view">
+        <button
+          mat-icon-button
+          class="users-page__view-button"
+          [class.users-page__view-button--active]="viewMode() === 'list'"
+          (click)="setViewMode('list')"
+          matTooltip="List view"
+          aria-label="List view"
+        >
+          <mat-icon>view_list</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          class="users-page__view-button"
+          [class.users-page__view-button--active]="viewMode() === 'grid'"
+          (click)="setViewMode('grid')"
+          matTooltip="Grid view"
+          aria-label="Grid view"
+        >
+          <mat-icon>grid_view</mat-icon>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <main class="users-page__main">
+    @if (loading()) {
+    <div class="users-page__loading">
+      <mat-progress-spinner diameter="42" mode="indeterminate" />
+      <span>Loading users…</span>
+    </div>
+    } @else { @if (viewMode() === 'list') {
+    <div class="users-page__table-container">
+      <mat-table
+        [dataSource]="paginatedUsers()"
+        [trackBy]="trackUser"
+        matSort
+        [matSortActive]="sortActive()"
+        [matSortDirection]="sortDirection()"
+        (matSortChange)="onSortChange($event)"
+      >
+        <ng-container matColumnDef="select">
+          <mat-header-cell *matHeaderCellDef>
+            <mat-checkbox
+              (change)="masterToggle()"
+              [checked]="selection.hasValue() && isAllSelected()"
+              [indeterminate]="selection.hasValue() && !isAllSelected()"
+              aria-label="Select all filtered users"
+            />
+          </mat-header-cell>
+          <mat-cell *matCellDef="let user">
+            <mat-checkbox
+              (click)="$event.stopPropagation()"
+              (change)="selection.toggle(user)"
+              [checked]="selection.isSelected(user)"
+              [attr.aria-label]="'Select ' + user.username"
+            />
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="username">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Username</mat-header-cell>
+          <mat-cell *matCellDef="let user">
+            <div class="users-page__name-cell">
+              <span class="users-page__avatar users-page__avatar--small">{{ userInitials(user) }}</span>
+              <strong>{{ user.username }}</strong>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="full_name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Full name</mat-header-cell>
+          <mat-cell *matCellDef="let user">{{ user.full_name || '—' }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Email</mat-header-cell>
+          <mat-cell *matCellDef="let user" [matTooltip]="user.email || ''">{{ user.email || '—' }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+          <mat-header-cell *matHeaderCellDef>Role</mat-header-cell>
+          <mat-cell *matCellDef="let user">
+            <span class="users-page__role" [class.users-page__role--admin]="user.is_superadmin">
+              {{ roleLabel(user) }}
+            </span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="is_active">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+          <mat-cell *matCellDef="let user">
+            <span class="users-page__status" [class.users-page__status--inactive]="!user.is_active">
+              <span></span>{{ user.is_active ? 'Active' : 'Inactive' }}
+            </span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+          <mat-cell *matCellDef="let user">
+            <div class="users-page__actions-cell">
+              <button
+                mat-icon-button
+                class="users-page__action users-page__action--details"
+                (click)="$event.stopPropagation(); selectUser(user)"
+                matTooltip="View user details"
+                [attr.aria-label]="'View details for ' + user.username"
+              >
+                <mat-icon>info</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                class="users-page__action users-page__action--edit"
+                (click)="$event.stopPropagation(); openUserDetailDialog(user)"
+                matTooltip="Edit user"
+                [attr.aria-label]="'Edit ' + user.username"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                class="users-page__action users-page__action--ai"
+                (click)="$event.stopPropagation(); openAiProfileDialog(user)"
+                matTooltip="Manage AI profiles"
+                [attr.aria-label]="'Manage AI profiles for ' + user.username"
+              >
+                <mat-icon>psychology</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                class="users-page__action users-page__action--delete"
+                (click)="$event.stopPropagation(); onDelete(user)"
+                matTooltip="Delete user"
+                [attr.aria-label]="'Delete ' + user.username"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" />
+        <mat-row
+          *matRowDef="let user; columns: displayedColumns"
+          [class.users-page__row--selected]="selectedUser()?.user_id === user.user_id"
+          (click)="selectUser(user)"
+        />
+      </mat-table>
+
+      @if (filteredUsers().length) {
+      <div class="users-page__table-footer">
+        <mat-paginator
+          [length]="filteredUsers().length"
+          [pageIndex]="pageIndex()"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+        />
+      </div>
+      } @else {
+      <ng-container *ngTemplateOutlet="emptyState" />
+      }
+    </div>
+    } @if (viewMode() === 'grid') {
+    <div class="users-page__grid" [class.users-page__grid--with-details]="selectedUser()">
+      @for (user of paginatedUsers(); track user.user_id) {
+      <article
+        class="users-page__card"
+        [class.users-page__card--selected]="selectedUser()?.user_id === user.user_id"
+        (click)="selectUser(user)"
+      >
+        <div class="users-page__card-header">
+          <span class="users-page__avatar">{{ userInitials(user) }}</span>
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="selection.toggle(user)"
+            [checked]="selection.isSelected(user)"
+            [attr.aria-label]="'Select ' + user.username"
+          />
+        </div>
+        <div class="users-page__card-body">
+          <div class="users-page__card-title">
+            <h3 [matTooltip]="user.username">{{ user.username }}</h3>
+            <span class="users-page__status" [class.users-page__status--inactive]="!user.is_active">
+              <span></span>{{ user.is_active ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+          <p>{{ user.full_name || 'No full name provided' }}</p>
+          <span class="users-page__role" [class.users-page__role--admin]="user.is_superadmin">
+            {{ roleLabel(user) }}
+          </span>
+          <dl>
+            <div>
+              <dt>Email</dt>
+              <dd [matTooltip]="user.email || 'Not provided'">{{ user.email || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Last login</dt>
+              <dd>{{ user.last_login ? (user.last_login | date : 'medium') : 'Never' }}</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="users-page__card-actions">
+          <button
+            mat-icon-button
+            class="users-page__action users-page__action--details"
+            matTooltip="View user details"
+            (click)="$event.stopPropagation(); selectUser(user)"
+            [attr.aria-label]="'View details for ' + user.username"
+          >
+            <mat-icon>info</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            class="users-page__action users-page__action--edit"
+            matTooltip="Edit user"
+            (click)="$event.stopPropagation(); openUserDetailDialog(user)"
+            [attr.aria-label]="'Edit ' + user.username"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            class="users-page__action users-page__action--ai"
+            matTooltip="Manage AI profiles"
+            (click)="$event.stopPropagation(); openAiProfileDialog(user)"
+            [attr.aria-label]="'Manage AI profiles for ' + user.username"
+          >
+            <mat-icon>psychology</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            class="users-page__action users-page__action--delete"
+            matTooltip="Delete user"
+            (click)="$event.stopPropagation(); onDelete(user)"
+            [attr.aria-label]="'Delete ' + user.username"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </article>
+      } @empty {
+      <ng-container *ngTemplateOutlet="emptyState" />
+      } @if (filteredUsers().length) {
+      <mat-paginator
+        class="users-page__grid-paginator"
+        [length]="filteredUsers().length"
+        [pageIndex]="pageIndex()"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+      />
+      }
+    </div>
+    } @if (selectedUser(); as user) {
+    <aside class="users-page__details" aria-label="User details">
+      <div class="users-page__details-header">
+        <div class="users-page__details-heading">
+          <span class="users-page__avatar users-page__avatar--small">{{ userInitials(user) }}</span>
+          <div class="users-page__details-title-line">
+            <h2 [matTooltip]="user.username">{{ user.username }}</h2>
+            <span class="users-page__role" [class.users-page__role--admin]="user.is_superadmin">
+              {{ roleLabel(user) }}
+            </span>
+          </div>
+        </div>
+        <button mat-icon-button (click)="closeDetails()" matTooltip="Close details" aria-label="Close details">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="users-page__details-body">
+        <div class="users-page__detail-row">
+          <mat-icon>badge</mat-icon><span>Full name</span><strong>{{ user.full_name || '—' }}</strong>
+        </div>
+        <div class="users-page__detail-row">
+          <mat-icon>mail</mat-icon><span>Email</span><strong>{{ user.email || '—' }}</strong>
+        </div>
+        <div class="users-page__detail-row">
+          <mat-icon>toggle_on</mat-icon><span>Status</span><strong>{{ user.is_active ? 'Active' : 'Inactive' }}</strong>
+        </div>
+        <div class="users-page__detail-row">
+          <mat-icon>login</mat-icon><span>Last login</span>
+          <strong>{{ user.last_login ? (user.last_login | date : 'medium') : 'Never' }}</strong>
+        </div>
+        <div class="users-page__detail-row">
+          <mat-icon>event</mat-icon><span>Created</span>
+          <strong>{{ user.created_at ? (user.created_at | date : 'medium') : '—' }}</strong>
+        </div>
+        <div class="users-page__detail-row">
+          <mat-icon>update</mat-icon><span>Updated</span>
+          <strong>{{ user.updated_at ? (user.updated_at | date : 'medium') : '—' }}</strong>
+        </div>
+        <div class="users-page__detail-row users-page__detail-row--id">
+          <mat-icon>fingerprint</mat-icon><span>User ID</span><strong>{{ user.user_id }}</strong>
+        </div>
+      </div>
+      <div class="users-page__details-actions">
+        <button
+          mat-stroked-button
+          class="users-page__details-action users-page__details-action--edit"
+          (click)="openUserDetailDialog(user)"
+        >
+          <mat-icon>edit</mat-icon>Edit
+        </button>
+        <button
+          mat-stroked-button
+          class="users-page__details-action users-page__details-action--ai"
+          (click)="openAiProfileDialog(user)"
+        >
+          <mat-icon>psychology</mat-icon>AI profiles
+        </button>
+        <button
+          mat-stroked-button
+          class="users-page__details-action users-page__details-action--delete"
+          (click)="onDelete(user)"
+        >
+          <mat-icon>delete</mat-icon>Delete
+        </button>
+      </div>
+    </aside>
+    } }
+  </main>
+</div>
+
+<ng-template #emptyState>
+  <div class="users-page__empty">
+    <mat-icon>person_search</mat-icon>
+    <h3>No users found</h3>
+    <p>Try changing the search, scope, or status filter.</p>
   </div>
-</header>
-
-<form class="user-management__search-form">
-  <mat-form-field class="user-management__search">
-    <input
-      matInput
-      placeholder="Search by username, full name or email"
-      [value]="searchText()"
-      (input)="searchText.set($event.target.value)"
-    />
-  </mat-form-field>
-</form>
-
-<div class="user-management__table-container">
-  <mat-table [dataSource]="dataSource | userFilter : searchText()" matSort #usersSort="matSort">
-    <ng-container matColumnDef="select">
-      <mat-header-cell *matHeaderCellDef class="user-management__small-col">
-        <mat-checkbox
-          (change)="$event ? masterToggle() : null"
-          [checked]="selection.hasValue() && isAllSelected()"
-          [indeterminate]="selection.hasValue() && !isAllSelected()"
-        >
-        </mat-checkbox>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let row" class="user-management__small-col">
-        <mat-checkbox
-          (click)="$event.stopPropagation()"
-          (change)="$event ? selection.toggle(row) : null"
-          [checked]="selection.isSelected(row)"
-        >
-        </mat-checkbox>
-      </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="username">
-      <mat-header-cell *matHeaderCellDef mat-sort-header>Username</mat-header-cell>
-      <mat-cell *matCellDef="let row">
-        <span
-          class="user-management__username user-management__username--clickable"
-          (click)="openUserDetailDialog(row)"
-          >{{ row.username }}</span
-        >
-      </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="full_name">
-      <mat-header-cell *matHeaderCellDef mat-sort-header>Full Name</mat-header-cell>
-      <mat-cell *matCellDef="let row">
-        <span class="user-management__overflow-text">{{ row.full_name }}</span>
-      </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="email">
-      <mat-header-cell *matHeaderCellDef mat-sort-header>Mail</mat-header-cell>
-      <mat-cell *matCellDef="let row">
-        <span class="user-management__overflow-text">{{ row.email }}</span>
-      </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="is_active">
-      <mat-header-cell *matHeaderCellDef mat-sort-header class="user-management__active-col">Active</mat-header-cell>
-      <mat-cell *matCellDef="let row" class="user-management__active-col">{{ row.is_active }}</mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="last_login">
-      <mat-header-cell *matHeaderCellDef mat-sort-header>Last Login</mat-header-cell>
-      <mat-cell *matCellDef="let row">
-        <span class="user-management__overflow-text">{{ row.last_login }}</span>
-      </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="updated_at">
-      <mat-header-cell *matHeaderCellDef mat-sort-header>Last Update</mat-header-cell>
-      <mat-cell *matCellDef="let row">
-        <span class="user-management__overflow-text">{{ row.updated_at ? row.updated_at : row.created_at }}</span>
-      </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="actions">
-      <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-      <mat-cell *matCellDef="let row" class="user-management__actions-cell">
-        <button mat-icon-button (click)="openUserDetailDialog(row)" matTooltip="Edit user">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button (click)="openAiProfileDialog(row)" matTooltip="AI Profiles">
-          <mat-icon>psychology</mat-icon>
-        </button>
-      </mat-cell>
-    </ng-container>
-
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-  </mat-table>
-
-  <mat-paginator
-    #usersPaginator="matPaginator"
-    [pageSizeOptions]="[5, 10, 20]"
-    showFirstLastButtons
-    aria-label="Select page"
-  >
-  </mat-paginator>
-</div>
-} @else {
-<div class="user-management__loader">
-  <mat-spinner class="user-management__spinner"></mat-spinner>
-</div>
-}
+</ng-template>

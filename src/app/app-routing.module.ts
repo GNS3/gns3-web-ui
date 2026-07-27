@@ -56,6 +56,7 @@ import { WebConsoleFullWindowComponent } from '@components/web-console-full-wind
 import { NodeFileManagerPageComponent } from '@components/project-map/node-file-manager-page/node-file-manager-page.component';
 import { ConsoleGuard } from './guards/console-guard';
 import { LoginGuard } from './guards/login-guard';
+import { AdministratorGuard } from './guards/administrator-guard';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ControllerResolve } from '@resolvers/controller-resolve';
 import { UserManagementComponent } from '@components/user-management/user-management.component';
@@ -100,7 +101,7 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/management/pools/:pool_id',
         component: ResourcePoolDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, AdministratorGuard],
         resolve: {
           pool: ResourcePoolsResolver,
           controller: ControllerResolve,
@@ -315,6 +316,7 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/management',
         component: ManagementComponent,
+        canActivate: [LoginGuard, AdministratorGuard],
         children: [
           {
             path: 'users',
@@ -341,6 +343,7 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/management/roles/:role_id',
         component: RoleDetailComponent,
+        canActivate: [LoginGuard, AdministratorGuard],
         resolve: {
           role: RoleDetailResolver,
           controller: ControllerResolve,
