@@ -107,6 +107,12 @@
           <mat-icon matListItemIcon>forum</mat-icon>
           <span matListItemTitle>Community</span>
         </a>
+        @if (controllerId) {
+        <button mat-list-item class="sidebar__nav-item" type="button" (click)="goToDocumentation()">
+          <mat-icon matListItemIcon>api</mat-icon>
+          <span matListItemTitle>API documentation</span>
+        </button>
+        }
         <a
           mat-list-item
           class="sidebar__nav-item"
@@ -121,22 +127,6 @@
 
       <!-- Spacer -->
       <div class="sidebar__spacer"></div>
-
-      <!-- User Profile Footer -->
-      @if (controller) {
-      <div class="sidebar__user-profile">
-        <div class="sidebar__user-avatar">
-          <mat-icon>person</mat-icon>
-        </div>
-        <div class="sidebar__user-info">
-          <div class="sidebar__user-name">{{ controller.username || 'User' }}</div>
-          <div class="sidebar__user-status">
-            <span class="sidebar__status-dot"></span>
-            Connected
-          </div>
-        </div>
-      </div>
-      }
     </div>
   </mat-drawer>
 
@@ -171,19 +161,26 @@
 
         <span class="spacer"></span>
 
-        <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More options">
-          <mat-icon>more_vert</mat-icon>
+        @if (controller && controllerId) {
+        <button
+          mat-button
+          class="toolbar__account"
+          [matMenuTriggerFor]="accountMenu"
+          aria-label="Open user account menu"
+        >
+          <span class="toolbar__account-avatar">
+            <mat-icon>person</mat-icon>
+          </span>
+          <span class="toolbar__account-name">{{ controller.username || 'User' }}</span>
+          <mat-icon class="toolbar__account-arrow">arrow_drop_down</mat-icon>
         </button>
+        }
 
-        <!-- GNS3 right menu -->
-        <mat-menu #menu="matMenu">
+        <!-- Logged-in user account menu -->
+        <mat-menu #accountMenu="matMenu">
           <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'systemstatus']">
             <mat-icon>info</mat-icon>
             <span>System status</span>
-          </button>
-          <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'settings']">
-            <mat-icon>settings</mat-icon>
-            <span>Settings</span>
           </button>
           <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'help']">
             <mat-icon>help</mat-icon>
@@ -200,10 +197,6 @@
           <button mat-menu-item [disabled]="!controllerId" (click)="openAiProfileDialog()">
             <mat-icon>psychology</mat-icon>
             <span>AI Profile</span>
-          </button>
-          <button mat-menu-item [disabled]="!controllerId" (click)="goToDocumentation()">
-            <mat-icon>person</mat-icon>
-            <span>API documentation</span>
           </button>
           <button mat-menu-item [disabled]="!controllerId" (click)="logout()">
             <mat-icon>highlight_off</mat-icon>
