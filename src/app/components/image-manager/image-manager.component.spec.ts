@@ -23,6 +23,21 @@ describe('ImageManagerComponent', () => {
       expect(typeof (ImageManagerComponent.prototype as any).onSearchChange).toBe('function');
     });
 
+    it('should have list and grid view controls', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).toggleView).toBe('function');
+    });
+
+    it('should have image detail controls', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).selectImage).toBe('function');
+      expect(typeof (ImageManagerComponent.prototype as any).closeDetails).toBe('function');
+    });
+
+    it('should have filter and sort controls', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).onTypeFilterChange).toBe('function');
+      expect(typeof (ImageManagerComponent.prototype as any).onSortByChange).toBe('function');
+      expect(typeof (ImageManagerComponent.prototype as any).onSortChange).toBe('function');
+    });
+
     it('should have isHighlighted method', () => {
       expect(typeof (ImageManagerComponent.prototype as any).isHighlighted).toBe('function');
     });

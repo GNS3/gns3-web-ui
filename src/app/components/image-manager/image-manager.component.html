@@ -1,131 +1,449 @@
 <div class="image-manager">
-  <header class="image-manager__header">
-    <button class="image-manager__back-btn" [routerLink]="'/controller/' + controllerId + '/projects'" mat-icon-button>
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <h1 class="image-manager__title">Image Manager</h1>
-    <div class="image-manager__actions">
-      <button
-        mat-icon-button
-        matTooltip="Install all images"
-        matTooltipClass="custom-tooltip"
-        (click)="installAllImages()"
-      >
-        <mat-icon>done_all</mat-icon>
-      </button>
-      <button mat-icon-button matTooltip="Prune images" matTooltipClass="custom-tooltip" (click)="pruneImages()">
-        <mat-icon>delete</mat-icon>
-      </button>
-      <button mat-icon-button matTooltip="Add image" matTooltipClass="custom-tooltip" (click)="addImageDialog()">
-        <mat-icon>add_circle_outline</mat-icon>
-      </button>
+  <div class="image-manager__content" [class.image-manager__content--with-details]="selectedImage()">
+    <header class="image-manager__header">
+      <div class="image-manager__heading">
+        <button
+          mat-icon-button
+          class="image-manager__back-btn"
+          [routerLink]="'/controller/' + controllerId + '/projects'"
+          matTooltip="Back to projects"
+          aria-label="Back to projects"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1 class="image-manager__title">Image Manager</h1>
+      </div>
+
+      <div class="image-manager__buttons-bar">
+        <button mat-raised-button class="image-manager__button" color="primary" (click)="addImageDialog()">
+          <mat-icon>add</mat-icon>
+          Add Image
+        </button>
+        <button mat-raised-button class="image-manager__button" color="primary" (click)="installAllImages()">
+          <mat-icon>done_all</mat-icon>
+          Install Images
+        </button>
+        <button mat-stroked-button class="image-manager__button image-manager__button--danger" (click)="pruneImages()">
+          <mat-icon>delete_sweep</mat-icon>
+          Prune Images
+        </button>
+      </div>
+    </header>
+
+    <div class="image-manager__toolbar">
+      <form class="image-manager__search-form">
+        <mat-form-field class="image-manager__search" subscriptSizing="dynamic">
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            matInput
+            placeholder="Search by filename, type, path, or checksum"
+            [value]="searchText()"
+            (input)="onSearchChange($event.target.value)"
+          />
+        </mat-form-field>
+      </form>
+
+      <div class="image-manager__toolbar-actions">
+        <mat-form-field class="image-manager__filter" subscriptSizing="dynamic">
+          <mat-label>Image type</mat-label>
+          <mat-select [value]="filterType()" (valueChange)="onTypeFilterChange($event)">
+            <mat-option value="all">All types</mat-option>
+            @for (type of imageTypes(); track type) {
+            <mat-option [value]="type">{{ type }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="image-manager__sort-by" subscriptSizing="dynamic">
+          <mat-label>Sort by</mat-label>
+          <mat-select [value]="sortActive()" (valueChange)="onSortByChange($event)">
+            <mat-option value="filename">Filename</mat-option>
+            <mat-option value="image_type">Image type</mat-option>
+            <mat-option value="image_size">Image size</mat-option>
+            <mat-option value="created_at">Created</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="image-manager__view-toggle" aria-label="Image view">
+          <button
+            mat-icon-button
+            class="image-manager__view-toggle-btn"
+            [class.image-manager__view-toggle-btn--active]="viewMode() === 'list'"
+            (click)="toggleView('list')"
+            matTooltip="List view"
+            aria-label="List view"
+          >
+            <mat-icon>view_list</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            class="image-manager__view-toggle-btn"
+            [class.image-manager__view-toggle-btn--active]="viewMode() === 'grid'"
+            (click)="toggleView('grid')"
+            matTooltip="Grid view"
+            aria-label="Grid view"
+          >
+            <mat-icon>grid_view</mat-icon>
+          </button>
+        </div>
+      </div>
     </div>
-  </header>
 
-  <main class="image-manager__content">
-    <form class="image-manager__search-form">
-      <mat-form-field appearance="fill" class="image-manager__search-field">
-        <mat-icon matPrefix>search</mat-icon>
-        <input
-          matInput
-          placeholder="Search images"
-          [value]="searchText()"
-          (input)="onSearchChange($event.target.value)"
-        />
-      </mat-form-field>
-    </form>
+    <main class="image-manager__main">
+      @if (viewMode() === 'list') {
+      <div class="image-manager__table-container">
+        <mat-table
+          [dataSource]="paginatedRows()"
+          [trackBy]="trackByRow"
+          matSort
+          [matSortActive]="sortActive()"
+          [matSortDirection]="sortDirection()"
+          (matSortChange)="onSortChange($event)"
+        >
+          <ng-container matColumnDef="select">
+            <mat-header-cell *matHeaderCellDef>
+              <mat-checkbox
+                (change)="selectAllImages()"
+                [checked]="hasSelection() && isAllSelected()"
+                [indeterminate]="hasSelection() && !isAllSelected()"
+                aria-label="Select all visible images"
+              />
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <mat-checkbox
+                (click)="onRowCheckboxClick($event, row)"
+                [checked]="isRowSelected(row)"
+                [disabled]="!isPersistedRow(row)"
+                [attr.aria-label]="'Select ' + row.filename"
+              />
+            </mat-cell>
+          </ng-container>
 
-    <div class="image-manager__table-container">
-      <mat-table #table [dataSource]="dataSource" [trackBy]="trackByRow" matSort>
-        <ng-container matColumnDef="select">
-          <mat-header-cell *matHeaderCellDef>
-            <mat-checkbox
-              (change)="$event ? selectAllImages() : null"
-              [checked]="hasSelection() && isAllSelected()"
-              [indeterminate]="hasSelection() && !isAllSelected()"
-            >
-            </mat-checkbox>
-          </mat-header-cell>
-          <mat-cell *matCellDef="let row">
+          <ng-container matColumnDef="filename">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Filename</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <div class="image-manager__row-content">
+                <span class="image-manager__filename">{{ row.filename }}</span>
+                @if (hasUploadState(row)) {
+                <div class="image-manager__upload-status">
+                  <mat-progress-bar mode="determinate" [value]="row.uploadProgress || 0" />
+                  <span
+                    class="image-manager__upload-text"
+                    [class.image-manager__upload-error]="row.uploadStatus === 'error'"
+                  >
+                    {{ row.uploadStatus | titlecase }} · {{ row.uploadProgress || 0 }}% @if (row.errorMessage) {
+                    <span> · {{ row.errorMessage }}</span>
+                    }
+                  </span>
+                </div>
+                }
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="image_type">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Image Type</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span class="image-manager__type-badge">
+                <mat-icon>{{ imageTypeIcon(row) }}</mat-icon>
+                {{ row.image_type || 'Unknown' }}
+              </span>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="image_size">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Image Size</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ formatImageSize(row) }}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="created_at">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Created</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.created_at ? (row.created_at | date : 'short') : '—' }}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>
+              <span>Actions</span>
+              @if (selectedCount() > 1) {
+              <button
+                mat-icon-button
+                class="image-manager__action-button image-manager__action-button--delete"
+                (click)="$event.stopPropagation(); deleteAllFiles()"
+                matTooltip="Delete selected images"
+                aria-label="Delete selected images"
+              >
+                <mat-icon>delete_sweep</mat-icon>
+              </button>
+              }
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <div class="image-manager__actions-cell">
+                <button
+                  mat-icon-button
+                  class="image-manager__action-button image-manager__action-button--details"
+                  (click)="$event.stopPropagation(); selectImage(row)"
+                  matTooltip="View image details"
+                  [attr.aria-label]="'View details for ' + row.filename"
+                >
+                  <mat-icon>info</mat-icon>
+                </button>
+                @if (isPersistedRow(row)) {
+                <button
+                  mat-icon-button
+                  class="image-manager__action-button image-manager__action-button--delete"
+                  (click)="$event.stopPropagation(); deleteFile(row.path)"
+                  matTooltip="Delete image"
+                  [attr.aria-label]="'Delete ' + row.filename"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+                } @else if (row.uploadStatus === 'uploading' || row.uploadStatus === 'queued') {
+                <button
+                  mat-icon-button
+                  class="image-manager__action-button image-manager__action-button--cancel"
+                  (click)="$event.stopPropagation(); cancelUpload(row)"
+                  matTooltip="Cancel upload"
+                  [attr.aria-label]="'Cancel upload for ' + row.filename"
+                >
+                  <mat-icon>cancel</mat-icon>
+                </button>
+                }
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" />
+          <mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            [class.image-manager__row--selected]="
+              (selectedImage()?.tempId || selectedImage()?.path) === (row.tempId || row.path)
+            "
+            [class.image-manager__row-highlight]="isHighlighted(row)"
+            (click)="selectImage(row)"
+          />
+        </mat-table>
+
+        @if (filteredRows().length > 0) {
+        <div class="image-manager__table-footer">
+          <mat-paginator
+            [length]="filteredRows().length"
+            [pageIndex]="pageIndex()"
+            [pageSize]="pageSize()"
+            [pageSizeOptions]="pageSizeOptions"
+            (page)="onPageEvent($event)"
+            showFirstLastButtons
+          />
+        </div>
+        } @else {
+        <div class="image-manager__empty">
+          <mat-icon class="image-manager__empty-icon">image_not_supported</mat-icon>
+          <p>No images match the current search and filter.</p>
+        </div>
+        }
+      </div>
+      } @if (viewMode() === 'grid') {
+      <div class="image-manager__grid" [class.image-manager__grid--with-details]="selectedImage()">
+        @for (row of paginatedRows(); track trackByRow($index, row)) {
+        <article
+          class="image-manager__card"
+          [class.image-manager__card--selected]="
+            (selectedImage()?.tempId || selectedImage()?.path) === (row.tempId || row.path)
+          "
+          [class.image-manager__row-highlight]="isHighlighted(row)"
+          (click)="selectImage(row)"
+        >
+          <div class="image-manager__card-header">
+            <div class="image-manager__card-icon">
+              <mat-icon>{{ imageTypeIcon(row) }}</mat-icon>
+            </div>
+            @if (isPersistedRow(row)) {
             <mat-checkbox
               (click)="onRowCheckboxClick($event, row)"
               [checked]="isRowSelected(row)"
-              [disabled]="!isPersistedRow(row)"
-            >
-            </mat-checkbox>
-          </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="filename">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> File Name </mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            <div class="image-manager__row-content">
-              <span class="image-manager__filename">{{ row.filename }}</span>
-              @if (hasUploadState(row)) {
-              <div class="image-manager__upload-status">
-                <mat-progress-bar mode="determinate" [value]="row.uploadProgress || 0"></mat-progress-bar>
-                <span
-                  class="image-manager__upload-text"
-                  [class.image-manager__upload-error]="row.uploadStatus === 'error'"
-                >
-                  {{ row.uploadStatus | titlecase }} {{ row.uploadProgress || 0 }}% @if (row.errorMessage) {
-                  <span> - {{ row.errorMessage }}</span>
-                  }
-                </span>
-              </div>
-              }
-            </div>
-          </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="image_type">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Image Type </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ row.image_type }} </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="image_size">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Image Size </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ formatImageSize(row) }} </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="created_at">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Created </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ row.created_at ? (row.created_at | date : 'short') : '-' }} </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="delete">
-          <mat-header-cell *matHeaderCellDef>
-            @if ((hasSelection() && isAllSelected()) || selectedCount() > 1) {
-            <button mat-icon-button (click)="deleteAllFiles()">
-              <mat-icon>delete</mat-icon>
-            </button>
+              [attr.aria-label]="'Select ' + row.filename"
+            />
             }
-          </mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            @if (isPersistedRow(row) && isRowSelected(row)) {
-            <button mat-icon-button (click)="deleteFile(row.path)">
-              <mat-icon>delete</mat-icon>
-            </button>
-            } @if (hasUploadState(row) && (row.uploadStatus === 'uploading' || row.uploadStatus === 'queued')) {
+          </div>
+
+          <div class="image-manager__card-body">
+            <h3 class="image-manager__card-name" [matTooltip]="row.filename">{{ row.filename }}</h3>
+            <span
+              class="image-manager__status-badge"
+              [class.image-manager__status-badge--uploading]="hasUploadState(row)"
+              [class.image-manager__status-badge--error]="row.uploadStatus === 'error'"
+            >
+              <span class="image-manager__status-dot"></span>
+              {{ imageStatusLabel(row) | titlecase }}
+            </span>
+            <dl class="image-manager__card-metadata">
+              <div>
+                <dt>Type</dt>
+                <dd>{{ row.image_type || 'Unknown' }}</dd>
+              </div>
+              <div>
+                <dt>Size</dt>
+                <dd>{{ formatImageSize(row) }}</dd>
+              </div>
+            </dl>
+            @if (hasUploadState(row)) {
+            <div class="image-manager__card-upload">
+              <mat-progress-bar mode="determinate" [value]="row.uploadProgress || 0" />
+              <span [class.image-manager__upload-error]="row.uploadStatus === 'error'">
+                {{ row.uploadProgress || 0 }}% @if (row.errorMessage) { · {{ row.errorMessage }} }
+              </span>
+            </div>
+            }
+          </div>
+
+          <div class="image-manager__card-actions">
             <button
               mat-icon-button
-              (click)="cancelUpload(row)"
+              class="image-manager__action-button image-manager__action-button--details"
+              (click)="$event.stopPropagation(); selectImage(row)"
+              matTooltip="View image details"
+              [attr.aria-label]="'View details for ' + row.filename"
+            >
+              <mat-icon>info</mat-icon>
+            </button>
+            @if (isPersistedRow(row)) {
+            <button
+              mat-icon-button
+              class="image-manager__action-button image-manager__action-button--delete"
+              (click)="$event.stopPropagation(); deleteFile(row.path)"
+              matTooltip="Delete image"
+              [attr.aria-label]="'Delete ' + row.filename"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+            } @else if (row.uploadStatus === 'uploading' || row.uploadStatus === 'queued') {
+            <button
+              mat-icon-button
+              class="image-manager__action-button image-manager__action-button--cancel"
+              (click)="$event.stopPropagation(); cancelUpload(row)"
               matTooltip="Cancel upload"
-              matTooltipClass="custom-tooltip"
+              [attr.aria-label]="'Cancel upload for ' + row.filename"
             >
               <mat-icon>cancel</mat-icon>
             </button>
             }
-          </mat-cell>
-        </ng-container>
-        <mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></mat-header-row>
-        <mat-row
-          *matRowDef="let row; columns: displayedColumns()"
-          [class.image-manager__row-highlight]="isHighlighted(row)"
-          (click)="onRowCheckboxClick($event, row)"
-        ></mat-row>
-      </mat-table>
-      <mat-paginator [pageSizeOptions]="pageSizeOptions" showFirstLastButtons> </mat-paginator>
-    </div>
-  </main>
+          </div>
+        </article>
+        } @empty {
+        <div class="image-manager__empty">
+          <mat-icon class="image-manager__empty-icon">image_not_supported</mat-icon>
+          <p>No images match the current search and filter.</p>
+        </div>
+        } @if (filteredRows().length > 0) {
+        <mat-paginator
+          class="image-manager__grid-paginator"
+          [length]="filteredRows().length"
+          [pageIndex]="pageIndex()"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onPageEvent($event)"
+          showFirstLastButtons
+        />
+        }
+      </div>
+      } @if (selectedImage(); as image) {
+      <aside class="image-manager__details" aria-label="Image details">
+        <div class="image-manager__details-header">
+          <h2 class="image-manager__details-title" [matTooltip]="image.filename">{{ image.filename }}</h2>
+          <button
+            mat-icon-button
+            class="image-manager__details-close"
+            (click)="closeDetails()"
+            matTooltip="Close details"
+            aria-label="Close image details"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="image-manager__details-body">
+          <div class="image-manager__detail-item">
+            <span class="image-manager__detail-icon"
+              ><mat-icon>{{ imageTypeIcon(image) }}</mat-icon></span
+            >
+            <span class="image-manager__detail-label">Type</span>
+            <span class="image-manager__detail-value">{{ image.image_type || 'Unknown' }}</span>
+          </div>
+          <div class="image-manager__detail-item">
+            <span class="image-manager__detail-icon"><mat-icon>data_usage</mat-icon></span>
+            <span class="image-manager__detail-label">Size</span>
+            <span class="image-manager__detail-value">{{ formatImageSize(image) }}</span>
+          </div>
+          <div class="image-manager__detail-item">
+            <span class="image-manager__detail-icon"><mat-icon>check_circle</mat-icon></span>
+            <span class="image-manager__detail-label">Status</span>
+            <span class="image-manager__detail-value">{{ imageStatusLabel(image) | titlecase }}</span>
+          </div>
+          @if (hasUploadState(image)) {
+          <div class="image-manager__detail-upload">
+            <mat-progress-bar mode="determinate" [value]="image.uploadProgress || 0" />
+            <span [class.image-manager__upload-error]="image.uploadStatus === 'error'">
+              {{ image.uploadProgress || 0 }}% @if (image.errorMessage) { · {{ image.errorMessage }} }
+            </span>
+          </div>
+          }
+          <div class="image-manager__detail-item">
+            <span class="image-manager__detail-icon"><mat-icon>event</mat-icon></span>
+            <span class="image-manager__detail-label">Created</span>
+            <span class="image-manager__detail-value">{{
+              image.created_at ? (image.created_at | date : 'medium') : '—'
+            }}</span>
+          </div>
+          <div class="image-manager__detail-item">
+            <span class="image-manager__detail-icon"><mat-icon>update</mat-icon></span>
+            <span class="image-manager__detail-label">Updated</span>
+            <span class="image-manager__detail-value">{{
+              image.updated_at ? (image.updated_at | date : 'medium') : '—'
+            }}</span>
+          </div>
+          <div class="image-manager__detail-item">
+            <span class="image-manager__detail-icon"><mat-icon>fingerprint</mat-icon></span>
+            <span class="image-manager__detail-label">Algorithm</span>
+            <span class="image-manager__detail-value">{{ image.checksum_algorithm || '—' }}</span>
+          </div>
+          <div class="image-manager__detail-item image-manager__detail-item--stacked">
+            <span class="image-manager__detail-icon"><mat-icon>tag</mat-icon></span>
+            <span class="image-manager__detail-label">Checksum</span>
+            <span class="image-manager__detail-value image-manager__detail-value--mono">{{
+              image.checksum || '—'
+            }}</span>
+          </div>
+          <div class="image-manager__detail-item image-manager__detail-item--stacked">
+            <span class="image-manager__detail-icon"><mat-icon>folder</mat-icon></span>
+            <span class="image-manager__detail-label">Path</span>
+            <span class="image-manager__detail-value image-manager__detail-value--path">{{
+              image.path || 'Not available while uploading'
+            }}</span>
+          </div>
+        </div>
+
+        <div class="image-manager__details-actions">
+          @if (isPersistedRow(image)) {
+          <button
+            mat-stroked-button
+            class="image-manager__details-action image-manager__details-action--delete"
+            (click)="deleteFile(image.path)"
+          >
+            <mat-icon>delete</mat-icon>
+            Delete Image
+          </button>
+          } @else if (image.uploadStatus === 'uploading' || image.uploadStatus === 'queued') {
+          <button
+            mat-stroked-button
+            class="image-manager__details-action image-manager__details-action--cancel"
+            (click)="cancelUpload(image)"
+          >
+            <mat-icon>cancel</mat-icon>
+            Cancel Upload
+          </button>
+          }
+        </div>
+      </aside>
+      }
+    </main>
+  </div>
 </div>
