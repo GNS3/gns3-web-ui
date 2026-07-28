@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { ProjectService } from '@services/project.service';
 import { filter, Subscription } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { ProgressService } from '../../common/progress/progress.service';
@@ -25,7 +24,6 @@ import { User } from '@models/users/user';
 import { ControllerManagementService } from '@services/controller-management.service';
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
-import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
 import { ToasterService } from '@services/toaster.service';
 import { UserService } from '@services/user.service';
 import { ConnectionManagerService } from '@services/connection-manager.service';
@@ -65,13 +63,9 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   controllerStatusSubscription: Subscription;
   shouldStopControllersOnClosing = true;
-  recentlyOpenedcontrollerId: string;
-  recentlyOpenedProjectId: string;
-  controllerIdProjectList: string;
   controllerId: string | undefined | null;
   public controller: Controller;
   public project: Project;
-  private projectMapSubscription: Subscription = new Subscription();
 
   // Sidebar state
   readonly sidenavOpened = signal(true);
@@ -79,7 +73,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   readonly sidebarMode = signal<'side' | 'over'>('side');
   readonly isAdministrator = signal(false);
 
-  private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
   private controllerManagement = inject(ControllerManagementService);
   private toasterService = inject(ToasterService);
   private userService = inject(UserService);
@@ -88,7 +81,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public router = inject(Router);
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
-  private projectService = inject(ProjectService);
   private cd = inject(ChangeDetectorRef);
   private connectionManager = inject(ConnectionManagerService);
   private breakpointObserver = inject(BreakpointObserver);
@@ -108,10 +100,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     // Initial load
     this.controllerId = this.getParamFromRoute(this.route, 'controller_id');
     this.getData();
-
-    this.recentlyOpenedcontrollerId = this.recentlyOpenedProjectService.getcontrollerId();
-    this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
-    this.controllerIdProjectList = this.recentlyOpenedProjectService.getcontrollerIdProjectList();
 
     this.isInstalledSoftwareAvailable = false; // Web application
 
@@ -227,18 +215,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
           this.router.navigate(['/controller', controller.id, 'login']);
         });
     });
-  }
-
-  listProjects() {
-    this.router
-      .navigate(['/controller', this.controllerIdProjectList, 'projects'])
-      .catch((error) => this.toasterService.error('Cannot list projects'));
-  }
-
-  backToProject() {
-    this.router
-      .navigate(['/controller', this.recentlyOpenedcontrollerId, 'project', this.recentlyOpenedProjectId])
-      .catch((error) => this.toasterService.error('Cannot navigate to the last opened project'));
   }
 
   @HostListener('window:beforeunload', ['$event'])

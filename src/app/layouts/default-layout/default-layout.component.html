@@ -152,13 +152,6 @@
         </span>
         }
 
-        @if (!recentlyOpenedProjectId && controllerIdProjectList) {
-        <button mat-button (click)="listProjects()">Projects</button>
-        }
-        @if (recentlyOpenedProjectId && recentlyOpenedcontrollerId) {
-        <button mat-button class="back-to-project-button" (click)="backToProject()">Back to project</button>
-        }
-
         <span class="spacer"></span>
 
         @if (controller && controllerId) {
