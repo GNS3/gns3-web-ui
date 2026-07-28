@@ -204,17 +204,32 @@ body .cdk-overlay-container .mat-mdc-menu-content.mat-mdc-menu-content {
   overflow: visible;
 }
 
-/* =============================================
-// Interface Menu Panel
-// ============================================= */
-body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.interface-menu-panel {
+body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-panel {
   max-height: 600px;
   overflow-y: auto;
 }
 
-body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-panel {
-  max-height: 600px;
-  overflow-y: auto;
+/* =============================================
+// Topology Context Menus
+// ============================================= */
+body
+  .cdk-overlay-container
+  .cdk-overlay-pane
+  :is(.mat-mdc-menu-panel.context-menu-items, .mat-mdc-menu-panel.interface-menu-panel) {
+  width: max-content;
+  max-width: calc(100vw - 16px);
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .mat-mdc-menu-item,
+  .mat-mdc-menu-item-text {
+    white-space: nowrap;
+  }
 }
 
 /* Template menu - fixed width and increased height to prevent double scrollbar */
@@ -580,16 +595,22 @@ mat-form-field {
   --gns3-menu-item-min-height: 48px;
 }
 
-.mat-mdc-menu-panel.context-menu-items {
-  .mat-mdc-menu-content {
-    padding: 4px 0;
-  }
-}
-
 .mat-mdc-menu-panel .mat-mdc-menu-item {
   min-height: var(--gns3-menu-item-min-height);
 }
 
 html[data-density='compact'] .mat-mdc-menu-panel {
   --gns3-menu-item-min-height: 40px;
+}
+
+.mat-mdc-menu-panel:is(.context-menu-items, .interface-menu-panel) {
+  --gns3-menu-item-min-height: 36px;
+
+  .mat-mdc-menu-content {
+    padding: 4px 0;
+  }
+}
+
+html[data-density='compact'] .mat-mdc-menu-panel:is(.context-menu-items, .interface-menu-panel) {
+  --gns3-menu-item-min-height: 36px;
 }
