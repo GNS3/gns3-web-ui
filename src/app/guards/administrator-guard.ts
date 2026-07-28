@@ -30,10 +30,10 @@ export class AdministratorGuard implements CanActivate {
         return true;
       }
 
-      await this.router.navigate(['/controller', numericControllerId, 'dashboard']);
+      await this.router.navigate(['/controller', numericControllerId, 'systemstatus']);
       return false;
     } catch {
-      await this.router.navigate(['/controller', numericControllerId, 'dashboard']);
+      await this.router.navigate(['/controller', numericControllerId, 'systemstatus']);
       return false;
     }
   }

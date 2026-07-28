@@ -1,8 +1,230 @@
 <div class="system-status">
-  <div class="system-status__header">
-    <h1 class="system-status__title">System status</h1>
+  @if (isLoading()) {
+  <div class="system-status__loading">
+    <mat-progress-spinner diameter="42" mode="indeterminate"></mat-progress-spinner>
+    <span>Loading system status…</span>
   </div>
-  <div class="system-status__content">
-    <app-status-info></app-status-info>
+  } @else {
+  <header class="system-status__header">
+    <div>
+      <h1 class="system-status__title">
+        <mat-icon>monitor_heart</mat-icon>
+        System status
+      </h1>
+    </div>
+    <div class="system-status__header-actions">
+      <span class="system-status__updated">Auto-refresh: 15s</span>
+      @if (lastUpdated()) {
+      <span class="system-status__updated">Updated {{ lastUpdated() | date: 'mediumTime' }}</span>
+      }
+      <button mat-stroked-button type="button" (click)="refresh()" [disabled]="isRefreshing()">
+        @if (isRefreshing()) {
+        <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+        } @else {
+        <mat-icon>refresh</mat-icon>
+        }
+        Refresh
+      </button>
+    </div>
+  </header>
+
+  @if (statisticsError()) {
+  <div class="system-status__notice" role="status">
+    <mat-icon>warning</mat-icon>
+    <span>{{ statisticsError() }}</span>
+    <button mat-button type="button" (click)="refresh()">Try again</button>
   </div>
+  }
+
+  <main class="system-status__content">
+    <section class="system-status__metrics" aria-label="System summary">
+      <article class="metric-card metric-card--status">
+        <div class="metric-card__icon"><mat-icon>{{ isControllerOnline() ? 'check_circle' : 'error' }}</mat-icon></div>
+        <div>
+          <span class="metric-card__label">Controller status</span>
+          <strong>{{ isControllerOnline() ? 'Online' : 'Offline' }}</strong>
+          <span class="metric-card__detail">{{ controller()?.name || 'GNS3 Controller' }}</span>
+        </div>
+      </article>
+
+      <article class="metric-card">
+        <div class="metric-card__icon"><mat-icon>folder_open</mat-icon></div>
+        <div>
+          <span class="metric-card__label">Projects</span>
+          <strong>{{ statistics()?.projects?.opened ?? 0 }}</strong>
+          <span class="metric-card__detail">{{ statistics()?.projects?.total ?? projects().length }} total</span>
+        </div>
+      </article>
+
+      <article class="metric-card metric-card--nodes">
+        <div class="metric-card__icon"><mat-icon>device_hub</mat-icon></div>
+        <div>
+          <span class="metric-card__label">Running nodes</span>
+          <strong>{{ runningNodes() }}</strong>
+          <span class="metric-card__detail">{{ statistics()?.nodes?.total ?? 0 }} total</span>
+        </div>
+      </article>
+
+      <article class="metric-card metric-card--links">
+        <div class="metric-card__icon"><mat-icon>link</mat-icon></div>
+        <div>
+          <span class="metric-card__label">Links</span>
+          <strong>{{ statistics()?.links?.total ?? 0 }}</strong>
+          <span class="metric-card__detail">{{ statistics()?.links?.capturing ?? 0 }} capturing</span>
+        </div>
+      </article>
+
+      <article class="metric-card metric-card--computes">
+        <div class="metric-card__icon"><mat-icon>dns</mat-icon></div>
+        <div>
+          <span class="metric-card__label">Computes</span>
+          <strong>{{ statistics()?.computes?.length ?? 0 }}</strong>
+          <span class="metric-card__detail">Reporting resources</span>
+        </div>
+      </article>
+    </section>
+
+    <div class="system-status__overview-grid">
+      <section class="status-panel">
+        <div class="status-panel__header">
+          <div>
+            <h2>Server information</h2>
+          </div>
+          <mat-icon>info</mat-icon>
+        </div>
+        <dl class="system-info">
+          <div><dt>Controller</dt><dd>{{ controller()?.name || 'Unavailable' }}</dd></div>
+          <div><dt>Endpoint</dt><dd>{{ controllerEndpoint() }}</dd></div>
+          <div><dt>GNS3 server</dt><dd>{{ gns3Version() || 'Unavailable' }}</dd></div>
+          <div><dt>Web UI</dt><dd>{{ webUiVersion }}</dd></div>
+          <div><dt>Server uptime</dt><dd>{{ formatUptime(statistics()?.uptime_seconds) }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="status-panel">
+        <div class="status-panel__header">
+          <div>
+            <h2>Project overview</h2>
+          </div>
+          <a mat-button [routerLink]="['/controller', controllerId(), 'projects']">View all</a>
+        </div>
+        <div class="project-list">
+          @for (project of visibleProjects(); track project.project_id) {
+          <div class="project-list__row">
+            <span class="project-list__name"><mat-icon>folder</mat-icon>{{ project.name }}</span>
+            <span class="project-list__owner">{{ project.created_by || 'Unknown owner' }}</span>
+            <span
+              class="project-list__status"
+              [class.project-list__status--open]="project.status === 'opened'"
+            >
+              {{ project.status === 'opened' ? 'Running' : 'Stopped' }}
+            </span>
+          </div>
+          } @empty {
+          <div class="system-status__empty">No projects are available to this user.</div>
+          }
+        </div>
+      </section>
+    </div>
+
+    <section class="status-panel status-panel--resources">
+      <div class="status-panel__header">
+        <div>
+          <h2>Compute resources</h2>
+        </div>
+        <span class="status-panel__meta">{{ statistics()?.computes?.length ?? 0 }} computes</span>
+      </div>
+
+      <div class="compute-grid">
+        @for (compute of statistics()?.computes ?? []; track compute.compute_id) {
+        <article class="compute-card">
+          <div class="compute-card__header">
+            <div class="compute-card__avatar"><mat-icon>memory</mat-icon></div>
+            <div>
+              <h3>{{ compute.compute_name }}</h3>
+              <span>{{ compute.compute_id }}</span>
+            </div>
+          </div>
+
+          <div class="resource-meter">
+            <div class="resource-meter__label"><span>CPU</span><strong>{{ compute.statistics.cpu_usage_percent }}%</strong></div>
+            <div class="resource-meter__track"><span [style.width.%]="clampPercentage(compute.statistics.cpu_usage_percent)"></span></div>
+            <small>{{ cpuSummary(compute.statistics) }}</small>
+          </div>
+          <div class="resource-meter resource-meter--memory">
+            <div class="resource-meter__label"><span>Memory</span><strong>{{ compute.statistics.memory_usage_percent }}%</strong></div>
+            <div class="resource-meter__track"><span [style.width.%]="clampPercentage(compute.statistics.memory_usage_percent)"></span></div>
+            <small>{{ memorySummary(compute.statistics) }}</small>
+          </div>
+          <div class="resource-meter resource-meter--disk">
+            <div class="resource-meter__label"><span>Disk</span><strong>{{ compute.statistics.disk_usage_percent }}%</strong></div>
+            <div class="resource-meter__track"><span [style.width.%]="clampPercentage(compute.statistics.disk_usage_percent)"></span></div>
+            <small>{{ diskSummary(compute.statistics) }}</small>
+          </div>
+          <div class="resource-meter resource-meter--swap">
+            <div class="resource-meter__label"><span>Swap</span><strong>{{ compute.statistics.swap_usage_percent }}%</strong></div>
+            <div class="resource-meter__track"><span [style.width.%]="clampPercentage(compute.statistics.swap_usage_percent)"></span></div>
+            <small>{{ swapSummary(compute.statistics) }}</small>
+          </div>
+
+          <div class="compute-card__load">
+            <span>{{ hasRawLoadAverage(compute.statistics) ? 'Load average' : 'CPU load' }} (1m / 5m / 15m)</span>
+            <strong>
+              {{ (loadAverageValues(compute.statistics)[0] ?? 0) | number: '1.2-2'
+              }}{{ hasRawLoadAverage(compute.statistics) ? '' : '%' }} /
+              {{ (loadAverageValues(compute.statistics)[1] ?? 0) | number: '1.2-2'
+              }}{{ hasRawLoadAverage(compute.statistics) ? '' : '%' }} /
+              {{ (loadAverageValues(compute.statistics)[2] ?? 0) | number: '1.2-2'
+              }}{{ hasRawLoadAverage(compute.statistics) ? '' : '%' }}
+            </strong>
+          </div>
+        </article>
+        } @empty {
+        <div class="system-status__empty system-status__empty--wide">No compute telemetry is available.</div>
+        }
+      </div>
+    </section>
+
+    <div class="system-status__breakdown-grid">
+      <section class="status-panel">
+        <div class="status-panel__header">
+          <div>
+            <h2>Nodes by type</h2>
+          </div>
+          <mat-icon>category</mat-icon>
+        </div>
+        <div class="breakdown-list">
+          @for (entry of nodeTypeEntries(); track entry[0]) {
+          <div class="breakdown-list__row">
+            <span>{{ formatNodeType(entry[0]) }}</span>
+            <strong>{{ entry[1] }}</strong>
+          </div>
+          } @empty {
+          <div class="system-status__empty">No node information is available.</div>
+          }
+        </div>
+      </section>
+
+      <section class="status-panel">
+        <div class="status-panel__header">
+          <div>
+            <h2>Nodes by status</h2>
+          </div>
+          <mat-icon>fact_check</mat-icon>
+        </div>
+        <div class="breakdown-list">
+          @for (entry of nodeStatusEntries(); track entry[0]) {
+          <div class="breakdown-list__row">
+            <span class="status-dot" [attr.data-status]="entry[0]"></span>
+            <span>{{ formatStatus(entry[0]) }}</span>
+            <strong>{{ entry[1] }}</strong>
+          </div>
+          } @empty {
+          <div class="system-status__empty">No runtime status is available.</div>
+          }
+        </div>
+      </section>
+    </div>
+  </main>
+  }
 </div>

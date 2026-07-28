@@ -104,7 +104,7 @@ export class LoginComponent implements OnInit {
         this.controller = controller;
 
         if (controller.authToken) {
-          this.router.navigate(['/controller', this.controller.id, 'dashboard']);
+          this.router.navigate(['/controller', this.controller.id, 'systemstatus']);
         }
 
         this.versionService.get(this.controller).subscribe({
@@ -195,7 +195,7 @@ export class LoginComponent implements OnInit {
         this.cd.markForCheck();
 
         if (this.returnUrl().length <= 1) {
-          this.router.navigate(['/controller', this.controller.id, 'dashboard']);
+          this.router.navigate(['/controller', this.controller.id, 'systemstatus']);
         } else {
           this.router.navigateByUrl(this.returnUrl());
         }

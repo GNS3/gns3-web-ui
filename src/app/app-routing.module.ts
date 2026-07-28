@@ -48,7 +48,6 @@ import { VpcsTemplatesComponent } from '@components/preferences/vpcs/vpcs-templa
 import { ProjectMapComponent } from '@components/project-map/project-map.component';
 import { ProjectsComponent } from '@components/projects/projects.component';
 import { ControllersComponent } from '@components/controllers/controllers.component';
-import { DashboardComponent } from '@components/dashboard/dashboard.component';
 import { ConsoleComponent } from '@components/settings/console/console.component';
 import { SettingsComponent } from '@components/settings/settings.component';
 import { SystemStatusComponent } from '@components/system-status/system-status.component';
@@ -86,8 +85,8 @@ const routes: Routes = [
       { path: 'controller/:controller_id/image-manager', component: ImageManagerComponent },
       {
         path: 'controller/:controller_id/dashboard',
-        component: DashboardComponent,
-        canActivate: [LoginGuard],
+        redirectTo: 'controller/:controller_id/systemstatus',
+        pathMatch: 'full',
       },
       {
         path: 'controller/:controller_id/projects',
@@ -108,7 +107,11 @@ const routes: Routes = [
         },
       },
       { path: 'installed-software', component: InstalledSoftwareComponent },
-      { path: 'controller/:controller_id/systemstatus', component: SystemStatusComponent, canActivate: [LoginGuard] },
+      {
+        path: 'controller/:controller_id/systemstatus',
+        component: SystemStatusComponent,
+        canActivate: [LoginGuard],
+      },
 
       {
         path: 'controller/:controller_ip/:controller_port/project/:project_id',

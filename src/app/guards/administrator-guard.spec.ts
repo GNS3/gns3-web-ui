@@ -37,17 +37,17 @@ describe('AdministratorGuard', () => {
     expect(router.navigate).not.toHaveBeenCalled();
   });
 
-  it('blocks regular users and returns them to the dashboard', async () => {
+  it('blocks regular users and returns them to system status', async () => {
     userService.getInformationAboutLoggedUser.mockReturnValue(of({ is_superadmin: false }));
 
     await expect(guard.canActivate(route, state)).resolves.toBe(false);
-    expect(router.navigate).toHaveBeenCalledWith(['/controller', 7, 'dashboard']);
+    expect(router.navigate).toHaveBeenCalledWith(['/controller', 7, 'systemstatus']);
   });
 
   it('fails closed when the current-user request fails', async () => {
     userService.getInformationAboutLoggedUser.mockReturnValue(throwError(() => new Error('Forbidden')));
 
     await expect(guard.canActivate(route, state)).resolves.toBe(false);
-    expect(router.navigate).toHaveBeenCalledWith(['/controller', 7, 'dashboard']);
+    expect(router.navigate).toHaveBeenCalledWith(['/controller', 7, 'systemstatus']);
   });
 });

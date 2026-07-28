@@ -207,8 +207,6 @@ import { ConsoleComponent } from '@components/settings/console/console.component
 import { SettingsComponent } from '@components/settings/settings.component';
 import { CreateSnapshotDialogComponent } from '@components/snapshots/create-snapshot-dialog/create-snapshot-dialog.component';
 import { SnapshotMenuItemComponent } from '@components/snapshots/snapshot-menu-item/snapshot-menu-item.component';
-import { StatusChartComponent } from '@components/system-status/status-chart/status-chart.component';
-import { StatusInfoComponent } from '@components/system-status/status-info/status-info.component';
 import { SystemStatusComponent } from '@components/system-status/system-status.component';
 import { TemplateListDialogComponent } from '@components/template/template-list-dialog/template-list-dialog.component';
 import { TemplateComponent } from '@components/template/template.component';
@@ -463,8 +461,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     NodeLabelDraggedComponent,
     TextAddedComponent,
     TextEditedComponent,
-    StatusInfoComponent,
-    StatusChartComponent,
     ToolDetailsDialogComponent,
     StartNodeActionComponent,
     StopNodeActionComponent,

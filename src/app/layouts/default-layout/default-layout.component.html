@@ -32,11 +32,11 @@
           mat-list-item
           class="sidebar__nav-item"
           routerLinkActive="active"
-          [routerLink]="['/controller', controllerId, 'dashboard']"
+          [routerLink]="['/controller', controllerId, 'systemstatus']"
           (click)="isSmallScreen() && sidenav.close()"
         >
-          <mat-icon matListItemIcon>home</mat-icon>
-          <span matListItemTitle>Dashboard</span>
+          <mat-icon matListItemIcon>monitor_heart</mat-icon>
+          <span matListItemTitle>System status</span>
         </a>
         <a
           mat-list-item
@@ -178,10 +178,6 @@
 
         <!-- Logged-in user account menu -->
         <mat-menu #userMenu="matMenu">
-          <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'systemstatus']">
-            <mat-icon>info</mat-icon>
-            <span>System status</span>
-          </button>
           <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'help']">
             <mat-icon>help</mat-icon>
             <span>Help</span>

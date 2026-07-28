@@ -1,6 +1,13 @@
 export interface Statistics {
+  cpu_count?: number;
+  cpu_count_physical?: number;
+  cpu_model?: string;
   cpu_usage_percent: number;
+  disk_free?: number;
+  disk_total?: number;
   disk_usage_percent: number;
+  disk_used?: number;
+  load_average?: number[];
   load_average_percent: number[];
   memory_free: number;
   memory_total: number;
@@ -38,6 +45,7 @@ export interface LinkStats {
 }
 
 export interface ControllerStatistics {
+  uptime_seconds?: number;
   computes: ComputeStatistics[];
   projects: ProjectStats;
   nodes: NodeStats;
