@@ -148,6 +148,11 @@
     }
   }
 
+  .qemu-configurator-tabs .mat-mdc-tab-body-content {
+    box-sizing: border-box;
+    padding-inline: 24px;
+  }
+
   /* Two-column form layout */
   .form-grid {
     display: grid;
@@ -1369,5 +1374,4 @@ h2[mat-dialog-title] {
     overflow: visible;
   }
 }
-
 

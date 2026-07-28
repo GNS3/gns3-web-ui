@@ -269,7 +269,7 @@ button[class$='__cancel-btn'] {
 /* File pickers inside a form already inherit the form's horizontal inset.
    Removing their nested inset keeps Advanced fields aligned with General
    fields while leaving standalone disk/image rows unchanged. */
-[class*='__form'] [class*='__file-row'] {
+[class$='__form'] [class*='__file-row'] {
   padding-inline: 0;
 }
 

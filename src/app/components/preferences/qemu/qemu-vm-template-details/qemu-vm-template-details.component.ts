@@ -413,8 +413,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
   onCdromInput(event: Event) {
     const value = (event.target as HTMLInputElement).value.toLowerCase();
-    const isoFiltered = this.globalImages.filter((img) => img.filename.toLowerCase().includes(value));
-    this.filteredGlobalImages = isoFiltered;
+    this.filteredGlobalImages = this.globalImages.filter((img) => img.filename.toLowerCase().includes(value));
   }
 
   onAdvancedInput(event: Event) {
