@@ -98,7 +98,6 @@ import { NodeAddedEvent } from '../template/template-list-dialog/template-list-d
 import { TopologySummaryComponent } from '../topology-summary/topology-summary.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
-import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ProjectReadmeComponent } from './project-readme/project-readme.component';
 import { AiChatStore } from '../../stores/ai-chat.store';
@@ -113,7 +112,6 @@ import { WebWiresharkInlineComponent } from './web-wireshark-inline/web-wireshar
 import { WebConsoleInlineComponent } from './web-console-inline/web-console-inline.component';
 import { NodeFileManagerInlineComponent } from './node-file-manager-inline/node-file-manager-inline.component';
 import { DrawLinkToolComponent } from './draw-link-tool/draw-link-tool.component';
-import { ImportApplianceComponent } from './import-appliance/import-appliance.component';
 import { NodesMenuComponent } from './nodes-menu/nodes-menu.component';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { TemplateComponent } from '../template/template.component';
@@ -150,7 +148,6 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
     NodesMenuComponent,
     SnapshotMenuItemComponent,
     TemplateComponent,
-    ImportApplianceComponent,
     ConsoleWrapperComponent,
     AiChatComponent,
     WebWiresharkInlineComponent,
@@ -1736,19 +1733,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         });
       }
     });
-  }
-
-  public addNewTemplate() {
-    const dialogRef = this.dialog.open(NewTemplateDialogComponent, {
-      width: '800px',
-      maxHeight: '800px',
-      autoFocus: false,
-      disableClose: true,
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'new-template-dialog-panel'],
-    });
-    let instance = dialogRef.componentInstance;
-    instance.controller = this.controller;
-    instance.project = this.project;
   }
 
   public showReadme() {

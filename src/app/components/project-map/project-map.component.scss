@@ -131,14 +131,25 @@ g.node:hover {
     color: var(--mat-sys-on-primary);
   }
 
-  .gns3-button {
-    position: relative;
-    top: -2px;
+  .back-to-projects,
+  .titlebar-action {
+    color: var(--mat-sys-on-primary);
+    --mat-text-button-label-text-color: var(--mat-sys-on-primary);
+  }
 
-    mat-icon {
-      width: 30px;
-      height: 30px;
-    }
+  .back-to-projects {
+    flex-shrink: 0;
+  }
+
+  .project-titlebar-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .titlebar-action {
+    padding: 0 10px;
   }
 
   .primary-controls {
@@ -197,14 +208,26 @@ g.node:hover {
   }
 }
 
+@media (max-width: 1100px) {
+  #project-titlebar {
+    .titlebar-action {
+      min-width: 40px;
+      padding: 0 8px;
+    }
+
+    .titlebar-action span {
+      display: none;
+    }
+  }
+}
+
 #project-toolbar {
   position: fixed;
   top: var(--gns3-project-titlebar-height);
   left: 0;
   width: 56px;
-  margin: 16px;
   background-color: var(--mat-sys-surface-container);
-  border-radius: 4px;
+  border-radius: 0 0 4px 0;
   @extend .shadow-subtle;
   z-index: 2;
   transition: background-color 200ms ease;

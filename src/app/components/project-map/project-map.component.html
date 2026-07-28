@@ -2,14 +2,15 @@
   <!-- Project Titlebar -->
   <div id="project-titlebar">
     <button
-      matTooltip="Open menu"
+      mat-button
+      class="back-to-projects"
+      [routerLink]="['/controller', controller.id, 'projects']"
+      matTooltip="Back to projects"
       matTooltipClass="custom-tooltip"
-      matTooltipPosition="left"
-      mat-icon-button
-      class="gns3-button menu-button"
-      [matMenuTriggerFor]="mainMenu"
+      matTooltipPosition="below"
     >
-      <mat-icon svgIcon="gns3"></mat-icon>
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to projects</span>
     </button>
     <div class="project-titlebar-controls">
       @if (!readonly) {
@@ -41,7 +42,29 @@
         ></app-context-menu>
       </div>
     </div>
-    <div>
+    <div class="project-titlebar-actions">
+      <button
+        mat-button
+        class="titlebar-action"
+        [matMenuTriggerFor]="projectMenu"
+        matTooltip="Project settings"
+        matTooltipClass="custom-tooltip"
+        matTooltipPosition="below"
+      >
+        <mat-icon>settings</mat-icon>
+        <span>Project settings</span>
+      </button>
+      <button
+        mat-button
+        class="titlebar-action"
+        [matMenuTriggerFor]="viewMenu"
+        matTooltip="Map settings"
+        matTooltipClass="custom-tooltip"
+        matTooltipPosition="below"
+      >
+        <mat-icon>view_module</mat-icon>
+        <span>Map settings</span>
+      </button>
       <button
         matTooltip="Toggle topology/controllers summary"
         matTooltipClass="custom-tooltip"
@@ -52,32 +75,6 @@
         <mat-icon>toc</mat-icon>
       </button>
     </div>
-
-    <!-- GNS3 menu -->
-    <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
-      <button mat-menu-item [routerLink]="['/controller', controller.id, 'projects']">
-        <mat-icon>work</mat-icon>
-        <span>Projects</span>
-      </button>
-
-      <button mat-menu-item routerLink="/controller/{{ controller.id }}/computes">
-        <mat-icon>dns</mat-icon>
-        <span>Computes</span>
-      </button>
-      <button mat-menu-item (click)="addNewTemplate()">
-        <mat-icon>control_point</mat-icon>
-        <span>New template</span>
-      </button>
-      <app-import-appliance [controller]="controller" [project]="project"></app-import-appliance>
-      <button mat-menu-item [matMenuTriggerFor]="projectMenu">
-        <mat-icon>settings</mat-icon>
-        <span>Project settings</span>
-      </button>
-      <button mat-menu-item [matMenuTriggerFor]="viewMenu">
-        <mat-icon>view_module</mat-icon>
-        <span>Map settings</span>
-      </button>
-    </mat-menu>
 
     <!-- Project Settings sub-menu -->
     <mat-menu #projectMenu="matMenu" [overlapTrigger]="false">
