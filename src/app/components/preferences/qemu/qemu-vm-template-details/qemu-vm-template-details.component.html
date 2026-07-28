@@ -635,13 +635,15 @@
             />
           </mat-form-field>
 
-          <mat-checkbox [checked]="linkedClone()" (change)="linkedClone.set($event.checked)"
-            >Use as a linked base VM</mat-checkbox
-          >
-          <mat-checkbox [checked]="tpm()" (change)="tpm.set($event.checked)"
-            >Enable the Trusted Platform Module (TPM)</mat-checkbox
-          >
-          <mat-checkbox [checked]="uefi()" (change)="uefi.set($event.checked)">Enable the UEFI boot mode</mat-checkbox>
+          <div class="qemu-template-details__checkbox-list">
+            <mat-checkbox [checked]="linkedClone()" (change)="linkedClone.set($event.checked)"
+              >Use as a linked base VM</mat-checkbox
+            >
+            <mat-checkbox [checked]="tpm()" (change)="tpm.set($event.checked)"
+              >Enable the Trusted Platform Module (TPM)</mat-checkbox
+            >
+            <mat-checkbox [checked]="uefi()" (change)="uefi.set($event.checked)">Enable the UEFI boot mode</mat-checkbox>
+          </div>
           <div class="two-column-grid" style="margin-top: 12px">
             <mat-form-field appearance="fill" class="qemu-template-details__field">
               <mat-label>Max CPUs (hot-plug)</mat-label>

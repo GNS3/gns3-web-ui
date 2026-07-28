@@ -90,7 +90,8 @@
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
   align-items: start;
-  gap: 22px;
+  column-gap: 22px;
+  row-gap: 12px;
   max-width: 1440px;
   margin: 0 auto;
   padding: 0 24px 32px;
@@ -99,7 +100,8 @@
 .template-edit-tabs {
   display: flex;
   grid-column: 1;
-  grid-row: 1;
+  grid-row: 1 / span 2;
+  align-self: start;
   flex-direction: column;
   gap: 6px;
   padding: 12px;
@@ -214,6 +216,7 @@
   box-sizing: border-box;
   justify-content: flex-end;
   gap: 12px;
+  margin-top: 0;
   padding: 4px 0 8px;
 }
 
@@ -222,8 +225,8 @@
   justify-content: flex-end;
 }
 
-[class$='__save-btn'],
-[class$='__cancel-btn'] {
+[class*='__save-btn'],
+[class*='__cancel-btn'] {
   min-height: 48px;
   height: 48px;
   border-radius: 12px;
@@ -233,16 +236,36 @@
   text-transform: none;
 }
 
-button[class$='__save-btn'] {
+button[class*='__save-btn'].mat-mdc-raised-button:not(:disabled) {
+  --mat-button-protected-label-text-color: var(--mat-sys-on-primary);
+  --mat-button-protected-container-color: var(--mat-sys-primary);
+  --mat-button-protected-state-layer-color: var(--mat-sys-on-primary);
   color: var(--mat-sys-on-primary);
   background-color: var(--mat-sys-primary);
   border: 1px solid var(--mat-sys-primary);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--mat-sys-primary) 24%, transparent);
 }
 
-button[class$='__cancel-btn'] {
-  color: var(--mat-sys-on-secondary-container);
-  background-color: var(--mat-sys-secondary-container);
-  border: 1px solid var(--mat-sys-outline-variant);
+button[class*='__cancel-btn'].mat-mdc-button:not(:disabled) {
+  --mat-button-text-label-text-color: var(--mat-sys-on-secondary);
+  --mat-button-text-state-layer-color: var(--mat-sys-on-secondary);
+  color: var(--mat-sys-on-secondary);
+  background-color: var(--mat-sys-secondary);
+  border: 1px solid var(--mat-sys-secondary);
+}
+
+button[class*='__config-btn'].mat-mdc-button:not(:disabled) {
+  --mat-button-text-label-text-color: var(--mat-sys-on-tertiary);
+  --mat-button-text-state-layer-color: var(--mat-sys-on-tertiary);
+  min-height: 44px;
+  border: 1px solid var(--mat-sys-tertiary);
+  border-radius: 10px;
+  color: var(--mat-sys-on-tertiary);
+  background-color: var(--mat-sys-tertiary);
+}
+
+button[class*='__config-btn'].mat-mdc-button:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--mat-sys-on-tertiary) 12%, var(--mat-sys-tertiary));
 }
 
 /* Usage is a free-form description, so it should use the complete editor
@@ -325,8 +348,8 @@ button[class*='__browse-btn'] {
     padding: 16px;
   }
 
-  [class$='__save-btn'],
-  [class$='__cancel-btn'] {
+  [class*='__save-btn'],
+  [class*='__cancel-btn'] {
     min-height: 40px;
     height: 40px;
   }
@@ -388,8 +411,8 @@ button[class*='__browse-btn'] {
     padding: 16px;
   }
 
-  [class$='__save-btn'],
-  [class$='__cancel-btn'] {
+  [class*='__save-btn'],
+  [class*='__cancel-btn'] {
     width: auto;
   }
 }

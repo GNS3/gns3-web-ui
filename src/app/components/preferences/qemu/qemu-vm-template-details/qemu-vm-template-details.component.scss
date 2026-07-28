@@ -207,6 +207,13 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
+.qemu-template-details__checkbox-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
 /* =============================================
 // Actions
 // ============================================= */
