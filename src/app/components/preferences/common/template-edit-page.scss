@@ -255,17 +255,17 @@ button[class*='__cancel-btn'].mat-mdc-button:not(:disabled) {
 }
 
 button[class*='__config-btn'].mat-mdc-button:not(:disabled) {
-  --mat-button-text-label-text-color: var(--mat-sys-on-tertiary);
-  --mat-button-text-state-layer-color: var(--mat-sys-on-tertiary);
+  --mat-button-text-label-text-color: var(--mat-sys-on-primary-container);
+  --mat-button-text-state-layer-color: var(--mat-sys-on-primary-container);
   min-height: 44px;
-  border: 1px solid var(--mat-sys-tertiary);
+  border: 1px solid var(--mat-sys-primary-container);
   border-radius: 10px;
-  color: var(--mat-sys-on-tertiary);
-  background-color: var(--mat-sys-tertiary);
+  color: var(--mat-sys-on-primary-container);
+  background-color: var(--mat-sys-primary-container);
 }
 
 button[class*='__config-btn'].mat-mdc-button:not(:disabled):hover {
-  background-color: color-mix(in srgb, var(--mat-sys-on-tertiary) 12%, var(--mat-sys-tertiary));
+  background-color: color-mix(in srgb, var(--mat-sys-on-primary-container) 12%, var(--mat-sys-primary-container));
 }
 
 /* Usage is a free-form description, so it should use the complete editor
