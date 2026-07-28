@@ -1,47 +1,100 @@
-<div class="help">
-  <header class="help__header">
-    <h1 class="help__title">Help</h1>
+<div class="help-page">
+  <header class="help-page__header">
+    <h1 class="help-page__title">Help</h1>
+
+    <button mat-raised-button color="primary" class="help-page__button" (click)="goToDocumentation()">
+      <mat-icon>open_in_new</mat-icon>
+      Documentation
+    </button>
   </header>
 
-  <main class="help__content">
-    <section class="help__card">
-      <mat-accordion>
+  <main class="help-page__main">
+    <section class="help-page__overview">
+      <span class="help-page__overview-icon">
+        <mat-icon>help_outline</mat-icon>
+      </span>
+      <div>
+        <h2>GNS3 Web UI help</h2>
+        <p>Find keyboard shortcuts, third-party component information, and release notes.</p>
+      </div>
+    </section>
+
+    <section class="help-page__panel">
+      <mat-accordion multi>
         <mat-expansion-panel>
           <mat-expansion-panel-header>
-            <mat-panel-title> Useful shortcuts </mat-panel-title>
+            <mat-panel-title>
+              <span class="help-page__panel-title">
+                <mat-icon>keyboard</mat-icon>
+                Useful shortcuts
+              </span>
+            </mat-panel-title>
           </mat-expansion-panel-header>
-          <mat-list>
-            <mat-list-item> ctrl + + to zoom in </mat-list-item>
-            <mat-list-item> ctrl + - to zoom out </mat-list-item>
-            <mat-list-item> ctrl + 0 to reset zoom </mat-list-item>
-            <mat-list-item> ctrl + h to hide toolbar </mat-list-item>
-            <mat-list-item> ctrl + a to select all items on map </mat-list-item>
-            <mat-list-item> ctrl + shift + a to deselect all items on map </mat-list-item>
-            <mat-list-item> ctrl + shift + s to go to preferences </mat-list-item>
-          </mat-list>
+
+          <div class="help-page__shortcuts">
+            <div class="help-page__shortcut">
+              <span><kbd>Ctrl</kbd><kbd>+</kbd></span>
+              <span>Zoom in</span>
+            </div>
+            <div class="help-page__shortcut">
+              <span><kbd>Ctrl</kbd><kbd>-</kbd></span>
+              <span>Zoom out</span>
+            </div>
+            <div class="help-page__shortcut">
+              <span><kbd>Ctrl</kbd><kbd>0</kbd></span>
+              <span>Reset zoom</span>
+            </div>
+            <div class="help-page__shortcut">
+              <span><kbd>Ctrl</kbd><kbd>H</kbd></span>
+              <span>Hide toolbar</span>
+            </div>
+            <div class="help-page__shortcut">
+              <span><kbd>Ctrl</kbd><kbd>A</kbd></span>
+              <span>Select all map items</span>
+            </div>
+            <div class="help-page__shortcut">
+              <span><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>A</kbd></span>
+              <span>Deselect all map items</span>
+            </div>
+            <div class="help-page__shortcut">
+              <span><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>S</kbd></span>
+              <span>Open preferences</span>
+            </div>
+          </div>
         </mat-expansion-panel>
+
         <mat-expansion-panel>
           <mat-expansion-panel-header>
-            <mat-panel-title> Third party components </mat-panel-title>
+            <mat-panel-title>
+              <span class="help-page__panel-title">
+                <mat-icon>extension</mat-icon>
+                Third-party components
+              </span>
+            </mat-panel-title>
           </mat-expansion-panel-header>
+
           <a
-            class="help__link"
+            class="help-page__link"
             href="https://downloads.solarwinds.com/solarwinds/GNS3/Solar-PuTTY/Solar-PuTTY-Optional.exe"
           >
-            <div [innerHTML]="thirdpartylicenses()"></div>
+            <mat-icon>download</mat-icon>
+            <span [innerHTML]="thirdpartylicenses()"></span>
           </a>
         </mat-expansion-panel>
+
         <mat-expansion-panel>
           <mat-expansion-panel-header>
-            <mat-panel-title> Release notes </mat-panel-title>
+            <mat-panel-title>
+              <span class="help-page__panel-title">
+                <mat-icon>description</mat-icon>
+                Release notes
+              </span>
+            </mat-panel-title>
           </mat-expansion-panel-header>
-          <div [innerHTML]="releasenotes()"></div>
+
+          <div class="help-page__release-notes" [innerHTML]="releasenotes()"></div>
         </mat-expansion-panel>
       </mat-accordion>
     </section>
-
-    <button mat-button color="primary" class="help__doc-button" (click)="goToDocumentation()">
-      Go to documentation
-    </button>
   </main>
 </div>

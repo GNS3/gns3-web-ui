@@ -1,112 +1,234 @@
-/**
- * GNS3 Help Component Styles
- * BEM naming applied, Material theme variables used
- * Design language unified with management pages
- */
-
 :host {
   display: block;
   width: 100%;
-  // Background moved to default-layout, keep transparent here
   background: transparent;
 }
 
-/* =============================================
-// Header
-// ============================================= */
-.help__header {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 32px 20px 16px;
-  animation: fadeInSlideIn 0.4s ease-out;
+.help-page {
+  animation: help-fade-in 0.4s ease-out;
 }
 
-.help__title {
+.help-page__header,
+.help-page__main {
+  max-width: 1600px;
+  margin-inline: auto;
+}
+
+.help-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px 20px 16px;
+}
+
+.help-page__title {
+  margin: 0;
+  color: var(--mat-sys-on-surface);
   font-size: 32px;
   font-weight: 500;
-  color: var(--mat-sys-on-surface);
-  margin: 0;
-  padding-bottom: 8px;
+  white-space: nowrap;
 }
 
-/* =============================================
-// Content
-// ============================================= */
-.help__content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 20px 20px;
-  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+button.help-page__button {
+  height: 48px;
+  padding-inline: 18px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-transform: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
+  }
 }
 
-/* =============================================
-// Card
-// ============================================= */
-.help__card {
-  background: var(--mat-sys-surface);
-  border-radius: 16px;
+.help-page__main {
+  padding: 0 20px 24px;
+}
+
+.help-page__overview {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 14px;
+  background: var(--mat-sys-surface-container);
+
+  h2 {
+    margin: 0;
+    color: var(--mat-sys-on-surface);
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 3px 0 0;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 14px;
+  }
+}
+
+.help-page__overview-icon {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 11px;
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
+}
+
+.help-page__panel {
   overflow: hidden;
+  border-radius: 16px;
+  background: var(--mat-sys-surface);
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
     0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
 }
 
-/* =============================================
-// Expansion Panel Overrides
-// ============================================= */
 .mat-expansion-panel {
-  box-shadow: none;
   border-bottom: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 0;
+  background: var(--mat-sys-surface);
+  box-shadow: none;
 
-  &:first-of-type {
-    border-top: none;
+  &:last-child {
+    border-bottom: 0;
   }
 }
 
 .mat-expansion-panel-header {
-  font-weight: 500;
+  min-height: 64px;
+  padding-inline: 20px;
   color: var(--mat-sys-on-surface);
+  background: color-mix(in srgb, var(--mat-sys-primary-container) 28%, var(--mat-sys-surface));
+
+}
+
+.mat-expansion-panel .mat-expansion-panel-header:hover {
+  background: color-mix(in srgb, var(--mat-sys-primary-container) 45%, var(--mat-sys-surface));
 }
 
 .mat-expansion-panel-header-title {
   color: var(--mat-sys-on-surface);
 }
 
-/* =============================================
-// Button
-// ============================================= */
-.help__doc-button {
-  display: block;
-  width: 100%;
-  margin-top: 20px;
-  height: 48px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 500;
-  text-transform: none;
-  letter-spacing: 0.5px;
+.help-page__panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 600;
+
+  mat-icon {
+    color: var(--mat-sys-primary);
+  }
 }
 
-/* =============================================
-// Link
-// ============================================= */
-.help__link {
-  color: var(--mat-sys-primary);
-  text-decoration: none;
+.help-page__shortcuts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  margin: 4px 0 8px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  background: var(--mat-sys-outline-variant);
+}
+
+.help-page__shortcut {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 54px;
+  gap: 16px;
+  padding: 10px 14px;
+  color: var(--mat-sys-on-surface);
+  background: var(--mat-sys-surface-container-low);
   font-size: 14px;
-  font-weight: 400;
+
+  > span:first-child {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 5px;
+  }
+}
+
+kbd {
+  min-width: 25px;
+  padding: 4px 7px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  color: var(--mat-sys-on-surface);
+  background: var(--mat-sys-surface-container-highest);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+}
+
+.help-page__link {
+  display: inline-flex;
+  align-items: flex-start;
+  max-width: 100%;
+  gap: 8px;
+  padding-block: 8px;
+  color: var(--mat-sys-primary);
+  font-size: 14px;
+  text-decoration: none;
+
+  mat-icon {
+    flex: 0 0 auto;
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+  }
+
+  span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
 
   &:hover {
     text-decoration: underline;
   }
 }
 
-/* =============================================
-// Animations
-// ============================================= */
-@keyframes fadeInSlideIn {
+.help-page__release-notes {
+  max-height: min(60vh, 640px);
+  overflow: auto;
+  padding: 8px 4px 12px;
+  color: var(--mat-sys-on-surface);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+:host-context([data-density='compact']) {
+  button.help-page__button {
+    min-height: 40px;
+    height: 40px;
+  }
+
+  .mat-expansion-panel-header {
+    min-height: 52px;
+  }
+}
+
+@keyframes help-fade-in {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -114,24 +236,38 @@
   }
 }
 
-/* =============================================
-// Responsive Design
-// ============================================= */
-@media (max-width: 768px) {
-  .help__header {
-    padding: 24px 16px 12px;
+@media (max-width: 800px) {
+  .help-page__shortcuts {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .help-page__header {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 20px 16px 12px;
   }
 
-  .help__title {
-    font-size: 24px;
+  .help-page__title {
+    font-size: 25px;
   }
 
-  .help__content {
-    padding: 0 16px 16px;
+  .help-page__main {
+    padding-inline: 16px;
   }
 
-  .help__doc-button {
-    height: 44px;
-    font-size: 15px;
+  button.help-page__button {
+    width: 100%;
+  }
+
+  .help-page__overview {
+    align-items: flex-start;
+  }
+
+  .help-page__shortcut {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
   }
 }

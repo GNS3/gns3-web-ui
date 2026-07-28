@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, 
 import { HttpClient } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ToasterService } from '@services/toaster.service';
 
@@ -10,7 +10,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-help',
   templateUrl: './help.component.html',
   styleUrl: './help.component.scss',
-  imports: [MatButtonModule, MatExpansionModule, MatListModule],
+  imports: [MatButtonModule, MatExpansionModule, MatIconModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelpComponent implements OnInit {

@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { HelpComponent } from './help.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
 import { ToasterService } from '@services/toaster.service';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -36,7 +36,7 @@ describe('HelpComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [HelpComponent, MatButtonModule, MatExpansionModule, MatListModule],
+      imports: [HelpComponent, MatButtonModule, MatExpansionModule, MatIconModule],
       providers: [
         { provide: HttpClient, useValue: mockHttpClient },
         { provide: DomSanitizer, useValue: mockSanitizer },
