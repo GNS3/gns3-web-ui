@@ -55,10 +55,6 @@
 
     <!-- GNS3 menu -->
     <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
-      <button mat-menu-item [routerLink]="['/controllers']">
-        <mat-icon>developer_board</mat-icon>
-        <span>Controllers</span>
-      </button>
       <button mat-menu-item [routerLink]="['/controller', controller.id, 'projects']">
         <mat-icon>work</mat-icon>
         <span>Projects</span>
@@ -67,14 +63,6 @@
       <button mat-menu-item routerLink="/controller/{{ controller.id }}/computes">
         <mat-icon>dns</mat-icon>
         <span>Computes</span>
-      </button>
-      <button mat-menu-item routerLink="/controller/{{ controller.id }}/preferences">
-        <mat-icon>settings_applications</mat-icon>
-        <span>Template preferences</span>
-      </button>
-      <button mat-menu-item [routerLink]="['/controller', controller.id, 'image-manager']">
-        <mat-icon>collections</mat-icon>
-        <span>Image manager</span>
       </button>
       <button mat-menu-item (click)="addNewTemplate()">
         <mat-icon>control_point</mat-icon>
