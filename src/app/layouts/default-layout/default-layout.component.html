@@ -32,6 +32,16 @@
           mat-list-item
           class="sidebar__nav-item"
           routerLinkActive="active"
+          [routerLink]="['/controller', controllerId, 'computes']"
+          (click)="isSmallScreen() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>dns</mat-icon>
+          <span matListItemTitle>Computes</span>
+        </a>
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
           [routerLink]="['/controller', controllerId, 'systemstatus']"
           (click)="isSmallScreen() && sidenav.close()"
         >
@@ -68,8 +78,7 @@
           <mat-icon matListItemIcon>settings_applications</mat-icon>
           <span matListItemTitle>Templates</span>
         </a>
-        }
-        @if (controllerId) {
+        } @if (controllerId) {
         <a
           mat-list-item
           class="sidebar__nav-item"
@@ -91,8 +100,7 @@
           <mat-icon matListItemIcon>manage_accounts</mat-icon>
           <span matListItemTitle>User management</span>
         </a>
-        }
-        }
+        } }
       </mat-nav-list>
 
       <!-- Support Section -->
@@ -135,12 +143,7 @@
     <header class="header">
       <mat-toolbar class="toolbar-primary">
         <!-- Sidebar toggle button -->
-        <button
-          mat-icon-button
-          class="gns3-button menu-button"
-          (click)="toggleSidenav()"
-          matTooltip="Toggle sidebar"
-        >
+        <button mat-icon-button class="gns3-button menu-button" (click)="toggleSidenav()" matTooltip="Toggle sidebar">
           <mat-icon>menu</mat-icon>
         </button>
 
@@ -155,12 +158,7 @@
         <span class="spacer"></span>
 
         @if (controller && controllerId) {
-        <button
-          mat-button
-          class="toolbar__account"
-          [matMenuTriggerFor]="userMenu"
-          aria-label="Open user account menu"
-        >
+        <button mat-button class="toolbar__account" [matMenuTriggerFor]="userMenu" aria-label="Open user account menu">
           <span class="toolbar__account-avatar">
             <mat-icon>person</mat-icon>
           </span>

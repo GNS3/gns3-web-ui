@@ -157,16 +157,26 @@ describe('ComputesComponent', () => {
   });
 
   it('should have correct displayedColumns', () => {
-    expect(component.displayedColumns).toEqual([
-      'status',
-      'name',
-      'host',
-      'connected',
-      'cpu',
-      'memory',
-      'disk',
-      'actions',
-    ]);
+    expect(component.displayedColumns).toEqual(['name', 'status', 'host', 'platform', 'resources', 'actions']);
+  });
+
+  it('should filter computes by search text and connection status', () => {
+    const remoteCompute = {
+      ...mockComputes[0],
+      compute_id: 'remote',
+      name: 'Remote Linux',
+      host: '192.0.2.10',
+      connected: false,
+      capabilities: { platform: 'linux', node_types: ['qemu'] },
+    } as Compute;
+    component['_computes'].set([...mockComputes, remoteCompute]);
+
+    component.onSearchChange('linux');
+    expect(component.filteredComputes()).toEqual([remoteCompute]);
+
+    component.onSearchChange('');
+    component.onStatusFilterChange('connected');
+    expect(component.filteredComputes()).toEqual([mockComputes[0]]);
   });
 
   it('should load controller on init', async () => {
@@ -294,9 +304,9 @@ describe('ComputesComponent', () => {
 
   describe('loadComputes error handling', () => {
     it('should display error when getComputes fails', async () => {
-      mockComputeService.getComputes = vi.fn().mockReturnValue(
-        throwError(() => ({ error: { message: 'Failed to load computes' } }))
-      );
+      mockComputeService.getComputes = vi
+        .fn()
+        .mockReturnValue(throwError(() => ({ error: { message: 'Failed to load computes' } })));
       const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
 
       component.loadComputes();
@@ -322,9 +332,9 @@ describe('ComputesComponent', () => {
 
   describe('connectCompute error handling', () => {
     it('should display error when connectCompute fails', async () => {
-      mockComputeService.connectCompute = vi.fn().mockReturnValue(
-        throwError(() => ({ error: { message: 'Connection refused' } }))
-      );
+      mockComputeService.connectCompute = vi
+        .fn()
+        .mockReturnValue(throwError(() => ({ error: { message: 'Connection refused' } })));
       const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
 
       component.connectCompute(mockComputes[0]);

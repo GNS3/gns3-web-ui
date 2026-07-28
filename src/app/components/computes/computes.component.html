@@ -1,99 +1,213 @@
-<div class="computes">
-  <header class="computes__header">
-    @if (controller) {
-    <button class="computes__back-btn" [routerLink]="'/controller/' + controller.id + '/projects'" mat-icon-button>
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    }
-    <h1 class="computes__title">Computes</h1>
-    @if (controller) {
-    <button
-      class="computes__add-btn"
-      matTooltip="Add Compute"
-      matTooltipClass="custom-tooltip"
-      mat-icon-button
-      (click)="openAddDialog()"
-    >
-      <mat-icon>add_circle_outline</mat-icon>
-    </button>
-    }
+<div class="computes-page">
+  <header class="computes-page__header">
+    <div class="computes-page__heading">
+      <h1 class="computes-page__title">Computes</h1>
+    </div>
+
+    <div class="computes-page__header-actions">
+      <button mat-stroked-button class="computes-page__button" (click)="loadComputes()" [disabled]="loading()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        class="computes-page__button"
+        (click)="openAddDialog()"
+        [disabled]="!controller"
+      >
+        <mat-icon>add</mat-icon>
+        Add Compute
+      </button>
+    </div>
   </header>
 
-  <main class="computes__content">
-    <div class="computes__info">
-      <mat-icon class="computes__info-icon">info</mat-icon>
-      <p class="computes__info-text">
-        Once configured and connected, the backend maintains the connection to Compute nodes automatically. This page is
-        used to add/delete/update node configurations and view node status.
-      </p>
-    </div>
-    @if (loading()) {
-    <div class="computes__loading">Loading...</div>
-    } @if (!loading() && !computes().length) {
-    <div class="computes__empty">
-      <mat-icon class="computes__empty-icon">cloud_off</mat-icon>
-      <p>No computes found. Click + to add one.</p>
-    </div>
-    } @if (!loading() && computes().length) {
-    <nav class="computes__list">
-      @for (compute of computes(); track compute.compute_id) {
-      <div class="computes__list-item">
-        <mat-icon
-          class="computes__list-icon"
-          [style.color]="getStatusColor(compute)"
-          [matTooltip]="compute.connected ? 'Connected' : 'Disconnected'"
-        >
-          {{ getStatusIcon(compute) }}
-        </mat-icon>
-        <div class="computes__list-info">
-          <span class="computes__list-name">{{ compute.name || compute.compute_id }}</span>
-          <span class="computes__list-host">{{ formatHost(compute) }}</span>
-        </div>
-        <div class="computes__list-stats">
-          @if (compute.connected) {
-          <span class="computes__stat">
-            <mat-icon class="computes__stat-icon">memory</mat-icon>
-            {{ formatPercent(compute.cpu_usage_percent) }}
-          </span>
-          <span class="computes__stat">
-            <mat-icon class="computes__stat-icon">storage</mat-icon>
-            {{ formatPercent(compute.memory_usage_percent) }}
-          </span>
-          <span class="computes__stat">
-            <mat-icon class="computes__stat-icon">disc_full</mat-icon>
-            {{ formatPercent(compute.disk_usage_percent) }}
-          </span>
-          } @else {
-          <span class="computes__stat computes__stat--offline">Offline</span>
-          }
-        </div>
-        @if (compute.compute_id !== 'local') {
-        <button
-          mat-icon-button
-          [matMenuTriggerFor]="menu"
-          class="computes__menu-btn"
-          (click)="$event.stopPropagation()"
-        >
-          <mat-icon>more_vert</mat-icon>
+  <section class="computes-page__toolbar">
+    <mat-form-field class="computes-page__search" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        placeholder="Search by name, host, platform, or node type"
+        [value]="searchText()"
+        (input)="onSearchChange($event.target.value)"
+      />
+    </mat-form-field>
+
+    <mat-form-field class="computes-page__filter" subscriptSizing="dynamic">
+      <mat-label>Status</mat-label>
+      <mat-select [value]="statusFilter()" (valueChange)="onStatusFilterChange($event)">
+        <mat-option value="all">All statuses</mat-option>
+        <mat-option value="connected">Connected</mat-option>
+        <mat-option value="disconnected">Disconnected</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </section>
+
+  <main class="computes-page__main">
+    <section class="computes-page__summary" aria-label="Compute summary">
+      <div class="computes-page__summary-item">
+        <mat-icon>dns</mat-icon>
+        <span>
+          <strong>{{ computes().length }}</strong>
+          Total
+        </span>
+      </div>
+      <div class="computes-page__summary-item computes-page__summary-item--connected">
+        <mat-icon>check_circle</mat-icon>
+        <span>
+          <strong>{{ connectedCount() }}</strong>
+          Connected
+        </span>
+      </div>
+      <div class="computes-page__summary-item computes-page__summary-item--disconnected">
+        <mat-icon>error_outline</mat-icon>
+        <span>
+          <strong>{{ computes().length - connectedCount() }}</strong>
+          Disconnected
+        </span>
+      </div>
+    </section>
+
+    <div class="computes-page__table-container" [class.computes-page__table-container--loading]="loading()">
+      @if (loading()) {
+      <div class="computes-page__loading">
+        <mat-progress-spinner diameter="42" mode="indeterminate" />
+        <span>Loading computes…</span>
+      </div>
+      } @else if (filteredComputes().length) {
+      <mat-table [dataSource]="filteredComputes()" [trackBy]="trackCompute">
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+          <mat-cell *matCellDef="let compute">
+            <div class="computes-page__name-cell">
+              <span class="computes-page__compute-icon">
+                <mat-icon>{{ compute.compute_id === 'local' ? 'computer' : 'dns' }}</mat-icon>
+              </span>
+              <span class="computes-page__name-copy">
+                <strong>{{ compute.name || compute.compute_id }}</strong>
+                <small>{{ compute.compute_id === 'local' ? 'Local compute' : compute.compute_id }}</small>
+              </span>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+          <mat-cell *matCellDef="let compute">
+            <span
+              class="computes-page__status"
+              [class.computes-page__status--connected]="compute.connected"
+              [matTooltip]="compute.last_error || ''"
+            >
+              <span></span>
+              {{ compute.connected ? 'Connected' : 'Disconnected' }}
+            </span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="host">
+          <mat-header-cell *matHeaderCellDef>Host</mat-header-cell>
+          <mat-cell *matCellDef="let compute">
+            <span class="computes-page__host" [matTooltip]="compute.protocol + '//' + formatHost(compute)">
+              {{ formatHost(compute) }}
+            </span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="platform">
+          <mat-header-cell *matHeaderCellDef>Platform</mat-header-cell>
+          <mat-cell *matCellDef="let compute">
+            <span class="computes-page__platform">
+              <mat-icon>memory</mat-icon>
+              {{ getPlatform(compute) }}
+            </span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="resources">
+          <mat-header-cell *matHeaderCellDef>Resources</mat-header-cell>
+          <mat-cell *matCellDef="let compute">
+            @if (compute.connected) {
+            <div class="computes-page__resources">
+              <span matTooltip="CPU usage"
+                ><mat-icon>developer_board</mat-icon>{{ formatPercent(compute.cpu_usage_percent) }}</span
+              >
+              <span matTooltip="Memory usage"
+                ><mat-icon>memory</mat-icon>{{ formatPercent(compute.memory_usage_percent) }}</span
+              >
+              <span matTooltip="Disk usage"
+                ><mat-icon>storage</mat-icon>{{ formatPercent(compute.disk_usage_percent) }}</span
+              >
+            </div>
+            } @else {
+            <span class="computes-page__unavailable">Unavailable</span>
+            }
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+          <mat-cell *matCellDef="let compute">
+            @if (compute.compute_id !== 'local') {
+            <div class="computes-page__actions-cell">
+              <button
+                mat-icon-button
+                class="computes-page__action computes-page__action--connect"
+                (click)="connectCompute(compute)"
+                matTooltip="Connect compute"
+                [attr.aria-label]="'Connect ' + (compute.name || compute.compute_id)"
+              >
+                <mat-icon>link</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                class="computes-page__action computes-page__action--edit"
+                (click)="openEditDialog(compute)"
+                matTooltip="Edit compute"
+                [attr.aria-label]="'Edit ' + (compute.name || compute.compute_id)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                class="computes-page__action computes-page__action--delete"
+                (click)="deleteCompute(compute)"
+                matTooltip="Delete compute"
+                [attr.aria-label]="'Delete ' + (compute.name || compute.compute_id)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            } @else {
+            <span class="computes-page__managed-label" matTooltip="The local compute is managed by the controller">
+              Controller managed
+            </span>
+            }
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" />
+        <mat-row
+          *matRowDef="let compute; columns: displayedColumns"
+          [class.computes-page__row--connected]="compute.connected"
+        />
+      </mat-table>
+      } @else {
+      <div class="computes-page__empty">
+        <mat-icon>dns</mat-icon>
+        <h3>No computes found</h3>
+        <p>
+          @if (searchText() || statusFilter() !== 'all') { Try changing the search or status filter. } @else { Add a
+          compute server to extend the controller's resources. }
+        </p>
+        @if (!searchText() && statusFilter() === 'all') {
+        <button mat-raised-button color="primary" class="computes-page__button" (click)="openAddDialog()">
+          <mat-icon>add</mat-icon>
+          Add Compute
         </button>
-        <mat-menu #menu="matMenu" xPosition="before">
-          <button mat-menu-item (click)="openEditDialog(compute)">
-            <mat-icon>edit</mat-icon>
-            <span>Edit</span>
-          </button>
-          <button mat-menu-item (click)="connectCompute(compute)">
-            <mat-icon>link</mat-icon>
-            <span>Connect</span>
-          </button>
-          <button mat-menu-item (click)="deleteCompute(compute)">
-            <mat-icon>delete</mat-icon>
-            <span>Delete</span>
-          </button>
-        </mat-menu>
         }
       </div>
       }
-    </nav>
-    }
+    </div>
   </main>
 </div>
