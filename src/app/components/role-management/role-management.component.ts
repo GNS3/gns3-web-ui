@@ -82,7 +82,7 @@ export class RoleManagementComponent implements OnInit, AfterViewInit {
 
   controller: Controller;
   dataSource = new MatTableDataSource<Role>();
-  displayedColumns = ['select', 'name', 'description'];
+  displayedColumns = ['select', 'name', 'description', 'is_builtin'];
   selection = new SelectionModel<Role>(true, []);
   readonly searchText = model('');
 

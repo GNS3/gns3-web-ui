@@ -164,6 +164,20 @@ describe('RoleManagementComponent', () => {
     it('should initialize with empty selection', () => {
       expect(component.selection.isEmpty()).toBe(true);
     });
+
+    it('should display the role type column', () => {
+      expect(component.displayedColumns).toEqual(['select', 'name', 'description', 'is_builtin']);
+
+      const headers = Array.from(fixture.nativeElement.querySelectorAll('mat-header-cell')).map((cell: Element) =>
+        cell.textContent?.trim()
+      );
+      const roleTypes = Array.from(fixture.nativeElement.querySelectorAll('mat-cell.mat-column-is_builtin')).map(
+        (cell: Element) => cell.textContent?.trim()
+      );
+
+      expect(headers).toContain('IS BUILT-IN');
+      expect(roleTypes).toEqual(['YES', 'NO']);
+    });
   });
 
   describe('isAllSelected', () => {

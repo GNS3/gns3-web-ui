@@ -113,16 +113,20 @@ mat-row:nth-child(even) {
 }
 
 // Header row styles
-.mat-header-row {
+.mat-header-row,
+.mat-mdc-header-row {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--mat-sys-surface);
+  background: var(--mat-sys-surface-container-highest);
+  box-shadow: inset 0 -2px var(--mat-sys-primary);
+  --mat-sort-arrow-color: var(--mat-sys-primary);
 
-  mat-header-cell {
+  mat-header-cell,
+  .mat-mdc-header-cell {
+    color: var(--mat-sys-on-surface);
     font-size: 13px;
-    font-weight: 600;
-    color: var(--mat-sys-on-surface-variant);
+    font-weight: 650;
     letter-spacing: 0.5px;
     text-transform: uppercase;
   }
@@ -140,10 +144,21 @@ mat-cell {
   color: var(--mat-sys-on-surface);
 }
 
-// Name column - left align with link
-mat-cell[mat-column='name'] {
+// Text columns - left align headers and entries
+mat-header-cell.mat-column-name,
+mat-cell.mat-column-name,
+mat-header-cell.mat-column-description,
+mat-cell.mat-column-description {
   justify-content: flex-start;
+  text-align: left;
+}
+
+mat-cell.mat-column-name {
   font-weight: 500;
+}
+
+.mat-column-is_builtin {
+  flex: 0 0 140px;
 }
 
 .role-management__link {

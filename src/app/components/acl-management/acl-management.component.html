@@ -11,7 +11,15 @@
     >
       Delete Selected
     </button>
-    <button mat-raised-button color="primary" class="acl-management__button" (click)="addACE()" matTooltip="Add access control entry">Add ACE</button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="acl-management__button"
+      (click)="addACE()"
+      matTooltip="Add access control entry"
+    >
+      Add ACE
+    </button>
   </div>
 </header>
 
@@ -48,14 +56,14 @@
     </ng-container>
 
     <ng-container matColumnDef="path">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Path</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>PATH</th>
       <td mat-cell *matCellDef="let element">
         <span class="acl-management__overflow-text">{{ getNameByUuidFromEndpoint(element.path) }}</span>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="user/group">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>User/Group</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>USER/GROUP</th>
       <td mat-cell *matCellDef="let element">
         <span class="acl-management__overflow-text">
           @if (element.ace_type === 'user') {
@@ -68,31 +76,31 @@
     </ng-container>
 
     <ng-container matColumnDef="role">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ROLE</th>
       <td mat-cell *matCellDef="let element">
         <span class="acl-management__overflow-text">{{ getNameByUuidFromEndpoint(element.role_id) }}</span>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="propagate">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Propagate</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>PROPAGATE</th>
       <td mat-cell *matCellDef="let element">{{ element.propagate }}</td>
     </ng-container>
 
     <ng-container matColumnDef="allowed">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Allowed</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ALLOWED</th>
       <td mat-cell *matCellDef="let element">{{ element.allowed }}</td>
     </ng-container>
 
     <ng-container matColumnDef="created_at">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Created</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>CREATED</th>
       <td mat-cell *matCellDef="let element">
         <span class="acl-management__overflow-text">{{ element.created_at }}</span>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="updated_at">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Last update</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>LAST UPDATE</th>
       <td mat-cell *matCellDef="let element">
         <span class="acl-management__overflow-text">{{ element.updated_at }}</span>
       </td>
