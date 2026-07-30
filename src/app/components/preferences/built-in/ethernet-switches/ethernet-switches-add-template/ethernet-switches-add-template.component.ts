@@ -1,14 +1,12 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, model } from '@angular/core';
 import {
-  FormsModule,
   ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormControl,
   UntypedFormGroup,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
@@ -20,6 +18,7 @@ import { EthernetSwitchTemplate } from '@models/templates/ethernet-switch-templa
 import { BuiltInTemplatesService } from '@services/built-in-templates.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { TemplateInfoFieldsComponent } from '../../../common/template-info-fields/template-info-fields.component';
 
 @Component({
   standalone: true,
@@ -28,15 +27,13 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './ethernet-switches-add-template.component.html',
   styleUrl: './ethernet-switches-add-template.component.scss',
   imports: [
-    CommonModule,
-    FormsModule,
     ReactiveFormsModule,
-    RouterModule,
     MatIconModule,
     MatButtonModule,
     MatRadioModule,
     MatFormFieldModule,
     MatInputModule,
+    TemplateInfoFieldsComponent,
   ],
 })
 export class EthernetSwitchesAddTemplateComponent implements OnInit {
@@ -48,9 +45,11 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
   private formBuilder = inject(UntypedFormBuilder);
   private cd = inject(ChangeDetectorRef);
 
-  controller: Controller;
+  controller?: Controller;
   formGroup: UntypedFormGroup;
   isLocalComputerChosen: boolean = true;
+  usage = model('');
+  symbol = model('ethernet_switch');
 
   constructor() {
     this.formGroup = this.formBuilder.group({
@@ -81,11 +80,12 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'ethernet-switches']);
+    const controllerId = this.controller?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
+    this.router.navigate(['/controller', controllerId, 'preferences']);
   }
 
   addTemplate() {
-    if (!this.formGroup.invalid) {
+    if (!this.formGroup.invalid && this.controller) {
       const ethernetSwitchTemplate: EthernetSwitchTemplate = {
         template_id: uuid(),
         builtin: false,
@@ -95,10 +95,10 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
         category: 'switch',
         console_type: 'none',
         default_name_format: 'Switch{0}',
-        symbol: 'ethernet_switch',
+        symbol: this.symbol(),
         ports_mapping: [],
         tags: [],
-        usage: '',
+        usage: this.usage(),
       };
 
       const numPorts = this.formGroup.get('numberOfPorts').value;
@@ -121,7 +121,7 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
           const message = err.error?.message || err.message || 'Failed to add ethernet switch template';
           this.toasterService.error(message);
           this.cd.markForCheck();
-        }
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields`);

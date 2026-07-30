@@ -1,179 +1,330 @@
-<div class="docker-add">
-  <header class="docker-add__header">
-    <h1 class="docker-add__title">New Docker container template</h1>
+<div class="docker-add template-wizard">
+  <header class="docker-add__header template-wizard__header">
+    <button class="template-wizard__back" (click)="goBack()" mat-icon-button aria-label="Back to Docker templates">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="template-wizard__heading">
+      <h1 class="docker-add__title template-wizard__title">New Docker container template</h1>
+    </div>
   </header>
 
-  <main class="docker-add__content">
-    <section class="docker-add__stepper-card">
-      <mat-vertical-stepper [linear]="true" class="docker-add__stepper">
-        <mat-step label="Controller type" [completed]="isLocalComputerChosen">
-          <div class="docker-add__step-content">
-            <mat-radio-group class="docker-add__radio-group">
-              <mat-radio-button
-                class="docker-add__radio"
-                value="1"
-                (click)="setControllerType('local')"
-                [checked]="true"
-              >
-                Run this Docker container locally
-              </mat-radio-button>
-            </mat-radio-group>
-          </div>
-        </mat-step>
+  <main class="docker-add__content template-wizard__body">
+    <section class="docker-add__stepper-card template-wizard__stepper-card">
+      <mat-horizontal-stepper
+        [linear]="true"
+        #stepper
+        class="docker-add__stepper template-wizard__stepper"
+        (selectionChange)="selectedStepIndex.set($event.selectedIndex)"
+      >
+        <ng-template matStepperIcon="edit" let-index="index">{{ index + 1 }}</ng-template>
+        <ng-template matStepperIcon="done" let-index="index">{{ index + 1 }}</ng-template>
 
-        <mat-step label="Docker Virtual Machine" [completed]="selectedImage || filename()">
-          <div class="docker-add__step-content">
-            <div class="docker-add__form">
+        <mat-step [completed]="isLocalComputerChosen">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>dns</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Controller type</span>
+                <span class="template-wizard__step-label-description">Choose the execution host</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="docker-add__step-content template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Controller type</h2>
+              <p class="template-wizard__section-copy">Choose where this Docker container will run.</p>
               <mat-radio-group class="docker-add__radio-group">
                 <mat-radio-button
                   class="docker-add__radio"
                   value="1"
-                  (click)="setDiskImage('existingImage')"
-                  [checked]="!newImageSelected"
+                  (click)="setControllerType('local')"
+                  [checked]="true"
                 >
-                  Existing image
-                </mat-radio-button>
-                <mat-radio-button class="docker-add__radio" value="2" (click)="setDiskImage('newImage')">
-                  New image
+                  Run this Docker container locally
                 </mat-radio-button>
               </mat-radio-group>
-              @if (!newImageSelected) {
+            </section>
+          </div>
+        </mat-step>
+
+        <mat-step [completed]="selectedImage || filename()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>inventory_2</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Docker image</span>
+                <span class="template-wizard__step-label-description">Select or name an image</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="docker-add__step-content template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Docker image</h2>
+              <p class="template-wizard__section-copy">Select an existing image or enter a new image name.</p>
+              <div class="docker-add__form">
+                <mat-radio-group class="docker-add__radio-group">
+                  <mat-radio-button
+                    class="docker-add__radio"
+                    value="1"
+                    (click)="setDiskImage('existingImage')"
+                    [checked]="!newImageSelected"
+                  >
+                    Existing image
+                  </mat-radio-button>
+                  <mat-radio-button class="docker-add__radio" value="2" (click)="setDiskImage('newImage')">
+                    New image
+                  </mat-radio-button>
+                </mat-radio-group>
+                @if (!newImageSelected) {
+                <mat-form-field appearance="fill" class="docker-add__field">
+                  <mat-label>Image list</mat-label>
+                  <mat-select
+                    required
+                    placeholder="Image list"
+                    [value]="selectedImage"
+                    (selectionChange)="selectedImage = $event.value"
+                  >
+                    @for (image of dockerImages; track image.image) {
+                    <mat-option [value]="image">{{ image.image }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                } @if (newImageSelected) {
+                <mat-form-field appearance="fill" class="docker-add__field">
+                  <mat-label>Image name</mat-label>
+                  <input
+                    matInput
+                    required
+                    class="filename"
+                    type="text"
+                    [value]="filename()"
+                    (input)="filename.set($event.target.value)"
+                    placeholder="Image name"
+                  />
+                </mat-form-field>
+                }
+              </div>
+            </section>
+          </div>
+        </mat-step>
+
+        <mat-step [completed]="templateName()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>description</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Container name</span>
+                <span class="template-wizard__step-label-description">Basic details and icon</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="docker-add__step-content template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Template information</h2>
+              <p class="template-wizard__section-copy">Choose a name and an optional usage note for your template.</p>
+              <div class="docker-add__form">
+                <mat-form-field appearance="fill" class="docker-add__field">
+                  <mat-label>Container name</mat-label>
+                  <input
+                    matInput
+                    required
+                    class="templatename"
+                    type="text"
+                    [value]="templateName()"
+                    (input)="templateName.set($event.target.value)"
+                    placeholder="Container name"
+                  />
+                </mat-form-field>
+              </div>
+              <app-template-info-fields [(usage)]="usage" [(symbol)]="symbol"></app-template-info-fields>
+            </section>
+          </div>
+        </mat-step>
+
+        <mat-step [completed]="adapters()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>settings_ethernet</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Network adapters</span>
+                <span class="template-wizard__step-label-description">Configure network ports</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="docker-add__step-content template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Network adapters</h2>
+              <p class="template-wizard__section-copy">Set the default number of network adapters.</p>
+              <div class="docker-add__form">
+                <mat-form-field appearance="fill" class="docker-add__field">
+                  <mat-label>Adapters</mat-label>
+                  <input
+                    matInput
+                    required
+                    class="networkadapter"
+                    type="number"
+                    min="1"
+                    [value]="adapters()"
+                    (input)="adapters.set(+$event.target.value)"
+                    placeholder="Adapters"
+                  />
+                </mat-form-field>
+              </div>
+            </section>
+          </div>
+        </mat-step>
+
+        <mat-step [optional]="true">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>terminal</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Start command</span>
+                <span class="template-wizard__step-label-description">Optional launch command</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="docker-add__step-content template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Start command</h2>
+              <p class="template-wizard__section-copy">Enter a command to run when the container starts.</p>
               <mat-form-field appearance="fill" class="docker-add__field">
-                <mat-label>Image list</mat-label>
+                <mat-label>Start command</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  [value]="startCommand()"
+                  (input)="startCommand.set($event.target.value)"
+                  placeholder="Start command"
+                />
+              </mat-form-field>
+            </section>
+          </div>
+        </mat-step>
+
+        <mat-step [optional]="true">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>desktop_windows</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Console type</span>
+                <span class="template-wizard__step-label-description">Select the primary console</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="docker-add__step-content template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Console</h2>
+              <p class="template-wizard__section-copy">Choose the primary console type for this container.</p>
+              <mat-form-field appearance="fill" class="docker-add__field">
+                <mat-label>Console type</mat-label>
                 <mat-select
-                  placeholder="Image list"
-                  [value]="selectedImage"
-                  (selectionChange)="selectedImage = $event.value"
+                  placeholder="Console type"
+                  [value]="consoleType()"
+                  (selectionChange)="consoleType.set($event.value)"
                 >
-                  @for (image of dockerImages; track image.image) {
-                  <mat-option [value]="image">{{ image.image }}</mat-option>
+                  @for (type of consoleTypes; track type) {
+                  <mat-option [value]="type">{{ type }}</mat-option>
                   }
                 </mat-select>
               </mat-form-field>
-              } @if (newImageSelected) {
+            </section>
+          </div>
+        </mat-step>
+
+        <mat-step [optional]="true">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>developer_board</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Auxiliary console</span>
+                <span class="template-wizard__step-label-description">Optional second console</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="docker-add__step-content template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Auxiliary console</h2>
+              <p class="template-wizard__section-copy">Choose an optional second console type.</p>
               <mat-form-field appearance="fill" class="docker-add__field">
-                <mat-label>Image name</mat-label>
-                <input
+                <mat-label>Auxiliary console type</mat-label>
+                <mat-select
+                  placeholder="Auxiliary console type"
+                  [value]="auxConsoleType()"
+                  (selectionChange)="auxConsoleType.set($event.value)"
+                >
+                  @for (type of auxConsoleTypes; track type) {
+                  <mat-option [value]="type">{{ type }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </section>
+          </div>
+        </mat-step>
+
+        <mat-step [optional]="true">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>tune</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Environment</span>
+                <span class="template-wizard__step-label-description">Set optional variables</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="docker-add__step-content template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Environment</h2>
+              <p class="template-wizard__section-copy">Define optional environment variables for the container.</p>
+              <mat-form-field appearance="fill" class="docker-add__field">
+                <mat-label>Environment</mat-label>
+                <textarea
                   matInput
-                  class="filename"
                   type="text"
-                  [value]="filename()"
-                  (input)="filename.set($event.target.value)"
-                  placeholder="Image name"
-                />
+                  [value]="environment()"
+                  (input)="environment.set($event.target.value)"
+                  placeholder="Environment variables (one per line, KEY=VALUE format). Supports: %vm-name%, %vm-id%, %project-id%, %project-path%"
+                ></textarea>
               </mat-form-field>
-              }
-            </div>
+            </section>
           </div>
         </mat-step>
-
-        <mat-step label="Container name" [completed]="templateName()">
-          <div class="docker-add__step-content">
-            <div class="docker-add__form">
-              <mat-form-field appearance="fill" class="docker-add__field">
-                <mat-label>Container name</mat-label>
-                <input
-                  matInput
-                  class="templatename"
-                  type="text"
-                  [value]="templateName()"
-                  (input)="templateName.set($event.target.value)"
-                  placeholder="Container name"
-                />
-              </mat-form-field>
-            </div>
-          </div>
-        </mat-step>
-
-        <mat-step label="Network adapters" [completed]="adapters()">
-          <div class="docker-add__step-content">
-            <div class="docker-add__form">
-              <mat-form-field appearance="fill" class="docker-add__field">
-                <mat-label>Adapters</mat-label>
-                <input
-                  matInput
-                  class="networkadapter"
-                  type="number"
-                  [value]="adapters()"
-                  (input)="adapters.set(+$event.target.value)"
-                  placeholder="Adapters"
-                />
-              </mat-form-field>
-            </div>
-          </div>
-        </mat-step>
-
-        <mat-step label="Start command" [completed]="startCommand()">
-          <div class="docker-add__step-content">
-            <mat-form-field appearance="fill" class="docker-add__field">
-              <mat-label>Start command</mat-label>
-              <input
-                matInput
-                type="text"
-                [value]="startCommand()"
-                (input)="startCommand.set($event.target.value)"
-                placeholder="Start command"
-              />
-            </mat-form-field>
-          </div>
-        </mat-step>
-
-        <mat-step label="Console type" [completed]="consoleType()">
-          <div class="docker-add__step-content">
-            <mat-form-field appearance="fill" class="docker-add__field">
-              <mat-label>Console type</mat-label>
-              <mat-select
-                placeholder="Console type"
-                [value]="consoleType()"
-                (selectionChange)="consoleType.set($event.value)"
-              >
-                @for (type of consoleTypes; track type) {
-                <mat-option [value]="type">{{ type }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </mat-step>
-
-        <mat-step label="Auxiliary console type" [completed]="auxConsoleType()">
-          <div class="docker-add__step-content">
-            <mat-form-field appearance="fill" class="docker-add__field">
-              <mat-label>Auxiliary console type</mat-label>
-              <mat-select
-                placeholder="Auxiliary console type"
-                [value]="auxConsoleType()"
-                (selectionChange)="auxConsoleType.set($event.value)"
-              >
-                @for (type of auxConsoleTypes; track type) {
-                <mat-option [value]="type">{{ type }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </mat-step>
-
-        <mat-step label="Environment">
-          <div class="docker-add__step-content">
-            <mat-form-field appearance="fill" class="docker-add__field">
-              <mat-label>Environment</mat-label>
-              <textarea
-                matInput
-                type="text"
-                [value]="environment()"
-                (input)="environment.set($event.target.value)"
-                placeholder="Environment variables (one per line, KEY=VALUE format). Supports: %vm-name%, %vm-id%, %project-id%, %project-path%"
-              ></textarea>
-            </mat-form-field>
-          </div>
-        </mat-step>
-      </mat-vertical-stepper>
+      </mat-horizontal-stepper>
     </section>
 
-    <div class="docker-add__actions">
-      <button mat-button class="docker-add__cancel-btn" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" class="docker-add__submit-btn" (click)="addTemplate()">
-        Add template
-      </button>
+    <div class="docker-add__actions template-wizard__actions">
+      <button mat-stroked-button class="docker-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <div class="template-wizard__step-actions">
+        @if (selectedStepIndex() > 0) {
+        <button mat-button type="button" class="template-wizard__previous" (click)="stepper.previous()">
+          <mat-icon>arrow_back</mat-icon>
+          Back
+        </button>
+        } @if (selectedStepIndex() < 7) {
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          class="template-wizard__next"
+          [disabled]="!canAdvance()"
+          (click)="stepper.next()"
+        >
+          Next
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </button>
+        } @else {
+        <button
+          mat-raised-button
+          color="primary"
+          class="docker-add__submit-btn"
+          [disabled]="!canCreateTemplate()"
+          (click)="addTemplate()"
+        >
+          Create template
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </button>
+        }
+      </div>
     </div>
   </main>
 </div>

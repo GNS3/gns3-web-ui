@@ -1,10 +1,7 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,17 +20,7 @@ import { VmwareService } from '@services/vmware.service';
   selector: 'app-add-vmware-template',
   templateUrl: './add-vmware-template.component.html',
   styleUrls: ['./add-vmware-template.component.scss', '../../preferences.component.scss'],
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule,
-    MatIconModule,
-    MatButtonModule,
-    MatCardModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatFormFieldModule,
-  ],
+  imports: [MatIconModule, MatButtonModule, MatSelectModule, MatCheckboxModule, MatFormFieldModule],
 })
 export class AddVmwareTemplateComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -49,8 +36,6 @@ export class AddVmwareTemplateComponent implements OnInit {
   readonly selectedVM = signal<VmwareVm | undefined>(undefined);
   readonly vmwareTemplate = signal<VmwareTemplate>(<VmwareTemplate>{});
 
-  // Form field signals
-  templateName = model('');
   linkedClone = model(false);
 
   ngOnInit() {
@@ -96,11 +81,12 @@ export class AddVmwareTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller().id, 'preferences', 'vmware', 'templates']);
+    const controllerId = this.controller()?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
+    this.router.navigate(['/controller', controllerId, 'preferences']);
   }
 
   addTemplate() {
-    if (this.templateName() && this.selectedVM()) {
+    if (this.controller() && this.selectedVM()) {
       const template = this.vmwareTemplate();
       template.name = this.selectedVM().vmname;
       template.vmx_path = this.selectedVM().vmx_path;
@@ -115,7 +101,7 @@ export class AddVmwareTemplateComponent implements OnInit {
           const message = err.error?.message || err.message || 'Failed to add vmware template';
           this.toasterService.error(message);
           this.cd.markForCheck();
-        }
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields`);

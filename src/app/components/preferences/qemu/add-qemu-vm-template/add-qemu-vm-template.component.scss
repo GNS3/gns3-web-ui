@@ -1,72 +1,6 @@
-/**
- * GNS3 QEMU Add Template Component Styles
- * BEM naming applied, Material theme variables used
- * Design language unified with management pages
- */
-
 :host {
   display: block;
   width: 100%;
-  // Background moved to default-layout, keep transparent here
-  background: transparent;
-}
-
-/* =============================================
-// Header
-// ============================================= */
-.qemu-add__header {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 32px 20px 16px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  animation: fadeInSlideIn 0.4s ease-out;
-}
-
-.qemu-add__back-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  color: var(--mat-sys-on-surface);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
-  }
-}
-
-.qemu-add__title {
-  flex: 1;
-  font-size: 32px;
-  font-weight: 500;
-  color: var(--mat-sys-on-surface);
-  margin: 0;
-}
-
-/* =============================================
-// Content
-// ============================================= */
-.qemu-add__content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 20px 20px;
-  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
-}
-
-/* =============================================
-// Form Card
-// ============================================= */
-.qemu-add__form-card {
-  background: var(--mat-sys-surface);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
-    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
-  padding: 24px;
-}
-
-.qemu-add__stepper {
   background: transparent;
 }
 
@@ -81,14 +15,8 @@
   font-size: 16px;
 }
 
-.qemu-add__form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.qemu-add__field {
-  width: 100%;
+.qemu-add__radio-group.qemu-add__controller-options {
+  margin-bottom: 0;
 }
 
 .qemu-add__field--flex {
@@ -110,84 +38,76 @@
   height: 48px;
 }
 
-/* =============================================
-// Actions
-// ============================================= */
-.qemu-add__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
-}
-
-.qemu-add__cancel-btn {
-  height: 48px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 500;
-  text-transform: none;
-}
-
-.qemu-add__submit-btn {
-  height: 48px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 500;
-  text-transform: none;
-  letter-spacing: 0.5px;
-}
-
-/* =============================================
-// Animations
-// ============================================= */
-@keyframes fadeInSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* =============================================
-// Responsive Design
-// ============================================= */
 @media (max-width: 768px) {
-  .qemu-add__header {
-    padding: 24px 16px 12px;
-    gap: 12px;
-  }
-
-  .qemu-add__back-btn {
-    width: 44px;
-    height: 44px;
-  }
-
-  .qemu-add__title {
-    font-size: 24px;
-  }
-
-  .qemu-add__content {
-    padding: 0 16px 16px;
-  }
-
-  .qemu-add__form-card {
-    padding: 16px;
-  }
-
   .qemu-add__file-row {
     flex-direction: column;
   }
+}
 
-  .qemu-add__actions {
-    flex-direction: column;
+.qemu-add__symbol-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+button.qemu-add__symbol-option {
+  min-width: 112px;
+  height: 58px;
+  border-radius: 12px;
+  color: var(--mat-sys-on-surface-variant);
+  text-transform: none;
+
+  mat-icon {
+    margin-right: 8px;
+  }
+}
+
+button.qemu-add__symbol-option--selected {
+  border-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
+}
+
+.qemu-add__summary {
+  margin: 20px 0 0;
+
+  div {
+    display: grid;
+    grid-template-columns: minmax(140px, 0.35fr) 1fr;
+    gap: 20px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
   }
 
-  .qemu-add__cancel-btn,
-  .qemu-add__submit-btn {
-    width: 100%;
-    height: 44px;
+  div:last-child {
+    border-bottom: 0;
+  }
+
+  dt {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  dd {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-weight: 550;
+  }
+}
+
+.qemu-add__step-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+@media (max-width: 600px) {
+  .qemu-add__step-actions {
+    flex: 1 1 100%;
+  }
+
+  .qemu-add__step-actions button {
+    flex: 1 1 0;
   }
 }

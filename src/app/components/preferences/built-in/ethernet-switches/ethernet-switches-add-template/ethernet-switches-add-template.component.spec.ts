@@ -183,19 +183,13 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
   });
 
   describe('goBack', () => {
-    it('should navigate to controller ethernet-switches preferences page', () => {
+    it('should navigate to the consolidated templates page', () => {
       component.controller = mockController;
       fixture.detectChanges();
 
       component.goBack();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith([
-        '/controller',
-        mockController.id,
-        'preferences',
-        'builtin',
-        'ethernet-switches',
-      ]);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
     });
 
     it('should navigate correctly even when controller id is 0', () => {
@@ -204,13 +198,7 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
 
       component.goBack();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith([
-        '/controller',
-        0,
-        'preferences',
-        'builtin',
-        'ethernet-switches',
-      ]);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 0, 'preferences']);
     });
   });
 
@@ -267,13 +255,7 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
       component.addTemplate();
       await fixture.whenStable();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith([
-        '/controller',
-        mockController.id,
-        'preferences',
-        'builtin',
-        'ethernet-switches',
-      ]);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
     });
 
     it('should call toasterService.success after successful template addition', async () => {

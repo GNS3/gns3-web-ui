@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, firstValueFrom, throwError } from 'rxjs';
 import { AddIosTemplateComponent } from './add-ios-template.component';
-import { ComputeService } from '@services/compute.service';
 import { ControllerService } from '@services/controller.service';
 import { IosService } from '@services/ios.service';
 import { IosConfigurationService } from '@services/ios-configuration.service';
@@ -30,7 +29,6 @@ describe('AddIosTemplateComponent', () => {
   let mockUploadServiceService: any;
   let mockProgressService: any;
   let mockMatSnackBar: any;
-  let mockComputeService: any;
 
   let mockController: Controller;
   let mockIosTemplate: IosTemplate;
@@ -227,10 +225,6 @@ describe('AddIosTemplateComponent', () => {
       openFromComponent: vi.fn(),
     };
 
-    mockComputeService = {
-      getComputes: vi.fn().mockReturnValue(of([])),
-    };
-
     await TestBed.configureTestingModule({
       imports: [AddIosTemplateComponent],
       providers: [
@@ -244,7 +238,6 @@ describe('AddIosTemplateComponent', () => {
         { provide: UploadServiceService, useValue: mockUploadServiceService },
         { provide: ProgressService, useValue: mockProgressService },
         { provide: MatSnackBar, useValue: mockMatSnackBar },
-        { provide: ComputeService, useValue: mockComputeService },
       ],
     }).compileComponents();
 
@@ -787,30 +780,18 @@ describe('AddIosTemplateComponent', () => {
 
       component.addTemplate();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith([
-        '/controller',
-        mockController.id,
-        'preferences',
-        'dynamips',
-        'templates',
-      ]);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
     });
   });
 
   describe('goBack', () => {
-    it('should navigate to controller dynamips templates page', () => {
+    it('should navigate to the consolidated templates page', () => {
       component.controller.set(mockController);
       fixture.detectChanges();
 
       component.goBack();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith([
-        '/controller',
-        mockController.id,
-        'preferences',
-        'dynamips',
-        'templates',
-      ]);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
     });
   });
 

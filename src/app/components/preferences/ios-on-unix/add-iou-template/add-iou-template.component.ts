@@ -1,10 +1,17 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, model, signal, inject, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  model,
+  signal,
+  inject,
+  computed,
+} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,33 +23,29 @@ import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/up
 import { FileItem, FileUploader, ParsedResponseHeaders, FileUploadModule } from 'ng2-file-upload';
 import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
-import { Compute } from '@models/compute';
 import { IouImage } from '@models/iou/iou-image';
 import { Controller } from '@models/controller';
 import { IouTemplate } from '@models/templates/iou-template';
-import { ComputeService } from '@services/compute.service';
 import { IouService } from '@services/iou.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/template-info-fields.component';
 
 @Component({
   selector: 'app-add-iou-template',
   templateUrl: './add-iou-template.component.html',
   styleUrls: ['./add-iou-template.component.scss', '../../preferences.component.scss'],
   imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule,
     MatIconModule,
     MatButtonModule,
-    MatCardModule,
     MatRadioModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatStepperModule,
     FileUploadModule,
+    TemplateInfoFieldsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -53,7 +56,6 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   private toasterService = inject(ToasterService);
   private router = inject(Router);
   private templateMocksService = inject(TemplateMocksService);
-  private computeService = inject(ComputeService);
   private uploadServiceService = inject(UploadServiceService);
   private snackBar = inject(MatSnackBar);
   private cd = inject(ChangeDetectorRef);
@@ -65,15 +67,19 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   readonly iouImages = signal<IouImage[]>([]);
   readonly uploader = signal<FileUploader | undefined>(undefined);
   readonly isLocalComputerChosen = signal<boolean>(true);
+  readonly selectedStepIndex = signal(0);
   subscription: Subscription;
 
   // Form field signals
   templateName = model('');
   imageName = model('');
   selectedType = model('');
+  usage = model('');
+  symbol = model('multilayer_switch');
 
   // Step completion computed signals
   nameStepCompleted = computed(() => !!this.templateName());
+  imageStepCompleted = computed(() => (this.newImageSelected() ? !!this.imageName() : !!this.iouTemplate().path));
 
   ngOnInit() {
     this.uploader.set(new FileUploader({ url: '' }));
@@ -153,6 +159,14 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
     this.newImageSelected.set(value === 'newImage');
   }
 
+  canAdvance(): boolean {
+    return this.selectedStepIndex() === 0 ? this.isLocalComputerChosen() : this.nameStepCompleted();
+  }
+
+  canCreateTemplate(): boolean {
+    return !!this.controller() && this.nameStepCompleted() && this.imageStepCompleted();
+  }
+
   uploadImageFile(event): void {
     let name = event.target.files[0].name;
     this.imageName.set(name);
@@ -177,17 +191,17 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller().id, 'preferences', 'iou', 'templates']);
+    const controllerId = this.controller()?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
+    this.router.navigate(['/controller', controllerId, 'preferences']);
   }
 
   addTemplate() {
-    if (
-      this.templateName() &&
-      ((this.newImageSelected() && this.imageName()) || (!this.newImageSelected() && this.iouTemplate().path))
-    ) {
+    if (this.canCreateTemplate()) {
       const template = this.iouTemplate();
       template.template_id = uuid();
       template.name = this.templateName();
+      template.usage = this.usage();
+      template.symbol = this.symbol();
       if (this.newImageSelected()) template.path = this.imageName();
       template.compute_id = 'local';
 
@@ -200,14 +214,14 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
       }
 
       this.iouService.addTemplate(this.controller(), template).subscribe({
-        next: (iouTemplate: IouTemplate) => {
+        next: () => {
           this.goBack();
         },
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to add iou template';
           this.toasterService.error(message);
           this.cd.markForCheck();
-        }
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields`);

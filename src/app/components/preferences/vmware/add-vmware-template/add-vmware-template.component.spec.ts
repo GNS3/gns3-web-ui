@@ -150,31 +150,16 @@ describe('AddVmwareTemplateComponent', () => {
 
   it('should navigate back when goBack is called', () => {
     component.goBack();
-    expect(mockRouter.navigate).toHaveBeenCalledWith([
-      '/controller',
-      mockController.id,
-      'preferences',
-      'vmware',
-      'templates',
-    ]);
-  });
-
-  it('should show error when addTemplate is called without templateName', () => {
-    component.selectedVM.set(mockVirtualMachines[0]);
-    component.addTemplate();
-    expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields');
-    expect(mockVmwareService.addTemplate).not.toHaveBeenCalled();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
   });
 
   it('should show error when addTemplate is called without selectedVM', () => {
-    component.templateName.set('TestTemplate');
     component.addTemplate();
     expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields');
     expect(mockVmwareService.addTemplate).not.toHaveBeenCalled();
   });
 
   it('should add template and navigate back when addTemplate is called with valid data', () => {
-    component.templateName.set('TestTemplate');
     component.selectedVM.set(mockVirtualMachines[0]);
     component.linkedClone.set(true);
 
@@ -190,7 +175,6 @@ describe('AddVmwareTemplateComponent', () => {
   });
 
   it('should not navigate when addTemplate fails validation', () => {
-    component.templateName.set('');
     component.selectedVM.set(undefined);
     component.addTemplate();
     expect(mockRouter.navigate).not.toHaveBeenCalled();
@@ -215,11 +199,6 @@ describe('AddVmwareTemplateComponent', () => {
     expect(component.linkedClone()).toBe(true);
     component.linkedClone.set(false);
     expect(component.linkedClone()).toBe(false);
-  });
-
-  it('should update templateName model signal when input changes', () => {
-    component.templateName.set('MyTemplate');
-    expect(component.templateName()).toBe('MyTemplate');
   });
 
   describe('error handling', () => {

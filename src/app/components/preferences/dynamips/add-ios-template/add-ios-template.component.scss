@@ -97,6 +97,16 @@
   align-self: flex-start;
 }
 
+.ios-add__image-source-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ios-add__image-select {
+  margin-top: 16px;
+}
+
 .ios-add__or-text {
   font-size: 14px;
   color: var(--mat-sys-on-surface-variant);
@@ -206,6 +216,12 @@
 
   .ios-add__step-content {
     padding: 12px 16px 20px;
+  }
+
+  .ios-add__image-source-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .ios-add__adapters {

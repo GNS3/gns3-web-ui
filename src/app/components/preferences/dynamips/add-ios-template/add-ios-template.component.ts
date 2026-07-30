@@ -1,11 +1,18 @@
-import { Location } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, model, signal, inject, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  model,
+  signal,
+  inject,
+  computed,
+} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -17,35 +24,32 @@ import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/up
 import { FileItem, FileUploader, ParsedResponseHeaders, FileUploadModule } from 'ng2-file-upload';
 import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
-import { Compute } from '@models/compute';
 import { IosImage } from '@models/images/ios-image';
 import { Controller } from '@models/controller';
 import { IosTemplate } from '@models/templates/ios-template';
-import { ComputeService } from '@services/compute.service';
 import { IosConfigurationService } from '@services/ios-configuration.service';
 import { IosService } from '@services/ios.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 import { ProgressService } from '../../../../common/progress/progress.service';
+import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/template-info-fields.component';
 
 @Component({
   selector: 'app-add-ios-template',
   templateUrl: './add-ios-template.component.html',
   styleUrls: ['./add-ios-template.component.scss', '../../preferences.component.scss'],
   imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule,
     MatIconModule,
     MatButtonModule,
-    MatCardModule,
+    MatCheckboxModule,
     MatRadioModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatStepperModule,
     FileUploadModule,
+    TemplateInfoFieldsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -57,7 +61,6 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private templateMocksService = inject(TemplateMocksService);
   private iosConfigurationService = inject(IosConfigurationService);
-  private computeService = inject(ComputeService);
   private uploadServiceService = inject(UploadServiceService);
   private progressService = inject(ProgressService);
   private snackBar = inject(MatSnackBar);
@@ -74,6 +77,8 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   chassis = model('');
   memory = model('');
   idlepc = model('');
+  usage = model('');
+  symbol = model('router');
 
   readonly iosImages = signal<IosImage[]>([]);
   readonly platforms = signal<string[]>([]);
@@ -88,12 +93,34 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   readonly ciscoUrl = 'https://cfn.cloudapps.cisco.com/ITDIT/CFN/jsp/SearchBySoftware.jsp';
   readonly uploader = signal<FileUploader | undefined>(undefined);
   readonly isLocalComputerChosen = signal<boolean>(true);
+  readonly selectedStepIndex = signal(0);
   subscription: Subscription;
 
   // Step completion computed signals
   imageStepCompleted = computed(() => !!this.imageName());
   namePlatformStepCompleted = computed(() => !!this.templateName() && !!this.platform());
   memoryStepCompleted = computed(() => !!this.memory());
+
+  canAdvance(): boolean {
+    switch (this.selectedStepIndex()) {
+      case 0:
+        return this.isLocalComputerChosen();
+      case 1:
+        return this.imageStepCompleted();
+      case 2:
+        return this.namePlatformStepCompleted();
+      case 3:
+        return this.memoryStepCompleted();
+      default:
+        return true;
+    }
+  }
+
+  canCreateTemplate(): boolean {
+    return (
+      !!this.controller() && this.imageStepCompleted() && this.namePlatformStepCompleted() && this.memoryStepCompleted()
+    );
+  }
 
   ngOnInit() {
     this.uploader.set(new FileUploader({ url: '' }));
@@ -224,12 +251,14 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   }
 
   addTemplate() {
-    if (this.imageName() && this.templateName() && this.platform() && this.memory()) {
+    if (this.canCreateTemplate()) {
       const template = this.iosTemplate();
       template.template_id = uuid();
       template.image = this.imageName();
       template.name = this.templateName();
       template.platform = this.platform();
+      template.usage = this.usage();
+      template.symbol = this.symbol();
 
       if (this.chassisOptions()[this.platform()]) template.chassis = this.chassis();
       template.ram = +this.memory();
@@ -245,14 +274,14 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       template.compute_id = 'local';
 
       this.iosService.addTemplate(this.controller(), template).subscribe({
-        next: (iosTemplate: IosTemplate) => {
+        next: () => {
           this.goBack();
         },
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to add ios template';
           this.toasterService.error(message);
           this.cd.markForCheck();
-        }
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields`);
@@ -280,7 +309,8 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller().id, 'preferences', 'dynamips', 'templates']);
+    const controllerId = this.controller()?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
+    this.router.navigate(['/controller', controllerId, 'preferences']);
   }
 
   onImageChosen() {
@@ -311,7 +341,11 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
         this.chassis.set(chassisFromName);
       } else {
         this.chassis.set('');
-        this.toasterService.warning(`Invalid chassis '${chassisFromName}' for platform c3600. Please select a valid chassis: ${validChassis.join(', ')}`);
+        this.toasterService.warning(
+          `Invalid chassis '${chassisFromName}' for platform c3600. Please select a valid chassis: ${validChassis.join(
+            ', '
+          )}`
+        );
       }
     }
     // 3. Check for c1700 chassis variants
@@ -322,7 +356,11 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
         this.chassis.set(chassisFromName);
       } else {
         this.chassis.set('');
-        this.toasterService.warning(`Invalid chassis '${chassisFromName}' for platform c1700. Please select a valid chassis: ${validChassis.join(', ')}`);
+        this.toasterService.warning(
+          `Invalid chassis '${chassisFromName}' for platform c1700. Please select a valid chassis: ${validChassis.join(
+            ', '
+          )}`
+        );
       }
     }
     // 4. Check for c2600 chassis variants (but not c2691)
@@ -333,14 +371,18 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
         this.chassis.set(chassisFromName);
       } else {
         this.chassis.set('');
-        this.toasterService.warning(`Invalid chassis '${chassisFromName}' for platform c2600. Please select a valid chassis.`);
+        this.toasterService.warning(
+          `Invalid chassis '${chassisFromName}' for platform c2600. Please select a valid chassis.`
+        );
       }
     }
     // 5. Unknown platform, warn user
     else {
       this.platform.set(name);
       this.chassis.set('');
-      this.toasterService.warning(`Unknown platform '${name}'. Supported platforms are: c1700, c2600, c2691, c3600, c3725, c3745, c7200. Please verify the platform manually.`);
+      this.toasterService.warning(
+        `Unknown platform '${name}'. Supported platforms are: c1700, c2600, c2691, c3600, c3725, c3745, c7200. Please verify the platform manually.`
+      );
     }
     this.memory.set(String(this.defaultRam()[this.platform()]));
     this.fillDefaultSlots();

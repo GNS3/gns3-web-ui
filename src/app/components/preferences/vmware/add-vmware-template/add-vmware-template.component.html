@@ -1,42 +1,72 @@
-<div class="vmware-add">
-  <header class="vmware-add__header">
+<div class="vmware-add template-wizard">
+  <header class="vmware-add__header template-wizard__header">
     @if (controller()) {
-    <button class="vmware-add__back-btn" (click)="goBack()" mat-icon-button>
+    <button
+      class="vmware-add__back-btn template-wizard__back"
+      (click)="goBack()"
+      mat-icon-button
+      aria-label="Back to VMware templates"
+    >
       <mat-icon>arrow_back</mat-icon>
     </button>
     }
-    <h1 class="vmware-add__title">New VMware VM template</h1>
+    <div class="template-wizard__heading">
+      <h1 class="vmware-add__title template-wizard__title">New VMware VM template</h1>
+    </div>
   </header>
 
   @if (vmwareTemplate()) {
-  <main class="vmware-add__content">
-    <section class="vmware-add__form-card">
-      <div class="vmware-add__form">
-        <mat-form-field appearance="fill" class="vmware-add__field">
-          <mat-label>VM list</mat-label>
-          <mat-select
-            placeholder="VM list"
-            [value]="templateName()"
-            (selectionChange)="templateName.set($event.value); selectedVM.set($event.value)"
-          >
-            @for (vm of virtualMachines(); track vm) {
-            <mat-option [value]="vm">
-              {{ vm.vmname }}
-            </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+  <main class="vmware-add__content template-wizard__body">
+    <div class="template-wizard__single-layout">
+      <aside class="template-wizard__single-nav" aria-label="Template creation steps">
+        <div class="template-wizard__single-step">
+          <span class="template-wizard__single-step-index">1</span>
+          <span>Virtual machine</span>
+        </div>
+      </aside>
+      <div class="template-wizard__single-content">
+        <section class="vmware-add__form-card template-wizard__panel">
+          <div class="template-wizard__notice">
+            <mat-icon>info</mat-icon>
+            <span>Select the existing VM that will provide the settings for this template.</span>
+          </div>
+          <h2 class="template-wizard__section-title">VMware virtual machine</h2>
+          <p class="template-wizard__section-copy">Only VMs reported by the connected GNS3 server are listed.</p>
+          <div class="vmware-add__form">
+            <mat-form-field appearance="fill" class="vmware-add__field">
+              <mat-label>VM list</mat-label>
+              <mat-select
+                required
+                placeholder="VM list"
+                [value]="selectedVM()"
+                (selectionChange)="selectedVM.set($event.value)"
+              >
+                @for (vm of virtualMachines(); track vm) {
+                <mat-option [value]="vm">
+                  {{ vm.vmname }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
 
-        <mat-checkbox [checked]="linkedClone()" (change)="linkedClone.set($event.checked)">
-          Use as a linked base VM (experimental)
-        </mat-checkbox>
+            <mat-checkbox [checked]="linkedClone()" (change)="linkedClone.set($event.checked)">
+              Use as a linked base VM (experimental)
+            </mat-checkbox>
+          </div>
+        </section>
       </div>
-    </section>
+    </div>
 
-    <div class="vmware-add__actions">
-      <button mat-button class="vmware-add__cancel-btn" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" class="vmware-add__submit-btn" (click)="addTemplate()">
-        Add template
+    <div class="vmware-add__actions template-wizard__actions">
+      <button mat-stroked-button class="vmware-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <button
+        mat-raised-button
+        color="primary"
+        class="vmware-add__submit-btn"
+        [disabled]="!controller() || !selectedVM()"
+        (click)="addTemplate()"
+      >
+        Create template
       </button>
     </div>
   </main>

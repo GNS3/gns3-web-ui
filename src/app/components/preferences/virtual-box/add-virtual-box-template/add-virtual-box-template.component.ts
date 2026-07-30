@@ -1,10 +1,7 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,17 +20,7 @@ import { VirtualBoxService } from '@services/virtual-box.service';
   selector: 'app-add-virtual-box-template',
   templateUrl: './add-virtual-box-template.component.html',
   styleUrls: ['./add-virtual-box-template.component.scss', '../../preferences.component.scss'],
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule,
-    MatIconModule,
-    MatButtonModule,
-    MatCardModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatFormFieldModule,
-  ],
+  imports: [MatIconModule, MatButtonModule, MatSelectModule, MatCheckboxModule, MatFormFieldModule],
 })
 export class AddVirtualBoxTemplateComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -49,8 +36,6 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
   readonly selectedVM = signal<VirtualBoxVm | undefined>(undefined);
   readonly virtualBoxTemplate = signal<VirtualBoxTemplate>(<VirtualBoxTemplate>{});
 
-  // Form field signals
-  vm = model<VirtualBoxVm | ''>('');
   linkedClone = model(false);
 
   ngOnInit() {
@@ -98,11 +83,12 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller().id, 'preferences', 'virtualbox', 'templates']);
+    const controllerId = this.controller()?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
+    this.router.navigate(['/controller', controllerId, 'preferences']);
   }
 
   addTemplate() {
-    if (this.vm()) {
+    if (this.controller() && this.selectedVM()) {
       const template = this.virtualBoxTemplate();
       template.name = this.selectedVM().vmname;
       template.vmname = this.selectedVM().vmname;
@@ -118,7 +104,7 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
           const message = err.error?.message || err.message || 'Failed to add virtual box template';
           this.toasterService.error(message);
           this.cd.markForCheck();
-        }
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields`);

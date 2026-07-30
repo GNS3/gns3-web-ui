@@ -5,7 +5,6 @@ import { of, throwError } from 'rxjs';
 import { AddQemuVmTemplateComponent } from './add-qemu-vm-template.component';
 import { QemuService } from '@services/qemu.service';
 import { QemuConfigurationService } from '@services/qemu-configuration.service';
-import { ComputeService } from '@services/compute.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
@@ -29,7 +28,6 @@ describe('AddQemuVmTemplateComponent', () => {
   let mockActivatedRoute: any;
   let mockSnackBar: any;
   let mockUploadServiceService: any;
-  let mockComputeService: any;
 
   let mockController: Controller;
   let mockQemuTemplate: QemuTemplate;
@@ -158,15 +156,6 @@ describe('AddQemuVmTemplateComponent', () => {
       cancelFileUploading: vi.fn(),
     };
 
-    mockComputeService = {
-      getComputes: vi.fn().mockReturnValue({
-        subscribe: vi.fn(),
-      }),
-      getCompute: vi.fn().mockReturnValue({
-        subscribe: vi.fn(),
-      }),
-    };
-
     // Reset TestBed before configuring
     TestBed.resetTestingModule();
 
@@ -175,7 +164,6 @@ describe('AddQemuVmTemplateComponent', () => {
       providers: [
         { provide: QemuService, useValue: mockQemuService },
         { provide: QemuConfigurationService, useValue: mockQemuConfigurationService },
-        { provide: ComputeService, useValue: mockComputeService },
         { provide: ControllerService, useValue: mockControllerService },
         { provide: TemplateMocksService, useValue: mockTemplateMocksService },
         { provide: ToasterService, useValue: mockToasterService },
@@ -235,6 +223,15 @@ describe('AddQemuVmTemplateComponent', () => {
     expect(component.isLocalComputerChosen()).toBe(true);
   });
 
+  it('should require the local controller step before advancing', () => {
+    component.selectedStepIndex.set(0);
+    component.isLocalComputerChosen.set(false);
+    expect(component.canAdvance()).toBe(false);
+
+    component.setControllerType('local');
+    expect(component.canAdvance()).toBe(true);
+  });
+
   it('should update newImageSelected signal when setDiskImage is called with newImage', () => {
     component.setDiskImage('newImage');
     expect(component.newImageSelected()).toBe(true);
@@ -245,15 +242,22 @@ describe('AddQemuVmTemplateComponent', () => {
     expect(component.newImageSelected()).toBe(false);
   });
 
+  it('should validate only the image source selected for the current disk mode', () => {
+    component.selectedImage.set(mockQemuImages[0]);
+    component.setDiskImage('newImage');
+    expect(component.diskStepCompleted()).toBe(false);
+
+    component.fileName.set('new-image.qcow2');
+    component.chosenImage.set('new-image.qcow2');
+    expect(component.diskStepCompleted()).toBe(true);
+
+    component.setDiskImage('existingImage');
+    expect(component.diskStepCompleted()).toBe(false);
+  });
+
   it('should navigate back when goBack is called', () => {
     component.goBack();
-    expect(mockRouter.navigate).toHaveBeenCalledWith([
-      '/controller',
-      mockController.id,
-      'preferences',
-      'qemu',
-      'templates',
-    ]);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
   });
 
   it('should show error when addTemplate is called without templateName', () => {
@@ -298,6 +302,8 @@ describe('AddQemuVmTemplateComponent', () => {
 
   it('should add template and navigate back when addTemplate is called with valid data using existing image', () => {
     component.templateName.set('TestTemplate');
+    component.usage.set('Lab workstation');
+    component.symbol.set('computer');
     component.ramMemory.set(512);
     component.selectedPlatform.set('x86_64');
     component.consoleType.set('vnc');
@@ -311,6 +317,8 @@ describe('AddQemuVmTemplateComponent', () => {
     expect(mockQemuService.addTemplate).toHaveBeenCalledWith(mockController, expect.any(Object));
     const calledTemplate = mockQemuService.addTemplate.mock.calls[0][1];
     expect(calledTemplate.name).toBe('TestTemplate');
+    expect(calledTemplate.usage).toBe('Lab workstation');
+    expect(calledTemplate.symbol).toBe('computer');
     expect(calledTemplate.ram).toBe(512);
     expect(calledTemplate.platform).toBe('x86_64');
     expect(calledTemplate.console_type).toBe('vnc');
@@ -376,6 +384,20 @@ describe('AddQemuVmTemplateComponent', () => {
     expect(component.auxConsoleStepCompleted()).toBe(false);
     component.auxConsoleType.set('telnet');
     expect(component.auxConsoleStepCompleted()).toBe(true);
+  });
+
+  it('should only enable creation when every required wizard step is complete', () => {
+    expect(component.canCreateTemplate()).toBe(false);
+
+    component.templateName.set('Complete template');
+    component.ramMemory.set(512);
+    component.selectedPlatform.set('x86_64');
+    component.consoleType.set('telnet');
+    component.auxConsoleType.set('none');
+    component.selectedImage.set(mockQemuImages[0]);
+
+    expect(component.diskStepCompleted()).toBe(true);
+    expect(component.canCreateTemplate()).toBe(true);
   });
 
   it('should update templateName model signal when input changes', () => {
@@ -447,6 +469,24 @@ describe('AddQemuVmTemplateComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the wide sidebar stepper with descriptions for every step', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.querySelector('mat-horizontal-stepper')).toBeTruthy();
+    expect(compiled.querySelectorAll('.template-wizard__step-label')).toHaveLength(7);
+    expect(compiled.querySelectorAll('.template-wizard__step-label-description')).toHaveLength(7);
+    expect(compiled.textContent).toContain('Controller type');
+    expect(compiled.textContent).toContain('Run this QEMU VM locally');
+    expect(compiled.querySelector('.template-wizard__notice')).toBeNull();
+  });
+
+  it('should identify mandatory fields with native required state', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const templateNameInput = compiled.querySelector('input[placeholder="e.g. My Linux VM"]');
+
+    expect(templateNameInput?.hasAttribute('required')).toBe(true);
+  });
+
   describe('error handling', () => {
     it('should show error toaster when controllerService.get fails', async () => {
       mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
@@ -471,7 +511,9 @@ describe('AddQemuVmTemplateComponent', () => {
     });
 
     it('should show error toaster when templateMocksService.getQemuTemplate fails', async () => {
-      mockTemplateMocksService.getQemuTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Template error' } })));
+      mockTemplateMocksService.getQemuTemplate.mockReturnValue(
+        throwError(() => ({ error: { message: 'Template error' } }))
+      );
 
       fixture = TestBed.createComponent(AddQemuVmTemplateComponent);
       component = fixture.componentInstance;

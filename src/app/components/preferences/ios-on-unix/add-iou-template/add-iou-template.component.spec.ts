@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { AddIouTemplateComponent } from './add-iou-template.component';
 import { IouService } from '@services/iou.service';
-import { ComputeService } from '@services/compute.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
@@ -25,7 +24,6 @@ describe('AddIouTemplateComponent', () => {
   let mockToasterService: any;
   let mockRouter: any;
   let mockActivatedRoute: any;
-  let mockComputeService: any;
   let mockUploadServiceService: any;
   let mockSnackBar: any;
 
@@ -116,10 +114,6 @@ describe('AddIouTemplateComponent', () => {
       warning: vi.fn(),
     };
 
-    mockComputeService = {
-      getComputes: vi.fn().mockReturnValue(of([])),
-    };
-
     mockUploadServiceService = {
       processBarCount: vi.fn(),
       currentCancelItemDetails: cancelItemSubject.asObservable(),
@@ -138,7 +132,6 @@ describe('AddIouTemplateComponent', () => {
         { provide: IouService, useValue: mockIouService },
         { provide: TemplateMocksService, useValue: mockTemplateMocksService },
         { provide: ToasterService, useValue: mockToasterService },
-        { provide: ComputeService, useValue: mockComputeService },
         { provide: UploadServiceService, useValue: mockUploadServiceService },
         { provide: MatSnackBar, useValue: mockSnackBar },
       ],
@@ -307,19 +300,13 @@ describe('AddIouTemplateComponent', () => {
   });
 
   describe('goBack', () => {
-    it('should navigate to controller iou templates page', () => {
+    it('should navigate to the consolidated templates page', () => {
       component.controller.set(mockController);
       fixture.detectChanges();
 
       component.goBack();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith([
-        '/controller',
-        mockController.id,
-        'preferences',
-        'iou',
-        'templates',
-      ]);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
     });
 
     it('should navigate correctly even when controller id is 0', () => {
@@ -329,7 +316,7 @@ describe('AddIouTemplateComponent', () => {
 
       component.goBack();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 0, 'preferences', 'iou', 'templates']);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 0, 'preferences']);
     });
   });
 
@@ -487,13 +474,7 @@ describe('AddIouTemplateComponent', () => {
       component.addTemplate();
       await fixture.whenStable();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith([
-        '/controller',
-        mockController.id,
-        'preferences',
-        'iou',
-        'templates',
-      ]);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
     });
 
     it('should set L2 image ethernet_adapters to 4 and serial_adapters to 0', async () => {
@@ -668,7 +649,9 @@ describe('AddIouTemplateComponent', () => {
     });
 
     it('should show error toaster when templateMocksService.getIouTemplate fails', async () => {
-      mockTemplateMocksService.getIouTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Template error' } })));
+      mockTemplateMocksService.getIouTemplate.mockReturnValue(
+        throwError(() => ({ error: { message: 'Template error' } }))
+      );
 
       fixture = TestBed.createComponent(AddIouTemplateComponent);
       component = fixture.componentInstance;

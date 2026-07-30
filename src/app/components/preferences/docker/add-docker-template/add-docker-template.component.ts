@@ -1,27 +1,22 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, signal, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { v4 as uuid } from 'uuid';
-import { Compute } from '@models/compute';
 import { DockerImage } from '@models/docker/docker-image';
 import { Controller } from '@models/controller';
 import { DockerTemplate } from '@models/templates/docker-template';
-import { ComputeService } from '@services/compute.service';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { DockerService } from '@services/docker.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/template-info-fields.component';
 
 @Component({
   standalone: true,
@@ -30,18 +25,14 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './add-docker-template.component.html',
   styleUrls: ['./add-docker-template.component.scss', '../../preferences.component.scss'],
   imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule,
     MatIconModule,
     MatButtonModule,
-    MatCardModule,
     MatRadioModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatStepperModule,
-    MatCheckboxModule,
+    TemplateInfoFieldsComponent,
   ],
 })
 export class AddDockerTemplateComponent implements OnInit {
@@ -52,17 +43,17 @@ export class AddDockerTemplateComponent implements OnInit {
   private router = inject(Router);
   private templateMocksService = inject(TemplateMocksService);
   private configurationService = inject(DockerConfigurationService);
-  private computeService = inject(ComputeService);
   private cd = inject(ChangeDetectorRef);
 
-  controller: Controller;
-  dockerTemplate: DockerTemplate;
+  controller?: Controller;
+  dockerTemplate?: DockerTemplate;
   consoleTypes: string[] = [];
   auxConsoleTypes: string[] = [];
   dockerImages: DockerImage[] = [];
-  selectedImage: DockerImage;
+  selectedImage?: DockerImage;
   newImageSelected: boolean = false;
   isLocalComputerChosen: boolean = true;
+  readonly selectedStepIndex = signal(0);
 
   // Model signals for form fields
   filename = model('');
@@ -72,6 +63,8 @@ export class AddDockerTemplateComponent implements OnInit {
   consoleType = model('');
   auxConsoleType = model('');
   environment = model('');
+  usage = model('');
+  symbol = model('docker_guest');
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -125,43 +118,66 @@ export class AddDockerTemplateComponent implements OnInit {
     this.newImageSelected = value === 'newImage';
   }
 
+  canAdvance(): boolean {
+    switch (this.selectedStepIndex()) {
+      case 0:
+        return this.isLocalComputerChosen;
+      case 1:
+        return this.newImageSelected ? !!this.filename() : !!this.selectedImage;
+      case 2:
+        return !!this.templateName();
+      case 3:
+        return this.adapters() > 0;
+      default:
+        return true;
+    }
+  }
+
+  canCreateTemplate(): boolean {
+    const hasImage = this.newImageSelected ? !!this.filename() : !!this.selectedImage;
+    return !!this.controller && !!this.dockerTemplate && hasImage && !!this.templateName() && this.adapters() > 0;
+  }
+
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'docker', 'templates']);
+    const controllerId = this.controller?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
+    this.router.navigate(['/controller', controllerId, 'preferences']);
   }
 
   addTemplate() {
+    const controller = this.controller;
+    const template = this.dockerTemplate;
+    const selectedImage = this.selectedImage;
     if (
-      (!this.newImageSelected && this.selectedImage) ||
-      (this.newImageSelected && this.filename() && this.templateName() && this.adapters())
+      !this.canCreateTemplate() ||
+      !controller ||
+      !template ||
+      (!this.newImageSelected && !selectedImage)
     ) {
-      this.dockerTemplate.template_id = uuid();
-
-      if (this.newImageSelected) {
-        this.dockerTemplate.image = this.filename();
-      } else {
-        this.dockerTemplate.image = this.selectedImage.image;
-      }
-
-      this.dockerTemplate.name = this.templateName();
-      this.dockerTemplate.adapters = this.adapters();
-      this.dockerTemplate.compute_id = 'local';
-      this.dockerTemplate.start_command = this.startCommand();
-      this.dockerTemplate.console_type = this.consoleType() || 'none';
-      this.dockerTemplate.aux_type = this.auxConsoleType() || 'none';
-      this.dockerTemplate.environment = this.environment();
-
-      this.dockerService.addTemplate(this.controller, this.dockerTemplate).subscribe({
-        next: (template: DockerTemplate) => {
-          this.goBack();
-        },
-        error: (err) => {
-          const message = err.error?.message || err.message || 'Failed to add template';
-          this.toasterService.error(message);
-          this.cd.markForCheck();
-        }
-      });
-    } else {
       this.toasterService.error(`Fill all required fields`);
+      return;
     }
+
+    template.template_id = uuid();
+    template.image = this.newImageSelected ? this.filename() : selectedImage.image;
+    template.name = this.templateName();
+    template.adapters = this.adapters();
+    template.compute_id = 'local';
+    template.start_command = this.startCommand();
+    template.console_type = this.consoleType() || 'none';
+    template.aux_type = this.auxConsoleType() || 'none';
+    template.environment = this.environment();
+    template.usage = this.usage();
+    template.symbol = this.symbol();
+
+    this.dockerService.addTemplate(controller, template).subscribe({
+      next: () => {
+        this.goBack();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to add template';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 }

@@ -1,126 +1,219 @@
-<div class="iou-add">
-  <header class="iou-add__header">
+<div class="iou-add template-wizard">
+  <header class="iou-add__header template-wizard__header">
     @if (controller()) {
-    <button class="iou-add__back-btn" (click)="goBack()" mat-icon-button>
+    <button
+      class="iou-add__back-btn template-wizard__back"
+      (click)="goBack()"
+      mat-icon-button
+      aria-label="Back to IOU templates"
+    >
       <mat-icon>arrow_back</mat-icon>
     </button>
     }
-    <h1 class="iou-add__title">New IOU device template</h1>
+    <div class="template-wizard__heading">
+      <h1 class="iou-add__title template-wizard__title">New IOU device template</h1>
+    </div>
   </header>
 
-  <main class="iou-add__content">
-    <section class="iou-add__form-card">
-      <mat-vertical-stepper [linear]="true" class="iou-add__stepper">
-        <mat-step label="Controller type" [completed]="isLocalComputerChosen()">
-          <mat-radio-group class="iou-add__radio-group">
-            <mat-radio-button class="iou-add__radio" value="1" (click)="setControllerType('local')" [checked]="true">
-              Run this IOU device locally
-            </mat-radio-button>
-          </mat-radio-group>
-        </mat-step>
+  <main class="iou-add__content template-wizard__body">
+    <section class="iou-add__form-card template-wizard__stepper-card">
+      <mat-horizontal-stepper
+        [linear]="true"
+        #stepper
+        class="iou-add__stepper template-wizard__stepper"
+        (selectionChange)="selectedStepIndex.set($event.selectedIndex)"
+      >
+        <ng-template matStepperIcon="edit" let-index="index">{{ index + 1 }}</ng-template>
+        <ng-template matStepperIcon="done" let-index="index">{{ index + 1 }}</ng-template>
 
-        <mat-step label="Name" [completed]="nameStepCompleted()">
-          <div class="iou-add__form">
-            <mat-form-field appearance="fill" class="iou-add__field">
-              <mat-label>Template name</mat-label>
-              <input
-                matInput
-                placeholder="Name"
-                type="text"
-                [value]="templateName()"
-                (input)="templateName.set($event.target.value)"
-              />
-            </mat-form-field>
+        <mat-step [completed]="isLocalComputerChosen()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>dns</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Controller type</span>
+                <span class="template-wizard__step-label-description">Choose the execution host</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="iou-add__step-content template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Controller type</h2>
+              <p class="template-wizard__section-copy">Choose where this IOU device will run.</p>
+              <mat-radio-group class="iou-add__radio-group">
+                <mat-radio-button
+                  class="iou-add__radio"
+                  value="1"
+                  (click)="setControllerType('local')"
+                  [checked]="true"
+                >
+                  Run this IOU device locally
+                </mat-radio-button>
+              </mat-radio-group>
+            </section>
           </div>
         </mat-step>
 
-        <mat-step label="Image">
-          <div class="iou-add__form">
-            <mat-radio-group class="iou-add__radio-group">
-              <mat-radio-button
-                class="iou-add__radio"
-                value="1"
-                (click)="setDiskImage('existingImage')"
-                [checked]="!newImageSelected()"
-              >
-                Existing image
-              </mat-radio-button>
-              <mat-radio-button
-                class="iou-add__radio"
-                value="2"
-                (click)="setDiskImage('newImage')"
-                [checked]="newImageSelected()"
-              >
-                New image
-              </mat-radio-button>
-            </mat-radio-group>
-
-            <mat-form-field appearance="fill" class="iou-add__field">
-              <mat-label>Type</mat-label>
-              <mat-select
-                placeholder="Type"
-                [value]="selectedType()"
-                (selectionChange)="selectedType.set($event.value)"
-              >
-                @for (type of types(); track type) {
-                <mat-option [value]="type">
-                  {{ type }}
-                </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-
-            @if (!newImageSelected()) {
-            <mat-form-field appearance="fill" class="iou-add__field">
-              <mat-label>IOU image</mat-label>
-              <mat-select
-                placeholder="IOU image"
-                [value]="iouTemplate().path"
-                (selectionChange)="iouTemplate.update(t => ({ ...t, path: $event.value }))"
-              >
-                @for (image of iouImages(); track image.path) {
-                <mat-option [value]="image.path">
-                  {{ image.path }}
-                </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            } @if (newImageSelected()) {
-            <div class="iou-add__file-row">
-              <input
-                type="file"
-                accept=".bin, .image, .iol"
-                #file
-                class="iou-add__file-input"
-                (change)="uploadImageFile($event)"
-                ng2FileSelect
-                [uploader]="uploader()"
-              />
-              <button mat-raised-button color="primary" (click)="file.click()" class="iou-add__browse-btn">
-                Browse
-              </button>
-              <mat-form-field appearance="fill" class="iou-add__field iou-add__field--flex">
-                <mat-label>IOU image</mat-label>
+        <mat-step [completed]="nameStepCompleted()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>description</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Template info</span>
+                <span class="template-wizard__step-label-description">Basic details and icon</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="iou-add__form template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Template information</h2>
+              <p class="template-wizard__section-copy">Choose a name and an optional usage note for your template.</p>
+              <mat-form-field appearance="outline" class="iou-add__field template-wizard__field">
+                <mat-label>Template name</mat-label>
                 <input
                   matInput
+                  required
+                  placeholder="Name"
                   type="text"
-                  [value]="imageName()"
-                  (input)="imageName.set($event.target.value)"
-                  placeholder="IOU image"
+                  [value]="templateName()"
+                  (input)="templateName.set($event.target.value)"
                 />
               </mat-form-field>
-            </div>
-            }
+              <app-template-info-fields [(usage)]="usage" [(symbol)]="symbol"></app-template-info-fields>
+            </section>
           </div>
         </mat-step>
-      </mat-vertical-stepper>
+
+        <mat-step [completed]="imageStepCompleted()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>hard_drive</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">IOU image</span>
+                <span class="template-wizard__step-label-description">Select an image or browse</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="iou-add__form template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">IOU image</h2>
+              <p class="template-wizard__section-copy">Select an existing IOU image or upload a new one.</p>
+              <mat-radio-group class="iou-add__radio-group">
+                <mat-radio-button
+                  class="iou-add__radio"
+                  value="1"
+                  (click)="setDiskImage('existingImage')"
+                  [checked]="!newImageSelected()"
+                >
+                  Existing image
+                </mat-radio-button>
+                <mat-radio-button
+                  class="iou-add__radio"
+                  value="2"
+                  (click)="setDiskImage('newImage')"
+                  [checked]="newImageSelected()"
+                >
+                  New image
+                </mat-radio-button>
+              </mat-radio-group>
+
+              <mat-form-field appearance="fill" class="iou-add__field">
+                <mat-label>Type</mat-label>
+                <mat-select
+                  placeholder="Type"
+                  [value]="selectedType()"
+                  (selectionChange)="selectedType.set($event.value)"
+                >
+                  @for (type of types(); track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              @if (!newImageSelected()) {
+              <mat-form-field appearance="fill" class="iou-add__field">
+                <mat-label>IOU image</mat-label>
+                <mat-select
+                  required
+                  placeholder="IOU image"
+                  [value]="iouTemplate().path"
+                  (selectionChange)="iouTemplate.update(t => ({ ...t, path: $event.value }))"
+                >
+                  @for (image of iouImages(); track image.path) {
+                  <mat-option [value]="image.path">
+                    {{ image.path }}
+                  </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              } @if (newImageSelected()) {
+              <div class="iou-add__file-row">
+                <input
+                  type="file"
+                  accept=".bin, .image, .iol"
+                  #file
+                  class="iou-add__file-input"
+                  (change)="uploadImageFile($event)"
+                  ng2FileSelect
+                  [uploader]="uploader()"
+                />
+                <button mat-raised-button color="primary" (click)="file.click()" class="iou-add__browse-btn">
+                  Browse
+                </button>
+                <mat-form-field appearance="fill" class="iou-add__field iou-add__field--flex">
+                  <mat-label>IOU image</mat-label>
+                  <input
+                    matInput
+                    required
+                    type="text"
+                    [value]="imageName()"
+                    (input)="imageName.set($event.target.value)"
+                    placeholder="IOU image"
+                  />
+                </mat-form-field>
+              </div>
+              }
+            </section>
+          </div>
+        </mat-step>
+      </mat-horizontal-stepper>
     </section>
 
-    <div class="iou-add__actions">
-      <button mat-button class="iou-add__cancel-btn" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" class="iou-add__submit-btn" (click)="addTemplate()">
-        Add template
-      </button>
+    <div class="iou-add__actions template-wizard__actions">
+      <button mat-stroked-button class="iou-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <div class="template-wizard__step-actions">
+        @if (selectedStepIndex() > 0) {
+        <button mat-button type="button" class="template-wizard__previous" (click)="stepper.previous()">
+          <mat-icon>arrow_back</mat-icon>
+          Back
+        </button>
+        } @if (selectedStepIndex() < 2) {
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          class="template-wizard__next"
+          [disabled]="!canAdvance()"
+          (click)="stepper.next()"
+        >
+          Next
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </button>
+        } @else {
+        <button
+          mat-raised-button
+          color="primary"
+          class="iou-add__submit-btn"
+          [disabled]="!canCreateTemplate()"
+          (click)="addTemplate()"
+        >
+          Create template
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </button>
+        }
+      </div>
     </div>
   </main>
 </div>

@@ -1,180 +1,380 @@
-<div class="qemu-add">
-  <header class="qemu-add__header">
+<div class="qemu-add template-wizard">
+  <header class="qemu-add__header template-wizard__header">
     @if (controller()) {
-    <button class="qemu-add__back-btn" (click)="goBack()" mat-icon-button>
+    <button
+      class="qemu-add__back-btn template-wizard__back"
+      (click)="goBack()"
+      mat-icon-button
+      aria-label="Back to QEMU templates"
+    >
       <mat-icon>arrow_back</mat-icon>
     </button>
     }
-    <h1 class="qemu-add__title">New QEMU VM template</h1>
+    <div class="template-wizard__heading">
+      <h1 class="qemu-add__title template-wizard__title">New QEMU VM template</h1>
+    </div>
   </header>
 
-  <main class="qemu-add__content">
-    <section class="qemu-add__form-card">
-      <mat-vertical-stepper [linear]="true" class="qemu-add__stepper">
-        <mat-step label="Controller type" [completed]="isLocalComputerChosen()">
-          <mat-radio-group class="qemu-add__radio-group">
-            <mat-radio-button class="qemu-add__radio" value="1" (click)="setControllerType('local')" [checked]="true">
-              Run this QEMU VM locally
-            </mat-radio-button>
-          </mat-radio-group>
-        </mat-step>
+  <main class="qemu-add__content template-wizard__body">
+    <section class="qemu-add__form-card template-wizard__stepper-card">
+      <mat-horizontal-stepper
+        [linear]="true"
+        #stepper
+        class="qemu-add__stepper template-wizard__stepper"
+        (selectionChange)="selectedStepIndex.set($event.selectedIndex)"
+      >
+        <ng-template matStepperIcon="edit" let-index="index">{{ index + 1 }}</ng-template>
+        <ng-template matStepperIcon="done" let-index="index">{{ index + 1 }}</ng-template>
 
-        <mat-step label="QEMU VM Name" [completed]="nameStepCompleted()">
-          <div class="qemu-add__form">
-            <mat-form-field appearance="fill" class="qemu-add__field">
-              <mat-label>Template name</mat-label>
-              <input
-                matInput
-                type="text"
-                [value]="templateName()"
-                (input)="templateName.set($event.target.value)"
-                placeholder="Please choose a descriptive name for your new QEMU virtual machine"
-              />
-            </mat-form-field>
+        <mat-step [completed]="isLocalComputerChosen()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>dns</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Controller type</span>
+                <span class="template-wizard__step-label-description">Choose the execution host</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Controller type</h2>
+              <p class="template-wizard__section-copy">Choose where this QEMU VM will run.</p>
+              <mat-radio-group class="qemu-add__radio-group qemu-add__controller-options">
+                <mat-radio-button
+                  class="qemu-add__radio"
+                  value="local"
+                  [checked]="isLocalComputerChosen()"
+                  (click)="setControllerType('local')"
+                >
+                  Run this QEMU VM locally
+                </mat-radio-button>
+              </mat-radio-group>
+            </section>
           </div>
         </mat-step>
 
-        <mat-step label="Platform and memory" [completed]="platformStepCompleted()">
-          <div class="qemu-add__form">
-            <mat-form-field appearance="fill" class="qemu-add__field">
-              <mat-label>Platform</mat-label>
-              <mat-select
-                placeholder="Platform"
-                [value]="selectedPlatform()"
-                (selectionChange)="selectedPlatform.set($event.value)"
-              >
-                @for (platform of selectPlatform(); track platform) {
-                <mat-option [value]="platform">
-                  {{ platform }}
-                </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+        <mat-step [completed]="nameStepCompleted()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>description</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Template info</span>
+                <span class="template-wizard__step-label-description">Basic details and name</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Template information</h2>
+              <p class="template-wizard__section-copy">Choose a name and an optional usage note for your template.</p>
 
-            <mat-form-field appearance="fill" class="qemu-add__field">
-              <mat-label>RAM</mat-label>
-              <input
-                matInput
-                type="number"
-                min="1"
-                placeholder="RAM"
-                [value]="ramMemory()"
-                (input)="ramMemory.set(+$event.target.value)"
-              />
-              <span matSuffix>MB</span>
-            </mat-form-field>
-          </div>
-        </mat-step>
-
-        <mat-step label="Console type" [completed]="consoleStepCompleted()">
-          <mat-form-field appearance="fill" class="qemu-add__field">
-            <mat-label>Console type</mat-label>
-            <mat-select
-              placeholder="Console type"
-              [value]="consoleType()"
-              (selectionChange)="consoleType.set($event.value)"
-            >
-              @for (type of consoleTypes(); track type) {
-              <mat-option [value]="type">
-                {{ type }}
-              </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </mat-step>
-
-        <mat-step label="Auxiliary console type" [completed]="auxConsoleStepCompleted()">
-          <mat-form-field appearance="fill" class="qemu-add__field">
-            <mat-label>Auxiliary console type</mat-label>
-            <mat-select
-              placeholder="Auxiliary console type"
-              [value]="auxConsoleType()"
-              (selectionChange)="auxConsoleType.set($event.value)"
-            >
-              @for (type of auxConsoleTypes(); track type) {
-              <mat-option [value]="type">
-                {{ type }}
-              </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </mat-step>
-
-        <mat-step label="Disk image">
-          <div class="qemu-add__form">
-            <mat-radio-group class="qemu-add__radio-group">
-              <mat-radio-button
-                class="qemu-add__radio"
-                value="1"
-                (click)="setDiskImage('existingImage')"
-                [checked]="!newImageSelected()"
-              >
-                Existing image
-              </mat-radio-button>
-              <mat-radio-button
-                class="qemu-add__radio"
-                value="2"
-                (click)="setDiskImage('newImage')"
-                [checked]="newImageSelected()"
-              >
-                New image
-              </mat-radio-button>
-            </mat-radio-group>
-
-            @if (!newImageSelected()) {
-            <mat-form-field appearance="fill" class="qemu-add__field">
-              <mat-label>Disk image (hda)</mat-label>
-              <input
-                matInput
-                type="text"
-                [matAutocomplete]="hdaAuto"
-                (input)="onDiskImageInput($event)"
-                placeholder="Disk image (hda)"
-              />
-              <mat-autocomplete #hdaAuto="matAutocomplete" (optionSelected)="onDiskImageSelected($event.option.value)">
-                @for (image of filteredImages(); track image.filename) {
-                <mat-option [value]="image.filename">
-                  {{ image.filename }}
-                </mat-option>
-                }
-              </mat-autocomplete>
-            </mat-form-field>
-            } @if (newImageSelected()) {
-            <div class="qemu-add__file-row">
-              <input
-                type="file"
-                accept=".qcow2"
-                #file
-                class="qemu-add__file-input"
-                (change)="uploadImageFile($event)"
-                ng2FileSelect
-                [uploader]="uploader()"
-              />
-              <button mat-raised-button color="primary" (click)="file.click()" class="qemu-add__browse-btn">
-                Browse
-              </button>
-              <mat-form-field appearance="fill" class="qemu-add__field qemu-add__field--flex">
-                <mat-label>Image name</mat-label>
+              <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+                <mat-label>Template name</mat-label>
                 <input
                   matInput
+                  required
                   type="text"
-                  [value]="fileName()"
-                  (input)="fileName.set($event.target.value)"
-                  placeholder="Please enter name"
+                  [value]="templateName()"
+                  (input)="templateName.set($event.target.value)"
+                  placeholder="e.g. My Linux VM"
                 />
               </mat-form-field>
-            </div>
-            }
+              <span class="template-wizard__field-hint">Use a unique, descriptive name.</span>
+
+              <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+                <mat-label>Usage notes</mat-label>
+                <textarea
+                  matInput
+                  rows="3"
+                  [value]="usage()"
+                  (input)="usage.set($event.target.value)"
+                  placeholder="e.g. Ubuntu appliance with 2 GB RAM and a VirtIO disk"
+                ></textarea>
+              </mat-form-field>
+            </section>
+
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Template icon</h2>
+              <p class="template-wizard__section-copy">Choose the symbol used for this template in the node list.</p>
+              <div class="qemu-add__symbol-options" role="radiogroup" aria-label="Template icon">
+                @for (option of symbolOptions; track option.value) {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="qemu-add__symbol-option"
+                  [class.qemu-add__symbol-option--selected]="symbol() === option.value"
+                  [attr.aria-pressed]="symbol() === option.value"
+                  (click)="symbol.set(option.value)"
+                >
+                  <mat-icon>{{ option.icon }}</mat-icon>
+                  <span>{{ option.label }}</span>
+                </button>
+                }
+              </div>
+            </section>
           </div>
         </mat-step>
-      </mat-vertical-stepper>
+
+        <mat-step [completed]="platformStepCompleted()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>memory</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Platform &amp; memory</span>
+                <span class="template-wizard__step-label-description">Define hardware configuration</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Platform and memory</h2>
+              <p class="template-wizard__section-copy">
+                These values can still be adjusted after the template is created.
+              </p>
+              <div class="template-wizard__field-grid">
+                <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+                  <mat-label>Platform</mat-label>
+                  <mat-select
+                    required
+                    [value]="selectedPlatform()"
+                    (selectionChange)="selectedPlatform.set($event.value)"
+                  >
+                    @for (platform of selectPlatform(); track platform) {
+                    <mat-option [value]="platform">{{ platform }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+                  <mat-label>RAM</mat-label>
+                  <input
+                    matInput
+                    required
+                    type="number"
+                    min="1"
+                    [value]="ramMemory()"
+                    (input)="ramMemory.set(+$event.target.value)"
+                  />
+                  <span matTextSuffix class="template-wizard__unit-suffix">MB</span>
+                </mat-form-field>
+              </div>
+            </section>
+          </div>
+        </mat-step>
+
+        <mat-step [completed]="consoleStepCompleted()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>desktop_windows</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Console</span>
+                <span class="template-wizard__step-label-description">Select console type</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Console</h2>
+              <p class="template-wizard__section-copy">Choose a console type supported by the QEMU configuration.</p>
+              <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+                <mat-label>Console type</mat-label>
+                <mat-select required [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
+                  @for (type of consoleTypes(); track type) {
+                  <mat-option [value]="type">{{ type }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </section>
+          </div>
+        </mat-step>
+
+        <mat-step [completed]="auxConsoleStepCompleted()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>terminal</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Auxiliary console</span>
+                <span class="template-wizard__step-label-description">Optional console configuration</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Auxiliary console</h2>
+              <p class="template-wizard__section-copy">Select “none” when a second console is not required.</p>
+              <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+                <mat-label>Auxiliary console type</mat-label>
+                <mat-select required [value]="auxConsoleType()" (selectionChange)="auxConsoleType.set($event.value)">
+                  @for (type of auxConsoleTypes(); track type) {
+                  <mat-option [value]="type">{{ type }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </section>
+          </div>
+        </mat-step>
+
+        <mat-step [completed]="diskStepCompleted()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>hard_drive</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Disk image</span>
+                <span class="template-wizard__step-label-description">Select disk image or browse</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Disk image</h2>
+              <p class="template-wizard__section-copy">
+                The selected image becomes the primary HDA disk for the template.
+              </p>
+
+              <mat-radio-group
+                class="qemu-add__radio-group"
+                [value]="newImageSelected() ? 'newImage' : 'existingImage'"
+              >
+                <mat-radio-button class="qemu-add__radio" value="existingImage" (click)="setDiskImage('existingImage')">
+                  Existing image
+                </mat-radio-button>
+                <mat-radio-button class="qemu-add__radio" value="newImage" (click)="setDiskImage('newImage')">
+                  Upload new image
+                </mat-radio-button>
+              </mat-radio-group>
+
+              @if (!newImageSelected()) {
+              <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+                <mat-label>Disk image (HDA)</mat-label>
+                <input
+                  matInput
+                  required
+                  type="text"
+                  [matAutocomplete]="hdaAuto"
+                  (input)="onDiskImageInput($event)"
+                  placeholder="Search available images"
+                />
+                <mat-icon matSuffix>search</mat-icon>
+                <mat-autocomplete
+                  #hdaAuto="matAutocomplete"
+                  (optionSelected)="onDiskImageSelected($event.option.value)"
+                >
+                  @for (image of filteredImages(); track image.filename) {
+                  <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                  }
+                </mat-autocomplete>
+              </mat-form-field>
+              } @else {
+              <div class="qemu-add__file-row">
+                <input
+                  type="file"
+                  accept=".qcow2"
+                  #file
+                  class="qemu-add__file-input"
+                  (change)="uploadImageFile($event)"
+                  ng2FileSelect
+                  [uploader]="uploader()"
+                />
+                <button mat-stroked-button type="button" (click)="file.click()" class="qemu-add__browse-btn">
+                  <mat-icon>upload_file</mat-icon>
+                  Browse
+                </button>
+                <mat-form-field appearance="outline" class="qemu-add__field qemu-add__field--flex">
+                  <mat-label>Image name</mat-label>
+                  <input
+                    matInput
+                    required
+                    type="text"
+                    [value]="fileName()"
+                    (input)="fileName.set($event.target.value)"
+                    placeholder="Image name"
+                  />
+                </mat-form-field>
+              </div>
+              }
+            </section>
+          </div>
+        </mat-step>
+
+        <mat-step [completed]="canCreateTemplate()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>check_circle</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Review</span>
+                <span class="template-wizard__step-label-description">Review and create your template</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Template summary</h2>
+              <dl class="qemu-add__summary">
+                <div>
+                  <dt>Name</dt>
+                  <dd>{{ templateName() || 'Not set' }}</dd>
+                </div>
+                <div>
+                  <dt>Platform</dt>
+                  <dd>{{ selectedPlatform() || 'Not set' }}</dd>
+                </div>
+                <div>
+                  <dt>Memory</dt>
+                  <dd>{{ ramMemory() }} MB</dd>
+                </div>
+                <div>
+                  <dt>Console</dt>
+                  <dd>{{ consoleType() || 'Not set' }}</dd>
+                </div>
+                <div>
+                  <dt>Auxiliary console</dt>
+                  <dd>{{ auxConsoleType() || 'Not set' }}</dd>
+                </div>
+                <div>
+                  <dt>Disk image</dt>
+                  <dd>{{ newImageSelected() ? fileName() : selectedImage()?.filename || 'Not set' }}</dd>
+                </div>
+              </dl>
+            </section>
+          </div>
+        </mat-step>
+      </mat-horizontal-stepper>
     </section>
 
-    <div class="qemu-add__actions">
-      <button mat-button class="qemu-add__cancel-btn" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" class="qemu-add__submit-btn" (click)="addTemplate()">
-        Add template
-      </button>
+    <div class="qemu-add__actions template-wizard__actions">
+      <button mat-stroked-button class="qemu-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <div class="qemu-add__step-actions">
+        @if (selectedStepIndex() > 0) {
+        <button mat-button type="button" class="template-wizard__previous" (click)="stepper.previous()">
+          <mat-icon>arrow_back</mat-icon>
+          Back
+        </button>
+        } @if (selectedStepIndex() < 6) {
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          class="template-wizard__next"
+          [disabled]="!canAdvance()"
+          (click)="stepper.next()"
+        >
+          Next
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </button>
+        } @else {
+        <button
+          mat-raised-button
+          color="primary"
+          class="qemu-add__submit-btn"
+          [disabled]="!canCreateTemplate()"
+          (click)="addTemplate()"
+        >
+          Create template
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </button>
+        }
+      </div>
     </div>
   </main>
 </div>

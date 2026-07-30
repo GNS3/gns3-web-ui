@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { AddDockerTemplateComponent } from './add-docker-template.component';
 import { DockerService } from '@services/docker.service';
-import { ComputeService } from '@services/compute.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
@@ -23,7 +22,6 @@ describe('AddDockerTemplateComponent', () => {
   let mockToasterService: any;
   let mockRouter: any;
   let mockActivatedRoute: any;
-  let mockComputeService: any;
   let mockConfigurationService: any;
 
   let mockController: Controller;
@@ -114,10 +112,6 @@ describe('AddDockerTemplateComponent', () => {
       warning: vi.fn(),
     };
 
-    mockComputeService = {
-      getComputes: vi.fn().mockReturnValue(of([])),
-    };
-
     mockConfigurationService = {
       getConsoleTypes: vi.fn().mockReturnValue(consoleTypes),
       getAuxConsoleTypes: vi.fn().mockReturnValue(auxConsoleTypes),
@@ -132,7 +126,6 @@ describe('AddDockerTemplateComponent', () => {
         { provide: DockerService, useValue: mockDockerService },
         { provide: TemplateMocksService, useValue: mockTemplateMocksService },
         { provide: ToasterService, useValue: mockToasterService },
-        { provide: ComputeService, useValue: mockComputeService },
         { provide: DockerConfigurationService, useValue: mockConfigurationService },
       ],
     }).compileComponents();
@@ -255,18 +248,12 @@ describe('AddDockerTemplateComponent', () => {
   });
 
   describe('goBack', () => {
-    it('should navigate to controller docker templates page', () => {
+    it('should navigate to the consolidated templates page', () => {
       component.controller = mockController;
 
       component.goBack();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith([
-        '/controller',
-        mockController.id,
-        'preferences',
-        'docker',
-        'templates',
-      ]);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
     });
 
     it('should navigate correctly even when controller id is 0', () => {
@@ -275,7 +262,15 @@ describe('AddDockerTemplateComponent', () => {
 
       component.goBack();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 0, 'preferences', 'docker', 'templates']);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 0, 'preferences']);
+    });
+
+    it('should use the route controller id while the controller is still loading', () => {
+      component.controller = undefined;
+
+      component.goBack();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 1, 'preferences']);
     });
   });
 
@@ -374,13 +369,7 @@ describe('AddDockerTemplateComponent', () => {
       component.addTemplate();
       await fixture.whenStable();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith([
-        '/controller',
-        mockController.id,
-        'preferences',
-        'docker',
-        'templates',
-      ]);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
     });
 
     it('should set template_id to a uuid', async () => {
@@ -615,7 +604,9 @@ describe('AddDockerTemplateComponent', () => {
     });
 
     it('should show error toaster when getDockerTemplate fails', async () => {
-      mockTemplateMocksService.getDockerTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Template error' } })));
+      mockTemplateMocksService.getDockerTemplate.mockReturnValue(
+        throwError(() => ({ error: { message: 'Template error' } }))
+      );
 
       fixture = TestBed.createComponent(AddDockerTemplateComponent);
       component = fixture.componentInstance;

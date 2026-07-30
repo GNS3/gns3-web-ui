@@ -1,29 +1,25 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, model } from '@angular/core';
 import {
-  FormsModule,
   ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormControl,
   UntypedFormGroup,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { v4 as uuid } from 'uuid';
-import { Compute } from '@models/compute';
 import { Controller } from '@models/controller';
 import { VpcsTemplate } from '@models/templates/vpcs-template';
-import { ComputeService } from '@services/compute.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 import { VpcsService } from '@services/vpcs.service';
+import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/template-info-fields.component';
 
 @Component({
   standalone: true,
@@ -32,16 +28,13 @@ import { VpcsService } from '@services/vpcs.service';
   templateUrl: './add-vpcs-template.component.html',
   styleUrls: ['./add-vpcs-template.component.scss', '../../preferences.component.scss'],
   imports: [
-    CommonModule,
-    FormsModule,
     ReactiveFormsModule,
-    RouterModule,
     MatIconModule,
     MatButtonModule,
-    MatCardModule,
     MatRadioModule,
     MatFormFieldModule,
     MatInputModule,
+    TemplateInfoFieldsComponent,
   ],
 })
 export class AddVpcsTemplateComponent implements OnInit {
@@ -52,13 +45,14 @@ export class AddVpcsTemplateComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private templateMocksService = inject(TemplateMocksService);
   private formBuilder = inject(UntypedFormBuilder);
-  private computeService = inject(ComputeService);
   private cd = inject(ChangeDetectorRef);
 
-  controller: Controller;
+  controller?: Controller;
   templateName: string = '';
   templateNameForm: UntypedFormGroup;
   isLocalComputerChosen: boolean = true;
+  usage = model('');
+  symbol = model('vpcs_guest');
 
   constructor() {
     this.templateNameForm = this.formBuilder.group({
@@ -88,11 +82,12 @@ export class AddVpcsTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'vpcs', 'templates']);
+    const controllerId = this.controller?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
+    this.router.navigate(['/controller', controllerId, 'preferences']);
   }
 
   addTemplate() {
-    if (!this.templateNameForm.invalid) {
+    if (!this.templateNameForm.invalid && this.controller) {
       this.templateName = this.templateNameForm.get('templateName').value;
 
       this.templateMocksService.getVpcsTemplate().subscribe({
@@ -101,6 +96,8 @@ export class AddVpcsTemplateComponent implements OnInit {
           vpcsTemplate.template_id = uuid();
           vpcsTemplate.name = this.templateName;
           vpcsTemplate.compute_id = 'local';
+          vpcsTemplate.usage = this.usage();
+          vpcsTemplate.symbol = this.symbol();
 
           this.vpcsService.addTemplate(this.controller, vpcsTemplate).subscribe({
             next: () => {

@@ -140,10 +140,6 @@ describe('AddVirtualBoxTemplateComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should have an empty vm model', () => {
-      expect(component.vm()).toBe('');
-    });
-
     it('should have linkedClone model set to false by default', () => {
       expect(component.linkedClone()).toBe(false);
     });
@@ -233,20 +229,14 @@ describe('AddVirtualBoxTemplateComponent', () => {
   });
 
   describe('goBack', () => {
-    it('should navigate to controller virtualbox templates page', async () => {
+    it('should navigate to the consolidated templates page', async () => {
       component.ngOnInit();
       fixture.detectChanges();
       await fixture.whenStable();
 
       component.goBack();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith([
-        '/controller',
-        mockController.id,
-        'preferences',
-        'virtualbox',
-        'templates',
-      ]);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
     });
 
     it('should navigate correctly even when controller id is 0', async () => {
@@ -259,21 +249,19 @@ describe('AddVirtualBoxTemplateComponent', () => {
 
       component.goBack();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 0, 'preferences', 'virtualbox', 'templates']);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 0, 'preferences']);
     });
   });
 
-  describe('vm model', () => {
-    it('should update when mat-select selection changes', async () => {
+  describe('selected VM', () => {
+    it('should update when the VM selection changes', async () => {
       component.ngOnInit();
       fixture.detectChanges();
       await fixture.whenStable();
 
-      component.vm.set(mockVirtualBoxVm);
       component.selectedVM.set(mockVirtualBoxVm);
       fixture.detectChanges();
 
-      expect(component.vm()).toEqual(mockVirtualBoxVm);
       expect(component.selectedVM()).toEqual(mockVirtualBoxVm);
     });
   });
@@ -302,8 +290,8 @@ describe('AddVirtualBoxTemplateComponent', () => {
       await fixture.whenStable();
     });
 
-    it('should not add template when vm is empty', () => {
-      component.vm.set('');
+    it('should not add template when no VM is selected', () => {
+      component.selectedVM.set(undefined);
       fixture.detectChanges();
 
       component.addTemplate();
@@ -311,8 +299,8 @@ describe('AddVirtualBoxTemplateComponent', () => {
       expect(mockVirtualBoxService.addTemplate).not.toHaveBeenCalled();
     });
 
-    it('should call toasterService.error when vm is empty', () => {
-      component.vm.set('');
+    it('should call toasterService.error when no VM is selected', () => {
+      component.selectedVM.set(undefined);
       fixture.detectChanges();
 
       component.addTemplate();
@@ -321,7 +309,6 @@ describe('AddVirtualBoxTemplateComponent', () => {
     });
 
     it('should add template when vm is selected', async () => {
-      component.vm.set(mockVirtualBoxVm);
       component.selectedVM.set(mockVirtualBoxVm);
       component.linkedClone.set(false);
       fixture.detectChanges();
@@ -333,7 +320,6 @@ describe('AddVirtualBoxTemplateComponent', () => {
     });
 
     it('should set template properties from selected VM', async () => {
-      component.vm.set(mockVirtualBoxVm);
       component.selectedVM.set(mockVirtualBoxVm);
       component.linkedClone.set(true);
       fixture.detectChanges();
@@ -353,7 +339,6 @@ describe('AddVirtualBoxTemplateComponent', () => {
     });
 
     it('should set linked_clone from linkedClone model', async () => {
-      component.vm.set(mockVirtualBoxVm);
       component.selectedVM.set(mockVirtualBoxVm);
       component.linkedClone.set(true);
       fixture.detectChanges();
@@ -371,7 +356,6 @@ describe('AddVirtualBoxTemplateComponent', () => {
     });
 
     it('should set template_id to a uuid', async () => {
-      component.vm.set(mockVirtualBoxVm);
       component.selectedVM.set(mockVirtualBoxVm);
       component.linkedClone.set(false);
       fixture.detectChanges();
@@ -390,7 +374,6 @@ describe('AddVirtualBoxTemplateComponent', () => {
     });
 
     it('should navigate to goBack after successful template addition', async () => {
-      component.vm.set(mockVirtualBoxVm);
       component.selectedVM.set(mockVirtualBoxVm);
       component.linkedClone.set(false);
       fixture.detectChanges();
@@ -398,13 +381,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
       component.addTemplate();
       await fixture.whenStable();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith([
-        '/controller',
-        mockController.id,
-        'preferences',
-        'virtualbox',
-        'templates',
-      ]);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
     });
   });
 

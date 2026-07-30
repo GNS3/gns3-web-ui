@@ -1,29 +1,25 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, model } from '@angular/core';
 import {
-  FormsModule,
   ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormControl,
   UntypedFormGroup,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { v4 as uuid } from 'uuid';
-import { Compute } from '@models/compute';
 import { Controller } from '@models/controller';
 import { CloudTemplate } from '@models/templates/cloud-template';
 import { BuiltInTemplatesService } from '@services/built-in-templates.service';
-import { ComputeService } from '@services/compute.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { TemplateInfoFieldsComponent } from '../../../common/template-info-fields/template-info-fields.component';
 
 @Component({
   standalone: true,
@@ -32,16 +28,13 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './cloud-nodes-add-template.component.html',
   styleUrls: ['./cloud-nodes-add-template.component.scss', '../../../preferences.component.scss'],
   imports: [
-    CommonModule,
-    FormsModule,
     ReactiveFormsModule,
-    RouterModule,
     MatIconModule,
     MatButtonModule,
-    MatCardModule,
     MatRadioModule,
     MatFormFieldModule,
     MatInputModule,
+    TemplateInfoFieldsComponent,
   ],
 })
 export class CloudNodesAddTemplateComponent implements OnInit {
@@ -52,13 +45,14 @@ export class CloudNodesAddTemplateComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private templateMocksService = inject(TemplateMocksService);
   private formBuilder = inject(UntypedFormBuilder);
-  private computeService = inject(ComputeService);
   private cd = inject(ChangeDetectorRef);
 
-  controller: Controller;
+  controller?: Controller;
   templateName: string = '';
   formGroup: UntypedFormGroup;
   isLocalComputerChosen: boolean = true;
+  usage = model('');
+  symbol = model('cloud');
 
   constructor() {
     this.formGroup = this.formBuilder.group({
@@ -88,11 +82,12 @@ export class CloudNodesAddTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'cloud-nodes']);
+    const controllerId = this.controller?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
+    this.router.navigate(['/controller', controllerId, 'preferences']);
   }
 
   addTemplate() {
-    if (!this.formGroup.invalid) {
+    if (!this.formGroup.invalid && this.controller) {
       let cloudTemplate: CloudTemplate;
 
       this.templateMocksService.getCloudNodeTemplate().subscribe({
@@ -101,6 +96,8 @@ export class CloudNodesAddTemplateComponent implements OnInit {
           cloudTemplate.template_id = uuid();
           cloudTemplate.name = this.formGroup.get('templateName').value;
           cloudTemplate.compute_id = 'local';
+          cloudTemplate.usage = this.usage();
+          cloudTemplate.symbol = this.symbol();
 
           this.builtInTemplatesService.addTemplate(this.controller, cloudTemplate).subscribe({
             next: () => {

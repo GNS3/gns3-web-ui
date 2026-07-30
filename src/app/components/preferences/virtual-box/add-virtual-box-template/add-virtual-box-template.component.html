@@ -1,45 +1,75 @@
-<div class="virtualbox-add">
-  <header class="virtualbox-add__header">
+<div class="virtualbox-add template-wizard">
+  <header class="virtualbox-add__header template-wizard__header">
     @if (controller()) {
-    <button class="virtualbox-add__back-btn" (click)="goBack()" mat-icon-button>
+    <button
+      class="virtualbox-add__back-btn template-wizard__back"
+      (click)="goBack()"
+      mat-icon-button
+      aria-label="Back to VirtualBox templates"
+    >
       <mat-icon>arrow_back</mat-icon>
     </button>
     }
-    <h1 class="virtualbox-add__title">New VirtualBox VM template</h1>
+    <div class="template-wizard__heading">
+      <h1 class="virtualbox-add__title template-wizard__title">New VirtualBox VM template</h1>
+    </div>
   </header>
 
   @if (virtualBoxTemplate()) {
-  <main class="virtualbox-add__content">
-    <section class="virtualbox-add__form-card">
-      <div class="virtualbox-add__form">
-        <mat-form-field appearance="fill" class="virtualbox-add__field">
-          <mat-label>VM list</mat-label>
-          <mat-select
-            placeholder="VM list"
-            [value]="vm()"
-            (selectionChange)="vm.set($event.value); selectedVM.set($event.value)"
+  <main class="virtualbox-add__content template-wizard__body">
+    <div class="template-wizard__single-layout">
+      <aside class="template-wizard__single-nav" aria-label="Template creation steps">
+        <div class="template-wizard__single-step">
+          <span class="template-wizard__single-step-index">1</span>
+          <span>Virtual machine</span>
+        </div>
+      </aside>
+      <div class="template-wizard__single-content">
+        <section class="virtualbox-add__form-card template-wizard__panel">
+          <div class="template-wizard__notice">
+            <mat-icon>info</mat-icon>
+            <span>Select the existing VM that will provide the settings for this template.</span>
+          </div>
+          <h2 class="template-wizard__section-title">VirtualBox virtual machine</h2>
+          <p class="template-wizard__section-copy">Only VMs reported by the connected GNS3 server are listed.</p>
+          <div class="virtualbox-add__form">
+            <mat-form-field appearance="fill" class="virtualbox-add__field">
+              <mat-label>VM list</mat-label>
+              <mat-select
+                required
+                placeholder="VM list"
+                [value]="selectedVM()"
+                (selectionChange)="selectedVM.set($event.value)"
+              >
+                @for (v of virtualMachines(); track v) {
+                <mat-option [value]="v">
+                  {{ v.vmname }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <mat-checkbox
+            [checked]="linkedClone()"
+            (change)="linkedClone.set($event.checked)"
+            class="virtualbox-add__checkbox"
           >
-            @for (v of virtualMachines(); track v) {
-            <mat-option [value]="v">
-              {{ v.vmname }}
-            </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+            Use as a linked base VM (experimental)
+          </mat-checkbox>
+        </section>
       </div>
-      <mat-checkbox
-        [checked]="linkedClone()"
-        (change)="linkedClone.set($event.checked)"
-        class="virtualbox-add__checkbox"
-      >
-        Use as a linked base VM (experimental)
-      </mat-checkbox>
-    </section>
+    </div>
 
-    <div class="virtualbox-add__actions">
-      <button mat-button class="virtualbox-add__cancel-btn" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" class="virtualbox-add__submit-btn" (click)="addTemplate()">
-        Add template
+    <div class="virtualbox-add__actions template-wizard__actions">
+      <button mat-stroked-button class="virtualbox-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <button
+        mat-raised-button
+        color="primary"
+        class="virtualbox-add__submit-btn"
+        [disabled]="!controller() || !selectedVM()"
+        (click)="addTemplate()"
+      >
+        Create template
       </button>
     </div>
   </main>

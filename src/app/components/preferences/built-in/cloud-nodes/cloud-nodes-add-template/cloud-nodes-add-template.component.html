@@ -1,38 +1,72 @@
-<div class="cloud-nodes-add">
-  <header class="cloud-nodes-add__header">
+<div class="cloud-nodes-add template-wizard">
+  <header class="cloud-nodes-add__header template-wizard__header">
     @if (controller) {
-    <button class="cloud-nodes-add__back-btn" (click)="goBack()" mat-icon-button>
+    <button
+      class="cloud-nodes-add__back-btn template-wizard__back"
+      (click)="goBack()"
+      mat-icon-button
+      aria-label="Back to cloud templates"
+    >
       <mat-icon>arrow_back</mat-icon>
     </button>
     }
-    <h1 class="cloud-nodes-add__title">New cloud node template</h1>
+    <div class="template-wizard__heading">
+      <h1 class="cloud-nodes-add__title template-wizard__title">New cloud node template</h1>
+    </div>
   </header>
 
-  <main class="cloud-nodes-add__content">
-    <section class="cloud-nodes-add__form-card">
-      <mat-radio-group class="cloud-nodes-add__radio-group">
-        <mat-radio-button
-          class="cloud-nodes-add__radio"
-          value="1"
-          (click)="setControllerType('local')"
-          [checked]="true"
-        >
-          Run the cloud node locally
-        </mat-radio-button>
-      </mat-radio-group>
+  <main class="cloud-nodes-add__content template-wizard__body">
+    <div class="template-wizard__single-layout">
+      <aside class="template-wizard__single-nav" aria-label="Template creation steps">
+        <div class="template-wizard__single-step template-wizard__single-step--detailed">
+          <span class="template-wizard__single-step-index">1</span>
+          <span class="template-wizard__step-label">
+            <mat-icon>description</mat-icon>
+            <span class="template-wizard__step-label-text">
+              <span class="template-wizard__step-label-title">Template info</span>
+              <span class="template-wizard__step-label-description">Basic details and name</span>
+            </span>
+          </span>
+        </div>
+      </aside>
+      <div class="template-wizard__single-content">
+        <section class="cloud-nodes-add__form-card template-wizard__panel">
+          <section class="template-wizard__section">
+            <h2 class="template-wizard__section-title">Template information</h2>
+            <p class="template-wizard__section-copy">Choose a name and an optional usage note for your template.</p>
+            <mat-radio-group class="cloud-nodes-add__radio-group">
+              <mat-radio-button
+                class="cloud-nodes-add__radio"
+                value="1"
+                (click)="setControllerType('local')"
+                [checked]="true"
+              >
+                Run the cloud node locally
+              </mat-radio-button>
+            </mat-radio-group>
 
-      <form [formGroup]="formGroup" class="cloud-nodes-add__form">
-        <mat-form-field appearance="fill" class="cloud-nodes-add__field">
-          <mat-label>Template name</mat-label>
-          <input formControlName="templateName" matInput type="text" placeholder="Template name" />
-        </mat-form-field>
-      </form>
-    </section>
+            <form [formGroup]="formGroup" class="cloud-nodes-add__form">
+              <mat-form-field appearance="outline" class="cloud-nodes-add__field template-wizard__field">
+                <mat-label>Template name</mat-label>
+                <input formControlName="templateName" matInput required type="text" placeholder="Template name" />
+              </mat-form-field>
+            </form>
+            <app-template-info-fields [(usage)]="usage" [(symbol)]="symbol"></app-template-info-fields>
+          </section>
+        </section>
+      </div>
+    </div>
 
-    <div class="cloud-nodes-add__actions">
-      <button mat-button class="cloud-nodes-add__cancel-btn" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" class="cloud-nodes-add__submit-btn" (click)="addTemplate()">
-        Add template
+    <div class="cloud-nodes-add__actions template-wizard__actions">
+      <button mat-stroked-button class="cloud-nodes-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <button
+        mat-raised-button
+        color="primary"
+        class="cloud-nodes-add__submit-btn"
+        [disabled]="formGroup.invalid || !controller"
+        (click)="addTemplate()"
+      >
+        Create template
       </button>
     </div>
   </main>
