@@ -102,6 +102,7 @@ describe('ChangeHostnameActionComponent', () => {
       expect(mockDialog.open).toHaveBeenCalledWith(ChangeHostnameDialogComponent, {
         autoFocus: false,
         disableClose: false,
+        panelClass: ['base-dialog-panel', 'dialog-small-panel'],
       });
     });
 

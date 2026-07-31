@@ -123,7 +123,7 @@ export class ResourcePoolsManagementComponent implements OnInit, AfterViewInit {
   addResourcePool() {
     this.dialog
       .open(AddResourcePoolDialogComponent, {
-        width: '400px',
+        panelClass: ['base-dialog-panel', 'dialog-small-panel'],
         autoFocus: false,
         disableClose: true,
         data: { controller: this.controller },

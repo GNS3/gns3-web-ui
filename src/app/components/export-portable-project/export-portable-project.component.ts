@@ -8,7 +8,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDividerModule } from '@angular/material/divider';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -50,7 +49,6 @@ interface SelectCompressionEvent {
     MatInputModule,
     MatSelectModule,
     MatCheckboxModule,
-    MatDividerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

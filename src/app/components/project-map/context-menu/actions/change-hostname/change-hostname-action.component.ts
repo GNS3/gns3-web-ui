@@ -23,6 +23,7 @@ export class ChangeHostnameActionComponent {
     const dialogRef = this.dialog.open(ChangeHostnameDialogComponent, {
       autoFocus: false,
       disableClose: false,
+      panelClass: ['base-dialog-panel', 'dialog-small-panel'],
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller();

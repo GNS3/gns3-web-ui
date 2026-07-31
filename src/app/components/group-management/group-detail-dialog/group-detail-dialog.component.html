@@ -86,7 +86,12 @@
                 <span class="group-detail-dialog__member-name" (click)="openUserDetailDialog(user)">{{
                   user.username
                 }}</span>
-                <button mat-icon-button matTooltip="Remove user" (click)="openRemoveUserDialog(user)">
+                <button
+                  mat-icon-button
+                  class="destructive-icon-button"
+                  matTooltip="Remove user"
+                  (click)="openRemoveUserDialog(user)"
+                >
                   <mat-icon>delete</mat-icon>
                 </button>
               </li>

@@ -38,6 +38,7 @@ describe('DialogConfigService', () => {
 
       expect(config).toBeDefined();
       expect(config.panelClass).toContain('base-dialog-panel');
+      expect(config.panelClass).toContain('dialog-small-panel');
     });
 
     it('should return new object (not same reference)', () => {
@@ -46,6 +47,20 @@ describe('DialogConfigService', () => {
 
       expect(config1).not.toBe(config2);
     });
+  });
+
+  describe('sizeConfig', () => {
+    it.each(['small', 'medium', 'large', 'extra-large'] as const)(
+      'should create a responsive %s category config',
+      (size) => {
+        const config = service.sizeConfig(size);
+
+        expect(config.panelClass).toEqual(['base-dialog-panel', `dialog-${size}-panel`]);
+        expect(config.maxWidth).toBe('calc(100vw - 32px)');
+        expect(config.maxHeight).toBe('calc(100vh - 32px)');
+        expect(config.autoFocus).toBe(false);
+      },
+    );
   });
 
   describe('openConfig', () => {
@@ -101,6 +116,7 @@ describe('DialogConfigService', () => {
 
     it('should have symbolsManager config', () => {
       const config = service.getConfig('symbolsManager');
+      expect(config.panelClass).toContain('dialog-large-panel');
       expect(config.panelClass).toContain('configurator-dialog-panel');
     });
 
@@ -121,21 +137,25 @@ describe('DialogConfigService', () => {
 
     it('should have customAdapters config', () => {
       const config = service.getConfig('customAdapters');
+      expect(config.panelClass).toContain('dialog-extra-large-panel');
       expect(config.panelClass).toContain('custom-adapters-dialog-panel');
     });
 
     it('should have editProject config', () => {
       const config = service.getConfig('editProject');
+      expect(config.panelClass).toContain('dialog-large-panel');
       expect(config.panelClass).toContain('edit-project-dialog-panel');
     });
 
     it('should have addAce config', () => {
       const config = service.getConfig('addAce');
+      expect(config.panelClass).toContain('dialog-extra-large-panel');
       expect(config.panelClass).toContain('add-ace-dialog-panel');
     });
 
     it('should have newTemplate config', () => {
       const config = service.getConfig('newTemplate');
+      expect(config.panelClass).toContain('dialog-medium-panel');
       expect(config.panelClass).toContain('new-template-dialog-panel');
     });
 
@@ -146,21 +166,25 @@ describe('DialogConfigService', () => {
 
     it('should have startCapture config', () => {
       const config = service.getConfig('startCapture');
+      expect(config.panelClass).toContain('dialog-medium-panel');
       expect(config.panelClass).toContain('simple-dialog-panel');
     });
 
     it('should have linkStyleEditor config', () => {
       const config = service.getConfig('linkStyleEditor');
+      expect(config.panelClass).toContain('dialog-small-panel');
       expect(config.panelClass).toContain('simple-dialog-panel');
     });
 
     it('should have packetFilters config', () => {
       const config = service.getConfig('packetFilters');
+      expect(config.panelClass).toContain('dialog-medium-panel');
       expect(config.panelClass).toContain('simple-dialog-panel');
     });
 
     it('should have helpDialog config', () => {
       const config = service.getConfig('helpDialog');
+      expect(config.panelClass).toContain('dialog-medium-panel');
       expect(config.panelClass).toContain('simple-dialog-panel');
     });
   });

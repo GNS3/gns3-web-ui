@@ -64,7 +64,7 @@ export class SnapshotDialogComponent {
 
   openCreateDialog() {
     const dialogRef = this.dialog.open(CreateSnapshotDialogComponent, {
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-small-panel'],
       data: {
         controller: this.controller,
         project: this.project,

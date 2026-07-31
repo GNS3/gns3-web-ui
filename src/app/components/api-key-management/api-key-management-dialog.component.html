@@ -52,14 +52,24 @@
         <mat-header-cell *matHeaderCellDef class="col-actions">Actions</mat-header-cell>
         <mat-cell *matCellDef="let row" class="col-actions">
           @if (!row.revoked) {
-            <button mat-icon-button color="warn" (click)="onRevoke(row)" matTooltip="Revoke API key">
+            <button
+              mat-icon-button
+              class="destructive-icon-button"
+              (click)="onRevoke(row)"
+              matTooltip="Revoke API key"
+            >
               <mat-icon>block</mat-icon>
             </button>
           } @else {
             <button mat-icon-button (click)="onRestore(row)" matTooltip="Restore API key">
               <mat-icon>restart_alt</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="onPermanentDelete(row)" matTooltip="Permanently delete">
+            <button
+              mat-icon-button
+              class="destructive-icon-button"
+              (click)="onPermanentDelete(row)"
+              matTooltip="Permanently delete"
+            >
               <mat-icon>delete_forever</mat-icon>
             </button>
           }

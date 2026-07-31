@@ -27,7 +27,7 @@ export class SnapshotMenuItemComponent {
     if (!project || !controller) return;
 
     this.dialog.open(SnapshotDialogComponent, {
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-large-panel'],
       data: {
         controller,
         project,

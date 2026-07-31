@@ -10,6 +10,8 @@ export interface DialogConfig {
   [key: string]: unknown;
 }
 
+export type DialogSize = 'small' | 'medium' | 'large' | 'extra-large';
+
 @Injectable({ providedIn: 'root' })
 export class DialogConfigService {
   private configs: Map<string, DialogConfig> = new Map();
@@ -18,114 +20,135 @@ export class DialogConfigService {
     this.registerDefaultConfigs();
   }
 
+  sizeConfig(size: DialogSize): DialogConfig {
+    return {
+      panelClass: ['base-dialog-panel', `dialog-${size}-panel`],
+      autoFocus: false,
+      maxWidth: 'calc(100vw - 32px)',
+      maxHeight: 'calc(100vh - 32px)',
+    };
+  }
+
   private registerDefaultConfigs(): void {
-    // Base dialog - common styles for all dialogs
+    // Small: confirmations and short, single-purpose forms.
+    const smallConfig = this.sizeConfig('small');
+
+    // Medium: editors, selectors, and multi-section forms.
+    const mediumConfig = this.sizeConfig('medium');
+
+    // Large: wide editors and tables that do not need the full management workspace.
+    const largeConfig = this.sizeConfig('large');
+
+    // Extra large: management/detail workflows with tabs, tables, or dense forms.
+    const extraLargeConfig = this.sizeConfig('extra-large');
+
+    // Base dialogs default to the safest small category.
     const baseConfig: DialogConfig = {
-      panelClass: ['base-dialog-panel'],
+      ...smallConfig,
     };
 
-    // Configurator dialog - main config pages (800px, tabs, cards)
-    // Size defined in CSS: .configurator-dialog-panel (800px, 80vh)
+    // Legacy aliases remain during migration; the category class owns sizing.
     const configuratorConfig: DialogConfig = {
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      ...largeConfig,
+      panelClass: ['base-dialog-panel', 'dialog-large-panel', 'configurator-dialog-panel'],
     };
 
-    // Simple dialog - sub dialogs like Image Creator (500px)
-    // Size defined in CSS: .simple-dialog-panel (500px, 80vh)
     const simpleConfig: DialogConfig = {
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+      ...mediumConfig,
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'simple-dialog-panel'],
     };
 
     // Change Symbol Dialog - inherits configurator
     this.configs.set('changeSymbol', {
       ...configuratorConfig,
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'change-symbol-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'change-symbol-dialog-panel'],
     });
 
     // Template Symbol Dialog - inherits configurator (same styling as change symbol)
     this.configs.set('templateSymbol', {
       ...configuratorConfig,
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'change-symbol-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'change-symbol-dialog-panel'],
     });
 
-    // Symbols Manager Dialog - inherits configurator (800px width)
+    // Symbols Manager Dialog - large asset-management workspace.
     this.configs.set('symbolsManager', {
       ...configuratorConfig,
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-large-panel', 'configurator-dialog-panel'],
     });
 
     // Confirmation Dialog
     this.configs.set('confirmation', {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      ...smallConfig,
+      panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-danger-panel'],
     });
 
     // Edit Controller Dialog
     this.configs.set('editController', {
       ...baseConfig,
-      panelClass: ['base-dialog-panel', 'edit-controller-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'edit-controller-dialog-panel'],
     });
 
     // Add Controller Dialog
     this.configs.set('addController', {
       ...baseConfig,
-      panelClass: ['base-dialog-panel', 'add-controller-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'add-controller-dialog-panel'],
     });
 
     // Custom Adapters Dialog
     // Size defined in CSS: .custom-adapters-dialog-panel (1000px)
     this.configs.set('customAdapters', {
-      panelClass: ['base-dialog-panel', 'custom-adapters-dialog-panel'],
+      ...extraLargeConfig,
+      panelClass: ['base-dialog-panel', 'dialog-extra-large-panel', 'custom-adapters-dialog-panel'],
     });
 
-    // Edit Project Dialog
-    // Size defined in CSS: .edit-project-dialog-panel (700px, 600px)
+    // Edit Project Dialog - large multi-section form.
     this.configs.set('editProject', {
       ...configuratorConfig,
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'edit-project-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-large-panel', 'edit-project-dialog-panel'],
     });
 
     // Add ACE Dialog
     // Size defined in CSS: .add-ace-dialog-panel (1000px)
     this.configs.set('addAce', {
       ...configuratorConfig,
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'add-ace-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-extra-large-panel', 'add-ace-dialog-panel'],
     });
 
     // New Template Dialog
     this.configs.set('newTemplate', {
       ...configuratorConfig,
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'new-template-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'new-template-dialog-panel'],
     });
 
     // Nodes Menu Confirmation Dialog
     // Size defined in CSS: .nodes-menu-confirmation-dialog-panel (500px, 200px)
     this.configs.set('nodesMenuConfirmation', {
-      ...simpleConfig,
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'nodes-menu-confirmation-dialog-panel'],
+      ...smallConfig,
+      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'nodes-menu-confirmation-dialog-panel'],
     });
 
     // Start Capture Dialog - simple dialog (500px)
     this.configs.set('startCapture', {
       ...simpleConfig,
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'simple-dialog-panel'],
     });
 
-    // Link Style Editor Dialog - simple dialog (500px)
+    // Link Style Editor Dialog - short single-purpose editor.
     this.configs.set('linkStyleEditor', {
-      ...simpleConfig,
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+      ...smallConfig,
+      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'simple-dialog-panel'],
     });
 
-    // Packet Filters Dialog - simple dialog (500px)
+    // Packet Filters Dialog - medium two-column editor.
     this.configs.set('packetFilters', {
-      ...simpleConfig,
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+      ...mediumConfig,
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'simple-dialog-panel'],
     });
 
     // Help Dialog - simple dialog (500px)
     this.configs.set('helpDialog', {
       ...simpleConfig,
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'simple-dialog-panel'],
     });
   }
 
@@ -133,7 +156,7 @@ export class DialogConfigService {
     const config = this.configs.get(name);
     if (!config) {
       console.warn(`DialogConfigService: No config found for "${name}", using base config`);
-      return { panelClass: ['base-dialog-panel'] };
+      return this.sizeConfig('small');
     }
     return { ...config };
   }

@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Save project as</h1>
 
-<div class="modal-form-container">
-  <mat-form-field class="form-field">
+<div mat-dialog-content>
+  <mat-form-field class="form-field" subscriptSizing="dynamic">
     <input matInput placeholder="Project name" [value]="name()" (input)="name.set($event.target.value)" type="text" />
   </mat-form-field>
 </div>

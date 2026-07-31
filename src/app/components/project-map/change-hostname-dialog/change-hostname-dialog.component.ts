@@ -10,7 +10,6 @@ import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatCardModule } from '@angular/material/card';
 import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
@@ -20,9 +19,8 @@ import { ToasterService } from '@services/toaster.service';
   standalone: true,
   selector: 'app-change-hostname-dialog-component',
   templateUrl: './change-hostname-dialog.component.html',
-  styleUrls: ['./change-hostname-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatDialogModule, MatButtonModule, MatInputModule, MatFormFieldModule, MatCardModule, ReactiveFormsModule],
+  imports: [MatDialogModule, MatButtonModule, MatInputModule, MatFormFieldModule, ReactiveFormsModule],
 })
 export class ChangeHostnameDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ChangeHostnameDialogComponent>);

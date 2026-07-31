@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Create new group</h1>
 <form [formGroup]="groupNameForm">
   <div mat-dialog-content>
-    <mat-form-field appearance="fill" class="full-width-field">
+    <mat-form-field appearance="fill" class="full-width-field" subscriptSizing="dynamic">
       <mat-label>Group name</mat-label>
       <input
         matInput
@@ -21,7 +21,7 @@
 
     <h5>Add users to group:</h5>
 
-    <mat-form-field appearance="fill" class="full-width-field">
+    <mat-form-field appearance="fill" class="full-width-field" subscriptSizing="dynamic">
       <mat-label>Users</mat-label>
       <input type="text" matInput [matAutocomplete]="auto" [formControl]="autocompleteControl" />
       <mat-autocomplete
@@ -41,7 +41,15 @@
         <div class="userList">
           <div>{{ user.username }}</div>
           <div>{{ user.email }}</div>
-          <mat-icon (click)="delUser(user)">delete</mat-icon>
+          <button
+            mat-icon-button
+            type="button"
+            class="destructive-icon-button"
+            (click)="delUser(user)"
+            aria-label="Remove user"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
         </div>
       </div>
       }

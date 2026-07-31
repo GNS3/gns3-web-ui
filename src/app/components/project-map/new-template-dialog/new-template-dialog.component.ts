@@ -698,7 +698,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
 
   showInfo(object: Appliance) {
     let dialogRef = this.dialog.open(ApplianceInfoDialogComponent, {
-      width: '250px',
+      panelClass: ['base-dialog-panel', 'dialog-small-panel'],
       data: { appliance: object },
     });
     dialogRef.componentInstance.appliance = object;
@@ -912,10 +912,9 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     iouTemplate.template_type = 'iou';
 
     const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
-      width: '400px',
       autoFocus: false,
       disableClose: true,
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'template-name-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'template-name-dialog-panel'],
       data: {
         name: this.applianceToInstall.name,
       },
@@ -934,7 +933,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
             const message = err.error?.message || err.message || 'Failed to add template';
             this.toasterService.error(message);
             this.changeDetector.markForCheck();
-          }
+          },
         });
       } else {
         return false;
@@ -974,10 +973,9 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     iosTemplate.template_type = 'dynamips';
 
     const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
-      width: '400px',
       autoFocus: false,
       disableClose: true,
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'template-name-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'template-name-dialog-panel'],
       data: {
         name: this.applianceToInstall.name,
       },
@@ -1019,10 +1017,9 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     dockerTemplate.template_type = 'docker';
 
     const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
-      width: '400px',
       autoFocus: false,
       disableClose: true,
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'template-name-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'template-name-dialog-panel'],
       data: {
         name: this.applianceToInstall.name,
       },
@@ -1042,7 +1039,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
             const message = err.error?.message || err.message || 'Failed to add template';
             this.toasterService.error(message);
             this.changeDetector.markForCheck();
-          }
+          },
         });
       } else {
         return false;
@@ -1091,10 +1088,9 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     qemuTemplate.platform = this.applianceToInstall.qemu.arch;
 
     const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
-      width: '400px',
       autoFocus: false,
       disableClose: true,
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'template-name-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'template-name-dialog-panel'],
       data: {
         name: this.applianceToInstall.name,
       },
@@ -1114,7 +1110,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
             const message = err.error?.message || err.message || 'Failed to add template';
             this.toasterService.error(message);
             this.changeDetector.markForCheck();
-          }
+          },
         });
       } else {
         return false;

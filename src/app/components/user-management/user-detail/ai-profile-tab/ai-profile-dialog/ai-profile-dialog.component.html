@@ -281,7 +281,11 @@
               <input matInput formControlName="value" />
             </mat-form-field>
 
-            <button mat-icon-button (click)="removeCustomField(i)" color="warn" class="delete-btn">
+            <button
+              mat-icon-button
+              (click)="removeCustomField(i)"
+              class="delete-btn destructive-icon-button"
+            >
               <mat-icon>delete</mat-icon>
             </button>
           </div>

@@ -259,11 +259,9 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     }
 
     const dialogRef = this.dialog.open(NewTemplateDialogComponent, {
-      width: '800px',
-      maxHeight: '800px',
       autoFocus: false,
       disableClose: true,
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'new-template-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'new-template-dialog-panel'],
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;

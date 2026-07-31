@@ -1557,7 +1557,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   addNewProject() {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
-      width: '400px',
+      panelClass: ['base-dialog-panel', 'dialog-small-panel'],
       autoFocus: false,
       disableClose: true,
     });
@@ -1567,7 +1567,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   saveProject() {
     const dialogRef = this.dialog.open(SaveProjectDialogComponent, {
-      width: '400px',
+      panelClass: ['base-dialog-panel', 'dialog-small-panel'],
       autoFocus: false,
       disableClose: true,
     });
@@ -1597,7 +1597,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   importProject() {
     let uuid: string = '';
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
-      width: '400px',
+      panelClass: ['base-dialog-panel', 'dialog-small-panel'],
       autoFocus: false,
       disableClose: true,
     });
@@ -1652,7 +1652,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   exportPortableProjectDialog() {
     const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel'],
       autoFocus: false,
       disableClose: true,
       data: { controllerDetails: this.controller, projectDetails: this.project },
@@ -1737,8 +1737,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public showReadme() {
     const dialogRef = this.dialog.open(ProjectReadmeComponent, {
-      width: '600px',
-      height: '650px',
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel'],
       autoFocus: false,
       disableClose: true,
     });

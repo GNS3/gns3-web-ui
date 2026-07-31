@@ -7,7 +7,7 @@
   </mat-radio-group>
 
   <form [formGroup]="nameForm" class="name-form">
-    <mat-form-field class="name-form">
+    <mat-form-field class="name-form" subscriptSizing="dynamic">
       <input
         matInput
         (keydown)="onKeyDown($event)"

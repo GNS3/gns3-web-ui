@@ -149,11 +149,7 @@ describe('ChatMessageListComponent', () => {
           type: 'tool_call',
           toolCall,
         },
-        width: '800px',
-        minWidth: '600px',
-        maxWidth: '95vw',
-        maxHeight: '85vh',
-        panelClass: ['tool-details-dialog'],
+        panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'tool-details-dialog'],
       });
     });
 
@@ -184,11 +180,7 @@ describe('ChatMessageListComponent', () => {
           toolName: 'show_version',
           toolOutput: '{"ios":"15.2"}',
         },
-        width: '800px',
-        minWidth: '600px',
-        maxWidth: '95vw',
-        maxHeight: '85vh',
-        panelClass: ['tool-details-dialog'],
+        panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'tool-details-dialog'],
       });
     });
   });

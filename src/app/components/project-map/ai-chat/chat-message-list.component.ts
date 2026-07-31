@@ -296,11 +296,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked, Af
 
     this.dialog.open(ToolDetailsDialogComponent, {
       data,
-      width: '800px',
-      minWidth: '600px',
-      maxWidth: '95vw',
-      maxHeight: '85vh',
-      panelClass: ['tool-details-dialog'],
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'tool-details-dialog'],
     });
   }
 
@@ -317,11 +313,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked, Af
 
     this.dialog.open(ToolDetailsDialogComponent, {
       data,
-      width: '800px',
-      minWidth: '600px',
-      maxWidth: '95vw',
-      maxHeight: '85vh',
-      panelClass: ['tool-details-dialog'],
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'tool-details-dialog'],
     });
   }
 

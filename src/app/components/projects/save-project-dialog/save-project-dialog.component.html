@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>Save project as</h1>
-<form class="file-name-form">
-  <mat-form-field class="file-name-form-field">
+<div mat-dialog-content>
+  <mat-form-field class="file-name-form-field" subscriptSizing="dynamic">
     <mat-label>Project name</mat-label>
     <input
       matInput
@@ -21,21 +21,21 @@
     <mat-error>Project with this name already exists</mat-error>
     }
   </mat-form-field>
-  <div mat-dialog-actions>
-    <button mat-button (click)="onNoClick()" color="accent" [disabled]="isCheckingName()">Cancel</button>
-    <button
-      mat-button
-      (click)="onAddClick()"
-      tabindex="2"
-      mat-raised-button
-      color="primary"
-      [disabled]="!isNameValid() || isCheckingName()"
-    >
-      @if (isCheckingName()) {
-      <span>Checking...</span>
-      } @else {
-      <span>Save project</span>
-      }
-    </button>
-  </div>
-</form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()" color="accent" [disabled]="isCheckingName()">Cancel</button>
+  <button
+    mat-button
+    (click)="onAddClick()"
+    tabindex="2"
+    mat-raised-button
+    color="primary"
+    [disabled]="!isNameValid() || isCheckingName()"
+  >
+    @if (isCheckingName()) {
+    <span>Checking...</span>
+    } @else {
+    <span>Save project</span>
+    }
+  </button>
+</div>

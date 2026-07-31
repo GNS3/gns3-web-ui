@@ -8,36 +8,8 @@
 }
 
 .file-button {
-  height: 48px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  text-transform: none;
-  letter-spacing: 0.5px;
   white-space: nowrap;
   flex-shrink: 0;
-  align-self: center;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 0 16px;
-
-  &:hover:not([disabled]) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
-  }
-
-  &:active:not([disabled]) {
-    transform: translateY(0);
-  }
-}
-
-.file-name-form {
-  width: 100%;
-  padding: 0 24px;
-  box-sizing: border-box;
 }
 
 .input-row {
@@ -52,37 +24,7 @@
   align-self: center;
 }
 
-.delete-button {
-  background: transparent;
-  border: none;
-  outline: 0;
-  width: 40px;
-  height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
-  }
-}
-
-.delete-icon {
-  vertical-align: middle;
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-  color: var(--mat-sys-on-surface-variant);
-
-  &:hover {
-    color: var(--mat-sys-on-surface);
-  }
-}
-
 .result-message-box {
-  margin-top: 16px;
   text-align: center;
   color: var(--mat-sys-on-surface);
 }

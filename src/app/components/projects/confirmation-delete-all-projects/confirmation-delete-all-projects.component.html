@@ -7,7 +7,7 @@
   }
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button (click)="deleteAll()">Delete</button>
+  <button mat-raised-button class="destructive-button" (click)="deleteAll()">Delete</button>
   <button mat-button mat-dialog-close cdkFocusInitial>Cancel</button>
 </div>
 } @if (isDelete() && !isUsedFiles()) {

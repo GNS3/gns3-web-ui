@@ -33,11 +33,10 @@
             <p class="instructions">Select custom symbols to delete:</p>
             <div class="delete-actions">
               <button
-                mat-button
-                color="warn"
+                mat-raised-button
+                class="destructive-button"
                 (click)="deleteSelectedSymbols()"
                 [disabled]="!hasSelectedSymbols()"
-                mat-raised-button
               >
                 <mat-icon>delete</mat-icon>
                 Delete ({{ selectedForDeletion().size }})

@@ -923,7 +923,7 @@ button.projects__details-action-btn {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1000px;
+  max-width: 1600px;
   margin: 0 auto;
   gap: 16px;
 }
@@ -1058,8 +1058,7 @@ button.projects__details-action-btn {
   }
 
   .projects__footer-content {
-    flex-direction: column;
-    gap: 12px;
-    text-align: center;
+    gap: 8px;
+    text-align: left;
   }
 }

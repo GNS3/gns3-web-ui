@@ -84,7 +84,7 @@ describe('ChangeHostnameDialogComponent', () => {
     it('should display node name in the dialog title', () => {
       component.ngOnInit();
       fixture.detectChanges();
-      const title = fixture.debugElement.query(By.css('.change-hostname__title'));
+      const title = fixture.debugElement.query(By.css('[mat-dialog-title]'));
       expect(title.nativeElement.textContent).toContain('Router1');
     });
   });

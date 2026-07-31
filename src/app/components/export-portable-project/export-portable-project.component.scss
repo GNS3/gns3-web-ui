@@ -1,9 +1,3 @@
-/**
- * Export Portable Project Component Styles
- * Uses BEM naming convention
- * Inherits from base-dialog-panel and simple-dialog-panel
- */
-
 :host {
   display: block;
 }
@@ -11,97 +5,36 @@
 .export-portable-project {
   &__form {
     display: flex;
+    min-height: 0;
     flex-direction: column;
-  }
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px 24px 8px;
-  }
-
-  &__title {
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--mat-sys-on-surface);
-    margin: 0;
   }
 
   &__close-btn {
+    margin-left: auto;
     flex-shrink: 0;
   }
 
-  &__content {
-    padding: 16px 24px 0;
-    display: flex;
-    flex-direction: column;
+  &__settings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
 
-  &__row {
+  &__options {
     display: flex;
-    align-items: center;
-    gap: 16px;
-
-    @media (max-width: 600px) {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  }
-
-  &__label {
-    flex: 0 0 140px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--mat-sys-on-surface-variant);
-    align-self: flex-start;
-    padding-top: 12px;
-  }
-
-  &__field {
-    flex: 1;
-  }
-
-  &__checkbox-section {
-    display: flex;
-    align-items: center;
-    min-height: 35px;
-  }
-
-  &__checkbox {
-    margin: 0;
-  }
-
-  &__actions {
-    display: flex;
-    justify-content: flex-end;
+    margin-top: 16px;
+    flex-direction: column;
     gap: 8px;
-    padding: 16px 24px;
   }
 }
 
-/* Legacy class names for backward compatibility */
-.checkBox-section {
-  display: flex;
-  align-items: center;
-  min-height: 35px;
+:host-context(html[data-density='compact']) .export-portable-project__options {
+  margin-top: 12px;
+  gap: 4px;
 }
 
-.checkBox-margin {
-  margin: 0 10px;
-}
-
-.input-full-width {
-  width: 100%;
-}
-
-.col-data {
-  text-align: left;
-  align-self: self-end;
-  margin-bottom: 20px;
-}
-
-.checkbox-row {
-  margin-top: 5px;
+@media (max-width: 600px) {
+  .export-portable-project__settings {
+    grid-template-columns: 1fr;
+  }
 }

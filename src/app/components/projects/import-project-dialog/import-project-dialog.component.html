@@ -1,80 +1,86 @@
 <h1 mat-dialog-title>Import project</h1>
 @if (!isFirstStepCompleted()) {
-<div>
-  <form class="file-name-form">
-    <input
-      type="file"
-      accept=".gns3project, .gns3p"
-      class="non-visible"
-      #file
-      (change)="uploadProjectFile($event)"
-      ng2FileSelect
-      [uploader]="uploader"
-    />
-    <div class="input-row">
-      <mat-form-field class="file-name-form-field" subscriptSizing="dynamic">
-        <input
-          matInput
-          type="text"
-          [value]="projectName()"
-          (input)="projectName.set($event.target.value)"
-          [ngClass]="{ 'is-invalid': hasInvalidCharacters() || (isNameEmpty() && submitted()) }"
-          placeholder="Enter project name"
-        />
-        @if (isNameEmpty() && submitted()) {
-        <mat-error>Project name is required</mat-error>
-        } @if (hasInvalidCharacters()) {
-        <mat-error>Project name is incorrect</mat-error>
-        }
-      </mat-form-field>
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="file.click()"
-        matTooltip="Import your .gns3p or .gns3project file"
-        matTooltipClass="custom-tooltip"
-        class="file-button"
-      >
-        <mat-icon>attach_file</mat-icon>
-        Choose file
-      </button>
-      @if (isDeleteVisible()) {
-      <button class="delete-button" matTooltip="Remove selected file" matTooltipPosition="above">
-        <mat-icon color="primary" (click)="onDeleteClick()" class="delete-icon">clear</mat-icon>
-      </button>
+<div mat-dialog-content>
+  <input
+    type="file"
+    accept=".gns3project, .gns3p"
+    class="non-visible"
+    #file
+    (change)="uploadProjectFile($event)"
+    ng2FileSelect
+    [uploader]="uploader"
+  />
+  <div class="input-row">
+    <mat-form-field class="file-name-form-field" subscriptSizing="dynamic">
+      <input
+        matInput
+        type="text"
+        [value]="projectName()"
+        (input)="projectName.set($event.target.value)"
+        [ngClass]="{ 'is-invalid': hasInvalidCharacters() || (isNameEmpty() && submitted()) }"
+        placeholder="Enter project name"
+      />
+      @if (isNameEmpty() && submitted()) {
+      <mat-error>Project name is required</mat-error>
+      } @if (hasInvalidCharacters()) {
+      <mat-error>Project name is incorrect</mat-error>
       }
-    </div>
-    <div mat-dialog-actions align="end">
-      <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
-      <button
-        mat-button
-        [disabled]="!isImportEnabled()"
-        (click)="onImportClick()"
-        tabindex="2"
-        mat-raised-button
-        color="primary"
-      >
-        Import
-      </button>
-    </div>
-  </form>
+    </mat-form-field>
+    <button
+      mat-stroked-button
+      color="primary"
+      (click)="file.click()"
+      matTooltip="Import your .gns3p or .gns3project file"
+      matTooltipClass="custom-tooltip"
+      class="file-button"
+    >
+      <mat-icon>attach_file</mat-icon>
+      Choose file
+    </button>
+    @if (isDeleteVisible()) {
+    <button
+      mat-icon-button
+      type="button"
+      class="destructive-icon-button"
+      (click)="onDeleteClick()"
+      matTooltip="Remove selected file"
+      matTooltipPosition="above"
+      aria-label="Remove selected file"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+    }
+  </div>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
+  <button
+    mat-button
+    [disabled]="!isImportEnabled()"
+    (click)="onImportClick()"
+    tabindex="2"
+    mat-raised-button
+    color="primary"
+  >
+    Import
+  </button>
 </div>
 } @if (isFirstStepCompleted()) {
-<div>
+<div mat-dialog-content>
   <div class="result-message-box">
     <span>{{ resultMessage() }}</span>
   </div>
-  <div mat-dialog-actions align="end">
-    <button
-      mat-button
-      [disabled]="!isFinishEnabled()"
-      (click)="onNoClick()"
-      tabindex="2"
-      mat-raised-button
-      color="primary"
-    >
-      Finish
-    </button>
-  </div>
+</div>
+<div mat-dialog-actions align="end">
+  <button
+    mat-button
+    [disabled]="!isFinishEnabled()"
+    (click)="onNoClick()"
+    tabindex="2"
+    mat-raised-button
+    color="primary"
+  >
+    Finish
+  </button>
 </div>
 }
