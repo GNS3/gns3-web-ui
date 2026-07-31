@@ -1,4 +1,15 @@
-<h1 mat-dialog-title>Configurator for IOU device {{ name }}</h1>
+<div mat-dialog-title class="node-config__header">
+  <h1 class="node-config__title">Configure Node <span aria-hidden="true">—</span> IOS on UNIX {{ name }}</h1>
+  <button
+    mat-icon-button
+    type="button"
+    class="node-config__close"
+    aria-label="Close node configuration"
+    (click)="onCancelClick()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
 <div class="modal-form-container">
   <div class="content">
@@ -6,7 +17,11 @@
       <mat-card class="matCard">
         @if (name) {
         <mat-tab-group>
-          <mat-tab label="General settings">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">General settings</h2>
             <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Name</mat-label>
@@ -23,8 +38,13 @@
                   </mat-chip>
                   }
                 </mat-chip-grid>
-                <input matInput placeholder="Add tags" [matChipInputFor]="chipList"
-                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="addTag($event)" />
+                <input
+                  matInput
+                  placeholder="Add tags"
+                  [matChipInputFor]="chipList"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="addTag($event)"
+                />
               </mat-form-field>
 
               <mat-form-field class="form-field">
@@ -36,7 +56,9 @@
                 </mat-select>
               </mat-form-field>
 
-              <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)"> Auto start console </mat-checkbox>
+              <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)">
+                Auto start console
+              </mat-checkbox>
 
               <mat-checkbox [checked]="l1Keepalives()" (change)="l1Keepalives.set($event.checked)">
                 Enable Layer 1 keepalive messages
@@ -62,24 +84,47 @@
             </div>
           </mat-tab>
 
-          <mat-tab label="Network">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>lan</mat-icon>Network</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">Network settings</h2>
             <div class="two-column-grid">
               <mat-form-field class="form-field">
                 <mat-label>Ethernet adapters</mat-label>
-                <input matInput [value]="ethernetAdapters()" (input)="ethernetAdapters.set($event.target.value)" type="text" />
+                <input
+                  matInput
+                  [value]="ethernetAdapters()"
+                  (input)="ethernetAdapters.set($event.target.value)"
+                  type="text"
+                />
               </mat-form-field>
               <mat-form-field class="form-field">
                 <mat-label>Serial adapters</mat-label>
-                <input matInput [value]="serialAdapters()" (input)="serialAdapters.set($event.target.value)" type="text" />
+                <input
+                  matInput
+                  [value]="serialAdapters()"
+                  (input)="serialAdapters.set($event.target.value)"
+                  type="text"
+                />
               </mat-form-field>
             </div>
           </mat-tab>
 
-          <mat-tab label="Usage">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>bar_chart</mat-icon>Usage</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">Usage notes</h2>
             <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Usage</mat-label>
-                <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)"></textarea>
+                <textarea
+                  matInput
+                  class="node-config__usage-textarea"
+                  [value]="usage()"
+                  (input)="usage.set($event.target.value)"
+                ></textarea>
               </mat-form-field>
             </div>
           </mat-tab>
@@ -92,5 +137,5 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
 </div>

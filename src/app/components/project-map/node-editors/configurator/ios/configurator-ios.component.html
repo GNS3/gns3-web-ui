@@ -1,4 +1,15 @@
-<h1 mat-dialog-title>Configurator for IOS router {{ name }}</h1>
+<div mat-dialog-title class="node-config__header">
+  <h1 class="node-config__title">Configure Node <span aria-hidden="true">—</span> IOS router {{ name }}</h1>
+  <button
+    mat-icon-button
+    type="button"
+    class="node-config__close"
+    aria-label="Close node configuration"
+    (click)="onCancelClick()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
 <div class="modal-form-container">
   <div class="content">
@@ -6,13 +17,17 @@
       <mat-card class="matCard">
         @if (name) {
         <mat-tab-group>
-          <mat-tab label="General settings">
-            <br />
-            <mat-label>Platform: {{ node.properties.platform }}</mat-label>
-            @if (node.properties.chassis) {
-            <mat-label> (chassis: {{ node.properties.chassis }})</mat-label>
-            }
-            <br /><br />
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">General settings</h2>
+            <p class="node-config__meta">
+              Platform: {{ node.properties.platform }}
+              @if (node.properties.chassis) {
+              <span> · Chassis: {{ node.properties.chassis }}</span>
+              }
+            </p>
             <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Name</mat-label>
@@ -76,14 +91,22 @@
                     }
                   </mat-select>
                 </mat-form-field>
-                <mat-checkbox class="form-grid__full" [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)">
+                <mat-checkbox
+                  class="form-grid__full"
+                  [checked]="consoleAutoStart()"
+                  (change)="consoleAutoStart.set($event.checked)"
+                >
                   Auto start console
                 </mat-checkbox>
               </div>
             </div>
           </mat-tab>
 
-          <mat-tab label="Memories and disks">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>storage</mat-icon>Memory &amp; disks</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">Memory and disks</h2>
             <div class="disk-cards-grid">
               <!-- Memory Card -->
               <div class="disk-card">
@@ -139,7 +162,11 @@
             </div>
           </mat-tab>
 
-          <mat-tab label="Slots">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>lan</mat-icon>Slots</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">Slots and adapters</h2>
             <div class="form-container">
               <div class="ios-configurator__slots-section">
                 <div class="ios-configurator__slots-group">
@@ -186,7 +213,11 @@
             </div>
           </mat-tab>
 
-          <mat-tab label="Advanced">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>settings</mat-icon>Advanced</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">Advanced settings</h2>
             <div class="form-container">
               <div class="disk-cards-grid">
                 <div class="disk-card">
@@ -228,19 +259,32 @@
                       <input matInput type="text" [value]="execArea()" (input)="execArea.set($event.target.value)" />
                       <span matSuffix>MiB</span>
                     </mat-form-field>
-                    <mat-checkbox [checked]="mmap()" (change)="mmap.set($event.checked)"> Enable mmap support </mat-checkbox>
-                    <mat-checkbox [checked]="sparsemem()" (change)="sparsemem.set($event.checked)"> Enable sparse memory support </mat-checkbox>
+                    <mat-checkbox [checked]="mmap()" (change)="mmap.set($event.checked)">
+                      Enable mmap support
+                    </mat-checkbox>
+                    <mat-checkbox [checked]="sparsemem()" (change)="sparsemem.set($event.checked)">
+                      Enable sparse memory support
+                    </mat-checkbox>
                   </div>
                 </div>
               </div>
             </div>
           </mat-tab>
 
-          <mat-tab label="Usage">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>bar_chart</mat-icon>Usage</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">Usage notes</h2>
             <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Usage</mat-label>
-                <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)"></textarea>
+                <textarea
+                  matInput
+                  class="node-config__usage-textarea"
+                  [value]="usage()"
+                  (input)="usage.set($event.target.value)"
+                ></textarea>
               </mat-form-field>
             </div>
           </mat-tab>
@@ -253,5 +297,5 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
 </div>

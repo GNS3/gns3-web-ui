@@ -31,7 +31,7 @@ export class ConfigActionComponent {
   readonly controller = input<Controller>(undefined);
   readonly node = input<Node>(undefined);
   private conf = {
-    panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+    panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'node-configurator-dialog-panel'],
     autoFocus: false,
     disableClose: false,
   };
@@ -52,11 +52,7 @@ export class ConfigActionComponent {
     } else if (node.node_type === 'iou') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogIouComponent, this.conf);
     } else if (node.node_type === 'qemu') {
-      // QEMU uses base styles + specific overrides
-      this.dialogRef = this.dialog.open(ConfiguratorDialogQemuComponent, {
-        ...this.conf,
-        panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
-      });
+      this.dialogRef = this.dialog.open(ConfiguratorDialogQemuComponent, this.conf);
     } else if (node.node_type === 'virtualbox') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogVirtualBoxComponent, this.conf);
     } else if (node.node_type === 'vmware') {
@@ -64,7 +60,7 @@ export class ConfigActionComponent {
     } else if (node.node_type === 'docker') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogDockerComponent, {
         ...this.conf,
-        panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'docker-configurator-dialog-panel'],
+        panelClass: [...this.conf.panelClass, 'docker-configurator-dialog-panel'],
       });
     } else if (node.node_type === 'nat') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogNatComponent, this.conf);
@@ -73,7 +69,7 @@ export class ConfigActionComponent {
     } else if (node.node_type === 'atm_switch') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogAtmSwitchComponent, {
         ...this.conf,
-        panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'atm-switch-config-panel'],
+        panelClass: [...this.conf.panelClass, 'atm-switch-config-panel'],
       });
     }
 

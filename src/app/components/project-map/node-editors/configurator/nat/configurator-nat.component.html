@@ -1,12 +1,28 @@
-<h1 mat-dialog-title>Configurator for NAT node {{ name }}</h1>
+<div mat-dialog-title class="node-config__header">
+  <h1 class="node-config__title">Configure Node <span aria-hidden="true">—</span> NAT {{ name }}</h1>
+  <button
+    mat-icon-button
+    type="button"
+    class="node-config__close"
+    aria-label="Close node configuration"
+    (click)="onCancelClick()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
 <div class="modal-form-container">
+  <div class="node-config__single-tab" role="tablist" aria-label="Node configuration sections">
+    <div role="tab" aria-selected="true">
+      <span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span>
+    </div>
+  </div>
   <div class="content">
     <div class="default-content">
       <mat-card class="matCard">
         @if (name) {
+        <h2 class="node-config__section-heading">General settings</h2>
         <div class="form-container">
-
           <mat-form-field class="form-field">
             <mat-label>Name</mat-label>
             <input matInput type="text" [value]="nodeName()" (input)="nodeName.set($event.target.value)" />
@@ -38,21 +54,21 @@
                 <th mat-header-cell *matHeaderCellDef>Interface</th>
                 <td mat-cell *matCellDef="let element">
                   @if (getHostInterface(element.interface || element.name); as host) {
-                    <div class="cloud-iface-cell">
-                      <span [matTooltip]="formatFlags(host.flags) || null">
-                        <span
-                          class="cloud-iface-status"
-                          [class.cloud-iface-status--up]="host.status === 'up'"
-                          [class.cloud-iface-status--down]="host.status !== 'up'"
-                        ></span>
-                        {{ element.name }}
-                      </span>
-                      @if (formatInterfaceMeta(host); as meta) {
-                        <span class="cloud-iface-meta">{{ meta }}</span>
-                      }
-                    </div>
+                  <div class="cloud-iface-cell">
+                    <span [matTooltip]="formatFlags(host.flags) || null">
+                      <span
+                        class="cloud-iface-status"
+                        [class.cloud-iface-status--up]="host.status === 'up'"
+                        [class.cloud-iface-status--down]="host.status !== 'up'"
+                      ></span>
+                      {{ element.name }}
+                    </span>
+                    @if (formatInterfaceMeta(host); as meta) {
+                    <span class="cloud-iface-meta">{{ meta }}</span>
+                    }
+                  </div>
                   } @else {
-                    {{ element.name }}
+                  {{ element.name }}
                   }
                 </td>
               </ng-container>
@@ -61,10 +77,8 @@
                 <th mat-header-cell *matHeaderCellDef>IP addresses</th>
                 <td mat-cell *matCellDef="let element">
                   @for (ip of getHostInterfaceIps(element.interface || element.name); track ip.address) {
-                    <div class="cloud-ip-line">{{ formatIpAddress(ip) }}</div>
-                  } @empty {
-                    —
-                  }
+                  <div class="cloud-ip-line">{{ formatIpAddress(ip) }}</div>
+                  } @empty { — }
                 </td>
               </ng-container>
 
@@ -82,5 +96,5 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
 </div>

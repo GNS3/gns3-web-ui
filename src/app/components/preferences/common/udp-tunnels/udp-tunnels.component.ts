@@ -25,10 +25,11 @@ import { ValidationService } from '@services/validation';
 
       .udp-tunnels__add-btn {
         display: flex;
-        justify-content: center;
+        justify-content: flex-end;
+        margin-bottom: 16px;
 
         button {
-          width: 80%;
+          min-width: 96px;
         }
       }
     `,

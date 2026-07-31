@@ -908,6 +908,848 @@ h2[mat-dialog-title] {
 // Node Editor Dialogs
 // ============================================= */
 
+// Shared node configurator shell. Kept separate from .configurator-dialog-panel
+// because that class is also used by project and user-management dialogs.
+.node-configurator-dialog-panel {
+  --mat-dialog-container-max-width: min(1080px, calc(100vw - 48px));
+  --node-config-dialog-height: min(880px, calc(100vh - 48px));
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: min(1080px, calc(100vw - 48px));
+    max-width: min(1080px, calc(100vw - 48px));
+    height: auto;
+    max-height: var(--node-config-dialog-height);
+  }
+
+  mat-dialog-container:has(mat-tab-group),
+  .mat-mdc-dialog-container:has(mat-tab-group) {
+    height: var(--node-config-dialog-height);
+  }
+
+  .mat-mdc-dialog-surface {
+    overflow: hidden;
+    border: 1px solid var(--mat-sys-outline-variant);
+    background: var(--mat-sys-surface-container-low);
+  }
+
+  :is(
+      app-configurator-qemu,
+      app-configurator-docker,
+      app-configurator-ios,
+      app-configurator-iou,
+      app-configurator-virtualbox,
+      app-configurator-vmware,
+      app-configurator-vpcs,
+      app-configurator-nat,
+      app-configurator-cloud,
+      app-configurator-ethernet-switch,
+      app-configurator-ethernet-hub,
+      app-configurator-switch,
+      app-configurator-atm-switch
+    ) {
+    display: flex;
+    min-height: 0;
+    max-height: var(--node-config-dialog-height);
+    flex-direction: column;
+  }
+
+  :is(
+      app-configurator-qemu,
+      app-configurator-docker,
+      app-configurator-ios,
+      app-configurator-iou,
+      app-configurator-virtualbox,
+      app-configurator-vmware,
+      app-configurator-cloud
+    ):has(mat-tab-group) {
+    height: 100%;
+  }
+
+  .node-config__header {
+    display: grid;
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 16px;
+    min-height: 84px;
+    margin: 0;
+    padding: 12px 20px 12px 24px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    color: var(--mat-sys-on-surface);
+  }
+
+  .node-config__header::before {
+    display: none;
+    content: none;
+  }
+
+  .node-config__title {
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    font-family: var(--mat-sys-title-large-font);
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .node-config__close {
+    color: var(--mat-sys-on-surface-variant);
+
+    &:hover {
+      color: var(--mat-sys-on-surface);
+      background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+    }
+  }
+
+  .modal-form-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 16px 16px 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 12px;
+    background: var(--mat-sys-surface);
+  }
+
+  .content,
+  .default-content {
+    min-height: 0;
+    height: 100%;
+  }
+
+  mat-card.mat-mdc-card,
+  .matCard.mat-mdc-card {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  mat-card.mat-mdc-card > div:has(> mat-tab-group) {
+    height: 100%;
+  }
+
+  mat-card.mat-mdc-card:not(:has(mat-tab-group)) {
+    padding: 28px;
+  }
+
+  mat-tab-group {
+    display: grid;
+    height: 100%;
+    min-height: 0;
+    grid-template-columns: 220px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    overflow: hidden;
+
+    .mat-mdc-tab-header {
+      min-width: 0;
+      grid-column: 1;
+      grid-row: 1;
+      overflow: auto;
+      border-right: 1px solid var(--mat-sys-outline-variant);
+      border-bottom: 0;
+      background: var(--mat-sys-surface-container);
+    }
+
+    .mat-mdc-tab-header-pagination {
+      display: none;
+    }
+
+    .mat-mdc-tab-label-container {
+      overflow: visible;
+      border: 0;
+    }
+
+    .mat-mdc-tab-list {
+      flex-grow: 1;
+    }
+
+    .mat-mdc-tab-labels {
+      flex-direction: column;
+      gap: 4px;
+      padding: 16px 10px;
+    }
+
+    .mat-mdc-tab {
+      width: 100%;
+      min-width: 0;
+      height: 58px;
+      justify-content: flex-start;
+      padding-inline: 20px;
+      border-left: 3px solid transparent;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .mat-mdc-tab .mdc-tab__content {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .mat-mdc-tab.mdc-tab--active {
+      border-left-color: var(--mat-sys-primary);
+      background: color-mix(in srgb, var(--mat-sys-primary-container) 34%, transparent);
+    }
+
+    .mdc-tab-indicator {
+      display: none;
+    }
+
+    .mat-mdc-tab-body-wrapper {
+      min-width: 0;
+      min-height: 0;
+      grid-column: 2;
+      grid-row: 1;
+      overflow: hidden;
+    }
+
+    .mat-mdc-tab-body {
+      min-width: 0;
+    }
+
+    .mat-mdc-tab-body-content {
+      box-sizing: border-box;
+      height: 100%;
+      padding: 24px 28px;
+      overflow: auto;
+    }
+  }
+
+  .node-config__tab-label {
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 500;
+
+    mat-icon {
+      width: 21px;
+      height: 21px;
+      font-size: 21px;
+    }
+  }
+
+  .node-config__single-tab {
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    align-items: stretch;
+    padding: 16px 10px;
+    border-right: 1px solid var(--mat-sys-outline-variant);
+    background: var(--mat-sys-surface-container);
+
+    [role='tab'] {
+      display: inline-flex;
+      width: 100%;
+      height: 58px;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 20px;
+      border-left: 3px solid var(--mat-sys-primary);
+      border-radius: 0 10px 10px 0;
+      color: var(--mat-sys-primary);
+      background: color-mix(in srgb, var(--mat-sys-primary-container) 34%, transparent);
+    }
+  }
+
+  .node-config__section-heading {
+    margin: 0 0 20px;
+    color: var(--mat-sys-on-surface);
+    font-family: var(--mat-sys-title-medium-font);
+    font-size: 18px;
+    font-weight: 650;
+    line-height: 1.3;
+  }
+
+  .modal-form-container:has(> .node-config__single-tab) {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+
+    > .content {
+      min-width: 0;
+      overflow: auto;
+    }
+
+    // Single-section dialogs can be taller than the available viewport (for
+    // example, the Ethernet switch port table). Let their card contribute its
+    // full content height so the content column, rather than the card, scrolls.
+    > .content > .default-content {
+      height: auto;
+      min-height: 100%;
+    }
+
+    > .content mat-card.mat-mdc-card {
+      height: auto;
+      min-height: 100%;
+      overflow: visible;
+    }
+  }
+
+  .node-config__usage-textarea {
+    box-sizing: border-box;
+    height: 150px;
+    min-height: 150px;
+    resize: vertical;
+  }
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .form-grid,
+  .two-column-grid {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 14px 18px;
+  }
+
+  .form-grid__full,
+  .grid-span-2 {
+    grid-column: 1 / -1;
+  }
+
+  .node-config__quad-grid,
+  .node-config__two-grid {
+    display: grid;
+    align-items: start;
+    gap: 14px 18px;
+  }
+
+  .node-config__quad-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .node-config__two-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .node-config__file-row {
+    display: grid;
+    grid-template-columns: max-content max-content minmax(220px, 1fr);
+    align-items: center;
+    gap: 8px;
+
+    button {
+      white-space: nowrap;
+    }
+  }
+
+  .node-config__file-field {
+    min-width: 0;
+
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+  }
+
+  .form-field {
+    margin: 0;
+  }
+
+  mat-checkbox,
+  mat-radio-button {
+    margin: 0;
+  }
+
+  mat-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+
+  .mat-mdc-form-field {
+    --mdc-filled-text-field-container-color: transparent;
+    --mdc-filled-text-field-focus-active-indicator-color: transparent;
+    --mdc-filled-text-field-hover-active-indicator-color: transparent;
+    --mdc-filled-text-field-active-indicator-color: transparent;
+  }
+
+  .mat-mdc-text-field-wrapper.mdc-text-field--filled {
+    border: 1px solid var(--mat-sys-outline);
+    border-radius: 8px;
+
+    &:hover {
+      border-color: var(--mat-sys-on-surface);
+    }
+  }
+
+  .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper.mdc-text-field--filled {
+    border-color: var(--mat-sys-primary);
+    box-shadow: inset 0 0 0 1px var(--mat-sys-primary);
+  }
+
+  .mdc-line-ripple {
+    display: none;
+  }
+
+  .mat-mdc-chip {
+    border: 1px solid var(--mat-sys-outline-variant);
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  .disk-card {
+    border-color: var(--mat-sys-outline-variant);
+    background: var(--mat-sys-surface-container);
+  }
+
+  h6 {
+    margin: 8px 0 0;
+    color: var(--mat-sys-on-surface);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .node-config__meta {
+    margin: 0 0 14px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .node-config__inline-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .node-config__add-button {
+    min-width: 72px;
+    align-self: center;
+  }
+
+  app-udp-tunnels .udp-tunnels__add-btn {
+    justify-content: center;
+  }
+
+  .node-config__secondary-actions {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 2px;
+  }
+
+  .node-config__secondary-action {
+    width: 100%;
+  }
+
+  .mat-mdc-dialog-actions {
+    flex: 0 0 auto;
+    min-height: 72px;
+    margin: 0;
+    padding: 12px 24px;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+    background: var(--mat-sys-surface-container);
+
+    button {
+      min-width: 108px;
+      height: 44px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    button[color='accent'] {
+      border: 1px solid var(--mat-sys-outline);
+      color: var(--mat-sys-on-surface);
+      background: transparent;
+    }
+
+    button[color='primary'] {
+      color: var(--mat-sys-on-primary);
+      background: var(--mat-sys-primary);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 24%, transparent);
+    }
+  }
+
+  @media (max-width: 760px) {
+    --mat-dialog-container-max-width: calc(100vw - 24px);
+    --node-config-dialog-height: calc(100vh - 24px);
+
+    mat-dialog-container,
+    .mat-mdc-dialog-container {
+      width: calc(100vw - 24px);
+      max-width: calc(100vw - 24px);
+    }
+
+    .node-config__header {
+      grid-template-columns: minmax(0, 1fr) 40px;
+      gap: 10px;
+      min-height: 70px;
+      padding: 10px 12px 10px 16px;
+    }
+
+    .node-config__title {
+      font-size: 18px;
+    }
+
+    mat-tab-group {
+      display: flex;
+      height: auto;
+      overflow: visible;
+
+      .mat-mdc-tab-header {
+        flex: 0 0 auto;
+        overflow: hidden;
+        border-right: 0;
+        border-bottom: 1px solid var(--mat-sys-outline-variant);
+      }
+
+      .mat-mdc-tab-label-container {
+        overflow-x: auto;
+      }
+
+      .mat-mdc-tab-labels {
+        flex-direction: row;
+        gap: 0;
+        padding: 0;
+      }
+
+      .mat-mdc-tab {
+        width: auto;
+        min-width: 112px;
+        height: 54px;
+        justify-content: center;
+        padding-inline: 12px;
+        border-bottom: 3px solid transparent;
+        border-left: 0;
+        border-radius: 0;
+      }
+
+      .mat-mdc-tab .mdc-tab__content {
+        width: auto;
+        justify-content: center;
+      }
+
+      .mat-mdc-tab.mdc-tab--active {
+        border-bottom-color: var(--mat-sys-primary);
+      }
+
+      .mat-mdc-tab-body-wrapper {
+        overflow: visible;
+      }
+
+      .mat-mdc-tab-body-content {
+        height: auto;
+        padding: 16px;
+        overflow: visible;
+      }
+    }
+
+    .modal-form-container {
+      margin: 10px 10px 0;
+      overflow: auto;
+    }
+
+    .modal-form-container:has(> .node-config__single-tab) {
+      display: block;
+
+      > .content {
+        overflow: visible;
+      }
+    }
+
+    .node-config__single-tab {
+      min-height: 54px;
+      padding: 0;
+      overflow-x: auto;
+      border-right: 0;
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+      [role='tab'] {
+        width: auto;
+        min-width: 112px;
+        height: 54px;
+        justify-content: center;
+        padding-inline: 12px;
+        border-bottom: 3px solid var(--mat-sys-primary);
+        border-left: 0;
+        border-radius: 0;
+      }
+    }
+
+    .form-grid,
+    .two-column-grid,
+    .node-config__quad-grid,
+    .node-config__two-grid,
+    .disk-cards-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .form-grid__full,
+    .grid-span-2 {
+      grid-column: auto;
+    }
+
+    .node-config__secondary-actions {
+      grid-template-columns: 1fr;
+    }
+
+    .node-config__file-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      .node-config__file-field {
+        grid-column: 1 / -1;
+      }
+    }
+
+    .udp-tunnels__input-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+html[data-density='compact'] .node-configurator-dialog-panel {
+  --node-config-dialog-height: min(820px, calc(100vh - 32px));
+  // Match the application's Material density scale -2. These explicit
+  // values also cover dialog content rendered in the overlay container.
+  --mat-button-filled-container-height: 32px;
+  --mat-button-outlined-container-height: 32px;
+  --mat-button-protected-container-height: 32px;
+  --mat-button-text-container-height: 32px;
+  --mat-checkbox-state-layer-size: 32px;
+  --mat-checkbox-touch-target-size: 32px;
+  --mat-chip-container-height: 24px;
+  --mat-form-field-container-height: 48px;
+  --mat-form-field-container-vertical-padding: 12px;
+  --mat-radio-state-layer-size: 32px;
+  --mat-radio-touch-target-size: 32px;
+
+  .node-config__header {
+    grid-template-columns: minmax(0, 1fr) 40px;
+    gap: 12px;
+    height: 56px;
+    min-height: 56px;
+    padding: 6px 16px 6px 20px;
+  }
+
+  .node-config__title {
+    font-size: 20px;
+  }
+
+  .modal-form-container {
+    margin: 10px 10px 0;
+  }
+
+  mat-tab-group {
+    .mat-mdc-tab-body-content {
+      padding: 16px 20px;
+    }
+  }
+
+  @media (min-width: 761px) {
+    mat-tab-group {
+      grid-template-columns: 190px minmax(0, 1fr);
+
+      .mat-mdc-tab-labels {
+        gap: 2px;
+        padding: 10px 8px;
+      }
+
+      .mat-mdc-tab {
+        height: 46px;
+        padding-inline: 14px;
+      }
+    }
+
+    .node-config__single-tab {
+      padding: 10px 8px;
+
+      [role='tab'] {
+        height: 46px;
+        padding-inline: 14px;
+      }
+    }
+
+    .modal-form-container:has(> .node-config__single-tab) {
+      grid-template-columns: 190px minmax(0, 1fr);
+    }
+  }
+
+  .node-config__tab-label {
+    gap: 8px;
+    font-size: 14px;
+
+    mat-icon {
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+    }
+  }
+
+  .node-config__section-heading {
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+
+  .form-container {
+    gap: 6px;
+  }
+
+  .interfaces-list,
+  .card-stack {
+    gap: 8px;
+  }
+
+  .disk-card__content {
+    gap: 8px;
+  }
+
+  .add-interface-row {
+    gap: 8px;
+    padding: 8px;
+
+    // The field and action share one centered row. Unlike normal form stacks,
+    // this row must not reserve helper-text space below only the field.
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+  }
+
+  .form-grid,
+  .two-column-grid,
+  .node-config__quad-grid,
+  .node-config__two-grid {
+    gap: 9px 12px;
+  }
+
+  .node-config__file-row {
+    gap: 6px;
+
+    button {
+      height: 32px;
+    }
+  }
+
+  mat-checkbox,
+  mat-radio-button {
+    min-height: 32px;
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .form-container > mat-checkbox + mat-checkbox {
+    margin-top: -2px;
+  }
+
+  mat-radio-group {
+    gap: 4px 10px;
+  }
+
+  // Keep Material's form-field separation, but use half of its normal 16px
+  // reserve in compact mode. Real hints and errors can still grow naturally.
+  .mat-mdc-form-field-bottom-align::before {
+    height: 8px;
+  }
+
+  .tags-field {
+    --mat-form-field-filled-with-label-container-padding-top: 18px;
+    --mat-form-field-filled-with-label-container-padding-bottom: 2px;
+
+    .mat-mdc-form-field-infix {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      column-gap: 4px;
+    }
+
+    .mat-mdc-chip-grid {
+      min-width: 0;
+      flex: 0 1 auto;
+
+      &:not(:has(.mat-mdc-chip)) {
+        display: none;
+      }
+
+      .mdc-evolution-chip-set__chips {
+        min-width: 0;
+        margin-left: -4px;
+      }
+    }
+
+    .mat-mdc-chip {
+      margin: 2px 0 2px 4px;
+    }
+
+    input.mat-mdc-chip-input {
+      min-width: 120px;
+      flex: 1 1 120px;
+    }
+  }
+
+  .fr-switch__input-grid,
+  .atm-switch__input-grid,
+  .udp-tunnels__input-grid {
+    gap: 0 12px;
+  }
+
+  .fr-switch__add-btn,
+  .atm-switch__add-btn {
+    margin-bottom: 8px;
+  }
+
+  .node-config__meta {
+    margin-bottom: 8px;
+  }
+
+  .node-config__inline-actions {
+    gap: 6px;
+    margin-bottom: 2px;
+  }
+
+  .node-config__secondary-actions {
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  app-udp-tunnels .udp-tunnels__add-btn {
+    margin-bottom: 8px;
+  }
+
+  mat-card.mat-mdc-card:not(:has(mat-tab-group)) {
+    padding: 18px 20px;
+  }
+
+  .disk-card {
+    padding: 12px;
+  }
+
+  .disk-card__header {
+    margin-bottom: 10px;
+  }
+
+  :is(mat-header-cell, mat-cell, .mat-mdc-header-cell, .mat-mdc-cell) {
+    padding: 8px 10px;
+  }
+
+  h6 {
+    margin-top: 4px;
+    font-size: 14px;
+  }
+
+  .mat-mdc-dialog-actions {
+    min-height: 52px;
+    padding: 8px 16px;
+
+    button {
+      min-width: 96px;
+      height: 32px;
+    }
+  }
+}
+
 // QEMU Configurator - 500px
 .qemu-configurator-dialog-panel {
   --mat-dialog-container-max-width: 500px;
@@ -920,7 +1762,7 @@ h2[mat-dialog-title] {
 }
 
 // Docker Configurator - 800px
-.docker-configurator-dialog-panel {
+.docker-configurator-dialog-panel:not(.node-configurator-dialog-panel) {
   --mat-dialog-container-max-width: 800px;
 
   mat-dialog-container,
@@ -1374,4 +2216,3 @@ h2[mat-dialog-title] {
     overflow: visible;
   }
 }
-

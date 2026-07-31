@@ -1,4 +1,15 @@
-<h1 mat-dialog-title>Configurator for node {{ name }}</h1>
+<div mat-dialog-title class="node-config__header">
+  <h1 class="node-config__title">Configure Node <span aria-hidden="true">—</span> Docker container {{ name }}</h1>
+  <button
+    mat-icon-button
+    type="button"
+    class="node-config__close"
+    aria-label="Close node configuration"
+    (click)="onCancelClick()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
 <div class="modal-form-container">
   <div class="content">
@@ -6,7 +17,11 @@
       <mat-card class="matCard">
         @if (name) {
         <mat-tab-group>
-          <mat-tab label="General settings">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">General settings</h2>
             <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Name</mat-label>
@@ -94,60 +109,119 @@
 
                 <mat-form-field class="form-field">
                   <mat-label>HTTP port in the container</mat-label>
-                  <input [value]="consoleHttpPort()" (input)="consoleHttpPort.set($event.target.value)" matInput type="text" />
+                  <input
+                    [value]="consoleHttpPort()"
+                    (input)="consoleHttpPort.set($event.target.value)"
+                    matInput
+                    type="text"
+                  />
                 </mat-form-field>
 
                 <mat-form-field class="form-field grid-span-2">
                   <mat-label>HTTP path</mat-label>
-                  <input matInput [value]="consoleHttpPath()" (input)="consoleHttpPath.set($event.target.value)" type="text" />
+                  <input
+                    matInput
+                    [value]="consoleHttpPath()"
+                    (input)="consoleHttpPath.set($event.target.value)"
+                    type="text"
+                  />
                 </mat-form-field>
 
-                <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)" class="grid-span-2"> Auto start console </mat-checkbox>
+                <mat-checkbox
+                  [checked]="consoleAutoStart()"
+                  (change)="consoleAutoStart.set($event.checked)"
+                  class="grid-span-2"
+                >
+                  Auto start console
+                </mat-checkbox>
               </div>
 
-              <div class="two-column-grid">
-                <button mat-button class="form-field" (click)="configureCustomAdapters()">
+              <div class="node-config__secondary-actions">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  class="node-config__secondary-action"
+                  (click)="configureCustomAdapters()"
+                >
                   Configure custom adapters
                 </button>
-                <button mat-button class="form-field" (click)="editNetworkConfiguration()">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  class="node-config__secondary-action"
+                  (click)="editNetworkConfiguration()"
+                >
                   Edit network configuration
                 </button>
               </div>
             </div>
           </mat-tab>
 
-          <mat-tab label="Advanced">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>settings</mat-icon>Advanced</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">Advanced settings</h2>
             <div class="form-container">
               <h6>Start command</h6>
               <mat-form-field class="form-field">
                 <mat-label>Start command</mat-label>
-                <textarea matInput [value]="startCommand()" (input)="startCommand.set($event.target.value)" placeholder='Command to run when the container starts (overrides image default CMD). E.g., python app.py, nginx -g "daemon off;"'></textarea>
+                <textarea
+                  matInput
+                  [value]="startCommand()"
+                  (input)="startCommand.set($event.target.value)"
+                  placeholder='Command to run when the container starts (overrides image default CMD). E.g., python app.py, nginx -g "daemon off;"'
+                ></textarea>
               </mat-form-field>
               <h6>Environment</h6>
               <mat-form-field class="form-field">
                 <mat-label>Environment variables</mat-label>
-                <textarea matInput [value]="environment()" (input)="environment.set($event.target.value)" placeholder="Environment variables (one per line, KEY=VALUE format). Supports: %vm-name%, %vm-id%, %project-id%, %project-path%"></textarea>
+                <textarea
+                  matInput
+                  [value]="environment()"
+                  (input)="environment.set($event.target.value)"
+                  placeholder="Environment variables (one per line, KEY=VALUE format). Supports: %vm-name%, %vm-id%, %project-id%, %project-path%"
+                ></textarea>
               </mat-form-field>
 
               <h6>Extra hosts</h6>
               <mat-form-field class="form-field">
                 <mat-label>Extra hosts</mat-label>
-                <textarea matInput [value]="extraHosts()" (input)="extraHosts.set($event.target.value)" placeholder="Hostname to IP mappings, one per line (e.g., gns3.com:192.168.100.10)"></textarea>
+                <textarea
+                  matInput
+                  [value]="extraHosts()"
+                  (input)="extraHosts.set($event.target.value)"
+                  placeholder="Hostname to IP mappings, one per line (e.g., gns3.com:192.168.100.10)"
+                ></textarea>
               </mat-form-field>
 
               <h6>Additional volumes</h6>
               <mat-form-field class="form-field">
                 <mat-label>Additional volumes</mat-label>
-                <textarea matInput [value]="extraVolumes()" (input)="extraVolumes.set($event.target.value)" placeholder="Container directories to persist, one per line (e.g., /data&#10;/config)"></textarea>
+                <textarea
+                  matInput
+                  [value]="extraVolumes()"
+                  (input)="extraVolumes.set($event.target.value)"
+                  placeholder="Container directories to persist, one per line (e.g., /data&#10;/config)"
+                ></textarea>
               </mat-form-field>
             </div>
           </mat-tab>
 
-          <mat-tab label="Usage">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>bar_chart</mat-icon>Usage</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">Usage notes</h2>
             <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Usage</mat-label>
-                <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)"></textarea>
+                <textarea
+                  matInput
+                  class="node-config__usage-textarea"
+                  [value]="usage()"
+                  (input)="usage.set($event.target.value)"
+                ></textarea>
               </mat-form-field>
             </div>
           </mat-tab>
@@ -160,5 +234,5 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
 </div>

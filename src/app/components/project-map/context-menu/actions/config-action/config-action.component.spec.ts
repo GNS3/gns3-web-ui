@@ -53,13 +53,18 @@ describe('ConfigActionComponent', () => {
     } as Node);
 
   const baseDialogConfig = {
-    panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+    panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'node-configurator-dialog-panel'],
     autoFocus: false,
     disableClose: false,
   };
 
   const atmSwitchDialogConfig = {
-    panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'atm-switch-config-panel'],
+    panelClass: [
+      'base-dialog-panel',
+      'configurator-dialog-panel',
+      'node-configurator-dialog-panel',
+      'atm-switch-config-panel',
+    ],
     autoFocus: false,
     disableClose: false,
   };
@@ -157,10 +162,7 @@ describe('ConfigActionComponent', () => {
 
       component.configureNode();
 
-      expect(mockDialog.open).toHaveBeenCalledWith(ConfiguratorDialogQemuComponent, {
-        ...baseDialogConfig,
-        panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
-      });
+      expect(mockDialog.open).toHaveBeenCalledWith(ConfiguratorDialogQemuComponent, baseDialogConfig);
     });
 
     it('should open VirtualBox configurator for virtualbox node type', () => {
@@ -192,7 +194,7 @@ describe('ConfigActionComponent', () => {
 
       expect(mockDialog.open).toHaveBeenCalledWith(ConfiguratorDialogDockerComponent, {
         ...baseDialogConfig,
-        panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'docker-configurator-dialog-panel'],
+        panelClass: [...baseDialogConfig.panelClass, 'docker-configurator-dialog-panel'],
       });
     });
 

@@ -1,4 +1,15 @@
-<h1 mat-dialog-title>Configurator for VirtualBox VM {{ name }}</h1>
+<div mat-dialog-title class="node-config__header">
+  <h1 class="node-config__title">Configure Node <span aria-hidden="true">—</span> VirtualBox VM {{ name }}</h1>
+  <button
+    mat-icon-button
+    type="button"
+    class="node-config__close"
+    aria-label="Close node configuration"
+    (click)="onCancelClick()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
 <div class="modal-form-container">
   <div class="content">
@@ -6,8 +17,12 @@
       <mat-card class="matCard">
         @if (name) {
         <mat-tab-group>
-          <mat-tab label="General settings">
-            <form [formGroup]="generalSettingsForm">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">General settings</h2>
+            <form class="form-container" [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
                 <mat-label>Name</mat-label>
                 <input matInput formControlName="name" type="text" />
@@ -65,20 +80,27 @@
               <mat-checkbox formControlName="headless"> Start VM in headless mode </mat-checkbox>
             </form>
           </mat-tab>
-          <mat-tab label="Network">
-            <form [formGroup]="generalSettingsForm">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>lan</mat-icon>Network</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">Network settings</h2>
+            <form class="form-container" [formGroup]="generalSettingsForm">
               <mat-checkbox formControlName="use_any_adapter">
                 Allow GNS3 to use any configured VirtualBox adapter
               </mat-checkbox>
-              <br /><br />
               <button mat-raised-button color="primary" (click)="openCustomAdaptersDialog()">Custom Adapters</button>
             </form>
           </mat-tab>
-          <mat-tab label="Usage">
-            <form [formGroup]="generalSettingsForm">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>bar_chart</mat-icon>Usage</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">Usage notes</h2>
+            <form class="form-container" [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
                 <mat-label>Usage</mat-label>
-                <textarea matInput formControlName="usage"></textarea>
+                <textarea matInput class="node-config__usage-textarea" formControlName="usage"></textarea>
               </mat-form-field>
             </form>
           </mat-tab>
@@ -91,5 +113,5 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
 </div>

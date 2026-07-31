@@ -1,13 +1,28 @@
-<h1 mat-dialog-title>Configurator for Qemu VM {{ name }}</h1>
+<div mat-dialog-title class="node-config__header">
+  <h1 class="node-config__title">Configure Node <span aria-hidden="true">—</span> QEMU VM {{ name }}</h1>
+  <button
+    mat-icon-button
+    type="button"
+    class="node-config__close"
+    aria-label="Close node configuration"
+    (click)="onCancelClick()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
 <div class="modal-form-container">
   <div class="content">
     <div class="default-content">
       <mat-card class="matCard">
         @if (name) {
-        <div >
+        <div>
           <mat-tab-group class="qemu-configurator-tabs">
-            <mat-tab label="General settings">
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span>
+              </ng-template>
+              <h2 class="node-config__section-heading">General settings</h2>
               <!-- Name field - full width -->
               <mat-form-field class="form-field">
                 <mat-label>Name</mat-label>
@@ -35,7 +50,7 @@
               </mat-form-field>
 
               <!-- Two-column grid for other fields -->
-              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; align-items: start;">
+              <div class="node-config__quad-grid">
                 <mat-form-field class="form-field">
                   <mat-label>Platform</mat-label>
                   <mat-select [value]="platform()" (valueChange)="platform.set($event)">
@@ -81,7 +96,7 @@
                 </mat-select>
               </mat-form-field>
 
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div class="node-config__two-grid">
                 <mat-form-field class="form-field">
                   <mat-label>Console type</mat-label>
                   <mat-select [value]="consoleType()" (valueChange)="consoleType.set($event)">
@@ -104,7 +119,11 @@
                 Auto start console
               </mat-checkbox>
             </mat-tab>
-            <mat-tab label="HDD">
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <span class="node-config__tab-label"><mat-icon>storage</mat-icon>HDD</span>
+              </ng-template>
+              <h2 class="node-config__section-heading">Hard disk drives</h2>
               <div class="hdd-create-section">
                 <button mat-raised-button color="primary" (click)="openQemuImageCreator()" class="create-button">
                   Create Qemu image
@@ -123,12 +142,16 @@
                       <input
                         matInput
                         type="text"
-                        [value]="hdaDiskImage()" (input)="hdaDiskImage.set($event.target.value)"
+                        [value]="hdaDiskImage()"
+                        (input)="hdaDiskImage.set($event.target.value)"
                         [matAutocomplete]="hdaAuto"
                         (input)="onHdaImageInput($event)"
                         (focus)="filteredImages = qemuImages; refreshQemuImages()"
                       />
-                      <mat-autocomplete #hdaAuto="matAutocomplete" (optionSelected)="hdaDiskImage.set($event.option.value)">
+                      <mat-autocomplete
+                        #hdaAuto="matAutocomplete"
+                        (optionSelected)="hdaDiskImage.set($event.option.value)"
+                      >
                         @if (projectDiskFiles.length) {
                         <mat-optgroup label="This device files">
                           @for (file of projectDiskFiles; track file) {
@@ -168,12 +191,16 @@
                       <input
                         matInput
                         type="text"
-                        [value]="hdbDiskImage()" (input)="hdbDiskImage.set($event.target.value)"
+                        [value]="hdbDiskImage()"
+                        (input)="hdbDiskImage.set($event.target.value)"
                         [matAutocomplete]="hdbAuto"
                         (input)="onHdbImageInput($event)"
                         (focus)="filteredImages = qemuImages; refreshQemuImages()"
                       />
-                      <mat-autocomplete #hdbAuto="matAutocomplete" (optionSelected)="hdbDiskImage.set($event.option.value)">
+                      <mat-autocomplete
+                        #hdbAuto="matAutocomplete"
+                        (optionSelected)="hdbDiskImage.set($event.option.value)"
+                      >
                         @if (projectDiskFiles.length) {
                         <mat-optgroup label="This device files">
                           @for (file of projectDiskFiles; track file) {
@@ -213,12 +240,16 @@
                       <input
                         matInput
                         type="text"
-                        [value]="hdcDiskImage()" (input)="hdcDiskImage.set($event.target.value)"
+                        [value]="hdcDiskImage()"
+                        (input)="hdcDiskImage.set($event.target.value)"
                         [matAutocomplete]="hdcAuto"
                         (input)="onHdcImageInput($event)"
                         (focus)="filteredImages = qemuImages; refreshQemuImages()"
                       />
-                      <mat-autocomplete #hdcAuto="matAutocomplete" (optionSelected)="hdcDiskImage.set($event.option.value)">
+                      <mat-autocomplete
+                        #hdcAuto="matAutocomplete"
+                        (optionSelected)="hdcDiskImage.set($event.option.value)"
+                      >
                         @if (projectDiskFiles.length) {
                         <mat-optgroup label="This device files">
                           @for (file of projectDiskFiles; track file) {
@@ -258,12 +289,16 @@
                       <input
                         matInput
                         type="text"
-                        [value]="hddDiskImage()" (input)="hddDiskImage.set($event.target.value)"
+                        [value]="hddDiskImage()"
+                        (input)="hddDiskImage.set($event.target.value)"
                         [matAutocomplete]="hddAuto"
                         (input)="onHddImageInput($event)"
                         (focus)="filteredImages = qemuImages; refreshQemuImages()"
                       />
-                      <mat-autocomplete #hddAuto="matAutocomplete" (optionSelected)="hddDiskImage.set($event.option.value)">
+                      <mat-autocomplete
+                        #hddAuto="matAutocomplete"
+                        (optionSelected)="hddDiskImage.set($event.option.value)"
+                      >
                         @if (projectDiskFiles.length) {
                         <mat-optgroup label="This device files">
                           @for (file of projectDiskFiles; track file) {
@@ -292,21 +327,47 @@
                 </div>
               </div>
             </mat-tab>
-            <mat-tab label="CD/DVD">
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <span class="node-config__tab-label"><mat-icon>album</mat-icon>CD/DVD</span>
+              </ng-template>
+              <h2 class="node-config__section-heading">CD/DVD drive</h2>
               <div class="form-container">
-                <div style="margin-bottom: 8px; display: flex; gap: 8px;">
-                  <button mat-raised-button color="primary" (click)="fileDevice.click()">
-                    Upload to device
-                  </button>
-                  <button mat-raised-button (click)="fileGlobal.click()">
-                    Upload globally
-                  </button>
-                  <input type="file" #fileDevice class="nonvisible" (change)="uploadCdromImageFile($event, 'device')" accept=".iso" />
-                  <input type="file" #fileGlobal class="nonvisible" (change)="uploadCdromImageFile($event, 'global')" accept=".iso" />
+                <div class="node-config__inline-actions">
+                  <button mat-raised-button color="primary" (click)="fileDevice.click()">Upload to device</button>
+                  <button mat-raised-button (click)="fileGlobal.click()">Upload globally</button>
+                  <input
+                    type="file"
+                    #fileDevice
+                    class="nonvisible"
+                    (change)="uploadCdromImageFile($event, 'device')"
+                    accept=".iso"
+                  />
+                  <input
+                    type="file"
+                    #fileGlobal
+                    class="nonvisible"
+                    (change)="uploadCdromImageFile($event, 'global')"
+                    accept=".iso"
+                  />
                 </div>
                 <mat-form-field class="form-field">
                   <mat-label>Image</mat-label>
-                  <input matInput type="text" [value]="cdromImage()" (input)="cdromImage.set($event.target.value); onCdromInput($event)" [matAutocomplete]="isoAuto" #isoTrigger="matAutocompleteTrigger" (focus)="filteredIsoFiles = projectIsoFiles; filteredGlobalIsoImages = globalIsoImages; isoTrigger.openPanel(); refreshNodeFiles(); refreshGlobalImages()" />
+                  <input
+                    matInput
+                    type="text"
+                    [value]="cdromImage()"
+                    (input)="cdromImage.set($event.target.value); onCdromInput($event)"
+                    [matAutocomplete]="isoAuto"
+                    #isoTrigger="matAutocompleteTrigger"
+                    (focus)="
+                      filteredIsoFiles = projectIsoFiles;
+                      filteredGlobalIsoImages = globalIsoImages;
+                      isoTrigger.openPanel();
+                      refreshNodeFiles();
+                      refreshGlobalImages()
+                    "
+                  />
                   <mat-autocomplete #isoAuto="matAutocomplete" (optionSelected)="cdromImage.set($event.option.value)">
                     @if (filteredIsoFiles.length) {
                     <mat-optgroup label="This device files">
@@ -314,8 +375,7 @@
                       <mat-option [value]="file">{{ file }}</mat-option>
                       }
                     </mat-optgroup>
-                    }
-                    @if (filteredGlobalIsoImages.length) {
+                    } @if (filteredGlobalIsoImages.length) {
                     <mat-optgroup label="Global images">
                       @for (image of filteredGlobalIsoImages; track image) {
                       <mat-option [value]="image">{{ image }}</mat-option>
@@ -326,11 +386,21 @@
                 </mat-form-field>
               </div>
             </mat-tab>
-            <mat-tab label="Network">
-              <div >
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <span class="node-config__tab-label"><mat-icon>lan</mat-icon>Network</span>
+              </ng-template>
+              <h2 class="node-config__section-heading">Network settings</h2>
+              <div>
                 <mat-form-field class="form-field">
                   <mat-label>Number of adapters</mat-label>
-                  <input matInput min="0" type="text" [value]="adapters()" (input)="adapters.set($event.target.value)" />
+                  <input
+                    matInput
+                    min="0"
+                    type="text"
+                    [value]="adapters()"
+                    (input)="adapters.set($event.target.value)"
+                  />
                 </mat-form-field>
                 <mat-form-field class="form-field">
                   <mat-label>Base MAC</mat-label>
@@ -354,7 +424,11 @@
                 </mat-checkbox>
               </div>
             </mat-tab>
-            <mat-tab label="Advanced">
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <span class="node-config__tab-label"><mat-icon>settings</mat-icon>Advanced</span>
+              </ng-template>
+              <h2 class="node-config__section-heading">Advanced settings</h2>
               <div class="card-stack">
                 <!-- Linux boot specific settings -->
                 <div class="disk-card">
@@ -362,22 +436,40 @@
                     <h3 class="disk-card__title">Linux boot specific settings</h3>
                   </div>
                   <div class="disk-card__content">
-                    <div class="form-container" style="gap: 8px;">
-                      <div style="display: flex; gap: 8px; align-items: center;">
-                        <button mat-raised-button color="primary" (click)="fileinitrdDevice.click()">Upload to device</button>
+                    <div class="form-container">
+                      <div class="node-config__file-row">
+                        <button mat-raised-button color="primary" (click)="fileinitrdDevice.click()">
+                          Upload to device
+                        </button>
                         <button mat-raised-button (click)="fileinitrdGlobal.click()">Upload globally</button>
-                        <mat-form-field class="form-field" style="flex: 1;">
+                        <mat-form-field class="form-field node-config__file-field">
                           <mat-label>Initial RAM disk (initrd)</mat-label>
-                          <input matInput type="text" [value]="initrd()" (input)="initrd.set($event.target.value); onAdvancedFileInput($event)" [matAutocomplete]="initrdAuto" #initrdTrigger="matAutocompleteTrigger" (focus)="filteredNodeFiles = allNodeFiles; filteredGlobalFiles = allGlobalFiles; initrdTrigger.openPanel(); refreshNodeFiles(); refreshQemuImages()" />
-                          <mat-autocomplete #initrdAuto="matAutocomplete" (optionSelected)="initrd.set($event.option.value)">
+                          <input
+                            matInput
+                            type="text"
+                            [value]="initrd()"
+                            (input)="initrd.set($event.target.value); onAdvancedFileInput($event)"
+                            [matAutocomplete]="initrdAuto"
+                            #initrdTrigger="matAutocompleteTrigger"
+                            (focus)="
+                              filteredNodeFiles = allNodeFiles;
+                              filteredGlobalFiles = allGlobalFiles;
+                              initrdTrigger.openPanel();
+                              refreshNodeFiles();
+                              refreshQemuImages()
+                            "
+                          />
+                          <mat-autocomplete
+                            #initrdAuto="matAutocomplete"
+                            (optionSelected)="initrd.set($event.option.value)"
+                          >
                             @if (filteredNodeFiles.length) {
                             <mat-optgroup label="This device files">
                               @for (file of filteredNodeFiles; track file) {
                               <mat-option [value]="file">{{ file }}</mat-option>
                               }
                             </mat-optgroup>
-                            }
-                            @if (filteredGlobalFiles.length) {
+                            } @if (filteredGlobalFiles.length) {
                             <mat-optgroup label="Global images">
                               @for (file of filteredGlobalFiles; track file) {
                               <mat-option [value]="file">{{ file }}</mat-option>
@@ -387,26 +479,54 @@
                           </mat-autocomplete>
                         </mat-form-field>
                       </div>
-                      <input type="file" #fileinitrdDevice class="nonvisible" (change)="uploadInitrdFile($event, 'device')" />
-                      <input type="file" #fileinitrdGlobal class="nonvisible" (change)="uploadInitrdFile($event, 'global')" />
+                      <input
+                        type="file"
+                        #fileinitrdDevice
+                        class="nonvisible"
+                        (change)="uploadInitrdFile($event, 'device')"
+                      />
+                      <input
+                        type="file"
+                        #fileinitrdGlobal
+                        class="nonvisible"
+                        (change)="uploadInitrdFile($event, 'global')"
+                      />
                     </div>
 
-                    <div class="form-container" style="gap: 8px;">
-                      <div style="display: flex; gap: 8px; align-items: center;">
-                        <button mat-raised-button color="primary" (click)="filekernelDevice.click()">Upload to device</button>
+                    <div class="form-container">
+                      <div class="node-config__file-row">
+                        <button mat-raised-button color="primary" (click)="filekernelDevice.click()">
+                          Upload to device
+                        </button>
                         <button mat-raised-button (click)="filekernelGlobal.click()">Upload globally</button>
-                        <mat-form-field class="form-field" style="flex: 1;">
+                        <mat-form-field class="form-field node-config__file-field">
                           <mat-label>Kernel image</mat-label>
-                          <input matInput type="text" [value]="kernelImage()" (input)="kernelImage.set($event.target.value); onAdvancedFileInput($event)" [matAutocomplete]="kernelAuto" #kernelTrigger="matAutocompleteTrigger" (focus)="filteredNodeFiles = allNodeFiles; filteredGlobalFiles = allGlobalFiles; kernelTrigger.openPanel(); refreshNodeFiles(); refreshQemuImages()" />
-                          <mat-autocomplete #kernelAuto="matAutocomplete" (optionSelected)="kernelImage.set($event.option.value)">
+                          <input
+                            matInput
+                            type="text"
+                            [value]="kernelImage()"
+                            (input)="kernelImage.set($event.target.value); onAdvancedFileInput($event)"
+                            [matAutocomplete]="kernelAuto"
+                            #kernelTrigger="matAutocompleteTrigger"
+                            (focus)="
+                              filteredNodeFiles = allNodeFiles;
+                              filteredGlobalFiles = allGlobalFiles;
+                              kernelTrigger.openPanel();
+                              refreshNodeFiles();
+                              refreshQemuImages()
+                            "
+                          />
+                          <mat-autocomplete
+                            #kernelAuto="matAutocomplete"
+                            (optionSelected)="kernelImage.set($event.option.value)"
+                          >
                             @if (filteredNodeFiles.length) {
                             <mat-optgroup label="This device files">
                               @for (file of filteredNodeFiles; track file) {
                               <mat-option [value]="file">{{ file }}</mat-option>
                               }
                             </mat-optgroup>
-                            }
-                            @if (filteredGlobalFiles.length) {
+                            } @if (filteredGlobalFiles.length) {
                             <mat-optgroup label="Global images">
                               @for (file of filteredGlobalFiles; track file) {
                               <mat-option [value]="file">{{ file }}</mat-option>
@@ -416,12 +536,27 @@
                           </mat-autocomplete>
                         </mat-form-field>
                       </div>
-                      <input type="file" #filekernelDevice class="nonvisible" (change)="uploadKernelImageFile($event, 'device')" />
-                      <input type="file" #filekernelGlobal class="nonvisible" (change)="uploadKernelImageFile($event, 'global')" />
+                      <input
+                        type="file"
+                        #filekernelDevice
+                        class="nonvisible"
+                        (change)="uploadKernelImageFile($event, 'device')"
+                      />
+                      <input
+                        type="file"
+                        #filekernelGlobal
+                        class="nonvisible"
+                        (change)="uploadKernelImageFile($event, 'global')"
+                      />
                     </div>
                     <mat-form-field class="form-field">
                       <mat-label>Kernel command line</mat-label>
-                      <input matInput type="text" [value]="kernelCommandLine()" (input)="kernelCommandLine.set($event.target.value)" />
+                      <input
+                        matInput
+                        type="text"
+                        [value]="kernelCommandLine()"
+                        (input)="kernelCommandLine.set($event.target.value)"
+                      />
                     </mat-form-field>
                   </div>
                 </div>
@@ -432,22 +567,40 @@
                     <h3 class="disk-card__title">Bios</h3>
                   </div>
                   <div class="disk-card__content">
-                    <div class="form-container" style="gap: 8px;">
-                      <div style="display: flex; gap: 8px; align-items: center;">
-                        <button mat-raised-button color="primary" (click)="filebiosDevice.click()">Upload to device</button>
+                    <div class="form-container">
+                      <div class="node-config__file-row">
+                        <button mat-raised-button color="primary" (click)="filebiosDevice.click()">
+                          Upload to device
+                        </button>
                         <button mat-raised-button (click)="filebiosGlobal.click()">Upload globally</button>
-                        <mat-form-field class="form-field" style="flex: 1;">
+                        <mat-form-field class="form-field node-config__file-field">
                           <mat-label>Bios image</mat-label>
-                          <input matInput type="text" [value]="biosImage()" (input)="biosImage.set($event.target.value); onAdvancedFileInput($event)" [matAutocomplete]="biosAuto" #biosTrigger="matAutocompleteTrigger" (focus)="filteredNodeFiles = allNodeFiles; filteredGlobalFiles = allGlobalFiles; biosTrigger.openPanel(); refreshNodeFiles(); refreshQemuImages()" />
-                          <mat-autocomplete #biosAuto="matAutocomplete" (optionSelected)="biosImage.set($event.option.value)">
+                          <input
+                            matInput
+                            type="text"
+                            [value]="biosImage()"
+                            (input)="biosImage.set($event.target.value); onAdvancedFileInput($event)"
+                            [matAutocomplete]="biosAuto"
+                            #biosTrigger="matAutocompleteTrigger"
+                            (focus)="
+                              filteredNodeFiles = allNodeFiles;
+                              filteredGlobalFiles = allGlobalFiles;
+                              biosTrigger.openPanel();
+                              refreshNodeFiles();
+                              refreshQemuImages()
+                            "
+                          />
+                          <mat-autocomplete
+                            #biosAuto="matAutocomplete"
+                            (optionSelected)="biosImage.set($event.option.value)"
+                          >
                             @if (filteredNodeFiles.length) {
                             <mat-optgroup label="This device files">
                               @for (file of filteredNodeFiles; track file) {
                               <mat-option [value]="file">{{ file }}</mat-option>
                               }
                             </mat-optgroup>
-                            }
-                            @if (filteredGlobalFiles.length) {
+                            } @if (filteredGlobalFiles.length) {
                             <mat-optgroup label="Global images">
                               @for (file of filteredGlobalFiles; track file) {
                               <mat-option [value]="file">{{ file }}</mat-option>
@@ -457,8 +610,18 @@
                           </mat-autocomplete>
                         </mat-form-field>
                       </div>
-                      <input type="file" #filebiosDevice class="nonvisible" (change)="uploadBiosFile($event, 'device')" />
-                      <input type="file" #filebiosGlobal class="nonvisible" (change)="uploadBiosFile($event, 'global')" />
+                      <input
+                        type="file"
+                        #filebiosDevice
+                        class="nonvisible"
+                        (change)="uploadBiosFile($event, 'device')"
+                      />
+                      <input
+                        type="file"
+                        #filebiosGlobal
+                        class="nonvisible"
+                        (change)="uploadBiosFile($event, 'global')"
+                      />
                     </div>
                   </div>
                 </div>
@@ -469,17 +632,31 @@
                     <h3 class="disk-card__title">Optimization</h3>
                   </div>
                   <div class="disk-card__content">
-                    <mat-checkbox [checked]="linkedClone()" (change)="linkedClone.set($event.checked)">Linked clone</mat-checkbox>
-                    <mat-checkbox [checked]="createConfigDisk()" (change)="createConfigDisk.set($event.checked)">Auto-create config disk</mat-checkbox>
+                    <mat-checkbox [checked]="linkedClone()" (change)="linkedClone.set($event.checked)"
+                      >Linked clone</mat-checkbox
+                    >
+                    <mat-checkbox [checked]="createConfigDisk()" (change)="createConfigDisk.set($event.checked)"
+                      >Auto-create config disk</mat-checkbox
+                    >
                     <mat-form-field class="form-field">
                       <mat-label>Max CPUs (hot-plug)</mat-label>
                       <input matInput type="text" [value]="maxcpus()" (input)="maxcpus.set($event.target.value)" />
                     </mat-form-field>
-                    <mat-checkbox [checked]="activateCpuThrottling()" (change)="activateCpuThrottling.set($event.checked)"> Activate CPU throttling </mat-checkbox>
+                    <mat-checkbox
+                      [checked]="activateCpuThrottling()"
+                      (change)="activateCpuThrottling.set($event.checked)"
+                    >
+                      Activate CPU throttling
+                    </mat-checkbox>
                     @if (activateCpuThrottling()) {
                     <mat-form-field class="form-field">
                       <mat-label>Percentage of CPU allowed</mat-label>
-                      <input matInput type="text" [value]="cpuThrottling()" (input)="cpuThrottling.set($event.target.value)" />
+                      <input
+                        matInput
+                        type="text"
+                        [value]="cpuThrottling()"
+                        (input)="cpuThrottling.set($event.target.value)"
+                      />
                     </mat-form-field>
                     }
                     <mat-form-field class="form-field">
@@ -509,16 +686,29 @@
                       <mat-label>Options</mat-label>
                       <input matInput type="text" [value]="options()" (input)="options.set($event.target.value)" />
                     </mat-form-field>
-                    <mat-checkbox [checked]="tpm()" (change)="tpm.set($event.checked)"> Enable the Trusted Platform Module (TPM) </mat-checkbox>
-                    <mat-checkbox [checked]="uefi()" (change)="uefi.set($event.checked)"> Enable the UEFI boot mode </mat-checkbox>
+                    <mat-checkbox [checked]="tpm()" (change)="tpm.set($event.checked)">
+                      Enable the Trusted Platform Module (TPM)
+                    </mat-checkbox>
+                    <mat-checkbox [checked]="uefi()" (change)="uefi.set($event.checked)">
+                      Enable the UEFI boot mode
+                    </mat-checkbox>
                   </div>
                 </div>
               </div>
             </mat-tab>
-            <mat-tab label="Usage">
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <span class="node-config__tab-label"><mat-icon>bar_chart</mat-icon>Usage</span>
+              </ng-template>
+              <h2 class="node-config__section-heading">Usage notes</h2>
               <mat-form-field class="form-field">
                 <mat-label>Usage</mat-label>
-                <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)"></textarea>
+                <textarea
+                  matInput
+                  class="node-config__usage-textarea"
+                  [value]="usage()"
+                  (input)="usage.set($event.target.value)"
+                ></textarea>
               </mat-form-field>
             </mat-tab>
           </mat-tab-group>
@@ -531,5 +721,5 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
 </div>

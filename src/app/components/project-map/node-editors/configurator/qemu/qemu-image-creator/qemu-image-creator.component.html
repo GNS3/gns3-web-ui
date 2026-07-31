@@ -4,12 +4,12 @@
   <div class="content">
     <div class="default-content">
       <p class="info-note">
-        The image will be created in the node's working directory. After creation, it will appear in the HDD
-        field and can be selected from the dropdown in the HDD tab.
+        The image will be created in the node's working directory. After creation, it will appear in the HDD field and
+        can be selected from the dropdown in the HDD tab.
       </p>
       <mat-card class="matCard">
         <div class="form-container">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px">
             <mat-form-field class="form-field">
               <mat-label>Mount point *</mat-label>
               <mat-select [value]="mountPoint()" (valueChange)="mountPoint.set($event)">
@@ -20,7 +20,13 @@
             </mat-form-field>
             <mat-form-field class="form-field">
               <mat-label>Filename *</mat-label>
-              <input matInput type="text" [value]="diskName()" (input)="diskName.set($event.target.value)" placeholder="e.g. data.qcow2" />
+              <input
+                matInput
+                type="text"
+                [value]="diskName()"
+                (input)="diskName.set($event.target.value)"
+                placeholder="e.g. data.qcow2"
+              />
             </mat-form-field>
           </div>
 
@@ -75,9 +81,7 @@
               }
             </mat-select>
           </mat-form-field>
-          }
-
-          @if (format() === 'vmdk') {
+          } @if (format() === 'vmdk') {
           <mat-form-field class="form-field">
             <mat-label>Subformat</mat-label>
             <mat-select [value]="subformat()" (valueChange)="subformat.set($event)">
@@ -106,9 +110,7 @@
               <mat-option value="off">off</mat-option>
             </mat-select>
           </mat-form-field>
-          }
-
-          @if (format() === 'vhd' || format() === 'vpc') {
+          } @if (format() === 'vhd' || format() === 'vpc') {
           <mat-form-field class="form-field">
             <mat-label>Subformat</mat-label>
             <mat-select [value]="subformat()" (valueChange)="subformat.set($event)">
@@ -127,9 +129,7 @@
               <mat-option value="off">off</mat-option>
             </mat-select>
           </mat-form-field>
-          }
-
-          @if (format() === 'vdi') {
+          } @if (format() === 'vdi') {
           <mat-form-field class="form-field">
             <mat-label>Static</mat-label>
             <mat-select [value]="static()" (valueChange)="static.set($event)">
@@ -147,5 +147,5 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
 </div>

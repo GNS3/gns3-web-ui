@@ -1,4 +1,15 @@
-<h1 mat-dialog-title>Configurator for cloud node {{ name }}</h1>
+<div mat-dialog-title class="node-config__header">
+  <h1 class="node-config__title">Configure Node <span aria-hidden="true">—</span> Cloud {{ name }}</h1>
+  <button
+    mat-icon-button
+    type="button"
+    class="node-config__close"
+    aria-label="Close node configuration"
+    (click)="onCancelClick()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
 <div class="modal-form-container">
   <div class="content">
@@ -6,7 +17,11 @@
       <mat-card class="matCard">
         @if (name) {
         <mat-tab-group>
-          <mat-tab label="Ethernet interfaces">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>lan</mat-icon>Ethernet</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">Ethernet interfaces</h2>
             <div class="interfaces-list">
               <div class="add-interface-row">
                 <mat-form-field>
@@ -29,14 +44,21 @@
                           <span class="cloud-iface-option__name">{{ iface.name }}</span>
                         </div>
                         @for (ip of iface.ip_addresses || []; track ip.address) {
-                          <span class="cloud-iface-option__ip">{{ formatIpAddress(ip) }}</span>
+                        <span class="cloud-iface-option__ip">{{ formatIpAddress(ip) }}</span>
                         }
                       </div>
                     </mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
-                <button mat-button (click)="onAddEthernetInterface()">Add</button>
+                <button
+                  mat-flat-button
+                  color="primary"
+                  class="node-config__add-button"
+                  (click)="onAddEthernetInterface()"
+                >
+                  Add
+                </button>
               </div>
 
               <table mat-table [dataSource]="portsMappingEthernet()" class="interfaces-table">
@@ -44,21 +66,21 @@
                   <th mat-header-cell *matHeaderCellDef>Interface</th>
                   <td mat-cell *matCellDef="let element">
                     @if (getHostInterface(element.interface || element.name); as host) {
-                      <div class="cloud-iface-cell">
-                        <span [matTooltip]="formatFlags(host.flags) || null">
-                          <span
-                            class="cloud-iface-status"
-                            [class.cloud-iface-status--up]="host.status === 'up'"
-                            [class.cloud-iface-status--down]="host.status !== 'up'"
-                          ></span>
-                          {{ element.name }}
-                        </span>
-                        @if (formatInterfaceMeta(host); as meta) {
-                          <span class="cloud-iface-meta">{{ meta }}</span>
-                        }
-                      </div>
+                    <div class="cloud-iface-cell">
+                      <span [matTooltip]="formatFlags(host.flags) || null">
+                        <span
+                          class="cloud-iface-status"
+                          [class.cloud-iface-status--up]="host.status === 'up'"
+                          [class.cloud-iface-status--down]="host.status !== 'up'"
+                        ></span>
+                        {{ element.name }}
+                      </span>
+                      @if (formatInterfaceMeta(host); as meta) {
+                      <span class="cloud-iface-meta">{{ meta }}</span>
+                      }
+                    </div>
                     } @else {
-                      {{ element.name }}
+                    {{ element.name }}
                     }
                   </td>
                 </ng-container>
@@ -67,10 +89,8 @@
                   <th mat-header-cell *matHeaderCellDef>IP addresses</th>
                   <td mat-cell *matCellDef="let element">
                     @for (ip of getHostInterfaceIps(element.interface || element.name); track ip.address) {
-                      <div class="cloud-ip-line">{{ formatIpAddress(ip) }}</div>
-                    } @empty {
-                      —
-                    }
+                    <div class="cloud-ip-line">{{ formatIpAddress(ip) }}</div>
+                    } @empty { — }
                   </td>
                 </ng-container>
 
@@ -89,13 +109,25 @@
             </div>
           </mat-tab>
 
-          <mat-tab label="TAP interfaces">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>cable</mat-icon>TAP</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">TAP interfaces</h2>
             <div class="interfaces-list">
               <div class="add-interface-row">
                 <mat-form-field>
-                  <input matInput type="text" [value]="tapInterface()" (input)="tapInterface.set($event.target.value)" placeholder="TAP interface" />
+                  <input
+                    matInput
+                    type="text"
+                    [value]="tapInterface()"
+                    (input)="tapInterface.set($event.target.value)"
+                    placeholder="TAP interface"
+                  />
                 </mat-form-field>
-                <button mat-button (click)="onAddTapInterface()">Add</button>
+                <button mat-flat-button color="primary" class="node-config__add-button" (click)="onAddTapInterface()">
+                  Add
+                </button>
               </div>
 
               <table mat-table [dataSource]="portsMappingTap()" class="interfaces-table">
@@ -119,11 +151,19 @@
             </div>
           </mat-tab>
 
-          <mat-tab label="UDP tunnels">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>swap_horiz</mat-icon>UDP tunnels</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">UDP tunnels</h2>
             <app-udp-tunnels #udpTunnels [dataSourceUdp]="portsMappingUdp()"></app-udp-tunnels>
           </mat-tab>
 
-          <mat-tab label="Miscellaneous">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>settings</mat-icon>Advanced</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">Advanced settings</h2>
             <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Name</mat-label>
@@ -162,26 +202,50 @@
 
               <mat-form-field class="form-field">
                 <mat-label>Console host</mat-label>
-                <input matInput type="text" [value]="remoteConsoleHost()" (input)="remoteConsoleHost.set($event.target.value)" />
+                <input
+                  matInput
+                  type="text"
+                  [value]="remoteConsoleHost()"
+                  (input)="remoteConsoleHost.set($event.target.value)"
+                />
               </mat-form-field>
 
               <mat-form-field class="form-field">
                 <mat-label>Console port</mat-label>
-                <input matInput type="text" [value]="remoteConsolePort()" (input)="remoteConsolePort.set($event.target.value)" />
+                <input
+                  matInput
+                  type="text"
+                  [value]="remoteConsolePort()"
+                  (input)="remoteConsolePort.set($event.target.value)"
+                />
               </mat-form-field>
 
               <mat-form-field class="form-field">
                 <mat-label>Console HTTP path</mat-label>
-                <input matInput type="text" [value]="remoteConsoleHttpPath()" (input)="remoteConsoleHttpPath.set($event.target.value)" />
+                <input
+                  matInput
+                  type="text"
+                  [value]="remoteConsoleHttpPath()"
+                  (input)="remoteConsoleHttpPath.set($event.target.value)"
+                />
               </mat-form-field>
             </div>
           </mat-tab>
 
-          <mat-tab label="Usage">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>bar_chart</mat-icon>Usage</span>
+            </ng-template>
+            <h2 class="node-config__section-heading">Usage notes</h2>
             <div class="form-container">
               <mat-form-field class="form-field">
                 <mat-label>Usage</mat-label>
-                <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)"></textarea>
+                <textarea
+                  matInput
+                  class="node-config__usage-textarea"
+                  [value]="usage()"
+                  (input)="usage.set($event.target.value)"
+                ></textarea>
               </mat-form-field>
             </div>
           </mat-tab>
@@ -191,9 +255,9 @@
       <div></div>
     </div>
   </div>
+</div>
 
-  <div mat-dialog-actions>
-    <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-    <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
-  </div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
 </div>

@@ -1,14 +1,33 @@
-<h1 mat-dialog-title>Configurator for ATM switch {{ name }}</h1>
+<div mat-dialog-title class="node-config__header">
+  <h1 class="node-config__title">Configure Node <span aria-hidden="true">—</span> ATM switch {{ name }}</h1>
+  <button
+    mat-icon-button
+    type="button"
+    class="node-config__close"
+    aria-label="Close node configuration"
+    (click)="onCancelClick()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
 <div class="modal-form-container">
+  <div class="node-config__single-tab" role="tablist" aria-label="Node configuration sections">
+    <div role="tab" aria-selected="true">
+      <span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span>
+    </div>
+  </div>
   <div class="content">
     <div class="default-content">
       <mat-card>
+        <h2 class="node-config__section-heading">ATM mappings</h2>
         <mat-form-field class="form-field">
           <mat-label>Name</mat-label>
           <input matInput type="text" [value]="nameSignal()" (input)="nameSignal.set($event.target.value)" />
         </mat-form-field>
-        <mat-checkbox [checked]="useVpiOnly()" (change)="useVpiOnly.set($event.checked)"> Use VPI only (VP tunnel) </mat-checkbox>
+        <mat-checkbox [checked]="useVpiOnly()" (change)="useVpiOnly.set($event.checked)">
+          Use VPI only (VP tunnel)
+        </mat-checkbox>
 
         <div class="atm-switch__input-grid">
           <mat-form-field class="form-field">
@@ -17,7 +36,12 @@
           </mat-form-field>
           <mat-form-field class="form-field">
             <mat-label>Destination Port</mat-label>
-            <input matInput type="text" [value]="destinationPort()" (input)="destinationPort.set($event.target.value)" />
+            <input
+              matInput
+              type="text"
+              [value]="destinationPort()"
+              (input)="destinationPort.set($event.target.value)"
+            />
           </mat-form-field>
         </div>
 
@@ -44,7 +68,7 @@
         </div>
 
         <div class="atm-switch__add-btn">
-          <button mat-button (click)="add()">Add</button>
+          <button mat-flat-button color="primary" class="node-config__add-button" (click)="add()">Add</button>
         </div>
 
         <table mat-table [dataSource]="nodeMappingsDataSource()">
@@ -61,7 +85,12 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Actions</th>
             <td mat-cell *matCellDef="let element">
-              <button mat-icon-button matTooltip="Delete mapping" matTooltipClass="custom-tooltip" (click)="delete(element)">
+              <button
+                mat-icon-button
+                matTooltip="Delete mapping"
+                matTooltipClass="custom-tooltip"
+                (click)="delete(element)"
+              >
                 <mat-icon aria-label="Delete mapping">delete</mat-icon>
               </button>
             </td>
@@ -77,5 +106,5 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
 </div>

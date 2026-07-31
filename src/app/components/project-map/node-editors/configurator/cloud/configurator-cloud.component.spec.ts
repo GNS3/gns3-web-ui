@@ -643,7 +643,7 @@ describe('ConfiguratorDialogCloudComponent', () => {
       component.name = 'Cloud-1';
       fixture.detectChanges();
 
-      const title = fixture.nativeElement.querySelector('h1[mat-dialog-title]');
+      const title = fixture.nativeElement.querySelector('.node-config__title');
       expect(title.textContent).toContain('Cloud-1');
     });
   });

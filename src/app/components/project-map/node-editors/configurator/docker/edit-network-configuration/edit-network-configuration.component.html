@@ -2,11 +2,17 @@
 
 @if (node) {
 <div class="modal-form-container">
-  <textarea matInput [value]="configuration()" (input)="configuration.set($event.target.value)" class="textArea" type="text"></textarea>
+  <textarea
+    matInput
+    [value]="configuration()"
+    (input)="configuration.set($event.target.value)"
+    class="textArea"
+    type="text"
+  ></textarea>
 </div>
 }
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
 </div>

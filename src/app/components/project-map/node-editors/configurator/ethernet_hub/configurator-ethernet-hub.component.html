@@ -1,9 +1,26 @@
-<h1 mat-dialog-title>Configurator for Ethernet hub {{ name }}</h1>
+<div mat-dialog-title class="node-config__header">
+  <h1 class="node-config__title">Configure Node <span aria-hidden="true">—</span> Ethernet hub {{ name }}</h1>
+  <button
+    mat-icon-button
+    type="button"
+    class="node-config__close"
+    aria-label="Close node configuration"
+    (click)="onCancelClick()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
 <div class="modal-form-container">
+  <div class="node-config__single-tab" role="tablist" aria-label="Node configuration sections">
+    <div role="tab" aria-selected="true">
+      <span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span>
+    </div>
+  </div>
   <div class="content">
     <div class="default-content">
       <mat-card class="matCard">
+        <h2 class="node-config__section-heading">General settings</h2>
         <div class="form-container">
           <mat-form-field class="form-field">
             <mat-label>Name</mat-label>
@@ -31,7 +48,12 @@
 
           <mat-form-field class="form-field">
             <mat-label>Number of ports</mat-label>
-            <input matInput type="text" [value]="nodeNumberOfPorts()" (input)="nodeNumberOfPorts.set($event.target.value)" />
+            <input
+              matInput
+              type="text"
+              [value]="nodeNumberOfPorts()"
+              (input)="nodeNumberOfPorts.set($event.target.value)"
+            />
           </mat-form-field>
         </div>
       </mat-card>
@@ -41,5 +63,5 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
 </div>
