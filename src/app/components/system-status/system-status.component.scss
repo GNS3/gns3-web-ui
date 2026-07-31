@@ -269,17 +269,41 @@
 }
 
 .project-list__status {
-  padding: 4px 8px;
-  border-radius: 999px;
-  color: var(--mat-sys-on-surface-variant);
-  background: var(--mat-sys-surface-container-highest);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
   font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.project-list__status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
 
 .project-list__status--open {
-  color: var(--mat-sys-on-tertiary-container);
-  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-primary);
+  background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+}
+
+.project-list__status--open .project-list__status-dot {
+  background: var(--mat-sys-primary);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--mat-sys-primary) 50%, transparent);
+}
+
+.project-list__status--closed {
+  color: var(--mat-sys-error);
+  background: color-mix(in srgb, var(--mat-sys-error) 12%, transparent);
+}
+
+.project-list__status--closed .project-list__status-dot {
+  background: var(--mat-sys-error);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--mat-sys-error) 50%, transparent);
 }
 
 .status-panel--resources {
@@ -419,7 +443,8 @@
 }
 
 .status-dot[data-status='started'] {
-  background: var(--mat-sys-tertiary);
+  // Same green used by the topology summary / node status indicator for running nodes
+  background: #008000;
 }
 
 .status-dot[data-status='suspended'] {

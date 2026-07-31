@@ -116,7 +116,9 @@
             <span
               class="project-list__status"
               [class.project-list__status--open]="project.status === 'opened'"
+              [class.project-list__status--closed]="project.status !== 'opened'"
             >
+              <span class="project-list__status-dot"></span>
               {{ project.status === 'opened' ? 'Running' : 'Stopped' }}
             </span>
           </div>
