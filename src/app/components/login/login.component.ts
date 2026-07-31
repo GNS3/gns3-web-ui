@@ -9,9 +9,8 @@ import {
   ViewChild,
   ElementRef,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -19,11 +18,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthResponse } from '@models/authResponse';
 import { Controller } from '@models/controller';
 import { Version } from '@models/version';
 import { LoginService } from '@services/login.service';
-import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
@@ -40,9 +39,7 @@ interface RememberMeData {
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
-    RouterModule,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -50,13 +47,13 @@ interface RememberMeData {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit {
   private loginService = inject(LoginService);
   private controllerService = inject(ControllerService);
-  private controllerDatabase = inject(ControllerDatabase);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private toasterService = inject(ToasterService);
@@ -92,8 +89,6 @@ export class LoginComponent implements OnInit {
     username: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     password: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
   });
-
-  constructor() {}
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');

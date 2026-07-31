@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
-import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,7 +11,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LoginService } from '@services/login.service';
-import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
@@ -25,7 +24,6 @@ describe('LoginComponent', () => {
   let fixture: ComponentFixture<LoginComponent>;
   let mockLoginService: LoginService;
   let mockControllerService: ControllerService;
-  let mockControllerDatabase: ControllerDatabase;
   let mockToasterService: ToasterService;
   let mockVersionService: VersionService;
   let mockThemeService: ThemeService;
@@ -54,10 +52,6 @@ describe('LoginComponent', () => {
       get: vi.fn().mockResolvedValue(mockController),
       update: vi.fn().mockResolvedValue(mockController),
     } as any as ControllerService;
-
-    mockControllerDatabase = {
-      getController: vi.fn().mockReturnValue(mockController),
-    } as any as ControllerDatabase;
 
     mockToasterService = {
       error: vi.fn(),
@@ -114,7 +108,6 @@ describe('LoginComponent', () => {
       imports: [
         LoginComponent,
         ReactiveFormsModule,
-        RouterModule,
         MatCardModule,
         MatFormFieldModule,
         MatInputModule,
@@ -126,7 +119,6 @@ describe('LoginComponent', () => {
       providers: [
         { provide: LoginService, useValue: mockLoginService },
         { provide: ControllerService, useValue: mockControllerService },
-        { provide: ControllerDatabase, useValue: mockControllerDatabase },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: VersionService, useValue: mockVersionService },
         { provide: ThemeService, useValue: mockThemeService },
@@ -169,6 +161,25 @@ describe('LoginComponent', () => {
     expect(component.hidePassword()).toBe(false);
     component.togglePasswordVisibility();
     expect(component.hidePassword()).toBe(true);
+  });
+
+  it('should render Material 3 login controls and the standard page footer', () => {
+    expect(fixture.nativeElement.querySelector('.login-card')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('mat-form-field')).toHaveLength(2);
+    expect(fixture.nativeElement.querySelector('.login-page__footer')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.login-page__back')).toBeNull();
+    expect(fixture.nativeElement.textContent).not.toContain('Sign in to your controller');
+    expect(fixture.nativeElement.querySelector('.login-card__submit-button').textContent).toContain('Login');
+  });
+
+  it('should expose password visibility as an accessible button', () => {
+    const button = fixture.nativeElement.querySelector('.login-card__visibility-button');
+
+    expect(button.tagName).toBe('BUTTON');
+    expect(button.getAttribute('aria-label')).toBe('Show password');
+    button.click();
+    fixture.detectChanges();
+    expect(button.getAttribute('aria-label')).toBe('Hide password');
   });
 
   it('should update caps lock state', () => {
