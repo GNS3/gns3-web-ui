@@ -443,8 +443,7 @@
 }
 
 .status-dot[data-status='started'] {
-  // Same green used by the topology summary / node status indicator for running nodes
-  background: #008000;
+  background: var(--custom-mat-sys-success);
 }
 
 .status-dot[data-status='suspended'] {
