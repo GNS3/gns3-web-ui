@@ -19,6 +19,7 @@ import { Node, Properties } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { EditNetworkConfigurationDialogComponent } from './edit-network-configuration/edit-network-configuration.component';
 
 describe('ConfiguratorDialogDockerComponent', () => {
   let fixture: ComponentFixture<ConfiguratorDialogDockerComponent>;
@@ -173,6 +174,11 @@ describe('ConfiguratorDialogDockerComponent', () => {
 
     fixture = TestBed.createComponent(ConfiguratorDialogDockerComponent);
     component = fixture.componentInstance;
+    vi.spyOn((component as any).dialog, 'open').mockReturnValue({
+      componentInstance: {},
+      close: vi.fn(),
+    });
+    mockDialog = (component as any).dialog;
     component.controller = mockController;
     component.node = { ...mockNode } as Node;
     fixture.detectChanges();
@@ -303,6 +309,25 @@ describe('ConfiguratorDialogDockerComponent', () => {
       component.removeTag('nonexistent');
 
       expect(component.node.tags).toEqual(originalTags);
+    });
+  });
+
+  describe('editNetworkConfiguration', () => {
+    it('should open the structured network editor at its responsive dialog size', () => {
+      component.editNetworkConfiguration();
+
+      expect(mockDialog.open).toHaveBeenCalledWith(
+        EditNetworkConfigurationDialogComponent,
+        expect.objectContaining({
+          panelClass: ['base-dialog-panel', 'node-configurator-dialog-panel', 'docker-network-config-dialog-panel'],
+          width: '1040px',
+          maxWidth: 'calc(100vw - 48px)',
+          height: 'min(760px, calc(100vh - 48px))',
+          disableClose: true,
+        })
+      );
+      expect(mockDialog.open.mock.results[0].value.componentInstance.controller).toBe(mockController);
+      expect(mockDialog.open.mock.results[0].value.componentInstance.node).toBe(component.node);
     });
   });
 

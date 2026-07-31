@@ -1,11 +1,356 @@
-/**
- * GNS3 Edit Network Configuration Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
- */
-
-.textArea {
+:host {
+  display: grid;
   width: 100%;
-  height: 350px;
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  color: var(--mat-sys-on-surface);
+  background: var(--mat-sys-surface);
+}
+
+.network-editor__shell {
+  display: grid;
+  min-height: 0;
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+
+.network-editor__sidebar {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 16px 16px;
+  border-right: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-low);
+
+  nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+.network-editor__nav-button {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  color: var(--mat-sys-on-surface-variant);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  mat-icon {
+    flex: 0 0 auto;
+  }
+
+  &:hover {
+    color: var(--mat-sys-on-surface);
+    background: var(--mat-sys-surface-container);
+  }
+
+  &--active {
+    color: var(--mat-sys-primary);
+    background: var(--mat-sys-primary-container);
+    font-weight: 600;
+  }
+}
+
+.network-editor__status-dot {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  margin-top: 4px;
+  border: 2px solid var(--mat-sys-outline-variant);
+  border-radius: 50%;
+  background: var(--mat-sys-surface-container-highest);
+
+  &--active {
+    border-color: color-mix(in srgb, var(--custom-mat-sys-success) 30%, transparent);
+    background: var(--custom-mat-sys-success);
+  }
+}
+
+.network-editor__content {
+  min-width: 0;
+  min-height: 0;
+  padding: 28px 30px;
+  overflow: auto;
+}
+
+.network-editor__section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+
+  h2 {
+    margin: 0;
+    font-family: var(--mat-sys-title-large-font);
+    font-size: 24px;
+    font-weight: 650;
+    line-height: 1.25;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: var(--mat-sys-on-surface-variant);
+    line-height: 1.45;
+  }
+}
+
+.network-editor__adapter-count {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: var(--mat-sys-on-secondary-container);
+  background: var(--mat-sys-secondary-container);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.network-editor__interface-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.network-editor__interface-card {
+  overflow: hidden;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  background: var(--mat-sys-surface);
+
+  &--disabled {
+    background: var(--mat-sys-surface-container-low);
+  }
+}
+
+.network-editor__interface-header {
+  display: flex;
+  min-height: 62px;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-low);
+}
+
+.network-editor__interface-name {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+
+  > div {
+    min-width: 0;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 650;
+    line-height: 1.3;
+  }
+
+  span:not(.network-editor__status-dot) {
+    display: block;
+    margin-top: 2px;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 12px;
+  }
+}
+
+.network-editor__interface-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.network-editor__subsection {
+  h4 {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  + .network-editor__subsection {
+    padding-top: 18px;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+}
+
+.network-editor__preserved-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
+  font-size: 13px;
+
+  mat-icon {
+    width: 19px;
+    height: 19px;
+    flex: 0 0 auto;
+    font-size: 19px;
+  }
+}
+
+.network-editor__preview {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+
+  textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 320px;
+    flex: 1 1 auto;
+    padding: 16px;
+    resize: none;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 10px;
+    color: var(--mat-sys-on-surface);
+    background: var(--mat-sys-surface-container-low);
+    font-family: var(--mat-sys-body-medium-font);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+}
+
+.network-editor__loading,
+.network-editor__empty-state {
+  display: flex;
+  min-height: 280px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+}
+
+.network-editor__empty-state {
+  border: 1px dashed var(--mat-sys-outline-variant);
+  border-radius: 12px;
+
+  h3,
+  p {
+    margin: 0;
+  }
+
+  p {
+    max-width: 440px;
+  }
+}
+
+:host-context([data-density='compact']) {
+  --mat-slide-toggle-state-layer-size: 32px;
+
+  .network-editor__shell {
+    grid-template-columns: 188px minmax(0, 1fr);
+  }
+
+  .network-editor__sidebar {
+    gap: 16px;
+    padding: 14px 10px 10px;
+
+    nav {
+      gap: 4px;
+    }
+  }
+
+  .network-editor__nav-button {
+    min-height: 40px;
+    gap: 9px;
+    padding: 7px 10px;
+    font-size: 13px;
+
+    mat-icon {
+      width: 19px;
+      height: 19px;
+      font-size: 19px;
+    }
+  }
+
+  .network-editor__content {
+    padding: 18px 20px;
+  }
+
+  .network-editor__section-header {
+    margin-bottom: 12px;
+
+    h2 {
+      font-size: 20px;
+    }
+
+    p {
+      margin-top: 3px;
+      font-size: 13px;
+    }
+  }
+
+  .network-editor__interface-list {
+    gap: 10px;
+  }
+
+  .network-editor__interface-header {
+    min-height: 48px;
+    padding: 7px 12px;
+  }
+
+  .network-editor__interface-body {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .network-editor__subsection {
+    h4 {
+      margin-bottom: 7px;
+    }
+
+    + .network-editor__subsection {
+      padding-top: 10px;
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .network-editor__shell {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .network-editor__sidebar {
+    flex: 0 0 auto;
+    padding: 8px;
+    border-right: 0;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    nav {
+      flex-direction: row;
+      overflow-x: auto;
+    }
+  }
+
+  .network-editor__nav-button {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  .network-editor__content {
+    padding: 16px;
+  }
 }

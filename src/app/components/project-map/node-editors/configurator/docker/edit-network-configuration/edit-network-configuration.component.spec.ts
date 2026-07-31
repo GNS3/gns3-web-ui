@@ -18,7 +18,10 @@ describe('EditNetworkConfigurationDialogComponent', () => {
   let mockChangeDetectorRef: any;
   let mockController: Controller;
   let mockNode: Node;
-  const mockConfiguration = 'ethernet0_config = "..."\nnetwork_mode = "bridge"';
+  const mockConfiguration = `auto eth0
+iface eth0 inet dhcp
+\thostname DockerContainer
+`;
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -132,10 +135,6 @@ describe('EditNetworkConfigurationDialogComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should have empty string configuration initially', () => {
-      expect(component.configuration()).toBe('');
-    });
-
     it('should have node and controller assigned', () => {
       expect(component.node).toBe(mockNode);
       expect(component.controller).toBe(mockController);
@@ -149,22 +148,61 @@ describe('EditNetworkConfigurationDialogComponent', () => {
       expect(mockNodeService.getNetworkConfiguration).toHaveBeenCalledWith(mockController, mockNode);
     });
 
-    it('should populate configuration after fetching', () => {
+    it('should populate the generated preview after fetching', () => {
       fixture.detectChanges();
 
-      expect(component.configuration()).toBe(mockConfiguration);
+      expect(component.configurationPreview()).toBe(mockConfiguration);
     });
 
     it('should call markForCheck after receiving configuration', () => {
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
       fixture.detectChanges();
 
-      expect(component.configuration()).toBe(mockConfiguration);
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should expose the server file as structured interface data', () => {
+      fixture.detectChanges();
+
+      expect(component.interfaces()).toHaveLength(1);
+      expect(component.interfaces()[0]).toMatchObject({
+        name: 'eth0',
+        enabled: true,
+        ipv4Mode: 'dhcp',
+        hostname: 'DockerContainer',
+      });
+      expect(component.loading()).toBe(false);
+    });
+
+    it('should render hostname and omit the disabled-interface startup message', () => {
+      fixture.detectChanges();
+
+      const text = fixture.nativeElement.textContent;
+      expect(text).toContain('Hostname');
+      expect(text).not.toContain('Container status');
+      expect(text).not.toContain('This interface will not be configured at container startup.');
+    });
+
+    it('should mark a configured interface active while its container is running', () => {
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.network-editor__status-dot--active')).toBeTruthy();
+    });
+
+    it('should provide every IPv4 subnet mask from /32 through /0', () => {
+      fixture.detectChanges();
+
+      expect(component.subnetMasks).toHaveLength(33);
+      expect(component.subnetMasks[0]).toEqual({ value: '255.255.255.255', label: '255.255.255.255 (/32)' });
+      expect(component.subnetMasks[8]).toEqual({ value: '255.255.255.0', label: '255.255.255.0 (/24)' });
+      expect(component.subnetMasks[32]).toEqual({ value: '0.0.0.0', label: '0.0.0.0 (/0)' });
     });
   });
 
   describe('onSaveClick', () => {
     beforeEach(() => {
-      component.configuration.set(mockConfiguration);
+      fixture.detectChanges();
     });
 
     it('should save network configuration via NodeService', () => {
@@ -173,7 +211,7 @@ describe('EditNetworkConfigurationDialogComponent', () => {
       expect(mockNodeService.saveNetworkConfiguration).toHaveBeenCalledWith(
         mockController,
         mockNode,
-        mockConfiguration
+        component.configurationPreview()
       );
     });
 
@@ -188,11 +226,71 @@ describe('EditNetworkConfigurationDialogComponent', () => {
 
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
+
+    it('should serialize edits made through the structured interface model', () => {
+      component.updateInterface(0, {
+        ipv4Mode: 'static',
+        ipv4Address: '192.168.50.2',
+        netmask: '255.255.255.0',
+        ipv4Gateway: '192.168.50.1',
+        hostname: 'static-node',
+      });
+
+      component.onSaveClick();
+
+      const savedConfiguration = mockNodeService.saveNetworkConfiguration.mock.calls[0][2];
+      expect(savedConfiguration).toContain('iface eth0 inet static');
+      expect(savedConfiguration).toContain('\taddress 192.168.50.2');
+      expect(savedConfiguration).toContain('\tgateway 192.168.50.1');
+      expect(savedConfiguration).toContain('\thostname static-node');
+    });
+
+    it('should reject invalid static IPv4 configuration', () => {
+      component.updateInterface(0, {
+        ipv4Mode: 'static',
+        ipv4Address: '999.1.1.1',
+        netmask: '255.255.255.0',
+      });
+
+      component.onSaveClick();
+
+      expect(mockNodeService.saveNetworkConfiguration).not.toHaveBeenCalled();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Enter a valid IPv4 address');
+      expect(component.errorFor(0, 'ipv4Address')).toBe('Enter a valid IPv4 address');
+    });
+
+    it('should reject invalid DNS, MTU, and IPv6 values', () => {
+      component.updateInterface(0, {
+        dnsNameservers: 'not-an-address',
+        mtu: '12',
+        ipv6Mode: 'static',
+        ipv6Address: 'invalid',
+        prefixLength: '129',
+      });
+
+      component.onSaveClick();
+
+      expect(mockNodeService.saveNetworkConfiguration).not.toHaveBeenCalled();
+      expect(component.validationErrors()).toMatchObject({
+        '0.dnsNameservers': 'Enter valid IPv4 or IPv6 DNS addresses',
+        '0.mtu': 'MTU must be between 68 and 65535',
+        '0.ipv6Address': 'Enter a valid IPv6 address',
+        '0.prefixLength': 'Prefix length must be between 0 and 128',
+      });
+    });
+
+    it('should reject an invalid DHCP hostname', () => {
+      component.updateInterface(0, { hostname: 'not a valid hostname' });
+
+      component.onSaveClick();
+
+      expect(mockNodeService.saveNetworkConfiguration).not.toHaveBeenCalled();
+      expect(component.errorFor(0, 'hostname')).toBe('Enter a valid hostname');
+    });
   });
 
   describe('onCancelClick', () => {
     it('should close the dialog without saving', () => {
-      component.configuration.set('some unsaved config');
       component.onCancelClick();
 
       expect(mockDialogRef.close).toHaveBeenCalled();
@@ -204,7 +302,7 @@ describe('EditNetworkConfigurationDialogComponent', () => {
     it('should update configuration after async operation in ngOnInit', () => {
       fixture.detectChanges();
 
-      expect(component.configuration()).toBe(mockConfiguration);
+      expect(component.configurationPreview()).toBe(mockConfiguration);
     });
   });
 
@@ -219,6 +317,7 @@ describe('EditNetworkConfigurationDialogComponent', () => {
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load network configuration');
       expect(cdrSpy).toHaveBeenCalled();
+      expect(component.loadFailed()).toBe(true);
     });
 
     it('should show error toast when saveNetworkConfiguration fails', () => {
@@ -226,7 +325,7 @@ describe('EditNetworkConfigurationDialogComponent', () => {
         throwError(() => new Error('Failed to save network configuration'))
       );
       const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
-      component.configuration.set(mockConfiguration);
+      fixture.detectChanges();
 
       component.onSaveClick();
 

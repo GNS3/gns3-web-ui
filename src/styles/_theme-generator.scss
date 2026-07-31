@@ -103,11 +103,20 @@ $theme-configs: (
       ),
     )
   );
+  $success-theme: mat.define-theme(
+    (
+      color: (
+        theme-type: map.get($config, theme-type),
+        primary: mat.$green-palette,
+      ),
+    )
+  );
 
   :root.#{$class-name} {
     @include mat.all-component-themes($theme);
     @include mat.system-level-colors($theme);
     @include mat.system-level-typography($theme);
+    --custom-mat-sys-success: #{mat.get-theme-color($success-theme, primary)};
   }
 
   .cdk-overlay-container.#{$class-name},

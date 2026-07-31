@@ -74,6 +74,15 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     panelClass: ['base-dialog-panel', 'docker-configurator-dialog-panel'],
     disableClose: true,
   };
+  private networkConfigurationDialog = {
+    autoFocus: false,
+    panelClass: ['base-dialog-panel', 'node-configurator-dialog-panel', 'docker-network-config-dialog-panel'],
+    disableClose: true,
+    width: '1040px',
+    maxWidth: 'calc(100vw - 48px)',
+    height: 'min(760px, calc(100vh - 48px))',
+    maxHeight: 'calc(100vh - 48px)',
+  };
   dialogRef;
 
   // Model signals
@@ -165,7 +174,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   }
 
   editNetworkConfiguration() {
-    this.dialogRef = this.dialog.open(EditNetworkConfigurationDialogComponent, this.conf);
+    this.dialogRef = this.dialog.open(EditNetworkConfigurationDialogComponent, this.networkConfigurationDialog);
     let instance = this.dialogRef.componentInstance;
     instance.controller = this.controller;
     instance.node = this.node;

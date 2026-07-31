@@ -1,18 +1,303 @@
-<h1 mat-dialog-title>Edit network configuration for node {{ node.name }}</h1>
-
-@if (node) {
-<div class="modal-form-container">
-  <textarea
-    matInput
-    [value]="configuration()"
-    (input)="configuration.set($event.target.value)"
-    class="textArea"
-    type="text"
-  ></textarea>
+<div mat-dialog-title class="node-config__header">
+  <h1 class="node-config__title">
+    Edit network configuration <span aria-hidden="true">—</span> Docker {{ node?.name }}
+  </h1>
+  <button
+    mat-icon-button
+    class="node-config__close"
+    type="button"
+    aria-label="Close network configuration"
+    (click)="onCancelClick()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
 </div>
-}
+
+<div class="network-editor__shell">
+  <aside class="network-editor__sidebar" aria-label="Network configuration sections">
+    <nav>
+      <button
+        type="button"
+        class="network-editor__nav-button"
+        [class.network-editor__nav-button--active]="activeSection() === 'interfaces'"
+        [attr.aria-current]="activeSection() === 'interfaces' ? 'page' : null"
+        (click)="activeSection.set('interfaces')"
+      >
+        <mat-icon>lan</mat-icon>
+        <span>Interfaces</span>
+      </button>
+      <button
+        type="button"
+        class="network-editor__nav-button"
+        [class.network-editor__nav-button--active]="activeSection() === 'preview'"
+        [attr.aria-current]="activeSection() === 'preview' ? 'page' : null"
+        (click)="activeSection.set('preview')"
+      >
+        <mat-icon>description</mat-icon>
+        <span>Configuration preview</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="network-editor__content">
+    @if (loading()) {
+    <div class="network-editor__loading">
+      <mat-spinner diameter="36"></mat-spinner>
+      <span>Loading network configuration…</span>
+    </div>
+    } @else if (loadFailed()) {
+    <div class="network-editor__empty-state" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <h3>Network configuration could not be loaded</h3>
+      <p>Close this dialog and try again. No changes can be applied until the current file is available.</p>
+    </div>
+    } @else if (activeSection() === 'interfaces') {
+    <section aria-labelledby="network-editor-interfaces-title">
+      <div class="network-editor__section-header">
+        <div>
+          <h2 id="network-editor-interfaces-title">Interfaces</h2>
+          <p>Configure startup behavior and addressing for the container's available Ethernet adapters.</p>
+        </div>
+        <span class="network-editor__adapter-count">
+          {{ interfaces().length }} {{ interfaces().length === 1 ? 'adapter' : 'adapters' }}
+        </span>
+      </div>
+
+      <div class="network-editor__interface-list">
+        @for (networkInterface of interfaces(); track networkInterface.name; let index = $index) {
+        <article
+          class="network-editor__interface-card"
+          [class.network-editor__interface-card--disabled]="!networkInterface.enabled"
+        >
+          <header class="network-editor__interface-header">
+            <div class="network-editor__interface-name">
+              <span
+                class="network-editor__status-dot"
+                [class.network-editor__status-dot--active]="networkInterface.enabled && node?.status === 'started'"
+              ></span>
+              <div>
+                <h3>{{ networkInterface.name }}</h3>
+                <span>{{ networkInterface.enabled ? ipv4ModeLabel(networkInterface.ipv4Mode) : 'Disabled' }}</span>
+              </div>
+            </div>
+            <mat-slide-toggle
+              color="primary"
+              [checked]="networkInterface.enabled"
+              [attr.aria-label]="'Enable ' + networkInterface.name"
+              (change)="updateInterface(index, { enabled: $event.checked })"
+            ></mat-slide-toggle>
+          </header>
+
+          @if (networkInterface.enabled) {
+          <div class="network-editor__interface-body">
+            <div class="network-editor__subsection">
+              <h4>IPv4 configuration</h4>
+              <div class="form-grid">
+                <mat-form-field>
+                  <mat-label>Addressing mode</mat-label>
+                  <mat-select
+                    [value]="networkInterface.ipv4Mode"
+                    (selectionChange)="updateInterface(index, { ipv4Mode: $event.value })"
+                  >
+                    <mat-option value="dhcp">DHCP</mat-option>
+                    <mat-option value="static">Static</mat-option>
+                    <mat-option value="manual">Manual / no address</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Hostname</mat-label>
+                  <input
+                    matInput
+                    [placeholder]="node?.name || 'docker'"
+                    [value]="networkInterface.hostname"
+                    (input)="updateInterface(index, { hostname: $event.target.value })"
+                  />
+                  @if (errorFor(index, 'hostname')) {
+                  <mat-error>{{ errorFor(index, 'hostname') }}</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>MTU</mat-label>
+                  <input
+                    matInput
+                    inputmode="numeric"
+                    placeholder="1500"
+                    [value]="networkInterface.mtu"
+                    (input)="updateInterface(index, { mtu: $event.target.value })"
+                  />
+                  @if (errorFor(index, 'mtu')) {
+                  <mat-error>{{ errorFor(index, 'mtu') }}</mat-error>
+                  }
+                </mat-form-field>
+
+                @if (networkInterface.ipv4Mode === 'static') {
+                <mat-form-field>
+                  <mat-label>IPv4 address</mat-label>
+                  <input
+                    matInput
+                    placeholder="192.168.0.2"
+                    [value]="networkInterface.ipv4Address"
+                    (input)="updateInterface(index, { ipv4Address: $event.target.value })"
+                  />
+                  @if (errorFor(index, 'ipv4Address')) {
+                  <mat-error>{{ errorFor(index, 'ipv4Address') }}</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Subnet mask</mat-label>
+                  <mat-select
+                    [value]="networkInterface.netmask"
+                    (selectionChange)="updateInterface(index, { netmask: $event.value })"
+                  >
+                    @for (mask of subnetMasks; track mask.value) {
+                    <mat-option [value]="mask.value">{{ mask.label }}</mat-option>
+                    }
+                  </mat-select>
+                  @if (errorFor(index, 'netmask')) {
+                  <mat-error>{{ errorFor(index, 'netmask') }}</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>IPv4 gateway</mat-label>
+                  <input
+                    matInput
+                    placeholder="192.168.0.1"
+                    [value]="networkInterface.ipv4Gateway"
+                    (input)="updateInterface(index, { ipv4Gateway: $event.target.value })"
+                  />
+                  @if (errorFor(index, 'ipv4Gateway')) {
+                  <mat-error>{{ errorFor(index, 'ipv4Gateway') }}</mat-error>
+                  }
+                </mat-form-field>
+                }
+
+                <mat-form-field class="form-grid__full">
+                  <mat-label>DNS nameservers</mat-label>
+                  <input
+                    matInput
+                    placeholder="1.1.1.1 8.8.8.8"
+                    [value]="networkInterface.dnsNameservers"
+                    (input)="updateInterface(index, { dnsNameservers: $event.target.value })"
+                  />
+                  <mat-hint>Separate multiple IPv4 or IPv6 addresses with spaces.</mat-hint>
+                  @if (errorFor(index, 'dnsNameservers')) {
+                  <mat-error>{{ errorFor(index, 'dnsNameservers') }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="network-editor__subsection">
+              <h4>IPv6 configuration</h4>
+              <div class="form-grid">
+                <mat-form-field>
+                  <mat-label>Addressing mode</mat-label>
+                  <mat-select
+                    [value]="networkInterface.ipv6Mode"
+                    (selectionChange)="updateInterface(index, { ipv6Mode: $event.value })"
+                  >
+                    <mat-option value="disabled">Disabled</mat-option>
+                    <mat-option value="auto">Automatic</mat-option>
+                    <mat-option value="dhcp">DHCP</mat-option>
+                    <mat-option value="static">Static</mat-option>
+                    <mat-option value="manual">Manual / no address</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                @if (networkInterface.ipv6Mode === 'static') {
+                <mat-form-field>
+                  <mat-label>IPv6 address</mat-label>
+                  <input
+                    matInput
+                    placeholder="2001:db8::2"
+                    [value]="networkInterface.ipv6Address"
+                    (input)="updateInterface(index, { ipv6Address: $event.target.value })"
+                  />
+                  @if (errorFor(index, 'ipv6Address')) {
+                  <mat-error>{{ errorFor(index, 'ipv6Address') }}</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Prefix length</mat-label>
+                  <input
+                    matInput
+                    inputmode="numeric"
+                    placeholder="64"
+                    [value]="networkInterface.prefixLength"
+                    (input)="updateInterface(index, { prefixLength: $event.target.value })"
+                  />
+                  @if (errorFor(index, 'prefixLength')) {
+                  <mat-error>{{ errorFor(index, 'prefixLength') }}</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>IPv6 gateway</mat-label>
+                  <input
+                    matInput
+                    placeholder="2001:db8::1"
+                    [value]="networkInterface.ipv6Gateway"
+                    (input)="updateInterface(index, { ipv6Gateway: $event.target.value })"
+                  />
+                  @if (errorFor(index, 'ipv6Gateway')) {
+                  <mat-error>{{ errorFor(index, 'ipv6Gateway') }}</mat-error>
+                  }
+                </mat-form-field>
+                }
+              </div>
+            </div>
+
+            @if (networkInterface.ipv4ExtraDirectives.length || networkInterface.ipv6ExtraDirectives.length) {
+            <div class="network-editor__preserved-note">
+              <mat-icon>info</mat-icon>
+              <span>Unsupported directives from this interface will be preserved when you apply the changes.</span>
+            </div>
+            }
+          </div>
+          }
+        </article>
+        } @empty {
+        <div class="network-editor__empty-state">
+          <mat-icon>lan</mat-icon>
+          <h3>No Ethernet adapters available</h3>
+          <p>Increase the adapter count in the Docker node's General settings before configuring addresses.</p>
+        </div>
+        }
+      </div>
+    </section>
+    } @else {
+    <section class="network-editor__preview" aria-labelledby="network-editor-preview-title">
+      <div class="network-editor__section-header">
+        <div>
+          <h2 id="network-editor-preview-title">Configuration preview</h2>
+          <p>This is the generated <code>/etc/network/interfaces</code> file that will be sent to the server.</p>
+        </div>
+      </div>
+      <textarea
+        readonly
+        spellcheck="false"
+        aria-label="Generated network configuration"
+        [value]="configurationPreview()"
+      ></textarea>
+    </section>
+    }
+  </main>
+</div>
 
 <div mat-dialog-actions>
-  <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
+  <button mat-button color="accent" type="button" [disabled]="saving()" (click)="onCancelClick()">Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    [disabled]="loading() || loadFailed() || saving()"
+    (click)="onSaveClick()"
+  >
+    {{ saving() ? 'Applying…' : 'Apply' }}
+  </button>
 </div>
