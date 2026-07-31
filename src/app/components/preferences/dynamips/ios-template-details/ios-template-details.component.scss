@@ -20,13 +20,13 @@
   padding: 32px 20px 16px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   animation: fadeInSlideIn 0.4s ease-out;
 }
 
 .ios-details__back-btn {
-  width: 48px;
-  height: 48px;
+  width: var(--gns3-density-icon-button);
+  height: var(--gns3-density-icon-button);
   border-radius: 12px;
   color: var(--mat-sys-on-surface);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -68,11 +68,11 @@
   overflow: hidden;
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
     0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
-  margin-bottom: 16px;
+  margin-bottom: var(--gns3-density-card-gap);
 }
 
 .ios-details__section-header {
-  padding: 16px 24px;
+  padding: var(--gns3-density-section-header-padding);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -101,15 +101,15 @@
 // Form
 // ============================================= */
 .ios-details__form {
-  padding: 16px 24px 24px;
+  padding: var(--gns3-density-card-padding) var(--gns3-density-card-padding) 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
 
   .two-column-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: var(--gns3-density-card-gap);
 
     .grid-span-2 {
       grid-column: 1 / -1;
@@ -132,7 +132,7 @@
 .three-column-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .ios-details__field--full {
@@ -142,20 +142,19 @@
 
 .ios-details__symbol-row {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
+  gap: var(--gns3-density-card-gap);
 }
 
 .ios-details__symbol-btn,
 .ios-details__action-btn {
-  margin-top: 4px;
-  height: 48px;
+  align-self: stretch;
 }
 
 .ios-details__info-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   padding: 8px 0;
 }
 
@@ -183,7 +182,7 @@
 .ios-details__adapters {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .ios-details__checkbox {
@@ -196,7 +195,7 @@
 .ios-details__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   margin-top: 24px;
 }
 

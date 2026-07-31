@@ -43,12 +43,12 @@
 // ============================================= */
 .projects__buttons-bar {
   display: flex;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 .projects__button {
   margin: 12px 0;
-  height: 48px;
+  height: var(--gns3-density-control-height);
   border-radius: 12px;
   font-size: 16px;
   font-weight: 500;
@@ -72,7 +72,7 @@
 .projects__toolbar {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 20px 8px;
@@ -92,7 +92,7 @@
 .projects__toolbar-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   flex-shrink: 0;
 }
 
@@ -106,34 +106,29 @@
   display: flex;
   align-items: center;
   gap: 2px;
+  padding: 4px 2px;
   background: var(--mat-sys-surface-container-high);
   border-radius: 8px;
-  padding: 2px;
 }
 
 button.projects__view-toggle-btn {
-  width: 48px;
-  height: 48px;
+  width: var(--gns3-density-icon-button);
+  height: var(--gns3-density-icon-button);
   border-radius: 8px;
-  --mat-icon-button-state-layer-size: 48px;
+  color: var(--mat-sys-on-surface-variant);
+  /* Keep the state layer in sync with the button size (48px normal /
+     40px compact) so the icon stays perfectly centered in both modes. */
+  --mat-icon-button-state-layer-size: var(--gns3-density-icon-button);
   --mat-icon-button-icon-size: 22px;
 
-  mat-icon {
-    color: var(--mat-sys-on-surface-variant);
-    transition: color 200ms ease;
-  }
-
-  &:hover mat-icon {
+  &:hover {
     color: var(--mat-sys-on-surface);
   }
 }
 
 .projects__view-toggle-btn--active {
+  color: var(--mat-sys-on-primary-container);
   background: var(--mat-sys-primary-container);
-
-  mat-icon {
-    color: var(--mat-sys-on-primary-container);
-  }
 }
 
 /* =============================================
@@ -313,7 +308,7 @@ mat-cell {
 .projects__table-status {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--gns3-density-space-2);
   padding: 4px 10px;
   border-radius: 20px;
   font-size: 12px;
@@ -500,7 +495,7 @@ mat-cell {
   min-width: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   align-content: start;
 }
 
@@ -513,12 +508,12 @@ mat-cell {
   background: var(--mat-sys-surface);
   border-radius: 16px;
   border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 60%, transparent);
-  padding: 16px;
+  padding: var(--gns3-density-card-padding);
   cursor: pointer;
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 
   &:hover {
     transform: translateY(-2px);
@@ -550,7 +545,7 @@ mat-cell {
 .projects__card-status {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--gns3-density-space-2);
   padding: 4px 10px;
   border-radius: 20px;
   font-size: 12px;
@@ -677,7 +672,7 @@ mat-cell {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   padding: 8px 12px 8px 20px;
   background: color-mix(in srgb, var(--mat-sys-primary-container) 72%, var(--mat-sys-surface));
   border-bottom: 1px solid var(--mat-sys-outline-variant);
@@ -833,7 +828,7 @@ mat-cell {
   background: color-mix(in srgb, var(--mat-sys-surface-container) 72%, transparent);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: var(--gns3-density-space-2);
 }
 
 button.projects__details-action-btn {
@@ -911,7 +906,12 @@ button.projects__details-action-btn {
 /* =============================================
 // Footer
 // ============================================= */
+/* The footer shares the exact geometry of the content columns (header,
+   toolbar, main): same 1600px cap, auto centering and 20px horizontal
+   padding, so the footer text/icons stay aligned with the table width. */
 .projects__footer {
+  max-width: 1600px;
+  margin: 0 auto;
   padding: 24px 20px;
   color: var(--mat-sys-on-surface-variant);
   font-size: 14px;
@@ -923,9 +923,7 @@ button.projects__details-action-btn {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1600px;
-  margin: 0 auto;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .projects__footer-info {
@@ -935,7 +933,7 @@ button.projects__details-action-btn {
 .projects__footer-social {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 .projects__footer-social-link {

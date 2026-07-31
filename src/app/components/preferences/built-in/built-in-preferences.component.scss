@@ -20,13 +20,13 @@
   padding: 32px 20px 16px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   animation: fadeInSlideIn 0.4s ease-out;
 }
 
 .builtin-prefs__back-btn {
-  width: 48px;
-  height: 48px;
+  width: var(--gns3-density-icon-button);
+  height: var(--gns3-density-icon-button);
   border-radius: 12px;
   color: var(--mat-sys-on-surface);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -68,7 +68,7 @@
 .builtin-prefs__nav-item {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   padding: 16px 24px;
   color: var(--mat-sys-on-surface);
   text-decoration: none;

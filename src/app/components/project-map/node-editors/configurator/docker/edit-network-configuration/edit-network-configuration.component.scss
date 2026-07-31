@@ -18,15 +18,15 @@
   min-height: 0;
   flex-direction: column;
   justify-content: space-between;
-  gap: 24px;
-  padding: 24px 16px 16px;
+  gap: var(--gns3-density-space-5);
+  padding: var(--gns3-density-card-padding) 16px 16px;
   border-right: 1px solid var(--mat-sys-outline-variant);
   background: var(--mat-sys-surface-container-low);
 
   nav {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--gns3-density-space-2);
   }
 }
 
@@ -35,7 +35,7 @@
   width: 100%;
   min-height: 48px;
   align-items: center;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   padding: 10px 14px;
   border: 0;
   border-radius: 10px;
@@ -118,7 +118,7 @@
 .network-editor__interface-list {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .network-editor__interface-card {
@@ -138,7 +138,7 @@
   box-sizing: border-box;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   padding: 12px 18px;
   border-bottom: 1px solid var(--mat-sys-outline-variant);
   background: var(--mat-sys-surface-container-low);
@@ -148,7 +148,7 @@
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 
   > div {
     min-width: 0;
@@ -192,7 +192,7 @@
 .network-editor__preserved-note {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--gns3-density-space-3);
   padding: 10px 12px;
   border-radius: 8px;
   color: var(--mat-sys-on-primary-container);
@@ -237,7 +237,7 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   color: var(--mat-sys-on-surface-variant);
   text-align: center;
 }

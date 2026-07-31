@@ -44,11 +44,11 @@
 
 .computes-page__header-actions {
   flex: 0 0 auto;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 button.computes-page__button {
-  height: 48px;
+  height: var(--gns3-density-control-height);
   padding-inline: 18px;
   border-radius: 12px;
   font-size: 15px;
@@ -64,7 +64,7 @@ button.computes-page__button {
 }
 
 .computes-page__toolbar {
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   padding: 0 20px 8px;
 }
 
@@ -84,15 +84,15 @@ button.computes-page__button {
 .computes-page__summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: var(--gns3-density-space-3);
+  margin-bottom: var(--gns3-density-card-gap);
 }
 
 .computes-page__summary-item {
   display: flex;
   align-items: center;
   min-width: 0;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   padding: 14px 16px;
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 14px;
@@ -157,7 +157,7 @@ button.computes-page__button {
   align-items: center;
   justify-content: center;
   min-height: 320px;
-  gap: 14px;
+  gap: var(--gns3-density-card-gap);
   color: var(--mat-sys-on-surface-variant);
   background: var(--mat-sys-surface);
 }
@@ -260,7 +260,7 @@ mat-header-cell {
 
 .computes-page__name-cell {
   min-width: 0;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 .computes-page__compute-icon {
@@ -307,7 +307,7 @@ mat-header-cell {
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  gap: 6px;
+  gap: var(--gns3-density-space-2);
   padding: 4px 10px;
   border: 1px solid var(--mat-sys-error);
   border-radius: 18px;
@@ -336,7 +336,7 @@ mat-header-cell {
 }
 
 .computes-page__platform {
-  gap: 6px;
+  gap: var(--gns3-density-space-2);
   color: var(--mat-sys-on-surface-variant);
   font-size: 13px;
 
@@ -348,7 +348,7 @@ mat-header-cell {
 }
 
 .computes-page__resources {
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 
   span {
     display: inline-flex;

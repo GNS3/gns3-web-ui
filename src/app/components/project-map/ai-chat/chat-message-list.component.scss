@@ -6,7 +6,7 @@
 .gns3-chat-message-list {
   height: 100%;
   overflow-y: auto;
-  padding: 16px;
+  padding: var(--gns3-density-space-4);
   background-color: var(--mat-sys-surface);
   scrollbar-width: auto;
   scrollbar-color: var(--mat-sys-primary) transparent;
@@ -37,7 +37,7 @@
 .gns3-chat-message-list__messages-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
 }
 
 // =============================================
@@ -348,7 +348,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  padding: 48px 16px;
+  padding: 48px var(--gns3-density-space-4);
 }
 
 .gns3-chat-message-list__empty-content {
@@ -362,7 +362,7 @@
   justify-content: center;
   width: 80px;
   height: 80px;
-  margin: 0 auto 24px;
+  margin: 0 auto var(--gns3-density-space-5);
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--mat-sys-tertiary) 10%, transparent),
@@ -394,27 +394,27 @@
   font-size: 18px;
   font-weight: 500;
   color: var(--mat-sys-on-surface);
-  margin: 0 0 8px 0;
+  margin: 0 0 var(--gns3-density-space-2) 0;
 }
 
 .gns3-chat-message-list__empty-description {
   font-size: 12px;
   color: var(--mat-sys-on-surface-variant);
-  margin: 0 0 24px 0;
+  margin: 0 0 var(--gns3-density-space-5) 0;
 }
 
 .gns3-chat-message-list__empty-suggestions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--gns3-density-space-2);
   align-items: center;
 }
 
 .gns3-chat-message-list__suggestion-chip {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: var(--gns3-density-space-2);
+  padding: var(--gns3-density-space-2) var(--gns3-density-space-4);
   background: var(--mat-sys-surface-container-low);
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 16px;

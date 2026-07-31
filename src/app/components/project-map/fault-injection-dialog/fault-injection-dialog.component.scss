@@ -16,7 +16,7 @@
 .fault-injection-content {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--gns3-density-space-5);
 }
 
 /* Confirmation Panel */
@@ -24,8 +24,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 32px 24px;
+  gap: var(--gns3-density-card-gap);
+  padding: 32px var(--gns3-density-card-padding);
   text-align: center;
 
   &__icon {
@@ -67,7 +67,7 @@
 
   &__group {
     display: flex;
-    gap: 6px;
+    gap: var(--gns3-density-space-2);
     width: 100%;
     border: none;
     border-radius: 0;
@@ -136,8 +136,8 @@
 /* Completion Message */
 .completion-message {
   display: flex;
-  gap: 16px;
-  padding: 20px;
+  gap: var(--gns3-density-card-gap);
+  padding: var(--gns3-density-card-padding);
   background: var(--mat-sys-surface-container-low);
   border-radius: 12px;
   border-left: 4px solid var(--mat-sys-primary);
@@ -196,7 +196,7 @@
 .events-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 
   h3 {
     font-size: 16px;
@@ -209,12 +209,12 @@
 .events-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--gns3-density-space-2);
 }
 
 .event {
   display: flex;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   padding: 12px 16px;
   background: var(--mat-sys-surface-container-low);
   border-radius: 8px;

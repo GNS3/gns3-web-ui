@@ -78,7 +78,10 @@
               placeholder="Symbol"
             />
           </mat-form-field>
-          <button mat-button class="ios-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+          <button mat-stroked-button color="primary" class="ios-details__symbol-btn" (click)="chooseSymbol()">
+            <mat-icon>add</mat-icon>
+            Choose symbol
+          </button>
         </div>
 
         <div class="ios-details__info-row">

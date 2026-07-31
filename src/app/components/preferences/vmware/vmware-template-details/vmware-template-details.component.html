@@ -79,7 +79,10 @@
               placeholder="Symbol"
             />
           </mat-form-field>
-          <button mat-button class="vmware-template-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+          <button mat-stroked-button color="primary" class="vmware-template-details__symbol-btn" (click)="chooseSymbol()">
+            <mat-icon>add</mat-icon>
+            Choose symbol
+          </button>
         </div>
 
         <mat-form-field appearance="fill" class="vmware-template-details__field">

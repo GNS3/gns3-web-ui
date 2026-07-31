@@ -17,7 +17,7 @@
   min-height: 420px;
   place-content: center;
   place-items: center;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   color: var(--mat-sys-on-surface-variant);
 }
 
@@ -25,14 +25,14 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 24px;
+  gap: var(--gns3-density-space-5);
   margin-bottom: 22px;
 }
 
 .system-status__title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--gns3-density-space-3);
   margin: 4px 0 2px;
   font-size: 32px;
   font-weight: 680;
@@ -49,12 +49,12 @@
 .system-status__header-actions {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .system-status__header-actions button {
   min-width: 112px;
-  height: 44px;
+  height: var(--gns3-density-control-height);
   border-radius: 10px;
 }
 
@@ -72,7 +72,7 @@
 .system-status__notice {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--gns3-density-space-3);
   margin-bottom: 18px;
   padding: 10px 14px;
   border: 1px solid var(--mat-sys-error);
@@ -88,13 +88,13 @@
 .system-status__content {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .system-status__metrics {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 14px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .metric-card,
@@ -109,7 +109,7 @@
   display: flex;
   align-items: center;
   min-width: 0;
-  gap: 14px;
+  gap: var(--gns3-density-card-gap);
   padding: 17px;
   border-radius: 14px;
 }
@@ -165,7 +165,7 @@
 .system-status__breakdown-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .status-panel {
@@ -180,7 +180,7 @@
   justify-content: space-between;
   min-height: 66px;
   box-sizing: border-box;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   padding: 14px 18px;
   border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
@@ -203,7 +203,7 @@
 .system-info > div {
   display: grid;
   grid-template-columns: minmax(120px, 0.65fr) minmax(0, 1.35fr);
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   padding: 10px 0;
   border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 60%, transparent);
 }
@@ -232,7 +232,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(90px, 0.55fr) auto;
   align-items: center;
-  gap: 14px;
+  gap: var(--gns3-density-card-gap);
   min-height: 42px;
   border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 60%, transparent);
 }
@@ -245,7 +245,7 @@
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 8px;
+  gap: var(--gns3-density-space-2);
   overflow: hidden;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -271,7 +271,7 @@
 .project-list__status {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--gns3-density-space-2);
   padding: 4px 10px;
   border-radius: 20px;
   font-size: 11px;
@@ -313,12 +313,12 @@
 .compute-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 14px;
-  padding: 18px;
+  gap: var(--gns3-density-card-gap);
+  padding: var(--gns3-density-card-padding);
 }
 
 .compute-card {
-  padding: 16px;
+  padding: var(--gns3-density-card-padding);
   border-radius: 14px;
   background: var(--mat-sys-surface-container);
   box-shadow: none;
@@ -327,8 +327,8 @@
 .compute-card__header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: var(--gns3-density-space-3);
+  margin-bottom: var(--gns3-density-card-gap);
 }
 
 .compute-card__avatar {
@@ -400,7 +400,7 @@
 .compute-card__load {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid var(--mat-sys-outline-variant);
@@ -415,14 +415,14 @@
 .breakdown-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px;
-  padding: 18px;
+  gap: var(--gns3-density-space-3);
+  padding: var(--gns3-density-card-padding);
 }
 
 .breakdown-list__row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--gns3-density-space-2);
   padding: 11px 12px;
   border-radius: 10px;
   background: var(--mat-sys-surface-container);

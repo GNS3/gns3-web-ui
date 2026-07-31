@@ -10,6 +10,7 @@
 @use 'styles/xterm-context-menu' as *;
 @use 'styles/markdown' as *;
 @use 'styles/template-wizard' as *;
+@use 'styles/density-tokens' as *;
 
 /* =============================================
 // Global Scrollbar Styles
@@ -571,7 +572,7 @@ mat-form-field {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    margin-top: 16px;
+    margin-top: var(--gns3-density-space-4);
   }
 
   .mat-mdc-form-field-subscript-wrapper {
@@ -582,6 +583,12 @@ mat-form-field {
   .mat-mdc-form-field-flex {
     align-items: flex-start;
   }
+}
+
+/* In compact density, form fields reserve no extra helper-text space below
+   the input, which tightens the vertical rhythm of dense forms. */
+html[data-density='compact'] mat-form-field .mat-mdc-form-field-subscript-wrapper {
+  margin-top: 0;
 }
 
 /* Vertically center text prefix (e.g. "global-" in marker name field) */

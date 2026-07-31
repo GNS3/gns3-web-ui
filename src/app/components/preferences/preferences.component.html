@@ -200,7 +200,7 @@
           <ng-container matColumnDef="template_type">
             <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
             <mat-cell *matCellDef="let template">
-              <span class="templates-page__type-badge">{{ templateTypeLabel(template.template_type) }}</span>
+              <span class="templates-page__type-badge" [ngClass]="typeBadgeClass(template.template_type)">{{ templateTypeLabel(template.template_type) }}</span>
             </mat-cell>
           </ng-container>
 
@@ -320,7 +320,7 @@
 
           <div class="templates-page__card-body">
             <h3 [matTooltip]="template.name">{{ template.name }}</h3>
-            <span class="templates-page__type-badge">{{ templateTypeLabel(template.template_type) }}</span>
+            <span class="templates-page__type-badge" [ngClass]="typeBadgeClass(template.template_type)">{{ templateTypeLabel(template.template_type) }}</span>
             <dl>
               @if (template.tags?.length) {
               <div class="templates-page__card-tags-row">
@@ -417,7 +417,7 @@
             </span>
             <div class="templates-page__details-title-line">
               <h2 [matTooltip]="template.name">{{ template.name }}</h2>
-              <span class="templates-page__type-badge">{{ templateTypeLabel(template.template_type) }}</span>
+              <span class="templates-page__type-badge" [ngClass]="typeBadgeClass(template.template_type)">{{ templateTypeLabel(template.template_type) }}</span>
             </div>
           </div>
           <button mat-icon-button (click)="closeDetails()" matTooltip="Close details" aria-label="Close details">

@@ -35,7 +35,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 
   button {
     min-height: 40px;
@@ -61,7 +61,7 @@
 
 .settings__category {
   width: 100%;
-  min-height: 44px;
+  min-height: var(--gns3-density-control-height);
   padding: 0 12px;
   display: flex;
   align-items: center;
@@ -170,7 +170,7 @@
   &--stacked {
     align-items: stretch;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--gns3-density-space-3);
   }
 }
 
@@ -211,7 +211,7 @@
 .settings__density-options {
   display: grid;
   grid-template-columns: repeat(2, minmax(180px, 1fr));
-  gap: 10px;
+  gap: var(--gns3-density-space-3);
   width: 100%;
 }
 
@@ -272,7 +272,7 @@
 .settings__theme-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(130px, 1fr));
-  gap: 10px;
+  gap: var(--gns3-density-space-3);
 
   &--map {
     grid-template-columns: repeat(3, minmax(150px, 1fr));
@@ -436,7 +436,7 @@
 
 .settings__inline-fields {
   display: flex;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   flex-wrap: wrap;
 }
 
@@ -474,7 +474,7 @@
   > div {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
+    gap: var(--gns3-density-space-3);
 
     > mat-icon {
       color: var(--mat-sys-primary);

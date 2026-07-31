@@ -72,7 +72,10 @@
               placeholder="Symbol"
             />
           </mat-form-field>
-          <button mat-button class="vpcs-template-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+          <button mat-stroked-button color="primary" class="vpcs-template-details__symbol-btn" (click)="chooseSymbol()">
+            <mat-icon>add</mat-icon>
+            Choose symbol
+          </button>
         </div>
 
         <mat-form-field appearance="fill" class="vpcs-template-details__field">

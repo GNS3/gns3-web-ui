@@ -450,7 +450,7 @@ export class ProjectsComponent implements OnInit {
 
   duplicate(project: Project) {
     const dialogRef = this.dialog.open(ChooseNameDialogComponent, {
-      panelClass: ['base-dialog-panel', 'choose-name-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'choose-name-dialog-panel'],
       autoFocus: false,
       disableClose: true,
     });
@@ -481,7 +481,7 @@ export class ProjectsComponent implements OnInit {
 
   addBlankProject() {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
-      panelClass: ['base-dialog-panel', 'add-blank-project-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'add-blank-project-dialog-panel'],
       autoFocus: false,
       disableClose: true,
     });
@@ -492,7 +492,7 @@ export class ProjectsComponent implements OnInit {
   importProject() {
     let uuid: string = '';
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
-      panelClass: ['base-dialog-panel', 'import-project-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'import-project-dialog-panel'],
       autoFocus: false,
       disableClose: true,
     });
@@ -560,7 +560,7 @@ export class ProjectsComponent implements OnInit {
 
   exportPortableProjectDialog() {
     const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel'],
       autoFocus: false,
       disableClose: true,
       data: { controllerDetails: this.controller, projectDetails: this.project },

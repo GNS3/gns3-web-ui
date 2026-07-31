@@ -3,22 +3,22 @@
 <div class="modal-form-container">
   <form [formGroup]="formGroup">
     @if (element.fill !== undefined) {
-    <mat-form-field class="form-field">
+    <mat-form-field class="form-field" subscriptSizing="dynamic">
       <mat-label>Fill color</mat-label>
       <input matInput type="color" [value]="element.fill" (input)="onFillChange($event.target.value)" />
     </mat-form-field>
     }
 
-    <mat-form-field class="form-field">
+    <mat-form-field class="form-field" subscriptSizing="dynamic">
       <mat-label>Border color</mat-label>
       <input matInput type="color" [value]="element.stroke" (input)="onStrokeChange($event.target.value)" />
     </mat-form-field>
 
-    <mat-form-field class="form-field">
+    <mat-form-field class="form-field" subscriptSizing="dynamic">
       <mat-label>Border width</mat-label>
       <input matInput formControlName="borderWidth" type="number" min="0" max="100" />
     </mat-form-field>
-    <mat-form-field class="form-field">
+    <mat-form-field class="form-field" subscriptSizing="dynamic">
       <mat-label>Border style</mat-label>
       <mat-select [value]="element.stroke_dasharray" (selectionChange)="onStrokeDasharrayChange($event.value)">
         @for (type of borderTypes; track type.value) {
@@ -28,24 +28,24 @@
     </mat-form-field>
 
     @if (element.width !== undefined) {
-    <mat-form-field class="form-field">
+    <mat-form-field class="form-field" subscriptSizing="dynamic">
       <mat-label>Width</mat-label>
       <input matInput min="0" type="number" [value]="element.width" (input)="onWidthChange(+$event.target.value)" />
     </mat-form-field>
     } @if (element.height !== undefined) {
-    <mat-form-field class="form-field">
+    <mat-form-field class="form-field" subscriptSizing="dynamic">
       <mat-label>Height</mat-label>
       <input matInput min="0" type="number" [value]="element.height" (input)="onHeightChange(+$event.target.value)" />
     </mat-form-field>
     } @if (element.rx !== undefined) {
-    <mat-form-field class="form-field full-width">
+    <mat-form-field class="form-field full-width" subscriptSizing="dynamic">
       <mat-label>Corner radius</mat-label>
       <input matInput type="number" min="0" max="100" [value]="element.rx" (input)="onRxChange(+$event.target.value)" />
     </mat-form-field>
     }
 
     @if (element.curve_type !== undefined) {
-    <mat-form-field class="form-field">
+    <mat-form-field class="form-field" subscriptSizing="dynamic">
       <mat-label>Curve type</mat-label>
       <mat-select [value]="element.curve_type" (selectionChange)="onCurveTypeChange($event.value)">
         @for (type of curveTypes; track type.value) {
@@ -53,7 +53,7 @@
         }
       </mat-select>
     </mat-form-field>
-    <mat-form-field class="form-field">
+    <mat-form-field class="form-field" subscriptSizing="dynamic">
       <mat-label>Arrow direction</mat-label>
       <mat-select [value]="element.arrow_direction" (selectionChange)="onArrowDirectionChange($event.value)">
         @for (dir of arrowDirections; track dir.value) {
@@ -64,7 +64,7 @@
     }
 
     @if (element.line_arrow_direction !== undefined) {
-    <mat-form-field class="form-field">
+    <mat-form-field class="form-field" subscriptSizing="dynamic">
       <mat-label>Arrow direction</mat-label>
       <mat-select [value]="element.line_arrow_direction" (selectionChange)="onLineArrowDirectionChange($event.value)">
         @for (dir of arrowDirections; track dir.value) {
@@ -72,7 +72,7 @@
         }
       </mat-select>
     </mat-form-field>
-    <mat-form-field class="form-field">
+    <mat-form-field class="form-field" subscriptSizing="dynamic">
       <mat-label>Drawing type</mat-label>
       <mat-select [value]="element.line_drawing_type" (selectionChange)="onLineDrawingTypeChange($event.value)">
         @for (type of lineDrawingTypes; track type.value) {
@@ -83,7 +83,7 @@
     }
 
     @if (element.line_drawing_type === undefined || element.line_drawing_type === 'straight') {
-    <mat-form-field class="form-field full-width">
+    <mat-form-field class="form-field full-width" subscriptSizing="dynamic">
       <mat-label>Rotation</mat-label>
       <input matInput formControlName="rotation" type="number" />
     </mat-form-field>

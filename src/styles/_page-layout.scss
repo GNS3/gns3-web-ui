@@ -22,14 +22,14 @@
 @mixin page-title {
   margin: 0;
   color: var(--mat-sys-on-surface);
-  font-size: 32px;
+  font-size: var(--gns3-density-page-title-size);
   font-weight: 500;
 }
 
 @mixin back-button {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--gns3-radius-control);
+  width: var(--gns3-density-icon-button);
+  height: var(--gns3-density-icon-button);
+  border-radius: var(--gns3-density-radius-lg);
   color: var(--mat-sys-on-surface);
   transition: background-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
 
@@ -40,7 +40,7 @@
 
 @mixin surface {
   overflow: hidden;
-  border-radius: var(--gns3-radius-surface);
+  border-radius: var(--gns3-density-radius-lg);
   background: var(--mat-sys-surface);
   border: var(--gns3-surface-border);
   box-shadow: none;
@@ -54,7 +54,7 @@
 @mixin action-bar {
   display: flex;
   align-items: center;
-  gap: var(--gns3-space-3);
+  gap: var(--gns3-density-space-3);
 }
 
 @mixin empty-state {
@@ -70,9 +70,9 @@
 @mixin status-chip {
   display: inline-flex;
   align-items: center;
-  gap: var(--gns3-space-2);
+  gap: var(--gns3-density-space-2);
   padding: 6px 14px;
-  border-radius: var(--gns3-radius-round);
+  border-radius: 999px;
   font-size: 13px;
   font-weight: 500;
 }

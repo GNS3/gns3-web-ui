@@ -31,7 +31,7 @@
 }
 
 button.help-page__button {
-  height: 48px;
+  height: var(--gns3-density-control-height);
   padding-inline: 18px;
   border-radius: 12px;
   font-size: 15px;
@@ -53,8 +53,8 @@ button.help-page__button {
 .help-page__overview {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 16px;
+  gap: var(--gns3-density-card-gap);
+  margin-bottom: var(--gns3-density-card-gap);
   padding: 16px 18px;
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 14px;
@@ -105,7 +105,7 @@ button.help-page__button {
 }
 
 .mat-expansion-panel-header {
-  min-height: 64px;
+  min-height: var(--gns3-density-section-header-height);
   padding-inline: 20px;
   color: var(--mat-sys-on-surface);
   background: color-mix(in srgb, var(--mat-sys-primary-container) 28%, var(--mat-sys-surface));
@@ -123,7 +123,7 @@ button.help-page__button {
 .help-page__panel-title {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   font-size: 15px;
   font-weight: 600;
 
@@ -148,7 +148,7 @@ button.help-page__button {
   align-items: center;
   justify-content: space-between;
   min-height: 54px;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   padding: 10px 14px;
   color: var(--mat-sys-on-surface);
   background: var(--mat-sys-surface-container-low);

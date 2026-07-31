@@ -7,7 +7,7 @@
 .new-template {
   &__title {
     margin: 0;
-    padding: 24px 24px 16px;
+    padding: var(--gns3-density-card-padding) var(--gns3-density-card-padding) 16px;
     font-size: 18px;
     font-weight: 500;
     color: var(--mat-sys-on-surface);
@@ -26,7 +26,7 @@
   }
 
   &__content {
-    padding: 16px 24px;
+    padding: 16px var(--gns3-density-card-padding);
     max-height: 60vh;
     overflow-y: auto;
   }
@@ -34,7 +34,7 @@
   &__radio-group {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--gns3-density-card-gap);
   }
 
   &__radio-button {
@@ -52,8 +52,8 @@
   &__actions {
     display: flex;
     justify-content: flex-end;
-    padding: 16px 24px 24px;
-    gap: 12px;
+    padding: 16px var(--gns3-density-card-padding) var(--gns3-density-card-padding);
+    gap: var(--gns3-density-space-3);
   }
 
   /* =============================================
@@ -62,8 +62,8 @@
   &__table-header {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: var(--gns3-density-card-gap);
+    margin-bottom: var(--gns3-density-card-gap);
   }
 
   &__filter-row {
@@ -73,7 +73,7 @@
 
   &__filter-controls-row {
     display: flex;
-    gap: 16px;
+    gap: var(--gns3-density-card-gap);
     flex-wrap: wrap;
   }
 
@@ -154,7 +154,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: var(--gns3-density-card-gap);
     font-size: 14px;
     font-weight: 500;
     color: var(--mat-sys-on-surface);
@@ -181,7 +181,7 @@
       }
 
       &.mat-expanded {
-        margin-bottom: 16px;
+        margin-bottom: var(--gns3-density-card-gap);
       }
     }
 
@@ -203,7 +203,7 @@
   &__version-summary {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--gns3-density-space-3);
     margin-left: 12px;
     font-size: 13px;
     color: var(--mat-sys-on-surface-variant);
@@ -249,7 +249,7 @@
   // Legacy Version Item (for non-QEMU)
   // ============================================= */
   &__version-item {
-    margin-bottom: 24px;
+    margin-bottom: var(--gns3-density-card-gap);
     padding-bottom: 16px;
     border-bottom: 1px solid var(--mat-sys-outline-variant);
 
@@ -288,7 +288,7 @@
   &__image-item {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--gns3-density-space-2);
     width: 100%;
 
     // Card style - visual hierarchy optimization
@@ -324,7 +324,7 @@
   &__image-status {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--gns3-density-space-3);
     flex-wrap: wrap;
   }
 
@@ -363,12 +363,12 @@
   &__action-group {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--gns3-density-space-2);
   }
 
   &__action-buttons {
     display: flex;
-    gap: 8px;
+    gap: var(--gns3-density-space-2);
   }
 
   /* =============================================
@@ -388,7 +388,7 @@
   &__upload-progress {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--gns3-density-space-2);
     padding: 12px 16px;
     background: var(--mat-sys-primary-container);
     border-radius: 8px;
@@ -411,7 +411,7 @@
   &__progress-text {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--gns3-density-space-2);
 
     mat-icon {
       font-size: 18px;
@@ -434,7 +434,7 @@
   &__update-button {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--gns3-density-space-2);
     min-width: 200px;
     justify-content: center;
 

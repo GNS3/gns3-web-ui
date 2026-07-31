@@ -80,7 +80,10 @@
               placeholder="Symbol"
             />
           </mat-form-field>
-          <button mat-button class="qemu-template-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+          <button mat-stroked-button color="primary" class="qemu-template-details__symbol-btn" (click)="chooseSymbol()">
+            <mat-icon>add</mat-icon>
+            Choose symbol
+          </button>
         </div>
 
         <mat-form-field appearance="fill" class="qemu-template-details__field">
@@ -323,38 +326,40 @@
         }}</mat-icon>
       </div>
       @if (activeSection === 'cddvd') {
-      <div class="qemu-template-details__file-row">
-        <input
-          type="file"
-          #filecdrom
-          class="qemu-template-details__file-input"
-          (change)="uploadCdromImageFile($event)"
-          accept=".iso"
-        />
-        <button mat-raised-button color="primary" (click)="filecdrom.click()" class="qemu-template-details__browse-btn">
-          Upload
-        </button>
-        <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
-          <mat-label>Image</mat-label>
+      <div class="qemu-template-details__form">
+        <div class="qemu-template-details__file-row">
           <input
-            matInput
-            [value]="cdromImage()"
-            (input)="onCdromInput($event); cdromImage.set($event.target.value)"
-            [matAutocomplete]="cdromAuto"
-            (focus)="refreshGlobalImages()"
-            type="text"
-            placeholder="Image"
+            type="file"
+            #filecdrom
+            class="qemu-template-details__file-input"
+            (change)="uploadCdromImageFile($event)"
+            accept=".iso"
           />
-          <mat-autocomplete #cdromAuto="matAutocomplete">
-            @if (filteredGlobalImages.length) {
-            <mat-optgroup label="Global images">
-              @for (image of filteredGlobalImages; track image.filename) {
-              <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+          <button mat-raised-button color="primary" (click)="filecdrom.click()" class="qemu-template-details__browse-btn">
+            Upload
+          </button>
+          <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
+            <mat-label>Image</mat-label>
+            <input
+              matInput
+              [value]="cdromImage()"
+              (input)="onCdromInput($event); cdromImage.set($event.target.value)"
+              [matAutocomplete]="cdromAuto"
+              (focus)="refreshGlobalImages()"
+              type="text"
+              placeholder="Image"
+            />
+            <mat-autocomplete #cdromAuto="matAutocomplete">
+              @if (filteredGlobalImages.length) {
+              <mat-optgroup label="Global images">
+                @for (image of filteredGlobalImages; track image.filename) {
+                <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                }
+              </mat-optgroup>
               }
-            </mat-optgroup>
-            }
-          </mat-autocomplete>
-        </mat-form-field>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
       </div>
       }
     </section>

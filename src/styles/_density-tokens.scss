@@ -1,0 +1,85 @@
+/**
+ * Global density design tokens.
+ *
+ * Single source of truth for element sizes and spacing across ALL pages,
+ * in both `normal` and `compact` interface densities. The active density is
+ * toggled on `<html data-density="normal|compact">` by
+ * `InterfaceDensityService`; these custom properties flip accordingly so any
+ * component that consumes them responds without per-page overrides.
+ *
+ * Values follow the Angular Material density `-2` scale for compact mode
+ * (~14% smaller control heights, ~25-33% tighter spacing) so custom layout
+ * elements stay consistent with Material components.
+ *
+ * Usage: reference `var(--gns3-density-*)` in component SCSS instead of
+ * hardcoded px. Do NOT hardcode px for shared structural dimensions.
+ */
+
+:root {
+  /* ---- Control heights (buttons, inputs, tab items) ---- */
+  --gns3-density-control-height: 44px; // default action/control
+  --gns3-density-control-height-sm: 36px; // small/secondary controls
+  --gns3-density-button-height: 48px; // primary action buttons (Save/Cancel)
+  --gns3-density-icon-button: 48px; // square icon buttons (back)
+  --gns3-density-form-field-height: 56px; // matches Material density 0
+
+  /* ---- Spacing scale (gaps & padding) ---- */
+  --gns3-density-space-1: 4px;
+  --gns3-density-space-2: 8px;
+  --gns3-density-space-3: 12px;
+  --gns3-density-space-4: 16px;
+  --gns3-density-space-5: 24px;
+  --gns3-density-space-6: 32px;
+
+  /* ---- Structural spacing ---- */
+  --gns3-density-page-padding: 24px;
+  --gns3-density-card-padding: 24px;
+  --gns3-density-card-gap: 16px; // gap between cards / grid columns
+  --gns3-density-section-header-height: 64px;
+  --gns3-density-section-header-padding: 12px 24px;
+
+  /* ---- Corner radii ---- */
+  --gns3-density-radius-sm: 8px;
+  --gns3-density-radius-md: 10px;
+  --gns3-density-radius-lg: 12px;
+  --gns3-density-radius-xl: 14px;
+
+  /* ---- Typography (density-responsive) ---- */
+  --gns3-density-page-title-size: 32px;
+  --gns3-density-section-title-size: 21px;
+}
+
+/* Compact density: scale all tokens down to the density -2 baseline. */
+html[data-density='compact'] {
+  /* ---- Control heights ---- */
+  --gns3-density-control-height: 40px;
+  --gns3-density-control-height-sm: 32px;
+  --gns3-density-button-height: 40px;
+  --gns3-density-icon-button: 40px;
+  --gns3-density-form-field-height: 48px; // matches Material density -2
+
+  /* ---- Spacing scale ---- */
+  --gns3-density-space-1: 2px;
+  --gns3-density-space-2: 6px;
+  --gns3-density-space-3: 8px;
+  --gns3-density-space-4: 12px;
+  --gns3-density-space-5: 16px;
+  --gns3-density-space-6: 24px;
+
+  /* ---- Structural spacing ---- */
+  --gns3-density-page-padding: 16px;
+  --gns3-density-card-padding: 16px;
+  --gns3-density-card-gap: 12px;
+  --gns3-density-section-header-height: 48px;
+  --gns3-density-section-header-padding: 8px 16px;
+
+  /* ---- Corner radii ---- */
+  --gns3-density-radius-sm: 6px;
+  --gns3-density-radius-md: 8px;
+  --gns3-density-radius-lg: 10px;
+  --gns3-density-radius-xl: 12px;
+
+  /* ---- Typography ---- */
+  --gns3-density-page-title-size: 27px;
+  --gns3-density-section-title-size: 18px;
+}

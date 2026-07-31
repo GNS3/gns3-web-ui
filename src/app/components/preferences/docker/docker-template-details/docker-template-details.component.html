@@ -67,6 +67,7 @@
           </mat-form-field>
           <button
             mat-stroked-button
+            color="primary"
             class="docker-details__pull-btn"
             type="button"
             [disabled]="isPulling() || !image().trim()"
@@ -95,7 +96,10 @@
               placeholder="Symbol"
             />
           </mat-form-field>
-          <button mat-button class="docker-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+          <button mat-stroked-button color="primary" class="docker-details__symbol-btn" (click)="chooseSymbol()">
+            <mat-icon>add</mat-icon>
+            Choose symbol
+          </button>
         </div>
         <mat-form-field class="form-field">
           <mat-label>Tags</mat-label>
@@ -224,7 +228,7 @@
           </mat-checkbox>
         </div>
         <button mat-button class="form-field docker-details__config-btn" (click)="editCustomAdapters()">
-          Edit network configuration
+          Configure custom adapters
         </button>
       </form>
       }
@@ -239,9 +243,11 @@
       <div class="form-container">
         <h6 class="docker-details__section-subtitle">Start command</h6>
         <mat-form-field class="form-field">
-          <mat-label>Start command</mat-label>
           <textarea
             matInput
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="8"
             [value]="startCommand()"
             (input)="startCommand.set($event.target.value)"
             type="text"
@@ -250,9 +256,11 @@
         </mat-form-field>
         <h6 class="docker-details__section-subtitle">Environment</h6>
         <mat-form-field class="form-field">
-          <mat-label>Environment</mat-label>
           <textarea
             matInput
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="8"
             [value]="environment()"
             (input)="environment.set($event.target.value)"
             type="text"
@@ -261,20 +269,24 @@
         </mat-form-field>
         <h6 class="docker-details__section-subtitle">Extra volumes</h6>
         <mat-form-field class="form-field">
-          <mat-label>Extra volumes</mat-label>
           <textarea
             matInput
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="8"
             [value]="extraVolumes()"
             (input)="extraVolumes.set($event.target.value)"
             type="text"
-            placeholder="Container directories to persist, one per line (e.g., /data&#10;/config)"
+            placeholder="Container directories to persist, one per line (e.g., /data/config)"
           ></textarea>
         </mat-form-field>
         <h6 class="docker-details__section-subtitle">Extra hosts</h6>
         <mat-form-field class="form-field">
-          <mat-label>Extra hosts</mat-label>
           <textarea
             matInput
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="8"
             [value]="extraHosts()"
             (input)="extraHosts.set($event.target.value)"
             type="text"

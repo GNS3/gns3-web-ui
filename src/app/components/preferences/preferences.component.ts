@@ -268,6 +268,25 @@ export class PreferencesComponent implements OnInit {
     return icons[type] || 'developer_board';
   }
 
+  /**
+   * Returns the theme-color modifier class for a template type badge so each
+   * type is easily identifiable (maps to a distinct --mat-sys-* role).
+   */
+  typeBadgeClass(type: string): string {
+    const classes: Record<string, string> = {
+      cloud: 'templates-page__type-badge--cloud',
+      docker: 'templates-page__type-badge--docker',
+      dynamips: 'templates-page__type-badge--dynamips',
+      ethernet_hub: 'templates-page__type-badge--ethernet-hub',
+      ethernet_switch: 'templates-page__type-badge--ethernet-switch',
+      iou: 'templates-page__type-badge--iou',
+      nat: 'templates-page__type-badge--nat',
+      qemu: 'templates-page__type-badge--qemu',
+      vpcs: 'templates-page__type-badge--vpcs',
+    };
+    return classes[type] || '';
+  }
+
   getSymbolSource(template: TemplateListItem): string | null {
     return template.symbol ? this.symbolBlobUrls().get(template.symbol) || null : null;
   }

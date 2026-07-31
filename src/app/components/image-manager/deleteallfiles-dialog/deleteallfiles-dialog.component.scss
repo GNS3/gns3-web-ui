@@ -15,7 +15,7 @@
 // ============================================= */
 .delete-files__title {
   margin: 0;
-  padding: 24px 24px 16px;
+  padding: var(--gns3-density-card-padding) var(--gns3-density-card-padding) 16px;
   font-size: 18px;
   font-weight: 500;
   color: var(--mat-sys-on-surface);
@@ -29,12 +29,12 @@
 // Content
 // ============================================= */
 .delete-files__content {
-  padding: 0 24px 16px;
+  padding: 0 var(--gns3-density-card-padding) 16px;
 
   &--center {
     display: flex;
     justify-content: center;
-    padding: 24px;
+    padding: var(--gns3-density-card-padding);
   }
 }
 
@@ -83,8 +83,8 @@
 .delete-files__actions {
   display: flex;
   justify-content: flex-end;
-  padding: 16px 24px 24px;
-  gap: 12px;
+  padding: 16px var(--gns3-density-card-padding) var(--gns3-density-card-padding);
+  gap: var(--gns3-density-space-3);
 }
 
 /* =============================================

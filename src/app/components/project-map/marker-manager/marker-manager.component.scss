@@ -130,13 +130,13 @@
   &__form-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: var(--gns3-density-space-2);
     align-items: flex-start;
   }
 
   &__form-actions {
     display: flex;
-    gap: 8px;
+    gap: var(--gns3-density-space-2);
     margin-top: 4px;
   }
 
@@ -190,7 +190,7 @@
   &__group-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--gns3-density-space-2);
     margin-bottom: 4px;
   }
 
@@ -214,7 +214,7 @@
   &__row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--gns3-density-space-2);
     padding: 4px 4px;
     border-radius: 4px;
 

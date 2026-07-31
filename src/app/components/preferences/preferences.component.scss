@@ -27,7 +27,7 @@
 
 .templates-page__heading {
   min-width: 0;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 .templates-page__title {
@@ -39,12 +39,12 @@
 }
 
 .templates-page__header-actions {
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 button.templates-page__refresh,
 button.templates-page__new {
-  height: 48px;
+  height: var(--gns3-density-control-height);
   border-radius: 12px;
   padding-inline: 18px;
   font-size: 15px;
@@ -122,7 +122,7 @@ button.templates-page__new {
 .templates-page__toolbar {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 20px 8px;
@@ -137,7 +137,7 @@ button.templates-page__new {
   display: flex;
   align-items: center;
   flex: 0 0 auto;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 .templates-page__filter,
@@ -155,11 +155,13 @@ button.templates-page__new {
 }
 
 button.templates-page__view-button {
-  width: 48px;
-  height: 48px;
+  width: var(--gns3-density-icon-button);
+  height: var(--gns3-density-icon-button);
   border-radius: 8px;
   color: var(--mat-sys-on-surface-variant);
-  --mat-icon-button-state-layer-size: 48px;
+  /* Keep the state layer in sync with the button size (48px normal /
+     40px compact) so the icon stays perfectly centered in both modes. */
+  --mat-icon-button-state-layer-size: var(--gns3-density-icon-button);
   --mat-icon-button-icon-size: 22px;
 }
 
@@ -185,7 +187,7 @@ button.templates-page__view-button--active {
   align-items: center;
   justify-content: center;
   min-height: 320px;
-  gap: 14px;
+  gap: var(--gns3-density-card-gap);
   color: var(--mat-sys-on-surface-variant);
 }
 
@@ -293,7 +295,7 @@ mat-header-cell {
   display: flex;
   align-items: center;
   min-width: 0;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 .templates-page__name-copy {
@@ -367,6 +369,53 @@ mat-header-cell {
 .templates-page__type-badge {
   color: var(--mat-sys-secondary);
   background: color-mix(in srgb, var(--mat-sys-secondary) 11%, transparent);
+}
+
+/* Theme-color coding per template type so each type is easily identifiable.
+   Uses only --mat-sys-* roles, so colors adapt to the active theme. */
+.templates-page__type-badge--qemu {
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
+}
+
+.templates-page__type-badge--docker {
+  color: var(--mat-sys-on-secondary-container);
+  background: var(--mat-sys-secondary-container);
+}
+
+.templates-page__type-badge--dynamips {
+  color: var(--mat-sys-on-tertiary-container);
+  background: var(--mat-sys-tertiary-container);
+}
+
+.templates-page__type-badge--cloud {
+  color: var(--mat-sys-on-error-container);
+  background: var(--mat-sys-error-container);
+}
+
+.templates-page__type-badge--vpcs {
+  color: var(--mat-sys-on-primary);
+  background: var(--mat-sys-primary);
+}
+
+.templates-page__type-badge--ethernet-hub {
+  color: var(--mat-sys-on-secondary);
+  background: var(--mat-sys-secondary);
+}
+
+.templates-page__type-badge--ethernet-switch {
+  color: var(--mat-sys-on-tertiary);
+  background: var(--mat-sys-tertiary);
+}
+
+.templates-page__type-badge--iou {
+  color: var(--mat-sys-on-error);
+  background: var(--mat-sys-error);
+}
+
+.templates-page__type-badge--nat {
+  color: var(--mat-sys-on-surface-variant);
+  background: var(--mat-sys-surface-container-highest);
 }
 
 .templates-page__source-badge {
@@ -443,7 +492,7 @@ button.templates-page__action--delete {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-content: start;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .templates-page__grid--with-details {
@@ -477,7 +526,7 @@ button.templates-page__action--delete {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 .templates-page__card-body {
@@ -613,7 +662,7 @@ button.templates-page__action--delete {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   min-height: 56px;
   box-sizing: border-box;
   padding: 8px 10px 8px 16px;
@@ -630,7 +679,7 @@ button.templates-page__action--delete {
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 
   h2 {
     flex: 1;
@@ -651,7 +700,7 @@ button.templates-page__action--delete {
   flex: 1;
   min-width: 0;
   align-items: center;
-  gap: 8px;
+  gap: var(--gns3-density-space-2);
 
   .templates-page__type-badge {
     flex: 0 0 auto;
@@ -693,7 +742,7 @@ button.templates-page__action--delete {
   display: grid;
   grid-template-columns: 22px 105px minmax(0, 1fr);
   align-items: center;
-  gap: 10px;
+  gap: var(--gns3-density-space-3);
   min-height: 40px;
   box-sizing: border-box;
   padding: 8px 0;
@@ -761,7 +810,7 @@ button.templates-page__action--delete {
 .templates-page__details-actions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
-  gap: 8px;
+  gap: var(--gns3-density-space-2);
   padding: 14px 16px 18px;
   border-top: 1px solid var(--mat-sys-outline-variant);
   background: color-mix(in srgb, var(--mat-sys-surface-container) 72%, transparent);

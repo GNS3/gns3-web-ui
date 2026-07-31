@@ -12,7 +12,7 @@
 }
 
 .gns3-chat-session-list__header {
-  padding: 12px;
+  padding: var(--gns3-density-space-3);
   border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
 
@@ -21,7 +21,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--gns3-density-space-2);
 }
 
 .gns3-chat-session-list__icon {
@@ -40,14 +40,14 @@
 .gns3-chat-session-list__container {
   flex: 1;
   overflow-y: auto;
-  padding: 8px;
+  padding: var(--gns3-density-space-2);
 }
 
 .gns3-chat-session-list__session {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 10px;
+  padding: var(--gns3-density-space-2) var(--gns3-density-space-3);
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -139,7 +139,7 @@
 .gns3-chat-session-list__preview {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--gns3-density-space-2);
 }
 
 .gns3-chat-session-list__stats {
@@ -192,7 +192,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: 48px var(--gns3-density-space-5);
   text-align: center;
 }
 

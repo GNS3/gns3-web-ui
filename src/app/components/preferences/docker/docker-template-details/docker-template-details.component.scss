@@ -20,13 +20,13 @@
   padding: 32px 20px 16px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   animation: fadeInSlideIn 0.4s ease-out;
 }
 
 .docker-details__back-btn {
-  width: 48px;
-  height: 48px;
+  width: var(--gns3-density-icon-button);
+  height: var(--gns3-density-icon-button);
   border-radius: 12px;
   color: var(--mat-sys-on-surface);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -68,11 +68,11 @@
   overflow: hidden;
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
     0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
-  margin-bottom: 16px;
+  margin-bottom: var(--gns3-density-card-gap);
 }
 
 .docker-details__section-header {
-  padding: 16px 24px;
+  padding: var(--gns3-density-section-header-padding);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -102,15 +102,15 @@
 // ============================================= */
 .docker-details__form,
 .form-container {
-  padding: 16px 24px 24px;
+  padding: var(--gns3-density-card-padding) var(--gns3-density-card-padding) 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
 
   .two-column-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: var(--gns3-density-card-gap);
 
     .grid-span-2 {
       grid-column: 1 / -1;
@@ -134,8 +134,8 @@
 
 .docker-details__symbol-row {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
+  gap: var(--gns3-density-card-gap);
 
   .form-field {
     flex: 1;
@@ -144,23 +144,27 @@
 
 .docker-details__image-row {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
+  gap: var(--gns3-density-card-gap);
 
   .form-field {
     flex: 1;
   }
 }
 
-.docker-details__pull-btn {
-  height: 48px;
-  margin-top: 4px;
+.docker-details__image-row .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* Match the "Pull image" button height to the Image field so it sits flush. */
+.docker-details__image-row .docker-details__pull-btn {
+  align-self: stretch;
   white-space: nowrap;
 }
 
 .docker-details__symbol-btn {
-  margin-top: 4px;
-  height: 48px;
+  align-self: stretch;
+  white-space: nowrap;
 }
 
 .docker-details__section-subtitle {
@@ -169,11 +173,11 @@
   color: var(--mat-sys-on-surface-variant);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin: 8px 0;
+  margin: var(--gns3-density-space-2) 0;
 }
 
 .docker-details__checkbox {
-  margin-top: 8px;
+  margin-top: var(--gns3-density-space-2);
 }
 
 /* =============================================
@@ -182,8 +186,8 @@
 .docker-details__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
+  gap: var(--gns3-density-space-3);
+  margin-top: var(--gns3-density-space-5);
 }
 
 .docker-details__cancel-btn {

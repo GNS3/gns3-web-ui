@@ -20,13 +20,13 @@
   padding: 32px 20px 16px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   animation: fadeInSlideIn 0.4s ease-out;
 }
 
 .vpcs-template-details__back-btn {
-  width: 48px;
-  height: 48px;
+  width: var(--gns3-density-icon-button);
+  height: var(--gns3-density-icon-button);
   border-radius: 12px;
   color: var(--mat-sys-on-surface);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -68,14 +68,14 @@
   overflow: hidden;
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
     0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
-  margin-bottom: 16px;
+  margin-bottom: var(--gns3-density-card-gap);
 }
 
 .vpcs-template-details__form {
-  padding: 24px;
+  padding: var(--gns3-density-card-padding);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .vpcs-template-details__field {
@@ -87,7 +87,7 @@
 }
 
 .vpcs-template-details__section-title {
-  padding: 16px 24px;
+  padding: var(--gns3-density-section-header-padding);
   margin: 0;
   font-size: 16px;
   font-weight: 500;
@@ -97,13 +97,12 @@
 
 .vpcs-template-details__symbol-row {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
+  gap: var(--gns3-density-card-gap);
 }
 
 .vpcs-template-details__symbol-btn {
-  margin-top: 4px;
-  height: 48px;
+  align-self: stretch;
 }
 
 /* =============================================
@@ -112,7 +111,7 @@
 .vpcs-template-details__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   margin-top: 24px;
 }
 

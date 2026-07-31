@@ -11,7 +11,7 @@
 .users-page__toolbar,
 .users-page__main {
   display: flex;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .users-page__header {
@@ -37,13 +37,13 @@
 }
 
 .users-page__header-actions {
-  gap: 10px;
+  gap: var(--gns3-density-space-3);
 }
 
 button.users-page__refresh,
 button.users-page__bulk-delete,
 button.users-page__add {
-  height: 48px;
+  height: var(--gns3-density-control-height);
   border-radius: 12px;
   padding-inline: 16px;
   font-size: 14px;
@@ -58,7 +58,7 @@ button.users-page__bulk-delete {
 .users-page__scopes {
   display: flex;
   gap: 4px;
-  margin-bottom: 16px;
+  margin-bottom: var(--gns3-density-card-gap);
   border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
 
@@ -129,7 +129,7 @@ button.users-page__bulk-delete {
 
 .users-page__toolbar-actions {
   flex: 0 0 auto;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 .users-page__filter,
@@ -147,11 +147,13 @@ button.users-page__bulk-delete {
 }
 
 button.users-page__view-button {
-  width: 48px;
-  height: 48px;
+  width: var(--gns3-density-icon-button);
+  height: var(--gns3-density-icon-button);
   border-radius: 8px;
   color: var(--mat-sys-on-surface-variant);
-  --mat-icon-button-state-layer-size: 48px;
+  /* Keep the state layer in sync with the button size (48px normal /
+     40px compact) so the icon stays perfectly centered in both modes. */
+  --mat-icon-button-state-layer-size: var(--gns3-density-icon-button);
   --mat-icon-button-icon-size: 22px;
 }
 
@@ -172,7 +174,7 @@ button.users-page__view-button--active {
   align-items: center;
   justify-content: center;
   min-height: 320px;
-  gap: 14px;
+  gap: var(--gns3-density-card-gap);
   color: var(--mat-sys-on-surface-variant);
 }
 
@@ -286,7 +288,7 @@ mat-header-cell {
   display: flex;
   align-items: center;
   min-width: 0;
-  gap: 10px;
+  gap: var(--gns3-density-space-3);
 
   strong {
     overflow: hidden;
@@ -413,7 +415,7 @@ button.users-page__action--delete {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-content: start;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .users-page__grid--with-details {
@@ -448,7 +450,7 @@ button.users-page__action--delete {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 .users-page__card-body {
@@ -576,7 +578,7 @@ button.users-page__action--delete {
   justify-content: space-between;
   min-height: 56px;
   box-sizing: border-box;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   padding: 8px 10px 8px 16px;
   border-bottom: 1px solid var(--mat-sys-outline-variant);
   background: color-mix(in srgb, var(--mat-sys-primary-container) 72%, var(--mat-sys-surface));
@@ -592,7 +594,7 @@ button.users-page__action--delete {
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 10px;
+  gap: var(--gns3-density-space-3);
 }
 
 .users-page__details-heading {
@@ -627,7 +629,7 @@ button.users-page__action--delete {
   align-items: center;
   min-height: 40px;
   box-sizing: border-box;
-  gap: 10px;
+  gap: var(--gns3-density-space-3);
   padding: 8px 0;
   border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 45%, transparent);
 
@@ -666,7 +668,7 @@ button.users-page__action--delete {
 .users-page__details-actions {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: var(--gns3-density-space-2);
   padding: 14px 16px 18px;
   border-top: 1px solid var(--mat-sys-outline-variant);
   background: color-mix(in srgb, var(--mat-sys-surface-container) 72%, transparent);

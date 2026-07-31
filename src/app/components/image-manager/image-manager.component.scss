@@ -27,7 +27,7 @@
 
 .image-manager__heading {
   min-width: 0;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 .image-manager__title {
@@ -39,11 +39,11 @@
 }
 
 .image-manager__buttons-bar {
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 button.image-manager__button {
-  height: 48px;
+  height: var(--gns3-density-control-height);
   border-radius: 12px;
   padding-inline: 18px;
   font-size: 15px;
@@ -67,7 +67,7 @@ button.image-manager__button--danger {
 .image-manager__toolbar {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 20px 8px;
@@ -87,7 +87,7 @@ button.image-manager__button--danger {
   display: flex;
   align-items: center;
   flex: 0 0 auto;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 .image-manager__filter,
@@ -105,8 +105,8 @@ button.image-manager__button--danger {
 }
 
 button.image-manager__view-toggle-btn {
-  width: 48px;
-  height: 48px;
+  width: var(--gns3-density-icon-button);
+  height: var(--gns3-density-icon-button);
   border-radius: 8px;
   color: var(--mat-sys-on-surface-variant);
   --mat-icon-button-state-layer-size: 48px;
@@ -343,7 +343,7 @@ button.image-manager__action-button--cancel {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-content: start;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .image-manager__grid--with-details {
@@ -354,7 +354,7 @@ button.image-manager__action-button--cancel {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding: 16px;
+  padding: var(--gns3-density-card-padding);
   border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 65%, transparent);
   border-radius: 16px;
   background: var(--mat-sys-surface);
@@ -418,7 +418,7 @@ button.image-manager__action-button--cancel {
 .image-manager__status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--gns3-density-space-2);
   margin-top: 9px;
   padding: 4px 10px;
   border-radius: 20px;
@@ -543,7 +543,7 @@ button.image-manager__action-button--cancel {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   min-height: 56px;
   box-sizing: border-box;
   padding: 8px 12px 8px 20px;

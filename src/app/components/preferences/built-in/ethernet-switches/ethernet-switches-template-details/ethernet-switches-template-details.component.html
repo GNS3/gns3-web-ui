@@ -65,7 +65,10 @@
               placeholder="Symbol"
             />
           </mat-form-field>
-          <button mat-button class="ethernet-switch-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+          <button mat-stroked-button color="primary" class="ethernet-switch-details__symbol-btn" (click)="chooseSymbol()">
+            <mat-icon>add</mat-icon>
+            Choose symbol
+          </button>
         </div>
 
         <mat-form-field appearance="fill" class="ethernet-switch-details__field">

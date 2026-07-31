@@ -29,7 +29,7 @@
 
 .acl-management__actions {
   display: flex;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 /* =============================================
@@ -37,7 +37,7 @@
 // ============================================= */
 .acl-management__button {
   margin: 12px 0;
-  height: 48px;
+  height: var(--gns3-density-control-height);
   border-radius: 12px;
   font-size: 16px;
   font-weight: 500;

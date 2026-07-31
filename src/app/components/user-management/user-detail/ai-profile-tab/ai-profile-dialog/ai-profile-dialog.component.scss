@@ -8,19 +8,20 @@
   // Form field layout
   .full-width {
     width: 100%;
-    margin-bottom: 12px;
+    margin-bottom: var(--gns3-density-space-3);
   }
 
   // Section headers
   .section-header {
-    margin-top: 16px;
-    margin-bottom: 16px;
+    margin-top: var(--gns3-density-space-4);
+    margin-bottom: var(--gns3-density-card-gap);
 
-    h3 {
+    h3,
+    h4 {
       margin: 0;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
-      color: var(--mat-sys-primary);
+      color: var(--mat-sys-on-surface);
     }
   }
 
@@ -47,8 +48,8 @@
   // Two-column row layout
   .row {
     display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: var(--gns3-density-space-3);
+    margin-bottom: var(--gns3-density-space-3);
 
     .half-width {
       flex: 1;
@@ -58,7 +59,7 @@
 
   // Checkbox section
   .checkbox-section {
-    margin: 16px 0;
+    margin: var(--gns3-density-space-4) 0;
 
     mat-checkbox {
       display: block;
@@ -83,20 +84,21 @@
 
   // Custom fields section
   .custom-fields-section {
-    margin-top: 16px;
-    padding-top: 16px;
+    margin-top: var(--gns3-density-space-4);
+    padding-top: var(--gns3-density-space-4);
     border-top: 1px solid var(--mat-sys-outline-variant);
 
     .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-top: 0;
+      margin-bottom: var(--gns3-density-space-2);
 
       h3 {
         margin: 0;
         font-size: 16px;
-        font-weight: 500;
+        font-weight: 600;
         color: var(--mat-sys-on-surface);
       }
 
@@ -145,7 +147,7 @@
     }
 
     .section-description {
-      margin-bottom: 16px;
+      margin-bottom: var(--gns3-density-card-gap);
 
       .reserved-field-hint {
         margin: 0;
@@ -158,12 +160,12 @@
     .custom-fields-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: var(--gns3-density-space-3);
 
       .custom-field-row {
         display: flex;
         align-items: flex-start;
-        gap: 8px;
+        gap: var(--gns3-density-space-2);
 
         .field-key {
           flex: 1;
@@ -225,7 +227,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: var(--gns3-density-card-padding);
       color: var(--mat-sys-on-surface-variant);
       text-align: center;
 
@@ -246,9 +248,9 @@
   .mode-selector {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 24px;
-    padding: 8px 0;
+    gap: var(--gns3-density-space-3);
+    margin-bottom: var(--gns3-density-card-gap);
+    padding: var(--gns3-density-space-2) 0;
 
     mat-button-toggle-group {
       flex: 1;
@@ -297,9 +299,9 @@
   .basic-mode {
     .mode-info {
       display: flex;
-      gap: 12px;
-      padding: 12px;
-      margin-top: 16px;
+      gap: var(--gns3-density-space-3);
+      padding: var(--gns3-density-space-3);
+      margin-top: var(--gns3-density-space-4);
       background: var(--mat-sys-surface-container);
       border: 1px solid var(--mat-sys-outline-variant);
       border-radius: 8px;
@@ -333,14 +335,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      padding: 16px;
+      margin-bottom: var(--gns3-density-space-4);
+      padding: var(--gns3-density-space-4);
       background: var(--mat-sys-surface-container);
       border-radius: 8px;
 
       h3 {
         margin: 0;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 600;
         color: var(--mat-sys-on-surface);
       }
@@ -348,7 +350,7 @@
       button {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: var(--gns3-density-space-2);
 
         .help-icon {
           font-size: 20px;

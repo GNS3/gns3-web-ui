@@ -23,7 +23,7 @@
 .ios-configurator__slots-group {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
 }
 
 .ios-configurator__slots-title {
@@ -36,7 +36,7 @@
 .ios-configurator__slots-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
 }
 
 :host-context([data-density='compact']) {

@@ -13,10 +13,10 @@
 [class$='__header'] {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--gns3-density-space-4);
   max-width: 1440px;
   margin: 0 auto;
-  padding: 24px 24px 14px;
+  padding: var(--gns3-density-space-5) var(--gns3-density-space-5) 14px;
 }
 
 [class$='__breadcrumb'] {
@@ -47,7 +47,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 24px;
+  gap: var(--gns3-density-space-5);
   width: 100%;
 }
 
@@ -56,7 +56,7 @@
   min-width: 0;
   margin: 0;
   color: var(--mat-sys-on-surface);
-  font-size: 32px;
+  font-size: var(--gns3-density-page-title-size);
   font-weight: 650;
   line-height: 1.2;
 }
@@ -64,14 +64,14 @@
 [class$='__header-actions'] {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--gns3-density-space-3);
   flex-shrink: 0;
 }
 
 [class$='__header-actions'] button {
-  min-height: 44px;
-  border-radius: 10px;
-  padding: 0 18px;
+  min-height: var(--gns3-density-control-height);
+  border-radius: var(--gns3-density-radius-md);
+  padding: 0 var(--gns3-density-space-4);
 }
 
 [class$='__header-actions'] button[color='primary'] {
@@ -80,9 +80,9 @@
 
 [class$='__back-btn'] {
   flex: 0 0 auto;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: var(--gns3-density-icon-button);
+  height: var(--gns3-density-icon-button);
+  border-radius: var(--gns3-density-radius-lg);
   color: var(--mat-sys-on-surface-variant);
 }
 
@@ -90,11 +90,11 @@
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
   align-items: start;
-  column-gap: 22px;
-  row-gap: 12px;
+  column-gap: var(--gns3-density-card-gap);
+  row-gap: var(--gns3-density-space-3);
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 24px 32px;
+  padding: 0 var(--gns3-density-space-5) 32px;
 }
 
 .template-edit-tabs {
@@ -103,10 +103,10 @@
   grid-row: 1 / span 2;
   align-self: start;
   flex-direction: column;
-  gap: 6px;
-  padding: 12px;
+  gap: var(--gns3-density-space-2);
+  padding: var(--gns3-density-space-3);
   border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 65%, transparent);
-  border-radius: 14px;
+  border-radius: var(--gns3-density-radius-xl);
   background: color-mix(in srgb, var(--mat-sys-primary-container) 18%, var(--mat-sys-surface));
 }
 
@@ -114,10 +114,10 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  min-height: 44px;
+  min-height: var(--gns3-density-control-height);
   border: 0;
-  border-radius: 9px;
-  padding: 0 12px;
+  border-radius: var(--gns3-density-radius-sm);
+  padding: 0 var(--gns3-density-space-3);
   color: var(--mat-sys-on-surface-variant);
   background: transparent;
   font: inherit;
@@ -161,9 +161,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 64px;
+  min-height: var(--gns3-density-section-header-height);
   box-sizing: border-box;
-  padding: 12px 24px;
+  padding: var(--gns3-density-section-header-padding);
   border-bottom: 1px solid var(--mat-sys-outline-variant);
   background: color-mix(in srgb, var(--mat-sys-primary-container) 28%, var(--mat-sys-surface));
   cursor: default;
@@ -176,7 +176,7 @@
 [class$='__section-title'] {
   margin: 0;
   color: var(--mat-sys-on-surface);
-  font-size: 21px;
+  font-size: var(--gns3-density-section-title-size);
   font-weight: 650;
 }
 
@@ -184,14 +184,14 @@
 .form-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 24px;
+  gap: var(--gns3-density-card-gap);
+  padding: var(--gns3-density-card-padding);
 }
 
 /* Keep QEMU's nested Advanced subsections on the same horizontal grid as its
    General settings form, regardless of component stylesheet order. */
 .qemu-template-details__form {
-  padding-inline: 24px;
+  padding-inline: var(--gns3-density-card-padding);
 }
 
 .qemu-template-details__subsection {
@@ -202,7 +202,7 @@
 .two-column-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: var(--gns3-density-card-gap);
 }
 
 [class$='__field'],
@@ -215,7 +215,7 @@
   width: 100%;
   box-sizing: border-box;
   justify-content: flex-end;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   margin-top: 0;
   padding: 4px 0 8px;
 }
@@ -227,10 +227,10 @@
 
 [class*='__save-btn'],
 [class*='__cancel-btn'] {
-  min-height: 48px;
-  height: 48px;
-  border-radius: 12px;
-  padding-inline: 20px;
+  min-height: var(--gns3-density-button-height);
+  height: var(--gns3-density-button-height);
+  border-radius: var(--gns3-density-radius-lg);
+  padding-inline: var(--gns3-density-space-5);
   font-size: 15px;
   font-weight: 550;
   text-transform: none;
@@ -242,24 +242,38 @@ button[class*='__save-btn'].mat-mdc-raised-button:not(:disabled) {
   --mat-button-protected-state-layer-color: var(--mat-sys-on-primary);
   color: var(--mat-sys-on-primary);
   background-color: var(--mat-sys-primary);
-  border: 1px solid var(--mat-sys-primary);
-  box-shadow: 0 3px 10px color-mix(in srgb, var(--mat-sys-primary) 24%, transparent);
+  box-shadow: 0 2px 6px color-mix(in srgb, currentColor 25%, transparent);
+
+  &:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px color-mix(in srgb, currentColor 35%, transparent);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
 
 button[class*='__cancel-btn'].mat-mdc-button:not(:disabled) {
-  --mat-button-text-label-text-color: var(--mat-sys-on-secondary);
-  --mat-button-text-state-layer-color: var(--mat-sys-on-secondary);
-  color: var(--mat-sys-on-secondary);
-  background-color: var(--mat-sys-secondary);
-  border: 1px solid var(--mat-sys-secondary);
+  --mat-button-text-label-text-color: var(--mat-sys-on-surface-variant);
+  --mat-button-text-state-layer-color: var(--mat-sys-on-surface-variant);
+  color: var(--mat-sys-on-surface-variant);
+  background-color: transparent;
+  border: 1px solid var(--mat-sys-outline);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+    border-color: var(--mat-sys-on-surface-variant);
+  }
 }
 
 button[class*='__config-btn'].mat-mdc-button:not(:disabled) {
   --mat-button-text-label-text-color: var(--mat-sys-on-primary-container);
   --mat-button-text-state-layer-color: var(--mat-sys-on-primary-container);
-  min-height: 44px;
+  min-height: var(--gns3-density-control-height);
   border: 1px solid var(--mat-sys-primary-container);
-  border-radius: 10px;
+  border-radius: var(--gns3-density-radius-md);
   color: var(--mat-sys-on-primary-container);
   background-color: var(--mat-sys-primary-container);
 }
@@ -274,7 +288,7 @@ button[class*='__config-btn'].mat-mdc-button:not(:disabled):hover {
 .preferences__usage-form {
   width: 100%;
   box-sizing: border-box;
-  padding: 24px;
+  padding: var(--gns3-density-card-padding);
 }
 
 .preferences__usage-field--full {
@@ -306,8 +320,22 @@ button[class*='__browse-btn'] {
 
 [class$='__symbol-row'] {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
+  gap: var(--gns3-density-card-gap);
+}
+
+/* The inline action button (e.g. "Choose symbol") sits next to the form
+   fields, so drop the fields' reserved helper-text space below the input.
+   Otherwise the taller field makes the centered button float too low. */
+[class$='__symbol-row'] .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* Match the action button height to the neighbouring form fields so the
+   button sits flush with the field box instead of floating above/below it. */
+[class$='__symbol-row'] [class$='__symbol-btn'],
+[class$='__symbol-row'] [class$='__action-btn'] {
+  align-self: stretch;
 }
 
 [class$='__symbol-row'] [class$='__field'] {
@@ -315,18 +343,12 @@ button[class*='__browse-btn'] {
 }
 
 :host-context([data-density='compact']) {
-  [class$='__header'] {
-    padding-block: 16px 10px;
-  }
-
-  [class$='__title'] {
-    font-size: 27px;
-  }
-
+  /* Only structural/layout changes remain here; all sizes and spacing now
+     respond automatically via the global --gns3-density-* tokens. */
   [class$='__heading-row'] {
     align-items: flex-start;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--gns3-density-space-3);
   }
 
   [class$='__header-actions'] {
@@ -335,27 +357,6 @@ button[class*='__browse-btn'] {
 
   [class$='__header-actions'] button {
     flex: 1;
-  }
-
-  [class$='__section-header'] {
-    min-height: 52px;
-    padding-block: 8px;
-  }
-
-  [class$='__form'],
-  .form-container {
-    gap: 12px;
-    padding: 16px;
-  }
-
-  [class*='__save-btn'],
-  [class*='__cancel-btn'] {
-    min-height: 40px;
-    height: 40px;
-  }
-
-  .preferences__usage-form {
-    padding: 16px;
   }
 }
 

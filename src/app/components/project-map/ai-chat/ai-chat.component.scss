@@ -112,7 +112,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: var(--gns3-density-space-4);
   cursor: grab;
   user-select: none;
   height: 56px;
@@ -135,7 +135,7 @@
   background: transparent;
   border-radius: 0;
   transition: all 200ms ease;
-  margin: 8px 0;
+  margin: var(--gns3-density-space-2) 0;
 
   mat-icon {
     font-size: 24px;
@@ -179,7 +179,7 @@
   color: var(--mat-sys-on-surface);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--gns3-density-space-2);
   width: 100%;
   justify-content: center;
 
@@ -269,7 +269,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: var(--gns3-density-space-4);
   flex-shrink: 0;
   cursor: grab;
   user-select: none;
@@ -286,7 +286,7 @@
 .gns3-ai-chat__title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--gns3-density-space-2);
   font-size: 14px;
   font-weight: 500;
   color: var(--mat-sys-on-surface);
