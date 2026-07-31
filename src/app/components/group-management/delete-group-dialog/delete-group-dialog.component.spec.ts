@@ -41,7 +41,7 @@ describe('DeleteGroupDialogComponent', () => {
 
   it('should show cancel and delete buttons', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    const buttons = compiled.querySelectorAll('button[mat-button]');
+    const buttons = compiled.querySelectorAll('button[mat-button], button[mat-raised-button]');
     expect(buttons.length).toBe(2);
     expect(buttons[0].textContent).toContain('No, cancel');
     expect(buttons[1].textContent).toContain('Yes, delete!');

@@ -59,7 +59,7 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
 
     it('should show Delete and Cancel buttons', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const buttons = compiled.querySelectorAll('button[mat-button]');
+      const buttons = compiled.querySelectorAll('button[mat-button], button[mat-raised-button]');
 
       expect(buttons.length).toBe(2);
       expect(buttons[0].textContent).toContain('Delete');
