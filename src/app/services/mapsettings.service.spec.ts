@@ -1,9 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { MapSettingsService } from './mapsettings.service';
+import { ThemeService } from './theme.service';
 
 describe('MapSettingsService', () => {
   let service: MapSettingsService;
   let mockLocalStorage: { [key: string]: string };
+  let themeService: ThemeService;
 
   beforeEach(() => {
     mockLocalStorage = {};
@@ -18,7 +20,8 @@ describe('MapSettingsService', () => {
       },
     });
 
-    service = new MapSettingsService();
+    themeService = new ThemeService(document, 'indigo-pink');
+    service = new MapSettingsService(themeService);
   });
 
   afterEach(() => {
@@ -270,34 +273,34 @@ describe('MapSettingsService', () => {
   describe('Constructor - localStorage initialization', () => {
     it('should initialize isLayerNumberVisible from localStorage when set to true', () => {
       mockLocalStorage['layersVisibility'] = 'true';
-      const serviceWithStorage = new MapSettingsService();
+      const serviceWithStorage = new MapSettingsService(themeService);
 
       expect(serviceWithStorage.isLayerNumberVisible).toBe(true);
     });
 
     it('should initialize isLayerNumberVisible from localStorage when set to false', () => {
       mockLocalStorage['layersVisibility'] = 'false';
-      const serviceWithStorage = new MapSettingsService();
+      const serviceWithStorage = new MapSettingsService(themeService);
 
       expect(serviceWithStorage.isLayerNumberVisible).toBe(false);
     });
 
     it('should initialize openConsolesInWidget from localStorage when set to true', () => {
       mockLocalStorage['openConsolesInWidget'] = 'true';
-      const serviceWithStorage = new MapSettingsService();
+      const serviceWithStorage = new MapSettingsService(themeService);
 
       expect(serviceWithStorage.openConsolesInWidget).toBe(true);
     });
 
     it('should initialize openReadme from localStorage when set to true', () => {
       mockLocalStorage['openReadme'] = 'true';
-      const serviceWithStorage = new MapSettingsService();
+      const serviceWithStorage = new MapSettingsService(themeService);
 
       expect(serviceWithStorage.openReadme).toBe(true);
     });
 
     it('should default openReadme to false when not set', () => {
-      const serviceWithStorage = new MapSettingsService();
+      const serviceWithStorage = new MapSettingsService(themeService);
 
       expect(serviceWithStorage.openReadme).toBe(false);
     });
@@ -306,7 +309,7 @@ describe('MapSettingsService', () => {
   describe('getSymbolScaling edge cases', () => {
     it('should return false when localStorage contains invalid value', () => {
       mockLocalStorage['symbolScaling'] = 'invalid';
-      const serviceWithStorage = new MapSettingsService();
+      const serviceWithStorage = new MapSettingsService(themeService);
 
       expect(serviceWithStorage.getSymbolScaling()).toBe(false);
     });
@@ -372,7 +375,7 @@ describe('MapSettingsService', () => {
         link_type: 'invalid',
       });
 
-      const serviceWithStorage = new MapSettingsService();
+      const serviceWithStorage = new MapSettingsService(themeService);
 
       expect(serviceWithStorage.getDefaultLabelStyle()).toEqual({
         fontFamily: 'TypeWriter',

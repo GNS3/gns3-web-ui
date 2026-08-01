@@ -105,24 +105,9 @@ export class SettingsComponent implements OnInit {
   readonly defaultDrawingGridSize = model(25);
   readonly defaultShowGrid = model(false);
   readonly defaultSnapToGrid = model(false);
-  readonly defaultLabelStyle = model<WorkspaceTextStyle>({
-    fontFamily: 'TypeWriter',
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#000000',
-  });
-  readonly defaultNoteStyle = model<WorkspaceTextStyle>({
-    fontFamily: 'Noto Sans',
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#000000',
-  });
-  readonly defaultLinkStyle = model<WorkspaceLinkStyle>({
-    color: '#000000',
-    width: 2,
-    type: 1,
-    link_type: 'straight',
-  });
+  readonly defaultLabelStyle = model<WorkspaceTextStyle>(this.mapSettingsService.getDefaultLabelStyle());
+  readonly defaultNoteStyle = model<WorkspaceTextStyle>(this.mapSettingsService.getDefaultNoteStyle());
+  readonly defaultLinkStyle = model<WorkspaceLinkStyle>(this.mapSettingsService.getDefaultLinkStyle());
   readonly fontFamilies = MapSettingsService.FONT_FAMILIES;
   readonly fontWeights = MapSettingsService.FONT_WEIGHTS;
   readonly linkStyleNames = MapSettingsService.LINK_STYLE_NAMES;
@@ -182,10 +167,6 @@ export class SettingsComponent implements OnInit {
     this.defaultDrawingGridSize.set(this.mapSettingsService.getDefaultDrawingGridSize());
     this.defaultShowGrid.set(this.mapSettingsService.getDefaultShowGrid());
     this.defaultSnapToGrid.set(this.mapSettingsService.getDefaultSnapToGrid());
-    this.defaultLabelStyle.set(this.mapSettingsService.getDefaultLabelStyle());
-    this.defaultNoteStyle.set(this.mapSettingsService.getDefaultNoteStyle());
-    this.defaultLinkStyle.set(this.mapSettingsService.getDefaultLinkStyle());
-
     this.cdr.markForCheck();
   }
 

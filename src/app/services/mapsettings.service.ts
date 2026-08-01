@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { ThemeService } from './theme.service';
 
 export interface WorkspaceTextStyle {
   fontFamily: string;
@@ -78,24 +79,9 @@ export class MapSettingsService {
   private static readonly DEFAULT_DRAWING_GRID_SIZE = 25;
   private static readonly DEFAULT_SHOW_GRID = false;
   private static readonly DEFAULT_SNAP_TO_GRID = false;
-  private static readonly DEFAULT_LABEL_STYLE: WorkspaceTextStyle = {
-    fontFamily: 'TypeWriter',
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#000000',
-  };
-  private static readonly DEFAULT_NOTE_STYLE: WorkspaceTextStyle = {
-    fontFamily: 'Noto Sans',
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#000000',
-  };
-  private static readonly DEFAULT_LINK_STYLE: WorkspaceLinkStyle = {
-    color: '#000000',
-    width: 2,
-    type: 1,
-    link_type: 'straight',
-  };
+  private readonly defaultLabelStyleFallback: WorkspaceTextStyle;
+  private readonly defaultNoteStyleFallback: WorkspaceTextStyle;
+  private readonly defaultLinkStyleFallback: WorkspaceLinkStyle;
 
   private static readonly SCENE_WIDTH_KEY = 'defaultSceneWidth';
   private static readonly SCENE_HEIGHT_KEY = 'defaultSceneHeight';
@@ -107,7 +93,26 @@ export class MapSettingsService {
   private static readonly NOTE_STYLE_KEY = 'defaultNoteStyle';
   private static readonly LINK_STYLE_KEY = 'defaultLinkStyle';
 
-  constructor() {
+  constructor(private themeService: ThemeService) {
+    this.defaultLabelStyleFallback = {
+      fontFamily: 'TypeWriter',
+      fontSize: 10,
+      fontWeight: 'bold',
+      color: this.themeService.getCanvasLabelColor(),
+    };
+    this.defaultNoteStyleFallback = {
+      fontFamily: 'Noto Sans',
+      fontSize: 11,
+      fontWeight: 'bold',
+      color: this.themeService.getCanvasLabelColor(),
+    };
+    this.defaultLinkStyleFallback = {
+      color: this.themeService.getCanvasLinkColor(),
+      width: 2,
+      type: 1,
+      link_type: 'straight',
+    };
+
     this.isLayerNumberVisible = localStorage.getItem('layersVisibility') === 'true' ? true : false;
     if (localStorage.getItem('integrateLinkLabelsToLinks'))
       this.integrateLinkLabelsToLinks = localStorage.getItem('integrateLinkLabelsToLinks') === 'true' ? true : false;
@@ -151,15 +156,15 @@ export class MapSettingsService {
     );
     this.defaultLabelStyle = this.readTextStyle(
       MapSettingsService.LABEL_STYLE_KEY,
-      MapSettingsService.DEFAULT_LABEL_STYLE
+      this.defaultLabelStyleFallback
     );
     this.defaultNoteStyle = this.readTextStyle(
       MapSettingsService.NOTE_STYLE_KEY,
-      MapSettingsService.DEFAULT_NOTE_STYLE
+      this.defaultNoteStyleFallback
     );
     this.defaultLinkStyle = this.readLinkStyle(
       MapSettingsService.LINK_STYLE_KEY,
-      MapSettingsService.DEFAULT_LINK_STYLE
+      this.defaultLinkStyleFallback
     );
   }
 
@@ -381,7 +386,7 @@ export class MapSettingsService {
   }
 
   setDefaultLabelStyle(value: WorkspaceTextStyle): void {
-    this.defaultLabelStyle = this.normalizeTextStyle(value, MapSettingsService.DEFAULT_LABEL_STYLE);
+    this.defaultLabelStyle = this.normalizeTextStyle(value, this.defaultLabelStyleFallback);
     localStorage.setItem(MapSettingsService.LABEL_STYLE_KEY, JSON.stringify(this.defaultLabelStyle));
   }
 
@@ -390,7 +395,7 @@ export class MapSettingsService {
   }
 
   setDefaultNoteStyle(value: WorkspaceTextStyle): void {
-    this.defaultNoteStyle = this.normalizeTextStyle(value, MapSettingsService.DEFAULT_NOTE_STYLE);
+    this.defaultNoteStyle = this.normalizeTextStyle(value, this.defaultNoteStyleFallback);
     localStorage.setItem(MapSettingsService.NOTE_STYLE_KEY, JSON.stringify(this.defaultNoteStyle));
   }
 
@@ -403,7 +408,7 @@ export class MapSettingsService {
   }
 
   setDefaultLinkStyle(value: WorkspaceLinkStyle): void {
-    this.defaultLinkStyle = this.normalizeLinkStyle(value, MapSettingsService.DEFAULT_LINK_STYLE);
+    this.defaultLinkStyle = this.normalizeLinkStyle(value, this.defaultLinkStyleFallback);
     localStorage.setItem(MapSettingsService.LINK_STYLE_KEY, JSON.stringify(this.defaultLinkStyle));
   }
 }
