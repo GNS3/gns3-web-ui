@@ -1,101 +1,94 @@
-<div class="title-container">
-  <h1 mat-dialog-title>Add a node</h1>
+<div mat-dialog-title class="dialog-title">
+  <span>Add a node</span>
   <button
     mat-button
-    class="top-button"
+    class="dialog-title__preferences"
     color="accent"
     (click)="onNoClick()"
     routerLink="/controller/{{ controller?.id }}/preferences"
   >
-    Go to template preferences
+    Template preferences
   </button>
 </div>
-<div mat-dialog-content class="content">
-  <div class="title-container">
-    <h6>Template</h6>
-  </div>
-  <mat-form-field class="form-field" floatPlaceholder="never">
-    <input
-      matInput
-      placeholder="Search by name"
-      [value]="searchText()"
-      (input)="searchText.set($event.target.value); filterTemplates()"
-    />
-  </mat-form-field>
-  <mat-form-field class="form-field">
-    <mat-select
-      placeholder="Filter templates by type"
-      [value]="selectedType()"
-      (selectionChange)="selectedType.set($event.value); filterTemplates()"
-    >
-      @for (type of templateTypes; track type) {
-      <mat-option [value]="type">
-        {{ type }}
-      </mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field class="form-field">
-    <mat-select
-      placeholder="Choose template"
-      [value]="selectedTemplate()"
-      (selectionChange)="selectedTemplate.set($event.value); chooseTemplate()"
-      [compareWith]="compareControllers"
-    >
-      @for (template of filteredTemplates | templatefilter: searchText(); track template.name) {
-      <mat-option [value]="template">
-        {{ template.name }}
-      </mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
+<div mat-dialog-content class="dialog-content">
+  <section class="dialog-section" aria-labelledby="template-section-title">
+    <h2 id="template-section-title" class="dialog-section__title">Template</h2>
+    <div class="dialog-fields">
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Search templates</mat-label>
+        <input
+          matInput
+          placeholder="Search by name"
+          [value]="searchText()"
+          (input)="searchText.set($event.target.value); filterTemplates()"
+        />
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Template type</mat-label>
+        <mat-select [value]="selectedType()" (selectionChange)="selectedType.set($event.value); filterTemplates()">
+          @for (type of templateTypes; track type) {
+          <mat-option [value]="type">
+            {{ type }}
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="dialog-fields__full" subscriptSizing="dynamic">
+        <mat-label>Template</mat-label>
+        <mat-select
+          [value]="selectedTemplate()"
+          (selectionChange)="selectedTemplate.set($event.value); chooseTemplate()"
+          [compareWith]="compareControllers"
+        >
+          @for (template of filteredTemplates | templatefilter: searchText(); track template.name) {
+          <mat-option [value]="template">
+            {{ template.name }}
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </section>
 
-  <div class="title-container">
-    <h6>Configuration</h6>
-  </div>
-  <form [formGroup]="configurationForm">
-    <mat-form-field class="form-field">
-      <input
-        type="number"
-        matInput
-        formControlName="numberOfNodes"
-        placeholder="Enter number of nodes (default value is 1)"
-      />
-    </mat-form-field>
-  </form>
-  @if (selectedTemplate()) {
-  <mat-form-field class="form-field compute-select">
-    <mat-select
-      placeholder="Choose controller for node"
-      [(value)]="selectedTemplate()!.compute_id"
-      [compareWith]="compareControllers"
-    >
-      @for (controller of nodeControllers; track controller.value) {
-      <mat-option [value]="controller.value">
-        {{ controller.display }}
-      </mat-option>
+  <section class="dialog-section" aria-labelledby="configuration-section-title">
+    <h2 id="configuration-section-title" class="dialog-section__title">Configuration</h2>
+    <div class="dialog-fields">
+      <form [formGroup]="configurationForm">
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Number of nodes</mat-label>
+          <input type="number" matInput formControlName="numberOfNodes" />
+        </mat-form-field>
+      </form>
+      @if (selectedTemplate()) {
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Controller</mat-label>
+        <mat-select [(value)]="selectedTemplate()!.compute_id" [compareWith]="compareControllers">
+          @for (controller of nodeControllers; track controller.value) {
+          <mat-option [value]="controller.value">
+            {{ controller.display }}
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
       }
-    </mat-select>
-  </mat-form-field>
-  }
+    </div>
+  </section>
 
-  <div class="title-container">
-    <h6>Position</h6>
-  </div>
-  <form [formGroup]="positionForm">
-    Left:&nbsp;
-    <mat-form-field>
-      <input matInput type="number" formControlName="left" />
-    </mat-form-field>
-    Top:&nbsp;
-    <mat-form-field>
-      <input matInput type="number" formControlName="top" />
-    </mat-form-field>
-  </form>
+  <section class="dialog-section" aria-labelledby="position-section-title">
+    <h2 id="position-section-title" class="dialog-section__title">Position</h2>
+    <form class="dialog-fields" [formGroup]="positionForm">
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Left</mat-label>
+        <input matInput type="number" formControlName="left" />
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Top</mat-label>
+        <input matInput type="number" formControlName="top" />
+      </mat-form-field>
+    </form>
+  </section>
 </div>
-<div mat-dialog-actions align="end">
-  <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">Close</button>
-  <button class="addButton" mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary">
-    Add
-  </button>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">Cancel</button>
+  <button mat-flat-button (click)="onAddClick()" tabindex="2" color="primary">Add node</button>
 </div>
