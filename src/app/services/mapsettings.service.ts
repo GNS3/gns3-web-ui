@@ -1,6 +1,20 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
+export interface WorkspaceTextStyle {
+  fontFamily: string;
+  fontSize: number;
+  fontWeight: string;
+  color: string;
+}
+
+export interface WorkspaceLinkStyle {
+  color: string;
+  width: number;
+  type: number;
+  link_type: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -33,6 +47,30 @@ export class MapSettingsService {
   public defaultDrawingGridSize: number;
   public defaultShowGrid: boolean;
   public defaultSnapToGrid: boolean;
+  private defaultLabelStyle: WorkspaceTextStyle;
+  private defaultNoteStyle: WorkspaceTextStyle;
+  private defaultLinkStyle: WorkspaceLinkStyle;
+
+  public static readonly FONT_FAMILIES = [
+    'TypeWriter',
+    'Noto Sans',
+    'Arial',
+    'Courier New',
+    'Times New Roman',
+    'Helvetica',
+    'Verdana',
+    'Georgia',
+    'Comic Sans MS',
+  ];
+  public static readonly FONT_WEIGHTS = ['normal', 'bold'];
+  public static readonly LINK_STYLE_NAMES = ['Invisible', 'Solid', 'Dash', 'Dot', 'Dash Dot', 'Dash Dot Dot'];
+  public static readonly LINK_TYPES = [
+    { label: 'Straight', value: 'straight' },
+    { label: 'Bezier', value: 'bezier' },
+    { label: 'Flowchart', value: 'flowchart' },
+    { label: 'StateMachine', value: 'statemachine' },
+    { label: 'Freeform', value: 'freeform' },
+  ];
 
   private static readonly DEFAULT_SCENE_WIDTH = 2000;
   private static readonly DEFAULT_SCENE_HEIGHT = 1000;
@@ -40,6 +78,24 @@ export class MapSettingsService {
   private static readonly DEFAULT_DRAWING_GRID_SIZE = 25;
   private static readonly DEFAULT_SHOW_GRID = false;
   private static readonly DEFAULT_SNAP_TO_GRID = false;
+  private static readonly DEFAULT_LABEL_STYLE: WorkspaceTextStyle = {
+    fontFamily: 'TypeWriter',
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#000000',
+  };
+  private static readonly DEFAULT_NOTE_STYLE: WorkspaceTextStyle = {
+    fontFamily: 'Noto Sans',
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#000000',
+  };
+  private static readonly DEFAULT_LINK_STYLE: WorkspaceLinkStyle = {
+    color: '#000000',
+    width: 2,
+    type: 1,
+    link_type: 'straight',
+  };
 
   private static readonly SCENE_WIDTH_KEY = 'defaultSceneWidth';
   private static readonly SCENE_HEIGHT_KEY = 'defaultSceneHeight';
@@ -47,6 +103,9 @@ export class MapSettingsService {
   private static readonly DRAWING_GRID_SIZE_KEY = 'defaultDrawingGridSize';
   private static readonly SHOW_GRID_KEY = 'defaultShowGrid';
   private static readonly SNAP_TO_GRID_KEY = 'defaultSnapToGrid';
+  private static readonly LABEL_STYLE_KEY = 'defaultLabelStyle';
+  private static readonly NOTE_STYLE_KEY = 'defaultNoteStyle';
+  private static readonly LINK_STYLE_KEY = 'defaultLinkStyle';
 
   constructor() {
     this.isLayerNumberVisible = localStorage.getItem('layersVisibility') === 'true' ? true : false;
@@ -74,24 +133,33 @@ export class MapSettingsService {
     // the GNS3 server defaults the desktop GUI uses for new projects.
     this.defaultSceneWidth = this.readNumber(
       MapSettingsService.SCENE_WIDTH_KEY,
-      MapSettingsService.DEFAULT_SCENE_WIDTH,
+      MapSettingsService.DEFAULT_SCENE_WIDTH
     );
     this.defaultSceneHeight = this.readNumber(
       MapSettingsService.SCENE_HEIGHT_KEY,
-      MapSettingsService.DEFAULT_SCENE_HEIGHT,
+      MapSettingsService.DEFAULT_SCENE_HEIGHT
     );
     this.defaultGridSize = this.readNumber(MapSettingsService.GRID_SIZE_KEY, MapSettingsService.DEFAULT_GRID_SIZE);
     this.defaultDrawingGridSize = this.readNumber(
       MapSettingsService.DRAWING_GRID_SIZE_KEY,
-      MapSettingsService.DEFAULT_DRAWING_GRID_SIZE,
+      MapSettingsService.DEFAULT_DRAWING_GRID_SIZE
     );
-    this.defaultShowGrid = this.readBoolean(
-      MapSettingsService.SHOW_GRID_KEY,
-      MapSettingsService.DEFAULT_SHOW_GRID,
-    );
+    this.defaultShowGrid = this.readBoolean(MapSettingsService.SHOW_GRID_KEY, MapSettingsService.DEFAULT_SHOW_GRID);
     this.defaultSnapToGrid = this.readBoolean(
       MapSettingsService.SNAP_TO_GRID_KEY,
-      MapSettingsService.DEFAULT_SNAP_TO_GRID,
+      MapSettingsService.DEFAULT_SNAP_TO_GRID
+    );
+    this.defaultLabelStyle = this.readTextStyle(
+      MapSettingsService.LABEL_STYLE_KEY,
+      MapSettingsService.DEFAULT_LABEL_STYLE
+    );
+    this.defaultNoteStyle = this.readTextStyle(
+      MapSettingsService.NOTE_STYLE_KEY,
+      MapSettingsService.DEFAULT_NOTE_STYLE
+    );
+    this.defaultLinkStyle = this.readLinkStyle(
+      MapSettingsService.LINK_STYLE_KEY,
+      MapSettingsService.DEFAULT_LINK_STYLE
     );
   }
 
@@ -105,6 +173,64 @@ export class MapSettingsService {
   private readBoolean(key: string, fallback: boolean): boolean {
     const stored = localStorage.getItem(key);
     return stored === null ? fallback : stored === 'true';
+  }
+
+  private readTextStyle(key: string, fallback: WorkspaceTextStyle): WorkspaceTextStyle {
+    const stored = localStorage.getItem(key);
+    if (!stored) return { ...fallback };
+    try {
+      return this.normalizeTextStyle(JSON.parse(stored), fallback);
+    } catch {
+      return { ...fallback };
+    }
+  }
+
+  private readLinkStyle(key: string, fallback: WorkspaceLinkStyle): WorkspaceLinkStyle {
+    const stored = localStorage.getItem(key);
+    if (!stored) return { ...fallback };
+    try {
+      return this.normalizeLinkStyle(JSON.parse(stored), fallback);
+    } catch {
+      return { ...fallback };
+    }
+  }
+
+  private normalizeTextStyle(value: unknown, fallback: WorkspaceTextStyle): WorkspaceTextStyle {
+    const candidate = typeof value === 'object' && value !== null ? (value as Partial<WorkspaceTextStyle>) : {};
+    const fontSize = Number(candidate.fontSize);
+    return {
+      fontFamily: MapSettingsService.FONT_FAMILIES.includes(candidate.fontFamily)
+        ? candidate.fontFamily
+        : fallback.fontFamily,
+      fontSize: Number.isFinite(fontSize)
+        ? Math.min(200, Math.max(1, Math.round(fontSize * 2) / 2))
+        : fallback.fontSize,
+      fontWeight: MapSettingsService.FONT_WEIGHTS.includes(candidate.fontWeight)
+        ? candidate.fontWeight
+        : fallback.fontWeight,
+      color: this.normalizeColor(candidate.color, fallback.color),
+    };
+  }
+
+  private normalizeLinkStyle(value: unknown, fallback: WorkspaceLinkStyle): WorkspaceLinkStyle {
+    const candidate = typeof value === 'object' && value !== null ? (value as Partial<WorkspaceLinkStyle>) : {};
+    const width = Number(candidate.width);
+    const type = Number(candidate.type);
+    const validLinkTypes = MapSettingsService.LINK_TYPES.map((linkType) => linkType.value);
+    return {
+      color: this.normalizeColor(candidate.color, fallback.color),
+      width: Number.isFinite(width) ? Math.min(20, Math.max(1, Math.round(width))) : fallback.width,
+      type:
+        Number.isInteger(type) && type >= 0 && type < MapSettingsService.LINK_STYLE_NAMES.length ? type : fallback.type,
+      link_type:
+        typeof candidate.link_type === 'string' && validLinkTypes.includes(candidate.link_type)
+          ? candidate.link_type
+          : fallback.link_type,
+    };
+  }
+
+  private normalizeColor(value: unknown, fallback: string): string {
+    return typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value) ? value.toLowerCase() : fallback;
   }
 
   public getSymbolScaling(): boolean {
@@ -244,5 +370,40 @@ export class MapSettingsService {
   setDefaultSnapToGrid(value: boolean) {
     this.defaultSnapToGrid = value;
     localStorage.setItem(MapSettingsService.SNAP_TO_GRID_KEY, value ? 'true' : 'false');
+  }
+
+  getDefaultLabelStyle(): WorkspaceTextStyle {
+    return { ...this.defaultLabelStyle };
+  }
+
+  hasDefaultLabelStyle(): boolean {
+    return localStorage.getItem(MapSettingsService.LABEL_STYLE_KEY) !== null;
+  }
+
+  setDefaultLabelStyle(value: WorkspaceTextStyle): void {
+    this.defaultLabelStyle = this.normalizeTextStyle(value, MapSettingsService.DEFAULT_LABEL_STYLE);
+    localStorage.setItem(MapSettingsService.LABEL_STYLE_KEY, JSON.stringify(this.defaultLabelStyle));
+  }
+
+  getDefaultNoteStyle(): WorkspaceTextStyle {
+    return { ...this.defaultNoteStyle };
+  }
+
+  setDefaultNoteStyle(value: WorkspaceTextStyle): void {
+    this.defaultNoteStyle = this.normalizeTextStyle(value, MapSettingsService.DEFAULT_NOTE_STYLE);
+    localStorage.setItem(MapSettingsService.NOTE_STYLE_KEY, JSON.stringify(this.defaultNoteStyle));
+  }
+
+  getDefaultLinkStyle(): WorkspaceLinkStyle {
+    return { ...this.defaultLinkStyle };
+  }
+
+  hasDefaultLinkStyle(): boolean {
+    return localStorage.getItem(MapSettingsService.LINK_STYLE_KEY) !== null;
+  }
+
+  setDefaultLinkStyle(value: WorkspaceLinkStyle): void {
+    this.defaultLinkStyle = this.normalizeLinkStyle(value, MapSettingsService.DEFAULT_LINK_STYLE);
+    localStorage.setItem(MapSettingsService.LINK_STYLE_KEY, JSON.stringify(this.defaultLinkStyle));
   }
 }

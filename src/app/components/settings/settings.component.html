@@ -175,7 +175,9 @@
         <div class="settings__panel-header">
           <span class="settings__eyebrow">Topology editor</span>
           <h2 id="workspace-settings-title">Project workspace</h2>
-          <p>Configure how topology information is rendered on the project canvas and defaults used for new projects.</p>
+          <p>
+            Configure how topology information is rendered on the project canvas and defaults used for new projects.
+          </p>
         </div>
         <div class="settings__setting-list">
           <div class="settings__setting-row">
@@ -229,7 +231,8 @@
             <div class="settings__section-heading">
               <h3>Default node and drawing grid size</h3>
               <p>
-                Grid spacing in pixels — <strong>node grid</strong> aligns nodes when snap is on, <strong>drawing grid</strong>
+                Grid spacing in pixels — <strong>node grid</strong> aligns nodes when snap is on,
+                <strong>drawing grid</strong>
                 aligns drawings and shapes. These seed new projects.
               </p>
             </div>
@@ -259,6 +262,168 @@
                   (input)="setDefaultDrawingGridSize(+$event.target.value)"
                 />
                 <span matSuffix>px</span>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="settings__setting-row settings__setting-row--style">
+            <div class="settings__setting-copy">
+              <h3>Default label style</h3>
+              <p>Font and color applied to labels when nodes are added.</p>
+            </div>
+            <div class="settings__style-fields settings__style-fields--text">
+              <mat-form-field appearance="outline">
+                <mat-label>Font family</mat-label>
+                <mat-select
+                  [value]="defaultLabelStyle().fontFamily"
+                  (selectionChange)="setDefaultLabelStyle({ fontFamily: $event.value })"
+                >
+                  @for (font of fontFamilies; track font) {
+                  <mat-option [value]="font">{{ font }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Font size</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  min="1"
+                  max="200"
+                  step="0.5"
+                  [value]="defaultLabelStyle().fontSize"
+                  (input)="setDefaultLabelStyle({ fontSize: +$event.target.value })"
+                />
+                <span matSuffix>pt</span>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Font weight</mat-label>
+                <mat-select
+                  [value]="defaultLabelStyle().fontWeight"
+                  (selectionChange)="setDefaultLabelStyle({ fontWeight: $event.value })"
+                >
+                  @for (weight of fontWeights; track weight) {
+                  <mat-option [value]="weight">{{ weight | titlecase }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <label class="settings__color-field">
+                <span>Color</span>
+                <input
+                  type="color"
+                  aria-label="Default label color"
+                  [value]="defaultLabelStyle().color"
+                  (input)="setDefaultLabelStyle({ color: $event.target.value })"
+                />
+                <code>{{ defaultLabelStyle().color }}</code>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings__setting-row settings__setting-row--style">
+            <div class="settings__setting-copy">
+              <h3>Default note style</h3>
+              <p>Font and color applied to new text notes on the canvas.</p>
+            </div>
+            <div class="settings__style-fields settings__style-fields--text">
+              <mat-form-field appearance="outline">
+                <mat-label>Font family</mat-label>
+                <mat-select
+                  [value]="defaultNoteStyle().fontFamily"
+                  (selectionChange)="setDefaultNoteStyle({ fontFamily: $event.value })"
+                >
+                  @for (font of fontFamilies; track font) {
+                  <mat-option [value]="font">{{ font }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Font size</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  min="1"
+                  max="200"
+                  step="0.5"
+                  [value]="defaultNoteStyle().fontSize"
+                  (input)="setDefaultNoteStyle({ fontSize: +$event.target.value })"
+                />
+                <span matSuffix>pt</span>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Font weight</mat-label>
+                <mat-select
+                  [value]="defaultNoteStyle().fontWeight"
+                  (selectionChange)="setDefaultNoteStyle({ fontWeight: $event.value })"
+                >
+                  @for (weight of fontWeights; track weight) {
+                  <mat-option [value]="weight">{{ weight | titlecase }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <label class="settings__color-field">
+                <span>Color</span>
+                <input
+                  type="color"
+                  aria-label="Default note color"
+                  [value]="defaultNoteStyle().color"
+                  (input)="setDefaultNoteStyle({ color: $event.target.value })"
+                />
+                <code>{{ defaultNoteStyle().color }}</code>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings__setting-row settings__setting-row--style">
+            <div class="settings__setting-copy">
+              <h3>Default link style</h3>
+              <p>Color, width, line pattern, and routing style applied to newly created links.</p>
+            </div>
+            <div class="settings__style-fields settings__style-fields--link">
+              <label class="settings__color-field">
+                <span>Color</span>
+                <input
+                  type="color"
+                  aria-label="Default link color"
+                  [value]="defaultLinkStyle().color"
+                  (input)="setDefaultLinkStyle({ color: $event.target.value })"
+                />
+                <code>{{ defaultLinkStyle().color }}</code>
+              </label>
+              <mat-form-field appearance="outline">
+                <mat-label>Width</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  min="1"
+                  max="20"
+                  step="1"
+                  [value]="defaultLinkStyle().width"
+                  (input)="setDefaultLinkStyle({ width: +$event.target.value })"
+                />
+                <span matSuffix>px</span>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Line style</mat-label>
+                <mat-select
+                  [value]="defaultLinkStyle().type"
+                  (selectionChange)="setDefaultLinkStyle({ type: $event.value })"
+                >
+                  @for (style of linkStyleNames; track style; let index = $index) {
+                  <mat-option [value]="index">{{ style }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Link style</mat-label>
+                <mat-select
+                  [value]="defaultLinkStyle().link_type"
+                  (selectionChange)="setDefaultLinkStyle({ link_type: $event.value })"
+                >
+                  @for (linkType of linkTypes; track linkType.value) {
+                  <mat-option [value]="linkType.value">{{ linkType.label }}</mat-option>
+                  }
+                </mat-select>
               </mat-form-field>
             </div>
           </div>

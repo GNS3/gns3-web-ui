@@ -16,8 +16,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
 import { ActivatedRoute, CanDeactivateFn } from '@angular/router';
-import { MapSettingsService } from '@services/mapsettings.service';
+import { MapSettingsService, WorkspaceLinkStyle, WorkspaceTextStyle } from '@services/mapsettings.service';
 import { Settings, SettingsService } from '@services/settings.service';
 import { ConsoleService } from '@services/settings/console.service';
 import { ThemeService, PrebuiltTheme } from '@services/theme.service';
@@ -43,7 +45,10 @@ type SettingsField =
   | 'defaultGridSize'
   | 'defaultDrawingGridSize'
   | 'defaultShowGrid'
-  | 'defaultSnapToGrid';
+  | 'defaultSnapToGrid'
+  | 'defaultLabelStyle'
+  | 'defaultNoteStyle'
+  | 'defaultLinkStyle';
 
 @Component({
   selector: 'app-settings',
@@ -58,6 +63,8 @@ type SettingsField =
     MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -98,6 +105,28 @@ export class SettingsComponent implements OnInit {
   readonly defaultDrawingGridSize = model(25);
   readonly defaultShowGrid = model(false);
   readonly defaultSnapToGrid = model(false);
+  readonly defaultLabelStyle = model<WorkspaceTextStyle>({
+    fontFamily: 'TypeWriter',
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#000000',
+  });
+  readonly defaultNoteStyle = model<WorkspaceTextStyle>({
+    fontFamily: 'Noto Sans',
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#000000',
+  });
+  readonly defaultLinkStyle = model<WorkspaceLinkStyle>({
+    color: '#000000',
+    width: 2,
+    type: 1,
+    link_type: 'straight',
+  });
+  readonly fontFamilies = MapSettingsService.FONT_FAMILIES;
+  readonly fontWeights = MapSettingsService.FONT_WEIGHTS;
+  readonly linkStyleNames = MapSettingsService.LINK_STYLE_NAMES;
+  readonly linkTypes = MapSettingsService.LINK_TYPES;
   readonly categories: { id: SettingsCategory; label: string; icon: string }[] = [
     { id: 'general', label: 'General', icon: 'tune' },
     { id: 'appearance', label: 'Appearance', icon: 'palette' },
@@ -153,6 +182,9 @@ export class SettingsComponent implements OnInit {
     this.defaultDrawingGridSize.set(this.mapSettingsService.getDefaultDrawingGridSize());
     this.defaultShowGrid.set(this.mapSettingsService.getDefaultShowGrid());
     this.defaultSnapToGrid.set(this.mapSettingsService.getDefaultSnapToGrid());
+    this.defaultLabelStyle.set(this.mapSettingsService.getDefaultLabelStyle());
+    this.defaultNoteStyle.set(this.mapSettingsService.getDefaultNoteStyle());
+    this.defaultLinkStyle.set(this.mapSettingsService.getDefaultLinkStyle());
 
     this.cdr.markForCheck();
   }
@@ -257,6 +289,46 @@ export class SettingsComponent implements OnInit {
     this.markDirty('defaultSnapToGrid');
   }
 
+  setDefaultLabelStyle(value: Partial<WorkspaceTextStyle>): void {
+    const current = this.defaultLabelStyle();
+    const next = this.mergeTextStyle(current, value);
+    if (this.stylesEqual(current, next)) return;
+    this.defaultLabelStyle.set(next);
+    this.markDirty('defaultLabelStyle');
+  }
+
+  setDefaultNoteStyle(value: Partial<WorkspaceTextStyle>): void {
+    const current = this.defaultNoteStyle();
+    const next = this.mergeTextStyle(current, value);
+    if (this.stylesEqual(current, next)) return;
+    this.defaultNoteStyle.set(next);
+    this.markDirty('defaultNoteStyle');
+  }
+
+  setDefaultLinkStyle(value: Partial<WorkspaceLinkStyle>): void {
+    const current = this.defaultLinkStyle();
+    const width =
+      value.width !== undefined && Number.isFinite(value.width)
+        ? Math.min(20, Math.max(1, Math.round(value.width)))
+        : current.width;
+    const next = { ...current, ...value, width };
+    if (this.stylesEqual(current, next)) return;
+    this.defaultLinkStyle.set(next);
+    this.markDirty('defaultLinkStyle');
+  }
+
+  private mergeTextStyle(current: WorkspaceTextStyle, value: Partial<WorkspaceTextStyle>): WorkspaceTextStyle {
+    const fontSize =
+      value.fontSize !== undefined && Number.isFinite(value.fontSize)
+        ? Math.min(200, Math.max(1, Math.round(value.fontSize * 2) / 2))
+        : current.fontSize;
+    return { ...current, ...value, fontSize };
+  }
+
+  private stylesEqual<T extends object>(first: T, second: T): boolean {
+    return Object.keys(first).every((key) => first[key] === second[key]);
+  }
+
   saveSettings(): void {
     this.settings = {
       ...this.settings,
@@ -315,6 +387,15 @@ export class SettingsComponent implements OnInit {
     }
     if (this.dirtyFields.has('defaultSnapToGrid')) {
       this.mapSettingsService.setDefaultSnapToGrid(this.defaultSnapToGrid());
+    }
+    if (this.dirtyFields.has('defaultLabelStyle')) {
+      this.mapSettingsService.setDefaultLabelStyle(this.defaultLabelStyle());
+    }
+    if (this.dirtyFields.has('defaultNoteStyle')) {
+      this.mapSettingsService.setDefaultNoteStyle(this.defaultNoteStyle());
+    }
+    if (this.dirtyFields.has('defaultLinkStyle')) {
+      this.mapSettingsService.setDefaultLinkStyle(this.defaultLinkStyle());
     }
 
     this.dirtyFields.clear();

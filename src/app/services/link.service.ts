@@ -7,10 +7,11 @@ import { LinkNode } from '@models/link-node';
 import { Port } from '@models/port';
 import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
+import { MapSettingsService } from './mapsettings.service';
 
 @Injectable()
 export class LinkService {
-  constructor(private httpController: HttpController) {}
+  constructor(private httpController: HttpController, private mapSettingsService: MapSettingsService) {}
 
   createLink(
     controller: Controller,
@@ -23,7 +24,7 @@ export class LinkService {
     xLabelTargetNode: number,
     yLabelTargetNode: number
   ) {
-    return this.httpController.post(controller, `/projects/${source_node.project_id}/links`, {
+    const payload: Pick<Link, 'nodes' | 'link_style'> = {
       nodes: [
         {
           node_id: source_node.node_id,
@@ -31,7 +32,7 @@ export class LinkService {
           adapter_number: source_port.adapter_number,
           label: {
             rotation: 0,
-            style: 'font-size: 10; font-style: Verdana',
+            style: 'font-size: 10; font-family: Verdana',
             text: source_port.short_name,
             x: xLabelSourceNode,
             y: yLabelSourceNode,
@@ -43,14 +44,18 @@ export class LinkService {
           adapter_number: target_port.adapter_number,
           label: {
             rotation: 0,
-            style: 'font-size: 10; font-style: Verdana',
+            style: 'font-size: 10; font-family: Verdana',
             text: target_port.short_name,
             x: xLabelTargetNode,
             y: yLabelTargetNode,
           },
         },
       ],
-    });
+    };
+    if (this.mapSettingsService.hasDefaultLinkStyle()) {
+      payload.link_style = this.mapSettingsService.getDefaultLinkStyle();
+    }
+    return this.httpController.post(controller, `/projects/${source_node.project_id}/links`, payload);
   }
 
   getLink(controller: Controller, projectId: string, linkId: string) {

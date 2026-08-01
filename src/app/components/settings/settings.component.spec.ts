@@ -94,6 +94,22 @@ describe('SettingsComponent', () => {
       setDefaultShowGrid: vi.fn(),
       getDefaultSnapToGrid: vi.fn().mockReturnValue(false),
       setDefaultSnapToGrid: vi.fn(),
+      getDefaultLabelStyle: vi.fn().mockReturnValue({
+        fontFamily: 'TypeWriter',
+        fontSize: 10,
+        fontWeight: 'bold',
+        color: '#000000',
+      }),
+      setDefaultLabelStyle: vi.fn(),
+      getDefaultNoteStyle: vi.fn().mockReturnValue({
+        fontFamily: 'Noto Sans',
+        fontSize: 11,
+        fontWeight: 'bold',
+        color: '#000000',
+      }),
+      setDefaultNoteStyle: vi.fn(),
+      getDefaultLinkStyle: vi.fn().mockReturnValue({ color: '#000000', width: 2, type: 1, link_type: 'straight' }),
+      setDefaultLinkStyle: vi.fn(),
     };
 
     mockToasterService = {
@@ -267,9 +283,50 @@ describe('SettingsComponent', () => {
       component.saveSettings();
       expect(mockMapSettingsService.setDefaultDrawingGridSize).toHaveBeenCalledWith(40);
     });
+
+    it('should persist default label, note, and link styles', () => {
+      component.setDefaultLabelStyle({ color: '#123456' });
+      component.setDefaultNoteStyle({ fontFamily: 'Arial', fontSize: 14 });
+      component.setDefaultLinkStyle({ color: '#abcdef', width: 4, type: 2, link_type: 'flowchart' });
+
+      component.saveSettings();
+
+      expect(mockMapSettingsService.setDefaultLabelStyle).toHaveBeenCalledWith({
+        fontFamily: 'TypeWriter',
+        fontSize: 10,
+        fontWeight: 'bold',
+        color: '#123456',
+      });
+      expect(mockMapSettingsService.setDefaultNoteStyle).toHaveBeenCalledWith({
+        fontFamily: 'Arial',
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#000000',
+      });
+      expect(mockMapSettingsService.setDefaultLinkStyle).toHaveBeenCalledWith({
+        color: '#abcdef',
+        width: 4,
+        type: 2,
+        link_type: 'flowchart',
+      });
+    });
   });
 
   describe('workspace defaults setters', () => {
+    it('should render label, note, and link style controls in Project workspace', () => {
+      component.selectCategory('workspace');
+      fixture.detectChanges();
+
+      const element = fixture.nativeElement as HTMLElement;
+      expect(element.textContent).toContain('Default label style');
+      expect(element.textContent).toContain('Default note style');
+      expect(element.textContent).toContain('Default link style');
+      expect(element.textContent).toContain('Link style');
+      expect(element.querySelector('input[aria-label="Default label color"]')).toBeTruthy();
+      expect(element.querySelector('input[aria-label="Default note color"]')).toBeTruthy();
+      expect(element.querySelector('input[aria-label="Default link color"]')).toBeTruthy();
+    });
+
     it('setDefaultSceneWidth should update the model and mark dirty', () => {
       component.setDefaultSceneWidth(1700);
       expect(component.defaultSceneWidth()).toBe(1700);
@@ -305,6 +362,25 @@ describe('SettingsComponent', () => {
       expect(component.defaultDrawingGridSize()).toBe(25);
       expect(component.defaultShowGrid()).toBe(false);
       expect(component.defaultSnapToGrid()).toBe(false);
+      expect(component.defaultLabelStyle().fontFamily).toBe('TypeWriter');
+      expect(component.defaultNoteStyle().fontFamily).toBe('Noto Sans');
+      expect(component.defaultLinkStyle()).toEqual({
+        color: '#000000',
+        width: 2,
+        type: 1,
+        link_type: 'straight',
+      });
+    });
+
+    it('should update style models and mark settings dirty', () => {
+      component.setDefaultLabelStyle({ fontSize: 12 });
+      component.setDefaultNoteStyle({ color: '#334455' });
+      component.setDefaultLinkStyle({ width: 5 });
+
+      expect(component.defaultLabelStyle().fontSize).toBe(12);
+      expect(component.defaultNoteStyle().color).toBe('#334455');
+      expect(component.defaultLinkStyle().width).toBe(5);
+      expect(component.isDirty()).toBe(true);
     });
   });
 

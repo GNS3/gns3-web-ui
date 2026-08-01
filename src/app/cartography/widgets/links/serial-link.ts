@@ -74,8 +74,7 @@ export class SerialLinkWidget implements Widget {
     const bezierVariation = normalizedLinkType === 'bezier' ? this.bezierLayout.getVariation(link) : 0;
 
     const hasValidColor = typeof link.link_style?.color === 'string' && link.link_style.color.length > 0;
-    const hasValidWidth =
-      typeof link.link_style?.width === 'number' && link.link_style.width >= this.defaultSerialLinkStyle.width;
+    const hasValidWidth = typeof link.link_style?.width === 'number' && link.link_style.width > 0;
 
     const style: LinkStyle = {
       color: hasValidColor ? link.link_style.color : this.defaultSerialLinkStyle.color,

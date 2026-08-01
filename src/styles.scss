@@ -656,3 +656,97 @@ html[data-density='compact'] .mat-mdc-menu-panel {
 html[data-density='compact'] .mat-mdc-menu-panel:is(.context-menu-items, .interface-menu-panel) {
   --gns3-menu-item-min-height: 36px;
 }
+
+/* Workspace style controls are scoped globally so their Material fields share
+   the same density metrics as the rest of the application. */
+app-settings {
+  .settings__setting-row.settings__setting-row--style {
+    display: grid;
+    grid-template-columns: minmax(220px, 280px) minmax(0, 860px);
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--gns3-density-space-5);
+  }
+
+  .settings__style-fields {
+    display: grid;
+    min-width: 0;
+    width: 100%;
+    max-width: 860px;
+    align-items: center;
+    gap: var(--gns3-density-space-4);
+
+    &--text,
+    &--link {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+  }
+
+  .settings__color-field {
+    display: grid;
+    height: var(--gns3-density-form-field-height);
+    box-sizing: border-box;
+    grid-template-columns: auto 32px minmax(62px, 1fr);
+    align-items: center;
+    gap: var(--gns3-density-space-2);
+    padding-inline: var(--gns3-density-space-3);
+    border: 1px solid var(--mat-sys-outline);
+    border-radius: var(--gns3-density-radius-sm);
+    color: var(--mat-sys-on-surface-variant);
+    background: var(--mat-sys-surface-container-lowest);
+    font: var(--mat-sys-body-small);
+
+    input {
+      width: 32px;
+      height: 28px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    code {
+      overflow: hidden;
+      color: var(--mat-sys-on-surface);
+      font: var(--mat-sys-label-small);
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+    }
+  }
+}
+
+@media (max-width: 1180px) {
+  app-settings {
+    .settings__setting-row.settings__setting-row--style {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--gns3-density-space-3);
+    }
+
+    .settings__setting-row--style .settings__setting-copy {
+      max-width: none;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  app-settings {
+    .settings__style-fields--text,
+    .settings__style-fields--link {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
+
+html[data-density='compact'] app-settings {
+  .settings__setting-row.settings__setting-row--style {
+    gap: var(--gns3-density-space-4);
+  }
+
+  .settings__style-fields {
+    gap: var(--gns3-density-space-3);
+  }
+}

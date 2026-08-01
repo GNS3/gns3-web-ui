@@ -12,6 +12,7 @@ import { FilterDescription } from '@models/filter-description';
 describe('LinkService', () => {
   let service: LinkService;
   let mockHttpController: any;
+  let mockMapSettingsService: any;
   let mockController: Controller;
 
   beforeEach(() => {
@@ -40,7 +41,12 @@ describe('LinkService', () => {
       tokenExpired: false,
     } as Controller;
 
-    service = new LinkService(mockHttpController);
+    mockMapSettingsService = {
+      getDefaultLinkStyle: vi.fn().mockReturnValue({ color: '#123456', width: 4, type: 2, link_type: 'bezier' }),
+      hasDefaultLinkStyle: vi.fn().mockReturnValue(true),
+    };
+
+    service = new LinkService(mockHttpController, mockMapSettingsService);
   });
 
   describe('Service Creation', () => {
@@ -213,6 +219,47 @@ describe('LinkService', () => {
 
       expect(payload.nodes[0].label.text).toBe('Ethernet0');
       expect(payload.nodes[1].label.text).toBe('Ethernet0');
+      expect(payload.nodes[0].label.style).toContain('font-family: Verdana');
+      expect(payload.nodes[0].label.style).not.toContain('font-style: Verdana');
+    });
+
+    it('should include the configured default link style in the create payload', () => {
+      mockHttpController.post.mockReturnValue(of({}));
+
+      service.createLink(
+        mockController,
+        mockSourceNode,
+        mockSourcePort,
+        mockTargetNode,
+        mockTargetPort,
+        10,
+        20,
+        30,
+        40
+      );
+
+      const payload = mockHttpController.post.mock.calls[0][2];
+      expect(payload.link_style).toEqual({ color: '#123456', width: 4, type: 2, link_type: 'bezier' });
+    });
+
+    it('should preserve the legacy create payload until a default link style is saved', () => {
+      mockHttpController.post.mockReturnValue(of({}));
+      mockMapSettingsService.hasDefaultLinkStyle.mockReturnValue(false);
+
+      service.createLink(
+        mockController,
+        mockSourceNode,
+        mockSourcePort,
+        mockTargetNode,
+        mockTargetPort,
+        10,
+        20,
+        30,
+        40
+      );
+
+      const payload = mockHttpController.post.mock.calls[0][2];
+      expect(payload.link_style).toBeUndefined();
     });
 
     it('should return Observable from httpController', () => {

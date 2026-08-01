@@ -311,4 +311,88 @@ describe('MapSettingsService', () => {
       expect(serviceWithStorage.getSymbolScaling()).toBe(false);
     });
   });
+
+  describe('workspace style defaults', () => {
+    it('should expose the established label, note, and link defaults', () => {
+      expect(service.hasDefaultLabelStyle()).toBe(false);
+      expect(service.hasDefaultLinkStyle()).toBe(false);
+      expect(service.getDefaultLabelStyle()).toEqual({
+        fontFamily: 'TypeWriter',
+        fontSize: 10,
+        fontWeight: 'bold',
+        color: '#000000',
+      });
+      expect(service.getDefaultNoteStyle()).toEqual({
+        fontFamily: 'Noto Sans',
+        fontSize: 11,
+        fontWeight: 'bold',
+        color: '#000000',
+      });
+      expect(service.getDefaultLinkStyle()).toEqual({
+        color: '#000000',
+        width: 2,
+        type: 1,
+        link_type: 'straight',
+      });
+    });
+
+    it('should persist validated style defaults', () => {
+      service.setDefaultLabelStyle({ fontFamily: 'Arial', fontSize: 12.5, fontWeight: 'normal', color: '#AABBCC' });
+      service.setDefaultNoteStyle({ fontFamily: 'Verdana', fontSize: 14, fontWeight: 'bold', color: '#123456' });
+      service.setDefaultLinkStyle({ color: '#FEDCBA', width: 4, type: 2, link_type: 'bezier' });
+
+      expect(service.hasDefaultLabelStyle()).toBe(true);
+      expect(service.hasDefaultLinkStyle()).toBe(true);
+      expect(JSON.parse(mockLocalStorage['defaultLabelStyle'])).toEqual({
+        fontFamily: 'Arial',
+        fontSize: 12.5,
+        fontWeight: 'normal',
+        color: '#aabbcc',
+      });
+      expect(JSON.parse(mockLocalStorage['defaultNoteStyle']).color).toBe('#123456');
+      expect(JSON.parse(mockLocalStorage['defaultLinkStyle'])).toEqual({
+        color: '#fedcba',
+        width: 4,
+        type: 2,
+        link_type: 'bezier',
+      });
+    });
+
+    it('should sanitize malformed stored styles', () => {
+      mockLocalStorage['defaultLabelStyle'] = JSON.stringify({
+        fontFamily: 'url(javascript:alert(1))',
+        fontSize: 999,
+        fontWeight: 'invalid',
+        color: 'red',
+      });
+      mockLocalStorage['defaultLinkStyle'] = JSON.stringify({
+        color: 'invalid',
+        width: -5,
+        type: 99,
+        link_type: 'invalid',
+      });
+
+      const serviceWithStorage = new MapSettingsService();
+
+      expect(serviceWithStorage.getDefaultLabelStyle()).toEqual({
+        fontFamily: 'TypeWriter',
+        fontSize: 200,
+        fontWeight: 'bold',
+        color: '#000000',
+      });
+      expect(serviceWithStorage.getDefaultLinkStyle()).toEqual({
+        color: '#000000',
+        width: 1,
+        type: 1,
+        link_type: 'straight',
+      });
+    });
+
+    it('should return copies so callers cannot mutate persisted defaults', () => {
+      const labelStyle = service.getDefaultLabelStyle();
+      labelStyle.color = '#ffffff';
+
+      expect(service.getDefaultLabelStyle().color).toBe('#000000');
+    });
+  });
 });

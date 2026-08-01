@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { NodeCreatedLabelStylesFixer } from './node-created-label-styles-fixer';
 import { FontBBoxCalculator } from '../../../cartography/helpers/font-bbox-calculator';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 import { ThemeService } from '../../../services/theme.service';
 import { Node } from '../../../cartography/models/node';
 import { Label } from '../../../cartography/models/label';
@@ -9,6 +10,10 @@ import { Label } from '../../../cartography/models/label';
 describe('NodeCreatedLabelStylesFixer', () => {
   let service: NodeCreatedLabelStylesFixer;
   let mockFontBBoxCalculator: { calculate: ReturnType<typeof vi.fn> };
+  let mockMapSettingsService: {
+    getDefaultLabelStyle: ReturnType<typeof vi.fn>;
+    hasDefaultLabelStyle: ReturnType<typeof vi.fn>;
+  };
   let mockThemeService: { getCanvasLabelColor: ReturnType<typeof vi.fn> };
 
   const createMockLabel = (): Label => ({
@@ -55,14 +60,22 @@ describe('NodeCreatedLabelStylesFixer', () => {
       calculate: vi.fn().mockReturnValue({ width: 50, height: 20 }),
     };
 
-    mockThemeService = {
-      getCanvasLabelColor: vi.fn().mockReturnValue('#FFFFFF'),
+    mockMapSettingsService = {
+      getDefaultLabelStyle: vi.fn().mockReturnValue({
+        fontFamily: 'Arial',
+        fontSize: 12,
+        fontWeight: 'normal',
+        color: '#123456',
+      }),
+      hasDefaultLabelStyle: vi.fn().mockReturnValue(true),
     };
+    mockThemeService = { getCanvasLabelColor: vi.fn().mockReturnValue('#ffffff') };
 
     TestBed.configureTestingModule({
       providers: [
         NodeCreatedLabelStylesFixer,
         { provide: FontBBoxCalculator, useValue: mockFontBBoxCalculator },
+        { provide: MapSettingsService, useValue: mockMapSettingsService },
         { provide: ThemeService, useValue: mockThemeService },
       ],
     });
@@ -87,13 +100,13 @@ describe('NodeCreatedLabelStylesFixer', () => {
   });
 
   describe('fix', () => {
-    it('should get canvas label color from theme service', () => {
+    it('should get the default label style from workspace settings', () => {
       const label = createMockLabel();
       const node = createMockNode(label);
 
       service.fix(node);
 
-      expect(mockThemeService.getCanvasLabelColor).toHaveBeenCalled();
+      expect(mockMapSettingsService.getDefaultLabelStyle).toHaveBeenCalled();
     });
 
     it('should set label style with correct font properties', () => {
@@ -102,11 +115,12 @@ describe('NodeCreatedLabelStylesFixer', () => {
 
       const result = service.fix(node);
 
-      expect(result.label.style).toContain('font-family: TypeWriter');
-      expect(result.label.style).toContain('font-size: 10.0');
-      expect(result.label.style).toContain('font-weight: bold');
-      expect(result.label.style).toContain('fill: #FFFFFF');
+      expect(result.label.style).toContain('font-family: Arial');
+      expect(result.label.style).toContain('font-size: 12');
+      expect(result.label.style).toContain('font-weight: normal');
+      expect(result.label.style).toContain('fill: #123456');
       expect(result.label.style).toContain('fill-opacity: 1.0');
+      expect(result.label.style).toContain('--gns3-custom-label-color: 1');
     });
 
     it('should calculate bounding box with label text and style', () => {
@@ -148,17 +162,32 @@ describe('NodeCreatedLabelStylesFixer', () => {
       expect(result).toBe(node);
     });
 
-    it('should handle different label colors from theme service', () => {
+    it('should apply updated label defaults', () => {
       const label = createMockLabel();
       const node = createMockNode(label);
 
-      mockThemeService.getCanvasLabelColor.mockReturnValue('#FF0000');
-      const resultRed = service.fix(node);
-      expect(resultRed.label.style).toContain('fill: #FF0000');
+      mockMapSettingsService.getDefaultLabelStyle.mockReturnValue({
+        fontFamily: 'Verdana',
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#abcdef',
+      });
+      const result = service.fix(node);
 
-      mockThemeService.getCanvasLabelColor.mockReturnValue('#0000FF');
-      const resultBlue = service.fix(node);
-      expect(resultBlue.label.style).toContain('fill: #0000FF');
+      expect(result.label.style).toContain('font-family: Verdana');
+      expect(result.label.style).toContain('font-size: 16');
+      expect(result.label.style).toContain('fill: #abcdef');
+    });
+
+    it('should preserve theme-aware label colors until a custom default is saved', () => {
+      mockMapSettingsService.hasDefaultLabelStyle.mockReturnValue(false);
+      const node = createMockNode(createMockLabel());
+
+      const result = service.fix(node);
+
+      expect(mockThemeService.getCanvasLabelColor).toHaveBeenCalled();
+      expect(result.label.style).toContain('fill: #ffffff');
+      expect(result.label.style).not.toContain('--gns3-custom-label-color');
     });
 
     it('should use correct label text for bounding box calculation', () => {

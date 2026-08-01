@@ -62,12 +62,9 @@ export class LabelWidget implements Widget {
     }
   }
 
-  /**
-   * Remove fill color from style string to let CSS variable take effect
-   */
-  private removeInlineFillColor(style: string): string {
-    // Remove fill color to allow CSS to control it
-    return style.replace(/fill:\s*[^;]+;?/gi, '');
+  private applyLabelColorMode(style: string): string {
+    const hasCustomColor = /--gns3-custom-label-color\s*:\s*1(?:\s*;|$)/i.test(style);
+    return hasCustomColor ? style : style.replace(/fill:\s*[^;]+;?/gi, '');
   }
 
   private drawLabel(view: SVGSelection) {
@@ -88,7 +85,7 @@ export class LabelWidget implements Widget {
       .attr('style', (label: MapLabel) => {
         let styles = this.cssFixer.fix(label.style);
         styles = this.fontFixer.fixStyles(styles);
-        styles = this.removeInlineFillColor(styles);
+        styles = this.applyLabelColorMode(styles);
         return styles;
       })
       .text((label: MapLabel) => label.text)
