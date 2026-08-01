@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import {
   TemplateListDialogComponent,
   TemplateDatabase,
@@ -73,7 +73,7 @@ describe('TemplateListDialogComponent', () => {
 
     mockTemplateService = {
       list: vi.fn().mockReturnValue(of([])),
-      newTemplateCreated: { subscribe: vi.fn() },
+      newTemplateCreated: new Subject<Template>(),
     };
 
     mockComputeService = {
@@ -100,7 +100,14 @@ describe('TemplateListDialogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TemplateListDialogComponent],
       providers: [
-        { provide: MAT_DIALOG_DATA, useValue: { controller: mockController, project: mockProject } },
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: {
+            controller: mockController,
+            project: mockProject,
+            allowTopologyDrop: true,
+          },
+        },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: TemplateService, useValue: mockTemplateService },
         { provide: ComputeService, useValue: mockComputeService },
@@ -133,6 +140,16 @@ describe('TemplateListDialogComponent', () => {
     it('should receive project from dialog data', () => {
       expect(component.project).toEqual(mockProject);
     });
+
+    it('should show the controller field before a template is selected', () => {
+      fixture.detectChanges();
+
+      const labels = Array.from(fixture.nativeElement.querySelectorAll('mat-label')).map((label: Element) =>
+        label.textContent?.trim()
+      );
+      expect(labels).toContain('Controller');
+      expect(component.selectedComputeId()).toBe('local');
+    });
   });
 
   describe('error handling', () => {
@@ -142,9 +159,7 @@ describe('TemplateListDialogComponent', () => {
 
     describe('getComputes', () => {
       it('should show error toaster when getComputes fails with error.error.message', async () => {
-        mockComputeService.getComputes.mockReturnValue(
-          throwError(() => ({ error: { message: 'Computes failed' } }))
-        );
+        mockComputeService.getComputes.mockReturnValue(throwError(() => ({ error: { message: 'Computes failed' } })));
 
         component.ngOnInit();
         fixture.detectChanges();
@@ -172,9 +187,7 @@ describe('TemplateListDialogComponent', () => {
       });
 
       it('should fallback to local only when getComputes fails', async () => {
-        mockComputeService.getComputes.mockReturnValue(
-          throwError(() => ({ error: { message: 'Computes failed' } }))
-        );
+        mockComputeService.getComputes.mockReturnValue(throwError(() => ({ error: { message: 'Computes failed' } })));
 
         component.ngOnInit();
         fixture.detectChanges();
@@ -183,9 +196,7 @@ describe('TemplateListDialogComponent', () => {
       });
 
       it('should call markForCheck when getComputes fails', async () => {
-        mockComputeService.getComputes.mockReturnValue(
-          throwError(() => ({ error: { message: 'Computes failed' } }))
-        );
+        mockComputeService.getComputes.mockReturnValue(throwError(() => ({ error: { message: 'Computes failed' } })));
 
         const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
         component.ngOnInit();
@@ -197,9 +208,7 @@ describe('TemplateListDialogComponent', () => {
 
     describe('templateService.list', () => {
       it('should show error toaster when list fails with error.error.message', async () => {
-        mockTemplateService.list.mockReturnValue(
-          throwError(() => ({ error: { message: 'List failed' } }))
-        );
+        mockTemplateService.list.mockReturnValue(throwError(() => ({ error: { message: 'List failed' } })));
 
         component.ngOnInit();
         fixture.detectChanges();
@@ -217,9 +226,7 @@ describe('TemplateListDialogComponent', () => {
       });
 
       it('should call markForCheck when list fails', async () => {
-        mockTemplateService.list.mockReturnValue(
-          throwError(() => ({ error: { message: 'List failed' } }))
-        );
+        mockTemplateService.list.mockReturnValue(throwError(() => ({ error: { message: 'List failed' } })));
 
         const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
         component.ngOnInit();
@@ -247,12 +254,82 @@ describe('TemplateListDialogComponent', () => {
       expect(typeof (TemplateListDialogComponent.prototype as any).filterTemplates).toBe('function');
     });
 
-    it('should have chooseTemplate method', () => {
-      expect(typeof (TemplateListDialogComponent.prototype as any).chooseTemplate).toBe('function');
-    });
-
     it('should have onAddClick method', () => {
       expect(typeof (TemplateListDialogComponent.prototype as any).onAddClick).toBe('function');
+    });
+  });
+
+  describe('template selection', () => {
+    const template = {
+      template_id: 'template-1',
+      name: 'Router',
+      symbol: 'router.svg',
+      template_type: 'qemu',
+      compute_id: 'local',
+    } as Template;
+
+    it('should select a template', () => {
+      component.selectTemplate(template);
+
+      expect(component.selectedTemplate()).toBe(template);
+    });
+
+    it('should select a template and default its controller before dragging', () => {
+      const templateWithoutCompute = { ...template, compute_id: undefined } as Template;
+      const pointerEvent = { clientX: 100, clientY: 80 } as MouseEvent;
+
+      component.onTemplatePointerDown(pointerEvent, templateWithoutCompute);
+
+      expect(component.selectedTemplate()).toBe(templateWithoutCompute);
+      expect(component.selectedComputeId()).toBe('local');
+      expect(templateWithoutCompute.compute_id).toBeUndefined();
+    });
+
+    it('should emit a drag-start request for a valid quantity', () => {
+      const emitSpy = vi.spyOn(component.templateDragStarted, 'emit');
+      const event = {
+        preventDefault: vi.fn(),
+        currentTarget: document.createElement('button'),
+        dataTransfer: { setData: vi.fn(), setDragImage: vi.fn(), effectAllowed: '' },
+      } as any;
+      component.configurationForm.get('numberOfNodes').setValue(4);
+
+      component.onTemplateDragStart(event, template);
+
+      expect(component.selectedTemplate()).toBe(template);
+      expect(emitSpy).toHaveBeenCalledWith({ event, template, numberOfNodes: 4, computeId: 'local' });
+      expect(event.dataTransfer.effectAllowed).toBe('copy');
+    });
+
+    it('should cancel template dragging when topology drops are unavailable', () => {
+      const event = { preventDefault: vi.fn() } as any;
+      const emitSpy = vi.spyOn(component.templateDragStarted, 'emit');
+      component.data.allowTopologyDrop = false;
+
+      component.onTemplateDragStart(event, template);
+
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should reject a node count below one', () => {
+      component.configurationForm.get('numberOfNodes').setValue(0);
+
+      expect(component.configurationForm.invalid).toBe(true);
+    });
+
+    it('should request manual node creation without closing the palette', () => {
+      const emitSpy = vi.spyOn(component.nodeAddRequested, 'emit');
+      component.templates = [template];
+      component.filteredTemplates = [template];
+      component.selectTemplate(template);
+
+      component.onAddClick();
+
+      expect(emitSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ template, controller: 'local', numberOfNodes: 1, x: 0, y: 0 })
+      );
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 

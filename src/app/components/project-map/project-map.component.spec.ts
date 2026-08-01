@@ -883,6 +883,29 @@ describe('ProjectMapComponent', () => {
       expect(component.symbolScaling).toBe(true);
       expect(component.isAIChatVisible).toBe(false);
     });
+
+    it('should complete a dragged batch only after the final node is created', () => {
+      const creationTracker = { onNodeCreated: vi.fn() };
+      vi.spyOn(component as any, 'templateComponent').mockReturnValue(creationTracker);
+      component.controller = mockController;
+      component.project = mockProject;
+      mockNodeService.createFromTemplate.mockReturnValue(of({ name: 'Router' } as Node));
+      mockProjectService.nodes.mockReturnValue(of([]));
+      const event = {
+        template: { name: 'Router' },
+        controller: 'local',
+        numberOfNodes: 3,
+        x: 0,
+        y: 0,
+        creationId: 'batch-1',
+      } as any;
+
+      component.onNodeCreation(event);
+
+      expect(mockNodeService.createFromTemplate).toHaveBeenCalledTimes(3);
+      expect(creationTracker.onNodeCreated).toHaveBeenCalledTimes(1);
+      expect(creationTracker.onNodeCreated).toHaveBeenCalledWith('batch-1', true);
+    });
   });
 
   describe('Node context menu selection', () => {

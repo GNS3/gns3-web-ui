@@ -3,140 +3,40 @@
   matTooltip="Add a node"
   matTooltipClass="custom-tooltip"
   mat-icon-button
-  [matMenuTriggerFor]="mainMenu"
-  #menuTrigger="matMenuTrigger"
+  (click)="openDialog()"
 >
   <mat-icon>add</mat-icon>
 </button>
 
-<mat-menu #mainMenu="matMenu" class="template-menu" (closed)="onMenuClosed()">
-  <button mat-menu-item (click)="openDialog()" class="template__dialog-btn">
-    <mat-icon>add_to_queue</mat-icon>
-    <span>Open dialog to configure</span>
-  </button>
-
-  <div class="template__filters">
-    <mat-form-field (click)="$event.stopPropagation()" class="template__search-field" floatPlaceholder="never">
-      <input
-        matInput
-        placeholder="Search template by name"
-        (keyup)="filterTemplates()"
-        [ngModel]="searchText()"
-        (ngModelChange)="searchText.set($event)"
-        [ngModelOptions]="{ standalone: true }"
-      />
-    </mat-form-field>
-    <mat-form-field (click)="$event.stopPropagation()" class="template__select-field">
-      <mat-select
-        [ngModelOptions]="{ standalone: true }"
-        placeholder="Filter templates by type"
-        (selectionChange)="selectedType.set($event.value); filterTemplates()"
-        [ngModel]="selectedType()"
-      >
-        @for (type of templateTypes; track type) {
-        <mat-option [value]="type">
-          {{ type }}
-        </mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-  </div>
-
-  <div class="template__list">
-    @for (template of filteredTemplates; track $index; let i = $index) { @if (i % 4 === 0) {
-    <div class="template__row">
-      <div class="template__item">
-        <div
-          class="template__icon-wrapper"
-          mwlDraggable
-          [ghostElementAppendTo]="bodyElement"
-          (dragStart)="dragStart($event, filteredTemplates[i])"
-          (dragEnd)="dragEnd($event, filteredTemplates[i])"
-        >
-          <img class="template__icon" draggable="false" [src]="getImageSourceForTemplate(filteredTemplates[i])" />
-        </div>
-        <span class="template__name">{{ filteredTemplates[i].name }}</span>
-      </div>
-      @if (filteredTemplates[i + 1]) {
-      <div class="template__item">
-        <div
-          class="template__icon-wrapper"
-          mwlDraggable
-          [ghostElementAppendTo]="bodyElement"
-          (dragStart)="dragStart($event, filteredTemplates[i])"
-          (dragEnd)="dragEnd($event, filteredTemplates[i + 1])"
-        >
-          <img class="template__icon" draggable="false" [src]="getImageSourceForTemplate(filteredTemplates[i + 1])" />
-        </div>
-        <span class="template__name">{{ filteredTemplates[i + 1].name }}</span>
-      </div>
-      } @if (filteredTemplates[i + 2]) {
-      <div class="template__item">
-        <div
-          class="template__icon-wrapper"
-          mwlDraggable
-          [ghostElementAppendTo]="bodyElement"
-          (dragStart)="dragStart($event, filteredTemplates[i])"
-          (dragEnd)="dragEnd($event, filteredTemplates[i + 2])"
-        >
-          <img class="template__icon" draggable="false" [src]="getImageSourceForTemplate(filteredTemplates[i + 2])" />
-        </div>
-        <span class="template__name">{{ filteredTemplates[i + 2].name }}</span>
-      </div>
-      } @if (filteredTemplates[i + 3]) {
-      <div class="template__item">
-        <div
-          class="template__icon-wrapper"
-          mwlDraggable
-          [ghostElementAppendTo]="bodyElement"
-          (dragStart)="dragStart($event, filteredTemplates[i])"
-          (dragEnd)="dragEnd($event, filteredTemplates[i + 3])"
-        >
-          <img class="template__icon" draggable="false" [src]="getImageSourceForTemplate(filteredTemplates[i + 3])" />
-        </div>
-        <span class="template__name">{{ filteredTemplates[i + 3].name }}</span>
-      </div>
-      }
-    </div>
-    } }
-  </div>
-</mat-menu>
-
 @if (showComputeSelector()) {
-  <div class="template__selector-backdrop" (click)="onComputeSelectorCancelled()"></div>
-}
+<div class="template__selector-backdrop" (click)="onComputeSelectorCancelled()"></div>
+} @if (showComputeSelector()) {
+<app-compute-selector
+  [computes]="availableComputes()"
+  [x]="lastPageX()"
+  [y]="lastPageY()"
+  (computeSelected)="onComputeSelected($event)"
+/>
+} @for (creatingNode of creatingNodes().values(); track creatingNode.id) { @let position =
+getCreatingNodeScreenPosition(creatingNode);
+<div
+  class="template__ghost-icon"
+  [style.left.px]="position.x"
+  [style.top.px]="position.y"
+>
+  <div class="template__ghost-name">{{ creatingNode.template.name }}</div>
 
-@if (showComputeSelector()) {
-  <app-compute-selector
-    [computes]="availableComputes()"
-    [x]="lastPageX()"
-    [y]="lastPageY()"
-    (computeSelected)="onComputeSelected($event)"
+  <img
+    class="template__ghost-icon-img"
+    [src]="getImageSourceForTemplate(creatingNode.template)"
+    [class.template__ghost-icon-img--error]="creatingNode.status === 'error'"
+    draggable="false"
   />
-}
 
-@for (creatingNode of creatingNodes().values(); track creatingNode.id) {
-  @let position = getCreatingNodeScreenPosition(creatingNode);
-  @let shouldFade = creatingNode.status === 'success';
-  <div
-    class="template__ghost-icon"
-    [class.template__ghost-icon--fading]="shouldFade"
-    [style.left.px]="position.x"
-    [style.top.px]="position.y"
-  >
-    <div class="template__ghost-name">{{ creatingNode.template.name }}</div>
-
-    <img
-      class="template__ghost-icon-img"
-      [src]="getImageSourceForTemplate(creatingNode.template)"
-      [class.template__ghost-icon-img--error]="creatingNode.status === 'error'"
-      draggable="false"
-    />
-
-    @if (creatingNode.status === 'error') {
-    <div class="template__ghost-icon-status">
-      <mat-icon class="template__status-icon--error">error</mat-icon>
-    </div>
-    }
+  @if (creatingNode.status === 'error') {
+  <div class="template__ghost-icon-status">
+    <mat-icon class="template__status-icon--error">error</mat-icon>
   </div>
+  }
+</div>
 }

@@ -916,11 +916,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       )
       .subscribe(
         (node: Node) => {
-          // Notify template component of success
-          if (creationId && this.templateComponent()) {
-            this.templateComponent()!.onNodeCreated(creationId, true);
-          }
-
           // Show success toast
           this.toasterService.success(`Node "${node.name}" created successfully`);
 
@@ -950,9 +945,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
                 nodeAddedEvent.y =
                   nodeAddedEvent.y + 50 < this.project.scene_height / 2 ? nodeAddedEvent.y + 50 : nodeAddedEvent.y;
                 this.onNodeCreation(nodeAddedEvent);
+              } else if (creationId && this.templateComponent()) {
+                this.templateComponent()!.onNodeCreated(creationId, true);
               }
             },
             error: (err) => {
+              if (creationId && this.templateComponent()) {
+                this.templateComponent()!.onNodeCreated(
+                  creationId,
+                  false,
+                  err.error?.message || err.message || 'Failed to load nodes'
+                );
+              }
               this.toasterService.error('Failed to load nodes: ' + (err.error?.message || err.message || 'Unknown error'));
               this.cd.markForCheck();
             },

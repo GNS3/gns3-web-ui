@@ -1,8 +1,19 @@
 import { DataSource } from '@angular/cdk/collections';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject, model } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  EventEmitter,
+  Inject,
+  OnInit,
+  Output,
+  inject,
+  model,
+} from '@angular/core';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import {
-  FormsModule,
   ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormControl,
@@ -15,8 +26,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
@@ -25,7 +38,19 @@ import { TemplateService } from '@services/template.service';
 import { ComputeService } from '@services/compute.service';
 import { ToasterService } from '@services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
-import { TemplateFilter } from '@filters/templateFilter.pipe';
+export interface TemplateListDialogData {
+  controller: Controller;
+  project: Project;
+  symbolUrls?: ReadonlyMap<string, string>;
+  allowTopologyDrop: boolean;
+}
+
+export interface TemplateDragStartRequest {
+  event: DragEvent;
+  template: Template;
+  numberOfNodes: number;
+  computeId?: string;
+}
 
 @Component({
   standalone: true,
@@ -42,7 +67,8 @@ import { TemplateFilter } from '@filters/templateFilter.pipe';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    TemplateFilter,
+    MatIconModule,
+    DragDropModule,
   ],
 })
 export class TemplateListDialogComponent implements OnInit {
@@ -53,18 +79,21 @@ export class TemplateListDialogComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private nonNegativeValidator = inject(NonNegativeValidator);
   private cd = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
+
+  @Output() nodeAddRequested = new EventEmitter<NodeAddedEvent>();
+  @Output() templateDragStarted = new EventEmitter<TemplateDragStartRequest>();
 
   controller: Controller;
   project: Project;
   templateTypes: string[] = [
+    'all',
     'cloud',
     'ethernet_hub',
     'ethernet_switch',
     'docker',
     'dynamips',
     'vpcs',
-    'virtualbox',
-    'vmware',
     'iou',
     'qemu',
   ];
@@ -76,15 +105,16 @@ export class TemplateListDialogComponent implements OnInit {
 
   // Model signals for two-way binding
   searchText = model('');
-  selectedType = model('');
+  selectedType = model('all');
   selectedTemplate = model<Template | null>(null);
+  selectedComputeId = model('local');
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
-    this.controller = data['controller'];
-    this.project = data['project'];
+  constructor(@Inject(MAT_DIALOG_DATA) public data: TemplateListDialogData) {
+    this.controller = data.controller;
+    this.project = data.project;
     this.configurationForm = this.formBuilder.group({
       numberOfNodes: new UntypedFormControl(1, [
-        Validators.compose([Validators.required, this.nonNegativeValidator.get]),
+        Validators.compose([Validators.required, Validators.min(1), this.nonNegativeValidator.get]),
       ]),
     });
     this.positionForm = this.formBuilder.group({
@@ -94,50 +124,54 @@ export class TemplateListDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.templateService.list(this.controller).subscribe({
-      next: (listOfTemplates: Template[]) => {
-        this.filteredTemplates = listOfTemplates;
-        this.templates = listOfTemplates;
-        this.cd.markForCheck();
-      },
-      error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to load templates';
-        this.toasterService.error(message);
-        this.cd.markForCheck();
-      },
-    });
+    this.templateService
+      .list(this.controller)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (listOfTemplates: Template[]) => {
+          this.templates = [...listOfTemplates].sort((a, b) => a.name.localeCompare(b.name));
+          this.filteredTemplates = [...this.templates];
+          this.cd.markForCheck();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to load templates';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        },
+      });
 
-    // Listen for new template creation events to refresh the list
-    this.templateService.newTemplateCreated.subscribe((newTemplate: Template) => {
-      this.templates.push(newTemplate);
-      this.filteredTemplates = [...this.templates];
-      this.cd.markForCheck();
-    });
+    this.templateService.newTemplateCreated
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((newTemplate: Template) => {
+        this.templates = [...this.templates, newTemplate].sort((a, b) => a.name.localeCompare(b.name));
+        this.filterTemplates();
+        this.cd.markForCheck();
+      });
 
-    // Load computes list for node controller selection
-    this.computeService.getComputes(this.controller).subscribe({
-      next: (computes: Compute[]) => {
-        // Add remote computes to nodeControllers (skip 'local' as it's already included)
-        const remoteComputes = computes
-          .filter((c) => c.compute_id !== 'local')
-          .map((c) => {
-            const shortId = c.compute_id.slice(-8);
-            return {
-              display: `${c.name || c.compute_id} (${shortId})`,
-              value: c.compute_id, // Full UUID as actual value
-            };
-          });
-        this.nodeControllers = [{ display: 'local', value: 'local' }, ...remoteComputes];
-        this.cd.markForCheck();
-      },
-      error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to load computes';
-        this.toasterService.error(message);
-        // Fallback to local only if fails
-        this.nodeControllers = [{ display: 'local', value: 'local' }];
-        this.cd.markForCheck();
-      },
-    });
+    this.computeService
+      .getComputes(this.controller)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (computes: Compute[]) => {
+          const remoteComputes = computes
+            .filter((c) => c.compute_id !== 'local')
+            .map((c) => {
+              const shortId = c.compute_id.slice(-8);
+              return {
+                display: `${c.name || c.compute_id} (${shortId})`,
+                value: c.compute_id,
+              };
+            });
+          this.nodeControllers = [{ display: 'local', value: 'local' }, ...remoteComputes];
+          this.cd.markForCheck();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to load computes';
+          this.toasterService.error(message);
+          this.nodeControllers = [{ display: 'local', value: 'local' }];
+          this.cd.markForCheck();
+        },
+      });
   }
 
   onNoClick(): void {
@@ -146,6 +180,59 @@ export class TemplateListDialogComponent implements OnInit {
 
   compareControllers(a: string, b: string): boolean {
     return a === b;
+  }
+
+  selectTemplate(template: Template): void {
+    this.selectedTemplate.set(template);
+    if (template.compute_id && this.nodeControllers.some((controller) => controller.value === template.compute_id)) {
+      this.selectedComputeId.set(template.compute_id);
+    }
+  }
+
+  onTemplatePointerDown(_event: MouseEvent, template: Template): void {
+    this.selectTemplate(template);
+  }
+
+  onTemplateDragStart(event: DragEvent, template: Template): void {
+    this.selectTemplate(template);
+    if (!this.configurationForm.valid || !this.data.allowTopologyDrop) {
+      event.preventDefault();
+      return;
+    }
+
+    event.dataTransfer?.setData('text/plain', template.template_id ?? template.name);
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'copy';
+      const image = (event.currentTarget as HTMLElement | null)?.querySelector<HTMLElement>(
+        '.template-card__image-wrap'
+      );
+      if (image) {
+        const imageRect = image.getBoundingClientRect();
+        event.dataTransfer.setDragImage(image, imageRect.width / 2, imageRect.height / 2);
+      }
+    }
+
+    this.templateDragStarted.emit({
+      event,
+      template,
+      numberOfNodes: this.configurationForm.get('numberOfNodes').value,
+      computeId: this.selectedComputeId(),
+    });
+  }
+
+  refreshSymbolImages(): void {
+    this.cd.markForCheck();
+  }
+
+  getImageSourceForTemplate(template: Template): string {
+    return this.data.symbolUrls?.get(template.symbol) ?? '';
+  }
+
+  formatTemplateType(type: string): string {
+    if (type === 'all') {
+      return 'All template types';
+    }
+    return type.replace(/_/g, ' ').replace(/\b\w/g, (character) => character.toUpperCase());
   }
 
   filterTemplates() {
@@ -157,29 +244,17 @@ export class TemplateListDialogComponent implements OnInit {
     } else {
       this.filteredTemplates = temporaryTemplates.filter((t) => t.template_type === this.selectedType());
     }
-  }
-
-  chooseTemplate() {
-    if (this.selectedTemplate()) {
-      const template = this.selectedTemplate()!;
-      if (
-        template.template_type === 'cloud' ||
-        template.template_type === 'ethernet_hub' ||
-        template.template_type === 'ethernet_switch'
-      ) {
-        template.compute_id = 'local';
-      }
-    }
+    this.filteredTemplates.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   onAddClick(): void {
     if (!this.selectedTemplate() || this.filteredTemplates.length === 0) {
       this.toasterService.error('Please firstly choose template.');
-    } else if (!this.positionForm.valid || !this.configurationForm.valid || !this.selectedTemplate().compute_id) {
+    } else if (!this.positionForm.valid || !this.configurationForm.valid || !this.selectedComputeId()) {
       this.toasterService.error('Please fill all required fields.');
     } else {
-      let x: number = this.positionForm.get('left').value;
-      let y: number = this.positionForm.get('top').value;
+      const x: number = this.positionForm.get('left').value;
+      const y: number = this.positionForm.get('top').value;
       if (
         x > this.project.scene_width / 2 ||
         x < -(this.project.scene_width / 2) ||
@@ -188,14 +263,14 @@ export class TemplateListDialogComponent implements OnInit {
       ) {
         this.toasterService.error('Please set correct position values.');
       } else {
-        let nodeAddedEvent: NodeAddedEvent = {
+        const nodeAddedEvent: NodeAddedEvent = {
           template: this.selectedTemplate(),
-          controller: this.selectedTemplate().compute_id,
+          controller: this.selectedComputeId(),
           numberOfNodes: this.configurationForm.get('numberOfNodes').value,
           x: x,
           y: y,
         };
-        this.dialogRef.close(nodeAddedEvent);
+        this.nodeAddRequested.emit(nodeAddedEvent);
       }
     }
   }

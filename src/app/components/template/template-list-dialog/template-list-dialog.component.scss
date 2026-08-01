@@ -1,12 +1,38 @@
 .dialog-title {
   display: flex;
+  align-items: center;
   gap: var(--gns3-density-space-4);
   justify-content: space-between;
 }
 
+.dialog-title__drag-handle,
+.dialog-title__actions {
+  display: flex;
+  align-items: center;
+}
+
+.dialog-title__drag-handle {
+  min-width: 0;
+  flex: 1 1 auto;
+  gap: var(--gns3-density-space-2);
+  user-select: none;
+}
+
+.dialog-title__drag-handle--enabled {
+  cursor: move;
+}
+
+.dialog-title__actions {
+  flex: 0 0 auto;
+  gap: var(--gns3-density-space-1);
+}
+
 .dialog-title__preferences {
   flex: 0 0 auto;
-  margin-left: auto;
+
+  mat-icon {
+    margin-right: var(--gns3-density-space-2);
+  }
 }
 
 .dialog-content {
@@ -40,27 +66,150 @@
   margin: 0;
 }
 
-.dialog-fields__full {
-  grid-column: 1 / -1;
-}
-
-.dialog-fields form,
+.dialog-fields > div,
 .dialog-fields mat-form-field {
   width: 100%;
   min-width: 0;
 }
 
+.template-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: var(--gns3-density-space-2);
+  max-height: calc(var(--gns3-density-form-field-height) * 5);
+  padding: var(--gns3-density-space-2);
+  overflow-y: auto;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--gns3-density-radius-sm);
+  background: var(--mat-sys-surface-container-lowest);
+  scrollbar-color: var(--mat-sys-outline) transparent;
+  scrollbar-width: thin;
+}
+
+.template-card {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: calc(var(--gns3-density-form-field-height) * 2);
+  box-sizing: border-box;
+  place-items: center;
+  align-content: center;
+  gap: var(--gns3-density-space-1);
+  padding: var(--gns3-density-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--gns3-density-radius-sm);
+  color: var(--mat-sys-on-surface);
+  background: transparent;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--mat-sys-surface-container);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: -2px;
+  }
+}
+
+.template-card--draggable {
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.template-card--selected {
+  border-color: var(--mat-sys-primary);
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.template-card__image-wrap {
+  display: grid;
+  width: var(--gns3-density-form-field-height);
+  height: var(--gns3-density-form-field-height);
+  place-items: center;
+}
+
+.template-card__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.template-card__fallback-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 32px;
+}
+
+.template-card__name {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  font: var(--mat-sys-label-large);
+  letter-spacing: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.template-card__type {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-label-small);
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.template-card__selected-icon {
+  position: absolute;
+  top: var(--gns3-density-space-1);
+  right: var(--gns3-density-space-1);
+  width: 18px;
+  height: 18px;
+  color: var(--mat-sys-primary);
+  font-size: 18px;
+}
+
+.template-gallery__empty {
+  display: flex;
+  min-height: calc(var(--gns3-density-form-field-height) * 2);
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gns3-density-space-2);
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-medium);
+  letter-spacing: 0;
+}
+
 @media (max-width: 560px) {
+  .dialog-title__drag-handle mat-icon {
+    display: none;
+  }
+
   .dialog-title__preferences {
     min-width: 0;
     padding-inline: var(--gns3-density-space-2);
+
+    span {
+      display: none;
+    }
+
+    mat-icon {
+      margin-right: 0;
+    }
   }
 
   .dialog-fields {
     grid-template-columns: 1fr;
-  }
-
-  .dialog-fields__full {
-    grid-column: auto;
   }
 }
