@@ -17,13 +17,21 @@
   @if (cloudNodeTemplate) {
   <main class="cloud-nodes-details__content">
     <nav class="template-edit-tabs" aria-label="Template settings">
-      <button type="button" [class.is-active]="activeSection === 'general'" (click)="selectSection('general')">General</button>
+      <button type="button" [class.is-active]="activeSection === 'general'" (click)="selectSection('general')">
+        General
+      </button>
       <button type="button" [class.is-active]="activeSection === 'ethernet'" (click)="selectSection('ethernet')">
         Ethernet interfaces
       </button>
-      <button type="button" [class.is-active]="activeSection === 'tap'" (click)="selectSection('tap')">TAP interfaces</button>
-      <button type="button" [class.is-active]="activeSection === 'udp'" (click)="selectSection('udp')">UDP tunnels</button>
-      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
+      <button type="button" [class.is-active]="activeSection === 'tap'" (click)="selectSection('tap')">
+        TAP interfaces
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'udp'" (click)="selectSection('udp')">
+        UDP tunnels
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">
+        Usage
+      </button>
     </nav>
     <section class="cloud-nodes-details__form-card">
       <div class="cloud-nodes-details__section-header" (click)="toggleSection('general')">
@@ -148,17 +156,33 @@
       @if (activeSection === 'ethernet') {
       <div class="cloud-nodes-details__form">
         <div class="cloud-nodes-details__add-row">
-          <mat-form-field appearance="fill" class="cloud-nodes-details__field cloud-nodes-details__field--flex">
+          <mat-form-field
+            appearance="fill"
+            class="cloud-nodes-details__field cloud-nodes-details__field--flex"
+            subscriptSizing="dynamic"
+          >
             <mat-label>Ethernet interface</mat-label>
-            <input
-              matInput
-              [value]="ethernetInterface()"
-              (input)="ethernetInterface.set($event.target.value)"
-              type="text"
-              placeholder="Ethernet interface name"
-            />
+            <mat-select [value]="ethernetInterface()" (selectionChange)="ethernetInterface.set($event.value)">
+              @if (networkInterfacesLoading()) {
+              <mat-option disabled>Loading interfaces...</mat-option>
+              } @else { @for (networkInterface of availableEthernetInterfaces(); track networkInterface.name) {
+              <mat-option [value]="networkInterface.name">{{ networkInterface.name }}</mat-option>
+              } @empty {
+              <mat-option disabled>No Ethernet interfaces available</mat-option>
+              } }
+            </mat-select>
           </mat-form-field>
-          <button mat-button class="cloud-nodes-details__add-btn" (click)="onAddEthernetInterface()">Add</button>
+          <button
+            type="button"
+            mat-flat-button
+            color="primary"
+            class="cloud-nodes-details__add-btn"
+            [disabled]="!ethernetInterface()"
+            (click)="onAddEthernetInterface()"
+          >
+            <mat-icon>add</mat-icon>
+            Add
+          </button>
         </div>
         <table mat-table [dataSource]="portsMappingEthernet" class="cloud-nodes-details__table">
           <ng-container matColumnDef="name">
@@ -188,17 +212,33 @@
       @if (activeSection === 'tap') {
       <div class="cloud-nodes-details__form">
         <div class="cloud-nodes-details__add-row">
-          <mat-form-field appearance="fill" class="cloud-nodes-details__field cloud-nodes-details__field--flex">
+          <mat-form-field
+            appearance="fill"
+            class="cloud-nodes-details__field cloud-nodes-details__field--flex"
+            subscriptSizing="dynamic"
+          >
             <mat-label>TAP interface</mat-label>
-            <input
-              matInput
-              [value]="tapInterface()"
-              (input)="tapInterface.set($event.target.value)"
-              type="text"
-              placeholder="TAP interface"
-            />
+            <mat-select [value]="tapInterface()" (selectionChange)="tapInterface.set($event.value)">
+              @if (networkInterfacesLoading()) {
+              <mat-option disabled>Loading interfaces...</mat-option>
+              } @else { @for (networkInterface of availableTapInterfaces(); track networkInterface.name) {
+              <mat-option [value]="networkInterface.name">{{ networkInterface.name }}</mat-option>
+              } @empty {
+              <mat-option disabled>No TAP interfaces available</mat-option>
+              } }
+            </mat-select>
           </mat-form-field>
-          <button mat-button class="cloud-nodes-details__add-btn" (click)="onAddTapInterface()">Add</button>
+          <button
+            type="button"
+            mat-flat-button
+            color="primary"
+            class="cloud-nodes-details__add-btn"
+            [disabled]="!tapInterface()"
+            (click)="onAddTapInterface()"
+          >
+            <mat-icon>add</mat-icon>
+            Add
+          </button>
         </div>
         <table mat-table [dataSource]="portsMappingTap" class="cloud-nodes-details__table">
           <ng-container matColumnDef="name">

@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { Compute, ComputeCreate, ComputeUpdate } from '@models/compute';
 import { ControllerStatistics } from '@models/computeStatistics';
 import { Controller } from '@models/controller';
+import type { NetworkInterface } from '../cartography/models/node';
 import { HttpController } from './http-controller.service';
 
 @Injectable()
@@ -15,6 +16,13 @@ export class ComputeService {
 
   getCompute(controller: Controller, computeId: string): Observable<Compute> {
     return this.httpController.get<Compute>(controller, `/computes/${computeId}`) as Observable<Compute>;
+  }
+
+  getNetworkInterfaces(controller: Controller, computeId: string): Observable<NetworkInterface[]> {
+    return this.httpController.get<NetworkInterface[]>(
+      controller,
+      `/computes/${computeId}/network/interfaces`
+    ) as Observable<NetworkInterface[]>;
   }
 
   createCompute(controller: Controller, compute: ComputeCreate): Observable<Compute> {

@@ -1,4 +1,12 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  OnInit,
+  model,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -18,10 +26,12 @@ import { CloudTemplate } from '@models/templates/cloud-template';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from '@services/built-in-templates.service';
 import { ControllerService } from '@services/controller.service';
+import { ComputeService } from '@services/compute.service';
 import { ToasterService } from '@services/toaster.service';
 import { CloudValidationService } from '@services/validation';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 import { DialogConfigService } from '@services/dialog-config.service';
+import type { NetworkInterface } from '../../../../../cartography/models/node';
 
 @Component({
   standalone: true,
@@ -50,6 +60,7 @@ import { DialogConfigService } from '@services/dialog-config.service';
 export class CloudNodesTemplateDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
+  private computeService = inject(ComputeService);
   private builtInTemplatesService = inject(BuiltInTemplatesService);
   private toasterService = inject(ToasterService);
   private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
@@ -66,7 +77,6 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
 
   categories: any[] = [];
   consoleTypes: string[] = [];
-  ethernetInterfaces: string[] = ['Ethernet 2', 'Ethernet 3'];
   ethernetDisplayColumns: string[] = ['name', 'actions'];
   tapDisplayColumns: string[] = ['name', 'actions'];
   displayColumnsUdp: string[] = ['name', 'lport', 'rhost', 'rport', 'action'];
@@ -94,6 +104,9 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   // Interface models
   ethernetInterface = model('');
   tapInterface = model('');
+  availableEthernetInterfaces = signal<NetworkInterface[]>([]);
+  availableTapInterfaces = signal<NetworkInterface[]>([]);
+  networkInterfacesLoading = signal(false);
 
   // Port mappings
   portsMappingEthernet: PortsMappingEntity[] = [];
@@ -136,10 +149,12 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
             this.usage.set(cloudNodeTemplate.usage || '');
             this.tags.set(cloudNodeTemplate.tags || []);
 
-            this.portsMappingEthernet = this.cloudNodeTemplate.ports_mapping.filter((elem) => elem.type === 'ethernet');
-            this.portsMappingTap = this.cloudNodeTemplate.ports_mapping.filter((elem) => elem.type === 'tap');
-            this.portsMappingUdp = this.cloudNodeTemplate.ports_mapping.filter((elem) => elem.type === 'udp');
+            const portsMapping = this.cloudNodeTemplate.ports_mapping ?? [];
+            this.portsMappingEthernet = portsMapping.filter((elem) => elem.type === 'ethernet');
+            this.portsMappingTap = portsMapping.filter((elem) => elem.type === 'tap');
+            this.portsMappingUdp = portsMapping.filter((elem) => elem.type === 'udp');
             this.dataSourceUdp = [...this.portsMappingUdp];
+            this.loadNetworkInterfaces(cloudNodeTemplate.compute_id || 'local');
 
             this.cd.markForCheck();
           },
@@ -177,6 +192,31 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   getConfiguration() {
     this.categories = this.builtInTemplatesConfigurationService.getCategoriesForCloudNodes();
     this.consoleTypes = this.builtInTemplatesConfigurationService.getConsoleTypesForCloudNodes();
+  }
+
+  private loadNetworkInterfaces(computeId: string): void {
+    this.networkInterfacesLoading.set(true);
+    this.computeService.getNetworkInterfaces(this.controller, computeId).subscribe({
+      next: (interfaces) => {
+        const availableInterfaces = interfaces ?? [];
+        this.availableEthernetInterfaces.set(
+          availableInterfaces.filter((networkInterface) => networkInterface.type === 'ethernet')
+        );
+        this.availableTapInterfaces.set(
+          availableInterfaces.filter((networkInterface) => networkInterface.type === 'tap')
+        );
+        this.networkInterfacesLoading.set(false);
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        this.availableEthernetInterfaces.set([]);
+        this.availableTapInterfaces.set([]);
+        this.networkInterfacesLoading.set(false);
+        const message = err.error?.message || err.message || 'Failed to load network interfaces';
+        this.toasterService.warning(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onAddEthernetInterface() {

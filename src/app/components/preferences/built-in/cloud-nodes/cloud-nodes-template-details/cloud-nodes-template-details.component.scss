@@ -138,13 +138,13 @@
 
 .cloud-nodes-details__add-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--gns3-density-card-gap);
 }
 
 .cloud-nodes-details__add-btn {
-  margin-top: 4px;
-  height: 48px;
+  min-height: var(--gns3-density-control-height);
+  flex: 0 0 auto;
 }
 
 /* =============================================

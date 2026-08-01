@@ -5,6 +5,7 @@ import { Observable, of } from 'rxjs';
 import { Controller } from '@models/controller';
 import { Compute, ComputeCreate, ComputeUpdate } from '@models/compute';
 import { ControllerStatistics } from '@models/computeStatistics';
+import type { NetworkInterface } from '../cartography/models/node';
 
 describe('ComputeService', () => {
   let service: ComputeService;
@@ -108,6 +109,24 @@ describe('ComputeService', () => {
       service.getCompute(mockController, 'my-compute');
 
       expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/computes/my-compute');
+    });
+  });
+
+  describe('getNetworkInterfaces', () => {
+    it('should request network interfaces for the selected compute', () => {
+      const interfaces: NetworkInterface[] = [
+        { name: 'eth0', special: false, type: 'ethernet' },
+        { name: 'tap0', special: false, type: 'tap' },
+      ];
+      mockHttpController.get.mockReturnValue(of(interfaces));
+
+      const result = service.getNetworkInterfaces(mockController, 'local');
+
+      expect(mockHttpController.get).toHaveBeenCalledWith(
+        mockController,
+        '/computes/local/network/interfaces'
+      );
+      expect(result).toBeInstanceOf(Observable);
     });
   });
 
