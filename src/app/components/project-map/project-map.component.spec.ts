@@ -32,7 +32,6 @@
  */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChangeDetectorRef, input, signal, ViewContainerRef, NO_ERRORS_SCHEMA } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
@@ -215,7 +214,6 @@ describe('ProjectMapComponent', () => {
   let mockThemeService: any;
   let mockAiChatStore: any;
   let mockMatDialog: any;
-  let mockMatBottomSheet: any;
   let mockRouter: any;
   let mockActivatedRoute: any;
   let mockTitle: any;
@@ -562,13 +560,6 @@ describe('ProjectMapComponent', () => {
       }),
     };
 
-    mockMatBottomSheet = {
-      open: vi.fn().mockReturnValue({
-        afterDismissed: vi.fn().mockReturnValue(of(false)),
-        instance: { projectMessage: '' },
-      }),
-    };
-
     mockRouter = {
       navigate: vi.fn(),
     };
@@ -772,7 +763,6 @@ describe('ProjectMapComponent', () => {
         { provide: ThemeService, useValue: mockThemeService },
         { provide: AiChatStore, useValue: mockAiChatStore },
         { provide: MatDialog, useValue: mockMatDialog },
-        { provide: MatBottomSheet, useValue: mockMatBottomSheet },
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Title, useValue: mockTitle },

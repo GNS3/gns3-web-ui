@@ -18,7 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
-import { ActivatedRoute, CanDeactivateFn } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { MapSettingsService, WorkspaceLinkStyle, WorkspaceTextStyle } from '@services/mapsettings.service';
 import { Settings, SettingsService } from '@services/settings.service';
 import { ConsoleService } from '@services/settings/console.service';
@@ -389,10 +389,6 @@ export class SettingsComponent implements OnInit {
     this.isDirty.set(true);
   }
 
-  canDeactivate(): boolean {
-    return !this.isDirty() || window.confirm('You have unsaved settings. Leave without saving them?');
-  }
-
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent): void {
     if (this.isDirty()) {
@@ -429,5 +425,3 @@ export class SettingsComponent implements OnInit {
     });
   }
 }
-
-export const canDeactivateSettings: CanDeactivateFn<SettingsComponent> = (component) => component.canDeactivate();

@@ -44,7 +44,7 @@ import { GroupService } from '@services/group.service';
 import { Controller } from '@models/controller';
 import { Group } from '@models/groups/group';
 import { AddGroupDialogComponent } from '@components/group-management/add-group-dialog/add-group-dialog.component';
-import { DeleteGroupDialogComponent } from '@components/group-management/delete-group-dialog/delete-group-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { GroupFilterPipe } from '@filters/group-filter.pipe';
 import {
   GroupDetailDialogComponent,
@@ -179,9 +179,17 @@ export class GroupManagementComponent implements OnInit, AfterViewInit {
 
   onDelete(groupsToDelete: Group[]) {
     this.dialog
-      .open(DeleteGroupDialogComponent, {
+      .open(ConfirmationDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { groups: groupsToDelete },
+        autoFocus: '.cancel-button',
+        data: {
+          title: groupsToDelete.length === 1 ? 'Delete group?' : 'Delete groups?',
+          message: `${groupsToDelete.length} selected ${groupsToDelete.length === 1 ? 'group' : 'groups'} will be permanently deleted.`,
+          details: groupsToDelete.map((group) => group.name),
+          note: 'This action cannot be undone.',
+          confirmButtonText: groupsToDelete.length === 1 ? 'Delete group' : 'Delete groups',
+          tone: 'danger',
+        },
       })
       .afterClosed()
       .subscribe((isDeletedConfirm: boolean) => {

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DeleteTemplateComponent } from './delete-template.component';
 import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
-import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { Controller } from '@models/controller';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi, beforeAll } from 'vitest';
@@ -93,12 +93,16 @@ describe('DeleteTemplateComponent', () => {
   it('should open delete confirmation dialog when deleteItem is called', () => {
     component.deleteItem(templateName, templateId);
 
-    expect((component as any).dialog.open).toHaveBeenCalledWith(DeleteConfirmationDialogComponent, {
+    expect((component as any).dialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
       data: {
-        templateName: templateName,
+        title: 'Delete template?',
+        message: `Template "${templateName}" will be permanently deleted.`,
+        note: 'This action cannot be undone.',
+        confirmButtonText: 'Delete template',
+        tone: 'danger',
       },
-      autoFocus: false,
       disableClose: true,
     });
   });

@@ -13,7 +13,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
@@ -31,13 +30,12 @@ import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.se
 import { Settings, SettingsService } from '@services/settings.service';
 import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
-import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { ConfirmationDeleteAllProjectsComponent } from './confirmation-delete-all-projects/confirmation-delete-all-projects.component';
 import { EditProjectDialogComponent } from './edit-project-dialog/edit-project-dialog.component';
 import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
-import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -56,7 +54,6 @@ import { version } from '../../version';
     CommonModule,
     FormsModule,
     RouterModule,
-    MatBottomSheetModule,
     MatDialogModule,
     MatSortModule,
     MatSelectModule,
@@ -209,7 +206,6 @@ export class ProjectsComponent implements OnInit {
   private progressService = inject(ProgressService);
   public dialog = inject(MatDialog);
   private router = inject(Router);
-  private bottomSheet = inject(MatBottomSheet);
   private toasterService = inject(ToasterService);
   private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
   private themeService = inject(ThemeService);
@@ -378,11 +374,18 @@ export class ProjectsComponent implements OnInit {
 
   // ── CRUD operations ───────────────────────────────────────────
   delete(project: Project) {
-    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
-      data: { message: 'Do you want to delete the project?' },
-      panelClass: 'confirmation-bottom-sheet',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Delete project?',
+        message: `"${project.name}" and its project files will be permanently deleted.`,
+        note: 'This action cannot be undone.',
+        confirmButtonText: 'Delete project',
+        tone: 'danger',
+      },
     });
-    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+    dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.setProjectLoading(project.project_id, true);
         this.projectService.delete(this.controller, project.project_id).subscribe({
@@ -422,11 +425,18 @@ export class ProjectsComponent implements OnInit {
   }
 
   close(project: Project) {
-    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
-      data: { message: 'Do you want to close the project?' },
-      panelClass: 'confirmation-bottom-sheet',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-warning-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Close project?',
+        message: `Close "${project.name}"? Open consoles for this project will be disconnected.`,
+        confirmButtonText: 'Close project',
+        tone: 'warning',
+        icon: 'folder_off',
+      },
     });
-    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+    dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.setProjectLoading(project.project_id, true);
         this.projectService.close(this.controller, project.project_id).subscribe({
@@ -506,11 +516,19 @@ export class ProjectsComponent implements OnInit {
       this.refresh();
       subscription.unsubscribe();
       if (uuid) {
-        this.bottomSheet.open(NavigationDialogComponent);
-        let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-        bottomSheetRef.instance.projectMessage = 'imported project';
+        const navigationDialogRef = this.dialog.open(ConfirmationDialogComponent, {
+          panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel'],
+          autoFocus: '.cancel-button',
+          data: {
+            title: 'Open imported project?',
+            message: 'The project was imported successfully. Would you like to open it now?',
+            confirmButtonText: 'Open project',
+            tone: 'neutral',
+            icon: 'folder_open',
+          },
+        });
 
-        const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+        navigationDialogRef.afterClosed().subscribe((result: boolean) => {
           if (result) {
             this.projectService.open(this.controller, uuid).subscribe({
               next: () => {
@@ -528,13 +546,37 @@ export class ProjectsComponent implements OnInit {
   }
 
   deleteAllFiles() {
+    const projects = this.selection.selected;
+    const confirmationRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Delete selected projects?',
+        message: `${projects.length} selected ${projects.length === 1 ? 'project' : 'projects'} will be permanently deleted.`,
+        details: projects.map((project) => project.name || project.project_id),
+        note: 'This action cannot be undone.',
+        confirmButtonText: projects.length === 1 ? 'Delete project' : 'Delete projects',
+        tone: 'danger',
+      },
+    });
+
+    confirmationRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) {
+        return;
+      }
+      this.openProjectDeletionProgress(projects);
+    });
+  }
+
+  private openProjectDeletionProgress(projects: Project[]): void {
     const dialogRef = this.dialog.open(ConfirmationDeleteAllProjectsComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'delete-all-projects-dialog-panel'],
       autoFocus: false,
       disableClose: true,
       data: {
         controller: this.controller,
-        deleteFilesPaths: this.selection.selected,
+        deleteFilesPaths: projects,
+        autoStart: true,
       },
     });
 

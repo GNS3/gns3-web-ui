@@ -22,6 +22,11 @@
   --gns3-density-button-height: 48px; // primary action buttons (Save/Cancel)
   --gns3-density-icon-button: 48px; // square icon buttons (back)
   --gns3-density-form-field-height: 56px; // matches Material density 0
+  --gns3-density-dialog-icon-container: 36px;
+  --gns3-density-dialog-icon-size: 24px;
+  --gns3-density-dialog-title-size: 21px;
+  --gns3-density-dialog-body-size: 15px;
+  --gns3-density-dialog-action-size: 15px;
 
   /* ---- Spacing scale (gaps & padding) ---- */
   --gns3-density-space-1: 4px;
@@ -58,6 +63,11 @@ html[data-density='compact'] {
   --gns3-density-button-height: 40px;
   --gns3-density-icon-button: 40px;
   --gns3-density-form-field-height: 48px; // matches Material density -2
+  --gns3-density-dialog-icon-container: 28px;
+  --gns3-density-dialog-icon-size: 20px;
+  --gns3-density-dialog-title-size: 19px;
+  --gns3-density-dialog-body-size: 15px;
+  --gns3-density-dialog-action-size: 15px;
 
   /* ---- Spacing scale ---- */
   --gns3-density-space-1: 2px;

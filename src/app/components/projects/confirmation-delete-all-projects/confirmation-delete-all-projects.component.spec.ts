@@ -18,6 +18,7 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
       { project_id: 'project-1', filename: 'project1.gns3' },
       { project_id: 'project-2', filename: 'project2.gns3' },
     ],
+    autoStart: false,
   };
 
   beforeEach(async () => {
@@ -49,25 +50,22 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
   });
 
   describe('initial state', () => {
-    it('should display confirmation dialog with project list', () => {
+    it('should display deletion progress', () => {
       const compiled = fixture.nativeElement as HTMLElement;
 
-      expect(compiled.querySelector('h1[mat-dialog-title]')?.textContent).toContain('Do you want delete all projects?');
-      expect(compiled.querySelectorAll('p')[1]?.textContent).toContain('project1.gns3');
-      expect(compiled.querySelectorAll('p')[2]?.textContent).toContain('project2.gns3');
+      expect(compiled.querySelector('h1[mat-dialog-title]')?.textContent).toContain('Deleting projects');
+      expect(compiled.querySelector('mat-spinner')).toBeTruthy();
     });
 
-    it('should show Delete and Cancel buttons', () => {
+    it('should not duplicate confirmation actions', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const buttons = compiled.querySelectorAll('button[mat-button], button[mat-raised-button]');
 
-      expect(buttons.length).toBe(2);
-      expect(buttons[0].textContent).toContain('Delete');
-      expect(buttons[1].textContent).toContain('Cancel');
+      expect(buttons.length).toBe(0);
     });
 
-    it('should have isDelete and isUsedFiles signals set to false initially', () => {
-      expect(fixture.componentInstance.isDelete()).toBeFalsy();
+    it('should start in the deleting state', () => {
+      expect(fixture.componentInstance.isDelete()).toBeTruthy();
       expect(fixture.componentInstance.isUsedFiles()).toBeFalsy();
     });
   });

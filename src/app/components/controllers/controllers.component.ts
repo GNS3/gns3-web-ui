@@ -12,7 +12,6 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSort, MatSortable, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -32,7 +31,7 @@ import { ControllerManagementService } from '@services/controller-management.ser
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
-import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
 import { EditControllerDialogComponent } from './edit-controller-dialog/edit-controller-dialog.component';
 import { version } from '../../version';
@@ -52,7 +51,6 @@ import { version } from '../../version';
     MatInputModule,
     MatIconModule,
     MatButtonModule,
-    MatBottomSheetModule,
     MatTooltipModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
@@ -65,7 +63,6 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   protected controllerDatabase = inject(ControllerDatabase);
   private controllerManagement = inject(ControllerManagementService);
   private changeDetector = inject(ChangeDetectorRef);
-  private bottomSheet = inject(MatBottomSheet);
   private router = inject(Router);
   private toasterService = inject(ToasterService);
 
@@ -291,11 +288,17 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   deleteController(controller: Controller) {
-    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
-      data: { message: 'Do you want to delete the controller?' },
-      panelClass: 'confirmation-bottom-sheet',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Delete controller?',
+        message: `Controller "${controller.name}" will be removed from this Web-UI.`,
+        confirmButtonText: 'Delete controller',
+        tone: 'danger',
+      },
     });
-    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+    dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.controllerService.delete(controller).then(
           () => {

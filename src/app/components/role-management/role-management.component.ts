@@ -44,7 +44,7 @@ import { ToasterService } from '@services/toaster.service';
 import { Role } from '@models/api/role';
 import { RoleService } from '@services/role.service';
 import { AddRoleDialogComponent } from '@components/role-management/add-role-dialog/add-role-dialog.component';
-import { DeleteRoleDialogComponent } from '@components/role-management/delete-role-dialog/delete-role-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { RoleFilterPipe } from '@components/role-management/role-filter.pipe';
 import { forkJoin } from 'rxjs';
 
@@ -177,9 +177,17 @@ export class RoleManagementComponent implements OnInit, AfterViewInit {
 
   onDelete(rolesToDelete: Role[]) {
     this.dialog
-      .open(DeleteRoleDialogComponent, {
+      .open(ConfirmationDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { roles: rolesToDelete },
+        autoFocus: '.cancel-button',
+        data: {
+          title: rolesToDelete.length === 1 ? 'Delete role?' : 'Delete roles?',
+          message: `${rolesToDelete.length} selected ${rolesToDelete.length === 1 ? 'role' : 'roles'} will be permanently deleted.`,
+          details: rolesToDelete.map((role) => role.name),
+          note: 'This action cannot be undone.',
+          confirmButtonText: rolesToDelete.length === 1 ? 'Delete role' : 'Delete roles',
+          tone: 'danger',
+        },
       })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {

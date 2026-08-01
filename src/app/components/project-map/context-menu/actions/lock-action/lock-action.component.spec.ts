@@ -3,8 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { LockActionComponent, LockConfirmDialogComponent } from './lock-action.component';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { LockActionComponent } from './lock-action.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
 import { NodeService } from '@services/node.service';
@@ -21,7 +22,7 @@ describe('LockActionComponent', () => {
   let component: LockActionComponent;
   let fixture: ComponentFixture<LockActionComponent>;
   let mockDialog: MatDialog;
-  let mockDialogRef: MatDialogRef<LockConfirmDialogComponent>;
+  let mockDialogRef: any;
   let mockNodesDataSource: NodesDataSource;
   let mockDrawingsDataSource: DrawingsDataSource;
   let mockNodeService: NodeService;
@@ -194,12 +195,13 @@ describe('LockActionComponent', () => {
       component.lock();
 
       expect(mockDialog.open).toHaveBeenCalledWith(
-        LockConfirmDialogComponent,
+        ConfirmationDialogComponent,
         expect.objectContaining({
           data: expect.objectContaining({
-            title: 'Confirm Lock All',
-            message: expect.stringContaining('2 items'),
-            action: 'lock',
+            title: 'Lock selected items?',
+            message: expect.stringContaining('2 selected items'),
+            confirmButtonText: 'Lock items',
+            tone: 'warning',
           }),
         })
       );
@@ -365,84 +367,5 @@ describe('LockActionComponent', () => {
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to process lock confirmation');
     });
-  });
-});
-
-describe('LockConfirmDialogComponent', () => {
-  let dialogFixture: ComponentFixture<LockConfirmDialogComponent>;
-  let mockDialogRef: MatDialogRef<LockConfirmDialogComponent>;
-
-  const mockData = {
-    title: 'Confirm Lock All',
-    message: 'Are you sure you want to lock 2 items?',
-    action: 'lock',
-  };
-
-  beforeEach(async () => {
-    mockDialogRef = {
-      close: vi.fn(),
-    } as any;
-
-    await TestBed.configureTestingModule({
-      imports: [LockConfirmDialogComponent, MatDialogModule, MatButtonModule],
-      providers: [
-        { provide: MatDialogRef, useValue: mockDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: mockData },
-      ],
-    }).compileComponents();
-
-    dialogFixture = TestBed.createComponent(LockConfirmDialogComponent);
-    dialogFixture.detectChanges();
-  });
-
-  it('should display the title from data', () => {
-    const title = dialogFixture.nativeElement.querySelector('h1');
-    expect(title.textContent).toContain('Confirm Lock All');
-  });
-
-  it('should display the message from data', () => {
-    const content = dialogFixture.nativeElement.querySelector('p');
-    expect(content.textContent).toContain('Are you sure you want to lock 2 items?');
-  });
-
-  it('should display "Lock" button when action is lock', () => {
-    const button = dialogFixture.nativeElement.querySelector('button[mat-raised-button]');
-    expect(button.textContent).toContain('Lock');
-  });
-
-  it('should display "Unlock" button when action is unlock', () => {
-    const unlockMockDialogRef = { close: vi.fn() } as any;
-    const unlockData = { ...mockData, action: 'unlock' };
-
-    TestBed.resetTestingModule();
-    TestBed.configureTestingModule({
-      imports: [LockConfirmDialogComponent, MatDialogModule, MatButtonModule],
-      providers: [
-        { provide: MatDialogRef, useValue: unlockMockDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: unlockData },
-      ],
-    }).compileComponents();
-
-    const unlockFixture = TestBed.createComponent(LockConfirmDialogComponent);
-    unlockFixture.detectChanges();
-
-    const button = unlockFixture.nativeElement.querySelector('button[mat-raised-button]');
-    expect(button.textContent).toContain('Unlock');
-
-    unlockFixture.destroy();
-  });
-
-  it('should close dialog with false when Cancel is clicked', () => {
-    const cancelButton = dialogFixture.nativeElement.querySelector('button[mat-button]');
-    cancelButton.click();
-
-    expect(mockDialogRef.close).toHaveBeenCalledWith(false);
-  });
-
-  it('should close dialog with true when Lock/Unlock button is clicked', () => {
-    const actionButton = dialogFixture.nativeElement.querySelector('button[mat-raised-button]');
-    actionButton.click();
-
-    expect(mockDialogRef.close).toHaveBeenCalledWith(true);
   });
 });

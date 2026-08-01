@@ -15,7 +15,7 @@ import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ControllerResponse } from '@models/controllerResponse';
 import { ProjectService } from '@services/project.service';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ProjectNameValidator } from '../models/projectNameValidator';
 import { UploadServiceService } from '../../../common/uploading-processbar/upload-service.service';
 import { UploadingProcessbarComponent } from '../../../common/uploading-processbar/uploading-processbar.component';
@@ -165,12 +165,27 @@ export class ImportProjectDialogComponent implements OnInit {
   }
 
   openConfirmationDialog(existingProject: Project): void {
+    const projectIsOpen = existingProject.status === 'opened';
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-warning-panel'],
-      data: {
-        existingProject: existingProject,
-      },
-      autoFocus: false,
+      data: projectIsOpen
+        ? {
+            title: 'Project is currently open',
+            message: `Project "${existingProject.name}" cannot be overwritten while it is open.`,
+            cancelButtonText: 'OK',
+            hideConfirm: true,
+            tone: 'warning',
+            icon: 'folder_open',
+          }
+        : {
+            title: 'Overwrite existing project?',
+            message: `Project "${existingProject.name}" already exists. Its current files will be replaced.`,
+            note: 'This action cannot be undone.',
+            confirmButtonText: 'Overwrite project',
+            tone: 'danger',
+            icon: 'folder_delete',
+          },
+      autoFocus: '.cancel-button',
       disableClose: true,
     });
 

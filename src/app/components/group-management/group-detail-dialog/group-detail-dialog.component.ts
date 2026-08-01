@@ -23,7 +23,7 @@ import { AclService } from '@services/acl.service';
 import { RoleService } from '@services/role.service';
 import { ToasterService } from '@services/toaster.service';
 import { AddUserToGroupDialogComponent } from '@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component';
-import { RemoveToGroupDialogComponent } from '@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import {
   UserDetailDialogComponent,
   UserDetailDialogData,
@@ -188,9 +188,16 @@ export class GroupDetailDialogComponent implements OnInit {
 
   openRemoveUserDialog(user: User): void {
     this.dialog
-      .open(RemoveToGroupDialogComponent, {
+      .open(ConfirmationDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
-        data: { name: user.username },
+        autoFocus: '.cancel-button',
+        data: {
+          title: 'Remove user from group?',
+          message: `User "${user.username}" will lose the permissions granted through this group.`,
+          confirmButtonText: 'Remove user',
+          tone: 'warning',
+          icon: 'person_remove',
+        },
       })
       .afterClosed()
       .subscribe((confirm: boolean) => {

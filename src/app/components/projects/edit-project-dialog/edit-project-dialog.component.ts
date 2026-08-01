@@ -25,7 +25,6 @@ import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
 import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
-import { DeleteConfirmationDialogComponent } from '../../preferences/common/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { ConfirmationDialogComponent, ConfirmationDialogData } from '../../dialogs/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
@@ -135,9 +134,15 @@ export class EditProjectDialogComponent implements OnInit {
   }
 
   deleteVariable(variable: ProjectVariable): void {
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      data: { templateName: variable.name },
-      panelClass: 'base-dialog-panel',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Delete variable?',
+        message: `Global variable "${variable.name}" will be removed from this project.`,
+        confirmButtonText: 'Delete variable',
+        tone: 'danger',
+      },
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {

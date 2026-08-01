@@ -3,7 +3,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Controller } from '@models/controller';
 import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
-import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-delete-template',
@@ -21,12 +21,16 @@ export class DeleteTemplateComponent {
   private toasterService = inject(ToasterService);
 
   deleteItem(templateName, templateId) {
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
       data: {
-        templateName: templateName,
+        title: 'Delete template?',
+        message: `Template "${templateName}" will be permanently deleted.`,
+        note: 'This action cannot be undone.',
+        confirmButtonText: 'Delete template',
+        tone: 'danger',
       },
-      autoFocus: false,
       disableClose: true,
     });
 

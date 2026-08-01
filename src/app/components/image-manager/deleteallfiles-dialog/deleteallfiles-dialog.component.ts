@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,12 +17,12 @@ import { ImageData } from '@models/images';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatProgressSpinnerModule],
 })
-export class DeleteAllImageFilesDialogComponent {
+export class DeleteAllImageFilesDialogComponent implements OnInit {
   private imageService = inject(ImageManagerService);
   private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
 
-  isDelete: boolean = false;
+  isDelete: boolean = true;
   isUsedFiles: boolean = false;
   deleteFliesDetails: ImageData = [];
   fileNotDeleted: ImageData = [];
@@ -31,6 +31,12 @@ export class DeleteAllImageFilesDialogComponent {
     @Inject(MAT_DIALOG_DATA) public deleteData: any,
     public dialogRef: MatDialogRef<DeleteAllImageFilesDialogComponent>
   ) {}
+
+  ngOnInit(): void {
+    if (this.deleteData.autoStart !== false) {
+      this.deleteFile();
+    }
+  }
 
   async deleteAll() {
     this.isDelete = true;

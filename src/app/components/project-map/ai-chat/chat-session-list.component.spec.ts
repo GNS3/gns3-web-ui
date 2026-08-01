@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AiChatService } from '@services/ai-chat.service';
+import { ToasterService } from '@services/toaster.service';
 import { ChatSessionListComponent } from './chat-session-list.component';
 import { ChatSession } from '@models/ai-chat.interface';
 import { Controller } from '@models/controller';
@@ -15,7 +15,7 @@ describe('ChatSessionListComponent', () => {
   let mockDialogRef: MatDialogRef<ConfirmationDialogComponent>;
   let mockDialog: MatDialog;
   let mockAiChatService: AiChatService;
-  let mockSnackBar: MatSnackBar;
+  let mockToasterService: Pick<ToasterService, 'error'>;
 
   const mockController: Controller = {
     authToken: 'test-token',
@@ -65,20 +65,18 @@ describe('ChatSessionListComponent', () => {
       deleteSession: vi.fn(),
     } as any;
 
-    mockSnackBar = {
-      open: vi.fn(),
-    } as any;
+    mockToasterService = { error: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [ChatSessionListComponent],
       providers: [
         { provide: MatDialog, useValue: mockDialog },
         { provide: AiChatService, useValue: mockAiChatService },
-        { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     })
       .overrideProvider(MatDialog, { useValue: mockDialog })
-      .overrideProvider(MatSnackBar, { useValue: mockSnackBar })
+      .overrideProvider(ToasterService, { useValue: mockToasterService })
       .compileComponents();
 
     fixture = TestBed.createComponent(ChatSessionListComponent);
@@ -266,23 +264,20 @@ describe('ChatSessionListComponent', () => {
       expect(mockAiChatService.deleteSession).not.toHaveBeenCalled();
     });
 
-    it('should calculate dialog position from click event', () => {
-      const session = createMockSession();
-      const event = { clientX: 500, clientY: 400 } as MouseEvent;
-      component.deleteSession(session, event);
-
-      const dialogCall = (mockDialog.open as any).mock.calls[0];
-      expect(dialogCall[1].position).toBeDefined();
-      expect(dialogCall[1].position.top).toBeDefined();
-      expect(dialogCall[1].position.left).toBeDefined();
-    });
-
-    it('should not pass position when no event provided', () => {
+    it('should use the shared centered danger confirmation', () => {
       const session = createMockSession();
       component.deleteSession(session);
 
       const dialogCall = (mockDialog.open as any).mock.calls[0];
-      expect(dialogCall[1].position).toEqual({});
+      expect(dialogCall[1].position).toBeUndefined();
+      expect(dialogCall[1].autoFocus).toBe('.cancel-button');
+      expect(dialogCall[1].data).toEqual(
+        expect.objectContaining({
+          title: 'Delete chat?',
+          confirmButtonText: 'Delete chat',
+          tone: 'danger',
+        })
+      );
     });
   });
 
@@ -321,10 +316,7 @@ describe('ChatSessionListComponent', () => {
 
       component.delete(session);
 
-      expect(mockSnackBar.open).toHaveBeenCalledWith('Delete failed', 'Close', expect.objectContaining({
-        duration: 6000,
-        panelClass: ['ai-chat-snack-error'],
-      }));
+      expect(mockToasterService.error).toHaveBeenCalledWith('Delete failed');
     });
   });
 

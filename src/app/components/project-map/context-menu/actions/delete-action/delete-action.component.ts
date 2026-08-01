@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { ConfirmationBottomSheetComponent } from 'app/components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
 import { LinksDataSource } from '../../../../../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
@@ -31,7 +31,7 @@ export class DeleteActionComponent {
   private nodeService = inject(NodeService);
   private drawingService = inject(DrawingService);
   private linkService = inject(LinkService);
-  private bottomSheet = inject(MatBottomSheet);
+  private dialog = inject(MatDialog);
   private cdr = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
@@ -40,11 +40,19 @@ export class DeleteActionComponent {
   readonly links = input<Link[]>([]);
 
   confirmDelete() {
-    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
-      data: { message: 'Do you want to delete all selected objects?' },
-      panelClass: 'confirmation-bottom-sheet',
+    const objectCount = this.nodes().length + this.drawings().length + this.links().length;
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Delete selected objects?',
+        message: `${objectCount} selected ${objectCount === 1 ? 'object' : 'objects'} will be permanently deleted.`,
+        note: 'This action cannot be undone.',
+        confirmButtonText: objectCount === 1 ? 'Delete object' : 'Delete objects',
+        tone: 'danger',
+      },
     });
-    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+    dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.delete();
         this.cdr.markForCheck();

@@ -19,6 +19,7 @@ describe('DeleteAllImageFilesDialogComponent', () => {
   const mockDeleteData = {
     controller: { id: 1, name: 'Test Controller' },
     deleteFilesPaths: [{ filename: 'image1.img' }, { filename: 'image2.img' }],
+    autoStart: false,
   };
 
   beforeEach(async () => {
@@ -63,8 +64,8 @@ describe('DeleteAllImageFilesDialogComponent', () => {
       expect(component.deleteData).toEqual(mockDeleteData);
     });
 
-    it('should initialize with isDelete false and isUsedFiles false', () => {
-      expect(component.isDelete).toBe(false);
+    it('should initialize in the deleting state', () => {
+      expect(component.isDelete).toBe(true);
       expect(component.isUsedFiles).toBe(false);
     });
 
@@ -75,19 +76,11 @@ describe('DeleteAllImageFilesDialogComponent', () => {
   });
 
   describe('Template Rendering', () => {
-    it('should show confirmation view with file list initially', () => {
+    it('should show progress without duplicate confirmation actions', () => {
       const compiled = fixture.nativeElement;
       expect(compiled.querySelector('.delete-files__title')).toBeTruthy();
-      expect(compiled.querySelector('.delete-files__list')).toBeTruthy();
-      expect(compiled.querySelector('button').textContent).toContain('Delete');
-    });
-
-    it('should display all file names in the list', () => {
-      const compiled = fixture.nativeElement;
-      const listItems = compiled.querySelectorAll('.delete-files__list-item');
-      expect(listItems.length).toBe(2);
-      expect(listItems[0].textContent).toContain('image1.img');
-      expect(listItems[1].textContent).toContain('image2.img');
+      expect(compiled.querySelector('mat-spinner')).toBeTruthy();
+      expect(compiled.querySelector('button')).toBeFalsy();
     });
   });
 

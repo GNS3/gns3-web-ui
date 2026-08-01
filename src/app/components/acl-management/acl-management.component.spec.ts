@@ -335,9 +335,7 @@ describe('AclManagementComponent', () => {
     });
   });
 
-  // Dialog tests are skipped because they require additional mocking setup
-  // for the AddAceDialogComponent and DeleteAceDialogComponent dependencies.
-  // These methods should be tested in integration tests that include the dialog modules.
+  // The add dialog requires the complete form and dialog module setup.
   describe('addACE', () => {
     it('should be defined as a function', () => {
       expect(typeof component.addACE).toBe('function');

@@ -24,7 +24,7 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
-import { QuestionDialogComponent } from '@components/dialogs/question-dialog/question-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { Controller } from '@models/controller';
 import { Image } from '@models/images';
 import { ControllerService } from '@services/controller.service';
@@ -276,9 +276,16 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   }
 
   deleteFile(path: string): void {
-    const dialogRef = this.dialog.open(QuestionDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'question-dialog-panel'],
-      data: { title: 'Delete image', question: 'Are you sure you want to delete this image?' },
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Delete image?',
+        message: 'This image will be permanently deleted.',
+        note: 'This action cannot be undone.',
+        confirmButtonText: 'Delete image',
+        tone: 'danger',
+      },
     });
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
@@ -377,11 +384,15 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   }
 
   installAllImages(): void {
-    const dialogRef = this.dialog.open(QuestionDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-info-panel', 'question-dialog-panel'],
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-neutral-panel'],
+      autoFocus: '.cancel-button',
       data: {
-        title: 'Install all images',
-        question: 'This will attempt to automatically create templates based on image checksums. Continue?',
+        title: 'Install all images?',
+        message: 'GNS3 will attempt to create templates automatically from the available image checksums.',
+        confirmButtonText: 'Install images',
+        tone: 'neutral',
+        icon: 'install_desktop',
       },
     });
 
@@ -403,9 +414,16 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   }
 
   pruneImages(): void {
-    const dialogRef = this.dialog.open(QuestionDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'question-dialog-panel'],
-      data: { title: 'Prune images', question: 'Delete all images not used by a template? This cannot be reverted.' },
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Prune unused images?',
+        message: 'All images that are not used by a template will be permanently deleted.',
+        note: 'This action cannot be undone.',
+        confirmButtonText: 'Prune images',
+        tone: 'danger',
+      },
     });
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
@@ -443,13 +461,37 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   }
 
   deleteAllFiles(): void {
+    const images = this.getSelectedRows();
+    const confirmationRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Delete selected images?',
+        message: `${images.length} selected ${images.length === 1 ? 'image' : 'images'} will be permanently deleted.`,
+        details: images.map((image) => image.filename),
+        note: 'Images used by templates will be reported and kept.',
+        confirmButtonText: images.length === 1 ? 'Delete image' : 'Delete images',
+        tone: 'danger',
+      },
+    });
+
+    confirmationRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) {
+        return;
+      }
+      this.openImageDeletionProgress(images);
+    });
+  }
+
+  private openImageDeletionProgress(images: ImageTableRow[]): void {
     const dialogRef = this.dialog.open(DeleteAllImageFilesDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'delete-all-images-dialog-panel'],
       autoFocus: false,
       disableClose: true,
       data: {
         controller: this.controller,
-        deleteFilesPaths: this.getSelectedRows(),
+        deleteFilesPaths: images,
+        autoStart: true,
       },
     });
 

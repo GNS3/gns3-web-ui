@@ -20,7 +20,6 @@ import { Controller } from '@models/controller';
 import { Node } from '../../../cartography/models/node';
 import { Drawing } from '../../../cartography/models/drawing';
 import { ScreenshotDialogComponent } from '../screenshot-dialog/screenshot-dialog.component';
-import { ProjectMapLockConfirmationDialogComponent } from './project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DefaultDrawingsFactory } from '../../../cartography/helpers/default-drawings-factory';

@@ -27,8 +27,6 @@ import { ProgressComponent } from './common/progress/progress.component';
 import { ProgressService } from './common/progress/progress.service';
 import { AdbutlerComponent } from '@components/adbutler/adbutler.component';
 import { BundledControllerFinderComponent } from '@components/bundled-controller-finder/bundled-controller-finder.component';
-import { InformationDialogComponent } from '@components/dialogs/information-dialog/information-dialog.component';
-import { QuestionDialogComponent } from '@components/dialogs/question-dialog/question-dialog.component';
 import { DirectLinkComponent } from '@components/direct-link/direct-link.component';
 import { DrawingAddedComponent } from '@components/drawings-listeners/drawing-added/drawing-added.component';
 import { DrawingDraggedComponent } from '@components/drawings-listeners/drawing-dragged/drawing-dragged.component';
@@ -55,7 +53,6 @@ import { EthernetSwitchesTemplateDetailsComponent } from '@components/preference
 import { EthernetSwitchesTemplatesComponent } from '@components/preferences/built-in/ethernet-switches/ethernet-switches-templates/ethernet-switches-templates.component';
 import { CustomAdaptersTableComponent } from '@components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 import { CustomAdaptersComponent } from '@components/preferences/common/custom-adapters/custom-adapters.component';
-import { DeleteConfirmationDialogComponent } from '@components/preferences/common/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { DeleteTemplateComponent } from '@components/preferences/common/delete-template-component/delete-template.component';
 import { EmptyTemplatesListComponent } from '@components/preferences/common/empty-templates-list/empty-templates-list.component';
 import { PortsComponent } from '@components/preferences/common/ports/ports.component';
@@ -192,13 +189,10 @@ import { ScreenshotDialogComponent } from '@components/project-map/screenshot-di
 import { WebConsoleComponent } from '@components/project-map/web-console/web-console.component';
 import { AddBlankProjectDialogComponent } from '@components/projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { ChooseNameDialogComponent } from '@components/projects/choose-name-dialog/choose-name-dialog.component';
-import { ConfirmationBottomSheetComponent } from '@components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
-import { ConfirmationDialogComponent } from '@components/projects/confirmation-dialog/confirmation-dialog.component';
 import { EditProjectDialogComponent } from '@components/projects/edit-project-dialog/edit-project-dialog.component';
 import { ReadmeEditorComponent } from '@components/projects/edit-project-dialog/readme-editor/readme-editor.component';
 import { ImportProjectDialogComponent } from '@components/projects/import-project-dialog/import-project-dialog.component';
 import { ProjectNameValidator } from '@components/projects/models/projectNameValidator';
-import { NavigationDialogComponent } from '@components/projects/navigation-dialog/navigation-dialog.component';
 import { ProjectsComponent } from '@components/projects/projects.component';
 import { SaveProjectDialogComponent } from '@components/projects/save-project-dialog/save-project-dialog.component';
 import { AddControllerDialogComponent } from '@components/controllers/add-controller-dialog/add-controller-dialog.component';
@@ -296,16 +290,12 @@ import { UserFilterPipe } from '@filters/user-filter.pipe';
 import { GroupManagementComponent } from '@components/group-management/group-management.component';
 import { GroupFilterPipe } from '@filters/group-filter.pipe';
 import { AddGroupDialogComponent } from '@components/group-management/add-group-dialog/add-group-dialog.component';
-import { DeleteGroupDialogComponent } from '@components/group-management/delete-group-dialog/delete-group-dialog.component';
-import { DeleteUserDialogComponent } from '@components/user-management/delete-user-dialog/delete-user-dialog.component';
 import { AddUserToGroupDialogComponent } from '@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component';
-import { RemoveToGroupDialogComponent } from '@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component';
 import { ManagementComponent } from '@components/management/management.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RoleManagementComponent } from '@components/role-management/role-management.component';
 import { RoleFilterPipe } from '@components/role-management/role-filter.pipe';
 import { AddRoleDialogComponent } from '@components/role-management/add-role-dialog/add-role-dialog.component';
-import { DeleteRoleDialogComponent } from '@components/role-management/delete-role-dialog/delete-role-dialog.component';
 import { RoleDetailComponent } from '@components/role-management/role-detail/role-detail.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -319,13 +309,10 @@ import { AddImageDialogComponent } from '@components/image-manager/add-image-dia
 import { DeleteAllImageFilesDialogComponent } from '@components/image-manager/deleteallfiles-dialog/deleteallfiles-dialog.component';
 import { UploadingProcessbarComponent } from './common/uploading-processbar/uploading-processbar.component';
 import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
-import { NodesMenuConfirmationDialogComponent } from '@components/project-map/nodes-menu/nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
 import { ConfirmationDeleteAllProjectsComponent } from '@components/projects/confirmation-delete-all-projects/confirmation-delete-all-projects.component';
-import { ProjectMapLockConfirmationDialogComponent } from '@components/project-map/project-map-menu/project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
 import { AclManagementComponent } from '@components/acl-management/acl-management.component';
 import { AddAceDialogComponent } from '@components/acl-management/add-ace-dialog/add-ace-dialog.component';
 import { AutocompleteComponent } from '@components/acl-management/add-ace-dialog/autocomplete/autocomplete.component';
-import { DeleteAceDialogComponent } from '@components/acl-management/delete-ace-dialog/delete-ace-dialog.component';
 import { AceFilterPipe } from '@filters/ace-filter.pipe';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { CdkTreeModule } from '@angular/cdk/tree';
@@ -334,13 +321,10 @@ import { PrivilegeComponent } from '@components/role-management/role-detail/priv
 import { GroupPrivilegesPipe } from '@components/role-management/role-detail/privilege/group-privileges.pipe';
 import { ResourcePoolsManagementComponent } from '@components/resource-pools-management/resource-pools-management.component';
 import { AddResourcePoolDialogComponent } from '@components/resource-pools-management/add-resource-pool-dialog/add-resource-pool-dialog.component';
-import { DeleteResourcePoolComponent } from '@components/resource-pools-management/delete-resource-pool/delete-resource-pool.component';
 import { ResourcePoolsFilterPipe } from '@components/resource-pools-management/resource-pools-filter.pipe';
 import { ResourcePoolDetailsComponent } from '@components/resource-pool-details/resource-pool-details.component';
-import { DeleteResourceConfirmationDialogComponent } from '@components/resource-pool-details/delete-resource-confirmation-dialog/delete-resource-confirmation-dialog.component';
 import { AiProfileTabComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-tab.component';
 import { AiProfileDialogComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-dialog/ai-profile-dialog.component';
-import { ConfirmDialogComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-dialog/confirm-dialog/confirm-dialog.component';
 import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-profile-tab/group-ai-profile-tab.component';
 import { GlobalUploadIndicatorComponent } from '@components/global-upload-indicator/global-upload-indicator.component';
 
@@ -504,23 +488,15 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     ScreenshotDialogComponent,
     IdlePCDialogComponent,
     PageNotFoundComponent,
-    InformationDialogComponent,
-    QuestionDialogComponent,
-    ConfirmationDialogComponent,
     TemplateListDialogComponent,
     ChooseNameDialogComponent,
-    NavigationDialogComponent,
     CreateSnapshotDialogComponent,
     ApplianceInfoDialogComponent,
     BundledControllerFinderComponent,
     AdbutlerComponent,
     HelpComponent,
     HelpDialogComponent,
-    ConfirmationBottomSheetComponent,
     ConfirmationDeleteAllProjectsComponent,
-    NodesMenuConfirmationDialogComponent,
-    ProjectMapLockConfirmationDialogComponent,
-    ConfirmDialogComponent,
     ProgressDialogComponent,
     UploadingProcessbarComponent,
     ChangeSymbolDialogComponent,
@@ -577,24 +553,17 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     ProjectMapMenuComponent,
     AddGroupDialogComponent,
     AddUserDialogComponent,
-    DeleteGroupDialogComponent,
-    DeleteUserDialogComponent,
     AddRoleDialogComponent,
     RoleDetailComponent,
-    DeleteRoleDialogComponent,
     DeleteAllImageFilesDialogComponent,
-    DeleteAceDialogComponent,
     AddUserToGroupDialogComponent,
     AddAceDialogComponent,
     AutocompleteComponent,
-    DeleteResourceConfirmationDialogComponent,
     SaveProjectDialogComponent,
-    RemoveToGroupDialogComponent,
     AddImageDialogComponent,
     TemplateNameDialogComponent,
     AddBlankProjectDialogComponent,
     AddResourcePoolDialogComponent,
-    DeleteResourcePoolComponent,
     GeneralPreferencesComponent,
     SettingsComponent,
     NodeSelectInterfaceComponent,
@@ -618,7 +587,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     // VirtualBoxPreferencesComponent,
     QemuPreferencesComponent,
     QemuVmTemplatesComponent,
-    DeleteConfirmationDialogComponent,
     DeleteTemplateComponent,
     VpcsTemplatesComponent,
     // VirtualBox support deprecated since 3.1.0

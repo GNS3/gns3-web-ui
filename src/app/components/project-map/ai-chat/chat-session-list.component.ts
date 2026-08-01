@@ -6,11 +6,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { ChatSession, isFaultInjectionSession } from '@models/ai-chat.interface';
 import { Controller } from '@models/controller';
 import { AiChatService } from '@services/ai-chat.service';
+import { ToasterService } from '@services/toaster.service';
 import {
   ConfirmationDialogComponent,
   ConfirmationDialogData,
@@ -30,7 +30,6 @@ import {
     MatMenuModule,
     MatButtonModule,
     MatDialogModule,
-    MatSnackBarModule,
     MatDividerModule,
   ],
   templateUrl: './chat-session-list.component.html',
@@ -40,7 +39,7 @@ import {
 export class ChatSessionListComponent {
   private dialog = inject(MatDialog);
   private aiChatService = inject(AiChatService);
-  private snackBar = inject(MatSnackBar);
+  private toasterService = inject(ToasterService);
 
   readonly sessions = input<ChatSession[]>([]);
   readonly currentSessionId = input<string | null>(null);
@@ -150,60 +149,19 @@ export class ChatSessionListComponent {
   /**
    * Delete session with confirmation dialog
    * @param session Session
-   * @param event MouseEvent to calculate dialog position
    */
-  deleteSession(session: ChatSession, event?: MouseEvent): void {
-    const message = `Are you sure you want to delete "${session.title || 'New chat'}"?`;
-
-    // Calculate dialog position centered on click
-    let position: { top?: string; left?: string; right?: string; bottom?: string } = {};
-
-    if (event) {
-      // Get click coordinates
-      const clickX = event.clientX;
-      const clickY = event.clientY;
-
-      // Dialog dimensions (estimated)
-      const dialogWidth = 360;
-      const dialogHeight = 180;
-
-      // Calculate centered position
-      let left = clickX - dialogWidth / 2;
-      let top = clickY - dialogHeight / 2;
-
-      // Get viewport dimensions
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-
-      // Ensure dialog doesn't go off-screen horizontally
-      if (left < 10) {
-        left = 10;
-      }
-      if (left + dialogWidth > viewportWidth - 10) {
-        left = viewportWidth - dialogWidth - 10;
-      }
-
-      // Ensure dialog doesn't go off-screen vertically
-      if (top < 10) {
-        top = 10;
-      }
-      if (top + dialogHeight > viewportHeight - 10) {
-        top = viewportHeight - dialogHeight - 10;
-      }
-
-      position = {
-        top: `${top}px`,
-        left: `${left}px`,
-      };
-    }
-
+  deleteSession(session: ChatSession): void {
+    const title = session.title || 'New chat';
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: { message },
-      position,
-      autoFocus: false,
-      restoreFocus: false,
-      backdropClass: 'delete-dialog-backdrop',
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Delete chat?',
+        message: `Chat "${title}" will be permanently deleted.`,
+        note: 'This action cannot be undone.',
+        confirmButtonText: 'Delete chat',
+        tone: 'danger',
+      },
     });
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
@@ -225,12 +183,7 @@ export class ChatSessionListComponent {
       },
       error: (error) => {
         const message = error?.error?.message || error?.message || 'Failed to delete session';
-        this.snackBar.open(message, 'Close', {
-          duration: 6000,
-          panelClass: ['ai-chat-snack-error'],
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-        });
+        this.toasterService.error(message);
       },
     });
   }

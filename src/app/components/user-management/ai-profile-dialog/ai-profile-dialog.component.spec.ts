@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AiProfileDialogComponent, AiProfileDialogData } from './ai-profile-dialog.component';
 import { AiProfilesService } from '@services/ai-profiles.service';
+import { ToasterService } from '@services/toaster.service';
 import { User } from '@models/users/user';
 import { Controller } from '@models/controller';
 import { of } from 'rxjs';
@@ -15,7 +15,7 @@ describe('AiProfileDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let mockAiProfilesService: Partial<AiProfilesService>;
   let mockDialog: { open: ReturnType<typeof vi.fn> };
-  let mockSnackBar: { open: ReturnType<typeof vi.fn> };
+  let mockToasterService: Pick<ToasterService, 'success' | 'warning' | 'error'>;
 
   const mockUser: User = {
     user_id: 'user-123',
@@ -61,8 +61,10 @@ describe('AiProfileDialogComponent', () => {
       }),
     };
 
-    mockSnackBar = {
-      open: vi.fn(),
+    mockToasterService = {
+      success: vi.fn(),
+      warning: vi.fn(),
+      error: vi.fn(),
     };
 
     mockAiProfilesService = {
@@ -81,12 +83,12 @@ describe('AiProfileDialogComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [AiProfileDialogComponent, MatDialogModule, MatSnackBarModule],
+      imports: [AiProfileDialogComponent, MatDialogModule],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
         { provide: MatDialog, useValue: mockDialog },
-        { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: ToasterService, useValue: mockToasterService },
         { provide: AiProfilesService, useValue: mockAiProfilesService },
       ],
     }).compileComponents();

@@ -15,7 +15,7 @@ import { ProgressDialogComponent } from '../../../common/progress-dialog/progres
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { ToasterService } from '@services/toaster.service';
 import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-snapshot-dialog.component';
-import { QuestionDialogComponent } from '@components/dialogs/question-dialog/question-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { DateFilter } from '@filters/dateFilter.pipe';
 
 @Component({
@@ -93,11 +93,15 @@ export class SnapshotDialogComponent {
   }
 
   restoreSnapshot(snapshot: Snapshot) {
-    const dialogRef = this.dialog.open(QuestionDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+      autoFocus: '.cancel-button',
       data: {
-        title: 'Restore snapshot',
-        question: `Are you sure you want to restore snapshot "${snapshot.name}"? This will replace your current topology.`,
+        title: 'Restore snapshot?',
+        message: `Restoring "${snapshot.name}" will replace the current topology.`,
+        confirmButtonText: 'Restore snapshot',
+        tone: 'warning',
+        icon: 'restore',
       },
     });
 
@@ -130,11 +134,15 @@ export class SnapshotDialogComponent {
   }
 
   deleteSnapshot(snapshot: Snapshot) {
-    const dialogRef = this.dialog.open(QuestionDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
       data: {
-        title: 'Delete snapshot',
-        question: `Are you sure you want to delete snapshot "${snapshot.name}"?`,
+        title: 'Delete snapshot?',
+        message: `Snapshot "${snapshot.name}" will be permanently deleted.`,
+        note: 'This action cannot be undone.',
+        confirmButtonText: 'Delete snapshot',
+        tone: 'danger',
       },
     });
 

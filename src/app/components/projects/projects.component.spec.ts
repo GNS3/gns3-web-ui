@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, of, throwError, Subject } from 'rxjs';
@@ -30,7 +29,6 @@ describe('ProjectsComponent', () => {
   let mockToasterService: any;
   let mockNotificationService: any;
   let mockDialog: any;
-  let mockBottomSheet: any;
   let mockRouter: any;
   let mockActivatedRoute: any;
 
@@ -108,16 +106,6 @@ describe('ProjectsComponent', () => {
       }),
     };
 
-    mockBottomSheet = {
-      open: vi.fn().mockReturnValue({
-        afterDismissed: vi.fn().mockReturnValue(of(true)),
-        instance: { projectMessage: '' },
-        _openedBottomSheetRef: {
-          instance: {},
-        },
-      }),
-    };
-
     mockRouter = {
       navigate: vi.fn(),
     };
@@ -140,7 +128,6 @@ describe('ProjectsComponent', () => {
         { provide: ToasterService, useValue: mockToasterService },
         { provide: NotificationService, useValue: mockNotificationService },
         { provide: MatDialog, useValue: mockDialog },
-        { provide: MatBottomSheet, useValue: mockBottomSheet },
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],

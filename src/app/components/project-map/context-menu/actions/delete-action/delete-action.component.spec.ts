@@ -3,10 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 import { DeleteActionComponent } from './delete-action.component';
-import { ConfirmationBottomSheetComponent } from 'app/components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { LinksDataSource } from '../../../../../cartography/datasources/links-datasource';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
@@ -23,7 +23,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
 describe('DeleteActionComponent', () => {
   let component: DeleteActionComponent;
   let fixture: ComponentFixture<DeleteActionComponent>;
-  let mockBottomSheet: any;
+  let mockDialog: any;
   let mockNodesDataSource: any;
   let mockLinksDataSource: any;
   let mockDrawingsDataSource: any;
@@ -31,7 +31,7 @@ describe('DeleteActionComponent', () => {
   let mockDrawingService: any;
   let mockLinkService: any;
   let mockToasterService: any;
-  let bottomSheetRef: any;
+  let dialogRef: any;
 
   const mockController: Controller = {
     id: 1,
@@ -74,12 +74,12 @@ describe('DeleteActionComponent', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
 
-    bottomSheetRef = {
-      afterDismissed: vi.fn().mockReturnValue(of(false)),
+    dialogRef = {
+      afterClosed: vi.fn().mockReturnValue(of(false)),
     };
 
-    mockBottomSheet = {
-      open: vi.fn().mockReturnValue(bottomSheetRef),
+    mockDialog = {
+      open: vi.fn().mockReturnValue(dialogRef),
     } as any;
 
     mockNodesDataSource = {
@@ -111,9 +111,9 @@ describe('DeleteActionComponent', () => {
     } as any;
 
     await TestBed.configureTestingModule({
-      imports: [DeleteActionComponent, MatButtonModule, MatIconModule, MatMenuModule, MatBottomSheetModule],
+      imports: [DeleteActionComponent, MatButtonModule, MatIconModule, MatMenuModule],
       providers: [
-        { provide: MatBottomSheet, useValue: mockBottomSheet },
+        { provide: MatDialog, useValue: mockDialog },
         { provide: NodesDataSource, useValue: mockNodesDataSource },
         { provide: LinksDataSource, useValue: mockLinksDataSource },
         { provide: DrawingsDataSource, useValue: mockDrawingsDataSource },
@@ -135,17 +135,24 @@ describe('DeleteActionComponent', () => {
   });
 
   describe('confirmDelete()', () => {
-    it('should open confirmation bottom sheet', () => {
+    it('should open a centered confirmation dialog', () => {
       component.confirmDelete();
 
-      expect(mockBottomSheet.open).toHaveBeenCalledWith(ConfirmationBottomSheetComponent, {
-        data: { message: 'Do you want to delete all selected objects?' },
-        panelClass: 'confirmation-bottom-sheet',
+      expect(mockDialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
+        panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-danger-panel'],
+        autoFocus: '.cancel-button',
+        data: {
+          title: 'Delete selected objects?',
+          message: '0 selected objects will be permanently deleted.',
+          note: 'This action cannot be undone.',
+          confirmButtonText: 'Delete objects',
+          tone: 'danger',
+        },
       });
     });
 
     it('should call delete() when user confirms', () => {
-      bottomSheetRef.afterDismissed.mockReturnValue(of(true));
+      dialogRef.afterClosed.mockReturnValue(of(true));
       const deleteSpy = vi.spyOn(component, 'delete');
 
       component.confirmDelete();
@@ -154,7 +161,7 @@ describe('DeleteActionComponent', () => {
     });
 
     it('should not call delete() when user cancels', () => {
-      bottomSheetRef.afterDismissed.mockReturnValue(of(false));
+      dialogRef.afterClosed.mockReturnValue(of(false));
       const deleteSpy = vi.spyOn(component, 'delete');
 
       component.confirmDelete();

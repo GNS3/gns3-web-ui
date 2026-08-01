@@ -13,7 +13,7 @@ import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ControllerService } from '@services/controller.service';
 import { SettingsService } from '@services/settings.service';
 import { ToasterService } from '@services/toaster.service';
-import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   standalone: true,
@@ -100,27 +100,35 @@ export class NodesMenuComponent {
   }
 
   public confirmControlsActions(type) {
-    const dialogRef = this.dialog.open(NodesMenuConfirmationDialogComponent, {
+    const actionType = String(type);
+    const actionLabel = actionType.charAt(0).toUpperCase() + actionType.slice(1);
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
-      autoFocus: false,
+      autoFocus: '.cancel-button',
       disableClose: true,
-      data: type,
+      data: {
+        title: `${actionLabel} all devices?`,
+        message: `This will ${actionType} every device in the current project.`,
+        confirmButtonText: `${actionLabel} all`,
+        tone: 'warning',
+        icon: 'power_settings_new',
+      },
     });
 
-    dialogRef.afterClosed().subscribe((confirmAction_result) => {
-      if (!confirmAction_result || !confirmAction_result.isAction) {
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) {
         return;
       }
 
-      if (confirmAction_result.actionType == 'start') {
+      if (actionType == 'start') {
         this.startNodes();
-      } else if (confirmAction_result.actionType == 'stop') {
+      } else if (actionType == 'stop') {
         this.stopNodes();
-      } else if (confirmAction_result.actionType == 'reload') {
+      } else if (actionType == 'reload') {
         this.reloadNodes();
-      } else if (confirmAction_result.actionType == 'suspend') {
+      } else if (actionType == 'suspend') {
         this.suspendNodes();
-      } else if (confirmAction_result.actionType == 'reset') {
+      } else if (actionType == 'reset') {
         this.resetNodes();
       }
     });

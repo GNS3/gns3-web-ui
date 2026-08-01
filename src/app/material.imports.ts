@@ -1,4 +1,3 @@
-import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -50,6 +49,5 @@ export const MATERIAL_IMPORTS = [
   MatGridListModule,
   MatTabsModule,
   MatTreeModule,
-  MatBottomSheetModule,
   MatChipsModule,
 ];

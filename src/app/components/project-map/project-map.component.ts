@@ -12,7 +12,6 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Title } from '@angular/platform-browser';
@@ -88,11 +87,10 @@ import { ToasterService } from '@services/toaster.service';
 import { ToolsService } from '@services/tools.service';
 import { ThemeService } from '@services/theme.service';
 import { WindowManagementService } from '@services/window-management.service';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
-import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
 import { ImportProjectDialogComponent } from '../projects/import-project-dialog/import-project-dialog.component';
-import { NavigationDialogComponent } from '../projects/navigation-dialog/navigation-dialog.component';
 import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
 import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
 import type { TopologySummaryComponent } from '../topology-summary/topology-summary.component';
@@ -299,7 +297,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private mapSettingsService = inject(MapSettingsService);
   private ethernetLinkWidget = inject(EthernetLinkWidget);
   private serialLinkWidget = inject(SerialLinkWidget);
-  private bottomSheet = inject(MatBottomSheet);
   private notificationService = inject(NotificationService);
   private title = inject(Title);
   private nodeConsoleService = inject(NodeConsoleService);
@@ -641,14 +638,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   deleteItems() {
-    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
-      data: { message: 'Do you want to delete all selected objects?' },
-      panelClass: 'confirmation-bottom-sheet',
+    const selected = this.selectionManager.getSelected();
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Delete selected objects?',
+        message: `${selected.length} selected ${selected.length === 1 ? 'object' : 'objects'} will be permanently deleted.`,
+        note: 'This action cannot be undone.',
+        confirmButtonText: selected.length === 1 ? 'Delete object' : 'Delete objects',
+        tone: 'danger',
+      },
     });
-    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+    dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
-        const selected = this.selectionManager.getSelected();
-
         selected
           .filter((item) => item instanceof MapNode)
           .forEach((item: MapNode) => {
@@ -1517,10 +1520,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   private showMessage(msg) {
-    if (this.notificationsVisibility) {
-      if (msg.type === 'error') this.toasterService.error(msg.message);
-      if (msg.type === 'warning') this.toasterService.warning(msg.message);
-    }
+    const options = { showToast: this.notificationsVisibility };
+    if (msg.type === 'error') this.toasterService.error(msg.message, options);
+    if (msg.type === 'warning') this.toasterService.warning(msg.message, options);
   }
 
   public hideMenu() {
@@ -1603,11 +1605,19 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe((isCancel: boolean) => {
       subscription.unsubscribe();
       if (uuid && !isCancel) {
-        this.bottomSheet.open(NavigationDialogComponent);
-        let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-        bottomSheetRef.instance.projectMessage = 'imported project';
+        const navigationDialogRef = this.dialog.open(ConfirmationDialogComponent, {
+          panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel'],
+          autoFocus: '.cancel-button',
+          data: {
+            title: 'Open imported project?',
+            message: 'The project was imported successfully. Would you like to open it now?',
+            confirmButtonText: 'Open project',
+            tone: 'neutral',
+            icon: 'folder_open',
+          },
+        });
 
-        const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+        navigationDialogRef.afterClosed().subscribe((result: boolean) => {
           if (result) {
             this.projectService.open(this.controller, uuid).subscribe({
               next: () => {
@@ -1687,11 +1697,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public closeProject() {
-    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
-      data: { message: 'Do you want to close the project?' },
-      panelClass: 'confirmation-bottom-sheet',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-warning-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Close project?',
+        message: `Close "${this.project.name}"? Open consoles for this project will be disconnected.`,
+        confirmButtonText: 'Close project',
+        tone: 'warning',
+        icon: 'folder_off',
+      },
     });
-    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+    dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.projectService.close(this.controller, this.project.project_id).subscribe({
           next: () => {
@@ -1708,11 +1725,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public deleteProject() {
-    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
-      data: { message: 'Do you want to delete the project?' },
-      panelClass: 'confirmation-bottom-sheet',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Delete project?',
+        message: `"${this.project.name}" and its project files will be permanently deleted.`,
+        note: 'This action cannot be undone.',
+        confirmButtonText: 'Delete project',
+        tone: 'danger',
+      },
     });
-    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+    dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.projectService.delete(this.controller, this.project.project_id).subscribe({
           next: () => {

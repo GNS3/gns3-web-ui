@@ -29,7 +29,7 @@ import { UserService } from '@services/user.service';
 import { ProgressService } from '../../common/progress/progress.service';
 import { AddUserDialogComponent } from './add-user-dialog/add-user-dialog.component';
 import { AiProfileDialogComponent, AiProfileDialogData } from './ai-profile-dialog/ai-profile-dialog.component';
-import { DeleteUserDialogComponent } from './delete-user-dialog/delete-user-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { UserDetailDialogComponent, UserDetailDialogData } from './user-detail-dialog/user-detail-dialog.component';
 
 type UserViewMode = 'list' | 'grid';
@@ -278,9 +278,16 @@ export class UserManagementComponent implements OnInit {
 
   onDelete(user: User): void {
     this.dialog
-      .open(DeleteUserDialogComponent, {
+      .open(ConfirmationDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { users: [user] },
+        autoFocus: '.cancel-button',
+        data: {
+          title: 'Delete user?',
+          message: `User "${user.username}" will be permanently deleted.`,
+          note: 'This action cannot be undone.',
+          confirmButtonText: 'Delete user',
+          tone: 'danger',
+        },
       })
       .afterClosed()
       .subscribe((confirmed) => {
@@ -305,9 +312,17 @@ export class UserManagementComponent implements OnInit {
   deleteMultiple(): void {
     const users = [...this.selection.selected];
     this.dialog
-      .open(DeleteUserDialogComponent, {
+      .open(ConfirmationDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { users },
+        autoFocus: '.cancel-button',
+        data: {
+          title: 'Delete users?',
+          message: `${users.length} selected users will be permanently deleted.`,
+          details: users.map((user) => user.full_name ? `${user.username} (${user.full_name})` : user.username),
+          note: 'This action cannot be undone.',
+          confirmButtonText: 'Delete users',
+          tone: 'danger',
+        },
       })
       .afterClosed()
       .subscribe((confirmed) => {

@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatDialogRef } from '@angular/material/dialog';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -13,18 +12,22 @@ export interface ConfirmationDialogData {
   title?: string;
   confirmButtonText?: string;
   cancelButtonText?: string;
+  details?: readonly string[];
+  note?: string;
+  tone?: 'danger' | 'warning' | 'neutral';
+  icon?: string;
+  hideConfirm?: boolean;
 }
 
 /**
  * Confirmation Dialog Component
- * Reusable confirmation dialog for delete/confirm actions
- * Can be positioned near the click location for better UX
+ * Reusable centered confirmation dialog for destructive and high-impact actions.
  */
 @Component({
   selector: 'app-confirmation-dialog',
   templateUrl: './confirmation-dialog.component.html',
   styleUrl: './confirmation-dialog.component.scss',
-  imports: [CommonModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatDialogModule, MatIconModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmationDialogComponent {
@@ -34,24 +37,35 @@ export class ConfirmationDialogComponent {
   ) {}
 
   /**
-   * Get dialog title (defaults to "Confirm Delete")
+   * Get dialog title.
    */
   get title(): string {
-    return this.data.title || 'Confirm Delete';
+    return this.data.title || 'Confirm action';
   }
 
   /**
-   * Get confirm button text (defaults to "Yes")
+   * Get confirm button text.
    */
   get confirmButtonText(): string {
-    return this.data.confirmButtonText || 'Yes';
+    return this.data.confirmButtonText || 'Confirm';
   }
 
   /**
-   * Get cancel button text (defaults to "No")
+   * Get cancel button text.
    */
   get cancelButtonText(): string {
-    return this.data.cancelButtonText || 'No';
+    return this.data.cancelButtonText || 'Cancel';
+  }
+
+  get tone(): 'danger' | 'warning' | 'neutral' {
+    return this.data.tone || 'danger';
+  }
+
+  get icon(): string {
+    if (this.data.icon) {
+      return this.data.icon;
+    }
+    return this.tone === 'danger' ? 'delete_forever' : this.tone === 'warning' ? 'warning' : 'help';
   }
 
   /**

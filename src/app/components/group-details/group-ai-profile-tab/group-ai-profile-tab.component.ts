@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { BehaviorSubject, Subject, combineLatest } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,8 +23,9 @@ import {
 } from '@models/ai-profile';
 
 import { AiProfilesService } from '@services/ai-profiles.service';
+import { ToasterService } from '@services/toaster.service';
 import { AiProfileDialogComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-dialog/ai-profile-dialog.component';
-import { ConfirmDialogComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-dialog/confirm-dialog/confirm-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-group-ai-profile-tab',
@@ -34,7 +34,6 @@ import { ConfirmDialogComponent } from '@components/user-management/user-detail/
   imports: [
     CommonModule,
     MatDialogModule,
-    MatSnackBarModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -71,7 +70,7 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
 
   private aiProfilesService = inject(AiProfilesService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private toasterService = inject(ToasterService);
 
   constructor() {}
 
@@ -254,13 +253,15 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
    * Delete configuration
    */
   deleteConfig(config: LLMModelConfigResponse): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      autoFocus: '.cancel-button',
       data: {
-        title: 'Delete Configuration',
-        message: `Are you sure you want to delete configuration "${config.name}"? This action cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        title: 'Delete configuration?',
+        message: `Configuration "${config.name}" will be permanently deleted.`,
+        note: 'This action cannot be undone.',
+        confirmButtonText: 'Delete configuration',
+        tone: 'danger',
       },
     });
 
@@ -436,29 +437,20 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
    * Show success message
    */
   private showSuccess(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-      panelClass: ['success-snackbar'],
-    });
+    this.toasterService.success(message);
   }
 
   /**
    * Show warning message
    */
   private showWarning(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 5000,
-      panelClass: ['warning-snackbar'],
-    });
+    this.toasterService.warning(message);
   }
 
   /**
    * Show error message
    */
   private showError(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 5000,
-      panelClass: ['error-snackbar'],
-    });
+    this.toasterService.error(message);
   }
 }

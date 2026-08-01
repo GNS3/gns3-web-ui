@@ -45,7 +45,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { AclService } from '@services/acl.service';
 import { AddAceDialogComponent } from '@components/acl-management/add-ace-dialog/add-ace-dialog.component';
-import { DeleteAceDialogComponent } from '@components/acl-management/delete-ace-dialog/delete-ace-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { Endpoint } from '@models/api/endpoint';
 import { ResourcePool } from '@models/resourcePools/ResourcePool';
 import { ResourcePoolsService } from '@services/resource-pools.service';
@@ -176,9 +176,15 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
 
   onDelete(ace: ACE) {
     this.dialog
-      .open(DeleteAceDialogComponent, {
+      .open(ConfirmationDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { aces: [ace] },
+        autoFocus: '.cancel-button',
+        data: {
+          title: 'Delete access rule?',
+          message: `The access rule for "${ace.path}" will be permanently deleted.`,
+          confirmButtonText: 'Delete rule',
+          tone: 'danger',
+        },
       })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
@@ -208,10 +214,18 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
   }
 
   deleteMultiple() {
+    const selectedAces = [...this.selection.selected];
     this.dialog
-      .open(DeleteAceDialogComponent, {
+      .open(ConfirmationDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { aces: this.selection.selected },
+        autoFocus: '.cancel-button',
+        data: {
+          title: 'Delete access rules?',
+          message: `${selectedAces.length} selected access rules will be permanently deleted.`,
+          details: selectedAces.map((ace) => ace.path),
+          confirmButtonText: 'Delete rules',
+          tone: 'danger',
+        },
       })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
@@ -220,7 +234,7 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
           // is subscribed to independently. Consider using Promise.all() + forkJoin to wait
           // for all deletions to complete, or use concatMap for sequential deletion.
           // For now, we keep the existing implementation as requested.
-          this.selection.selected.forEach((ace: ACE) => {
+          selectedAces.forEach((ace: ACE) => {
             this.aclService.delete(this.controller, ace.ace_id).subscribe({
               next: () => {
                 this.refresh();

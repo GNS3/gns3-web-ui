@@ -14,6 +14,8 @@ describe('ConfirmationDialogComponent', () => {
     title: 'Confirm Action',
     confirmButtonText: 'Yes, proceed',
     cancelButtonText: 'No, cancel',
+    details: ['Router 1', 'Router 2'],
+    note: 'This action cannot be undone.',
   };
 
   beforeEach(async () => {
@@ -64,7 +66,7 @@ describe('ConfirmationDialogComponent', () => {
 
     it('should return default title when not provided', () => {
       const componentWithoutTitle = new ConfirmationDialogComponent(mockDialogRef, { message: 'Test' });
-      expect(componentWithoutTitle.title).toBe('Confirm Delete');
+      expect(componentWithoutTitle.title).toBe('Confirm action');
     });
   });
 
@@ -75,7 +77,7 @@ describe('ConfirmationDialogComponent', () => {
 
     it('should return default confirm button text when not provided', () => {
       const componentWithoutText = new ConfirmationDialogComponent(mockDialogRef, { message: 'Test' });
-      expect(componentWithoutText.confirmButtonText).toBe('Yes');
+      expect(componentWithoutText.confirmButtonText).toBe('Confirm');
     });
   });
 
@@ -86,7 +88,20 @@ describe('ConfirmationDialogComponent', () => {
 
     it('should return default cancel button text when not provided', () => {
       const componentWithoutText = new ConfirmationDialogComponent(mockDialogRef, { message: 'Test' });
-      expect(componentWithoutText.cancelButtonText).toBe('No');
+      expect(componentWithoutText.cancelButtonText).toBe('Cancel');
+    });
+  });
+
+  describe('presentation', () => {
+    it('should default to a destructive confirmation', () => {
+      const defaultComponent = new ConfirmationDialogComponent(mockDialogRef, { message: 'Test' });
+      expect(defaultComponent.tone).toBe('danger');
+      expect(defaultComponent.icon).toBe('delete_forever');
+    });
+
+    it('should render optional details and note', () => {
+      expect(fixture.nativeElement.querySelectorAll('.confirmation-dialog__details li').length).toBe(2);
+      expect(fixture.nativeElement.querySelector('.confirmation-dialog__note').textContent).toContain('cannot be undone');
     });
   });
 

@@ -12,7 +12,7 @@ import * as SparkMD5 from 'spark-md5';
 import { timer } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { ProgressService } from '../../../common/progress/progress.service';
-import { InformationDialogComponent } from '@components/dialogs/information-dialog/information-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { Appliance, Image, Version } from '@models/appliance';
 import { Project } from '@models/project';
 import { QemuBinary } from '@models/qemu/qemu-binary';
@@ -727,13 +727,19 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
         this.uploadServiceService.setMessage('');
         this.uploadServiceService.setComputing(false);
         this.progressService.deactivate();
-        const dialogRef = this.dialog.open(InformationDialogComponent, {
-          autoFocus: false,
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+          autoFocus: '.cancel-button',
           disableClose: true,
-          panelClass: ['base-confirmation-dialog-panel', 'information-dialog-panel'],
+          panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+          data: {
+            title: 'Use image with a different checksum?',
+            message: `The selected file has MD5 checksum ${output}, but ${imageToInstall.md5sum} was expected.`,
+            note: 'Only continue if you trust this image.',
+            confirmButtonText: 'Use image',
+            tone: 'warning',
+            icon: 'verified_user',
+          },
         });
-        dialogRef.componentInstance.confirmationMessage = `This is not the correct file.
-                    The MD5 sum is ${output} and should be ${imageToInstall.md5sum}. Do you want to accept it at your own risks?`;
         dialogRef.afterClosed().subscribe((answer: boolean) => {
           if (answer) {
             this.openSnackBar();
@@ -845,12 +851,18 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
   }
 
   openConfirmationDialog(message: string, link: string) {
-    const dialogRef = this.dialog.open(InformationDialogComponent, {
-      autoFocus: false,
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      autoFocus: '.cancel-button',
       disableClose: true,
-      panelClass: ['base-confirmation-dialog-panel', 'information-dialog-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-neutral-panel'],
+      data: {
+        title: 'Open external download?',
+        message,
+        confirmButtonText: 'Open download',
+        tone: 'neutral',
+        icon: 'open_in_new',
+      },
     });
-    dialogRef.componentInstance.confirmationMessage = message;
 
     dialogRef.afterClosed().subscribe((answer: boolean) => {
       if (answer) {

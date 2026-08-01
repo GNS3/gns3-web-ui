@@ -32,7 +32,7 @@ import { ThemeService } from '@services/theme.service';
 import { ToolsService } from '@services/tools.service';
 import { ToasterService } from '@services/toaster.service';
 import { Screenshot, ScreenshotDialogComponent } from '../screenshot-dialog/screenshot-dialog.component';
-import { ProjectMapLockConfirmationDialogComponent } from './project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
@@ -544,26 +544,32 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   }
 
   public changeLockValue() {
-    const dialogRef = this.dialog.open(ProjectMapLockConfirmationDialogComponent, {
+    const shouldLock = !this.isLocked;
+    const actionLabel = shouldLock ? 'Lock' : 'Unlock';
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
-      autoFocus: false,
+      autoFocus: '.cancel-button',
       disableClose: true,
-      data: { actionType: this.isLocked ? 'Unlock' : 'Lock' },
+      data: {
+        title: `${actionLabel} all objects?`,
+        message: `${actionLabel} every node and drawing in the current project?`,
+        confirmButtonText: `${actionLabel} all`,
+        tone: 'warning',
+        icon: shouldLock ? 'lock' : 'lock_open',
+      },
     });
 
-    dialogRef.afterClosed().subscribe((confirmAction_result) => {
-      if (confirmAction_result && confirmAction_result != '') {
-        if (confirmAction_result.actionType == 'Lock' && confirmAction_result.isAction) {
-          this.isLocked = true;
-          this.mapSettingsService.changeMapLockValue(this.isLocked);
-          this.cdr.markForCheck();
-          this.lockAllNode();
-        } else {
-          this.isLocked = false;
-          this.mapSettingsService.changeMapLockValue(this.isLocked);
-          this.cdr.markForCheck();
-          this.unlockAllNode();
-        }
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) {
+        return;
+      }
+      this.isLocked = shouldLock;
+      this.mapSettingsService.changeMapLockValue(this.isLocked);
+      this.cdr.markForCheck();
+      if (shouldLock) {
+        this.lockAllNode();
+      } else {
+        this.unlockAllNode();
       }
     });
   }

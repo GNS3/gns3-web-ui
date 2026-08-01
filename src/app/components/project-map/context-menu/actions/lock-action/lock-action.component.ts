@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnChanges, inject, input, ChangeDetectorRef, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnChanges, inject, input, ChangeDetectorRef } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
@@ -12,6 +12,7 @@ import { DrawingService } from '@services/drawing.service';
 import { NodeService } from '@services/node.service';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-lock-action',
@@ -56,12 +57,15 @@ export class LockActionComponent implements OnChanges {
       const isLocking = !nodes.every((n) => n.locked) || !drawings.every((d) => d.locked);
       const action = isLocking ? 'lock' : 'unlock';
 
-      const dialogRef = this.dialog.open(LockConfirmDialogComponent, {
-        panelClass: 'simple-dialog-panel',
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+        autoFocus: '.cancel-button',
         data: {
-          title: `Confirm ${action === 'lock' ? 'Lock' : 'Unlock'} All`,
-          message: `Are you sure you want to ${action} ${totalItems} item${totalItems > 1 ? 's' : ''}?`,
-          action: action,
+          title: `${action === 'lock' ? 'Lock' : 'Unlock'} selected items?`,
+          message: `${action === 'lock' ? 'Lock' : 'Unlock'} ${totalItems} selected items?`,
+          confirmButtonText: action === 'lock' ? 'Lock items' : 'Unlock items',
+          tone: 'warning',
+          icon: action === 'lock' ? 'lock' : 'lock_open',
         },
       });
 
@@ -114,29 +118,4 @@ export class LockActionComponent implements OnChanges {
     });
     this.projectService.projectUpdateLockIcon();
   }
-}
-
-@Component({
-  selector: 'app-lock-confirm-dialog',
-  template: `
-    <h1 mat-dialog-title>{{ data.title }}</h1>
-    <div mat-dialog-content>
-      <p>{{ data.message }}</p>
-    </div>
-    <div mat-dialog-actions align="end">
-      <button mat-button (click)="dialogRef.close(false)">Cancel</button>
-      <button mat-raised-button color="primary" (click)="dialogRef.close(true)">
-        {{ data.action === 'lock' ? 'Lock' : 'Unlock' }}
-      </button>
-    </div>
-  `,
-  imports: [MatDialogModule, MatButtonModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-})
-export class LockConfirmDialogComponent {
-  constructor(
-    public dialogRef: MatDialogRef<LockConfirmDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { title: string; message: string; action: string }
-  ) {}
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
 import { CanDeactivate } from '@angular/router';
 import { Observable } from 'rxjs';
-import { ConfirmationBottomSheetComponent } from '@components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 
 export interface CanComponentDeactivate {
@@ -11,15 +11,22 @@ export interface CanComponentDeactivate {
 
 @Injectable()
 export class ConsoleGuard implements CanDeactivate<CanComponentDeactivate> {
-  constructor(private consoleService: NodeConsoleService, private bottomSheet: MatBottomSheet) {}
+  constructor(private consoleService: NodeConsoleService, private dialog: MatDialog) {}
 
   canDeactivate() {
     if (this.consoleService.openConsoles > 0) {
-      const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
-        data: { message: 'Exiting the project will close open consoles, do you want to continue?' },
-        panelClass: 'confirmation-bottom-sheet',
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-warning-panel'],
+        autoFocus: '.cancel-button',
+        data: {
+          title: 'Leave project?',
+          message: 'Leaving this project will close all open consoles.',
+          confirmButtonText: 'Leave project',
+          tone: 'warning',
+          icon: 'exit_to_app',
+        },
       });
-      return bottomSheetRef.afterDismissed();
+      return dialogRef.afterClosed();
     } else {
       return true;
     }

@@ -15,7 +15,7 @@ import { ACE, ACEDetailed } from '@models/api/ACE';
 import { Role } from '@models/api/role';
 import { Endpoint } from '@models/api/endpoint';
 import { AddUserToGroupDialogComponent } from '@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component';
-import { RemoveToGroupDialogComponent } from '@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { UserDetailDialogComponent } from '@components/user-management/user-detail-dialog/user-detail-dialog.component';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -117,7 +117,7 @@ describe('GroupDetailDialogComponent', () => {
         if (componentType === AddUserToGroupDialogComponent) {
           return addUserDialogRef;
         }
-        if (componentType === RemoveToGroupDialogComponent) {
+        if (componentType === ConfirmationDialogComponent) {
           return removeUserDialogRef;
         }
         if (componentType === UserDetailDialogComponent) {
@@ -485,12 +485,19 @@ describe('GroupDetailDialogComponent', () => {
       mockUser = createMockUser('1', 'TestUser');
     });
 
-    it('should open RemoveToGroupDialogComponent dialog', () => {
+    it('should open the shared confirmation dialog', () => {
       component.openRemoveUserDialog(mockUser);
 
-      expect(mockDialog.open).toHaveBeenCalledWith(RemoveToGroupDialogComponent, {
+      expect(mockDialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
-        data: { name: mockUser.username },
+        autoFocus: '.cancel-button',
+        data: {
+          title: 'Remove user from group?',
+          message: `User "${mockUser.username}" will lose the permissions granted through this group.`,
+          confirmButtonText: 'Remove user',
+          tone: 'warning',
+          icon: 'person_remove',
+        },
       });
     });
 

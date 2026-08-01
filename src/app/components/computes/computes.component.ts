@@ -29,7 +29,7 @@ import { ComputeService } from '@services/compute.service';
 import { ControllerService } from '@services/controller.service';
 import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
-import { DeleteConfirmationDialogComponent } from '@components/preferences/common/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   standalone: true,
@@ -255,12 +255,16 @@ export class ComputesComponent implements OnInit, OnDestroy {
   }
 
   deleteCompute(compute: Compute) {
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-      autoFocus: false,
+      autoFocus: '.cancel-button',
       disableClose: true,
       data: {
-        templateName: compute.name || compute.compute_id,
+        title: 'Delete compute?',
+        message: `Compute "${compute.name || compute.compute_id}" will be permanently deleted.`,
+        note: 'This action cannot be undone.',
+        confirmButtonText: 'Delete compute',
+        tone: 'danger',
       },
     });
 

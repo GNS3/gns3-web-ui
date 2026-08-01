@@ -19,7 +19,7 @@ import { map, startWith } from 'rxjs/operators';
 import { Project } from '@models/project';
 import { Observable } from 'rxjs';
 import { Resource } from '@models/resourcePools/Resource';
-import { DeleteResourceConfirmationDialogComponent } from '@components/resource-pool-details/delete-resource-confirmation-dialog/delete-resource-confirmation-dialog.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-resource-pool-details',
@@ -113,17 +113,23 @@ export class ResourcePoolDetailsComponent implements OnInit {
 
   deleteResource(resource: Resource): void {
     this.dialog
-      .open(DeleteResourceConfirmationDialogComponent, {
+      .open(ConfirmationDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: resource,
+        autoFocus: '.cancel-button',
+        data: {
+          title: 'Delete resource?',
+          message: `Resource "${resource.name}" (${resource.resource_type}) will be removed from this pool.`,
+          confirmButtonText: 'Delete resource',
+          tone: 'danger',
+        },
       })
       .afterClosed()
-      .subscribe((result: Resource) => {
-        if (result) {
-          this.resourcePoolsService.deleteResource(this.controller, result, this.pool()).subscribe({
+      .subscribe((confirmed: boolean) => {
+        if (confirmed) {
+          this.resourcePoolsService.deleteResource(this.controller, resource, this.pool()).subscribe({
             next: () => {
               this.refresh();
-              this.toastService.success(`Resource ${result.name} deleted from pool ${this.pool().name}`);
+              this.toastService.success(`Resource ${resource.name} deleted from pool ${this.pool().name}`);
             },
             error: (err) => {
               const message = err.error?.message || err.message || 'Failed to delete resource from pool';

@@ -120,13 +120,6 @@ export class DialogConfigService {
       panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'new-template-dialog-panel'],
     });
 
-    // Nodes Menu Confirmation Dialog
-    // Size defined in CSS: .nodes-menu-confirmation-dialog-panel (500px, 200px)
-    this.configs.set('nodesMenuConfirmation', {
-      ...smallConfig,
-      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'nodes-menu-confirmation-dialog-panel'],
-    });
-
     // Start Capture Dialog - simple dialog (500px)
     this.configs.set('startCapture', {
       ...simpleConfig,

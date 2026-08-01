@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,18 +15,24 @@ import { catchError } from 'rxjs/operators';
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatProgressSpinnerModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConfirmationDeleteAllProjectsComponent {
+export class ConfirmationDeleteAllProjectsComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ConfirmationDeleteAllProjectsComponent>);
   private projectService = inject(ProjectService);
   private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
 
-  isDelete = signal(false);
+  isDelete = signal(true);
   isUsedFiles = signal(false);
   successfulDeletions = signal<any[]>([]);
   failedDeletions = signal<any[]>([]);
 
   constructor(@Inject(MAT_DIALOG_DATA) public deleteData: any) {}
+
+  ngOnInit(): void {
+    if (this.deleteData.autoStart !== false) {
+      this.deleteFile();
+    }
+  }
 
   async deleteAll() {
     this.isDelete.set(true);

@@ -159,11 +159,6 @@ describe('DialogConfigService', () => {
       expect(config.panelClass).toContain('new-template-dialog-panel');
     });
 
-    it('should have nodesMenuConfirmation config', () => {
-      const config = service.getConfig('nodesMenuConfirmation');
-      expect(config.panelClass).toContain('nodes-menu-confirmation-dialog-panel');
-    });
-
     it('should have startCapture config', () => {
       const config = service.getConfig('startCapture');
       expect(config.panelClass).toContain('dialog-medium-panel');

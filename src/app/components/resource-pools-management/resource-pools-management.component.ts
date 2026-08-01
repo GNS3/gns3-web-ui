@@ -30,7 +30,7 @@ import { ToasterService } from '@services/toaster.service';
 import { forkJoin } from 'rxjs';
 import { ResourcePool } from '@models/resourcePools/ResourcePool';
 import { AddResourcePoolDialogComponent } from '@components/resource-pools-management/add-resource-pool-dialog/add-resource-pool-dialog.component';
-import { DeleteResourcePoolComponent } from '@components/resource-pools-management/delete-resource-pool/delete-resource-pool.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ResourcePoolsService } from '@services/resource-pools.service';
 import { ResourcePoolsFilterPipe } from './resource-pools-filter.pipe';
 
@@ -154,9 +154,17 @@ export class ResourcePoolsManagementComponent implements OnInit, AfterViewInit {
 
   onDelete(resourcePoolToDelete: ResourcePool[]) {
     this.dialog
-      .open(DeleteResourcePoolComponent, {
+      .open(ConfirmationDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { pools: resourcePoolToDelete },
+        autoFocus: '.cancel-button',
+        data: {
+          title: resourcePoolToDelete.length === 1 ? 'Delete resource pool?' : 'Delete resource pools?',
+          message: `${resourcePoolToDelete.length} selected ${resourcePoolToDelete.length === 1 ? 'pool' : 'pools'} will be permanently deleted.`,
+          details: resourcePoolToDelete.map((pool) => pool.name),
+          note: 'This action cannot be undone.',
+          confirmButtonText: resourcePoolToDelete.length === 1 ? 'Delete pool' : 'Delete pools',
+          tone: 'danger',
+        },
       })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {

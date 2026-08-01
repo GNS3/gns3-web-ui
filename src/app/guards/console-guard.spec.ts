@@ -1,24 +1,24 @@
 import { TestBed } from '@angular/core/testing';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { ConsoleGuard } from './console-guard';
 import { NodeConsoleService } from '@services/nodeConsole.service';
-import { ConfirmationBottomSheetComponent } from '@components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('ConsoleGuard', () => {
   let guard: ConsoleGuard;
   let mockConsoleService: { openConsoles: number };
-  let mockBottomSheet: { open: ReturnType<typeof vi.fn> };
-  let mockBottomSheetRef: { afterDismissed: ReturnType<typeof vi.fn> };
+  let mockDialog: { open: ReturnType<typeof vi.fn> };
+  let mockDialogRef: { afterClosed: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
-    mockBottomSheetRef = {
-      afterDismissed: vi.fn().mockReturnValue(of(true)),
+    mockDialogRef = {
+      afterClosed: vi.fn().mockReturnValue(of(true)),
     };
 
-    mockBottomSheet = {
-      open: vi.fn().mockReturnValue(mockBottomSheetRef),
+    mockDialog = {
+      open: vi.fn().mockReturnValue(mockDialogRef),
     };
 
     mockConsoleService = {
@@ -29,7 +29,7 @@ describe('ConsoleGuard', () => {
       providers: [
         ConsoleGuard,
         { provide: NodeConsoleService, useValue: mockConsoleService },
-        { provide: MatBottomSheet, useValue: mockBottomSheet },
+        { provide: MatDialog, useValue: mockDialog },
       ],
     });
 
@@ -43,38 +43,43 @@ describe('ConsoleGuard', () => {
       const result = guard.canDeactivate();
 
       expect(result).toBe(true);
-      expect(mockBottomSheet.open).not.toHaveBeenCalled();
+      expect(mockDialog.open).not.toHaveBeenCalled();
     });
 
-    it('should open confirmation bottom sheet when consoles are open', () => {
+    it('should open a centered confirmation dialog when consoles are open', () => {
       mockConsoleService.openConsoles = 2;
 
       guard.canDeactivate();
 
-      expect(mockBottomSheet.open).toHaveBeenCalledWith(ConfirmationBottomSheetComponent, {
+      expect(mockDialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
+        panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-warning-panel'],
+        autoFocus: '.cancel-button',
         data: {
-          message: 'Exiting the project will close open consoles, do you want to continue?',
+          title: 'Leave project?',
+          message: 'Leaving this project will close all open consoles.',
+          confirmButtonText: 'Leave project',
+          tone: 'warning',
+          icon: 'exit_to_app',
         },
-        panelClass: 'confirmation-bottom-sheet',
       });
     });
 
-    it('should return Observable from afterDismissed when consoles are open', () => {
+    it('should return Observable from afterClosed when consoles are open', () => {
       mockConsoleService.openConsoles = 1;
 
       const result = guard.canDeactivate();
 
       expect(result).toBeTruthy();
-      expect(mockBottomSheetRef.afterDismissed).toHaveBeenCalled();
+      expect(mockDialogRef.afterClosed).toHaveBeenCalled();
     });
 
-    it('should pass correct data to bottom sheet', () => {
+    it('should pass correct data to the dialog', () => {
       mockConsoleService.openConsoles = 5;
 
       guard.canDeactivate();
 
-      const openCall = mockBottomSheet.open.mock.calls[0];
-      expect(openCall[1].data.message).toBe('Exiting the project will close open consoles, do you want to continue?');
+      const openCall = mockDialog.open.mock.calls[0];
+      expect(openCall[1].data.message).toBe('Leaving this project will close all open consoles.');
     });
   });
 });
