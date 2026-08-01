@@ -10,35 +10,38 @@
 }
 
 .settings__header {
-  @include page.page-frame(1600px, 32px 20px 18px);
+  @include page.page-frame(
+    1600px,
+    var(--gns3-density-space-6) var(--gns3-density-page-padding) var(--gns3-density-space-4)
+  );
   @include page.page-motion;
 }
 
 .settings__title {
   @include page.page-title;
-  font-size: 32px;
+  font-size: var(--gns3-density-page-title-size);
   font-weight: 650;
   line-height: 1.2;
 }
 
 .settings__layout {
-  @include page.page-frame(1600px, 0 20px 32px);
+  @include page.page-frame(1600px, 0 var(--gns3-density-page-padding) var(--gns3-density-space-6));
   @include page.page-motion(50ms);
   display: grid;
   grid-template-columns: 228px minmax(0, 1fr);
-  gap: 20px;
+  gap: var(--gns3-density-card-gap);
   align-items: start;
 }
 
 .settings__footer {
-  @include page.page-frame(1600px, 0 20px 32px);
+  @include page.page-frame(1600px, 0 var(--gns3-density-page-padding) var(--gns3-density-space-6));
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: var(--gns3-density-space-3);
 
   button {
-    min-height: 40px;
+    min-height: var(--gns3-density-control-height);
   }
 }
 
@@ -49,25 +52,25 @@
 
 .settings__categories {
   position: sticky;
-  top: 64px;
-  padding: 6px;
+  top: var(--gns3-density-app-header-height);
+  padding: var(--gns3-density-space-2);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--gns3-density-space-1);
   background: var(--mat-sys-surface-container);
   border: 1px solid var(--mat-sys-outline-variant);
-  border-radius: 14px;
+  border-radius: var(--gns3-density-radius-lg);
 }
 
 .settings__category {
   width: 100%;
   min-height: var(--gns3-density-control-height);
-  padding: 0 12px;
+  padding: 0 var(--gns3-density-space-3);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   border: 0;
-  border-radius: 9px;
+  border-radius: var(--gns3-density-radius-sm);
   background: transparent;
   color: var(--mat-sys-on-surface-variant);
   font: inherit;
@@ -119,48 +122,36 @@
   color: var(--mat-sys-on-surface);
   background: var(--mat-sys-surface);
   border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 65%, transparent);
-  border-radius: 16px;
+  border-radius: var(--gns3-density-radius-xl);
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 16%, transparent);
 }
 
 .settings__panel-header {
-  padding: 22px 24px 18px;
+  padding: var(--gns3-density-space-4) var(--gns3-density-page-padding);
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
   border-bottom: 1px solid var(--mat-sys-outline-variant);
 
   h2 {
-    margin: 2px 0 4px;
-    font-size: 21px;
+    margin: 0;
+    font-size: calc(var(--gns3-density-section-title-size) + 2px);
     font-weight: 650;
     line-height: 1.2;
   }
-
-  p {
-    margin: 0;
-    color: var(--mat-sys-on-surface-variant);
-    font-size: 13px;
-    line-height: 1.5;
-  }
-}
-
-.settings__eyebrow {
-  color: var(--mat-sys-primary);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
 }
 
 .settings__setting-list {
-  padding: 0 24px;
+  padding: 0 var(--gns3-density-page-padding);
 }
 
 .settings__setting-row {
-  min-height: 82px;
-  padding: 16px 0;
+  min-height: calc(var(--gns3-density-control-height) + var(--gns3-density-space-4) + var(--gns3-density-space-4));
+  padding: var(--gns3-density-space-4) 0;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 28px;
+  gap: var(--gns3-density-space-5);
   border-bottom: 1px solid var(--mat-sys-outline-variant);
 
   &:last-child {
@@ -171,6 +162,10 @@
     align-items: stretch;
     flex-direction: column;
     gap: var(--gns3-density-space-3);
+
+    .settings__section-heading {
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -196,7 +191,7 @@
 }
 
 .settings__theme-section {
-  padding: 22px 24px 24px;
+  padding: var(--gns3-density-space-5) var(--gns3-density-page-padding);
   border-bottom: 1px solid var(--mat-sys-outline-variant);
 
   &:last-child {
@@ -205,7 +200,7 @@
 }
 
 .settings__section-heading {
-  margin-bottom: 14px;
+  margin-bottom: var(--gns3-density-space-3);
 }
 
 .settings__density-options {
@@ -217,13 +212,14 @@
 
 .settings__density-option {
   min-width: 0;
-  min-height: 64px;
-  padding: 10px 12px;
+  min-height: calc(var(--gns3-density-control-height) + var(--gns3-density-space-2) + var(--gns3-density-space-2));
+  padding: var(--gns3-density-space-2) var(--gns3-density-space-3);
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   border: 1px solid var(--mat-sys-outline-variant);
-  border-radius: 10px;
+  border-radius: var(--gns3-density-radius-md);
   background: var(--mat-sys-surface-container-low);
   color: var(--mat-sys-on-surface);
   font: inherit;
@@ -281,9 +277,9 @@
 
 .settings__theme-tile {
   min-width: 0;
-  padding: 8px;
+  padding: var(--gns3-density-space-2);
   border: 1px solid var(--mat-sys-outline-variant);
-  border-radius: 10px;
+  border-radius: var(--gns3-density-radius-md);
   background: var(--mat-sys-surface-container-low);
   color: var(--mat-sys-on-surface);
   font: inherit;
@@ -310,7 +306,7 @@
 }
 
 .settings__theme-preview {
-  height: 72px;
+  height: calc(var(--gns3-density-form-field-height) + var(--gns3-density-space-4));
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -334,11 +330,11 @@
 }
 
 .settings__theme-preview-body {
-  padding: 10px;
+  padding: var(--gns3-density-space-3);
   display: grid;
   grid-template-columns: 22px 1fr;
   grid-template-rows: repeat(2, 8px);
-  gap: 7px;
+  gap: var(--gns3-density-space-2);
 
   span {
     border-radius: 3px;
@@ -356,7 +352,7 @@
 
 .settings__map-preview {
   position: relative;
-  height: 72px;
+  height: calc(var(--gns3-density-form-field-height) + var(--gns3-density-space-4));
   display: block;
   overflow: hidden;
   border: 1px solid var(--mat-sys-outline-variant);
@@ -395,12 +391,12 @@
 }
 
 .settings__tile-label {
-  min-height: 42px;
-  padding: 8px 2px 0;
+  min-height: var(--gns3-density-control-height-sm);
+  padding: var(--gns3-density-space-2) var(--gns3-density-space-1) 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: var(--gns3-density-space-2);
 
   > span {
     min-width: 0;
@@ -408,17 +404,17 @@
     flex-direction: column;
   }
 
-    strong {
-      overflow: hidden;
-      font-size: 14px;
+  strong {
+    overflow: hidden;
+    font-size: 14px;
     font-weight: 600;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-    small {
-      color: var(--mat-sys-on-surface-variant);
-      font-size: 11px;
+  small {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 11px;
   }
 
   mat-icon {
@@ -448,7 +444,7 @@
 .settings__variables {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 12px;
+  gap: var(--gns3-density-space-2) var(--gns3-density-space-3);
   color: var(--mat-sys-on-surface-variant);
   font-size: 11px;
 
@@ -461,15 +457,15 @@
 }
 
 .settings__action-card {
-  margin: 24px;
-  padding: 16px;
+  margin: var(--gns3-density-page-padding);
+  padding: var(--gns3-density-space-4);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: var(--gns3-density-space-5);
   background: var(--mat-sys-surface-container-low);
   border: 1px solid var(--mat-sys-outline-variant);
-  border-radius: 12px;
+  border-radius: var(--gns3-density-radius-lg);
 
   > div {
     display: flex;
@@ -500,46 +496,46 @@
 
 @media (max-width: 720px) {
   .settings__header {
-    padding: 20px 16px 14px;
+    padding: var(--gns3-density-space-5) var(--gns3-density-page-padding) var(--gns3-density-space-3);
   }
 
   .settings__layout {
-    padding: 0 16px 20px;
+    padding: 0 var(--gns3-density-page-padding) var(--gns3-density-space-5);
     grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+    gap: var(--gns3-density-space-3);
   }
 
   .settings__footer {
-    padding: 0 16px 20px;
+    padding: 0 var(--gns3-density-page-padding) var(--gns3-density-space-5);
   }
 
   .settings__categories {
     position: static;
-    padding: 4px;
+    padding: var(--gns3-density-space-1);
     flex-direction: row;
     overflow-x: auto;
-    border-radius: 10px;
+    border-radius: var(--gns3-density-radius-md);
     scrollbar-width: thin;
   }
 
   .settings__category {
     width: auto;
     min-width: max-content;
-    min-height: 40px;
+    min-height: var(--gns3-density-control-height);
   }
 
   .settings__panel-header,
   .settings__theme-section {
-    padding-right: 16px;
-    padding-left: 16px;
+    padding-right: var(--gns3-density-page-padding);
+    padding-left: var(--gns3-density-page-padding);
   }
 
   .settings__setting-list {
-    padding: 0 16px;
+    padding: 0 var(--gns3-density-page-padding);
   }
 
   .settings__setting-row {
-    gap: 16px;
+    gap: var(--gns3-density-space-4);
   }
 }
 
@@ -550,7 +546,7 @@
   }
 
   .settings__action-card {
-    margin: 16px;
+    margin: var(--gns3-density-page-padding);
     align-items: stretch;
     flex-direction: column;
 
@@ -561,128 +557,5 @@
 
   .settings__footer button {
     width: 100%;
-  }
-}
-
-/* =============================================
-// Interface density — compact mode
-//
-// Driven by `<html data-density="compact">` (set by
-// InterfaceDensityService). Tightens every Settings section element:
-// panel headers, setting rows, theme tiles, density option tiles,
-// section headings, and action-card, so the Settings page itself
-// reflects the same compact spacing as the rest of the app.
-// ============================================= */
-:host-context([data-density='compact']) {
-  .settings__layout {
-    gap: 14px;
-  }
-
-  .settings__category {
-    padding: 0 10px;
-    min-height: 40px;
-    gap: 10px;
-    font-size: 16px;
-  }
-
-  .settings__panel {
-    border-radius: 16px;
-  }
-
-  .settings__panel-header {
-    padding: 16px 20px 12px;
-
-    h2 {
-      margin: 2px 0 2px;
-      font-size: 20px;
-    }
-
-    p {
-      margin: 0;
-      font-size: 12px;
-    }
-  }
-
-  .settings__eyebrow {
-    font-size: 9px;
-  }
-
-  .settings__setting-list {
-    padding: 0 20px;
-  }
-
-  .settings__setting-row {
-    padding: 11px 0;
-    gap: 20px;
-  }
-
-  .settings__setting-copy,
-  .settings__section-heading,
-  .settings__action-card {
-    h3 {
-      margin: 0 0 2px;
-      font-size: 16px;
-    }
-
-    p {
-      margin: 0;
-      font-size: 14px;
-    }
-  }
-
-  .settings__theme-section {
-    padding: 16px 20px 18px;
-  }
-
-  .settings__section-heading {
-    margin-bottom: 10px;
-  }
-
-  .settings__density-options {
-    gap: 8px;
-  }
-
-  .settings__density-option {
-    padding: 8px 10px;
-    gap: 10px;
-
-    strong {
-      font-size: 16px;
-    }
-
-    small {
-      font-size: 12px;
-    }
-  }
-
-  .settings__theme-grid {
-    gap: 8px;
-  }
-
-  .settings__theme-tile {
-    padding: 6px;
-  }
-
-  .settings__theme-preview-body {
-    padding: 7px;
-    gap: 5px;
-  }
-
-  .settings__tile-label {
-    padding: 6px 2px 0;
-
-    strong {
-      font-size: 14px;
-    }
-
-    small {
-      font-size: 11px;
-    }
-  }
-
-  .settings__action-card {
-    margin: 18px;
-    padding: 12px;
-    gap: 14px;
   }
 }

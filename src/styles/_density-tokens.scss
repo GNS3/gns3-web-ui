@@ -35,6 +35,7 @@
   --gns3-density-page-padding: 24px;
   --gns3-density-card-padding: 24px;
   --gns3-density-card-gap: 16px; // gap between cards / grid columns
+  --gns3-density-app-header-height: 64px;
   --gns3-density-section-header-height: 64px;
   --gns3-density-section-header-padding: 12px 24px;
 
@@ -70,6 +71,7 @@ html[data-density='compact'] {
   --gns3-density-page-padding: 16px;
   --gns3-density-card-padding: 16px;
   --gns3-density-card-gap: 12px;
+  --gns3-density-app-header-height: 52px;
   --gns3-density-section-header-height: 48px;
   --gns3-density-section-header-padding: 8px 16px;
 

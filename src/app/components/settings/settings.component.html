@@ -25,9 +25,7 @@
       @switch (activeCategory()) { @case ('general') {
       <section class="settings__panel" aria-labelledby="general-settings-title">
         <div class="settings__panel-header">
-          <span class="settings__eyebrow">Local preferences</span>
           <h2 id="general-settings-title">General</h2>
-          <p>Choose how project information is presented when you open a workspace.</p>
         </div>
         <div class="settings__setting-list">
           <div class="settings__setting-row">
@@ -46,9 +44,7 @@
       } @case ('appearance') {
       <section class="settings__panel" aria-labelledby="appearance-settings-title">
         <div class="settings__panel-header">
-          <span class="settings__eyebrow">Display</span>
           <h2 id="appearance-settings-title">Appearance</h2>
-          <p>Choose the appearance of the application and topology canvas.</p>
         </div>
 
         <div class="settings__theme-section">
@@ -173,11 +169,7 @@
       } @case ('workspace') {
       <section class="settings__panel" aria-labelledby="workspace-settings-title">
         <div class="settings__panel-header">
-          <span class="settings__eyebrow">Topology editor</span>
           <h2 id="workspace-settings-title">Project workspace</h2>
-          <p>
-            Configure how topology information is rendered on the project canvas and defaults used for new projects.
-          </p>
         </div>
         <div class="settings__setting-list">
           <div class="settings__setting-row">
@@ -198,7 +190,7 @@
               <p>Canvas dimensions applied to new projects (in pixels).</p>
             </div>
             <div class="settings__inline-fields">
-              <mat-form-field appearance="outline" class="settings__inline-field">
+              <mat-form-field appearance="outline" class="settings__inline-field" subscriptSizing="dynamic">
                 <mat-label>Width</mat-label>
                 <input
                   matInput
@@ -211,7 +203,7 @@
                 />
                 <span matSuffix>px</span>
               </mat-form-field>
-              <mat-form-field appearance="outline" class="settings__inline-field">
+              <mat-form-field appearance="outline" class="settings__inline-field" subscriptSizing="dynamic">
                 <mat-label>Height</mat-label>
                 <input
                   matInput
@@ -237,7 +229,7 @@
               </p>
             </div>
             <div class="settings__inline-fields">
-              <mat-form-field appearance="outline" class="settings__inline-field">
+              <mat-form-field appearance="outline" class="settings__inline-field" subscriptSizing="dynamic">
                 <mat-label>Node grid size</mat-label>
                 <input
                   matInput
@@ -250,7 +242,7 @@
                 />
                 <span matSuffix>px</span>
               </mat-form-field>
-              <mat-form-field appearance="outline" class="settings__inline-field">
+              <mat-form-field appearance="outline" class="settings__inline-field" subscriptSizing="dynamic">
                 <mat-label>Drawing grid size</mat-label>
                 <input
                   matInput
@@ -456,9 +448,7 @@
       } @case ('console') {
       <section class="settings__panel" aria-labelledby="console-settings-title">
         <div class="settings__panel-header">
-          <span class="settings__eyebrow">Terminal behavior</span>
           <h2 id="console-settings-title">Console</h2>
-          <p>Choose where consoles open and customize the external console command.</p>
         </div>
         <div class="settings__setting-list">
           <div class="settings__setting-row">
@@ -497,9 +487,7 @@
       } @case ('privacy') {
       <section class="settings__panel" aria-labelledby="privacy-settings-title">
         <div class="settings__panel-header">
-          <span class="settings__eyebrow">Data preferences</span>
           <h2 id="privacy-settings-title">Privacy and diagnostics</h2>
-          <p>Control optional diagnostic information shared to improve GNS3.</p>
         </div>
         <div class="settings__setting-list">
           <div class="settings__setting-row">
@@ -529,9 +517,7 @@
       } @case ('updates') {
       <section class="settings__panel" aria-labelledby="update-settings-title">
         <div class="settings__panel-header">
-          <span class="settings__eyebrow">Application</span>
           <h2 id="update-settings-title">Updates</h2>
-          <p>Open the GNS3 download page to check for a newer application release.</p>
         </div>
         <div class="settings__action-card">
           <div>
@@ -547,9 +533,7 @@
       } @case ('ai') {
       <section class="settings__panel" aria-labelledby="ai-settings-title">
         <div class="settings__panel-header">
-          <span class="settings__eyebrow">Assistant</span>
           <h2 id="ai-settings-title">AI</h2>
-          <p>Manage the controller-provided skills used by the project AI assistant.</p>
         </div>
         <div class="settings__action-card">
           <div>
