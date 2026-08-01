@@ -210,7 +210,6 @@ import { SnapshotMenuItemComponent } from '@components/snapshots/snapshot-menu-i
 import { SystemStatusComponent } from '@components/system-status/system-status.component';
 import { TemplateListDialogComponent } from '@components/template/template-list-dialog/template-list-dialog.component';
 import { TemplateComponent } from '@components/template/template.component';
-import { TopologySummaryComponent } from '@components/topology-summary/topology-summary.component';
 import { WebConsoleFullWindowComponent } from '@components/web-console-full-window/web-console-full-window.component';
 import { DataSourceFilter } from '@filters/dataSourceFilter';
 import { AuthImageFilter } from '@filters/authImageFilter';
@@ -402,7 +401,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     TemplateComponent,
     ContextMenuComponent,
     ContextConsoleMenuComponent,
-    TopologySummaryComponent,
     ResourcePoolsManagementComponent,
     ResourcePoolDetailsComponent,
     LinkStyleEditorDialogComponent,

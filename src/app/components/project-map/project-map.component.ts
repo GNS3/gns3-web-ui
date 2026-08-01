@@ -95,7 +95,7 @@ import { ImportProjectDialogComponent } from '../projects/import-project-dialog/
 import { NavigationDialogComponent } from '../projects/navigation-dialog/navigation-dialog.component';
 import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
 import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
-import { TopologySummaryComponent } from '../topology-summary/topology-summary.component';
+import type { TopologySummaryComponent } from '../topology-summary/topology-summary.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
@@ -237,7 +237,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     };
   });
   private instance: ComponentRef<TopologySummaryComponent>;
-  // private instance: any
+  private destroyed = false;
 
   tools = {
     selection: true,
@@ -308,12 +308,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private cd = inject(ChangeDetectorRef);
   private aiChatStore = inject(AiChatStore);
   public windowManagement = inject(WindowManagementService);
-  private viewContainerRef = inject(ViewContainerRef);
-  // private cfr: ComponentFactoryResolver,
-  // private injector: Injector,
-
-  // constructor(private viewContainerRef: ViewContainerRef) {}
-  // createMyComponent() {this.viewContainerRef.createComponent(MyComponent);}
 
   ngOnInit() {
     this.getSettings();
@@ -346,23 +340,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   async lazyLoadTopologySummary() {
     if (this.isTopologySummaryVisible) {
+      if (this.instance) return;
       // In zoneless mode, we need to explicitly notify Angular after async operations
       const { TopologySummaryComponent } = await import('../topology-summary/topology-summary.component');
+      if (this.destroyed || !this.isTopologySummaryVisible || this.instance) return;
       this.instance = this.topologySummaryContainer().createComponent(TopologySummaryComponent);
-
-      // const componentFactory = this.cfr.resolveComponentFactory(TopologySummaryComponent);
-      // this.instance = this.topologySummaryContainer().createComponent(componentFactory, null, this.injector);
       this.instance.instance.controller = this.controller;
-      this.instance.instance.project = this.project;
       // In zoneless mode, createComponent doesn't automatically trigger change detection
       // We need to explicitly detect changes to ensure the component is rendered
       this.instance.changeDetectorRef.detectChanges();
     } else if (this.instance) {
-      if (this.instance.instance) {
-        this.instance.instance.ngOnDestroy();
-        this.instance.destroy();
-        this.instance = null;
-      }
+      this.instance.destroy();
+      this.instance = null;
     }
   }
 
@@ -1751,6 +1740,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.destroyed = true;
+
     // Close AI Chat when leaving project
     this.onLeaveProject();
 

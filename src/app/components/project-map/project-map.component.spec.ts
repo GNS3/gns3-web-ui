@@ -884,6 +884,16 @@ describe('ProjectMapComponent', () => {
       expect(component.isAIChatVisible).toBe(false);
     });
 
+    it('should persist topology inspector visibility and update its lazy-loaded state', () => {
+      const lazyLoadSpy = vi.mocked(component.lazyLoadTopologySummary);
+
+      component.toggleShowTopologySummary(false);
+
+      expect(component.isTopologySummaryVisible).toBe(false);
+      expect(mockMapSettingsService.toggleTopologySummary).toHaveBeenCalledWith(false);
+      expect(lazyLoadSpy).toHaveBeenCalled();
+    });
+
     it('should complete a dragged batch only after the final node is created', () => {
       const creationTracker = { onNodeCreated: vi.fn() };
       vi.spyOn(component as any, 'templateComponent').mockReturnValue(creationTracker);

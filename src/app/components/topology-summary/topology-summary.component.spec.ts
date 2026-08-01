@@ -6,13 +6,11 @@ import { LinksDataSource } from '../../cartography/datasources/links-datasource'
 import { Node, Properties } from '../../cartography/models/node';
 import { Link } from '@models/link';
 import { ComputeService } from '@services/compute.service';
-import { ProjectService } from '@services/project.service';
-import { ThemeService } from '@services/theme.service';
 import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
-import { ProjectStatistics } from '@models/project-statistics';
+import { NodeConsoleService } from '@services/nodeConsole.service';
+import { MapSettingsService } from '@services/mapsettings.service';
 import { Compute } from '@models/compute';
-import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { TopologySummaryComponent } from './topology-summary.component';
 import { ResizeEvent } from 'angular-resizable-element';
@@ -24,15 +22,14 @@ describe('TopologySummaryComponent', () => {
   let fixture: ComponentFixture<TopologySummaryComponent>;
   let mockNodesDataSource: any;
   let mockLinksDataSource: any;
-  let mockProjectService: any;
   let mockComputeService: any;
-  let mockThemeService: any;
   let mockNotificationService: any;
   let mockToasterService: any;
   let mockChangeDetectorRef: any;
+  let mockNodeConsoleService: any;
+  let mockMapSettingsService: any;
   let nodesSubject: Subject<Node[]>;
   let mockController: Controller;
-  let mockProject: Project;
 
   const createMockProperties = (): Properties => ({
     adapter_type: '',
@@ -177,22 +174,11 @@ describe('TopologySummaryComponent', () => {
       getItems: vi.fn().mockReturnValue([]),
     };
 
-    // ✅ Fix: Ensure mock function returns Observable
-    mockProjectService = {
-      getStatistics: vi.fn().mockReturnValue(of({} as ProjectStatistics)),
-    };
-
     mockComputeService = {
       getComputes: vi.fn().mockReturnValue(of([])),
     };
 
-    mockThemeService = {
-      getActualTheme: vi.fn().mockReturnValue('dark'),
-    };
-
     mockNotificationService = {
-      computeNotificationEmitter: new Subject(),
-      connectToComputeNotifications: vi.fn(),
       hasCachedData: vi.fn().mockReturnValue(false),
       getCachedComputes: vi.fn().mockReturnValue([]),
       setInitialComputes: vi.fn(),
@@ -206,6 +192,14 @@ describe('TopologySummaryComponent', () => {
 
     mockChangeDetectorRef = {
       markForCheck: vi.fn(),
+    };
+
+    mockNodeConsoleService = {
+      openConsoleForNode: vi.fn(),
+    };
+
+    mockMapSettingsService = {
+      logConsoleSubject: new Subject<boolean>(),
     };
 
     mockController = {
@@ -224,29 +218,6 @@ describe('TopologySummaryComponent', () => {
       tokenExpired: false,
     } as Controller;
 
-    mockProject = {
-      project_id: 'proj1',
-      name: 'Test Project',
-      filename: 'test.gns3',
-      status: 'opened',
-      created_by: '',
-      auto_close: true,
-      auto_open: false,
-      auto_start: false,
-      scene_width: 2000,
-      scene_height: 1000,
-      zoom: 100,
-      show_layers: false,
-      snap_to_grid: false,
-      show_grid: false,
-      grid_size: 75,
-      drawing_grid_size: 25,
-      show_interface_labels: false,
-      variables: [],
-      path: '/path/to/project',
-      readonly: false,
-    } as Project;
-
     TestBed.resetTestingModule();
 
     await TestBed.configureTestingModule({
@@ -254,19 +225,18 @@ describe('TopologySummaryComponent', () => {
       providers: [
         { provide: NodesDataSource, useValue: mockNodesDataSource },
         { provide: LinksDataSource, useValue: mockLinksDataSource },
-        { provide: ProjectService, useValue: mockProjectService },
         { provide: ComputeService, useValue: mockComputeService },
-        { provide: ThemeService, useValue: mockThemeService },
         { provide: NotificationService, useValue: mockNotificationService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
+        { provide: NodeConsoleService, useValue: mockNodeConsoleService },
+        { provide: MapSettingsService, useValue: mockMapSettingsService },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TopologySummaryComponent);
     component = fixture.componentInstance;
     component.controller = mockController;
-    component.project = mockProject;
   });
 
   afterEach(() => {
@@ -274,6 +244,7 @@ describe('TopologySummaryComponent', () => {
       fixture.destroy();
     }
     localStorage.clear();
+    delete document.documentElement.dataset['density'];
     vi.useRealTimers();
   });
 
@@ -295,27 +266,8 @@ describe('TopologySummaryComponent', () => {
   });
 
   describe('ngOnInit', () => {
-    it('should detect light theme', async () => {
-      mockThemeService.getActualTheme.mockReturnValue('light');
-
-      component.ngOnInit();
-      await vi.runAllTimersAsync();
-
-      expect(component.isLightThemeEnabled).toBe(true);
-    });
-
-    it('should detect dark theme', async () => {
-      mockThemeService.getActualTheme.mockReturnValue('dark');
-
-      component.ngOnInit();
-      await vi.runAllTimersAsync();
-
-      expect(component.isLightThemeEnabled).toBe(false);
-    });
-
     it('should subscribe to nodes data changes and update nodes list', async () => {
-      const testNodes = [mockNode];
-      // Mock was already set up in beforeEach, no need to set it again here
+      const testNodes = [{ ...mockNode, console_host: '192.168.1.50' }];
 
       component.ngOnInit();
       await vi.runAllTimersAsync();
@@ -323,6 +275,16 @@ describe('TopologySummaryComponent', () => {
 
       expect(component.nodes).toEqual(testNodes);
       expect(component.filteredNodes).toEqual(testNodes);
+    });
+
+    it('should normalize wildcard console hosts without mutating datasource nodes', async () => {
+      const testNode = { ...mockNode, console_host: '0.0.0.0' };
+
+      component.ngOnInit();
+      nodesSubject.next([testNode]);
+
+      expect(component.nodes[0].console_host).toBe(mockController.host);
+      expect(testNode.console_host).toBe('0.0.0.0');
     });
 
     it('should replace console_host with controller host when 0.0.0.0', async () => {
@@ -392,17 +354,6 @@ describe('TopologySummaryComponent', () => {
       expect(component.filteredNodes[1].name).toBe('Alpha');
     });
 
-    it('should fetch project statistics', async () => {
-      const mockStats = { nodes: 5, links: 3, snapshots: 1 } as ProjectStatistics;
-      mockProjectService.getStatistics.mockReturnValue(of(mockStats));
-
-      component.ngOnInit();
-      await vi.runAllTimersAsync();
-
-      expect(mockProjectService.getStatistics).toHaveBeenCalledWith(mockController, mockProject.project_id);
-      expect(component.projectsStatistics).toEqual(mockStats);
-    });
-
     it('should fetch computes', async () => {
       const mockComputes = [{ compute_id: 'comp1', name: 'Local' } as Compute];
       mockComputeService.getComputes.mockReturnValue(of(mockComputes));
@@ -426,7 +377,6 @@ describe('TopologySummaryComponent', () => {
 
   describe('ngOnDestroy', () => {
     it('should unsubscribe from all subscriptions', async () => {
-      mockProjectService.getStatistics.mockReturnValue(of({} as ProjectStatistics));
       mockComputeService.getComputes.mockReturnValue(of([]));
 
       component.ngOnInit();
@@ -436,6 +386,17 @@ describe('TopologySummaryComponent', () => {
       // Verify ngOnDestroy completes without errors
       expect(component).toBeTruthy();
     });
+
+    it('should cancel an in-flight compute request when destroyed', () => {
+      const computeRequest = new Subject<Compute[]>();
+      mockComputeService.getComputes.mockReturnValue(computeRequest);
+
+      component.ngOnInit();
+      component.ngOnDestroy();
+      computeRequest.next([{ compute_id: 'late-compute', name: 'Late' } as Compute]);
+
+      expect(component.computes).toEqual([]);
+    });
   });
 
   describe('revertPosition', () => {
@@ -443,18 +404,17 @@ describe('TopologySummaryComponent', () => {
       component.revertPosition();
 
       expect(component.style).toEqual({
-        top: '60px',
-        right: '0px',
-        width: '320px',
-        height: '400px',
+        top: '68px',
+        right: '16px',
+        width: '720px',
+        height: '680px',
       });
     });
 
     it('should load position from localStorage when data exists', () => {
       localStorage.setItem('leftPosition', '100');
-      localStorage.setItem('rightPosition', '200');
       localStorage.setItem('topPosition', '150');
-      localStorage.setItem('widthOfWidget', '400');
+      localStorage.setItem('widthOfWidget', '600');
       localStorage.setItem('heightOfWidget', '500');
 
       component.revertPosition();
@@ -462,11 +422,51 @@ describe('TopologySummaryComponent', () => {
       expect(component.style).toEqual({
         position: 'fixed',
         left: '100px',
-        right: '200px',
         top: '150px',
-        width: '400px',
+        width: '600px',
         height: '500px',
       });
+    });
+
+    it('should clamp a saved position and size to the viewport', () => {
+      localStorage.setItem('leftPosition', '5000');
+      localStorage.setItem('topPosition', '5000');
+      localStorage.setItem('widthOfWidget', '5000');
+      localStorage.setItem('heightOfWidget', '5000');
+
+      component.revertPosition();
+
+      expect(component.style['left']).toBe('0px');
+      expect(component.style['top']).toBe('0px');
+      expect(component.style['width']).toBe(`${window.innerWidth}px`);
+      expect(component.style['height']).toBe(`${window.innerHeight}px`);
+    });
+
+    it('should align the default inspector with the compact project header', () => {
+      document.documentElement.dataset['density'] = 'compact';
+
+      component.revertPosition();
+
+      expect(component.style['top']).toBe('56px');
+      expect(component.style['right']).toBe('8px');
+    });
+
+    it('should fit the inspector below the project header on narrow viewports', () => {
+      const widthSpy = vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(600);
+      const heightSpy = vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(800);
+
+      component.onViewportResize();
+
+      expect(component.style).toEqual({
+        position: 'fixed',
+        top: '56px',
+        left: '0px',
+        width: '600px',
+        height: '744px',
+      });
+
+      widthSpy.mockRestore();
+      heightSpy.mockRestore();
     });
   });
 
@@ -504,6 +504,7 @@ describe('TopologySummaryComponent', () => {
       expect(component.style['left']).toBe('110px');
       expect(component.style['top']).toBe('220px');
       expect(localStorage.getItem('leftPosition')).toBe('110');
+      expect(localStorage.getItem('rightPosition')).toBeNull();
       expect(localStorage.getItem('topPosition')).toBe('220');
     });
 
@@ -531,13 +532,21 @@ describe('TopologySummaryComponent', () => {
       expect(component.style['right']).toBe('85px');
       expect(component.style['top']).toBe('225px');
       expect(localStorage.getItem('rightPosition')).toBe('85');
+      expect(localStorage.getItem('leftPosition')).toBeNull();
+    });
+
+    it('should keep the widget within the viewport while dragging', () => {
+      component.dragWidget({ movementX: -5000, movementY: -5000 } as MouseEvent);
+
+      expect(component.style['left']).toBe('0px');
+      expect(component.style['top']).toBe('0px');
     });
   });
 
   describe('validate', () => {
     it('should return true for valid resize dimensions', () => {
       const mockEvent: ResizeEvent = {
-        rectangle: { width: 300, height: 300, left: 0, top: 0, right: 300, bottom: 300 },
+        rectangle: { width: 600, height: 500, left: 0, top: 0, right: 600, bottom: 500 },
         edges: {},
       };
 
@@ -581,7 +590,7 @@ describe('TopologySummaryComponent', () => {
 
     it('should return true for minimum valid dimensions', () => {
       const mockEvent: ResizeEvent = {
-        rectangle: { width: 290, height: 260, left: 0, top: 0, right: 290, bottom: 260 },
+        rectangle: { width: 400, height: 420, left: 0, top: 0, right: 400, bottom: 420 },
         edges: {},
       };
 
@@ -620,7 +629,7 @@ describe('TopologySummaryComponent', () => {
       });
     });
 
-    it('should update inner style height based on resize', () => {
+    it('should persist geometry after resize', () => {
       const mockEvent: ResizeEvent = {
         rectangle: { width: 400, height: 500, left: 50, top: 60, right: 450, bottom: 560 },
         edges: {},
@@ -628,9 +637,10 @@ describe('TopologySummaryComponent', () => {
 
       component.onResizeEnd(mockEvent);
 
-      expect(component.styleInside).toEqual({
-        height: '380px', // 500 - 120
-      });
+      expect(localStorage.getItem('leftPosition')).toBe('50');
+      expect(localStorage.getItem('topPosition')).toBe('60');
+      expect(localStorage.getItem('widthOfWidget')).toBe('400');
+      expect(localStorage.getItem('heightOfWidget')).toBe('500');
     });
   });
 
@@ -641,13 +651,13 @@ describe('TopologySummaryComponent', () => {
       expect(component.isTopologyVisible).toBe(true);
     });
 
-    it('should set topology visibility to false and call revertPosition', () => {
+    it('should set topology visibility to false without resetting the inspector position', () => {
       const revertPositionSpy = vi.spyOn(component, 'revertPosition');
 
       component.toggleTopologyVisibility(false);
 
       expect(component.isTopologyVisible).toBe(false);
-      expect(revertPositionSpy).toHaveBeenCalled();
+      expect(revertPositionSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -696,7 +706,7 @@ describe('TopologySummaryComponent', () => {
       beforeEach(() => {
         const node1 = { ...mockNode, name: 'Zebra', node_id: 'node1' };
         const node2 = { ...mockNode, name: 'Alpha', node_id: 'node2' };
-        component.filteredNodes = [node1, node2];
+        component.nodes = [node1, node2];
       });
 
       it('should sort nodes in ascending order when sortingOrder is asc', () => {
@@ -958,44 +968,115 @@ describe('TopologySummaryComponent', () => {
     });
   });
 
-  describe('Output Events', () => {
-    it('should emit false when close is called', () => {
-      const emitSpy = vi.spyOn(component.closeTopologySummary, 'emit');
+  describe('Inspector interactions', () => {
+    it('should render even before project statistics are available', () => {
+      fixture.detectChanges();
 
-      component.close();
-
-      expect(emitSpy).toHaveBeenCalledWith(false);
+      expect(fixture.nativeElement.querySelector('.topology-inspector')).toBeTruthy();
     });
+
+    it('should render the dense inspector without title or footer chrome', () => {
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.inspector-header')).toBeNull();
+      expect(fixture.nativeElement.querySelector('.inspector-footer')).toBeNull();
+      expect(fixture.nativeElement.querySelector('.node-count')).toBeNull();
+    });
+
+    it('should show protocol and port columns without node type or status chips', () => {
+      component.filteredNodes = [
+        { ...mockNode, name: 'Console node', node_type: 'vpcs', console_type: 'telnet', console: 5000 },
+        { ...mockNode, node_id: 'no-console', name: 'No console node', console_type: 'none', console: null },
+      ];
+      fixture.detectChanges();
+
+      const tableText = fixture.nativeElement.querySelector('.node-table').textContent;
+      expect(tableText).toContain('Protocol');
+      expect(tableText).toContain('Port');
+      expect(tableText).toContain('telnet');
+      expect(tableText).toContain('5000');
+      expect(tableText).toContain('none');
+      expect(tableText).not.toContain('vpcs');
+      expect(fixture.nativeElement.querySelector('.status-badge')).toBeNull();
+    });
+
+    it('should filter nodes by name without changing the source collection', () => {
+      const alpha = { ...mockNode, node_id: 'alpha', name: 'Alpha' };
+      const beta = { ...mockNode, node_id: 'beta', name: 'Beta' };
+      component.nodes = [alpha, beta];
+
+      component.setSearchQuery('alp');
+
+      expect(component.filteredNodes).toEqual([alpha]);
+      expect(component.nodes).toEqual([alpha, beta]);
+    });
+
+    it('should refresh or clear the selected node when datasource nodes change', () => {
+      const original = { ...mockNode, status: 'started' };
+      const updated = { ...original, status: 'stopped' };
+      component.ngOnInit();
+      nodesSubject.next([original]);
+      component.selectNode(component.nodes[0]);
+
+      nodesSubject.next([updated]);
+
+      expect(component.selectedNode).toBe(component.nodes[0]);
+      expect(component.selectedNode?.status).toBe('stopped');
+
+      nodesSubject.next([]);
+      expect(component.selectedNode).toBeNull();
+    });
+
+    it('should consume real-time compute cache updates once', () => {
+      const computes = [{ compute_id: 'updated-compute', name: 'Updated' } as Compute];
+      component.ngOnInit();
+
+      mockNotificationService.computeCacheUpdated.next(computes);
+
+      expect(component.computes).toEqual(computes);
+    });
+
+    it('should open a started terminal console through the existing console service', () => {
+      const node = { ...mockNode, status: 'started', console_type: 'telnet', console: 5000 };
+      const visibilitySpy = vi.spyOn(mockMapSettingsService.logConsoleSubject, 'next');
+
+      component.openConsole(node);
+
+      expect(visibilitySpy).toHaveBeenCalledWith(true);
+      expect(mockNodeConsoleService.openConsoleForNode).toHaveBeenCalledWith(node);
+    });
+
+    it('should reject console opening for a stopped node', () => {
+      component.openConsole({ ...mockNode, status: 'stopped', console_type: 'telnet' });
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('To open console please start the node');
+      expect(mockNodeConsoleService.openConsoleForNode).not.toHaveBeenCalled();
+    });
+
+    it('should ignore empty packet-filter arrays', () => {
+      mockLinksDataSource.getItems.mockReturnValue([
+        { ...mockLink, filters: { bpf: [], corrupt: [], packet_loss: [], frequency_drop: [] } },
+      ]);
+
+      expect(component.checkPacketFilters([mockNode])).toEqual([]);
+    });
+
   });
 
   describe('Zoneless Change Detection', () => {
     it('should update nodes correctly after async operation', () => {
-      mockProjectService.getStatistics.mockReturnValue(of({} as ProjectStatistics));
       mockComputeService.getComputes.mockReturnValue(of([]));
 
       component.ngOnInit();
       nodesSubject.next([mockNode]);
 
       // Verify that the component state is updated correctly
-      expect(component.nodes).toEqual([mockNode]);
-      expect(component.filteredNodes).toEqual([mockNode]);
-    });
-
-    it('should update project statistics after async operation', async () => {
-      const mockStats = { nodes: 5, links: 3, snapshots: 1 } as ProjectStatistics;
-      mockProjectService.getStatistics.mockReturnValue(of(mockStats));
-      mockComputeService.getComputes.mockReturnValue(of([]));
-
-      component.ngOnInit();
-      await vi.runAllTimersAsync();
-
-      // Verify that the component state is updated correctly
-      expect(component.projectsStatistics).toEqual(mockStats);
+      expect(component.nodes[0].console_host).toBe(mockController.host);
+      expect(component.filteredNodes[0].console_host).toBe(mockController.host);
     });
 
     it('should update computes after async operation', async () => {
       const mockComputes = [{ compute_id: 'comp1', name: 'Local' } as Compute];
-      mockProjectService.getStatistics.mockReturnValue(of({} as ProjectStatistics));
       mockComputeService.getComputes.mockReturnValue(of(mockComputes));
 
       component.ngOnInit();
@@ -1009,40 +1090,6 @@ describe('TopologySummaryComponent', () => {
   describe('error handling', () => {
     beforeEach(() => {
       vi.clearAllMocks();
-    });
-
-    describe('getStatistics', () => {
-      it('should show error toaster when getStatistics fails with error.error.message', async () => {
-        mockProjectService.getStatistics.mockReturnValue(
-          throwError(() => ({ error: { message: 'Statistics failed' } }))
-        );
-
-        component.ngOnInit();
-        await vi.runAllTimersAsync();
-
-        expect(mockToasterService.error).toHaveBeenCalledWith('Statistics failed');
-      });
-
-      it('should use fallback message when getStatistics error has no message', async () => {
-        mockProjectService.getStatistics.mockReturnValue(throwError(() => ({})));
-
-        component.ngOnInit();
-        await vi.runAllTimersAsync();
-
-        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load project statistics');
-      });
-
-      it('should call markForCheck when getStatistics fails', async () => {
-        mockProjectService.getStatistics.mockReturnValue(
-          throwError(() => ({ error: { message: 'Statistics failed' } }))
-        );
-
-        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
-        component.ngOnInit();
-        await vi.runAllTimersAsync();
-
-        expect(cdrSpy).toHaveBeenCalled();
-      });
     });
 
     describe('getComputes', () => {

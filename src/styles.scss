@@ -262,6 +262,40 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.template-menu 
   display: none;
 }
 
+/* Topology inspector tabs are scoped here because Material owns the nested tab DOM. */
+.topology-inspector .inspector-tabs {
+  .mat-mdc-tab-header {
+    flex: 0 0 auto;
+    padding-inline: var(--gns3-density-space-3);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    cursor: move;
+    user-select: none;
+  }
+
+  .mat-mdc-tab {
+    min-width: 136px;
+  }
+
+  .mdc-tab__content {
+    gap: var(--gns3-density-space-2);
+  }
+
+  .mat-mdc-tab-body-wrapper,
+  .mat-mdc-tab-body,
+  .mat-mdc-tab-body-content {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .mat-mdc-tab-body-wrapper {
+    flex: 1 1 auto;
+  }
+
+  .mat-mdc-tab-body-content {
+    overflow: hidden;
+  }
+}
+
 /* =============================================
 // Console Wrapper Tabs - Material 3 Layout
 // ============================================= */

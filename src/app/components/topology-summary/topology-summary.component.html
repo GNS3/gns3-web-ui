@@ -1,103 +1,212 @@
 @if (isDraggingEnabled) {
 <div (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
-} @if (projectsStatistics) {
-<div
-  class="summaryWrapper"
-  (mousedown)="toggleDragging(true)"
+}
+
+<section
+  class="topology-inspector"
   [ngStyle]="style"
-  [ngClass]="{ lightTheme: isLightThemeEnabled }"
   mwlResizable
   [validateResize]="validate"
-  [resizeEdges]="{ right: true, left: true, bottom: true, top: true }"
   [enableGhostResize]="true"
   (resizeStart)="toggleDragging(false)"
   (resizeEnd)="onResizeEnd($event)"
+  aria-label="Topology map"
 >
-  <div class="summaryHeader">
-    <mat-tab-group>
-      <mat-tab (click)="toggleTopologyVisibility(true)" label="Map topology">
-        <div class="tabContent">
-          <div class="summaryFilters">
-            <mat-select placeholder="Filter nodes" multiple>
-              <mat-optgroup label="Status filter">
-                <mat-option value="started" (onSelectionChange)="applyStatusFilter('started')">started</mat-option>
-                <mat-option value="suspended" (onSelectionChange)="applyStatusFilter('suspended')"
-                  >suspended</mat-option
-                >
-                <mat-option value="stopped" (onSelectionChange)="applyStatusFilter('stopped')">stopped</mat-option>
-              </mat-optgroup>
-              <mat-optgroup label="Capture filter">
-                <mat-option value="capture" (onSelectionChange)="applyCaptureFilter('capture')"
-                  >active capture(s)</mat-option
-                >
-                <mat-option value="packet" (onSelectionChange)="applyCaptureFilter('packet')"
-                  >active packet captures</mat-option
-                >
-              </mat-optgroup>
-            </mat-select>
+  <div class="resize-handle resize-handle-top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
+  <div class="resize-handle resize-handle-right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
+  <div class="resize-handle resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
+  <div class="resize-handle resize-handle-left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
+  <div class="resize-handle resize-handle-top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
+  <div class="resize-handle resize-handle-top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
+  <div class="resize-handle resize-handle-bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
+  <div class="resize-handle resize-handle-bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+
+  <mat-tab-group
+    class="inspector-tabs"
+    animationDuration="0ms"
+    [selectedIndex]="isTopologyVisible ? 0 : 1"
+    (selectedIndexChange)="toggleTopologyVisibility($event === 0)"
+    (mousedown)="startDraggingFromTabStrip($event)"
+  >
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>map</mat-icon>
+        <span>Map topology</span>
+      </ng-template>
+
+      <div class="tab-content">
+        <div class="node-toolbar">
+          <div class="search-control">
+            <mat-icon>search</mat-icon>
+            <input
+              type="search"
+              aria-label="Filter nodes"
+              placeholder="Filter nodes"
+              [ngModel]="searchQuery"
+              (ngModelChange)="setSearchQuery($event)"
+            />
           </div>
-          <div class="summarySorting">
-            <mat-select (selectionChange)="setSortingOrder()" placeholder="Sorting" [(value)]="sortingOrder">
-              <mat-option value="asc">sort by name ascending</mat-option>
-              <mat-option value="desc">sort by name descending</mat-option>
-            </mat-select>
+
+          <mat-select
+            class="sort-control"
+            aria-label="Sort nodes"
+            [value]="sortingOrder"
+            (selectionChange)="sortingOrder = $event.value; setSortingOrder()"
+          >
+            <mat-option value="asc">Name (A-Z)</mat-option>
+            <mat-option value="desc">Name (Z-A)</mat-option>
+          </mat-select>
+
+          <button
+            mat-icon-button
+            type="button"
+            class="filter-button"
+            [matMenuTriggerFor]="filterMenu"
+            [attr.aria-label]="activeFilterCount ? activeFilterCount + ' active node filters' : 'Filter nodes'"
+          >
+            <mat-icon>filter_alt</mat-icon>
+            @if (activeFilterCount) {
+            <span class="filter-button__count">{{ activeFilterCount }}</span>
+            }
+          </button>
+        </div>
+
+        <mat-menu #filterMenu="matMenu" class="topology-filter-menu">
+          <div class="filter-menu" (click)="$event.stopPropagation()">
+            <span class="filter-menu__label">Status</span>
+            <mat-checkbox [checked]="startedStatusFilterEnabled" (change)="applyStatusFilter('started')">
+              Running
+            </mat-checkbox>
+            <mat-checkbox [checked]="stoppedStatusFilterEnabled" (change)="applyStatusFilter('stopped')">
+              Stopped
+            </mat-checkbox>
+            <mat-checkbox [checked]="suspendedStatusFilterEnabled" (change)="applyStatusFilter('suspended')">
+              Suspended
+            </mat-checkbox>
+            <mat-divider></mat-divider>
+            <span class="filter-menu__label">Links</span>
+            <mat-checkbox [checked]="captureFilterEnabled" (change)="applyCaptureFilter('capture')">
+              Active capture
+            </mat-checkbox>
+            <mat-checkbox [checked]="packetFilterEnabled" (change)="applyCaptureFilter('packet')">
+              Packet filter
+            </mat-checkbox>
           </div>
-          <mat-divider class="divider"></mat-divider>
-          <div [ngStyle]="styleInside" class="summaryContent">
-            @for (node of filteredNodes; track node.name) {
-            <div class="nodeRow">
-              <div>
-                @if (node.status === 'started') {
-                <svg width="10" height="10">
-                  <rect class="status_started" x="0" y="0" width="10" height="10" fill="green"></rect>
-                </svg>
-                } @if (node.status === 'suspended') {
-                <svg width="10" height="10">
-                  <rect class="status_suspended" x="0" y="0" width="10" height="10" fill="yellow"></rect>
-                </svg>
-                } @if (node.status === 'stopped') {
-                <svg width="10" height="10">
-                  <rect class="status_stopped" x="0" y="0" width="10" height="10" fill="red"></rect>
-                </svg>
-                }
-                {{ node.name }}
+        </mat-menu>
+
+        <div class="node-table" role="table" aria-label="Project nodes">
+          <div class="node-table__body">
+            <div class="node-table__header" role="row">
+              <span role="columnheader">Node</span>
+              <span role="columnheader">Protocol</span>
+              <span role="columnheader">Port</span>
+              <span role="columnheader" aria-label="Actions"></span>
+            </div>
+            @for (node of filteredNodes; track node.node_id) {
+            <div
+              class="node-row"
+              role="row"
+              tabindex="0"
+              [class.node-row--selected]="selectedNode?.node_id === node.node_id"
+              (click)="selectNode(node)"
+              (keydown.enter)="selectNode(node)"
+            >
+              <div class="node-cell" role="cell">
+                <span
+                  class="status-dot"
+                  [attr.data-status]="node.status"
+                  [attr.aria-label]="getStatusLabel(node.status)"
+                  [matTooltip]="getStatusLabel(node.status)"
+                ></span>
+                <span class="node-symbol">
+                  @if (node.symbol_url) {
+                  <img [src]="node.symbol_url" alt="" />
+                  } @else {
+                  <mat-icon>dns</mat-icon>
+                  }
+                </span>
+                <span class="node-identity">
+                  <strong>{{ node.name }}</strong>
+                </span>
               </div>
-              @if (node.console !== null && node.console !== undefined && node.console_type !== 'none') {
-              <div>{{ node.console_type }}://{{ node.console_host }}:{{ node.console }}</div>
-              } @if (node.console === null || node.console === undefined || node.console_type === 'none') {
-              <div>none</div>
-              }
+              <span class="protocol-cell" role="cell">{{ hasConsole(node) ? node.console_type : 'none' }}</span>
+              <span class="port-cell" role="cell">{{ hasConsole(node) ? node.console : '-' }}</span>
+              <button
+                mat-icon-button
+                type="button"
+                class="row-action"
+                aria-label="Actions for {{ node.name }}"
+                [matMenuTriggerFor]="nodeActionsMenu"
+                (click)="selectNode(node); $event.stopPropagation()"
+              >
+                <mat-icon>more_horiz</mat-icon>
+              </button>
+            </div>
+            } @empty {
+            <div class="empty-state">
+              <mat-icon>search_off</mat-icon>
+              <span>No nodes match the current filters</span>
             </div>
             }
           </div>
         </div>
-      </mat-tab>
-      <mat-tab (click)="toggleTopologyVisibility(false)" label="Computes">
-        <div class="tabContent">
-          <div class="summaryContentComputes">
-            @for (compute of computes; track compute.name) {
-            <div class="nodeRow" [matTooltip]="getComputeTooltip(compute)" matTooltipPosition="above">
-              <div>
-                @if (compute.connected) {
-                <svg width="10" height="10">
-                  <rect class="status_started" x="0" y="0" width="10" height="10" fill="green"></rect>
-                </svg>
-                } @if (!compute.connected) {
-                <svg width="10" height="10">
-                  <rect class="status_stopped" x="0" y="0" width="10" height="10" fill="red"></rect>
-                </svg>
-                }
-                {{ truncateComputeName(compute.name) }}
-              </div>
-              <div>
-                {{ compute.host }}:{{ compute.port }}
-              </div>
-            </div>
-            }
-          </div>
+
+        <mat-menu #nodeActionsMenu="matMenu">
+          <button mat-menu-item [disabled]="!canOpenConsole(selectedNode)" (click)="openConsole()">
+            <mat-icon>terminal</mat-icon>
+            <span>Open console</span>
+          </button>
+        </mat-menu>
+      </div>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>dns</mat-icon>
+        <span>Computes</span>
+      </ng-template>
+
+      <div class="tab-content">
+        <div>
+          <span>{{ computes.length }} computes &middot; {{ connectedComputeCount }} connected</span>
         </div>
-      </mat-tab>
-    </mat-tab-group>
-  </div>
-</div>
-}
+        <div class="compute-list">
+          @for (compute of computes; track compute.compute_id) {
+          <div class="compute-row" [matTooltip]="getComputeTooltip(compute)" matTooltipPosition="above">
+            <span class="status-dot" [attr.data-status]="compute.connected ? 'started' : 'stopped'"></span>
+            <span class="compute-identity">
+              <strong>{{ compute.name || compute.compute_id }}</strong>
+              <span>{{ compute.host }}:{{ compute.port }}</span>
+            </span>
+            <span class="compute-metric">
+              <span>CPU</span>
+              <strong
+                >{{
+                  compute.cpu_usage_percent !== null && compute.cpu_usage_percent !== undefined
+                    ? (compute.cpu_usage_percent | number: '1.0-1') + '%'
+                    : '-'
+                }}</strong
+              >
+            </span>
+            <span class="compute-metric">
+              <span>Memory</span>
+              <strong
+                >{{
+                  compute.memory_usage_percent !== null && compute.memory_usage_percent !== undefined
+                    ? (compute.memory_usage_percent | number: '1.0-1') + '%'
+                    : '-'
+                }}</strong
+              >
+            </span>
+          </div>
+          } @empty {
+          <div class="empty-state">
+            <mat-icon>dns</mat-icon>
+            <span>No computes available</span>
+          </div>
+          }
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</section>

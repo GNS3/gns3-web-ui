@@ -2,63 +2,75 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  EventEmitter,
   Input,
   OnDestroy,
   OnInit,
-  Output,
   inject,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ResizeEvent } from 'angular-resizable-element';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ResizableModule, ResizeEvent } from 'angular-resizable-element';
 import { Subscription } from 'rxjs';
 import { LinksDataSource } from '../../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
 import { Node } from '../../cartography/models/node';
 import { Compute } from '@models/compute';
-import { Project } from '@models/project';
-import { ProjectStatistics } from '@models/project-statistics';
 import { Controller } from '@models/controller';
 import { ComputeService } from '@services/compute.service';
-import { ProjectService } from '@services/project.service';
-import { ThemeService } from '@services/theme.service';
-import { NotificationService, ComputeNotification } from '@services/notification.service';
+import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
+import { NodeConsoleService } from '@services/nodeConsole.service';
+import { MapSettingsService } from '@services/mapsettings.service';
 
 @Component({
   selector: 'app-topology-summary',
   templateUrl: './topology-summary.component.html',
   styleUrl: './topology-summary.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatTabsModule, MatSelectModule, MatOptionModule, MatDividerModule, MatTooltipModule],
+  host: {
+    '(window:resize)': 'onViewportResize()',
+  },
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatTabsModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatDividerModule,
+    MatTooltipModule,
+    MatIconModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatCheckboxModule,
+    ResizableModule,
+  ],
 })
 export class TopologySummaryComponent implements OnInit, OnDestroy {
   private nodesDataSource = inject(NodesDataSource);
-  private projectService = inject(ProjectService);
   private computeService = inject(ComputeService);
   private linksDataSource = inject(LinksDataSource);
-  private themeService = inject(ThemeService);
   private notificationService = inject(NotificationService);
   private toasterService = inject(ToasterService);
+  private nodeConsoleService = inject(NodeConsoleService);
+  private mapSettingsService = inject(MapSettingsService);
   private cd = inject(ChangeDetectorRef);
+  private document = inject(DOCUMENT);
 
   @Input() controller: Controller;
-  @Input() project: Project;
 
-  // Track if computes have been initialized
   private computesInitialized = false;
 
-  @Output() closeTopologySummary = new EventEmitter<boolean>();
-
   public style = {};
-  public styleInside = { height: `280px` };
   private subscriptions: Subscription[] = [];
-  projectsStatistics: ProjectStatistics;
   nodes: Node[] = [];
   filteredNodes: Node[] = [];
   public sortingOrder: string = 'asc';
@@ -68,138 +80,145 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   captureFilterEnabled: boolean = false;
   packetFilterEnabled: boolean = false;
   computes: Compute[] = [];
+  searchQuery = '';
+  selectedNode: Node | null = null;
 
   isTopologyVisible: boolean = true;
   isDraggingEnabled: boolean = false;
-  isLightThemeEnabled: boolean = false;
-
-  constructor() {}
 
   ngOnInit() {
-    this.themeService.getActualTheme() === 'light'
-      ? (this.isLightThemeEnabled = true)
-      : (this.isLightThemeEnabled = false);
     this.subscriptions.push(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
-        this.nodes = nodes;
-        this.nodes.forEach((n) => {
-          if (n.console_host === '0.0.0.0' || n.console_host === '0:0:0:0:0:0:0:0' || n.console_host === '::') {
-            n.console_host = this.controller?.host;
-          }
-        });
-        if (this.sortingOrder === 'asc') {
-          this.filteredNodes = nodes.sort(this.compareAsc);
-        } else {
-          this.filteredNodes = nodes.sort(this.compareDesc);
-        }
-        // In zoneless mode, we need to mark for check after async updates
+        const selectedNodeId = this.selectedNode?.node_id;
+        this.nodes = nodes.map((node) => this.normalizeConsoleHost(node));
+        this.selectedNode = selectedNodeId
+          ? (this.nodes.find((node) => node.node_id === selectedNodeId) ?? null)
+          : null;
+        this.applyFilters();
         this.cd.markForCheck();
       })
     );
 
-    // Delay initialization to wait for controller and project to be set
-    // This is necessary because the component is dynamically loaded
-    // and ngOnInit runs before the @Input properties are set
-    setTimeout(() => {
-      this.initializeComputesAndNotifications();
-    }, 0);
-
+    this.initializeComputes();
     this.revertPosition();
   }
 
-  private initializeComputesAndNotifications() {
-    if (!this.controller || !this.project || this.computesInitialized) {
+  private initializeComputes() {
+    if (!this.controller || this.computesInitialized) {
       return;
     }
 
     this.computesInitialized = true;
-
-    this.projectService.getStatistics(this.controller, this.project.project_id).subscribe({
-      next: (stats) => {
-        this.projectsStatistics = stats;
-        // In zoneless mode, trigger change detection when async data arrives
-        this.cd.markForCheck();
-      },
-      error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to load project statistics';
-        this.toasterService.error(message);
-        this.cd.markForCheck();
-      },
-    });
-
-    // Try to load from cache first
-    if (this.notificationService.hasCachedData()) {
-      const cachedComputes = this.notificationService.getCachedComputes();
-      this.computes = cachedComputes;
-      this.cd.markForCheck();
-    } else {
-      // If no cache, load from HTTP
-      this.computeService.getComputes(this.controller).subscribe({
-        next: (computes) => {
-          // Set to cache
-          this.notificationService.setInitialComputes(computes);
-          this.computes = computes;
-          // In zoneless mode, trigger change detection when async data arrives
-          this.cd.markForCheck();
-        },
-        error: (err) => {
-          const message = err.error?.message || err.message || 'Failed to load computes';
-          this.toasterService.error(message);
-          this.cd.markForCheck();
-        },
-      });
-    }
-
-    // Subscribe to compute notifications for real-time updates
-    this.subscriptions.push(
-      this.notificationService.computeNotificationEmitter.subscribe((notification: ComputeNotification) => {
-        this.handleComputeNotification(notification);
-      })
-    );
-
-    // Subscribe to cache updates
     this.subscriptions.push(
       this.notificationService.computeCacheUpdated.subscribe((computes) => {
         this.computes = computes;
         this.cd.markForCheck();
       })
     );
+
+    if (this.notificationService.hasCachedData()) {
+      this.computes = this.notificationService.getCachedComputes();
+      this.cd.markForCheck();
+    } else {
+      this.subscriptions.push(
+        this.computeService.getComputes(this.controller).subscribe({
+          next: (computes) => {
+            this.computes = computes;
+            this.notificationService.setInitialComputes(computes);
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load computes';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
+        })
+      );
+    }
+  }
+
+  private normalizeConsoleHost(node: Node): Node {
+    const usesWildcardHost =
+      node.console_host === '0.0.0.0' || node.console_host === '0:0:0:0:0:0:0:0' || node.console_host === '::';
+    return usesWildcardHost && this.controller?.host ? { ...node, console_host: this.controller.host } : node;
   }
 
   revertPosition() {
-    let leftPosition = localStorage.getItem('leftPosition');
-    let rightPosition = localStorage.getItem('rightPosition');
-    let topPosition = localStorage.getItem('topPosition');
-    let widthOfWidget = localStorage.getItem('widthOfWidget');
-    let heightOfWidget = localStorage.getItem('heightOfWidget');
+    const viewportWidth = this.document.defaultView?.innerWidth ?? 1280;
+    const viewportHeight = this.document.defaultView?.innerHeight ?? 800;
 
-    if (!topPosition) {
-      this.style = { top: '60px', right: '0px', width: '320px', height: '400px' };
-    } else {
+    if (viewportWidth <= 720) {
+      const headerHeight = 56;
       this.style = {
         position: 'fixed',
-        left: `${+leftPosition}px`,
-        right: `${+rightPosition}px`,
-        top: `${+topPosition}px`,
-        width: `${+widthOfWidget}px`,
-        height: `${+heightOfWidget}px`,
+        top: `${headerHeight}px`,
+        left: '0px',
+        width: `${viewportWidth}px`,
+        height: `${Math.max(0, viewportHeight - headerHeight)}px`,
+      };
+      return;
+    }
+
+    const leftPosition = localStorage.getItem('leftPosition');
+    const rightPosition = localStorage.getItem('rightPosition');
+    const topPosition = localStorage.getItem('topPosition');
+    const widthOfWidget = localStorage.getItem('widthOfWidget');
+    const heightOfWidget = localStorage.getItem('heightOfWidget');
+
+    if (!topPosition) {
+      const compactDensity = this.document.documentElement.dataset['density'] === 'compact';
+      this.style = {
+        top: compactDensity ? '56px' : '68px',
+        right: compactDensity ? '8px' : '16px',
+        width: '720px',
+        height: '680px',
+      };
+    } else {
+      const minimumWidth = 400;
+      const width = Math.min(Math.max(Number(widthOfWidget) || 720, minimumWidth), viewportWidth);
+      const height = Math.min(Math.max(Number(heightOfWidget) || 680, 420), viewportHeight);
+      const top = Math.min(Math.max(Number(topPosition) || 0, 0), Math.max(0, viewportHeight - height));
+      const horizontalPosition =
+        leftPosition !== null
+          ? { left: `${Math.min(Math.max(Number(leftPosition) || 0, 0), Math.max(0, viewportWidth - width))}px` }
+          : { right: `${Math.min(Math.max(Number(rightPosition) || 0, 0), Math.max(0, viewportWidth - width))}px` };
+
+      this.style = {
+        position: 'fixed',
+        ...horizontalPosition,
+        top: `${top}px`,
+        width: `${width}px`,
+        height: `${height}px`,
       };
     }
+  }
+
+  onViewportResize(): void {
+    this.revertPosition();
   }
 
   toggleDragging(value: boolean) {
     this.isDraggingEnabled = value;
   }
 
-  dragWidget(event) {
-    let x: number = Number(event.movementX);
-    let y: number = Number(event.movementY);
+  startDraggingFromTabStrip(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (event.button === 0 && target.closest('.mat-mdc-tab-header')) {
+      this.toggleDragging(true);
+    }
+  }
 
-    let width: number = Number(this.style['width'].split('px')[0]);
-    let height: number = Number(this.style['height'].split('px')[0]);
-    let top: number = Number(this.style['top'].split('px')[0]) + y;
+  dragWidget(event: Pick<MouseEvent, 'movementX' | 'movementY'>) {
+    const x = Number(event.movementX);
+    const y = Number(event.movementY);
+    const width = Number(this.style['width'].split('px')[0]);
+    const height = Number(this.style['height'].split('px')[0]);
+    const viewportWidth = this.document.defaultView?.innerWidth ?? 1280;
+    const viewportHeight = this.document.defaultView?.innerHeight ?? 800;
+    const top = this.clamp(Number(this.style['top'].split('px')[0]) + y, 0, viewportHeight - height);
+
     if (this.style['left']) {
-      let left: number = Number(this.style['left'].split('px')[0]) + x;
+      const left = this.clamp(Number(this.style['left'].split('px')[0]) + x, 0, viewportWidth - width);
       this.style = {
         position: 'fixed',
         left: `${left}px`,
@@ -209,11 +228,12 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       };
 
       localStorage.setItem('leftPosition', left.toString());
+      localStorage.removeItem('rightPosition');
       localStorage.setItem('topPosition', top.toString());
       localStorage.setItem('widthOfWidget', width.toString());
       localStorage.setItem('heightOfWidget', height.toString());
     } else {
-      let right: number = Number(this.style['right'].split('px')[0]) - x;
+      const right = this.clamp(Number(this.style['right'].split('px')[0]) - x, 0, viewportWidth - width);
       this.style = {
         position: 'fixed',
         right: `${right}px`,
@@ -223,17 +243,22 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       };
 
       localStorage.setItem('rightPosition', right.toString());
+      localStorage.removeItem('leftPosition');
       localStorage.setItem('topPosition', top.toString());
       localStorage.setItem('widthOfWidget', width.toString());
       localStorage.setItem('heightOfWidget', height.toString());
     }
   }
 
+  private clamp(value: number, minimum: number, maximum: number): number {
+    return Math.min(Math.max(value, minimum), Math.max(minimum, maximum));
+  }
+
   validate(event: ResizeEvent): boolean {
     if (
       event.rectangle.width &&
       event.rectangle.height &&
-      (event.rectangle.width < 290 || event.rectangle.height < 260)
+      (event.rectangle.width < 400 || event.rectangle.height < 420)
     ) {
       return false;
     }
@@ -249,52 +274,23 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       height: `${event.rectangle.height}px`,
     };
 
-    this.styleInside = {
-      height: `${event.rectangle.height - 120}px`,
-    };
+    localStorage.setItem('leftPosition', event.rectangle.left.toString());
+    localStorage.removeItem('rightPosition');
+    localStorage.setItem('topPosition', event.rectangle.top.toString());
+    localStorage.setItem('widthOfWidget', event.rectangle.width.toString());
+    localStorage.setItem('heightOfWidget', event.rectangle.height.toString());
   }
 
   toggleTopologyVisibility(value: boolean) {
     this.isTopologyVisible = value;
-    this.revertPosition();
   }
 
   compareAsc(first: Node, second: Node) {
-    if (first.name < second.name) return -1;
-    return 1;
+    return first.name.localeCompare(second.name);
   }
 
   compareDesc(first: Node, second: Node) {
-    if (first.name < second.name) return 1;
-    return -1;
-  }
-
-  handleComputeNotification(notification: ComputeNotification) {
-    switch (notification.action) {
-      case 'compute.created':
-        // Add new compute to the list
-        this.computes = [...this.computes, notification.event];
-        break;
-      case 'compute.updated':
-        // Update existing compute or add if it doesn't exist
-        const existingIndex = this.computes.findIndex((c) => c.compute_id === notification.event.compute_id);
-        if (existingIndex !== -1) {
-          // Update existing compute
-          this.computes = this.computes.map((c) =>
-            c.compute_id === notification.event.compute_id ? notification.event : c
-          );
-        } else {
-          // Add new compute (it wasn't in the initial load)
-          this.computes = [...this.computes, notification.event];
-        }
-        break;
-      case 'compute.deleted':
-        // Remove deleted compute from the list
-        this.computes = this.computes.filter((c) => c.compute_id !== notification.event.compute_id);
-        break;
-    }
-    // Trigger change detection for zoneless mode
-    this.cd.markForCheck();
+    return second.name.localeCompare(first.name);
   }
 
   ngOnDestroy() {
@@ -302,11 +298,12 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   }
 
   setSortingOrder() {
-    if (this.sortingOrder === 'asc') {
-      this.filteredNodes = this.filteredNodes.sort(this.compareAsc);
-    } else {
-      this.filteredNodes = this.filteredNodes.sort(this.compareDesc);
-    }
+    this.applyFilters();
+  }
+
+  setSearchQuery(value: string) {
+    this.searchQuery = value;
+    this.applyFilters();
   }
 
   applyStatusFilter(filter: string) {
@@ -356,70 +353,109 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       nodes = this.checkPacketFilters(nodes);
     }
 
+    const normalizedQuery = this.searchQuery.trim().toLocaleLowerCase();
+    if (normalizedQuery) {
+      nodes = nodes.filter((node) => node.name.toLocaleLowerCase().includes(normalizedQuery));
+    }
+
     if (this.sortingOrder === 'asc') {
-      this.filteredNodes = nodes.sort(this.compareAsc);
+      this.filteredNodes = [...nodes].sort(this.compareAsc);
     } else {
-      this.filteredNodes = nodes.sort(this.compareDesc);
+      this.filteredNodes = [...nodes].sort(this.compareDesc);
     }
   }
 
   checkCapturing(nodes: Node[]): Node[] {
-    let links = this.linksDataSource.getItems();
-    let nodesWithCapturing: string[] = [];
+    const links = this.linksDataSource.getItems();
+    const nodesWithCapturing = new Set<string>();
 
     links.forEach((link) => {
       if (link.capturing) {
         link.nodes.forEach((node) => {
-          nodesWithCapturing.push(node.node_id);
+          nodesWithCapturing.add(node.node_id);
         });
       }
     });
 
-    let filteredNodes: Node[] = [];
-    nodes.forEach((node) => {
-      if (nodesWithCapturing.includes(node.node_id)) {
-        filteredNodes.push(node);
-      }
-    });
-    return filteredNodes;
+    return nodes.filter((node) => nodesWithCapturing.has(node.node_id));
   }
 
   checkPacketFilters(nodes: Node[]): Node[] {
-    let links = this.linksDataSource.getItems();
-    let nodesWithPacketFilters: string[] = [];
+    const links = this.linksDataSource.getItems();
+    const nodesWithPacketFilters = new Set<string>();
 
     links.forEach((link) => {
-      if (
-        link.filters.bpf ||
-        link.filters.corrupt ||
-        link.filters.corrupt ||
-        link.filters.packet_loss ||
-        link.filters.frequency_drop
-      ) {
+      if (Object.values(link.filters ?? {}).some((value) => this.hasActiveFilterValue(value))) {
         link.nodes.forEach((node) => {
-          nodesWithPacketFilters.push(node.node_id);
+          nodesWithPacketFilters.add(node.node_id);
         });
       }
     });
 
-    let filteredNodes: Node[] = [];
-    nodes.forEach((node) => {
-      if (nodesWithPacketFilters.includes(node.node_id)) {
-        filteredNodes.push(node);
-      }
-    });
-    return filteredNodes;
+    return nodes.filter((node) => nodesWithPacketFilters.has(node.node_id));
   }
 
-  close() {
-    this.closeTopologySummary.emit(false);
+  selectNode(node: Node): void {
+    this.selectedNode = node;
   }
 
-  truncateComputeName(name: string): string {
-    if (!name) return '';
-    const maxLength = 15;
-    if (name.length <= maxLength) return name;
-    return name.substring(0, maxLength) + '...';
+  hasConsole(node: Node): boolean {
+    return (
+      node.console !== null &&
+      node.console !== undefined &&
+      Boolean(node.console_type) &&
+      node.console_type !== 'none'
+    );
+  }
+
+  canOpenConsole(node: Node | null): boolean {
+    return Boolean(
+      node && node.status === 'started' && (node.console_type === 'telnet' || node.console_type === 'ssh')
+    );
+  }
+
+  openConsole(node: Node | null = this.selectedNode): void {
+    if (!node) return;
+    if (node.status !== 'started') {
+      this.toasterService.error('To open console please start the node');
+      return;
+    }
+    if (node.console_type !== 'telnet' && node.console_type !== 'ssh') {
+      this.toasterService.error(
+        `Console type '${node.console_type || 'none'}' is not supported in the embedded console.`
+      );
+      return;
+    }
+    this.mapSettingsService.logConsoleSubject.next(true);
+    this.nodeConsoleService.openConsoleForNode(node);
+  }
+
+  getStatusLabel(status: string): string {
+    if (status === 'started') return 'Running';
+    if (status === 'stopped') return 'Stopped';
+    if (status === 'suspended') return 'Suspended';
+    return status || 'Unknown';
+  }
+
+  get activeFilterCount(): number {
+    return [
+      this.startedStatusFilterEnabled,
+      this.stoppedStatusFilterEnabled,
+      this.suspendedStatusFilterEnabled,
+      this.captureFilterEnabled,
+      this.packetFilterEnabled,
+    ].filter(Boolean).length;
+  }
+
+  get connectedComputeCount(): number {
+    return this.computes.filter((compute) => compute.connected).length;
+  }
+
+  private hasActiveFilterValue(value: unknown): boolean {
+    if (Array.isArray(value)) {
+      return value.some((entry) => entry !== null && entry !== undefined && entry !== '' && entry !== 0);
+    }
+    return value !== null && value !== undefined && value !== '' && value !== 0 && value !== false;
   }
 
   getComputeTooltip(compute: Compute): string {
