@@ -152,6 +152,7 @@ export class StartCaptureDialogComponent implements OnInit {
             );
           }
           this.isLoading.set(false);
+          this.toasterService.success('Packet capture started.');
           this.dialogRef.close();
         },
         error: (err) => {
@@ -174,6 +175,7 @@ export class StartCaptureDialogComponent implements OnInit {
               `Failed to start Web Wireshark: ${err.message || 'Unknown error'}`
             );
           }
+          this.toasterService.error(this.errorMessage());
         },
       });
     } else {
@@ -191,11 +193,13 @@ export class StartCaptureDialogComponent implements OnInit {
         next: (updatedLink: Link) => {
           // Update the link in the data source with the response from server
           this.linksDataSource.update(updatedLink);
+          this.toasterService.success('Packet capture started.');
           this.dialogRef.close();
         },
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to start capture';
           this.errorMessage.set(message);
+          this.toasterService.error(message);
         },
       });
     }

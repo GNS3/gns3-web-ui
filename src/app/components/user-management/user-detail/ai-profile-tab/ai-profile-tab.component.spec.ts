@@ -5,7 +5,7 @@ import { of, throwError, BehaviorSubject } from 'rxjs';
 import { AiProfileTabComponent } from './ai-profile-tab.component';
 import { AiProfilesService } from '../../../../services/ai-profiles.service';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { ToasterService } from '../../../../services/toaster.service';
 import { Controller } from '../../../../models/controller';
 import { User } from '../../../../models/users/user';
 import { LLMModelConfigWithSource, LLMModelConfigInheritedResponse } from '../../../../models/ai-profile';
@@ -65,7 +65,7 @@ describe('AiProfileTabComponent', () => {
 
   let mockAiProfilesService: Partial<AiProfilesService>;
   let mockDialog: Partial<MatDialog>;
-  let mockSnackBar: Partial<MatSnackBar>;
+  let mockToasterService: Pick<ToasterService, 'success' | 'warning' | 'error'>;
   let mockDialogRef: any;
   let afterClosedSubject: BehaviorSubject<any>;
   let mockController: Controller;
@@ -96,8 +96,10 @@ describe('AiProfileTabComponent', () => {
       open: vi.fn().mockReturnValue(mockDialogRef),
     };
 
-    mockSnackBar = {
-      open: vi.fn(),
+    mockToasterService = {
+      success: vi.fn(),
+      warning: vi.fn(),
+      error: vi.fn(),
     };
 
     mockAiProfilesService = {
@@ -120,7 +122,7 @@ describe('AiProfileTabComponent', () => {
       providers: [
         { provide: AiProfilesService, useValue: mockAiProfilesService },
         { provide: MatDialog, useValue: mockDialog },
-        { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     }).compileComponents();
 

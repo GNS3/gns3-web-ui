@@ -1,0 +1,119 @@
+@if (notificationCenter.panelOpen()) {
+<button
+  type="button"
+  class="notification-center__backdrop"
+  tabindex="-1"
+  aria-hidden="true"
+  (click)="notificationCenter.closePanel()"
+></button>
+
+<aside
+  id="notification-center-panel"
+  class="notification-center"
+  role="region"
+  aria-labelledby="notification-center-title"
+>
+  <header class="notification-center__header">
+    <div class="notification-center__heading">
+      <h2 id="notification-center-title">Notifications</h2>
+      <span class="notification-center__unread">{{ notificationCenter.unreadCount() }} unread</span>
+    </div>
+    <button
+      mat-icon-button
+      type="button"
+      class="notification-center__close"
+      aria-label="Close notifications"
+      (click)="notificationCenter.closePanel()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <nav class="notification-center__filters" aria-label="Filter notifications">
+    @for (filter of filters; track filter.value) {
+    <button
+      type="button"
+      [class.notification-center__filter--active]="activeFilter() === filter.value"
+      [attr.aria-pressed]="activeFilter() === filter.value"
+      (click)="activeFilter.set(filter.value)"
+    >
+      <span>{{ filter.label }}</span>
+      <strong>{{ count(filter.value) }}</strong>
+    </button>
+    }
+  </nav>
+
+  <div class="notification-center__tools">
+    <label class="notification-center__search">
+      <mat-icon aria-hidden="true">search</mat-icon>
+      <input
+        type="search"
+        aria-label="Search notifications"
+        placeholder="Search notifications"
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)"
+      />
+    </label>
+    <button
+      mat-icon-button
+      type="button"
+      matTooltip="Mark all as read"
+      aria-label="Mark all notifications as read"
+      [disabled]="notificationCenter.unreadCount() === 0"
+      (click)="notificationCenter.markAllAsRead()"
+    >
+      <mat-icon>done_all</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      type="button"
+      matTooltip="Clear history"
+      aria-label="Clear notification history"
+      [disabled]="notificationCenter.notifications().length === 0"
+      (click)="notificationCenter.clear()"
+    >
+      <mat-icon>delete_sweep</mat-icon>
+    </button>
+  </div>
+
+  <div class="notification-center__list">
+    @for (notification of filteredNotifications(); track notification.id) {
+    <article
+      class="notification-center__item"
+      [class.notification-center__item--unread]="!notification.read"
+      [class.notification-center__item--success]="notification.kind === 'success'"
+      [class.notification-center__item--info]="notification.kind === 'info'"
+      [class.notification-center__item--warning]="notification.kind === 'warning'"
+      [class.notification-center__item--error]="notification.kind === 'error'"
+    >
+      <button type="button" class="notification-center__item-main" (click)="markAsRead(notification)">
+        <mat-icon class="notification-center__item-icon" aria-hidden="true">{{ icon(notification.kind) }}</mat-icon>
+        <span class="notification-center__item-content">
+          <span class="notification-center__item-meta">
+            <strong>{{ label(notification.kind) }}</strong>
+            <time [attr.datetime]="dateTime(notification.createdAt)">{{ formatTime(notification.createdAt) }}</time>
+          </span>
+          <span class="notification-center__item-message">{{ notification.message }}</span>
+        </span>
+      </button>
+      <button
+        mat-icon-button
+        type="button"
+        class="notification-center__item-remove"
+        matTooltip="Remove"
+        aria-label="Remove notification"
+        (click)="remove($event, notification.id)"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </article>
+    } @empty {
+    <div class="notification-center__empty">
+      <mat-icon aria-hidden="true">notifications_none</mat-icon>
+      <strong>No notifications</strong>
+      <span>Completed activities and errors will appear here.</span>
+    </div>
+    }
+  </div>
+</aside>
+}

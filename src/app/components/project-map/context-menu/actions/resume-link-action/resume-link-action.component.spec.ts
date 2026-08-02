@@ -13,7 +13,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 describe('ResumeLinkActionComponent', () => {
   let fixture: ComponentFixture<ResumeLinkActionComponent>;
   let mockLinkService: { updateLink: ReturnType<typeof vi.fn> };
-  let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockToasterService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
 
   const createMockLink = (overrides: Partial<Link> = {}): Link => {
     const defaults: Link = {
@@ -57,7 +57,7 @@ describe('ResumeLinkActionComponent', () => {
     vi.clearAllMocks();
 
     mockLinkService = { updateLink: vi.fn().mockReturnValue(of({})) };
-    mockToasterService = { error: vi.fn() };
+    mockToasterService = { success: vi.fn(), error: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [ResumeLinkActionComponent, MatButtonModule, MatIconModule, MatMenuModule],

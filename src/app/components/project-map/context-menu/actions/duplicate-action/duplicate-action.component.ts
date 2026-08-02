@@ -11,6 +11,7 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { createActionCompletion } from '@utils/action-completion.util';
 
 @Component({
   selector: 'app-duplicate-action',
@@ -32,12 +33,20 @@ export class DuplicateActionComponent {
   readonly nodes = input<Node[]>([]);
 
   duplicate() {
+    const completion = createActionCompletion(this.nodes().length + this.drawings().length, (count) => {
+      if (count > 0) {
+        this.toasterService.success(`${count} selected ${count === 1 ? 'object' : 'objects'} duplicated.`);
+      }
+    });
+
     for (let node of this.nodes()) {
       this.nodeService.duplicate(this.controller(), node).subscribe({
         next: (node: Node) => {
           this.nodesDataSource.add(node);
+          completion.succeed();
         },
         error: (err) => {
+          completion.fail();
           if (err.status === 409) {
             this.toasterService.error(`Shutdown ${node.name} before duplicating`);
           } else {
@@ -53,8 +62,10 @@ export class DuplicateActionComponent {
       this.drawingService.duplicate(this.controller(), drawing.project_id, drawing).subscribe({
         next: (drawing: Drawing) => {
           this.drawingsDataSource.add(drawing);
+          completion.succeed();
         },
         error: (err) => {
+          completion.fail();
           const message = err.error?.message || err.message || 'Failed to duplicate drawing';
           this.toasterService.error(message);
           this.cdr.markForCheck();

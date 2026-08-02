@@ -42,6 +42,7 @@ export class ChangeSymbolDialogComponent implements OnInit {
   onSelectClick() {
     this.nodeService.updateSymbol(this.controller, this.node, this.symbol).subscribe({
       next: () => {
+        this.toasterService.success(`Symbol for node "${this.node.name}" updated.`);
         this.onCloseClick();
       },
       error: (err) => {

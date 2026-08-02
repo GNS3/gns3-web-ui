@@ -23,7 +23,7 @@ export class ResetLinkActionComponent {
 
   resetLink() {
     this.linkService.resetLink(this.controller(), this.link()).subscribe({
-        next: () => {},
+        next: () => this.toasterService.success('Link reset.'),
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to reset link';
           this.toasterService.error(message);

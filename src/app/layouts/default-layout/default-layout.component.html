@@ -157,6 +157,24 @@
 
         <span class="spacer"></span>
 
+        <button
+          mat-icon-button
+          type="button"
+          class="toolbar__notifications"
+          matTooltip="Notifications"
+          [attr.aria-label]="notificationCenter.panelOpen() ? 'Close notifications' : 'Open notifications'"
+          aria-controls="notification-center-panel"
+          [attr.aria-expanded]="notificationCenter.panelOpen()"
+          (click)="notificationCenter.togglePanel()"
+        >
+          <mat-icon>{{ notificationCenter.panelOpen() ? 'notifications' : 'notifications_none' }}</mat-icon>
+          @if (notificationCenter.unreadCount() > 0) {
+          <span class="toolbar__notification-badge">{{
+            notificationCenter.unreadCount() > 99 ? '99+' : notificationCenter.unreadCount()
+          }}</span>
+          }
+        </button>
+
         @if (controller && controllerId) {
         <button mat-button class="toolbar__account" [matMenuTriggerFor]="userMenu" aria-label="Open user account menu">
           <span class="toolbar__account-avatar">
@@ -199,4 +217,5 @@
   </mat-drawer-content>
 </mat-drawer-container>
 
+<app-notification-center></app-notification-center>
 <app-progress></app-progress>

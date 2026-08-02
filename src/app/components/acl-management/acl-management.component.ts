@@ -43,6 +43,7 @@ import { ACE } from '@models/api/ACE';
 import { ActivatedRoute } from '@angular/router';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { createActionCompletion } from '@utils/action-completion.util';
 import { AclService } from '@services/acl.service';
 import { AddAceDialogComponent } from '@components/acl-management/add-ace-dialog/add-ace-dialog.component';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
@@ -191,6 +192,7 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
         if (isDeletedConfirm) {
           this.aclService.delete(this.controller, ace.ace_id).subscribe({
             next: () => {
+              this.toasterService.success('Access rule deleted.');
               this.refresh();
             },
             error: (err) => {
@@ -230,16 +232,17 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
-          // TODO: This implementation has a race condition issue where each ACE deletion
-          // is subscribed to independently. Consider using Promise.all() + forkJoin to wait
-          // for all deletions to complete, or use concatMap for sequential deletion.
-          // For now, we keep the existing implementation as requested.
+          const completion = createActionCompletion(selectedAces.length, (count) => {
+            if (count > 0) {
+              this.toasterService.success(`${count} access ${count === 1 ? 'rule' : 'rules'} deleted.`);
+              this.refresh();
+            }
+          });
           selectedAces.forEach((ace: ACE) => {
             this.aclService.delete(this.controller, ace.ace_id).subscribe({
-              next: () => {
-                this.refresh();
-              },
+              next: () => completion.succeed(),
               error: (err) => {
+                completion.fail();
                 const message = err.error?.message || err.message || 'Failed to delete ACE';
                 this.toasterService.error(message);
                 this.cdr.markForCheck();

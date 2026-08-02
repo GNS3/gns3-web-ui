@@ -23,7 +23,7 @@ export class StopCaptureActionComponent {
 
   stopCapture() {
     this.linkService.stopCaptureOnLink(this.controller(), this.link()).subscribe({
-        next: () => {},
+        next: () => this.toasterService.success('Packet capture stopped.'),
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to stop capture';
           this.toasterService.error(message);

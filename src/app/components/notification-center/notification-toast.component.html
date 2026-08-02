@@ -1,0 +1,16 @@
+<div
+  class="notification-toast"
+  [class.notification-toast--success]="data.notification.kind === 'success'"
+  [class.notification-toast--info]="data.notification.kind === 'info'"
+  [class.notification-toast--warning]="data.notification.kind === 'warning'"
+  [class.notification-toast--error]="data.notification.kind === 'error'"
+>
+  <mat-icon class="notification-toast__status" aria-hidden="true">{{ icon(data.notification.kind) }}</mat-icon>
+  <div class="notification-toast__content">
+    <strong>{{ label(data.notification.kind) }}</strong>
+    <span>{{ data.notification.message }}</span>
+  </div>
+  <button mat-icon-button type="button" aria-label="Dismiss notification" (click)="dismiss()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>

@@ -18,7 +18,7 @@ describe('ToggleShowFiltersIconActionComponent', () => {
   let mockLinkService: { updateLink: ReturnType<typeof vi.fn> };
   let mockLinksDataSource: { get: ReturnType<typeof vi.fn>; update: ReturnType<typeof vi.fn> };
   let mockMapLinksDataSource: { get: ReturnType<typeof vi.fn>; update: ReturnType<typeof vi.fn> };
-  let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockToasterService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
 
   const mockController: Controller = {
     id: 1,
@@ -70,7 +70,7 @@ describe('ToggleShowFiltersIconActionComponent', () => {
       get: vi.fn(),
       update: vi.fn(),
     };
-    mockToasterService = { error: vi.fn() };
+    mockToasterService = { success: vi.fn(), error: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [MatIconModule, MatMenuModule],

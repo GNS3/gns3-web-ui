@@ -92,5 +92,6 @@ export class ExportConfigActionComponent {
 
     var event = new MouseEvent('click');
     element.dispatchEvent(event);
+    this.toasterService.success(`Configuration for node "${node.name}" exported.`);
   }
 }

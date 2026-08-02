@@ -102,6 +102,7 @@ export class LinkCreatedComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: () => {
+          this.toasterService.success('Link created.');
           this.projectService.links(this.controller(), this.project.project_id).subscribe((links: Link[]) => {
             this.linksDataSource.set(links);
           });

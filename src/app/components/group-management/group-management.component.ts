@@ -199,6 +199,9 @@ export class GroupManagementComponent implements OnInit, AfterViewInit {
           );
           forkJoin(observables).subscribe({
             next: () => {
+              this.toasterService.success(
+                `${groupsToDelete.length} ${groupsToDelete.length === 1 ? 'group' : 'groups'} deleted.`
+              );
               this.refresh();
             },
             error: (err) => {

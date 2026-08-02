@@ -23,7 +23,7 @@ export class UnisolateNodeActionComponent {
 
   unisolate() {
     this.nodeService.unisolate(this.controller(), this.node()).subscribe({
-      next: (n: Node) => {},
+      next: () => this.toasterService.success(`Node "${this.node().name}" unisolated.`),
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to unisolate node';
         this.toasterService.error(message);

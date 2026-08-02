@@ -68,6 +68,7 @@ export class TextAddedComponent implements OnInit, OnDestroy {
         next: (controllerDrawing: Drawing) => {
           this.drawingsDataSource.add(controllerDrawing);
           this.drawingSaved.emit(true);
+          this.toasterService.success('Text note created.');
         },
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to create text drawing';

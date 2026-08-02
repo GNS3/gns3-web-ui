@@ -31,7 +31,7 @@ describe('LinkCreatedComponent', () => {
   let mockLinksDataSource: { set: ReturnType<typeof vi.fn> };
   let mockLinkService: { createLink: ReturnType<typeof vi.fn> };
   let mockProjectService: { links: ReturnType<typeof vi.fn> };
-  let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockToasterService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
   let mockChangeDetectorRef: { markForCheck: ReturnType<typeof vi.fn> };
 
   // Events
@@ -115,6 +115,7 @@ describe('LinkCreatedComponent', () => {
     };
 
     mockToasterService = {
+      success: vi.fn(),
       error: vi.fn(),
     };
 

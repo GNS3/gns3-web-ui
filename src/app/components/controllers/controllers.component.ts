@@ -304,6 +304,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
           () => {
             this.resetPage();
             this.controllerDatabase.remove(controller);
+            this.toasterService.success(`Controller "${controller.name}" deleted.`);
             this.changeDetector.markForCheck();
           },
           (err) => {

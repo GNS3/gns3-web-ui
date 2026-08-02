@@ -105,6 +105,7 @@ describe('TextAddedComponent', () => {
     };
 
     mockToasterService = {
+      success: vi.fn(),
       error: vi.fn(),
     };
 

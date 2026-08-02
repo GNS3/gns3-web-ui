@@ -138,6 +138,7 @@ describe('TextEditorDialogComponent', () => {
     };
 
     mockToasterService = {
+      success: vi.fn(),
       error: vi.fn(),
     };
 

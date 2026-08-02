@@ -16,7 +16,7 @@ describe('StartNodeActionComponent', () => {
   let component: StartNodeActionComponent;
   let fixture: ComponentFixture<StartNodeActionComponent>;
   let mockNodeService: { start: ReturnType<typeof vi.fn> };
-  let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockToasterService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
   let mockProgressService: { activate: ReturnType<typeof vi.fn>; deactivate: ReturnType<typeof vi.fn> };
 
   const mockController: Controller = {
@@ -68,7 +68,7 @@ describe('StartNodeActionComponent', () => {
     vi.clearAllMocks();
 
     mockNodeService = { start: vi.fn().mockReturnValue(of({})) };
-    mockToasterService = { error: vi.fn() };
+    mockToasterService = { success: vi.fn(), error: vi.fn() };
     mockProgressService = { activate: vi.fn(), deactivate: vi.fn() };
 
     await TestBed.configureTestingModule({
@@ -172,6 +172,8 @@ describe('StartNodeActionComponent', () => {
       expect(mockNodeService.start).toHaveBeenCalledTimes(2);
       expect(mockNodeService.start).toHaveBeenCalledWith(mockController, nodes[0]);
       expect(mockNodeService.start).toHaveBeenCalledWith(mockController, nodes[1]);
+      expect(mockToasterService.success).toHaveBeenCalledWith('2 nodes started.');
+      expect(mockProgressService.deactivate).toHaveBeenCalledOnce();
     });
 
     it('should show error toast when nodeService.start fails', async () => {

@@ -443,20 +443,6 @@
 }
 
 // =============================================
-// Snackbar Error Styles
-// =============================================
-.gns3-ai-chat__snack-error {
-  background-color: var(--mat-sys-error);
-  color: var(--mat-sys-on-error);
-  font-weight: 500;
-
-  .mat-simple-snackbar-action {
-    color: var(--mat-sys-on-error);
-    font-weight: 600;
-  }
-}
-
-// =============================================
 // Responsive Design
 // =============================================
 @media (max-width: 768px) {

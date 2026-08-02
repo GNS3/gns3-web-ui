@@ -7,6 +7,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { createActionCompletion } from '@utils/action-completion.util';
 
 @Component({
   selector: 'app-align-horizontally-action',
@@ -24,21 +25,29 @@ export class AlignHorizontallyActionComponent {
   readonly nodes = input<Node[]>(undefined);
 
   alignHorizontally() {
+    const nodes = this.nodes() || [];
+    if (nodes.length === 0) return;
+
     let averageY: number = 0;
-    this.nodes().forEach((node) => {
+    nodes.forEach((node) => {
       averageY += node.y;
     });
-    averageY = averageY / this.nodes().length;
+    averageY = averageY / nodes.length;
+    const completion = createActionCompletion(nodes.length, (count) => {
+      if (count > 0) this.toasterService.success('Nodes aligned horizontally.', { showToast: false });
+    });
 
-    this.nodes().forEach((node) => {
+    nodes.forEach((node) => {
       node.y = averageY;
       this.nodesDataSource.update(node);
 
       this.nodeService.update(this.controller(), node).subscribe({
         next: () => {
+          completion.succeed();
           this.cdr.markForCheck();
         },
         error: (err) => {
+          completion.fail();
           const message = err.error?.message || err.message || 'Failed to align node';
           this.toasterService.error(message);
           this.cdr.markForCheck();

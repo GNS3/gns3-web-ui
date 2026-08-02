@@ -16,6 +16,9 @@ import { LinkService } from '@services/link.service';
 import { LinkTypeCache } from '@services/link-type-cache';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { createActionCompletion } from '@utils/action-completion.util';
+import { describeTopologyItems } from '@utils/topology-delete-summary.util';
+import type { TopologyItemCounts } from '@utils/topology-delete-summary.util';
 
 @Component({
   selector: 'app-delete-action',
@@ -40,13 +43,14 @@ export class DeleteActionComponent {
   readonly links = input<Link[]>([]);
 
   confirmDelete() {
-    const objectCount = this.nodes().length + this.drawings().length + this.links().length;
+    const counts = this.selectedItemCounts();
+    const objectCount = counts.nodes + counts.drawings + counts.links;
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-danger-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Delete selected objects?',
-        message: `${objectCount} selected ${objectCount === 1 ? 'object' : 'objects'} will be permanently deleted.`,
+        message: `${describeTopologyItems(counts)} will be permanently deleted.`,
         note: 'This action cannot be undone.',
         confirmButtonText: objectCount === 1 ? 'Delete object' : 'Delete objects',
         tone: 'danger',
@@ -61,12 +65,29 @@ export class DeleteActionComponent {
   }
 
   delete() {
+    const deletableNodes = this.nodes().filter((node) => !node.locked);
+    const deletableDrawings = this.drawings().filter((drawing) => !drawing.locked);
+    const deletableLinks = this.nodes().length === 0 && this.drawings().length === 0 ? this.links() : [];
+    const deletedCounts: TopologyItemCounts = { nodes: 0, links: 0, drawings: 0 };
+    const completion = createActionCompletion(
+      deletableNodes.length + deletableDrawings.length + deletableLinks.length,
+      (count) => {
+        if (count > 0) {
+          this.toasterService.success(`${describeTopologyItems(deletedCounts)} deleted.`);
+        }
+      }
+    );
+
     this.nodes().forEach((node) => {
       if (!node.locked) {
         this.nodesDataSource.remove(node);
         this.nodeService.delete(this.controller(), node).subscribe({
-          next: (node: Node) => {},
+          next: () => {
+            deletedCounts.nodes++;
+            completion.succeed();
+          },
           error: (err) => {
+            completion.fail();
             const message = err.error?.message || err.message || 'Failed to delete node';
             this.toasterService.error(message);
             this.cdr.markForCheck();
@@ -83,8 +104,12 @@ export class DeleteActionComponent {
       if (!drawing.locked) {
         this.drawingsDataSource.remove(drawing);
         this.drawingService.delete(this.controller(), drawing).subscribe({
-          next: (drawing: Drawing) => {},
+          next: () => {
+            deletedCounts.drawings++;
+            completion.succeed();
+          },
           error: (err) => {
+            completion.fail();
             const message = err.error?.message || err.message || 'Failed to delete drawing';
             this.toasterService.error(message);
             this.cdr.markForCheck();
@@ -103,8 +128,11 @@ export class DeleteActionComponent {
         this.linkService.deleteLink(this.controller(), link).subscribe({
           next: () => {
             LinkTypeCache.remove(link.project_id, link.link_id);
+            deletedCounts.links++;
+            completion.succeed();
           },
           error: (err) => {
+            completion.fail();
             const message = err.error?.message || err.message || 'Failed to delete link';
             this.toasterService.error(message);
             this.cdr.markForCheck();
@@ -112,5 +140,14 @@ export class DeleteActionComponent {
         });
       });
     }
+  }
+
+  private selectedItemCounts(): TopologyItemCounts {
+    const hasNodesOrDrawings = this.nodes().length > 0 || this.drawings().length > 0;
+    return {
+      nodes: this.nodes().length,
+      drawings: this.drawings().length,
+      links: hasNodesOrDrawings ? 0 : this.links().length,
+    };
   }
 }

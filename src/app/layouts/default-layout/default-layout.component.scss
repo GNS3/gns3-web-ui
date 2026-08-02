@@ -169,7 +169,6 @@
   .gns3-button:hover {
     transform: scale(1.3);
   }
-
 }
 
 /* Toolbar brand */
@@ -201,6 +200,35 @@
   &:hover {
     background: color-mix(in srgb, var(--mat-sys-on-primary) 10%, transparent);
   }
+}
+
+.toolbar__notifications {
+  position: relative;
+  width: var(--gns3-density-control-height);
+  height: var(--gns3-density-control-height);
+  margin-right: var(--gns3-density-space-2);
+  color: var(--mat-sys-on-primary);
+  --mat-icon-button-icon-color: var(--mat-sys-on-primary);
+}
+
+.toolbar__notification-badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  color: var(--mat-sys-on-error);
+  background: var(--mat-sys-error);
+  border: 2px solid var(--mat-sys-primary);
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .toolbar__account-avatar {
@@ -384,7 +412,6 @@
   .sidebar__divider {
     margin: 8px 16px;
   }
-
 }
 
 @media (max-width: 599px) {

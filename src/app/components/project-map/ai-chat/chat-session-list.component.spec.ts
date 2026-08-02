@@ -15,7 +15,7 @@ describe('ChatSessionListComponent', () => {
   let mockDialogRef: MatDialogRef<ConfirmationDialogComponent>;
   let mockDialog: MatDialog;
   let mockAiChatService: AiChatService;
-  let mockToasterService: Pick<ToasterService, 'error'>;
+  let mockToasterService: Pick<ToasterService, 'success' | 'error'>;
 
   const mockController: Controller = {
     authToken: 'test-token',
@@ -65,7 +65,7 @@ describe('ChatSessionListComponent', () => {
       deleteSession: vi.fn(),
     } as any;
 
-    mockToasterService = { error: vi.fn() };
+    mockToasterService = { success: vi.fn(), error: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [ChatSessionListComponent],

@@ -174,6 +174,9 @@ export class ResourcePoolsManagementComponent implements OnInit, AfterViewInit {
           );
           forkJoin(observables).subscribe({
             next: () => {
+              this.toasterService.success(
+                `${resourcePoolToDelete.length} resource ${resourcePoolToDelete.length === 1 ? 'pool' : 'pools'} deleted.`
+              );
               this.refresh();
             },
             error: (err) => {

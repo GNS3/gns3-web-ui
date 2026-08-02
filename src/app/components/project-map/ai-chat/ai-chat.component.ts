@@ -17,7 +17,6 @@ import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { environment } from '../../../../environments/environment';
@@ -30,6 +29,7 @@ import { AiChatService } from '@services/ai-chat.service';
 import { ControllerService } from '@services/controller.service';
 import { AiProfilesService } from '@services/ai-profiles.service';
 import { LoginService } from '@services/login.service';
+import { ToasterService } from '@services/toaster.service';
 import { AiChatStore } from '../../../stores/ai-chat.store';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 import { getModelDisplayName, shortenModelName } from '@utils/ai-profile.util';
@@ -59,7 +59,6 @@ interface HttpErrorLike {
     CommonModule,
     ResizableDirective,
     ResizeHandleDirective,
-    MatSnackBarModule,
     MatIconModule,
     MatButtonModule,
     ChatSessionListComponent,
@@ -121,7 +120,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   private aiProfilesService = inject(AiProfilesService);
   private loginService = inject(LoginService);
   private aiChatStore = inject(AiChatStore);
-  private snackBar = inject(MatSnackBar);
+  private toasterService = inject(ToasterService);
   private cdr = inject(ChangeDetectorRef);
   private boundaryService = inject(WindowBoundaryService);
 
@@ -969,14 +968,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     // Parse and format error message for user-friendly display
     const friendlyMessage = this.parseErrorMessage(displayMessage);
 
-    // Show error using Material Snackbar
-    this.snackBar.open(friendlyMessage, 'Close', {
-      duration: 6000,
-      panelClass: ['ai-chat-snack-error'],
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-      politeness: 'assertive',
-    });
+    this.toasterService.error(friendlyMessage);
   }
 
   /**
@@ -1371,11 +1363,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
               // Show success message
               const modelName = shortenModelName(config.config.model);
-              this.snackBar.open(`Switched to ${modelName}`, 'Close', {
-                duration: 3000,
-                horizontalPosition: 'center',
-                verticalPosition: 'bottom',
-              });
+              this.toasterService.success(`Switched to ${modelName}`);
             },
             error: (error) => {
               this.logError('Failed to set default model:', error);
@@ -1418,11 +1406,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
               // Show success message
               const modeName = mode === 'teaching_assistant' ? 'Teaching Assistant' : 'Lab Automation';
-              this.snackBar.open(`Switched to ${modeName} mode`, 'Close', {
-                duration: 3000,
-                horizontalPosition: 'center',
-                verticalPosition: 'bottom',
-              });
+              this.toasterService.success(`Switched to ${modeName} mode`);
             },
             error: (error) => {
               this.logError('Failed to update copilot mode:', error);

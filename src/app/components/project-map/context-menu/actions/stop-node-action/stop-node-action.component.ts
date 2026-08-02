@@ -7,6 +7,7 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { ProgressService } from '../../../../../common/progress/progress.service';
+import { createActionCompletion } from '@utils/action-completion.util';
 
 @Component({
   selector: 'app-stop-node-action',
@@ -36,17 +37,22 @@ export class StopNodeActionComponent implements OnChanges {
   }
 
   stopNodes() {
-    this.progressService.activate();
+    const nodes = this.nodes() || [];
+    if (nodes.length === 0) return;
 
-    this.nodes().forEach((node) => {
+    this.progressService.activate();
+    const completion = createActionCompletion(nodes.length, (count) => {
+      this.progressService.deactivate();
+      if (count > 0) {
+        this.toasterService.success(`${count} ${count === 1 ? 'node' : 'nodes'} stopped.`);
+      }
+    });
+
+    nodes.forEach((node) => {
       this.nodeService.stop(this.controller(), node).subscribe({
-        next: (n: Node) => {
-          if (this.nodes().indexOf(node) === this.nodes().length - 1) {
-            this.progressService.deactivate();
-          }
-        },
+        next: () => completion.succeed(),
         error: (err) => {
-          this.progressService.deactivate();
+          completion.fail();
           const message = err.error?.message || err.message || 'Failed to stop node';
           this.toasterService.error(message);
           this.cdr.markForCheck();

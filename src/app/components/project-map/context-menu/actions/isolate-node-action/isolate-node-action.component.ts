@@ -22,12 +22,12 @@ export class IsolateNodeActionComponent {
   readonly node = input<Node>(undefined);
 
   isolate() {
-    this.nodeService.isolate(this.controller(), this.node()).subscribe(
-      (n: Node) => {},
-      (error) => {
+    this.nodeService.isolate(this.controller(), this.node()).subscribe({
+      next: () => this.toasterService.success(`Node "${this.node().name}" isolated.`),
+      error: (error) => {
         this.toasterService.error(error.error?.message || error.message || 'Failed to isolate node');
         this.cdr.markForCheck();
-      }
-    );
+      },
+    });
   }
 }

@@ -44,6 +44,25 @@
     </div>
     <div class="project-titlebar-actions">
       <button
+        mat-icon-button
+        type="button"
+        class="project-notifications"
+        matTooltip="Notifications"
+        matTooltipClass="custom-tooltip"
+        matTooltipPosition="below"
+        [attr.aria-label]="notificationCenter.panelOpen() ? 'Close notifications' : 'Open notifications'"
+        aria-controls="notification-center-panel"
+        [attr.aria-expanded]="notificationCenter.panelOpen()"
+        (click)="notificationCenter.togglePanel()"
+      >
+        <mat-icon>{{ notificationCenter.panelOpen() ? 'notifications' : 'notifications_none' }}</mat-icon>
+        @if (notificationCenter.unreadCount() > 0) {
+          <span class="project-notifications__badge">{{
+            notificationCenter.unreadCount() > 99 ? '99+' : notificationCenter.unreadCount()
+          }}</span>
+        }
+      </button>
+      <button
         mat-button
         class="titlebar-action"
         [matMenuTriggerFor]="projectMenu"
@@ -123,7 +142,7 @@
           Show topology/controllers summary </mat-checkbox
         ><br />
         <mat-checkbox [checked]="notificationsVisibility" (change)="toggleNotifications($event.checked)">
-          Show notifications </mat-checkbox
+          Show notification toasts </mat-checkbox
         ><br />
         <mat-checkbox [checked]="layersVisibility" (change)="toggleLayers($event.checked)"> Show layers </mat-checkbox
         ><br />
@@ -405,4 +424,5 @@
   </div>
 </div>
 
+<app-notification-center></app-notification-center>
 <ng-template #topologySummaryContainer></ng-template>

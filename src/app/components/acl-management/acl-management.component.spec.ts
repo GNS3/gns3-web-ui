@@ -104,6 +104,7 @@ describe('AclManagementComponent', () => {
     };
 
     mockToasterService = {
+      success: vi.fn(),
       error: vi.fn(),
     };
 

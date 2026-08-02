@@ -159,6 +159,9 @@ export class SymbolsManagerDialogComponent {
 
     forkJoin(deleteObservables).subscribe({
       next: () => {
+        this.toasterService.success(
+          `${selectedSymbols.length} ${selectedSymbols.length === 1 ? 'symbol' : 'symbols'} deleted.`
+        );
         this.selectedForDeletion.set(new Set());
         this.loadCustomSymbols();
         this.symbolsUpdated.emit();

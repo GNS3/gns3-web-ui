@@ -47,6 +47,7 @@ describe('SuspendLinkActionComponent', () => {
     };
 
     mockToasterService = {
+      success: vi.fn(),
       error: vi.fn(),
     };
 

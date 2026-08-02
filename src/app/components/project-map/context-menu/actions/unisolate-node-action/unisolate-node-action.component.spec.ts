@@ -11,7 +11,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 describe('UnisolateNodeActionComponent', () => {
   let fixture: ComponentFixture<UnisolateNodeActionComponent>;
   let mockNodeService: { unisolate: ReturnType<typeof vi.fn> };
-  let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockToasterService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
 
   const createMockProperties = (): Properties => ({
     adapter_type: '',
@@ -143,7 +143,7 @@ describe('UnisolateNodeActionComponent', () => {
     vi.clearAllMocks();
 
     mockNodeService = { unisolate: vi.fn().mockReturnValue(of({})) };
-    mockToasterService = { error: vi.fn() };
+    mockToasterService = { success: vi.fn(), error: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [UnisolateNodeActionComponent],

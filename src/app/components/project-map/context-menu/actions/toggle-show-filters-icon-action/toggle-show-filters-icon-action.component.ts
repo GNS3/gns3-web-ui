@@ -49,6 +49,10 @@ export class ToggleShowFiltersIconActionComponent {
           mapLink.show_filters_icon = updatedLink.show_filters_icon;
           this.mapLinksDataSource.update(mapLink);
         }
+        this.toasterService.success(
+          `Filter icon ${updatedLink.show_filters_icon ? 'shown' : 'hidden'}.`,
+          { showToast: false }
+        );
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to toggle filter icon visibility';

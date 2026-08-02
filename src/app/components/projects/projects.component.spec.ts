@@ -461,6 +461,35 @@ describe('ProjectsComponent', () => {
     });
   });
 
+  describe('project lifecycle notifications', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+      mockDialog.open.mockReturnValue({
+        afterClosed: vi.fn().mockReturnValue(of(true)),
+        componentInstance: {},
+      });
+      component.dialog = mockDialog;
+    });
+
+    it('should notify after deleting a project', () => {
+      component.delete(mockProjects[0]);
+
+      expect(mockToasterService.success).toHaveBeenCalledWith('Project "Project A" deleted.');
+    });
+
+    it('should notify after opening a project', () => {
+      component.open(mockProjects[0]);
+
+      expect(mockToasterService.success).toHaveBeenCalledWith('Project "Project A" opened.');
+    });
+
+    it('should notify after closing a project', () => {
+      component.close(mockProjects[1]);
+
+      expect(mockToasterService.success).toHaveBeenCalledWith('Project "Project B" closed.');
+    });
+  });
+
   describe('error handling', () => {
     beforeEach(() => {
       vi.clearAllMocks();

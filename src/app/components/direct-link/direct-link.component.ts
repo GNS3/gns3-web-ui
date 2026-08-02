@@ -115,6 +115,7 @@ export class DirectLinkComponent implements OnInit {
 
     this.controllerService.create(controllerToAdd).then(
       (addedController: Controller) => {
+        this.toasterService.success(`Controller "${addedController.name}" added.`);
         this.router.navigate(['/controller', addedController.id, 'project', this.projectId]);
       },
       (err) => {

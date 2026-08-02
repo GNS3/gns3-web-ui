@@ -11,6 +11,7 @@ import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { DrawingService } from '../../../services/drawing.service';
 import { ToolsService } from '../../../services/tools.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-curve-drawing',
@@ -36,6 +37,7 @@ export class CurveDrawingComponent implements OnInit, OnDestroy {
   private drawingsDataSource = inject(DrawingsDataSource);
   private drawingService = inject(DrawingService);
   private toolsService = inject(ToolsService);
+  private toasterService = inject(ToasterService);
 
   ngOnInit() {
     this.svgSelection = select(this.svg());
@@ -202,8 +204,15 @@ export class CurveDrawingComponent implements OnInit, OnDestroy {
       minX,
       minY,
       svgContent
-    ).subscribe((drawing: Drawing) => {
-      this.drawingsDataSource.add(drawing);
+    ).subscribe({
+      next: (drawing: Drawing) => {
+        this.drawingsDataSource.add(drawing);
+        this.toasterService.success('Curve created.');
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to create curve';
+        this.toasterService.error(message);
+      },
     });
   }
 

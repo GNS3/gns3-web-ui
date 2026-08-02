@@ -9,6 +9,7 @@
 // ============================================= */
 :host {
   --gns3-project-titlebar-height: 56px;
+  --gns3-notification-anchor-height: var(--gns3-project-titlebar-height);
 }
 
 .shadow-subtle {
@@ -146,6 +147,32 @@ g.node:hover {
     align-items: center;
     gap: 4px;
     flex-shrink: 0;
+  }
+
+  .project-notifications {
+    position: relative;
+    color: var(--mat-sys-on-primary);
+    --mat-icon-button-icon-color: var(--mat-sys-on-primary);
+  }
+
+  .project-notifications__badge {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    color: var(--mat-sys-on-error);
+    background: var(--mat-sys-error);
+    border: 2px solid var(--mat-sys-primary);
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
   }
 
   .titlebar-action {

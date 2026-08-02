@@ -21,7 +21,7 @@ describe('UserManagementComponent', () => {
     delete: ReturnType<typeof vi.fn>;
   };
   let controllerService: { get: ReturnType<typeof vi.fn> };
-  let toasterService: { error: ReturnType<typeof vi.fn> };
+  let toasterService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
   let progressService: { setError: ReturnType<typeof vi.fn> };
   let dialog: { open: ReturnType<typeof vi.fn> };
   let location: { back: ReturnType<typeof vi.fn> };
@@ -74,7 +74,7 @@ describe('UserManagementComponent', () => {
       delete: vi.fn().mockReturnValue(of(null)),
     };
     controllerService = { get: vi.fn().mockResolvedValue(controller) };
-    toasterService = { error: vi.fn() };
+    toasterService = { success: vi.fn(), error: vi.fn() };
     progressService = { setError: vi.fn() };
     location = { back: vi.fn() };
     dialog = {
@@ -178,6 +178,7 @@ describe('UserManagementComponent', () => {
 
     expect(userService.delete).toHaveBeenCalledWith(controller, user.user_id);
     expect(userService.list).toHaveBeenCalledTimes(2);
+    expect(toasterService.success).toHaveBeenCalledWith(`User "${user.username}" deleted.`);
   });
 
   it('reports user-list errors without leaving the loading state active', () => {

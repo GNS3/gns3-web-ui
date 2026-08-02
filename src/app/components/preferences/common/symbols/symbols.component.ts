@@ -206,6 +206,7 @@ export class SymbolsComponent implements OnInit {
       if (result) {
         this.symbolService.delete(this.controller(), symbol.symbol_id).subscribe({
           next: () => {
+            this.toasterService.success(`Symbol "${symbol.filename}" deleted.`);
             this.loadSymbols();
           },
           error: (err) => {
@@ -322,6 +323,9 @@ export class SymbolsComponent implements OnInit {
         // Use forkJoin to wait for all deletions
         forkJoin(deleteObservables).subscribe({
           next: () => {
+            this.toasterService.success(
+              `${selectedSymbols.length} ${selectedSymbols.length === 1 ? 'symbol' : 'symbols'} deleted.`
+            );
             this.selectedForDeletion.set(new Set());
             this.loadSymbols();
           },

@@ -25,7 +25,7 @@ export class SuspendLinkActionComponent {
     const link = this.link();
     link.suspend = true;
     this.linkService.updateLink(this.controller(), link).subscribe({
-        next: () => {},
+        next: () => this.toasterService.success('Link suspended.'),
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to suspend link';
           this.toasterService.error(message);

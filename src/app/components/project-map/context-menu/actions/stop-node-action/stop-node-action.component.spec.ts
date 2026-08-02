@@ -16,7 +16,7 @@ describe('StopNodeActionComponent', () => {
   let component: StopNodeActionComponent;
   let fixture: ComponentFixture<StopNodeActionComponent>;
   let mockNodeService: { stop: ReturnType<typeof vi.fn> };
-  let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockToasterService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
   let mockProgressService: { activate: ReturnType<typeof vi.fn>; deactivate: ReturnType<typeof vi.fn> };
   let mockChangeDetectorRef: { markForCheck: ReturnType<typeof vi.fn> };
 
@@ -71,7 +71,7 @@ describe('StopNodeActionComponent', () => {
     vi.clearAllMocks();
 
     mockNodeService = { stop: vi.fn().mockReturnValue(of({})) };
-    mockToasterService = { error: vi.fn() };
+    mockToasterService = { success: vi.fn(), error: vi.fn() };
     mockProgressService = { activate: vi.fn(), deactivate: vi.fn() };
     mockChangeDetectorRef = { markForCheck: vi.fn() };
 

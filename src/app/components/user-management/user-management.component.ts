@@ -31,6 +31,7 @@ import { AddUserDialogComponent } from './add-user-dialog/add-user-dialog.compon
 import { AiProfileDialogComponent, AiProfileDialogData } from './ai-profile-dialog/ai-profile-dialog.component';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { UserDetailDialogComponent, UserDetailDialogData } from './user-detail-dialog/user-detail-dialog.component';
+import { createActionCompletion } from '@utils/action-completion.util';
 
 type UserViewMode = 'list' | 'grid';
 type UserScope = 'all' | 'active' | 'administrators';
@@ -296,6 +297,7 @@ export class UserManagementComponent implements OnInit {
         }
         this.userService.delete(this.controller, user.user_id).subscribe({
           next: () => {
+            this.toasterService.success(`User "${user.username}" deleted.`);
             if (this.selectedUser()?.user_id === user.user_id) {
               this.closeDetails();
             }
@@ -329,10 +331,17 @@ export class UserManagementComponent implements OnInit {
         if (!confirmed) {
           return;
         }
+        const completion = createActionCompletion(users.length, (count) => {
+          if (count > 0) {
+            this.toasterService.success(`${count} ${count === 1 ? 'user' : 'users'} deleted.`);
+            this.refresh();
+          }
+        });
         users.forEach((user) => {
           this.userService.delete(this.controller, user.user_id).subscribe({
-            next: () => this.refresh(),
+            next: () => completion.succeed(),
             error: (err) => {
+              completion.fail();
               this.toasterService.error(err.error?.message || err.message || `Failed to delete user ${user.username}`);
               this.cd.markForCheck();
             },

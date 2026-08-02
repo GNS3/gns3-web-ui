@@ -180,6 +180,7 @@ export class ChatSessionListComponent {
       next: () => {
         // Emit event to notify parent to remove from store
         this.sessionDeleted.emit(session.thread_id);
+        this.toasterService.success(`Chat "${session.title || 'New chat'}" deleted.`);
       },
       error: (error) => {
         const message = error?.error?.message || error?.message || 'Failed to delete session';

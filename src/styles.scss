@@ -71,39 +71,21 @@
 }
 
 /* =============================================
-// ToasterService Snackbar Styles
-// Material 3 themed notification styles
+// Notification toast overlay
 // ============================================= */
-.snackabar-success {
-  .mat-mdc-snack-bar-surface {
-    background-color: var(--mat-sys-primary);
-    color: var(--mat-sys-on-primary);
-    border-radius: 8px;
-  }
-  .mat-mdc-snack-bar-label {
-    white-space: pre-line;
-  }
-}
+.gns3-toast-panel.mat-mdc-snack-bar-container {
+  --mat-snack-bar-container-color: transparent;
+  --mat-snack-bar-supporting-text-color: var(--mat-sys-on-surface);
 
-.snackabar-warning {
-  .mat-mdc-snack-bar-surface {
-    background-color: var(--mat-sys-tertiary);
-    color: var(--mat-sys-on-tertiary);
-    border-radius: 8px;
+  .mat-mdc-snackbar-surface {
+    min-width: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
   }
-  .mat-mdc-snack-bar-label {
-    white-space: pre-line;
-  }
-}
 
-.snackabar-error {
-  .mat-mdc-snack-bar-surface {
-    background-color: var(--mat-sys-error);
-    color: var(--mat-sys-on-error);
-    border-radius: 8px;
-  }
   .mat-mdc-snack-bar-label {
-    white-space: pre-line;
+    padding: 0;
   }
 }
 

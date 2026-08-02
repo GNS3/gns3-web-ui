@@ -50,7 +50,7 @@ describe('MarkerManagerComponent', () => {
         { provide: MapLinksDataSource, useValue: { get: vi.fn(), update: vi.fn() } },
         { provide: NodesDataSource, useValue: { get: vi.fn(), getItems: vi.fn(() => []) } },
         { provide: MarkerRegistryService, useValue: registry },
-        { provide: ToasterService, useValue: { error: vi.fn() } },
+        { provide: ToasterService, useValue: { success: vi.fn(), error: vi.fn() } },
         {
           provide: WindowBoundaryService,
           useValue: { setConfig: vi.fn(), constrainResizeSize: vi.fn() },

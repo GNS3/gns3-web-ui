@@ -6,6 +6,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { createActionCompletion } from '@utils/action-completion.util';
 
 @Component({
   selector: 'app-reload-node-action',
@@ -38,10 +39,17 @@ export class ReloadNodeActionComponent implements OnInit {
   }
 
   reloadNodes() {
+    const completion = createActionCompletion(this.filteredNodes.length, (count) => {
+      if (count > 0) {
+        this.toasterService.success(`${count} ${count === 1 ? 'node' : 'nodes'} reloaded.`);
+      }
+    });
+
     this.filteredNodes.forEach((node) => {
       this.nodeService.reload(this.controller(), node).subscribe({
-        next: (n: Node) => {},
+        next: () => completion.succeed(),
         error: (err) => {
+          completion.fail();
           const message = err.error?.message || err.message || 'Failed to reload node';
           this.toasterService.error(message);
           this.cdr.markForCheck();

@@ -130,6 +130,7 @@ export class PacketFiltersDialogComponent implements OnInit {
 
     this.linkService.updateLink(this.controller, this.link).subscribe({
       next: (link: Link) => {
+        this.toasterService.success('Packet filters reset.');
         this.dialogRef.close();
         this.cdr.markForCheck();
       },
@@ -145,6 +146,7 @@ export class PacketFiltersDialogComponent implements OnInit {
     this.link.filters = this.filters;
     this.linkService.updateLink(this.controller, this.link).subscribe({
       next: (link: Link) => {
+        this.toasterService.success('Packet filters applied.');
         this.dialogRef.close();
         this.cdr.markForCheck();
       },

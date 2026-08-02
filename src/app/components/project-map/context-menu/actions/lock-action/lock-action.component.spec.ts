@@ -28,7 +28,7 @@ describe('LockActionComponent', () => {
   let mockNodeService: NodeService;
   let mockDrawingService: DrawingService;
   let mockProjectService: ProjectService;
-  let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockToasterService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
   let mockCdr: { markForCheck: ReturnType<typeof vi.fn> };
 
   const mockController: Controller = {
@@ -81,7 +81,7 @@ describe('LockActionComponent', () => {
       projectUpdateLockIcon: vi.fn(),
     } as any;
 
-    mockToasterService = { error: vi.fn() };
+    mockToasterService = { success: vi.fn(), error: vi.fn() };
     mockCdr = { markForCheck: vi.fn() };
 
     await TestBed.configureTestingModule({

@@ -37,6 +37,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { NotificationCenterComponent } from '@components/notification-center/notification-center.component';
+import { NotificationCenterService } from '@services/notification-center.service';
 
 @Component({
   selector: 'app-default-layout',
@@ -53,6 +55,7 @@ import { CommonModule } from '@angular/common';
     MatSidenavModule,
     MatListModule,
     ProgressComponent,
+    NotificationCenterComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -84,12 +87,15 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   private cd = inject(ChangeDetectorRef);
   private connectionManager = inject(ConnectionManagerService);
   private breakpointObserver = inject(BreakpointObserver);
+  readonly notificationCenter = inject(NotificationCenterService);
 
   ngOnInit() {
+    this.notificationCenter.closePanel();
     // Use filter and proper subscription for NavigationEnd
     this.routeSubscription = this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe(() => {
+        this.notificationCenter.closePanel();
         // Recursively traverse the route tree to find controller_id
         this.controllerId = this.getParamFromRoute(this.route, 'controller_id');
         this.getData();

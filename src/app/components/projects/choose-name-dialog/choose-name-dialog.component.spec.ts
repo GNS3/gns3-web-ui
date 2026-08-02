@@ -67,8 +67,8 @@ describe('ChooseNameDialogComponent', () => {
     };
 
     mockToasterService = {
-      error: vi.fn(),
       success: vi.fn(),
+      error: vi.fn(),
     };
 
     mockController = createMockController();

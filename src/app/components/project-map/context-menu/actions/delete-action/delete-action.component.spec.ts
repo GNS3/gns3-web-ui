@@ -107,6 +107,7 @@ describe('DeleteActionComponent', () => {
     } as any;
 
     mockToasterService = {
+      success: vi.fn(),
       error: vi.fn(),
     } as any;
 
@@ -143,7 +144,7 @@ describe('DeleteActionComponent', () => {
         autoFocus: '.cancel-button',
         data: {
           title: 'Delete selected objects?',
-          message: '0 selected objects will be permanently deleted.',
+          message: '0 objects will be permanently deleted.',
           note: 'This action cannot be undone.',
           confirmButtonText: 'Delete objects',
           tone: 'danger',
@@ -193,6 +194,7 @@ describe('DeleteActionComponent', () => {
       component.delete();
 
       expect(mockNodeService.delete).toHaveBeenCalledWith(mockController, node);
+      expect(mockToasterService.success).toHaveBeenCalledWith('1 node deleted.');
     });
 
     it('should show error and skip locked nodes', () => {
@@ -244,6 +246,7 @@ describe('DeleteActionComponent', () => {
       component.delete();
 
       expect(mockDrawingService.delete).toHaveBeenCalledWith(mockController, drawing);
+      expect(mockToasterService.success).toHaveBeenCalledWith('1 drawing deleted.');
     });
 
     it('should show error and skip locked drawings', () => {
@@ -273,6 +276,7 @@ describe('DeleteActionComponent', () => {
 
       expect(mockLinksDataSource.remove).toHaveBeenCalledWith(link);
       expect(mockLinkService.deleteLink).toHaveBeenCalledWith(mockController, link);
+      expect(mockToasterService.success).toHaveBeenCalledWith('1 link deleted.');
     });
 
     it('should not delete links when nodes exist', () => {

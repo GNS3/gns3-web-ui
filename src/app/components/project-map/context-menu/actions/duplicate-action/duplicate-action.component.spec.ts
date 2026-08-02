@@ -95,6 +95,7 @@ describe('DuplicateActionComponent', () => {
     };
 
     mockToasterService = {
+      success: vi.fn(),
       error: vi.fn(),
     };
 

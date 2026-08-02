@@ -57,6 +57,7 @@ describe('DirectLinkComponent', () => {
     mockControllerDatabase = {};
 
     mockToasterService = {
+      success: vi.fn(),
       error: vi.fn(),
     };
 

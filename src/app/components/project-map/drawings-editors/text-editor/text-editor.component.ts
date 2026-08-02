@@ -177,6 +177,7 @@ export class TextEditorDialogComponent implements OnInit {
         this.nodeService.updateLabel(this.controller, this.node, this.node.label).subscribe({
           next: (node: Node) => {
             this.nodesDataSource.update(node);
+            this.toasterService.success('Node label updated.');
             this.dialogRef.close();
             this.cdr.markForCheck();
           },
@@ -194,6 +195,7 @@ export class TextEditorDialogComponent implements OnInit {
         this.linkService.updateLink(this.controller, this.link).subscribe({
           next: (link: Link) => {
             this.linksDataSource.update(link);
+            this.toasterService.success('Link label updated.');
             this.dialogRef.close();
             this.cdr.markForCheck();
           },
@@ -215,6 +217,7 @@ export class TextEditorDialogComponent implements OnInit {
         this.drawingService.update(this.controller, this.drawing).subscribe({
           next: (controllerDrawing: Drawing) => {
             this.drawingsDataSource.update(controllerDrawing);
+            this.toasterService.success('Drawing text updated.');
             this.dialogRef.close();
             this.cdr.markForCheck();
           },

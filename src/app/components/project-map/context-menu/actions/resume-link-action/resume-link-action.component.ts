@@ -25,7 +25,7 @@ export class ResumeLinkActionComponent {
     const link = this.link();
     link.suspend = false;
     this.linkService.updateLink(this.controller(), link).subscribe({
-        next: () => {},
+        next: () => this.toasterService.success('Link resumed.'),
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to resume link';
           this.toasterService.error(message);

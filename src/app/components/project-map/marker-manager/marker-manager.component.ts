@@ -412,6 +412,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
 
     const editing = this.editingDefinition();
     const done = () => {
+      this.toasterService.success(`Marker definition "${body.name}" ${editing ? 'updated' : 'created'}.`);
       this.cancelEditDefinition();
       this.loadDefinitions();
       // The fan-out emits link.updated → registry reconciles (legend/icons); also refresh
@@ -419,7 +420,9 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
       this.loadAggregate();
     };
     const fail = (err: any) => {
-      this.defError.set(err.error?.message || err.message || 'Failed to save definition');
+      const message = err.error?.message || err.message || 'Failed to save definition';
+      this.defError.set(message);
+      this.toasterService.error(message);
       this.cdr.markForCheck();
     };
 
@@ -466,12 +469,15 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     this.defError.set(null);
     this.markerService.deleteDefinition(controller, project.project_id, row.name).subscribe({
       next: () => {
+        this.toasterService.success(`Marker definition "${row.name}" deleted.`);
         if (this.editingDefinition() === row.name) this.cancelEditDefinition();
         this.loadDefinitions();
         this.loadAggregate();
       },
       error: (err) => {
-        this.defError.set(err.error?.message || err.message || 'Failed to delete definition');
+        const message = err.error?.message || err.message || 'Failed to delete definition';
+        this.defError.set(message);
+        this.toasterService.error(message);
         this.cdr.markForCheck();
       },
     });
@@ -542,6 +548,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
 
     this.markerService.create(controller, project.project_id, linkId, body).subscribe({
       next: () => {
+        this.toasterService.success(`Marker "${body.name}" created.`);
         if (this.selectedLinkId()) {
           this.markerForm.reset();
         } else {
@@ -551,7 +558,9 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
         this.loadAggregate();
       },
       error: (err) => {
-        this.linkError.set(err.error?.message || err.message || 'Failed to create marker');
+        const message = err.error?.message || err.message || 'Failed to create marker';
+        this.linkError.set(message);
+        this.toasterService.error(message);
         this.cdr.markForCheck();
       },
     });
@@ -564,11 +573,14 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     this.linkError.set(null);
     this.markerService.delete(controller, project.project_id, linkId, name).subscribe({
       next: () => {
+        this.toasterService.success(`Marker "${name}" deleted.`);
         this.refreshLink(linkId);
         this.loadAggregate();
       },
       error: (err) => {
-        this.linkError.set(err.error?.message || err.message || 'Failed to delete marker');
+        const message = err.error?.message || err.message || 'Failed to delete marker';
+        this.linkError.set(message);
+        this.toasterService.error(message);
         this.cdr.markForCheck();
       },
     });
@@ -615,12 +627,15 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
 
     this.markerService.update(controller, project.project_id, linkId, editing.name, body).subscribe({
       next: () => {
+        this.toasterService.success(`Marker "${editing.name}" updated.`);
         this.editingMarker.set(null);
         this.refreshLink(linkId);
         this.loadAggregate();
       },
       error: (err) => {
-        this.linkError.set(err.error?.message || err.message || 'Failed to update marker');
+        const message = err.error?.message || err.message || 'Failed to update marker';
+        this.linkError.set(message);
+        this.toasterService.error(message);
         this.cdr.markForCheck();
       },
     });

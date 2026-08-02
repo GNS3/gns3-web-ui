@@ -40,8 +40,8 @@ describe('QemuImageCreatorComponent', () => {
     };
 
     mockToasterService = {
-      error: vi.fn(),
       success: vi.fn(),
+      error: vi.fn(),
     };
 
     mockQemuService = {

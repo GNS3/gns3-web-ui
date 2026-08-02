@@ -124,6 +124,11 @@ import { TextAddedComponent } from '../drawings-listeners/text-added/text-added.
 import { MarkerLegendComponent } from './marker-legend/marker-legend.component';
 import { MarkerManagerComponent } from './marker-manager/marker-manager.component';
 import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edited.component';
+import { createActionCompletion } from '@utils/action-completion.util';
+import { NotificationCenterComponent } from '@components/notification-center/notification-center.component';
+import { NotificationCenterService } from '@services/notification-center.service';
+import { describeTopologyItems } from '@utils/topology-delete-summary.util';
+import type { TopologyItemCounts } from '@utils/topology-delete-summary.util';
 
 @Component({
   selector: 'app-project-map',
@@ -162,6 +167,7 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
     TextEditedComponent,
     MarkerLegendComponent,
     MarkerManagerComponent,
+    NotificationCenterComponent,
   ],
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
@@ -298,6 +304,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private ethernetLinkWidget = inject(EthernetLinkWidget);
   private serialLinkWidget = inject(SerialLinkWidget);
   private notificationService = inject(NotificationService);
+  readonly notificationCenter = inject(NotificationCenterService);
   private title = inject(Title);
   private nodeConsoleService = inject(NodeConsoleService);
   private symbolService = inject(SymbolService);
@@ -307,6 +314,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public windowManagement = inject(WindowManagementService);
 
   ngOnInit() {
+    this.notificationCenter.closePanel();
     this.getSettings();
     this.progressService.activate();
 
@@ -639,26 +647,49 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   deleteItems() {
     const selected = this.selectionManager.getSelected();
+    const selectedNodes = selected.filter((item) => item instanceof MapNode);
+    const selectedLinks = selected.filter((item) => item instanceof MapLink);
+    const selectedDrawings = selected.filter((item) => item instanceof MapDrawing);
+    const selectedCounts: TopologyItemCounts = {
+      nodes: selectedNodes.length,
+      links: selectedLinks.length,
+      drawings: selectedDrawings.length,
+    };
+    const selectedCount = selectedNodes.length + selectedLinks.length + selectedDrawings.length;
+    if (selectedCount === 0) return;
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-danger-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Delete selected objects?',
-        message: `${selected.length} selected ${selected.length === 1 ? 'object' : 'objects'} will be permanently deleted.`,
+        message: `${describeTopologyItems(selectedCounts)} will be permanently deleted.`,
         note: 'This action cannot be undone.',
-        confirmButtonText: selected.length === 1 ? 'Delete object' : 'Delete objects',
+        confirmButtonText: selectedCount === 1 ? 'Delete object' : 'Delete objects',
         tone: 'danger',
       },
     });
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
-        selected
-          .filter((item) => item instanceof MapNode)
+        const deletedCounts: TopologyItemCounts = { nodes: 0, links: 0, drawings: 0 };
+        const completion = createActionCompletion(
+          selectedNodes.length + selectedLinks.length + selectedDrawings.length,
+          (count) => {
+            if (count > 0) {
+              this.toasterService.success(`${describeTopologyItems(deletedCounts)} deleted.`);
+            }
+          }
+        );
+
+        selectedNodes
           .forEach((item: MapNode) => {
             const node = this.mapNodeToNode.convert(item);
             this.nodeService.delete(this.controller, node).subscribe({
-              next: () => this.toasterService.success('Node has been deleted'),
+              next: () => {
+                deletedCounts.nodes++;
+                completion.succeed();
+              },
               error: (err) => {
+                completion.fail();
                 const message = err.error?.message || err.message || 'Failed to delete node';
                 this.toasterService.error(message);
                 this.cd.markForCheck();
@@ -666,13 +697,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             });
           });
 
-        selected
-          .filter((item) => item instanceof MapLink)
+        selectedLinks
           .forEach((item: MapLink) => {
             const link = this.mapLinkToLink.convert(item);
             this.linkService.deleteLink(this.controller, link).subscribe({
-              next: () => this.toasterService.success('Link has been deleted'),
+              next: () => {
+                deletedCounts.links++;
+                completion.succeed();
+              },
               error: (err) => {
+                completion.fail();
                 const message = err.error?.message || err.message || 'Failed to delete link';
                 this.toasterService.error(message);
                 this.cd.markForCheck();
@@ -680,13 +714,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             });
           });
 
-        selected
-          .filter((item) => item instanceof MapDrawing)
+        selectedDrawings
           .forEach((item: MapDrawing) => {
             const drawing = this.mapDrawingToDrawing.convert(item);
             this.drawingService.delete(this.controller, drawing).subscribe({
-              next: () => this.toasterService.success('Drawing has been deleted'),
+              next: () => {
+                deletedCounts.drawings++;
+                completion.succeed();
+              },
               error: (err) => {
+                completion.fail();
                 const message = err.error?.message || err.message || 'Failed to delete drawing';
                 this.toasterService.error(message);
                 this.cd.markForCheck();
@@ -1681,7 +1718,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.drawingService
         .add(this.controller, this.project.project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)
         .subscribe({
-          next: () => {},
+          next: () => this.toasterService.success('Image added to the topology.'),
           error: (err) => {
             const message = err.error?.message || err.message || 'Failed to add image';
             this.toasterService.error(message);
@@ -1712,6 +1749,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       if (result) {
         this.projectService.close(this.controller, this.project.project_id).subscribe({
           next: () => {
+            this.toasterService.success(`Project "${this.project.name}" closed.`);
             this.router.navigate(['/controller', this.controller.id, 'projects']);
           },
           error: (err) => {
@@ -1740,6 +1778,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       if (result) {
         this.projectService.delete(this.controller, this.project.project_id).subscribe({
           next: () => {
+            this.toasterService.success(`Project "${this.project.name}" deleted.`);
             this.router.navigate(['/controller', this.controller.id, 'projects']);
           },
           error: (err) => {
@@ -1765,6 +1804,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.destroyed = true;
+    this.notificationCenter.closePanel();
 
     // Close AI Chat when leaving project
     this.onLeaveProject();

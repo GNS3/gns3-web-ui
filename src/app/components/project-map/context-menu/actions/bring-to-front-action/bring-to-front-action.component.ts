@@ -10,6 +10,7 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { createActionCompletion } from '@utils/action-completion.util';
 
 @Component({
   selector: 'app-bring-to-front-action',
@@ -30,10 +31,16 @@ export class BringToFrontActionComponent {
   readonly drawings = input<Drawing[]>([]);
 
   bringToFront() {
+    const operationCount = this.nodes().length + this.drawings().length;
+    if (operationCount === 0) return;
+
     let maxZValueForNodes = Math.max(...this.nodes().map((n) => n.z));
     let maxZValueForDrawings = Math.max(...this.drawings().map((n) => n.z));
     let maxZValue = Math.max(maxZValueForNodes, maxZValueForDrawings);
     if (maxZValue < 100) maxZValue++;
+    const completion = createActionCompletion(operationCount, (count) => {
+      if (count > 0) this.toasterService.success('Selection brought to front.', { showToast: false });
+    });
 
     this.nodes().forEach((node) => {
       node.z = maxZValue;
@@ -41,9 +48,11 @@ export class BringToFrontActionComponent {
 
       this.nodeService.update(this.controller(), node).subscribe({
         next: () => {
+          completion.succeed();
           this.cdr.markForCheck();
         },
         error: (err) => {
+          completion.fail();
           const message = err.error?.message || err.message || 'Failed to bring node to front';
           this.toasterService.error(message);
           this.cdr.markForCheck();
@@ -57,9 +66,11 @@ export class BringToFrontActionComponent {
 
       this.drawingService.update(this.controller(), drawing).subscribe({
         next: () => {
+          completion.succeed();
           this.cdr.markForCheck();
         },
         error: (err) => {
+          completion.fail();
           const message = err.error?.message || err.message || 'Failed to bring drawing to front';
           this.toasterService.error(message);
           this.cdr.markForCheck();

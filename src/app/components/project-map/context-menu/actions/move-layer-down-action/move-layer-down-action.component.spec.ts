@@ -17,7 +17,7 @@ describe('MoveLayerDownActionComponent', () => {
   let fixture: ComponentFixture<MoveLayerDownActionComponent>;
   let mockNodeService: { update: ReturnType<typeof vi.fn> };
   let mockDrawingService: { update: ReturnType<typeof vi.fn> };
-  let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockToasterService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
   let mockNodesDataSource: { update: ReturnType<typeof vi.fn> };
   let mockDrawingsDataSource: { update: ReturnType<typeof vi.fn> };
   let mockCdr: { markForCheck: ReturnType<typeof vi.fn> };
@@ -88,7 +88,7 @@ describe('MoveLayerDownActionComponent', () => {
 
     mockNodeService = { update: vi.fn().mockReturnValue(of({})) };
     mockDrawingService = { update: vi.fn().mockReturnValue(of({})) };
-    mockToasterService = { error: vi.fn() };
+    mockToasterService = { success: vi.fn(), error: vi.fn() };
     mockNodesDataSource = { update: vi.fn() };
     mockDrawingsDataSource = { update: vi.fn() };
     mockCdr = { markForCheck: vi.fn() };

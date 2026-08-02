@@ -110,6 +110,7 @@ describe('ProjectMapMenuComponent', () => {
     };
 
     mockToasterService = {
+      success: vi.fn(),
       error: vi.fn(),
     };
 

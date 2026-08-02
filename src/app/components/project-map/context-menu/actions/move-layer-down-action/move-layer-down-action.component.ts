@@ -10,6 +10,7 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { createActionCompletion } from '@utils/action-completion.util';
 
 @Component({
   selector: 'app-move-layer-down-action',
@@ -30,13 +31,18 @@ export class MoveLayerDownActionComponent {
   readonly drawings = input<Drawing[]>(undefined);
 
   moveLayerDown() {
+    const completion = createActionCompletion(this.nodes().length + this.drawings().length, (count) => {
+      if (count > 0) this.toasterService.success('Selection moved one layer down.', { showToast: false });
+    });
+
     this.nodes().forEach((node) => {
       node.z--;
       this.nodesDataSource.update(node);
 
       this.nodeService.update(this.controller(), node).subscribe({
-        next: (node: Node) => {},
+        next: () => completion.succeed(),
         error: (err) => {
+          completion.fail();
           const message = err.error?.message || err.message || 'Failed to move layer down';
           this.toasterService.error(message);
           this.cdr.markForCheck();
@@ -49,8 +55,9 @@ export class MoveLayerDownActionComponent {
       this.drawingsDataSource.update(drawing);
 
       this.drawingService.update(this.controller(), drawing).subscribe({
-        next: (drawing: Drawing) => {},
+        next: () => completion.succeed(),
         error: (err) => {
+          completion.fail();
           const message = err.error?.message || err.message || 'Failed to move layer down';
           this.toasterService.error(message);
           this.cdr.markForCheck();

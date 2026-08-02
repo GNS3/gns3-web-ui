@@ -280,6 +280,7 @@ export class StyleEditorDialogComponent implements OnInit {
       this.drawingService.update(this.controller, this.drawing).subscribe({
         next: (controllerDrawing: Drawing) => {
           this.drawingsDataSource.update(controllerDrawing);
+          this.toasterService.success('Drawing style updated.');
           this.dialogRef.close();
         },
         error: (err) => {

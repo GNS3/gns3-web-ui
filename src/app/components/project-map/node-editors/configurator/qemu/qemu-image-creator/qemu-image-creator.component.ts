@@ -107,6 +107,7 @@ export class QemuImageCreatorComponent {
 
     this.qemuService.createDiskImage(this.controller, this.projectId, this.nodeId, this.diskName(), options).subscribe({
       next: () => {
+        this.toasterService.success(`Disk image "${this.diskName()}" created.`);
         this.dialogRef.close({ mountPoint: this.mountPoint(), filename: this.diskName() });
       },
       error: (error) => {

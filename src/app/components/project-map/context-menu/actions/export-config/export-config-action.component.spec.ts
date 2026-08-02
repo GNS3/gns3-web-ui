@@ -20,7 +20,7 @@ describe('ExportConfigActionComponent', () => {
     getPrivateConfiguration: ReturnType<typeof vi.fn>;
   };
   let mockDialog: { open: ReturnType<typeof vi.fn> };
-  let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockToasterService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
   let mockDialogRef: { afterClosed: ReturnType<typeof vi.fn>; componentInstance: Record<string, unknown> };
 
   const createMockController = (): Controller => ({
@@ -76,7 +76,7 @@ describe('ExportConfigActionComponent', () => {
       componentInstance: {},
     };
     mockDialog = { open: vi.fn().mockReturnValue(mockDialogRef) };
-    mockToasterService = { error: vi.fn() };
+    mockToasterService = { success: vi.fn(), error: vi.fn() };
     mockNodeService = {
       getStartupConfiguration: vi.fn().mockReturnValue(of('mock startup config')),
       getPrivateConfiguration: vi.fn().mockReturnValue(of('mock private config')),

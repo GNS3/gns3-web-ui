@@ -580,6 +580,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
     this.drawingService.lockAllNodes(this.controller(), this.project()).subscribe({
       next: (res) => {
+        this.toaster.success('All topology objects locked.');
         // Ensure update happens in next tick
         setTimeout(() => {
           this.lock = 'lock';
@@ -601,6 +602,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
     this.drawingService.unLockAllNodes(this.controller(), this.project()).subscribe({
       next: (res) => {
+        this.toaster.success('All topology objects unlocked.');
         // Ensure update happens in next tick
         setTimeout(() => {
           this.lock = 'lock_open';
@@ -640,7 +642,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       this.drawingService
         .add(this.controller(), this.project().project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)
         .subscribe({
-          next: () => {},
+          next: () => this.toaster.success('Image added to the topology.'),
           error: (err) => {
             const message = err.error?.message || err.message || 'Failed to add image';
             this.toaster.error(message);

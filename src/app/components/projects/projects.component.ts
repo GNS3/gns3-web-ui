@@ -390,6 +390,7 @@ export class ProjectsComponent implements OnInit {
         this.setProjectLoading(project.project_id, true);
         this.projectService.delete(this.controller, project.project_id).subscribe({
           next: () => {
+            this.toasterService.success(`Project "${project.name}" deleted.`);
             this.refresh();
           },
           error: (err) => {
@@ -410,6 +411,7 @@ export class ProjectsComponent implements OnInit {
 
     this.projectService.open(this.controller, project.project_id).subscribe({
       next: () => {
+        this.toasterService.success(`Project "${project.name}" opened.`);
         this.refresh();
       },
       error: (err) => {
@@ -441,6 +443,7 @@ export class ProjectsComponent implements OnInit {
         this.setProjectLoading(project.project_id, true);
         this.projectService.close(this.controller, project.project_id).subscribe({
           next: () => {
+            this.toasterService.success(`Project "${project.name}" closed.`);
             this.refresh();
             this.progressService.deactivate();
           },

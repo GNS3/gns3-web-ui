@@ -3,7 +3,6 @@ import { ChangeDetectorRef, Component, Input, Output, EventEmitter } from '@angu
 import { Subject, of, throwError } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ResizeEvent } from 'angular-resizable-element';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { AiChatComponent } from './ai-chat.component';
@@ -11,6 +10,7 @@ import { AiChatService } from '@services/ai-chat.service';
 import { ControllerService } from '@services/controller.service';
 import { AiProfilesService } from '@services/ai-profiles.service';
 import { LoginService } from '@services/login.service';
+import { ToasterService } from '@services/toaster.service';
 import { AiChatStore } from '../../../stores/ai-chat.store';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 import { Project } from '@models/project';
@@ -74,7 +74,7 @@ describe('AiChatComponent', () => {
   let mockAiProfilesService: any;
   let mockLoginService: any;
   let mockAiChatStore: any;
-  let mockSnackBar: any;
+  let mockToasterService: any;
   let mockBoundaryService: any;
   let mockChangeDetectorRef: any;
 
@@ -186,8 +186,9 @@ describe('AiChatComponent', () => {
       resetSessionState: vi.fn(),
     };
 
-    mockSnackBar = {
-      open: vi.fn(),
+    mockToasterService = {
+      success: vi.fn(),
+      error: vi.fn(),
     };
 
     mockBoundaryService = {
@@ -217,7 +218,7 @@ describe('AiChatComponent', () => {
             { provide: AiProfilesService, useValue: mockAiProfilesService },
             { provide: LoginService, useValue: mockLoginService },
             { provide: AiChatStore, useValue: mockAiChatStore },
-            { provide: MatSnackBar, useValue: mockSnackBar },
+            { provide: ToasterService, useValue: mockToasterService },
             { provide: WindowBoundaryService, useValue: mockBoundaryService },
             { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
           ],

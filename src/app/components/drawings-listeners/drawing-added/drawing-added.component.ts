@@ -77,6 +77,7 @@ export class DrawingAddedComponent implements OnInit, OnDestroy, OnChanges {
         next: (controllerDrawing: Drawing) => {
           this.drawingsDataSource.add(controllerDrawing);
           this.drawingSaved.emit(true);
+          this.toasterService.success('Drawing created.');
         },
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to create drawing';

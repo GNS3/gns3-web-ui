@@ -40,6 +40,7 @@ export class ChooseNameDialogComponent implements OnInit {
   onSaveClick() {
     this.projectService.duplicate(this.controller, this.project.project_id, this.name()).subscribe({
       next: () => {
+        this.toasterService.success(`Project duplicated as "${this.name()}".`);
         this.dialogRef.close();
       },
       error: (err) => {

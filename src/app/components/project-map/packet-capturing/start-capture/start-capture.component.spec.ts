@@ -118,6 +118,7 @@ describe('StartCaptureDialogComponent', () => {
     };
 
     mockToasterService = {
+      success: vi.fn(),
       error: vi.fn(),
     };
 
