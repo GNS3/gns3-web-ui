@@ -153,12 +153,6 @@ describe('DialogConfigService', () => {
       expect(config.panelClass).toContain('add-ace-dialog-panel');
     });
 
-    it('should have newTemplate config', () => {
-      const config = service.getConfig('newTemplate');
-      expect(config.panelClass).toContain('dialog-medium-panel');
-      expect(config.panelClass).toContain('new-template-dialog-panel');
-    });
-
     it('should have startCapture config', () => {
       const config = service.getConfig('startCapture');
       expect(config.panelClass).toContain('dialog-medium-panel');

@@ -468,19 +468,6 @@
 }
 
 /* =============================================
-// New Template Dialog
-// ============================================= */
-.new-template-dialog-panel {
-  --mat-dialog-container-max-width: 800px;
-
-  mat-dialog-container,
-  .mat-mdc-dialog-container {
-    width: 800px;
-    max-width: 800px;
-  }
-}
-
-/* =============================================
 // Tool Details Dialog
 // ============================================= */
 .tool-details-dialog {
@@ -1827,17 +1814,6 @@ html[data-density='compact'] .node-configurator-dialog-panel {
   }
 }
 
-// Template Name Dialog - 400px
-.template-name-dialog-panel {
-  --mat-dialog-container-max-width: 400px;
-
-  mat-dialog-container,
-  .mat-mdc-dialog-container {
-    width: 400px;
-    max-width: 400px;
-  }
-}
-
 // Controller Dialogs - 350px/400px
 .controller-dialog-panel {
   --mat-dialog-container-max-width: 400px;
@@ -2260,7 +2236,6 @@ html[data-density='compact'] .node-configurator-dialog-panel {
 
 :is(
     .simple-dialog-panel,
-    .new-template-dialog-panel,
     .change-symbol-dialog-panel,
     .controller-dialog-panel,
     .controller-small-dialog-panel,
@@ -2291,7 +2266,6 @@ html[data-density='compact'] .node-configurator-dialog-panel {
     .delete-all-images-dialog-panel,
     .delete-all-projects-dialog-panel,
     .change-user-password-dialog-panel,
-    .template-name-dialog-panel,
     .idle-pc-action-dialog-panel
   ) {
   --gns3-dialog-width: 440px;
@@ -2345,7 +2319,6 @@ button.destructive-icon-button {
     .delete-all-images-dialog-panel,
     .delete-all-projects-dialog-panel,
     .change-user-password-dialog-panel,
-    .template-name-dialog-panel,
     .idle-pc-action-dialog-panel
   ) {
   .mat-mdc-dialog-content,
@@ -2414,7 +2387,6 @@ html[data-density='compact']
     .delete-all-images-dialog-panel,
     .delete-all-projects-dialog-panel,
     .change-user-password-dialog-panel,
-    .template-name-dialog-panel,
     .idle-pc-action-dialog-panel
   ) {
   .mat-mdc-dialog-content,

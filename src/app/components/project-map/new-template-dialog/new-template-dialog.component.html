@@ -1,742 +1,636 @@
-<h1 mat-dialog-title class="new-template__title">Add new template</h1>
+<div class="template-wizard new-template-wizard">
+  <header class="new-template-wizard__header template-wizard__header">
+    <button
+      mat-icon-button
+      type="button"
+      class="template-wizard__back"
+      aria-label="Back to templates"
+      matTooltip="Back to templates"
+      matTooltipClass="custom-tooltip"
+      (click)="goBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="template-wizard__heading">
+      <h1 class="new-template-wizard__title template-wizard__title">Install appliance</h1>
+    </div>
+  </header>
 
-<mat-horizontal-stepper [linear]="false" #stepper class="new-template__stepper">
-  <mat-step class="new-template__step">
-    <ng-template matStepLabel class="new-template__step-label">Select creation method</ng-template>
+  <main class="new-template-wizard__body template-wizard__body">
+    <section class="new-template-wizard__stepper-card template-wizard__stepper-card">
+      <mat-horizontal-stepper
+        [linear]="true"
+        #stepper
+        class="template-wizard__stepper"
+        (selectionChange)="onStepChange($event)"
+      >
+        <ng-template matStepperIcon="edit" let-index="index">{{ index + 1 }}</ng-template>
+        <ng-template matStepperIcon="done" let-index="index">{{ index + 1 }}</ng-template>
 
-    <mat-dialog-content class="new-template__content">
-      <mat-radio-group class="new-template__radio-group" [value]="action" (change)="setAction($event.value)">
-        <mat-radio-button value="install" class="new-template__radio-button">
-          Install new appliance from the GNS controller
-        </mat-radio-button>
-        <mat-radio-button value="import" class="new-template__radio-button" disabled>
-          Import an appliance file
-          <span class="new-template__feature-unavailable">(Feature not complete)</span>
-        </mat-radio-button>
-      </mat-radio-group>
-    </mat-dialog-content>
-
-    <mat-dialog-actions class="new-template__actions">
-      <button mat-button matStepperNext>Next</button>
-      <button mat-button (click)="onCloseClick()">Cancel</button>
-    </mat-dialog-actions>
-  </mat-step>
-
-  <mat-step class="new-template__step">
-    <ng-template matStepLabel class="new-template__step-label">{{ actionTitle }}</ng-template>
-
-    <mat-dialog-content class="new-template__content">
-      @if (action === 'install') {
-      <div class="new-template__table-header">
-        <div class="new-template__filter-row">
-          <mat-form-field appearance="fill" class="new-template__filter-field">
-            <mat-label>Filter</mat-label>
-            <input matInput [value]="searchText()" (input)="onSearchTextChange($event.target.value)" />
-            @if (searchText()) {
-            <button mat-icon-button matSuffix (click)="clearFilter()">
-              <mat-icon>close</mat-icon>
-            </button>
-            }
-          </mat-form-field>
-        </div>
-
-        <div class="new-template__filter-controls-row">
-          <mat-form-field appearance="fill" class="new-template__category-field">
-            <mat-label>Category</mat-label>
-            <input matInput [formControl]="categoryControl" [matAutocomplete]="categoryAuto" />
-            @if (categoryControl.value) {
-            <button mat-icon-button matSuffix (click)="clearCategoryFilter()">
-              <mat-icon>close</mat-icon>
-            </button>
-            }
-            <mat-autocomplete #categoryAuto="matAutocomplete" (optionSelected)="onCategoryChange($event.option.value)">
-              @for (cat of filteredCategories; track cat) {
-              <mat-option [value]="cat">{{ cat }}</mat-option>
-              }
-            </mat-autocomplete>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="new-template__emulator-field">
-            <mat-label>Emulator</mat-label>
-            <input matInput [formControl]="emulatorControl" [matAutocomplete]="emulatorAuto" />
-            @if (emulatorControl.value) {
-            <button mat-icon-button matSuffix (click)="clearEmulatorFilter()">
-              <mat-icon>close</mat-icon>
-            </button>
-            }
-            <mat-autocomplete #emulatorAuto="matAutocomplete" (optionSelected)="onEmulatorChange($event.option.value)">
-              @for (emu of filteredEmulators; track emu) {
-              <mat-option [value]="emu">{{ emu }}</mat-option>
-              }
-            </mat-autocomplete>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="new-template__vendor-field">
-            <mat-label>Vendor</mat-label>
-            <input matInput [formControl]="vendorControl" [matAutocomplete]="vendorAuto" />
-            @if (vendorControl.value) {
-            <button mat-icon-button matSuffix (click)="clearVendorFilter()">
-              <mat-icon>close</mat-icon>
-            </button>
-            }
-            <mat-autocomplete #vendorAuto="matAutocomplete" (optionSelected)="onVendorChange($event.option.value)">
-              @for (v of filteredVendors; track v) {
-              <mat-option [value]="v">{{ v }}</mat-option>
-              }
-            </mat-autocomplete>
-          </mat-form-field>
-        </div>
-      </div>
-
-      <div class="new-template__table-container">
-        <mat-table matSort (matSortChange)="sortData($event)" [dataSource]="dataSource" class="new-template__table">
-          <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
-          </ng-container>
-
-          <ng-container matColumnDef="emulator">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Emulator</mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.emulator }}</mat-cell>
-          </ng-container>
-
-          <ng-container matColumnDef="vendor">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Vendor</mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.vendor_name }}</mat-cell>
-          </ng-container>
-
-          <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-            <mat-cell *matCellDef="let row" class="new-template__actions-cell">
-              <button mat-icon-button matTooltip="Install" matTooltipClass="custom-tooltip" (click)="install(row)">
-                <mat-icon>archive</mat-icon>
-              </button>
-              <button mat-icon-button matTooltip="Show info" matTooltipClass="custom-tooltip" (click)="showInfo(row)">
-                <mat-icon>info</mat-icon>
-              </button>
-            </mat-cell>
-          </ng-container>
-
-          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-          <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-        </mat-table>
-        <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
-      </div>
-      } @if (action === 'import') {
-      <div class="new-template__import-area">
-        <input
-          type="file"
-          accept=".gns3appliance, .gns3a"
-          class="new-template__file-input"
-          #file
-          (change)="addAppliance($event)"
-          ng2FileSelect
-          [uploader]="uploader"
-        />
-        <button mat-raised-button color="primary" class="new-template__import-button" (click)="file.click()">
-          Click to import appliance
-        </button>
-      </div>
-      }
-    </mat-dialog-content>
-
-    <mat-dialog-actions class="new-template__actions">
-      <button mat-button matStepperPrevious>Back</button>
-      @if (action === 'install') {
-      <button mat-button class="new-template__update-button" (click)="updateAppliances()" [disabled]="isUpdatingAppliances">
-        @if (isUpdatingAppliances) {
-        <mat-spinner diameter="20"></mat-spinner>
-        <span>Updating...</span>
-        } @else {
-        <span>Update from online registry</span>
-        }
-      </button>
-      }
-      <button mat-button (click)="onCloseClick()">Cancel</button>
-    </mat-dialog-actions>
-  </mat-step>
-
-  @if (applianceToInstall) {
-  <mat-step class="new-template__step">
-    <ng-template matStepLabel class="new-template__step-label">{{ secondActionTitle }}</ng-template>
-
-    <mat-dialog-content class="new-template__content">
-      @if (applianceToInstall.qemu && (!isLinuxPlatform || applianceToInstall.dynamips)) {
-      <div class="new-template__install-section">
-        <div class="new-template__section-header">
-          <span>Install the required files</span>
-          <button
-            mat-icon-button
-            matTooltip="Refresh list of images"
-            matTooltipClass="custom-tooltip"
-            (click)="refreshImages()"
-          >
-            <mat-icon>refresh</mat-icon>
-          </button>
-        </div>
-
-        <mat-accordion class="new-template__version-accordion" multi="true">
-          @for (version of applianceToInstall.versions; track version.name) {
-          <mat-expansion-panel>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                <div
-                  style="
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    width: 100%;
-                    padding-right: 16px;
-                  "
+        <!-- ================= Step 1: creation method ================= -->
+        <mat-step [completed]="true">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>add_circle</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Creation method</span>
+                <span class="template-wizard__step-label-description">Install or import an appliance</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="template-wizard__panel">
+            <section class="template-wizard__section new-template-wizard__method-section">
+              <h2 class="template-wizard__section-title">How do you want to create the template?</h2>
+              <p class="template-wizard__section-copy">
+                Install a pre-configured appliance from the registry on the GNS controller, or import an appliance
+                file from your computer.
+              </p>
+              <div class="new-template-wizard__method-options" role="radiogroup" aria-label="Creation method">
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="new-template-wizard__method-option"
+                  [class.new-template-wizard__method-option--selected]="action() === 'install'"
+                  [attr.aria-pressed]="action() === 'install'"
+                  (click)="setAction('install')"
                 >
-                  <span style="font-weight: 500">{{ applianceToInstall.name }} version {{ version.name }}</span>
-                  <div class="new-template__version-summary">
-                    <span
-                      class="new-template__version-count"
-                      [class.new-template__version-count--complete]="isVersionComplete(version)"
-                      [class.new-template__version-count--partial]="
-                        !isVersionComplete(version) && getVersionReadyCount(version) > 0
-                      "
-                    >
-                      {{ getVersionReadyCount(version) }}/{{ getVersionImageCount(version) }} ready
+                  <mat-icon class="new-template-wizard__method-icon">cloud_download</mat-icon>
+                  <span class="new-template-wizard__method-text">
+                    <span class="new-template-wizard__method-title">Install new appliance from the GNS controller</span>
+                    <span class="new-template-wizard__method-description">
+                      Browse pre-configured appliances available in the registry
                     </span>
+                  </span>
+                  @if (action() === 'install') {
+                  <mat-icon class="new-template-wizard__method-check">check_circle</mat-icon>
+                  }
+                </button>
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="new-template-wizard__method-option"
+                  [class.new-template-wizard__method-option--selected]="action() === 'import'"
+                  [attr.aria-pressed]="action() === 'import'"
+                  (click)="setAction('import')"
+                >
+                  <mat-icon class="new-template-wizard__method-icon">upload_file</mat-icon>
+                  <span class="new-template-wizard__method-text">
+                    <span class="new-template-wizard__method-title">Import an appliance file</span>
+                    <span class="new-template-wizard__method-description">
+                      Use a .gns3a or .gns3appliance file from your computer
+                    </span>
+                  </span>
+                  @if (action() === 'import') {
+                  <mat-icon class="new-template-wizard__method-check">check_circle</mat-icon>
+                  }
+                </button>
+              </div>
+            </section>
+          </div>
+        </mat-step>
+
+        <!-- ================= Step 2: choose / import appliance ================= -->
+        <mat-step [completed]="!!applianceToInstall()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>{{ action() === 'install' ? 'storefront' : 'upload_file' }}</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">{{ browseStepTitle() }}</span>
+                <span class="template-wizard__step-label-description">{{ browseStepDescription() }}</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="template-wizard__panel">
+            @if (action() === 'install') {
+            <section class="template-wizard__section">
+              <div class="new-template-wizard__browse-header">
+                <div class="new-template-wizard__browse-heading">
+                  <h2 class="template-wizard__section-title">Available appliances</h2>
+                  <p class="template-wizard__section-copy">
+                    Select an appliance to install. Its settings are pre-configured by the registry.
+                  </p>
+                </div>
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  type="button"
+                  class="new-template-wizard__registry-update"
+                  matTooltip="Update from online registry"
+                  matTooltipClass="custom-tooltip"
+                  [disabled]="isUpdatingAppliances()"
+                  (click)="updateAppliances()"
+                >
+                  @if (isUpdatingAppliances()) {
+                  <mat-spinner diameter="18"></mat-spinner>
+                  <span>Updating...</span>
+                  } @else {
+                  <mat-icon>refresh</mat-icon>
+                  <span>Update registry</span>
+                  }
+                </button>
+              </div>
+
+              <div class="new-template-wizard__filters">
+                <mat-form-field appearance="outline" class="new-template-wizard__search" subscriptSizing="dynamic">
+                  <mat-label>Search appliances</mat-label>
+                  <mat-icon matPrefix>search</mat-icon>
+                  <input matInput type="text" [value]="searchText()" (input)="searchText.set($event.target.value)" />
+                  @if (searchText()) {
+                  <button mat-icon-button matSuffix aria-label="Clear search" (click)="searchText.set('')">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="new-template-wizard__filter" subscriptSizing="dynamic">
+                  <mat-label>Category</mat-label>
+                  <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+                    <mat-option value="all">All categories</mat-option>
+                    @for (option of categories(); track option) {
+                    <mat-option [value]="option">{{ formatLabel(option) }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="new-template-wizard__filter" subscriptSizing="dynamic">
+                  <mat-label>Emulator</mat-label>
+                  <mat-select [value]="emulator()" (selectionChange)="emulator.set($event.value)">
+                    <mat-option value="all">All emulators</mat-option>
+                    @for (option of emulators(); track option) {
+                    <mat-option [value]="option">{{ option }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="new-template-wizard__filter" subscriptSizing="dynamic">
+                  <mat-label>Vendor</mat-label>
+                  <mat-select [value]="vendor()" (selectionChange)="vendor.set($event.value)">
+                    <mat-option value="all">All vendors</mat-option>
+                    @for (option of vendors(); track option) {
+                    <mat-option [value]="option">{{ option }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="new-template-wizard__sort-field" subscriptSizing="dynamic">
+                  <mat-label>Sort by</mat-label>
+                  <mat-select [value]="sortBy()" (selectionChange)="sortBy.set($event.value)">
+                    <mat-option value="name">Name</mat-option>
+                    <mat-option value="emulator">Emulator</mat-option>
+                    <mat-option value="vendor">Vendor</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="new-template-wizard__sort-toggle"
+                  [matTooltip]="sortAscending() ? 'Sort descending' : 'Sort ascending'"
+                  matTooltipClass="custom-tooltip"
+                  (click)="toggleSortDirection()"
+                >
+                  <mat-icon>{{ sortAscending() ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                </button>
+              </div>
+
+              <div class="new-template-wizard__result-count">
+                {{ filteredAppliances().length }}
+                {{ filteredAppliances().length === 1 ? 'appliance' : 'appliances' }}
+              </div>
+
+              @if (isLoadingAppliances()) {
+              <div class="new-template-wizard__loading">
+                <mat-spinner diameter="40"></mat-spinner>
+                <span>Loading appliances...</span>
+              </div>
+              } @else {
+              <div class="new-template-wizard__appliance-list" role="listbox" aria-label="Appliances">
+                @for (appliance of pagedAppliances(); track appliance.name) {
+                <div
+                  class="new-template-wizard__appliance"
+                  role="option"
+                  tabindex="0"
+                  [attr.aria-selected]="applianceToInstall() === appliance"
+                  [class.new-template-wizard__appliance--selected]="applianceToInstall() === appliance"
+                  (click)="selectAppliance(appliance)"
+                  (keydown.enter)="selectAppliance(appliance)"
+                >
+                  <span class="new-template-wizard__appliance-icon">
+                    <mat-icon>{{ emulatorIcon(appliance) }}</mat-icon>
+                  </span>
+                  <span class="new-template-wizard__appliance-text">
+                    <span class="new-template-wizard__appliance-name">{{ appliance.name }}</span>
+                    <span class="new-template-wizard__appliance-meta">
+                      {{ appliance.vendor_name || 'Unknown vendor' }} &middot; {{ appliance.emulator }} &middot;
+                      {{ formatLabel(appliance.category) }}
+                    </span>
+                  </span>
+                  <span class="new-template-wizard__appliance-actions">
+                    @if (applianceToInstall() === appliance) {
+                    <mat-icon class="new-template-wizard__appliance-check">check_circle</mat-icon>
+                    }
                     <button
-                      mat-raised-button
-                      color="primary"
-                      (click)="$event.stopPropagation(); createQemuTemplateFromVersion(version)"
-                      [disabled]="!isVersionComplete(version)"
+                      mat-icon-button
+                      type="button"
+                      matTooltip="Show info"
+                      matTooltipClass="custom-tooltip"
+                      aria-label="Show appliance information"
+                      (click)="$event.stopPropagation(); showInfo(appliance)"
                     >
-                      Create
+                      <mat-icon>info</mat-icon>
                     </button>
-                  </div>
+                  </span>
                 </div>
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-
-            <div class="new-template__version-content">
-              @if (version.images.bios_image) {
-              <div
-                class="new-template__image-item"
-                [class.new-template__image-item--installed]="checkImageFromVersion(version.images.bios_image)"
-                [class.new-template__image-item--missing]="!checkImageFromVersion(version.images.bios_image)"
-              >
-                <span class="new-template__image-name">{{ version.images.bios_image }}</span>
-                <div class="new-template__image-status">
-                  @if (checkImageFromVersion(version.images.bios_image)) {
-                  <div class="new-template__status-badge new-template__status-badge--ready">
-                    <mat-icon>check_circle</mat-icon>
-                    <span>Ready</span>
-                  </div>
-                  } @else {
-                  <div class="new-template__status-badge new-template__status-badge--missing">
-                    <mat-icon>cancel</mat-icon>
-                    <span>Missing</span>
-                  </div>
-                  }
-                  <div class="new-template__action-group">
-                    <input
-                      type="file"
-                      class="new-template__file-input"
-                      #fileBios
-                      (change)="importImage($event, version.images.bios_image)"
-                      ng2FileSelect
-                      [uploader]="uploaderImage"
-                    />
-                    <button mat-stroked-button [matMenuTriggerFor]="menuBios" class="new-template__more-menu">
-                      <mat-icon>more_horiz</mat-icon>
-                      <span>Actions</span>
-                    </button>
-                    <mat-menu #menuBios="matMenu">
-                      <button mat-menu-item (click)="fileBios.click()">
-                        <mat-icon>upload_file</mat-icon>
-                        <span>Import from file</span>
-                      </button>
-                      <button mat-menu-item (click)="downloadImageFromVersion(version.images.bios_image)">
-                        <mat-icon>download</mat-icon>
-                        <span>Download from vendor</span>
-                      </button>
-                    </mat-menu>
-                  </div>
-                </div>
-
-                @if (isUploading && uploadingImageName === version.images.bios_image) {
-                <div class="new-template__upload-progress">
-                  <div class="new-template__progress-info">
-                    <div class="new-template__progress-text">
-                      <mat-icon>sync</mat-icon>
-                      <span>Importing {{ version.images.bios_image }}...</span>
-                    </div>
-                    <span class="new-template__progress-percentage">{{ uploadProgress }}%</span>
-                  </div>
-                  <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
-                  <button mat-button class="new-template__cancel-button" (click)="cancelUploading()">Cancel</button>
+                } @empty {
+                <div class="new-template-wizard__empty">
+                  <mat-icon>search_off</mat-icon>
+                  <span>No appliances match the current filters</span>
                 </div>
                 }
               </div>
-              } @if (version.images.hda_disk_image) {
-              <div
-                class="new-template__image-item"
-                [class.new-template__image-item--installed]="checkImageFromVersion(version.images.hda_disk_image)"
-                [class.new-template__image-item--missing]="!checkImageFromVersion(version.images.hda_disk_image)"
-              >
-                <span class="new-template__image-name">{{ version.images.hda_disk_image }}</span>
-                <div class="new-template__image-status">
-                  @if (checkImageFromVersion(version.images.hda_disk_image)) {
-                  <div class="new-template__status-badge new-template__status-badge--ready">
-                    <mat-icon>check_circle</mat-icon>
-                    <span>Ready</span>
-                  </div>
+              <mat-paginator
+                [length]="filteredAppliances().length"
+                [pageIndex]="pageIndex()"
+                [pageSize]="pageSize()"
+                [pageSizeOptions]="[5, 10, 20, 50]"
+                (page)="onPage($event)"
+                showFirstLastButtons
+              ></mat-paginator>
+              }
+            </section>
+            } @else {
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Import an appliance file</h2>
+              <p class="template-wizard__section-copy">
+                The appliance file is read locally and its settings are loaded automatically.
+              </p>
+              <div class="new-template-wizard__import-area">
+                <input
+                  type="file"
+                  accept=".gns3appliance, .gns3a"
+                  class="new-template-wizard__file-input"
+                  #applianceFile
+                  (change)="addAppliance($event)"
+                />
+                <mat-icon class="new-template-wizard__import-icon">upload_file</mat-icon>
+                <span class="new-template-wizard__import-text">Choose a .gns3a or .gns3appliance file to upload</span>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  type="button"
+                  class="new-template-wizard__import-button"
+                  [disabled]="isImportingAppliance()"
+                  (click)="openApplianceFileBrowser()"
+                >
+                  @if (isImportingAppliance()) {
+                  <mat-spinner diameter="18"></mat-spinner>
+                  <span>Importing...</span>
                   } @else {
-                  <div class="new-template__status-badge new-template__status-badge--missing">
-                    <mat-icon>cancel</mat-icon>
-                    <span>Missing</span>
-                  </div>
+                  <span>Browse files</span>
                   }
-                  <div class="new-template__action-group">
-                    <input
-                      type="file"
-                      class="new-template__file-input"
-                      #file2
-                      (change)="importImage($event, version.images.hda_disk_image)"
-                      ng2FileSelect
-                      [uploader]="uploaderImage"
-                    />
-                    <button mat-stroked-button [matMenuTriggerFor]="menuHda" class="new-template__more-menu">
-                      <mat-icon>more_horiz</mat-icon>
-                      <span>Actions</span>
-                    </button>
-                    <mat-menu #menuHda="matMenu">
-                      <button mat-menu-item (click)="file2.click()">
-                        <mat-icon>upload_file</mat-icon>
-                        <span>Import from file</span>
-                      </button>
-                      <button mat-menu-item (click)="downloadImageFromVersion(version.images.hda_disk_image)">
-                        <mat-icon>download</mat-icon>
-                        <span>Download from vendor</span>
-                      </button>
-                    </mat-menu>
-                  </div>
-                </div>
-
-                @if (isUploading && uploadingImageName === version.images.hda_disk_image) {
-                <div class="new-template__upload-progress">
-                  <div class="new-template__progress-info">
-                    <div class="new-template__progress-text">
-                      <mat-icon>sync</mat-icon>
-                      <span>Importing {{ version.images.hda_disk_image }}...</span>
-                    </div>
-                    <span class="new-template__progress-percentage">{{ uploadProgress }}%</span>
-                  </div>
-                  <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
-                  <button mat-button class="new-template__cancel-button" (click)="cancelUploading()">Cancel</button>
-                </div>
-                }
+                </button>
               </div>
-              } @if (version.images.hdb_disk_image) {
-              <div
-                class="new-template__image-item"
-                [class.new-template__image-item--installed]="checkImageFromVersion(version.images.hdb_disk_image)"
-                [class.new-template__image-item--missing]="!checkImageFromVersion(version.images.hdb_disk_image)"
-              >
-                <span class="new-template__image-name">{{ version.images.hdb_disk_image }}</span>
-                <div class="new-template__image-status">
-                  @if (checkImageFromVersion(version.images.hdb_disk_image)) {
-                  <div class="new-template__status-badge new-template__status-badge--ready">
-                    <mat-icon>check_circle</mat-icon>
-                    <span>Ready</span>
-                  </div>
-                  } @else {
-                  <div class="new-template__status-badge new-template__status-badge--missing">
-                    <mat-icon>cancel</mat-icon>
-                    <span>Missing</span>
-                  </div>
-                  }
-                  <div class="new-template__action-group">
-                    <input
-                      type="file"
-                      class="new-template__file-input"
-                      #file3
-                      (change)="importImage($event, version.images.hdb_disk_image)"
-                      ng2FileSelect
-                      [uploader]="uploaderImage"
-                    />
-                    <button mat-stroked-button [matMenuTriggerFor]="menuHdb" class="new-template__more-menu">
-                      <mat-icon>more_horiz</mat-icon>
-                      <span>Actions</span>
-                    </button>
-                    <mat-menu #menuHdb="matMenu">
-                      <button mat-menu-item (click)="file3.click()">
-                        <mat-icon>upload_file</mat-icon>
-                        <span>Import from file</span>
-                      </button>
-                      <button mat-menu-item (click)="downloadImageFromVersion(version.images.hdb_disk_image)">
-                        <mat-icon>download</mat-icon>
-                        <span>Download from vendor</span>
-                      </button>
-                    </mat-menu>
-                  </div>
-                </div>
+            </section>
+            }
+          </div>
+        </mat-step>
 
-                @if (isUploading && uploadingImageName === version.images.hdb_disk_image) {
-                <div class="new-template__upload-progress">
-                  <div class="new-template__progress-info">
-                    <div class="new-template__progress-text">
-                      <mat-icon>sync</mat-icon>
-                      <span>Importing {{ version.images.hdb_disk_image }}...</span>
-                    </div>
-                    <span class="new-template__progress-percentage">{{ uploadProgress }}%</span>
-                  </div>
-                  <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
-                  <button mat-button class="new-template__cancel-button" (click)="cancelUploading()">Cancel</button>
+        <!-- ================= Step 3: required files ================= -->
+        @if (requiresImages()) {
+        <mat-step [completed]="filesReady()">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>inventory_2</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Required files</span>
+                <span class="template-wizard__step-label-description">Provide the appliance images</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="template-wizard__panel">
+            <section class="template-wizard__section">
+              <div class="new-template-wizard__files-header">
+                <div class="new-template-wizard__browse-heading">
+                  <h2 class="template-wizard__section-title">Install the required files</h2>
+                  <p class="template-wizard__section-copy">
+                    Import the images from your computer or download them from the vendor. The status refreshes
+                    automatically once an image is available on the controller.
+                  </p>
                 </div>
-                }
+                <button
+                  mat-icon-button
+                  type="button"
+                  matTooltip="Refresh list of images"
+                  matTooltipClass="custom-tooltip"
+                  aria-label="Refresh list of images"
+                  (click)="refreshImages()"
+                >
+                  <mat-icon>refresh</mat-icon>
+                </button>
               </div>
-              } @if (version.images.hdc_disk_image) {
-              <div
-                class="new-template__image-item"
-                [class.new-template__image-item--installed]="checkImageFromVersion(version.images.hdc_disk_image)"
-                [class.new-template__image-item--missing]="!checkImageFromVersion(version.images.hdc_disk_image)"
-              >
-                <span class="new-template__image-name">{{ version.images.hdc_disk_image }}</span>
-                <div class="new-template__image-status">
-                  @if (checkImageFromVersion(version.images.hdc_disk_image)) {
-                  <div class="new-template__status-badge new-template__status-badge--ready">
-                    <mat-icon>check_circle</mat-icon>
-                    <span>Ready</span>
-                  </div>
-                  } @else {
-                  <div class="new-template__status-badge new-template__status-badge--missing">
-                    <mat-icon>cancel</mat-icon>
-                    <span>Missing</span>
-                  </div>
-                  }
-                  <div class="new-template__action-group">
-                    <input
-                      type="file"
-                      class="new-template__file-input"
-                      #file4
-                      (change)="importImage($event, version.images.hdc_disk_image)"
-                      ng2FileSelect
-                      [uploader]="uploaderImage"
-                    />
-                    <button mat-stroked-button [matMenuTriggerFor]="menuHdc" class="new-template__more-menu">
-                      <mat-icon>more_horiz</mat-icon>
-                      <span>Actions</span>
-                    </button>
-                    <mat-menu #menuHdc="matMenu">
-                      <button mat-menu-item (click)="file4.click()">
-                        <mat-icon>upload_file</mat-icon>
-                        <span>Import from file</span>
-                      </button>
-                      <button mat-menu-item (click)="downloadImageFromVersion(version.images.hdc_disk_image)">
-                        <mat-icon>download</mat-icon>
-                        <span>Download from vendor</span>
-                      </button>
-                    </mat-menu>
-                  </div>
-                </div>
 
-                @if (isUploading && uploadingImageName === version.images.hdc_disk_image) {
-                <div class="new-template__upload-progress">
-                  <div class="new-template__progress-info">
-                    <div class="new-template__progress-text">
-                      <mat-icon>sync</mat-icon>
-                      <span>Importing {{ version.images.hdc_disk_image }}...</span>
+              @if (applianceToInstall().qemu) {
+              <mat-accordion class="new-template-wizard__versions">
+                @for (version of applianceToInstall().versions || []; track version.name) {
+                <mat-expansion-panel
+                  [expanded]="selectedVersion() === version"
+                  [class.new-template-wizard__version--selected]="selectedVersion() === version"
+                  (opened)="selectVersion(version)"
+                >
+                  <mat-expansion-panel-header>
+                    <mat-panel-title class="new-template-wizard__version-title">
+                      <span class="new-template-wizard__version-name">
+                        {{ applianceToInstall().name }} version {{ version.name }}
+                      </span>
+                      <span class="new-template-wizard__version-summary">
+                        <span
+                          class="new-template-wizard__version-count"
+                          [class.new-template-wizard__version-count--complete]="isVersionComplete(version)"
+                          [class.new-template-wizard__version-count--partial]="
+                            !isVersionComplete(version) && getVersionReadyCount(version) > 0
+                          "
+                        >
+                          {{ getVersionReadyCount(version) }}/{{ getVersionImageCount(version) }} ready
+                        </span>
+                        @if (selectedVersion() === version && isVersionComplete(version)) {
+                        <mat-icon class="new-template-wizard__version-check">check_circle</mat-icon>
+                        }
+                      </span>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+
+                  <div class="new-template-wizard__version-content">
+                    @for (image of getVersionImages(version); track image.key) {
+                    <div
+                      class="new-template-wizard__image"
+                      [class.new-template-wizard__image--ready]="checkImageFromVersion(image.filename)"
+                      [class.new-template-wizard__image--missing]="!checkImageFromVersion(image.filename)"
+                    >
+                      <div class="new-template-wizard__image-info">
+                        <span class="new-template-wizard__image-name">{{ image.filename }}</span>
+                        @if (checkImageFromVersion(image.filename)) {
+                        <span
+                          class="new-template-wizard__status-badge new-template-wizard__status-badge--ready"
+                        >
+                          <mat-icon>check_circle</mat-icon>
+                          <span>Ready</span>
+                        </span>
+                        } @else {
+                        <span
+                          class="new-template-wizard__status-badge new-template-wizard__status-badge--missing"
+                        >
+                          <mat-icon>cancel</mat-icon>
+                          <span>Missing</span>
+                        </span>
+                        }
+                      </div>
+                      <div class="new-template-wizard__image-actions">
+                        <input
+                          type="file"
+                          class="new-template-wizard__file-input"
+                          #fileImage
+                          (change)="importImage($event, image.filename)"
+                          ng2FileSelect
+                          [uploader]="uploaderImage"
+                        />
+                        <button
+                          mat-stroked-button
+                          type="button"
+                          [disabled]="isUploading()"
+                          (click)="fileImage.click()"
+                        >
+                          <mat-icon>upload_file</mat-icon>
+                          <span>Import</span>
+                        </button>
+                        <button
+                          mat-stroked-button
+                          type="button"
+                          (click)="downloadImageFromVersion(image.filename)"
+                        >
+                          <mat-icon>download</mat-icon>
+                          <span>Download</span>
+                        </button>
+                      </div>
+
+                      @if (isUploading() && uploadingImageName === image.filename) {
+                      <div class="new-template-wizard__upload-progress">
+                        <div class="new-template-wizard__progress-info">
+                          <div class="new-template-wizard__progress-text">
+                            <mat-icon>sync</mat-icon>
+                            <span>Importing {{ image.filename }}...</span>
+                          </div>
+                          <span class="new-template-wizard__progress-percentage">{{ uploadProgress }}%</span>
+                        </div>
+                        <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+                        <button mat-button type="button" class="new-template-wizard__cancel-button" (click)="cancelUploading()">
+                          Cancel
+                        </button>
+                      </div>
+                      }
                     </div>
-                    <span class="new-template__progress-percentage">{{ uploadProgress }}%</span>
+                    }
                   </div>
-                  <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
-                  <button mat-button class="new-template__cancel-button" (click)="cancelUploading()">Cancel</button>
-                </div>
+                </mat-expansion-panel>
                 }
-              </div>
-              } @if (version.images.hdd_disk_image) {
-              <div
-                class="new-template__image-item"
-                [class.new-template__image-item--installed]="checkImageFromVersion(version.images.hdd_disk_image)"
-                [class.new-template__image-item--missing]="!checkImageFromVersion(version.images.hdd_disk_image)"
-              >
-                <span class="new-template__image-name">{{ version.images.hdd_disk_image }}</span>
-                <div class="new-template__image-status">
-                  @if (checkImageFromVersion(version.images.hdd_disk_image)) {
-                  <div class="new-template__status-badge new-template__status-badge--ready">
-                    <mat-icon>check_circle</mat-icon>
-                    <span>Ready</span>
+              </mat-accordion>
+              } @else {
+              <div class="new-template-wizard__images">
+                @for (image of applianceToInstall().images || []; track image.filename) {
+                <div
+                  class="new-template-wizard__image new-template-wizard__image--selectable"
+                  role="option"
+                  tabindex="0"
+                  [attr.aria-selected]="selectedImage() === image.filename"
+                  [class.new-template-wizard__image--selected]="selectedImage() === image.filename"
+                  [class.new-template-wizard__image--ready]="checkImageFromVersion(image.filename)"
+                  [class.new-template-wizard__image--missing]="!checkImageFromVersion(image.filename)"
+                  (click)="selectImage(image.filename)"
+                  (keydown.enter)="selectImage(image.filename)"
+                >
+                  <div class="new-template-wizard__image-info">
+                    <span class="new-template-wizard__image-name">{{ image.filename }}</span>
+                    @if (checkImageFromVersion(image.filename)) {
+                    <span class="new-template-wizard__status-badge new-template-wizard__status-badge--ready">
+                      <mat-icon>check_circle</mat-icon>
+                      <span>Ready</span>
+                    </span>
+                    } @else {
+                    <span class="new-template-wizard__status-badge new-template-wizard__status-badge--missing">
+                      <mat-icon>cancel</mat-icon>
+                      <span>Missing</span>
+                    </span>
+                    }
                   </div>
-                  } @else {
-                  <div class="new-template__status-badge new-template__status-badge--missing">
-                    <mat-icon>cancel</mat-icon>
-                    <span>Missing</span>
-                  </div>
-                  }
-                  <div class="new-template__action-group">
+                  <div class="new-template-wizard__image-actions">
+                    @if (selectedImage() === image.filename && checkImageFromVersion(image.filename)) {
+                    <mat-icon class="new-template-wizard__appliance-check">check_circle</mat-icon>
+                    }
                     <input
                       type="file"
-                      class="new-template__file-input"
-                      #file5
-                      (change)="importImage($event, version.images.hdd_disk_image)"
+                      class="new-template-wizard__file-input"
+                      #fileImage
+                      (change)="importImage($event, image.filename)"
                       ng2FileSelect
                       [uploader]="uploaderImage"
                     />
-                    <button mat-stroked-button [matMenuTriggerFor]="menuHdd" class="new-template__more-menu">
-                      <mat-icon>more_horiz</mat-icon>
-                      <span>Actions</span>
+                    <button
+                      mat-stroked-button
+                      type="button"
+                      [disabled]="isUploading()"
+                      (click)="$event.stopPropagation(); fileImage.click()"
+                    >
+                      <mat-icon>upload_file</mat-icon>
+                      <span>Import</span>
                     </button>
-                    <mat-menu #menuHdd="matMenu">
-                      <button mat-menu-item (click)="file5.click()">
-                        <mat-icon>upload_file</mat-icon>
-                        <span>Import from file</span>
-                      </button>
-                      <button mat-menu-item (click)="downloadImageFromVersion(version.images.hdd_disk_image)">
-                        <mat-icon>download</mat-icon>
-                        <span>Download from vendor</span>
-                      </button>
-                    </mat-menu>
                   </div>
-                </div>
 
-                @if (isUploading && uploadingImageName === version.images.hdd_disk_image) {
-                <div class="new-template__upload-progress">
-                  <div class="new-template__progress-info">
-                    <div class="new-template__progress-text">
-                      <mat-icon>sync</mat-icon>
-                      <span>Importing {{ version.images.hdd_disk_image }}...</span>
+                  @if (isUploading() && uploadingImageName === image.filename) {
+                  <div class="new-template-wizard__upload-progress">
+                    <div class="new-template-wizard__progress-info">
+                      <div class="new-template-wizard__progress-text">
+                        <mat-icon>sync</mat-icon>
+                        <span>Importing {{ image.filename }}...</span>
+                      </div>
+                      <span class="new-template-wizard__progress-percentage">{{ uploadProgress }}%</span>
                     </div>
-                    <span class="new-template__progress-percentage">{{ uploadProgress }}%</span>
-                  </div>
-                  <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
-                  <button mat-button class="new-template__cancel-button" (click)="cancelUploading()">Cancel</button>
-                </div>
-                }
-              </div>
-              } @if (version.images.cdrom_image) {
-              <div
-                class="new-template__image-item"
-                [class.new-template__image-item--installed]="checkImageFromVersion(version.images.cdrom_image)"
-                [class.new-template__image-item--missing]="!checkImageFromVersion(version.images.cdrom_image)"
-              >
-                <span class="new-template__image-name">{{ version.images.cdrom_image }}</span>
-                <div class="new-template__image-status">
-                  @if (checkImageFromVersion(version.images.cdrom_image)) {
-                  <div class="new-template__status-badge new-template__status-badge--ready">
-                    <mat-icon>check_circle</mat-icon>
-                    <span>Ready</span>
-                  </div>
-                  } @else {
-                  <div class="new-template__status-badge new-template__status-badge--missing">
-                    <mat-icon>cancel</mat-icon>
-                    <span>Missing</span>
+                    <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+                    <button mat-button type="button" class="new-template-wizard__cancel-button" (click)="cancelUploading()">
+                      Cancel
+                    </button>
                   </div>
                   }
-                  <div class="new-template__action-group">
-                    <input
-                      type="file"
-                      class="new-template__file-input"
-                      #file6
-                      (change)="importImage($event, version.images.cdrom_image)"
-                      ng2FileSelect
-                      [uploader]="uploaderImage"
-                    />
-                    <button mat-stroked-button [matMenuTriggerFor]="menuCdrom" class="new-template__more-menu">
-                      <mat-icon>more_horiz</mat-icon>
-                      <span>Actions</span>
-                    </button>
-                    <mat-menu #menuCdrom="matMenu">
-                      <button mat-menu-item (click)="file6.click()">
-                        <mat-icon>upload_file</mat-icon>
-                        <span>Import from file</span>
-                      </button>
-                      <button mat-menu-item (click)="downloadImageFromVersion(version.images.cdrom_image)">
-                        <mat-icon>download</mat-icon>
-                        <span>Download from vendor</span>
-                      </button>
-                    </mat-menu>
-                  </div>
-                </div>
-
-                @if (isUploading && uploadingImageName === version.images.cdrom_image) {
-                <div class="new-template__upload-progress">
-                  <div class="new-template__progress-info">
-                    <div class="new-template__progress-text">
-                      <mat-icon>sync</mat-icon>
-                      <span>Importing {{ version.images.cdrom_image }}...</span>
-                    </div>
-                    <span class="new-template__progress-percentage">{{ uploadProgress }}%</span>
-                  </div>
-                  <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
-                  <button mat-button class="new-template__cancel-button" (click)="cancelUploading()">Cancel</button>
                 </div>
                 }
               </div>
               }
-            </div>
-          </mat-expansion-panel>
-          }
-        </mat-accordion>
-      </div>
-      } @if (applianceToInstall.docker) {
-      <div class="new-template__install-section">
-        <button mat-raised-button color="primary" class="new-template__create-button" (click)="createDockerTemplate()">
-          Create docker template
+            </section>
+          </div>
+        </mat-step>
+        }
+
+        <!-- ================= Step 4: review & create ================= -->
+        <mat-step>
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>check_circle</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Review &amp; create</span>
+                <span class="template-wizard__step-label-description">Name and create the template</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="template-wizard__panel">
+            @if (applianceToInstall(); as appliance) {
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Template name</h2>
+              <p class="template-wizard__section-copy">Choose a unique, descriptive name for the new template.</p>
+              @if (templateNameControl) {
+              <mat-form-field appearance="outline" class="template-wizard__field">
+                <mat-label>Template name</mat-label>
+                <input matInput required type="text" [formControl]="templateNameControl" />
+                @if (templateNameControl.hasError('required')) {
+                <mat-error>A template name is required</mat-error>
+                } @if (templateNameControl.hasError('invalidName')) {
+                <mat-error>The template name contains invalid characters</mat-error>
+                } @if (templateNameControl.hasError('templateExist')) {
+                <mat-error>A template with this name already exists</mat-error>
+                }
+              </mat-form-field>
+              }
+            </section>
+
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Template summary</h2>
+              <dl class="new-template-wizard__summary">
+                <div>
+                  <dt>Name</dt>
+                  <dd>{{ templateNameControl?.value || 'Not set' }}</dd>
+                </div>
+                <div>
+                  <dt>Appliance</dt>
+                  <dd>{{ appliance.name }}</dd>
+                </div>
+                <div>
+                  <dt>Emulator</dt>
+                  <dd>{{ appliance.emulator }}</dd>
+                </div>
+                <div>
+                  <dt>Vendor</dt>
+                  <dd>{{ appliance.vendor_name || 'Not set' }}</dd>
+                </div>
+                <div>
+                  <dt>Category</dt>
+                  <dd>{{ formatLabel(getCategory()) }}</dd>
+                </div>
+                @if (appliance.docker) {
+                <div>
+                  <dt>Docker image</dt>
+                  <dd>{{ appliance.docker.image }}</dd>
+                </div>
+                } @if (appliance.qemu && selectedVersion(); as version) {
+                <div>
+                  <dt>Version</dt>
+                  <dd>{{ version.name }}</dd>
+                </div>
+                <div>
+                  <dt>Images</dt>
+                  <dd>{{ getSelectedVersionImageNames() }}</dd>
+                </div>
+                } @if ((appliance.dynamips || appliance.iou) && selectedImage(); as image) {
+                <div>
+                  <dt>Image</dt>
+                  <dd>{{ image }}</dd>
+                </div>
+                }
+              </dl>
+            </section>
+            }
+          </div>
+        </mat-step>
+      </mat-horizontal-stepper>
+    </section>
+
+    <div class="new-template-wizard__actions template-wizard__actions">
+      <button mat-stroked-button type="button" class="new-template-wizard__cancel" (click)="onCloseClick()">
+        Cancel
+      </button>
+      <div class="template-wizard__step-actions">
+        @if (selectedStepIndex() > 0) {
+        <button mat-button type="button" class="template-wizard__previous" (click)="stepper.previous()">
+          <mat-icon>arrow_back</mat-icon>
+          Back
         </button>
-      </div>
-      } @if (applianceToInstall.dynamips) {
-      <div class="new-template__install-section">
-        <div class="new-template__section-header">
-          <span>Install the required images</span>
-          <button
-            mat-icon-button
-            matTooltip="Refresh list of images"
-            matTooltipClass="custom-tooltip"
-            (click)="refreshImages()"
-          >
-            <mat-icon>refresh</mat-icon>
-          </button>
-        </div>
-
-        <mat-list class="new-template__image-list">
-          @for (image of applianceToInstall.images; track image.filename) {
-          <mat-list-item class="new-template__list-item">
-            <div
-              class="new-template__image-item"
-              [class.new-template__image-item--installed]="checkImageFromVersion(image.filename)"
-              [class.new-template__image-item--missing]="!checkImageFromVersion(image.filename)"
-            >
-              <span class="new-template__image-name">{{ image.filename }}</span>
-              <div class="new-template__image-status">
-                @if (checkImageFromVersion(image.filename)) {
-                <div class="new-template__status-badge new-template__status-badge--ready">
-                  <mat-icon>check_circle</mat-icon>
-                  <span>Ready</span>
-                </div>
-                } @else {
-                <div class="new-template__status-badge new-template__status-badge--missing">
-                  <mat-icon>cancel</mat-icon>
-                  <span>Missing</span>
-                </div>
-                }
-                <div class="new-template__action-group">
-                  <input
-                    type="file"
-                    class="new-template__file-input"
-                    #file2
-                    (change)="importImage($event, image.filename)"
-                    ng2FileSelect
-                    [uploader]="uploaderImage"
-                  />
-                  <button mat-raised-button color="primary" (click)="createIosTemplate(image)">Create</button>
-                  <button mat-stroked-button [matMenuTriggerFor]="menuIos" class="new-template__more-menu">
-                    <mat-icon>more_horiz</mat-icon>
-                  </button>
-                  <mat-menu #menuIos="matMenu">
-                    <button mat-menu-item (click)="file2.click()">
-                      <mat-icon>upload_file</mat-icon>
-                      <span>Import from file</span>
-                    </button>
-                  </mat-menu>
-                </div>
-
-                @if (isUploading && uploadingImageName === image.filename) {
-                <div class="new-template__upload-progress">
-                  <div class="new-template__progress-info">
-                    <div class="new-template__progress-text">
-                      <mat-icon>sync</mat-icon>
-                      <span>Importing {{ image.filename }}...</span>
-                    </div>
-                    <span class="new-template__progress-percentage">{{ uploadProgress }}%</span>
-                  </div>
-                  <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
-                  <button mat-button class="new-template__cancel-button" (click)="cancelUploading()">Cancel</button>
-                </div>
-                }
-              </div>
-            </div>
-          </mat-list-item>
+        } @if (selectedStepIndex() < lastStepIndex()) {
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          class="template-wizard__next"
+          [disabled]="!canAdvance()"
+          (click)="stepper.next()"
+        >
+          Next
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </button>
+        } @else {
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          class="new-template-wizard__submit"
+          [disabled]="!nameValid() || isCreating()"
+          (click)="createTemplate()"
+        >
+          @if (isCreating()) {
+          <mat-spinner diameter="18"></mat-spinner>
+          <span>Creating...</span>
+          } @else {
+          <span>Create template</span>
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
           }
-        </mat-list>
+        </button>
+        }
       </div>
-      } @if (applianceToInstall.iou) {
-      <div class="new-template__install-section">
-        <div class="new-template__section-header">
-          <span>Install the required images</span>
-          <button
-            mat-icon-button
-            matTooltip="Refresh list of images"
-            matTooltipClass="custom-tooltip"
-            (click)="refreshImages()"
-          >
-            <mat-icon>refresh</mat-icon>
-          </button>
-        </div>
-
-        <mat-list class="new-template__image-list">
-          @for (image of applianceToInstall.images; track image.filename) {
-          <mat-list-item class="new-template__list-item">
-            <div
-              class="new-template__image-item"
-              [class.new-template__image-item--installed]="checkImageFromVersion(image.filename)"
-              [class.new-template__image-item--missing]="!checkImageFromVersion(image.filename)"
-            >
-              <span class="new-template__image-name">{{ image.filename }}</span>
-              <div class="new-template__image-status">
-                @if (checkImageFromVersion(image.filename)) {
-                <div class="new-template__status-badge new-template__status-badge--ready">
-                  <mat-icon>check_circle</mat-icon>
-                  <span>Ready</span>
-                </div>
-                } @else {
-                <div class="new-template__status-badge new-template__status-badge--missing">
-                  <mat-icon>cancel</mat-icon>
-                  <span>Missing</span>
-                </div>
-                }
-                <div class="new-template__action-group">
-                  <input
-                    type="file"
-                    class="new-template__file-input"
-                    #fileiou
-                    (change)="importImage($event, image.filename)"
-                    ng2FileSelect
-                    [uploader]="uploaderImage"
-                  />
-                  <button mat-raised-button color="primary" (click)="createIouTemplate(image)">Create</button>
-                  <button mat-stroked-button [matMenuTriggerFor]="menuIou" class="new-template__more-menu">
-                    <mat-icon>more_horiz</mat-icon>
-                  </button>
-                  <mat-menu #menuIou="matMenu">
-                    <button mat-menu-item (click)="fileiou.click()">
-                      <mat-icon>upload_file</mat-icon>
-                      <span>Import from file</span>
-                    </button>
-                  </mat-menu>
-                </div>
-
-                @if (isUploading && uploadingImageName === image.filename) {
-                <div class="new-template__upload-progress">
-                  <div class="new-template__progress-info">
-                    <div class="new-template__progress-text">
-                      <mat-icon>sync</mat-icon>
-                      <span>Importing {{ image.filename }}...</span>
-                    </div>
-                    <span class="new-template__progress-percentage">{{ uploadProgress }}%</span>
-                  </div>
-                  <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
-                  <button mat-button class="new-template__cancel-button" (click)="cancelUploading()">Cancel</button>
-                </div>
-                }
-              </div>
-            </div>
-          </mat-list-item>
-          }
-        </mat-list>
-      </div>
-      }
-    </mat-dialog-content>
-
-    <mat-dialog-actions class="new-template__actions">
-      <button mat-button matStepperPrevious>Back</button>
-      <button mat-button (click)="onCloseClick()">Cancel</button>
-    </mat-dialog-actions>
-  </mat-step>
-  }
-</mat-horizontal-stepper>
+    </div>
+  </main>
+</div>

@@ -1,21 +1,43 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, model, viewChild } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  ElementRef,
+  Input,
+  OnInit,
+  computed,
+  effect,
+  inject,
+  model,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, UntypedFormControl, Validators } from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatStepper, MatStepperModule } from '@angular/material/stepper';
+import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSortModule, Sort } from '@angular/material/sort';
-import { MatStepper } from '@angular/material/stepper';
-import { MatTableDataSource } from '@angular/material/table';
-import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
-import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FileItem, FileUploader, ParsedResponseHeaders, FileUploadModule } from 'ng2-file-upload';
 import * as SparkMD5 from 'spark-md5';
 import { timer } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { ProgressService } from '../../../common/progress/progress.service';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
-import { Appliance, Image, Version } from '@models/appliance';
-import { Project } from '@models/project';
-import { QemuBinary } from '@models/qemu/qemu-binary';
+import { Appliance, Image, Images, Version } from '@models/appliance';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
 import { DockerTemplate } from '@models/templates/docker-template';
@@ -23,7 +45,7 @@ import { IosTemplate } from '@models/templates/ios-template';
 import { IouTemplate } from '@models/templates/iou-template';
 import { QemuTemplate } from '@models/templates/qemu-template';
 import { ApplianceService } from '@services/appliances.service';
-import { ComputeService } from '@services/compute.service';
+import { ControllerService } from '@services/controller.service';
 import { DockerService } from '@services/docker.service';
 import { IosService } from '@services/ios.service';
 import { IouService } from '@services/iou.service';
@@ -31,126 +53,177 @@ import { QemuService } from '@services/qemu.service';
 import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
 import { ApplianceInfoDialogComponent } from './appliance-info-dialog/appliance-info-dialog.component';
-import { TemplateNameDialogComponent } from './template-name-dialog/template-name-dialog.component';
 import { UploadServiceService } from '../../../common/uploading-processbar/upload-service.service';
-import { environment } from 'environments/environment';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
-import { FormControl } from '@angular/forms';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatButtonModule } from '@angular/material/button';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { FileUploadModule } from 'ng2-file-upload';
+import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
+import { templateNameAsyncValidator } from '../../../validators/template-name-async-validator';
+import { ProjectNameValidator } from '../../projects/models/projectNameValidator';
+
+type CreationAction = 'install' | 'import';
+type ApplianceSort = 'name' | 'emulator' | 'vendor';
+
+const ALL_FILTER = 'all';
+const IMAGE_SLOTS: (keyof Images)[] = [
+  'bios_image',
+  'hda_disk_image',
+  'hdb_disk_image',
+  'hdc_disk_image',
+  'hdd_disk_image',
+  'cdrom_image',
+];
 
 @Component({
   standalone: true,
   selector: 'app-new-template-dialog',
   templateUrl: './new-template-dialog.component.html',
   styleUrls: ['./new-template-dialog.component.scss'],
+  providers: [ProjectNameValidator],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('detailExpand', [
-      state('collapsed', style({ height: '0px', minHeight: '0', visibility: 'hidden' })),
-      state('expanded', style({ height: '*', visibility: 'visible' })),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     MatDialogModule,
-    MatRadioModule,
     MatButtonModule,
     MatStepperModule,
-    MatCardModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
     MatInputModule,
+    MatPaginatorModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
-    MatCheckboxModule,
     MatExpansionModule,
     MatIconModule,
-    MatMenuModule,
-    MatAutocompleteModule,
+    MatTooltipModule,
     FileUploadModule,
-    FormsModule,
-    ReactiveFormsModule,
   ],
 })
-export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
+export class NewTemplateDialogComponent implements OnInit {
   @Input() controller: Controller;
-  @Input() project: Project;
 
-  uploader: FileUploader;
-  uploaderImage: FileUploader;
+  // ------------------------------------------------------------------
+  // Wizard state
+  // ------------------------------------------------------------------
+  readonly selectedStepIndex = signal(0);
+  readonly action = signal<CreationAction>('install');
+  readonly applianceToInstall = signal<Appliance | null>(null);
+  readonly selectedVersion = signal<Version | null>(null);
+  readonly selectedImage = signal<string | null>(null);
+  readonly isCreating = signal(false);
 
-  public action: string = 'install';
-  public actionTitle: string = 'Install appliance from controller';
-  public secondActionTitle: string = 'Appliance settings';
-
+  // ------------------------------------------------------------------
+  // Registry browsing state
+  // ------------------------------------------------------------------
+  readonly allAppliances = signal<Appliance[]>([]);
+  readonly isLoadingAppliances = signal(true);
+  readonly isUpdatingAppliances = signal(false);
   readonly searchText = model('');
-  public allAppliances: Appliance[] = [];
-  public appliances: Appliance[] = [];
-  public applianceToInstall: Appliance;
-  public selectedImages: any[];
-  public isLinuxPlatform = false;
-  private isLocalComputerChosen = false;
+  readonly category = model(ALL_FILTER);
+  readonly emulator = model(ALL_FILTER);
+  readonly vendor = model(ALL_FILTER);
+  readonly categories = signal<string[]>([]);
+  readonly emulators = signal<string[]>([]);
+  readonly vendors = signal<string[]>([]);
+  readonly sortBy = model<ApplianceSort>('name');
+  readonly sortAscending = signal(true);
+  readonly pageIndex = signal(0);
+  readonly pageSize = signal(5);
 
-  public categories: string[] = ['all categories', 'router', 'multilayer_switch', 'guest', 'firewall'];
-  readonly category = model('all categories');
-  public emulators: string[] = ['all emulators'];
-  readonly emulator = model('all emulators');
-  public vendors: string[] = ['all vendors'];
-  readonly vendor = model('all vendors');
-  public displayedColumns: string[] = ['name', 'emulator', 'vendor', 'actions'];
+  readonly filteredAppliances = computed(() => {
+    const search = this.searchText().toLowerCase();
+    const category = this.category();
+    const emulator = this.emulator();
+    const vendor = this.vendor();
+    const direction = this.sortAscending() ? 1 : -1;
 
-  // Form controls for autocomplete
-  categoryControl = new FormControl('all categories');
-  emulatorControl = new FormControl('all emulators');
-  vendorControl = new FormControl('all vendors');
+    const filtered = this.allAppliances().filter((appliance) => {
+      if (search && !appliance.name.toLowerCase().includes(search)) return false;
+      if (category !== ALL_FILTER && appliance.category !== category) return false;
+      if (emulator !== ALL_FILTER && appliance.emulator !== emulator) return false;
+      if (vendor !== ALL_FILTER && appliance.vendor_name !== vendor) return false;
+      return true;
+    });
 
-  // Filtered options for autocomplete
-  filteredCategories: string[] = [];
-  filteredEmulators: string[] = [];
-  filteredVendors: string[] = [];
+    const key = this.sortBy();
+    return filtered.sort((a, b) => {
+      const first = (key === 'vendor' ? a.vendor_name : key === 'emulator' ? a.emulator : a.name) || '';
+      const second = (key === 'vendor' ? b.vendor_name : key === 'emulator' ? b.emulator : b.name) || '';
+      return first.toLowerCase().localeCompare(second.toLowerCase()) * direction;
+    });
+  });
 
-  public dataSource: MatTableDataSource<Appliance>;
+  readonly pagedAppliances = computed(() => {
+    const start = this.pageIndex() * this.pageSize();
+    return this.filteredAppliances().slice(start, start + this.pageSize());
+  });
 
-  private qemuImages: Image[] = [];
-  private iosImages: Image[] = [];
-  private iouImages: Image[] = [];
+  // ------------------------------------------------------------------
+  // Images available on the controller
+  // ------------------------------------------------------------------
+  readonly qemuImages = signal<Image[]>([]);
+  readonly iosImages = signal<Image[]>([]);
+  readonly iouImages = signal<Image[]>([]);
 
-  private templates: Template[] = [];
+  // ------------------------------------------------------------------
+  // Upload state
+  // ------------------------------------------------------------------
+  uploaderImage: FileUploader;
   uploadProgress: number = 0;
   uploadingImageName: string = '';
-  isUploading: boolean = false;
-  isUpdatingAppliances: boolean = false;
+  readonly isUploading = signal(false);
+  readonly isImportingAppliance = signal(false);
   private checksumCancelled = false;
 
-  readonly paginator = viewChild(MatPaginator);
-  readonly stepper = viewChild<MatStepper>('stepper');
+  // ------------------------------------------------------------------
+  // Review state
+  // ------------------------------------------------------------------
+  templateNameControl: UntypedFormControl;
+  readonly nameValid = signal(false);
 
-  public dialogRef = inject<MatDialogRef<NewTemplateDialogComponent>>(MatDialogRef);
+  readonly requiresImages = computed(() => {
+    const appliance = this.applianceToInstall();
+    return !!appliance && !appliance.docker;
+  });
+
+  readonly lastStepIndex = computed(() => (this.requiresImages() ? 3 : 2));
+
+  readonly browseStepTitle = computed(() =>
+    this.action() === 'install' ? 'Choose appliance' : 'Import appliance'
+  );
+
+  readonly browseStepDescription = computed(() =>
+    this.action() === 'install' ? 'Select from the registry' : 'Upload a .gns3a file'
+  );
+
+  readonly filesReady = computed(() => {
+    const appliance = this.applianceToInstall();
+    if (!appliance) return false;
+    if (appliance.qemu) {
+      const version = this.selectedVersion();
+      return !!version && this.isVersionComplete(version);
+    }
+    const image = this.selectedImage();
+    return !!image && this.checkImageFromVersion(image);
+  });
+
+  readonly canAdvance = computed(() => {
+    switch (this.selectedStepIndex()) {
+      case 0:
+        return true;
+      case 1:
+        return !!this.applianceToInstall();
+      case 2:
+        return this.requiresImages() ? this.filesReady() : this.nameValid();
+      default:
+        return this.nameValid();
+    }
+  });
+
+  readonly stepper = viewChild<MatStepper>('stepper');
+  readonly applianceFileInput = viewChild<ElementRef<HTMLInputElement>>('applianceFile');
+
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
   private applianceService = inject(ApplianceService);
-  private changeDetector = inject(ChangeDetectorRef);
   private toasterService = inject(ToasterService);
   private qemuService = inject(QemuService);
   private dockerService = inject(DockerService);
@@ -158,174 +231,114 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
   private iouService = inject(IouService);
   private templateService = inject(TemplateService);
   public dialog = inject(MatDialog);
-  private computeService = inject(ComputeService);
-  private changeDetectorRef = inject(ChangeDetectorRef);
+  private cd = inject(ChangeDetectorRef);
   private progressService = inject(ProgressService);
   public snackBar = inject(MatSnackBar);
   private uploadServiceService = inject(UploadServiceService);
+  private projectNameValidator = inject(ProjectNameValidator);
+  private destroyRef = inject(DestroyRef);
+
+  constructor() {
+    // Reset pagination whenever the registry filters change.
+    effect(() => {
+      this.searchText();
+      this.category();
+      this.emulator();
+      this.vendor();
+      this.pageIndex.set(0);
+    });
+
+    // Automatically pre-select the first version/image whose required files
+    // are all present on the controller, so the user can continue right away.
+    // Only auto-select while nothing is selected: overriding an explicit user
+    // choice (e.g. opening an incomplete version to upload its images) would
+    // snap the stepper back to the complete version and make those files
+    // unreachable.
+    effect(() => {
+      const appliance = this.applianceToInstall();
+      if (!appliance) return;
+      // Track the controller image lists.
+      this.qemuImages();
+      this.iosImages();
+      this.iouImages();
+
+      if (appliance.qemu) {
+        if (!this.selectedVersion()) {
+          const complete = (appliance.versions || []).find((version) => this.isVersionComplete(version));
+          if (complete) this.selectedVersion.set(complete);
+        }
+      } else if (appliance.dynamips || appliance.iou) {
+        if (!this.selectedImage()) {
+          const ready = (appliance.images || []).find((image) => this.checkImageFromVersion(image.filename));
+          if (ready) this.selectedImage.set(ready.filename);
+        }
+      }
+    });
+  }
 
   ngOnInit() {
-    // Setup autocomplete filtering
-    this.setupAutocompleteFilters();
+    this.setupUploaders();
 
-    this.applianceService.getAppliances(this.controller).subscribe({
-      next: (appliances) => {
-        this.appliances = appliances;
-        this.appliances.forEach((appliance) => {
-          if (appliance.docker) appliance.emulator = 'Docker';
-          if (appliance.dynamips) appliance.emulator = 'Dynamips';
-          if (appliance.iou) appliance.emulator = 'Iou';
-          if (appliance.qemu) appliance.emulator = 'Qemu';
-        });
-        this.allAppliances = appliances;
-        this.extractFilterOptions();
-        this.dataSource = new MatTableDataSource(this.allAppliances);
-        this.setupPaginator();
-        this.changeDetectorRef.markForCheck();
+    // The wizard is now a routed page. When no controller was provided as an
+    // input (e.g. directly routed), resolve it from the URL before loading the
+    // registry and image lists.
+    if (this.controller) {
+      this.onControllerReady();
+    } else {
+      this.loadController();
+    }
+  }
+
+  private loadController(): void {
+    const controllerId = this.route.snapshot.paramMap.get('controller_id') ?? '';
+    this.controllerService.get(parseInt(controllerId, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.onControllerReady();
+        this.cd.markForCheck();
       },
-      error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to load appliances';
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
         this.toasterService.error(message);
-        this.changeDetectorRef.markForCheck();
-      },
+        this.cd.markForCheck();
+      }
+    );
+  }
+
+  private onControllerReady(): void {
+    this.templateNameControl = new UntypedFormControl(
+      '',
+      [Validators.required, this.projectNameValidator.get],
+      [templateNameAsyncValidator(this.controller, this.templateService)]
+    );
+    this.templateNameControl.statusChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      // Do not allow submission while the duplicate-name check is pending.
+      // Otherwise a fast click can create a duplicate before the async
+      // validator has had a chance to report the error.
+      this.nameValid.set(this.templateNameControl.status === 'VALID');
     });
 
-    this.templateService.list(this.controller).subscribe({
-      next: (templates) => {
-        this.templates = templates;
-        this.changeDetectorRef.markForCheck();
-      },
-      error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to load templates';
-        this.toasterService.error(message);
-        this.changeDetectorRef.markForCheck();
-      },
-    });
+    this.loadAppliances();
+    this.refreshImages();
+  }
 
-    this.computeService.getComputes(this.controller).subscribe({
-      next: (computes) => {
-        computes.forEach((compute) => {
-          if (compute.capabilities?.platform === 'linux') this.isLinuxPlatform = true;
-        });
-        this.changeDetectorRef.markForCheck();
-      },
-      error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to load computes';
-        this.toasterService.error(message);
-        this.changeDetectorRef.markForCheck();
-      },
-    });
-
-    this.qemuService.getImages(this.controller).subscribe({
-      next: (qemuImages) => {
-        this.qemuImages = qemuImages;
-        this.changeDetectorRef.markForCheck();
-      },
-      error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to load QEMU images';
-        this.toasterService.error(message);
-        this.changeDetectorRef.markForCheck();
-      },
-    });
-
-    this.iosService.getImages(this.controller).subscribe({
-      next: (iosImages) => {
-        this.iosImages = iosImages;
-        this.changeDetectorRef.markForCheck();
-      },
-      error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to load IOS images';
-        this.toasterService.error(message);
-        this.changeDetectorRef.markForCheck();
-      },
-    });
-
-    this.iouService.getImages(this.controller).subscribe({
-      next: (iouImages) => {
-        this.iouImages = iouImages;
-        this.changeDetectorRef.markForCheck();
-      },
-      error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to load IOU images';
-        this.toasterService.error(message);
-        this.changeDetectorRef.markForCheck();
-      },
-    });
-
-    this.applianceService.getAppliances(this.controller).subscribe((appliances) => {
-      this.appliances = appliances;
-      this.appliances.forEach((appliance) => {
-        if (appliance.docker) appliance.emulator = 'Docker';
-        if (appliance.dynamips) appliance.emulator = 'Dynamips';
-        if (appliance.iou) appliance.emulator = 'Iou';
-        if (appliance.qemu) appliance.emulator = 'Qemu';
-      });
-      this.allAppliances = appliances;
-      this.extractFilterOptions();
-      this.dataSource = new MatTableDataSource(this.allAppliances);
-      this.setupPaginator();
-    });
-
-    this.applianceService.getAppliances(this.controller).subscribe({
-      next: (appliances) => {
-        this.appliances = appliances;
-        this.appliances.forEach((appliance) => {
-          if (appliance.docker) appliance.emulator = 'Docker';
-          if (appliance.dynamips) appliance.emulator = 'Dynamips';
-          if (appliance.iou) appliance.emulator = 'Iou';
-          if (appliance.qemu) appliance.emulator = 'Qemu';
-        });
-        this.allAppliances = appliances;
-        this.extractFilterOptions();
-        this.dataSource = new MatTableDataSource(this.allAppliances);
-        this.setupPaginator();
-        this.changeDetectorRef.markForCheck();
-      },
-      error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to load appliances';
-        this.toasterService.error(message);
-        this.changeDetectorRef.markForCheck();
-      },
-    });
-
-    this.uploader = new FileUploader({ url: '' });
-    this.uploader.onAfterAddingFile = (file) => {
-      file.withCredentials = false;
-    };
-
-    this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-      this.toasterService.error('An error has occured');
-    };
-
-    this.uploader.onSuccessItem = (
-      item: FileItem,
-      response: string,
-      status: number,
-      headers: ParsedResponseHeaders
-    ) => {
-      this.toasterService.success('Appliance imported succesfully');
-      this.getAppliance(item.url);
-    };
-
+  private setupUploaders(): void {
     this.uploaderImage = new FileUploader({ url: '' });
     this.uploaderImage.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
-
     this.uploaderImage.onErrorItem = (
       item: FileItem,
       response: string,
       status: number,
       headers: ParsedResponseHeaders
     ) => {
-      this.toasterService.error('An error has occurred because image already exists');
-      this.progressService.deactivate();
-      this.isUploading = false;
-      this.uploadingImageName = '';
-      this.uploaderImage.clearQueue();
-      this.changeDetectorRef.markForCheck();
+      this.toasterService.error(
+        status === 409 ? 'An error has occurred because image already exists' : 'Failed to import image'
+      );
+      this.resetUploadState();
+      this.cd.markForCheck();
     };
-
     this.uploaderImage.onSuccessItem = (
       item: FileItem,
       response: string,
@@ -334,377 +347,344 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     ) => {
       this.toasterService.success('Image successfully imported');
       const uploadedFilename = this.uploadingImageName;
-      this.progressService.deactivate();
-      this.isUploading = false;
-      this.uploadingImageName = '';
-      this.uploaderImage.clearQueue();
-      this.changeDetectorRef.markForCheck();
+      this.resetUploadState();
+      this.cd.markForCheck();
       // The server computes the image checksum asynchronously after the upload
       // finishes, so poll until the just-uploaded image shows up as installed
-      // (otherwise the dialog stays "missing" until a manual page refresh).
+      // (otherwise the image stays "missing" until a manual refresh).
       this.refreshImagesUntilReady(uploadedFilename);
     };
-
     this.uploaderImage.onProgressItem = (progress: any) => {
       this.uploadProgress = progress['progress'];
       this.uploadServiceService.processBarCount(this.uploadProgress);
-      this.changeDetectorRef.markForCheck();
+      this.cd.markForCheck();
     };
 
-    this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
-      if (isCancel) {
-        this.cancelUploading();
-      }
-    });
+    this.uploadServiceService.currentCancelItemDetails
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((isCancel) => {
+        if (isCancel) {
+          this.cancelUploading();
+        }
+      });
   }
 
-  ngAfterViewInit() {
-    this.setupPaginator();
-  }
-
-  private setupPaginator() {
-    if (this.dataSource && this.paginator()) {
-      this.dataSource.paginator = this.paginator();
-      this.changeDetectorRef.markForCheck();
+  // ------------------------------------------------------------------
+  // Step navigation
+  // ------------------------------------------------------------------
+  onStepChange(event: StepperSelectionEvent) {
+    this.selectedStepIndex.set(event.selectedIndex);
+    // Keep the image status fresh when entering the files step so a manual
+    // "Refresh" click is not required after copying images on the server.
+    if (this.requiresImages() && event.selectedIndex === 2) {
+      this.refreshImages();
     }
   }
 
+  setAction(action: CreationAction) {
+    this.action.set(action);
+    this.applianceToInstall.set(null);
+    this.selectedVersion.set(null);
+    this.selectedImage.set(null);
+    // Selecting a creation method is enough to move to the browse step, so the
+    // import page (with its file picker) is shown right away.
+    setTimeout(() => {
+      this.stepper()?.next();
+      this.cd.markForCheck();
+    }, 150);
+  }
+
+  selectAppliance(appliance: Appliance) {
+    this.applianceToInstall.set(appliance);
+    this.selectedVersion.set(null);
+    this.selectedImage.set(null);
+    if (this.templateNameControl) {
+      this.templateNameControl.setValue(appliance.name);
+    }
+    // Selecting an appliance is enough, move straight to the next step.
+    setTimeout(() => {
+      this.stepper()?.next();
+      this.cd.markForCheck();
+    }, 150);
+  }
+
+  selectVersion(version: Version) {
+    this.selectedVersion.set(version);
+  }
+
+  selectImage(filename: string) {
+    this.selectedImage.set(filename);
+  }
+
+  onCloseClick() {
+    this.goBack();
+  }
+
+  /**
+   * Navigate back to the Templates page on the controller this wizard is
+   * editing. Mirrors the behaviour of the manual template creation pages.
+   */
+  goBack(): void {
+    const controllerId =
+      this.controller?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id') ?? '', 10);
+    this.router.navigate(['/controller', controllerId, 'preferences']);
+  }
+
+  // ------------------------------------------------------------------
+  // Registry browsing
+  // ------------------------------------------------------------------
+  private loadAppliances() {
+    this.isLoadingAppliances.set(true);
+    this.applianceService.getAppliances(this.controller).subscribe({
+      next: (appliances) => {
+        this.applyAppliances(appliances);
+        this.isLoadingAppliances.set(false);
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load appliances';
+        this.toasterService.error(message);
+        this.isLoadingAppliances.set(false);
+        this.cd.markForCheck();
+      },
+    });
+  }
+
   updateAppliances() {
-    this.isUpdatingAppliances = true;
+    this.isUpdatingAppliances.set(true);
     this.progressService.activate();
     this.applianceService.updateAppliances(this.controller).subscribe({
       next: (appliances) => {
-        this.appliances = appliances;
+        this.applyAppliances(appliances);
         this.progressService.deactivate();
-        this.isUpdatingAppliances = false;
+        this.isUpdatingAppliances.set(false);
         this.toasterService.success('Appliances are up-to-date.');
-        this.changeDetectorRef.markForCheck();
+        this.cd.markForCheck();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to update appliances';
         this.progressService.deactivate();
-        this.isUpdatingAppliances = false;
+        this.isUpdatingAppliances.set(false);
         this.toasterService.error(message);
-        this.changeDetectorRef.markForCheck();
+        this.cd.markForCheck();
       },
     });
   }
 
+  private applyAppliances(appliances: Appliance[]) {
+    appliances.forEach((appliance) => {
+      if (appliance.docker) appliance.emulator = 'Docker';
+      if (appliance.dynamips) appliance.emulator = 'Dynamips';
+      if (appliance.iou) appliance.emulator = 'Iou';
+      if (appliance.qemu) appliance.emulator = 'Qemu';
+    });
+    this.allAppliances.set(appliances);
+    this.extractFilterOptions(appliances);
+  }
+
+  private extractFilterOptions(appliances: Appliance[]) {
+    const categories = new Set<string>();
+    const emulators = new Set<string>();
+    const vendors = new Set<string>();
+    appliances.forEach((appliance) => {
+      if (appliance.category) categories.add(appliance.category);
+      if (appliance.emulator) emulators.add(appliance.emulator);
+      if (appliance.vendor_name) vendors.add(appliance.vendor_name);
+    });
+    this.categories.set(Array.from(categories).sort());
+    this.emulators.set(Array.from(emulators).sort());
+    this.vendors.set(Array.from(vendors).sort());
+  }
+
+  onPage(event: PageEvent) {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+  }
+
+  toggleSortDirection() {
+    this.sortAscending.set(!this.sortAscending());
+  }
+
+  formatLabel(value: string): string {
+    if (!value) return '';
+    return value.replace(/_/g, ' ').replace(/\b\w/g, (character) => character.toUpperCase());
+  }
+
+  emulatorIcon(appliance: Appliance): string {
+    switch (appliance.emulator) {
+      case 'Docker':
+        return 'deployed_code';
+      case 'Qemu':
+        return 'desktop_windows';
+      case 'Dynamips':
+        return 'router';
+      case 'Iou':
+        return 'hub';
+      default:
+        return 'dns';
+    }
+  }
+
+  showInfo(appliance: Appliance) {
+    this.dialog.open(ApplianceInfoDialogComponent, {
+      panelClass: ['base-dialog-panel', 'dialog-small-panel'],
+      data: { appliance: appliance },
+    });
+  }
+
+  // ------------------------------------------------------------------
+  // Appliance import
+  // ------------------------------------------------------------------
+  /**
+   * Open the native file picker for a .gns3a / .gns3appliance file. The input
+   * value is reset first so re-picking the same file still fires a change.
+   */
+  openApplianceFileBrowser(): void {
+    const input = this.applianceFileInput()?.nativeElement;
+    if (!input) {
+      return;
+    }
+    input.value = '';
+    input.click();
+  }
+
+  /**
+   * Import a .gns3a / .gns3appliance file. The file is plain JSON describing
+   * the appliance, so it is parsed directly in the browser (the same way the
+   * GNS3 desktop client imports appliances). The controller has no endpoint
+   * to ingest appliance files: posting the JSON to the image upload endpoint
+   * fails because it is not a valid disk image.
+   */
+  addAppliance(event) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    if (!this.controller) {
+      this.toasterService.error('Controller is not loaded yet. Please try again.');
+      return;
+    }
+    const fileReader: FileReader = new FileReader();
+
+    fileReader.onloadend = () => {
+      this.isImportingAppliance.set(true);
+      try {
+        const appliance = JSON.parse(fileReader.result as string) as Appliance;
+        if (!appliance || typeof appliance !== 'object' || !appliance.name) {
+          this.toasterService.error(`'${file.name}' is not a valid appliance file`);
+          return;
+        }
+        if (!appliance.qemu && !appliance.dynamips && !appliance.iou && !appliance.docker) {
+          this.toasterService.error('Template type not supported');
+          return;
+        }
+        // Derive the emulator label the same way as for registry appliances
+        // (it is shown in the review summary).
+        if (appliance.docker) appliance.emulator = 'Docker';
+        if (appliance.dynamips) appliance.emulator = 'Dynamips';
+        if (appliance.iou) appliance.emulator = 'Iou';
+        if (appliance.qemu) appliance.emulator = 'Qemu';
+        this.applianceToInstall.set(appliance);
+        this.selectedVersion.set(null);
+        this.selectedImage.set(null);
+        if (this.templateNameControl) {
+          this.templateNameControl.setValue(appliance.name);
+        }
+        this.toasterService.success('Appliance imported successfully');
+        setTimeout(() => {
+          this.stepper()?.next();
+          this.cd.markForCheck();
+        }, 100);
+      } catch (err) {
+        // JSON.parse failed - the selected file is not an appliance file.
+        this.toasterService.error(`'${file.name}' is not a valid appliance file`);
+      } finally {
+        // Never leave the wizard stuck on "Importing..." regardless of the outcome.
+        this.isImportingAppliance.set(false);
+        this.cd.markForCheck();
+      }
+    };
+
+    fileReader.readAsText(file);
+  }
+
+  // ------------------------------------------------------------------
+  // Image handling
+  // ------------------------------------------------------------------
   refreshImages() {
     this.qemuService.getImages(this.controller).subscribe({
       next: (qemuImages) => {
-        this.qemuImages = qemuImages;
-        this.changeDetectorRef.markForCheck();
+        this.qemuImages.set(qemuImages);
+        this.cd.markForCheck();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load QEMU images';
         this.toasterService.error(message);
-        this.changeDetectorRef.markForCheck();
+        this.cd.markForCheck();
       },
     });
 
     this.iosService.getImages(this.controller).subscribe({
       next: (iosImages) => {
-        this.iosImages = iosImages;
-        this.changeDetectorRef.markForCheck();
+        this.iosImages.set(iosImages);
+        this.cd.markForCheck();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load IOS images';
         this.toasterService.error(message);
-        this.changeDetectorRef.markForCheck();
+        this.cd.markForCheck();
       },
     });
 
     this.iouService.getImages(this.controller).subscribe({
       next: (iouImages) => {
-        this.iouImages = iouImages;
-        this.changeDetectorRef.markForCheck();
+        this.iouImages.set(iouImages);
+        this.cd.markForCheck();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load IOU images';
         this.toasterService.error(message);
-        this.changeDetectorRef.markForCheck();
+        this.cd.markForCheck();
       },
     });
   }
 
   private refreshImagesUntilReady(filename: string, attempt = 0): void {
     const MAX_ATTEMPTS = 15;
-    const service = this.applianceToInstall?.qemu
-      ? this.qemuService
-      : this.applianceToInstall?.dynamips
-        ? this.iosService
-        : this.iouService;
-    service.getImages(this.controller).subscribe((images: any[]) => {
-      if (this.applianceToInstall?.qemu) this.qemuImages = images;
-      else if (this.applianceToInstall?.dynamips) this.iosImages = images;
-      else this.iouImages = images;
-      this.changeDetectorRef.markForCheck();
-      if (this.checkImageFromVersion(filename) || attempt >= MAX_ATTEMPTS) return;
-      timer(1000).subscribe(() => this.refreshImagesUntilReady(filename, attempt + 1));
-    });
-  }
-
-  getAppliance(url: string) {
-    let str = url.split(`/${environment.current_version}`);
-    let appliancePath = str[str.length - 1];
-    this.applianceService.getAppliance(this.controller, appliancePath).subscribe({
-      next: (appliance: Appliance) => {
-        this.applianceToInstall = appliance;
-        setTimeout(() => {
-          this.stepper().next();
-        }, 100);
-        this.changeDetectorRef.markForCheck();
-      },
-      error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to load appliance';
-        this.toasterService.error(message);
-        this.changeDetectorRef.markForCheck();
-      },
-    });
-  }
-
-  addAppliance(event): void {
-    let name = event.target.files[0].name.split('-')[0];
-    let fileName = event.target.files[0].name;
-    let file = event.target.files[0];
-    let fileReader: FileReader = new FileReader();
-    let emulator;
-
-    fileReader.onloadend = () => {
-      let appliance = JSON.parse(fileReader.result as string);
-
-      if (appliance.docker) emulator = 'docker';
-      if (appliance.dynamips) emulator = 'dynamips';
-      if (appliance.iou) emulator = 'iou';
-      if (appliance.qemu) emulator = 'qemu';
-
-      const url = this.applianceService.getUploadPath(this.controller, fileName);
-      this.uploader.queue.forEach((elem) => (elem.url = url));
-
-      const itemToUpload = this.uploader.queue[0];
-      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true;
-      (itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }];
-
-      this.uploader.uploadItem(itemToUpload);
-    };
-
-    fileReader.readAsText(file);
-  }
-
-  extractFilterOptions() {
-    // Get base unique options from all appliances
-    const baseEmulators = new Set<string>();
-    const baseVendors = new Set<string>();
-    const baseCategories = new Set<string>();
-
-    this.allAppliances.forEach((appliance) => {
-      if (appliance.emulator) baseEmulators.add(appliance.emulator);
-      if (appliance.vendor_name) baseVendors.add(appliance.vendor_name);
-      if (appliance.category) baseCategories.add(appliance.category);
-    });
-
-    // Update base options (used for autocomplete)
-    this.categories = ['all categories', 'router', 'multilayer_switch', 'guest', 'firewall'];
-    this.emulators = ['all emulators', ...Array.from(baseEmulators).sort()];
-    this.vendors = ['all vendors', ...Array.from(baseVendors).sort()];
-
-    // Initial filter options update based on current selection
-    this.updateFilterOptions();
-  }
-
-  updateFilterOptions() {
-    // Apply current filters to get filtered appliances
-    let filteredAppliances = this.allAppliances;
-
-    // Filter by category
-    if (this.category() !== 'all categories' && this.category()) {
-      filteredAppliances = filteredAppliances.filter((t) => t.category === this.category());
-    }
-
-    // Filter by emulator
-    if (this.emulator() !== 'all emulators' && this.emulator()) {
-      filteredAppliances = filteredAppliances.filter((t) => t.emulator === this.emulator());
-    }
-
-    // Filter by vendor
-    if (this.vendor() !== 'all vendors' && this.vendor()) {
-      filteredAppliances = filteredAppliances.filter((t) => t.vendor_name === this.vendor());
-    }
-
-    // Extract unique options from filtered results for dynamic filtering
-    const uniqueEmulators = new Set<string>();
-    const uniqueVendors = new Set<string>();
-    const uniqueCategories = new Set<string>();
-
-    filteredAppliances.forEach((appliance) => {
-      if (appliance.emulator) uniqueEmulators.add(appliance.emulator);
-      if (appliance.vendor_name) uniqueVendors.add(appliance.vendor_name);
-      if (appliance.category) uniqueCategories.add(appliance.category);
-    });
-
-    // Update dynamic options based on current filters
-    this.emulators = ['all emulators', ...Array.from(uniqueEmulators).sort()];
-    this.vendors = ['all vendors', ...Array.from(uniqueVendors).sort()];
-
-    // Update filtered options for autocomplete
-    this.filteredCategories = this._filter(this.categoryControl.value || '', this.categories);
-    this.filteredEmulators = this._filter(this.emulatorControl.value || '', this.emulators);
-    this.filteredVendors = this._filter(this.vendorControl.value || '', this.vendors);
-  }
-
-  setupAutocompleteFilters() {
-    // Category filter
-    this.categoryControl.valueChanges.subscribe((value) => {
-      this.filteredCategories = this._filter(value || '', this.categories);
-    });
-
-    // Emulator filter
-    this.emulatorControl.valueChanges.subscribe((value) => {
-      this.filteredEmulators = this._filter(value || '', this.emulators);
-    });
-
-    // Vendor filter
-    this.vendorControl.valueChanges.subscribe((value) => {
-      this.filteredVendors = this._filter(value || '', this.vendors);
-    });
-  }
-
-  private _filter(value: string, options: string[]): string[] {
-    const filterValue = value.toLowerCase();
-    return options.filter((option) => option.toLowerCase().includes(filterValue));
-  }
-
-  filterAppliances() {
-    let temporaryAppliances = this.allAppliances.filter((item) => {
-      return item.name.toLowerCase().includes(this.searchText().toLowerCase());
-    });
-
-    // Filter by category
-    if (this.category() !== 'all categories' && this.category()) {
-      temporaryAppliances = temporaryAppliances.filter((t) => t.category === this.category());
-    }
-
-    // Filter by emulator
-    if (this.emulator() !== 'all emulators' && this.emulator()) {
-      temporaryAppliances = temporaryAppliances.filter((t) => t.emulator === this.emulator());
-    }
-
-    // Filter by vendor
-    if (this.vendor() !== 'all vendors' && this.vendor()) {
-      temporaryAppliances = temporaryAppliances.filter((t) => t.vendor_name === this.vendor());
-    }
-
-    this.appliances = temporaryAppliances;
-    this.dataSource = new MatTableDataSource(this.appliances);
-    this.setupPaginator();
-
-    // Update filter options based on current results
-    this.updateFilterOptions();
-  }
-
-  onSearchTextChange(value: string) {
-    this.searchText.set(value);
-    this.updateFilterOptions();
-    this.filterAppliances();
-  }
-
-  onCategoryChange(value: string) {
-    this.category.set(value);
-    this.categoryControl.setValue(value);
-    this.updateFilterOptions();
-    this.filterAppliances();
-  }
-
-  onEmulatorChange(value: string) {
-    this.emulator.set(value);
-    this.emulatorControl.setValue(value);
-    this.updateFilterOptions();
-    this.filterAppliances();
-  }
-
-  onVendorChange(value: string) {
-    this.vendor.set(value);
-    this.vendorControl.setValue(value);
-    this.updateFilterOptions();
-    this.filterAppliances();
-  }
-
-  clearFilter() {
-    this.searchText.set('');
-    this.filterAppliances();
-  }
-
-  clearCategoryFilter() {
-    this.category.set('all categories');
-    this.categoryControl.setValue('');
-    this.updateFilterOptions();
-    this.filterAppliances();
-  }
-
-  clearEmulatorFilter() {
-    this.emulator.set('all emulators');
-    this.emulatorControl.setValue('');
-    this.updateFilterOptions();
-    this.filterAppliances();
-  }
-
-  clearVendorFilter() {
-    this.vendor.set('all vendors');
-    this.vendorControl.setValue('');
-    this.updateFilterOptions();
-    this.filterAppliances();
-  }
-
-  setAction(action: string) {
-    this.action = action;
-    if (action === 'install') {
-      this.actionTitle = 'Install appliance from controller';
-    } else if (action === 'import') {
-      this.actionTitle = 'Import an appliance file';
-    }
-  }
-
-  setControllerType(controllerType: string) {
-    this.isLocalComputerChosen = true;
-  }
-
-  sortData(sort: Sort) {
-    if (!sort.active || sort.direction === '') return;
-
-    let appliances = this.appliances.slice();
-    this.appliances = appliances.sort((a, b) => {
-      const isAsc = sort.direction === 'asc';
-      if (sort.active === 'name') {
-        return compareNames(a.name, b.name, isAsc);
-      } else if (sort.active === 'emulator') {
-        return compareNames(a.emulator, b.emulator, isAsc);
-      } else if (sort.active === 'vendor') {
-        return compareNames(a.vendor_name, b.vendor_name, isAsc);
-      } else return 0;
-    });
-  }
-
-  onCloseClick() {
-    this.dialogRef.close();
-  }
-
-  install(object: Appliance) {
-    this.applianceToInstall = object;
-    setTimeout(() => {
-      this.stepper().next();
-    }, 100);
-  }
-
-  showInfo(object: Appliance) {
-    let dialogRef = this.dialog.open(ApplianceInfoDialogComponent, {
-      panelClass: ['base-dialog-panel', 'dialog-small-panel'],
-      data: { appliance: object },
-    });
-    dialogRef.componentInstance.appliance = object;
+    const appliance = this.applianceToInstall();
+    const service = appliance?.qemu ? this.qemuService : appliance?.dynamips ? this.iosService : this.iouService;
+    service
+      .getImages(this.controller)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (images: Image[]) => {
+          if (appliance?.qemu) this.qemuImages.set(images);
+          else if (appliance?.dynamips) this.iosImages.set(images);
+          else this.iouImages.set(images);
+          this.cd.markForCheck();
+          if (this.checkImageFromVersion(filename) || attempt >= MAX_ATTEMPTS) return;
+          timer(1000)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.refreshImagesUntilReady(filename, attempt + 1));
+        },
+        error: () => {
+          // Image indexing can briefly make the image endpoint unavailable.
+          // Keep polling within the same bounded retry window instead of
+          // leaving the image permanently marked as missing.
+          if (attempt >= MAX_ATTEMPTS) return;
+          timer(1000)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.refreshImagesUntilReady(filename, attempt + 1));
+        },
+      });
   }
 
   importImage(event, imageName) {
+    const file = event?.target?.files?.[0];
+    if (!file) {
+      return;
+    }
+
     this.uploadingImageName = imageName;
     this.checksumCancelled = false;
     // Open the progress snackbar up front and drive it from the MD5 computation,
@@ -714,12 +694,22 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     this.openSnackBar();
     this.uploadServiceService.processBarCount(0);
 
-    this.computeChecksumMd5(event.target.files[0], false, (percent) => {
+    this.computeChecksumMd5(file, false, (percent) => {
       this.uploadServiceService.processBarCount(percent);
     }).then((output) => {
       if (this.checksumCancelled) return;
 
-      let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === imageName)[0];
+      const imageToInstall = this.applianceToInstall()?.images?.find((n) => n.filename === imageName);
+
+      // Defensive: an imported .gns3a may reference a version image that is
+      // missing from the top-level images array. Bail out cleanly instead of
+      // crashing on imageToInstall.md5sum and leaving the wizard stuck.
+      if (!imageToInstall) {
+        this.resetUploadState();
+        this.toasterService.error(`Image '${imageName}' was not found in the appliance definition`);
+        this.cd.markForCheck();
+        return;
+      }
 
       if (imageToInstall.md5sum !== output) {
         // Close the checksum snackbar so it does not linger behind the dialog.
@@ -745,109 +735,113 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
             this.openSnackBar();
             this.uploadServiceService.setMessage('Uploading');
             this.uploadServiceService.setComputing(false);
-            this.importImageFile(event, imageName);
+            this.importImageFile(imageName);
           } else {
-            this.isUploading = false;
-            this.uploadingImageName = '';
-            this.uploaderImage.clearQueue();
-            this.changeDetectorRef.markForCheck();
+            this.resetUploadState();
+            this.cd.markForCheck();
           }
         });
       } else {
         this.uploadServiceService.setMessage('Uploading');
         this.uploadServiceService.setComputing(false);
         this.uploadServiceService.processBarCount(0);
-        this.importImageFile(event, imageName);
+        this.importImageFile(imageName);
       }
+    }).catch((err) => {
+      // A local read error must close the progress UI and clear the queued
+      // file; otherwise the wizard remains in a stale checksum phase.
+      if (this.checksumCancelled) return;
+      this.resetUploadState();
+      this.toasterService.error(typeof err === 'string' ? err : 'MD5 computation failed - error reading the file');
+      this.cd.markForCheck();
     });
   }
 
-  importImageFile(event, imageName) {
-    let name = event.target.files[0].name.split('-')[0];
-    let file = event.target.files[0];
-    let fileReader: FileReader = new FileReader();
-    let emulator;
+  private importImageFile(imageName: string) {
+    // Reading the file into memory is intentionally avoided: large disk images
+    // would blow up the browser. The file is already queued by ng2FileSelect,
+    // so we only configure the upload URL/headers and start the upload.
+    const url = this.applianceService.getUploadPath(this.controller, imageName);
+    this.uploaderImage.queue.forEach((elem) => (elem.url = url));
 
-    fileReader.onloadend = () => {
-      if (this.applianceToInstall.qemu) emulator = 'qemu';
-      if (this.applianceToInstall.dynamips) emulator = 'dynamips';
-      if (this.applianceToInstall.iou) emulator = 'iou';
+    const itemToUpload = this.uploaderImage.queue[0];
+    const options = (itemToUpload as any)?.options;
+    if (!itemToUpload || !options) {
+      this.resetUploadState();
+      this.toasterService.error('The selected file could not be queued for upload');
+      this.cd.markForCheck();
+      return;
+    }
+    options.disableMultipart = true;
+    options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }];
 
-      const url = this.applianceService.getUploadPath(this.controller, imageName);
-      this.uploaderImage.queue.forEach((elem) => (elem.url = url));
-
-      const itemToUpload = this.uploaderImage.queue[0];
-      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true;
-      (itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }];
-
-      this.isUploading = true;
-      this.uploadProgress = 0;
-      this.uploaderImage.uploadItem(itemToUpload);
-      this.changeDetectorRef.markForCheck();
-    };
-
-    //fileReader.readAsText(file); //web browser out ouf memory when upload large image file
-    fileReader.onloadend(undefined);
+    this.isUploading.set(true);
+    this.uploadProgress = 0;
+    this.uploaderImage.uploadItem(itemToUpload);
+    this.cd.markForCheck();
   }
 
   cancelUploading() {
     this.checksumCancelled = true;
+    this.resetUploadState();
+    this.toasterService.warning('File upload cancelled');
+    this.uploadServiceService.cancelFileUploading(false);
+    this.cd.markForCheck();
+  }
+
+  private resetUploadState(): void {
+    this.progressService.deactivate();
     this.uploaderImage.clearQueue();
+    this.uploadProgress = 0;
+    this.isUploading.set(false);
+    this.uploadingImageName = '';
     this.uploadServiceService.processBarCount(null);
     this.uploadServiceService.setMessage('');
     this.uploadServiceService.setComputing(false);
-    this.toasterService.warning('File upload cancelled');
-    this.uploadServiceService.cancelFileUploading(false);
   }
 
   checkImageFromVersion(image: string): boolean {
-    let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === image)[0];
-    if (this.applianceToInstall.qemu) {
-      if (this.qemuImages.filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
-    } else if (this.applianceToInstall.dynamips) {
-      if (this.iosImages.filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
-    } else if (this.applianceToInstall.iou) {
-      if (this.iouImages.filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
+    const appliance = this.applianceToInstall();
+    if (!appliance) return false;
+    const imageToInstall = appliance.images?.find((n) => n.filename === image);
+    if (!imageToInstall) return false;
+    if (appliance.qemu) {
+      if (this.qemuImages().filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
+    } else if (appliance.dynamips) {
+      if (this.iosImages().filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
+    } else if (appliance.iou) {
+      if (this.iouImages().filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
     }
 
     return false;
+  }
+
+  getVersionImages(version: Version): { key: keyof Images; filename: string }[] {
+    return IMAGE_SLOTS.filter((slot) => version.images[slot]).map((slot) => ({
+      key: slot,
+      filename: version.images[slot],
+    }));
   }
 
   /**
    * Get the count of images in a version
    */
   getVersionImageCount(version: Version): number {
-    const images = version.images;
-    let count = 0;
-    if (images.bios_image) count++;
-    if (images.hda_disk_image) count++;
-    if (images.hdb_disk_image) count++;
-    if (images.hdc_disk_image) count++;
-    if (images.hdd_disk_image) count++;
-    if (images.cdrom_image) count++;
-    return count;
+    return this.getVersionImages(version).length;
   }
 
   /**
    * Get the count of ready (installed) images in a version
    */
   getVersionReadyCount(version: Version): number {
-    const images = version.images;
-    let count = 0;
-    if (images.bios_image && this.checkImageFromVersion(images.bios_image)) count++;
-    if (images.hda_disk_image && this.checkImageFromVersion(images.hda_disk_image)) count++;
-    if (images.hdb_disk_image && this.checkImageFromVersion(images.hdb_disk_image)) count++;
-    if (images.hdc_disk_image && this.checkImageFromVersion(images.hdc_disk_image)) count++;
-    if (images.hdd_disk_image && this.checkImageFromVersion(images.hdd_disk_image)) count++;
-    if (images.cdrom_image && this.checkImageFromVersion(images.cdrom_image)) count++;
-    return count;
+    return this.getVersionImages(version).filter((image) => this.checkImageFromVersion(image.filename)).length;
   }
 
   /**
    * Check if all images in a version are ready
    */
   isVersionComplete(version: Version): boolean {
-    return this.getVersionReadyCount(version) === this.getVersionImageCount(version);
+    return this.getVersionImageCount(version) > 0 && this.getVersionReadyCount(version) === this.getVersionImageCount(version);
   }
 
   openConfirmationDialog(message: string, link: string) {
@@ -888,181 +882,105 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
   }
 
   downloadImageFromVersion(image: string) {
-    this.applianceToInstall.images.forEach((n) => {
+    this.applianceToInstall().images.forEach((n) => {
       if (n.filename === image) this.downloadImage(n);
     });
   }
 
+  // ------------------------------------------------------------------
+  // Template creation
+  // ------------------------------------------------------------------
   getCategory() {
-    if (this.applianceToInstall.category === 'multilayer_switch') {
+    if (this.applianceToInstall().category === 'multilayer_switch') {
       return 'switch';
     }
-    return this.applianceToInstall.category;
+    return this.applianceToInstall().category;
   }
 
-  createIouTemplate(image: Image) {
+  private buildIouTemplate(image: Image, name: string): IouTemplate {
+    const appliance = this.applianceToInstall();
     let iou_image = image.filename;
-    let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === iou_image)[0];
-    let imageToUse = this.iouImages.filter((n) => n.checksum === imageToInstall.md5sum);
+    let imageToInstall = appliance.images.filter((n) => n.filename === iou_image)[0];
+    let imageToUse = this.iouImages().filter((n) => n.checksum === imageToInstall.md5sum);
     if (imageToUse.length > 0) {
       iou_image = imageToUse[0].filename; // use the image name from the controller
     }
 
     let iouTemplate: IouTemplate = new IouTemplate();
-    iouTemplate.nvram = this.applianceToInstall.iou.nvram;
-    iouTemplate.ram = this.applianceToInstall.iou.ram;
-    iouTemplate.ethernet_adapters = this.applianceToInstall.iou.ethernet_adapters;
-    iouTemplate.serial_adapters = this.applianceToInstall.iou.serial_adapters;
-    iouTemplate.startup_config = this.applianceToInstall.iou.startup_config;
+    iouTemplate.nvram = appliance.iou.nvram;
+    iouTemplate.ram = appliance.iou.ram;
+    iouTemplate.ethernet_adapters = appliance.iou.ethernet_adapters;
+    iouTemplate.serial_adapters = appliance.iou.serial_adapters;
+    iouTemplate.startup_config = appliance.iou.startup_config;
     iouTemplate.category = this.getCategory();
-    iouTemplate.default_name_format = this.applianceToInstall.default_name_format;
-    iouTemplate.symbol = this.applianceToInstall.symbol;
-    iouTemplate.tags = this.applianceToInstall.tags || [];
+    iouTemplate.default_name_format = appliance.default_name_format;
+    iouTemplate.symbol = appliance.symbol;
+    iouTemplate.tags = appliance.tags || [];
     iouTemplate.compute_id = 'local';
     iouTemplate.template_id = uuid();
     iouTemplate.path = iou_image;
     iouTemplate.template_type = 'iou';
-
-    const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
-      autoFocus: false,
-      disableClose: true,
-      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'template-name-dialog-panel'],
-      data: {
-        name: this.applianceToInstall.name,
-      },
-    });
-    dialogRef.componentInstance.controller = this.controller;
-    dialogRef.afterClosed().subscribe((answer: string) => {
-      if (answer) {
-        iouTemplate.name = answer;
-        this.iouService.addTemplate(this.controller, iouTemplate).subscribe({
-          next: (template) => {
-            this.templateService.newTemplateCreated.next(template);
-            this.toasterService.success('Template added');
-            this.dialogRef.close();
-          },
-          error: (err) => {
-            const message = err.error?.message || err.message || 'Failed to add template';
-            this.toasterService.error(message);
-            this.changeDetector.markForCheck();
-          },
-        });
-      } else {
-        return false;
-      }
-    });
+    iouTemplate.name = name;
+    return iouTemplate;
   }
 
-  createIosTemplate(image: Image) {
+  private buildIosTemplate(image: Image, name: string): IosTemplate {
+    const appliance = this.applianceToInstall();
     let ios_image = image.filename;
-    let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === ios_image)[0];
-    let imageToUse = this.iosImages.filter((n) => n.checksum === imageToInstall.md5sum);
+    let imageToInstall = appliance.images.filter((n) => n.filename === ios_image)[0];
+    let imageToUse = this.iosImages().filter((n) => n.checksum === imageToInstall.md5sum);
     if (imageToUse.length > 0) {
       ios_image = imageToUse[0].filename; // use the image name from the controller
     }
 
     let iosTemplate: IosTemplate = new IosTemplate();
-    iosTemplate.chassis = this.applianceToInstall.dynamips.chassis;
-    iosTemplate.nvram = this.applianceToInstall.dynamips.nvram;
-    iosTemplate.platform = this.applianceToInstall.dynamips.platform;
-    iosTemplate.ram = this.applianceToInstall.dynamips.ram;
-    iosTemplate.startup_config = this.applianceToInstall.dynamips.startup_config;
-    iosTemplate.slot0 = this.applianceToInstall.dynamips.slot0;
-    iosTemplate.slot1 = this.applianceToInstall.dynamips.slot1;
-    iosTemplate.slot2 = this.applianceToInstall.dynamips.slot2;
-    iosTemplate.slot3 = this.applianceToInstall.dynamips.slot3;
-    iosTemplate.slot4 = this.applianceToInstall.dynamips.slot4;
-    iosTemplate.slot5 = this.applianceToInstall.dynamips.slot5;
-    iosTemplate.slot6 = this.applianceToInstall.dynamips.slot6;
-    iosTemplate.slot7 = this.applianceToInstall.dynamips.slot7;
+    iosTemplate.chassis = appliance.dynamips.chassis;
+    iosTemplate.nvram = appliance.dynamips.nvram;
+    iosTemplate.platform = appliance.dynamips.platform;
+    iosTemplate.ram = appliance.dynamips.ram;
+    iosTemplate.startup_config = appliance.dynamips.startup_config;
+    iosTemplate.slot0 = appliance.dynamips.slot0;
+    iosTemplate.slot1 = appliance.dynamips.slot1;
+    iosTemplate.slot2 = appliance.dynamips.slot2;
+    iosTemplate.slot3 = appliance.dynamips.slot3;
+    iosTemplate.slot4 = appliance.dynamips.slot4;
+    iosTemplate.slot5 = appliance.dynamips.slot5;
+    iosTemplate.slot6 = appliance.dynamips.slot6;
+    iosTemplate.slot7 = appliance.dynamips.slot7;
     iosTemplate.category = this.getCategory();
-    iosTemplate.default_name_format = this.applianceToInstall.default_name_format;
-    iosTemplate.symbol = this.applianceToInstall.symbol;
-    iosTemplate.tags = this.applianceToInstall.tags || [];
+    iosTemplate.default_name_format = appliance.default_name_format;
+    iosTemplate.symbol = appliance.symbol;
+    iosTemplate.tags = appliance.tags || [];
     iosTemplate.compute_id = 'local';
     iosTemplate.template_id = uuid();
     iosTemplate.image = ios_image;
     iosTemplate.template_type = 'dynamips';
-
-    const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
-      autoFocus: false,
-      disableClose: true,
-      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'template-name-dialog-panel'],
-      data: {
-        name: this.applianceToInstall.name,
-      },
-    });
-    dialogRef.componentInstance.controller = this.controller;
-    dialogRef.afterClosed().subscribe((answer: string) => {
-      if (answer) {
-        iosTemplate.name = answer;
-
-        this.iosService.addTemplate(this.controller, iosTemplate).subscribe({
-          next: (template) => {
-            this.templateService.newTemplateCreated.next(template as any as Template);
-            this.toasterService.success('Template added');
-            this.dialogRef.close();
-          },
-          error: (err) => {
-            const message = err.error?.message || err.message || 'Failed to add template';
-            this.toasterService.error(message);
-            this.changeDetector.markForCheck();
-          }
-        });
-      } else {
-        return false;
-      }
-    });
+    iosTemplate.name = name;
+    return iosTemplate;
   }
 
-  createDockerTemplate() {
+  private buildDockerTemplate(name: string): DockerTemplate {
+    const appliance = this.applianceToInstall();
     let dockerTemplate: DockerTemplate = new DockerTemplate();
-    dockerTemplate.adapters = this.applianceToInstall.docker.adapters;
-    dockerTemplate.console_type = this.applianceToInstall.docker.console_type;
+    dockerTemplate.adapters = appliance.docker.adapters;
+    dockerTemplate.console_type = appliance.docker.console_type;
     dockerTemplate.category = this.getCategory();
-    dockerTemplate.default_name_format = this.applianceToInstall.default_name_format;
-    dockerTemplate.symbol = this.applianceToInstall.symbol;
-    dockerTemplate.tags = this.applianceToInstall.tags || [];
+    dockerTemplate.default_name_format = appliance.default_name_format;
+    dockerTemplate.symbol = appliance.symbol;
+    dockerTemplate.tags = appliance.tags || [];
     dockerTemplate.compute_id = 'local';
     dockerTemplate.template_id = uuid();
-    dockerTemplate.image = this.applianceToInstall.docker.image;
+    dockerTemplate.image = appliance.docker.image;
     dockerTemplate.template_type = 'docker';
-
-    const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
-      autoFocus: false,
-      disableClose: true,
-      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'template-name-dialog-panel'],
-      data: {
-        name: this.applianceToInstall.name,
-      },
-    });
-    dialogRef.componentInstance.controller = this.controller;
-    dialogRef.afterClosed().subscribe((answer: string) => {
-      if (answer) {
-        dockerTemplate.name = answer;
-
-        this.dockerService.addTemplate(this.controller, dockerTemplate).subscribe({
-          next: (template) => {
-            this.templateService.newTemplateCreated.next(template as any as Template);
-            this.toasterService.success('Template added');
-            this.dialogRef.close();
-          },
-          error: (err) => {
-            const message = err.error?.message || err.message || 'Failed to add template';
-            this.toasterService.error(message);
-            this.changeDetector.markForCheck();
-          },
-        });
-      } else {
-        return false;
-      }
-    });
+    dockerTemplate.name = name;
+    return dockerTemplate;
   }
 
   findControllerImageName(image_name) {
     if (image_name) {
-      let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === image_name)[0];
-      let imageToUse = this.qemuImages.filter((n) => n.checksum === imageToInstall.md5sum);
+      const imageToInstall = this.applianceToInstall()?.images?.find((n) => n.filename === image_name);
+      if (!imageToInstall) return image_name;
+      const imageToUse = this.qemuImages().filter((n) => n.checksum === imageToInstall.md5sum);
       if (imageToUse.length > 0) {
         image_name = imageToUse[0].filename; // use the image name from the controller
       }
@@ -1070,76 +988,129 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     return image_name;
   }
 
-  createQemuTemplateFromVersion(version: Version) {
+  private buildQemuTemplate(version: Version, name: string): QemuTemplate {
+    const appliance = this.applianceToInstall();
     let qemuTemplate: QemuTemplate = new QemuTemplate();
-    qemuTemplate.ram = this.applianceToInstall.qemu.ram;
-    qemuTemplate.adapters = this.applianceToInstall.qemu.adapters;
-    qemuTemplate.adapter_type = this.applianceToInstall.qemu.adapter_type;
-    qemuTemplate.boot_priority = this.applianceToInstall.qemu.boot_priority;
-    qemuTemplate.console_type = this.applianceToInstall.qemu.console_type;
-    qemuTemplate.hda_disk_interface = this.applianceToInstall.qemu.hda_disk_interface;
-    qemuTemplate.hdb_disk_interface = this.applianceToInstall.qemu.hdb_disk_interface;
-    qemuTemplate.hdc_disk_interface = this.applianceToInstall.qemu.hdc_disk_interface;
-    qemuTemplate.hdd_disk_interface = this.applianceToInstall.qemu.hdd_disk_interface;
+    qemuTemplate.ram = appliance.qemu.ram;
+    qemuTemplate.adapters = appliance.qemu.adapters;
+    qemuTemplate.adapter_type = appliance.qemu.adapter_type;
+    qemuTemplate.boot_priority = appliance.qemu.boot_priority;
+    qemuTemplate.console_type = appliance.qemu.console_type;
+    qemuTemplate.hda_disk_interface = appliance.qemu.hda_disk_interface;
+    qemuTemplate.hdb_disk_interface = appliance.qemu.hdb_disk_interface;
+    qemuTemplate.hdc_disk_interface = appliance.qemu.hdc_disk_interface;
+    qemuTemplate.hdd_disk_interface = appliance.qemu.hdd_disk_interface;
     qemuTemplate.category = this.getCategory();
-    qemuTemplate.first_port_name = this.applianceToInstall.first_port_name;
-    qemuTemplate.port_name_format = this.applianceToInstall.port_name_format;
-    qemuTemplate.port_segment_size = this.applianceToInstall.port_segment_size;
-    qemuTemplate.default_name_format = this.applianceToInstall.default_name_format;
-    qemuTemplate.symbol = this.applianceToInstall.symbol;
-    qemuTemplate.tags = this.applianceToInstall.tags || [];
+    qemuTemplate.first_port_name = appliance.first_port_name;
+    qemuTemplate.port_name_format = appliance.port_name_format;
+    qemuTemplate.port_segment_size = appliance.port_segment_size;
+    qemuTemplate.default_name_format = appliance.default_name_format;
+    qemuTemplate.symbol = appliance.symbol;
+    qemuTemplate.tags = appliance.tags || [];
     qemuTemplate.compute_id = 'local';
     qemuTemplate.template_id = uuid();
+    qemuTemplate.bios_image = this.findControllerImageName(version.images.bios_image);
     qemuTemplate.hda_disk_image = this.findControllerImageName(version.images.hda_disk_image);
     qemuTemplate.hdb_disk_image = this.findControllerImageName(version.images.hdb_disk_image);
     qemuTemplate.hdc_disk_image = this.findControllerImageName(version.images.hdc_disk_image);
     qemuTemplate.hdd_disk_image = this.findControllerImageName(version.images.hdd_disk_image);
     qemuTemplate.cdrom_image = this.findControllerImageName(version.images.cdrom_image);
     qemuTemplate.template_type = 'qemu';
-    qemuTemplate.usage = this.applianceToInstall.usage;
-    qemuTemplate.platform = this.applianceToInstall.qemu.arch;
+    qemuTemplate.usage = appliance.usage;
+    qemuTemplate.platform = appliance.qemu.arch;
+    qemuTemplate.name = name;
+    return qemuTemplate;
+  }
 
-    const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
-      autoFocus: false,
-      disableClose: true,
-      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'template-name-dialog-panel'],
-      data: {
-        name: this.applianceToInstall.name,
+  createTemplate() {
+    const appliance = this.applianceToInstall();
+    if (!appliance) {
+      this.toasterService.error('Please select an appliance first');
+      return;
+    }
+    // The submit button is disabled while the async duplicate-name check is
+    // pending. Keep this guard focused on an actual invalid value so callers
+    // that invoke this method directly do not get a transient false negative
+    // while Angular is settling the control status.
+    if (!this.templateNameControl || this.templateNameControl.invalid) {
+      this.toasterService.error('Please enter correct name for new template');
+      return;
+    }
+
+    const name = this.templateNameControl.value;
+    this.isCreating.set(true);
+
+    let request;
+    if (appliance.qemu) {
+      const version = this.selectedVersion();
+      if (!version || !this.isVersionComplete(version)) {
+        this.isCreating.set(false);
+        this.toasterService.error('Please select a version with all required images');
+        return;
+      }
+      request = this.qemuService.addTemplate(this.controller, this.buildQemuTemplate(version, name));
+    } else if (appliance.dynamips) {
+      const image = appliance.images.filter((n) => n.filename === this.selectedImage())[0];
+      if (!image || !this.checkImageFromVersion(image.filename)) {
+        this.isCreating.set(false);
+        this.toasterService.error('Please select an image available on the controller');
+        return;
+      }
+      request = this.iosService.addTemplate(this.controller, this.buildIosTemplate(image, name));
+    } else if (appliance.iou) {
+      const image = appliance.images.filter((n) => n.filename === this.selectedImage())[0];
+      if (!image || !this.checkImageFromVersion(image.filename)) {
+        this.isCreating.set(false);
+        this.toasterService.error('Please select an image available on the controller');
+        return;
+      }
+      request = this.iouService.addTemplate(this.controller, this.buildIouTemplate(image, name));
+    } else {
+      request = this.dockerService.addTemplate(this.controller, this.buildDockerTemplate(name));
+    }
+
+    request.subscribe({
+      next: (template) => {
+        this.templateService.newTemplateCreated.next(template as any as Template);
+        this.toasterService.success('Template added');
+        this.isCreating.set(false);
+        this.goBack();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to add template';
+        this.isCreating.set(false);
+        this.toasterService.error(message);
+        this.cd.markForCheck();
       },
     });
-    dialogRef.componentInstance.controller = this.controller;
-    dialogRef.afterClosed().subscribe((answer: string) => {
-      if (answer) {
-        qemuTemplate.name = answer;
+  }
 
-        this.qemuService.addTemplate(this.controller, qemuTemplate).subscribe({
-          next: (template) => {
-            this.templateService.newTemplateCreated.next(template as any as Template);
-            this.toasterService.success('Template added');
-            this.dialogRef.close();
-          },
-          error: (err) => {
-            const message = err.error?.message || err.message || 'Failed to add template';
-            this.toasterService.error(message);
-            this.changeDetector.markForCheck();
-          },
-        });
-      } else {
-        return false;
-      }
-    });
+  // ------------------------------------------------------------------
+  // Review helpers
+  // ------------------------------------------------------------------
+  getSelectedVersionImageNames(): string {
+    const version = this.selectedVersion();
+    if (!version) return '';
+    return this.getVersionImages(version)
+      .map((image) => image.filename)
+      .join(', ');
   }
 
   private computeChecksumMd5(
     file: File,
     encode = false,
-    onProgress?: (percent: number) => void,
+    onProgress?: (percent: number) => void
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       const chunkSize = 2097152;
       const spark = new SparkMD5.ArrayBuffer();
       const fileReader = new FileReader();
       let cursor = 0;
+
+      if (file.size === 0) {
+        resolve(spark.end(encode));
+        return;
+      }
 
       fileReader.onerror = function (): void {
         reject('MD5 computation failed - error reading the file');
@@ -1174,10 +1145,4 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
       data: { upload_file_type: 'Image' },
     });
   }
-}
-
-function compareNames(a: string, b: string, isAsc: boolean) {
-  a = a.toLowerCase();
-  b = b.toLowerCase();
-  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }

@@ -43,7 +43,8 @@
 }
 
 button.templates-page__refresh,
-button.templates-page__new {
+button.templates-page__new,
+button.templates-page__manual {
   height: var(--gns3-density-control-height);
   border-radius: 12px;
   padding-inline: 18px;
@@ -846,6 +847,7 @@ button.templates-page__details-action--delete {
 :host-context([data-density='compact']) {
   button.templates-page__refresh,
   button.templates-page__new,
+  button.templates-page__manual,
   .templates-page__scope {
     min-height: 40px;
     height: 40px;
@@ -965,7 +967,8 @@ button.templates-page__details-action--delete {
   }
 
   button.templates-page__refresh,
-  button.templates-page__new {
+  button.templates-page__new,
+  button.templates-page__manual {
     width: 100%;
     padding-inline: 10px;
   }

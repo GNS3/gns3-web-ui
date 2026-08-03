@@ -30,6 +30,7 @@ import { CopyIouTemplateComponent } from '@components/preferences/ios-on-unix/co
 import { IouTemplateDetailsComponent } from '@components/preferences/ios-on-unix/iou-template-details/iou-template-details.component';
 import { IouTemplatesComponent } from '@components/preferences/ios-on-unix/iou-templates/iou-templates.component';
 import { PreferencesComponent } from '@components/preferences/preferences.component';
+import { NewTemplateDialogComponent } from '@components/project-map/new-template-dialog/new-template-dialog.component';
 import { AddQemuVmTemplateComponent } from '@components/preferences/qemu/add-qemu-vm-template/add-qemu-vm-template.component';
 import { CopyQemuVmTemplateComponent } from '@components/preferences/qemu/copy-qemu-vm-template/copy-qemu-vm-template.component';
 import { QemuVmTemplateDetailsComponent } from '@components/preferences/qemu/qemu-vm-template-details/qemu-vm-template-details.component';
@@ -119,6 +120,13 @@ const routes: Routes = [
         canActivate: [LoginGuard],
       },
       { path: 'controller/:controller_id/preferences', component: PreferencesComponent, canActivate: [LoginGuard] },
+      {
+        // New template wizard: install from the registry or import an appliance.
+        // Opened as its own page (like the manual template creation pages).
+        path: 'controller/:controller_id/preferences/new-template',
+        component: NewTemplateDialogComponent,
+        canActivate: [LoginGuard],
+      },
       // { path: 'controller/:controller_id/preferences/general', component: GeneralPreferencesComponent },
       {
         path: 'controller/:controller_id/computes',

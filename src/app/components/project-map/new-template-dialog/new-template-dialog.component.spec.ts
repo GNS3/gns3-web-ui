@@ -1,16 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSortModule, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { NewTemplateDialogComponent } from './new-template-dialog.component';
-import { Appliance, Image } from '@models/appliance';
+import { Appliance, Image, Version } from '@models/appliance';
 import { Controller } from '@models/controller';
-import { Project } from '@models/project';
 import { Template } from '@models/template';
 import { ApplianceService } from '@services/appliances.service';
-import { ComputeService } from '@services/compute.service';
+import { ControllerService } from '@services/controller.service';
 import { DockerService } from '@services/docker.service';
 import { IosService } from '@services/ios.service';
 import { IouService } from '@services/iou.service';
@@ -19,14 +17,12 @@ import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
 import { ProgressService } from '../../../common/progress/progress.service';
 import { UploadServiceService } from '../../../common/uploading-processbar/upload-service.service';
-import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('NewTemplateDialogComponent', () => {
   let component: NewTemplateDialogComponent;
   let fixture: ComponentFixture<NewTemplateDialogComponent>;
   let mockApplianceService: any;
-  let mockComputeService: any;
   let mockTemplateService: any;
   let mockQemuService: any;
   let mockIosService: any;
@@ -35,10 +31,11 @@ describe('NewTemplateDialogComponent', () => {
   let mockToasterService: any;
   let mockProgressService: any;
   let mockUploadServiceService: any;
-  let mockChangeDetectorRef: any;
   let mockDialog: any;
   let mockSnackBar: any;
-  let mockDialogRef: any;
+  let mockRouter: any;
+  let mockRoute: any;
+  let mockControllerService: any;
 
   const mockController: Controller = {
     id: 1,
@@ -56,29 +53,6 @@ describe('NewTemplateDialogComponent', () => {
     tokenExpired: false,
   } as Controller;
 
-  const mockProject: Project = {
-    project_id: 'proj1',
-    name: 'Test Project',
-    filename: 'test.gns3',
-    status: 'opened',
-      created_by: '',
-    auto_close: true,
-    auto_open: false,
-    auto_start: false,
-    scene_width: 2000,
-    scene_height: 1000,
-    zoom: 100,
-    show_layers: false,
-    snap_to_grid: false,
-    show_grid: false,
-    grid_size: 75,
-    drawing_grid_size: 25,
-    show_interface_labels: false,
-    variables: [],
-    path: '/path/to/project',
-    readonly: false,
-  } as Project;
-
   const createMockAppliance = (): Appliance =>
     ({
       name: 'Test Appliance',
@@ -86,7 +60,7 @@ describe('NewTemplateDialogComponent', () => {
       symbol: 'test-symbol',
       category: 'router',
       vendor_name: 'Test Vendor',
-      emulator: 'qemu',
+      emulator: 'Qemu',
       images: [
         {
           filename: 'test-image.img',
@@ -127,7 +101,44 @@ describe('NewTemplateDialogComponent', () => {
       registry_version: 1,
       status: '',
       vendor_url: '',
-      versions: [],
+      versions: [
+        {
+          name: '1.0',
+          images: { hda_disk_image: 'test-image.img' },
+        } as Version,
+      ],
+    } as unknown as Appliance);
+
+  const createDockerAppliance = (): Appliance =>
+    ({
+      ...createMockAppliance(),
+      name: 'Docker Appliance',
+      qemu: null,
+      emulator: 'Docker',
+      docker: { adapters: 1, console_type: 'telnet', image: 'ubuntu:latest' },
+    } as unknown as Appliance);
+
+  const createDynamipsAppliance = (): Appliance =>
+    ({
+      ...createMockAppliance(),
+      name: 'IOS Appliance',
+      qemu: null,
+      emulator: 'Dynamips',
+      dynamips: {
+        chassis: 'c3600',
+        nvram: 128,
+        platform: 'c3600',
+        ram: 192,
+        slot0: '',
+        slot1: '',
+        slot2: '',
+        slot3: '',
+        slot4: '',
+        slot5: '',
+        slot6: '',
+        slot7: '',
+        startup_config: '',
+      },
     } as unknown as Appliance);
 
   const mockTemplate: Template = {
@@ -136,15 +147,8 @@ describe('NewTemplateDialogComponent', () => {
     template_type: 'qemu',
   } as Template;
 
-  const mockCompute = { capabilities: { platform: 'linux' } };
-
   beforeEach(async () => {
     vi.clearAllMocks();
-
-    mockDialogRef = {
-      close: vi.fn(),
-      afterClosed: vi.fn().mockReturnValue(of(null)),
-    };
 
     const mockDialogRefForOpen = {
       close: vi.fn(),
@@ -156,15 +160,27 @@ describe('NewTemplateDialogComponent', () => {
       afterClosed: vi.fn().mockReturnValue(of(null)),
     };
 
+    mockRouter = {
+      navigate: vi.fn(),
+    };
+
+    mockRoute = {
+      snapshot: {
+        paramMap: {
+          get: vi.fn().mockReturnValue(String(mockController.id)),
+        },
+      },
+    };
+
+    mockControllerService = {
+      get: vi.fn().mockResolvedValue(mockController),
+    };
+
     mockApplianceService = {
       getAppliances: vi.fn().mockReturnValue(of([createMockAppliance()])),
       updateAppliances: vi.fn().mockReturnValue(of([createMockAppliance()])),
       getAppliance: vi.fn().mockReturnValue(of(createMockAppliance())),
       getUploadPath: vi.fn().mockReturnValue('http://test.com/upload'),
-    };
-
-    mockComputeService = {
-      getComputes: vi.fn().mockReturnValue(of([mockCompute])),
     };
 
     mockTemplateService = {
@@ -212,10 +228,6 @@ describe('NewTemplateDialogComponent', () => {
       currentComputing: of(false),
     };
 
-    mockChangeDetectorRef = {
-      markForCheck: vi.fn(),
-    };
-
     mockDialog = {
       open: vi.fn().mockReturnValue(mockDialogRefForOpen),
     };
@@ -227,10 +239,11 @@ describe('NewTemplateDialogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [NewTemplateDialogComponent],
       providers: [
-        { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MatDialog, useValue: mockDialog },
+        { provide: Router, useValue: mockRouter },
+        { provide: ActivatedRoute, useValue: mockRoute },
+        { provide: ControllerService, useValue: mockControllerService },
         { provide: ApplianceService, useValue: mockApplianceService },
-        { provide: ComputeService, useValue: mockComputeService },
         { provide: TemplateService, useValue: mockTemplateService },
         { provide: QemuService, useValue: mockQemuService },
         { provide: IosService, useValue: mockIosService },
@@ -239,7 +252,6 @@ describe('NewTemplateDialogComponent', () => {
         { provide: ToasterService, useValue: mockToasterService },
         { provide: ProgressService, useValue: mockProgressService },
         { provide: UploadServiceService, useValue: mockUploadServiceService },
-        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
         { provide: MatSnackBar, useValue: mockSnackBar },
       ],
     }).compileComponents();
@@ -247,7 +259,9 @@ describe('NewTemplateDialogComponent', () => {
     fixture = TestBed.createComponent(NewTemplateDialogComponent);
     component = fixture.componentInstance;
     component.controller = mockController;
-    component.project = mockProject;
+    // The standalone component imports MatDialogModule, so the MatDialog mock
+    // must be assigned directly (TestBed providers lose against the module).
+    component.dialog = mockDialog as unknown as MatDialog;
     fixture.detectChanges();
   });
 
@@ -261,33 +275,27 @@ describe('NewTemplateDialogComponent', () => {
     });
 
     it('should have default action set to install', () => {
-      expect(component.action).toBe('install');
-    });
-
-    it('should have default actionTitle set correctly', () => {
-      expect(component.actionTitle).toBe('Install appliance from controller');
+      expect(component.action()).toBe('install');
     });
 
     it('should have default searchText as empty string', () => {
       expect(component.searchText()).toBe('');
     });
 
-    it('should have default category as all categories', () => {
-      expect(component.category()).toBe('all categories');
+    it('should have default filters set to all', () => {
+      expect(component.category()).toBe('all');
+      expect(component.emulator()).toBe('all');
+      expect(component.vendor()).toBe('all');
+    });
+
+    it('should start on the first step', () => {
+      expect(component.selectedStepIndex()).toBe(0);
     });
   });
 
   describe('ngOnInit', () => {
     it('should load appliances from service', () => {
       expect(mockApplianceService.getAppliances).toHaveBeenCalledWith(mockController);
-    });
-
-    it('should load templates from service', () => {
-      expect(mockTemplateService.list).toHaveBeenCalledWith(mockController);
-    });
-
-    it('should load computes from service', () => {
-      expect(mockComputeService.getComputes).toHaveBeenCalledWith(mockController);
     });
 
     it('should load qemu images from service', () => {
@@ -301,227 +309,315 @@ describe('NewTemplateDialogComponent', () => {
     it('should load iou images from service', () => {
       expect(mockIouService.getImages).toHaveBeenCalledWith(mockController);
     });
+
+    it('should mark appliances as loaded', () => {
+      expect(component.isLoadingAppliances()).toBe(false);
+    });
+
+    it('should populate appliances', () => {
+      expect(component.allAppliances().length).toBe(1);
+      expect(component.allAppliances()[0].name).toBe('Test Appliance');
+    });
   });
 
   describe('setAction', () => {
-    it('should set action to install', () => {
-      component.setAction('install');
-      expect(component.action).toBe('install');
-    });
-
-    it('should set actionTitle to Install appliance from controller when action is install', () => {
-      component.setAction('install');
-      expect(component.actionTitle).toBe('Install appliance from controller');
-    });
-
-    it('should set actionTitle to Import an appliance file when action is import', () => {
-      component.setAction('import');
-      expect(component.actionTitle).toBe('Import an appliance file');
-    });
-
     it('should set action to import', () => {
       component.setAction('import');
-      expect(component.action).toBe('import');
+      expect(component.action()).toBe('import');
+    });
+
+    it('should set action to install', () => {
+      component.setAction('import');
+      component.setAction('install');
+      expect(component.action()).toBe('install');
+    });
+
+    it('should clear the selected appliance when switching methods', () => {
+      component.selectAppliance(createMockAppliance());
+      component.setAction('import');
+      expect(component.applianceToInstall()).toBeNull();
+    });
+
+    it('should update the browse step title', () => {
+      expect(component.browseStepTitle()).toBe('Choose appliance');
+      component.setAction('import');
+      expect(component.browseStepTitle()).toBe('Import appliance');
     });
   });
 
-  describe('setControllerType', () => {
-    it('should set isLocalComputerChosen to true', () => {
-      component.setControllerType('local');
-      expect((component as any).isLocalComputerChosen).toBe(true);
-    });
-  });
-
-  describe('filterAppliances', () => {
+  describe('filteredAppliances', () => {
     beforeEach(() => {
-      component.allAppliances = [
-        { ...createMockAppliance(), name: 'Router1', category: 'router' },
-        { ...createMockAppliance(), name: 'Switch1', category: 'multilayer_switch' },
-        { ...createMockAppliance(), name: 'Firewall1', category: 'firewall' },
-      ];
-      component.appliances = [...component.allAppliances];
-      component.dataSource = new MatTableDataSource(component.allAppliances);
+      component.allAppliances.set([
+        { ...createMockAppliance(), name: 'Router1', category: 'router', emulator: 'Qemu', vendor_name: 'Cisco' },
+        {
+          ...createMockAppliance(),
+          name: 'Switch1',
+          category: 'multilayer_switch',
+          emulator: 'Dynamips',
+          vendor_name: 'Cisco',
+        },
+        { ...createMockAppliance(), name: 'Firewall1', category: 'firewall', emulator: 'Docker', vendor_name: 'Ubuntu' },
+      ]);
     });
 
     it('should filter appliances by search text', () => {
       component.searchText.set('Router');
-      component.filterAppliances();
-
-      expect(component.appliances.length).toBe(1);
-      expect(component.appliances[0].name).toBe('Router1');
+      expect(component.filteredAppliances().length).toBe(1);
+      expect(component.filteredAppliances()[0].name).toBe('Router1');
     });
 
     it('should filter appliances by category', () => {
       component.category.set('router');
-      component.filterAppliances();
+      expect(component.filteredAppliances().length).toBe(1);
+      expect(component.filteredAppliances()[0].category).toBe('router');
+    });
 
-      expect(component.appliances.length).toBe(1);
-      expect(component.appliances[0].category).toBe('router');
+    it('should filter appliances by emulator', () => {
+      component.emulator.set('Docker');
+      expect(component.filteredAppliances().length).toBe(1);
+      expect(component.filteredAppliances()[0].name).toBe('Firewall1');
+    });
+
+    it('should filter appliances by vendor', () => {
+      component.vendor.set('Cisco');
+      expect(component.filteredAppliances().length).toBe(2);
     });
 
     it('should filter by both search text and category', () => {
       component.searchText.set('Router');
       component.category.set('router');
-      component.filterAppliances();
-
-      expect(component.appliances.length).toBe(1);
+      expect(component.filteredAppliances().length).toBe(1);
     });
 
-    it('should return all appliances when category is all categories', () => {
-      component.category.set('all categories');
-      component.filterAppliances();
-
-      expect(component.appliances.length).toBe(3);
+    it('should return all appliances when filters are all', () => {
+      expect(component.filteredAppliances().length).toBe(3);
     });
 
-    it('should update dataSource after filtering', () => {
-      component.searchText.set('Router');
-      component.filterAppliances();
+    it('should sort appliances by name ascending by default', () => {
+      const names = component.filteredAppliances().map((a) => a.name);
+      expect(names).toEqual(['Firewall1', 'Router1', 'Switch1']);
+    });
 
-      expect(component.dataSource.data.length).toBe(1);
+    it('should sort appliances by name descending when toggled', () => {
+      component.toggleSortDirection();
+      const names = component.filteredAppliances().map((a) => a.name);
+      expect(names).toEqual(['Switch1', 'Router1', 'Firewall1']);
+    });
+
+    it('should sort appliances by vendor', () => {
+      component.sortBy.set('vendor');
+      const vendors = component.filteredAppliances().map((a) => a.vendor_name);
+      expect(vendors).toEqual(['Cisco', 'Cisco', 'Ubuntu']);
+    });
+
+    it('should sort appliances by emulator', () => {
+      component.sortBy.set('emulator');
+      const emulators = component.filteredAppliances().map((a) => a.emulator);
+      expect(emulators).toEqual(['Docker', 'Dynamips', 'Qemu']);
     });
   });
 
-  describe('sortData', () => {
+  describe('pagination', () => {
     beforeEach(() => {
-      component.appliances = [
-        { ...createMockAppliance(), name: 'Zebra', emulator: 'qemu', vendor_name: 'Zebra' },
-        { ...createMockAppliance(), name: 'Alpha', emulator: 'docker', vendor_name: 'Alpha' },
-      ];
+      const appliances: Appliance[] = [];
+      for (let i = 1; i <= 10; i++) {
+        appliances.push({ ...createMockAppliance(), name: `Appliance ${i}` });
+      }
+      component.allAppliances.set(appliances);
     });
 
-    it('should sort appliances by name ascending', () => {
-      const sort: Sort = { active: 'name', direction: 'asc' };
-
-      component.sortData(sort);
-
-      expect(component.appliances[0].name).toBe('Alpha');
-      expect(component.appliances[1].name).toBe('Zebra');
+    it('should paginate appliances with the default page size', () => {
+      expect(component.pageSize()).toBe(5);
+      expect(component.pagedAppliances().length).toBe(5);
     });
 
-    it('should sort appliances by name descending', () => {
-      const sort: Sort = { active: 'name', direction: 'desc' };
-
-      component.sortData(sort);
-
-      expect(component.appliances[0].name).toBe('Zebra');
-      expect(component.appliances[1].name).toBe('Alpha');
+    it('should return the second page', () => {
+      component.pageIndex.set(1);
+      expect(component.pagedAppliances().length).toBe(5);
     });
 
-    it('should sort appliances by emulator ascending', () => {
-      const sort: Sort = { active: 'emulator', direction: 'asc' };
-
-      component.sortData(sort);
-
-      expect(component.appliances[0].emulator).toBe('docker');
-      expect(component.appliances[1].emulator).toBe('qemu');
+    it('should update page index and size on page event', () => {
+      component.onPage({ pageIndex: 1, pageSize: 4, length: 10 } as any);
+      expect(component.pageIndex()).toBe(1);
+      expect(component.pageSize()).toBe(4);
+      expect(component.pagedAppliances().length).toBe(4);
     });
 
-    it('should sort appliances by vendor ascending', () => {
-      const sort: Sort = { active: 'vendor', direction: 'asc' };
-
-      component.sortData(sort);
-
-      expect(component.appliances[0].vendor_name).toBe('Alpha');
-      expect(component.appliances[1].vendor_name).toBe('Zebra');
-    });
-
-    it('should not sort when direction is empty', () => {
-      const originalOrder = [...component.appliances];
-      const sort: Sort = { active: 'name', direction: '' };
-
-      component.sortData(sort);
-
-      expect(component.appliances).toEqual(originalOrder);
-    });
-
-    it('should not sort when active is empty', () => {
-      const originalOrder = [...component.appliances];
-      const sort: Sort = { active: '', direction: 'asc' };
-
-      component.sortData(sort);
-
-      expect(component.appliances).toEqual(originalOrder);
+    it('should reset the page index when filters change', () => {
+      component.pageIndex.set(1);
+      component.searchText.set('Appliance');
+      fixture.detectChanges();
+      expect(component.pageIndex()).toBe(0);
     });
   });
 
-  describe('onCloseClick', () => {
-    it('should close the dialog', () => {
-      component.onCloseClick();
-      expect(mockDialogRef.close).toHaveBeenCalled();
-    });
-  });
-
-  describe('install', () => {
+  describe('selectAppliance', () => {
     it('should set applianceToInstall', () => {
-      component.install(createMockAppliance());
-      expect(component.applianceToInstall).toBeTruthy();
-    });
-  });
-
-  describe('showInfo', () => {
-    it('should call dialog.open when triggered', () => {
       const appliance = createMockAppliance();
-      // showInfo calls dialog.open internally which requires full dialog infrastructure
-      // This tests the method exists and is callable
-      expect(typeof component.showInfo).toBe('function');
+      component.selectAppliance(appliance);
+      expect(component.applianceToInstall()).toBe(appliance);
+    });
+
+    it('should prefill the template name with the appliance name', () => {
+      component.selectAppliance(createMockAppliance());
+      expect(component.templateNameControl.value).toBe('Test Appliance');
+    });
+
+    it('should reset version and image selections', () => {
+      component.selectedVersion.set(createMockAppliance().versions[0]);
+      component.selectedImage.set('test-image.img');
+      component.selectAppliance(createMockAppliance());
+      expect(component.selectedVersion()).toBeNull();
+      expect(component.selectedImage()).toBeNull();
     });
   });
 
-  describe('getAppliance', () => {
-    it('should call getAppliance service', () => {
-      const testUrl = `/${mockController.id}/appliances/test-appliance`;
-      component.getAppliance(testUrl);
-      expect(mockApplianceService.getAppliance).toHaveBeenCalled();
+  describe('requiresImages and lastStepIndex', () => {
+    it('should not require images without a selected appliance', () => {
+      expect(component.requiresImages()).toBe(false);
+    });
+
+    it('should require images for qemu appliances', () => {
+      component.applianceToInstall.set(createMockAppliance());
+      expect(component.requiresImages()).toBe(true);
+      expect(component.lastStepIndex()).toBe(3);
+    });
+
+    it('should not require images for docker appliances', () => {
+      component.applianceToInstall.set(createDockerAppliance());
+      expect(component.requiresImages()).toBe(false);
+      expect(component.lastStepIndex()).toBe(2);
+    });
+  });
+
+  describe('canAdvance', () => {
+    it('should always allow advancing from the method step', () => {
+      component.selectedStepIndex.set(0);
+      expect(component.canAdvance()).toBe(true);
+    });
+
+    it('should require an appliance on the browse step', () => {
+      component.selectedStepIndex.set(1);
+      expect(component.canAdvance()).toBe(false);
+      component.applianceToInstall.set(createMockAppliance());
+      expect(component.canAdvance()).toBe(true);
+    });
+
+    it('should require ready files on the files step', () => {
+      component.applianceToInstall.set(createMockAppliance());
+      component.selectedStepIndex.set(2);
+      expect(component.canAdvance()).toBe(false);
+    });
+
+    it('should require a valid name on the review step for docker appliances', () => {
+      component.applianceToInstall.set(createDockerAppliance());
+      component.selectedStepIndex.set(2);
+      component.nameValid.set(false);
+      expect(component.canAdvance()).toBe(false);
+      component.nameValid.set(true);
+      expect(component.canAdvance()).toBe(true);
     });
   });
 
   describe('checkImageFromVersion', () => {
+    it('should return false when no appliance is selected', () => {
+      expect(component.checkImageFromVersion('test-image.img')).toBe(false);
+    });
+
     it('should return false when no matching image found', () => {
-      component.applianceToInstall = createMockAppliance();
-      mockQemuService.getImages.mockReturnValue(of([]));
+      component.applianceToInstall.set(createMockAppliance());
+      component.qemuImages.set([]);
+      expect(component.checkImageFromVersion('test-image.img')).toBe(false);
+    });
 
-      const result = component.checkImageFromVersion('test-image.img');
+    it('should return true when the checksum matches a controller image', () => {
+      component.applianceToInstall.set(createMockAppliance());
+      component.qemuImages.set([{ filename: 'test-image.img', checksum: 'abc123' } as Image]);
+      expect(component.checkImageFromVersion('test-image.img')).toBe(true);
+    });
+  });
 
-      expect(result).toBe(false);
+  describe('version helpers', () => {
+    it('should list the images of a version in a stable order', () => {
+      const version = {
+        name: '1.0',
+        images: { cdrom_image: 'c.iso', hda_disk_image: 'a.img', bios_image: 'b.bin' },
+      } as Version;
+      const images = component.getVersionImages(version);
+      expect(images.map((i) => i.key)).toEqual(['bios_image', 'hda_disk_image', 'cdrom_image']);
+    });
+
+    it('should count the images of a version', () => {
+      const version = { name: '1.0', images: { hda_disk_image: 'a.img', cdrom_image: 'c.iso' } } as Version;
+      expect(component.getVersionImageCount(version)).toBe(2);
+    });
+
+    it('should count the ready images of a version', () => {
+      component.applianceToInstall.set(createMockAppliance());
+      component.qemuImages.set([{ filename: 'test-image.img', checksum: 'abc123' } as Image]);
+      const version = component.applianceToInstall().versions[0];
+      expect(component.getVersionReadyCount(version)).toBe(1);
+    });
+
+    it('should detect a complete version', () => {
+      component.applianceToInstall.set(createMockAppliance());
+      const version = component.applianceToInstall().versions[0];
+      expect(component.isVersionComplete(version)).toBe(false);
+      component.qemuImages.set([{ filename: 'test-image.img', checksum: 'abc123' } as Image]);
+      expect(component.isVersionComplete(version)).toBe(true);
+    });
+  });
+
+  describe('auto-selection effect', () => {
+    it('should auto-select the first complete version for qemu appliances', () => {
+      component.qemuImages.set([{ filename: 'test-image.img', checksum: 'abc123' } as Image]);
+      component.applianceToInstall.set(createMockAppliance());
+      fixture.detectChanges();
+      expect(component.selectedVersion()?.name).toBe('1.0');
+    });
+
+    it('should auto-select the first ready image for dynamips appliances', () => {
+      component.iosImages.set([{ filename: 'test-image.img', checksum: 'abc123' } as Image]);
+      component.applianceToInstall.set(createDynamipsAppliance());
+      fixture.detectChanges();
+      expect(component.selectedImage()).toBe('test-image.img');
+    });
+
+    it('should mark files as ready when a complete version is selected', () => {
+      component.qemuImages.set([{ filename: 'test-image.img', checksum: 'abc123' } as Image]);
+      component.applianceToInstall.set(createMockAppliance());
+      fixture.detectChanges();
+      expect(component.filesReady()).toBe(true);
     });
   });
 
   describe('getCategory', () => {
     it('should return switch for multilayer_switch category', () => {
-      component.applianceToInstall = { ...createMockAppliance(), category: 'multilayer_switch' };
+      component.applianceToInstall.set({ ...createMockAppliance(), category: 'multilayer_switch' });
       expect(component.getCategory()).toBe('switch');
     });
 
     it('should return the category when not multilayer_switch', () => {
-      component.applianceToInstall = { ...createMockAppliance(), category: 'router' };
+      component.applianceToInstall.set({ ...createMockAppliance(), category: 'router' });
       expect(component.getCategory()).toBe('router');
     });
   });
 
   describe('findControllerImageName', () => {
     it('should return original image name when no matching checksum found', () => {
-      component.applianceToInstall = createMockAppliance();
-      mockQemuService.getImages.mockReturnValue(of([]));
-
-      const result = component.findControllerImageName('test-image.img');
-
-      expect(result).toBe('test-image.img');
+      component.applianceToInstall.set(createMockAppliance());
+      component.qemuImages.set([]);
+      expect(component.findControllerImageName('test-image.img')).toBe('test-image.img');
     });
 
     it('should return controller image name when checksum matches', () => {
-      component.applianceToInstall = createMockAppliance();
-      const controllerImage: Image = { filename: 'controller-image.img', checksum: 'abc123' } as Image;
-      (component as any).qemuImages = [controllerImage];
-
-      const result = component.findControllerImageName('test-image.img');
-
-      expect(result).toBe('controller-image.img');
+      component.applianceToInstall.set(createMockAppliance());
+      component.qemuImages.set([{ filename: 'controller-image.img', checksum: 'abc123' } as Image]);
+      expect(component.findControllerImageName('test-image.img')).toBe('controller-image.img');
     });
 
     it('should return original name when image_name is null', () => {
-      const result = component.findControllerImageName(null as any);
-      expect(result).toBeNull();
+      expect(component.findControllerImageName(null as any)).toBeNull();
     });
   });
 
@@ -535,22 +631,163 @@ describe('NewTemplateDialogComponent', () => {
       component.updateAppliances();
       expect(mockProgressService.activate).toHaveBeenCalled();
     });
+
+    it('should show a success toast and deactivate progress', () => {
+      component.updateAppliances();
+      expect(mockProgressService.deactivate).toHaveBeenCalled();
+      expect(mockToasterService.success).toHaveBeenCalledWith('Appliances are up-to-date.');
+    });
+
+    it('should show error toast when updateAppliances fails', () => {
+      mockApplianceService.updateAppliances.mockReturnValue(throwError(() => new Error('Update failed')));
+      component.updateAppliances();
+      expect(mockProgressService.deactivate).toHaveBeenCalled();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');
+      expect(component.isUpdatingAppliances()).toBe(false);
+    });
   });
 
   describe('refreshImages', () => {
     it('should refresh qemu images', () => {
+      mockQemuService.getImages.mockClear();
       component.refreshImages();
       expect(mockQemuService.getImages).toHaveBeenCalledWith(mockController);
     });
 
     it('should refresh ios images', () => {
+      mockIosService.getImages.mockClear();
       component.refreshImages();
       expect(mockIosService.getImages).toHaveBeenCalledWith(mockController);
     });
 
     it('should refresh iou images', () => {
+      mockIouService.getImages.mockClear();
       component.refreshImages();
       expect(mockIouService.getImages).toHaveBeenCalledWith(mockController);
+    });
+
+    it('should handle refreshImages errors gracefully', () => {
+      mockQemuService.getImages.mockReturnValue(throwError(() => new Error('QEMU images failed')));
+      component.refreshImages();
+      expect(mockToasterService.error).toHaveBeenCalledWith('QEMU images failed');
+    });
+  });
+
+  describe('onStepChange', () => {
+    it('should update the selected step index', () => {
+      component.onStepChange({ selectedIndex: 1 } as any);
+      expect(component.selectedStepIndex()).toBe(1);
+    });
+
+    it('should refresh images automatically when entering the files step', () => {
+      component.applianceToInstall.set(createMockAppliance());
+      mockQemuService.getImages.mockClear();
+      component.onStepChange({ selectedIndex: 2 } as any);
+      expect(mockQemuService.getImages).toHaveBeenCalled();
+    });
+
+    it('should not refresh images on the files step for docker appliances', () => {
+      component.applianceToInstall.set(createDockerAppliance());
+      mockQemuService.getImages.mockClear();
+      component.onStepChange({ selectedIndex: 2 } as any);
+      expect(mockQemuService.getImages).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onCloseClick', () => {
+    it('should navigate back to the Templates page', () => {
+      component.onCloseClick();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
+    });
+  });
+
+  describe('goBack', () => {
+    it('should navigate back to the Templates page using the loaded controller', () => {
+      component.goBack();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
+    });
+
+    it('should fall back to the route controller id when no controller is set', () => {
+      component.controller = undefined;
+      component.goBack();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
+    });
+  });
+
+  describe('showInfo', () => {
+    it('should open the appliance info dialog', () => {
+      component.showInfo(createMockAppliance());
+      expect(mockDialog.open).toHaveBeenCalled();
+    });
+  });
+
+  describe('addAppliance', () => {
+    it('should parse the appliance file and set the appliance to install', async () => {
+      const appliance = createMockAppliance();
+      const file = new File([JSON.stringify(appliance)], 'appliance.gns3a', { type: 'application/json' });
+
+      component.addAppliance({ target: { files: [file] } });
+
+      // Wait for the FileReader onloadend callback to run. Fake timers are
+      // active globally, so advance them (async version also flushes the
+      // real async FileReader events between timer ticks).
+      await vi.advanceTimersByTimeAsync(100);
+
+      expect(component.applianceToInstall()?.name).toBe(appliance.name);
+      expect(component.isImportingAppliance()).toBe(false);
+      expect(mockToasterService.success).toHaveBeenCalledWith('Appliance imported successfully');
+    });
+
+    it('should pre-fill the template name from the imported appliance', async () => {
+      const appliance = createMockAppliance();
+      const file = new File([JSON.stringify(appliance)], 'appliance.gns3a', { type: 'application/json' });
+
+      component.addAppliance({ target: { files: [file] } });
+      await vi.advanceTimersByTimeAsync(100);
+
+      expect(component.templateNameControl.value).toBe(appliance.name);
+    });
+
+    it('should show an error when the file is not valid JSON', async () => {
+      const file = new File(['not a json'], 'appliance.gns3a', { type: 'application/octet-stream' });
+
+      component.addAppliance({ target: { files: [file] } });
+      await vi.advanceTimersByTimeAsync(100);
+
+      expect(component.applianceToInstall()).toBeFalsy();
+      expect(component.isImportingAppliance()).toBe(false);
+      expect(mockToasterService.error).toHaveBeenCalledWith("'appliance.gns3a' is not a valid appliance file");
+    });
+
+    it('should show an error when the appliance has no supported emulator section', async () => {
+      const appliance = { name: 'Broken Appliance' };
+      const file = new File([JSON.stringify(appliance)], 'appliance.gns3a', { type: 'application/json' });
+
+      component.addAppliance({ target: { files: [file] } });
+      await vi.advanceTimersByTimeAsync(100);
+
+      expect(component.applianceToInstall()).toBeFalsy();
+      expect(component.isImportingAppliance()).toBe(false);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Template type not supported');
+    });
+
+    it('should do nothing when no file is selected', () => {
+      component.addAppliance({ target: { files: [] } });
+
+      expect(component.applianceToInstall()).toBeFalsy();
+      expect(component.isImportingAppliance()).toBe(false);
+      expect(mockToasterService.error).not.toHaveBeenCalled();
+    });
+
+    it('should show an error when the controller is not loaded yet', () => {
+      component.controller = undefined;
+      const file = new File(['{}'], 'appliance.gns3a', { type: 'application/octet-stream' });
+
+      component.addAppliance({ target: { files: [file] } });
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(
+        'Controller is not loaded yet. Please try again.'
+      );
     });
   });
 
@@ -569,6 +806,16 @@ describe('NewTemplateDialogComponent', () => {
       component.cancelUploading();
       expect(mockUploadServiceService.cancelFileUploading).toHaveBeenCalledWith(false);
     });
+
+    it('should clear the phase message on cancel', () => {
+      component.cancelUploading();
+      expect(mockUploadServiceService.setMessage).toHaveBeenCalledWith('');
+    });
+
+    it('should clear the computing flag on cancel', () => {
+      component.cancelUploading();
+      expect(mockUploadServiceService.setComputing).toHaveBeenCalledWith(false);
+    });
   });
 
   describe('downloadImage', () => {
@@ -585,21 +832,29 @@ describe('NewTemplateDialogComponent', () => {
     });
 
     it('should call openConfirmationDialog when image has compression', () => {
-      // This test verifies the method exists and is callable
-      // The full dialog infrastructure is tested in integration tests
-      expect(typeof (component as any).openConfirmationDialog).toBe('function');
+      const image = {
+        direct_download_url: 'http://test.com/image.img',
+        compression: 'zip',
+        download_url: 'http://test.com/image.img',
+      } as Image;
+
+      component.downloadImage(image);
+      expect(mockDialog.open).toHaveBeenCalled();
     });
 
     it('should call openConfirmationDialog when no direct_download_url', () => {
-      // This test verifies the method exists and is callable
-      // The full dialog infrastructure is tested in integration tests
-      expect(typeof (component as any).openConfirmationDialog).toBe('function');
+      const image = {
+        download_url: 'http://test.com/image.img',
+      } as Image;
+
+      component.downloadImage(image);
+      expect(mockDialog.open).toHaveBeenCalled();
     });
   });
 
   describe('downloadImageFromVersion', () => {
     it('should call downloadImage for matching image', () => {
-      component.applianceToInstall = createMockAppliance();
+      component.applianceToInstall.set(createMockAppliance());
       const downloadImageSpy = vi.spyOn(component, 'downloadImage');
       component.downloadImageFromVersion('test-image.img');
       expect(downloadImageSpy).toHaveBeenCalled();
@@ -624,22 +879,10 @@ describe('NewTemplateDialogComponent', () => {
     });
   });
 
-  describe('cancelUploading computing-phase reset', () => {
-    it('should clear the phase message on cancel', () => {
-      component.cancelUploading();
-      expect(mockUploadServiceService.setMessage).toHaveBeenCalledWith('');
-    });
-
-    it('should clear the computing flag on cancel', () => {
-      component.cancelUploading();
-      expect(mockUploadServiceService.setComputing).toHaveBeenCalledWith(false);
-    });
-  });
-
   describe('refreshImagesUntilReady', () => {
     it('should stop polling once the uploaded image checksum is available', () => {
       mockQemuService.getImages.mockReturnValue(of([{ checksum: 'abc123' }]));
-      component.applianceToInstall = createMockAppliance();
+      component.applianceToInstall.set(createMockAppliance());
       mockQemuService.getImages.mockClear(); // ignore the initial load triggered by ngOnInit
 
       (component as any).refreshImagesUntilReady('test-image.img');
@@ -654,54 +897,180 @@ describe('NewTemplateDialogComponent', () => {
         callCount++;
         return of(callCount === 1 ? [] : [{ checksum: 'abc123' }]);
       });
-      component.applianceToInstall = createMockAppliance();
+      component.applianceToInstall.set(createMockAppliance());
       mockQemuService.getImages.mockClear(); // ignore the initial load triggered by ngOnInit
 
-      vi.useFakeTimers();
-      try {
-        (component as any).refreshImagesUntilReady('test-image.img');
-        await vi.runAllTimersAsync();
+      (component as any).refreshImagesUntilReady('test-image.img');
+      await vi.runAllTimersAsync();
 
-        expect(mockQemuService.getImages).toHaveBeenCalledTimes(2);
-        expect(component.checkImageFromVersion('test-image.img')).toBe(true);
-      } finally {
-        vi.useRealTimers();
-      }
+      expect(mockQemuService.getImages).toHaveBeenCalledTimes(2);
+      expect(component.checkImageFromVersion('test-image.img')).toBe(true);
     });
   });
 
-  describe('Error handling', () => {
-    it('should show error toast when updateAppliances fails', () => {
-      mockApplianceService.updateAppliances.mockReturnValue(throwError(() => new Error('Update failed')));
-      const cdrSpy = vi.spyOn(component['changeDetectorRef'], 'markForCheck');
-
-      component.updateAppliances();
-
-      expect(mockProgressService.deactivate).toHaveBeenCalled();
-      expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');
-      expect(cdrSpy).toHaveBeenCalled();
+  describe('createTemplate', () => {
+    beforeEach(async () => {
+      component.templateNameControl.setValue('Brand new template');
+      await vi.advanceTimersByTimeAsync(600);
     });
 
-    it('should show error toast when getAppliance fails', () => {
-      mockApplianceService.getAppliance.mockReturnValue(throwError(() => new Error('Failed to load appliance')));
-      const cdrSpy = vi.spyOn(component['changeDetectorRef'], 'markForCheck');
-
-      component.getAppliance('/appliances/test');
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load appliance');
-      expect(cdrSpy).toHaveBeenCalled();
+    it('should show an error when no appliance is selected', () => {
+      component.applianceToInstall.set(null);
+      component.createTemplate();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Please select an appliance first');
     });
 
-    it('should handle refreshImages errors gracefully', () => {
-      mockQemuService.getImages.mockReturnValue(throwError(() => new Error('QEMU images failed')));
-      mockIosService.getImages.mockReturnValue(throwError(() => new Error('IOS images failed')));
-      mockIouService.getImages.mockReturnValue(throwError(() => new Error('IOU images failed')));
-      const cdrSpy = vi.spyOn(component['changeDetectorRef'], 'markForCheck');
+    it('should create a qemu template from the selected version', () => {
+      component.qemuImages.set([{ filename: 'test-image.img', checksum: 'abc123' } as Image]);
+      component.applianceToInstall.set(createMockAppliance());
+      fixture.detectChanges();
 
-      component.refreshImages();
+      component.createTemplate();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('QEMU images failed');
-      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockQemuService.addTemplate).toHaveBeenCalled();
+      const template = mockQemuService.addTemplate.mock.calls[0][1];
+      expect(template.name).toBe('Brand new template');
+      expect(template.template_type).toBe('qemu');
+      expect(template.hda_disk_image).toBe('test-image.img');
+    });
+
+    it('should emit newTemplateCreated, toast and close on success', () => {
+      component.qemuImages.set([{ filename: 'test-image.img', checksum: 'abc123' } as Image]);
+      component.applianceToInstall.set(createMockAppliance());
+      fixture.detectChanges();
+      const emitted: Template[] = [];
+      mockTemplateService.newTemplateCreated.subscribe((t: Template) => emitted.push(t));
+
+      component.createTemplate();
+
+      expect(emitted.length).toBe(1);
+      expect(mockToasterService.success).toHaveBeenCalledWith('Template added');
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
+    });
+
+    it('should show an error when the qemu version is not complete', () => {
+      component.qemuImages.set([]);
+      component.applianceToInstall.set(createMockAppliance());
+      component.selectedVersion.set(createMockAppliance().versions[0]);
+
+      component.createTemplate();
+
+      expect(mockQemuService.addTemplate).not.toHaveBeenCalled();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Please select a version with all required images');
+    });
+
+    it('should create a dynamips template from the selected image', () => {
+      component.iosImages.set([{ filename: 'test-image.img', checksum: 'abc123' } as Image]);
+      component.applianceToInstall.set(createDynamipsAppliance());
+      fixture.detectChanges();
+
+      component.createTemplate();
+
+      expect(mockIosService.addTemplate).toHaveBeenCalled();
+      const template = mockIosService.addTemplate.mock.calls[0][1];
+      expect(template.name).toBe('Brand new template');
+      expect(template.template_type).toBe('dynamips');
+      expect(template.image).toBe('test-image.img');
+    });
+
+    it('should create an iou template from the selected image', () => {
+      const iouAppliance = {
+        ...createDynamipsAppliance(),
+        name: 'IOU Appliance',
+        dynamips: null,
+        emulator: 'Iou',
+        iou: { ethernet_adapters: 2, nvram: 128, ram: 256, serial_adapters: 0, startup_config: '' },
+      } as unknown as Appliance;
+      component.iouImages.set([{ filename: 'test-image.img', checksum: 'abc123' } as Image]);
+      component.applianceToInstall.set(iouAppliance);
+      fixture.detectChanges();
+
+      component.createTemplate();
+
+      expect(mockIouService.addTemplate).toHaveBeenCalled();
+      const template = mockIouService.addTemplate.mock.calls[0][1];
+      expect(template.name).toBe('Brand new template');
+      expect(template.template_type).toBe('iou');
+      expect(template.path).toBe('test-image.img');
+    });
+
+    it('should create a docker template without requiring images', () => {
+      component.applianceToInstall.set(createDockerAppliance());
+      fixture.detectChanges();
+
+      component.createTemplate();
+
+      expect(mockDockerService.addTemplate).toHaveBeenCalled();
+      const template = mockDockerService.addTemplate.mock.calls[0][1];
+      expect(template.name).toBe('Brand new template');
+      expect(template.template_type).toBe('docker');
+      expect(template.image).toBe('ubuntu:latest');
+    });
+
+    it('should show error toast when template creation fails', () => {
+      mockDockerService.addTemplate.mockReturnValue(throwError(() => new Error('Failed to add template')));
+      component.applianceToInstall.set(createDockerAppliance());
+      fixture.detectChanges();
+
+      component.createTemplate();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to add template');
+      expect(component.isCreating()).toBe(false);
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('formatting helpers', () => {
+    it('should format labels', () => {
+      expect(component.formatLabel('multilayer_switch')).toBe('Multilayer Switch');
+    });
+
+    it('should map emulators to icons', () => {
+      expect(component.emulatorIcon({ emulator: 'Docker' } as Appliance)).toBe('deployed_code');
+      expect(component.emulatorIcon({ emulator: 'Qemu' } as Appliance)).toBe('desktop_windows');
+      expect(component.emulatorIcon({ emulator: 'Dynamips' } as Appliance)).toBe('router');
+      expect(component.emulatorIcon({ emulator: 'Iou' } as Appliance)).toBe('hub');
+      expect(component.emulatorIcon({} as Appliance)).toBe('dns');
+    });
+
+    it('should return the selected version image names', () => {
+      component.applianceToInstall.set(createMockAppliance());
+      component.selectedVersion.set(createMockAppliance().versions[0]);
+      expect(component.getSelectedVersionImageNames()).toBe('test-image.img');
+    });
+  });
+
+  describe('template rendering', () => {
+    it('should render the wizard page shell with the shared template-wizard classes', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      expect(compiled.querySelector('.template-wizard.new-template-wizard')).toBeTruthy();
+      expect(compiled.querySelector('.template-wizard__back')).toBeTruthy();
+      expect(compiled.querySelector('.template-wizard__stepper')).toBeTruthy();
+      expect(compiled.querySelector('.template-wizard__actions')).toBeTruthy();
+    });
+
+    it('should render step labels with icons, titles and descriptions', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      expect(compiled.querySelectorAll('.template-wizard__step-label').length).toBeGreaterThanOrEqual(3);
+      expect(compiled.querySelectorAll('.template-wizard__step-label-title').length).toBeGreaterThanOrEqual(3);
+      expect(compiled.querySelectorAll('.template-wizard__step-label-description').length).toBeGreaterThanOrEqual(3);
+    });
+
+    it('should render both creation method options', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      const options = compiled.querySelectorAll('.new-template-wizard__method-option');
+      expect(options.length).toBe(2);
+      expect(options[0].textContent).toContain('Install new appliance from the GNS controller');
+      expect(options[1].textContent).toContain('Import an appliance file');
+    });
+
+    it('should render the appliance list with a row per appliance', () => {
+      component.stepper().selectedIndex = 1;
+      fixture.detectChanges();
+      const compiled = fixture.nativeElement as HTMLElement;
+      const rows = compiled.querySelectorAll('.new-template-wizard__appliance');
+      expect(rows.length).toBe(1);
+      expect(rows[0].textContent).toContain('Test Appliance');
     });
   });
 });

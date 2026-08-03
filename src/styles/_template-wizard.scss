@@ -190,6 +190,125 @@
   overflow: visible;
 }
 
+/* New-template wizard refinements. These selectors live globally because the
+   Material stepper, button and form-field internals are rendered by child
+   components and are not covered by emulated component styles. */
+.new-template-wizard .template-wizard__stepper > .mat-horizontal-stepper-wrapper {
+  grid-template-columns: 300px minmax(0, 1fr);
+}
+
+.new-template-wizard .template-wizard__stepper .mat-horizontal-content-container {
+  // Fit the registry header, filters, five appliance rows and paginator.
+  height: 700px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.new-template-wizard .template-wizard__stepper .mat-horizontal-stepper-content-current {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.new-template-wizard
+  .template-wizard__stepper
+  .mat-horizontal-stepper-content-current
+  > .template-wizard__panel {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.new-template-wizard
+  .template-wizard__stepper
+  .mat-horizontal-stepper-content-current
+  > .template-wizard__panel
+  > .template-wizard__section {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.new-template-wizard.new-template-wizard .new-template-wizard__header.template-wizard__header {
+  box-sizing: border-box;
+  height: calc(
+    var(--gns3-density-space-4) * 2 + (var(--gns3-density-section-title-size) + 2px) * 1.2 + 1px
+  );
+  padding: 0 var(--gns3-density-page-padding);
+  gap: var(--gns3-density-space-3);
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.new-template-wizard.new-template-wizard .template-wizard__title {
+  font-size: calc(var(--gns3-density-section-title-size) + 2px);
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--mat-sys-on-primary-container);
+}
+
+.new-template-wizard.new-template-wizard .template-wizard__back {
+  color: var(--mat-sys-on-primary-container);
+}
+
+.new-template-wizard button.new-template-wizard__method-option {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.new-template-wizard button.new-template-wizard__method-option .new-template-wizard__method-icon {
+  order: 0;
+}
+
+.new-template-wizard button.new-template-wizard__method-option .mdc-button__label {
+  display: flex;
+  order: 1;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.new-template-wizard button.new-template-wizard__method-option .new-template-wizard__method-check {
+  order: 2;
+  margin-left: auto;
+}
+
+.new-template-wizard .new-template-wizard__registry-update .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gns3-density-space-2);
+  line-height: 1;
+}
+
+.new-template-wizard .new-template-wizard__filters .mat-mdc-text-field-wrapper {
+  --mat-form-field-outlined-container-shape: var(--gns3-density-radius-sm);
+  border-radius: var(--gns3-density-radius-sm);
+}
+
+.new-template-wizard .new-template-wizard__filters .mdc-notched-outline__leading {
+  border-radius: var(--gns3-density-radius-sm) 0 0 var(--gns3-density-radius-sm);
+}
+
+.new-template-wizard .new-template-wizard__filters .mdc-notched-outline__trailing {
+  border-radius: 0 var(--gns3-density-radius-sm) var(--gns3-density-radius-sm) 0;
+}
+
+.new-template-wizard .new-template-wizard__submit .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gns3-density-space-2);
+}
+
+.new-template-wizard .new-template-wizard__submit > .mat-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
 .template-wizard__stepper .mat-horizontal-stepper-content-current:not(:has(.template-wizard__panel)) {
   padding: 24px;
   border: 1px solid var(--mat-sys-outline-variant);
@@ -455,7 +574,7 @@
 html[data-density='compact'] {
   .template-wizard.template-wizard .template-wizard__header {
     gap: 12px;
-    padding: 18px 24px 16px;
+    padding: 12px 24px 12px;
   }
 
   .template-wizard__title {
@@ -520,6 +639,10 @@ html[data-density='compact'] {
 
   .template-wizard__stepper .mat-horizontal-content-container {
     padding: 16px;
+  }
+
+  .new-template-wizard .template-wizard__stepper .mat-horizontal-content-container {
+    height: 590px;
   }
 
   .template-wizard__stepper .mat-horizontal-stepper-content-current:not(:has(.template-wizard__panel)) {
@@ -755,6 +878,10 @@ html[data-density='compact'] {
 
   .template-wizard__stepper .mat-horizontal-content-container {
     padding: 12px;
+  }
+
+  .new-template-wizard .template-wizard__stepper .mat-horizontal-content-container {
+    height: auto;
   }
 
   .template-wizard__panel {

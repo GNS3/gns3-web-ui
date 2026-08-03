@@ -114,12 +114,6 @@ export class DialogConfigService {
       panelClass: ['base-dialog-panel', 'dialog-extra-large-panel', 'add-ace-dialog-panel'],
     });
 
-    // New Template Dialog
-    this.configs.set('newTemplate', {
-      ...configuratorConfig,
-      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'new-template-dialog-panel'],
-    });
-
     // Start Capture Dialog - simple dialog (500px)
     this.configs.set('startCapture', {
       ...simpleConfig,

@@ -13,7 +13,6 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { ProgressService } from '../../common/progress/progress.service';
-import { NewTemplateDialogComponent } from '@components/project-map/new-template-dialog/new-template-dialog.component';
 import { LoggedUserComponent } from '@components/users/logged-user/logged-user.component';
 import { AiProfileDialogComponent } from '@components/user-management/ai-profile-dialog/ai-profile-dialog.component';
 import { ApiKeyManagementDialogComponent } from '@components/api-key-management/api-key-management-dialog.component';
@@ -256,22 +255,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
         },
       });
     });
-  }
-
-  public addNewTemplate() {
-    if (!this.controller) {
-      this.toasterService.error('Please select a controller first');
-      return;
-    }
-
-    const dialogRef = this.dialog.open(NewTemplateDialogComponent, {
-      autoFocus: false,
-      disableClose: true,
-      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'new-template-dialog-panel'],
-    });
-    let instance = dialogRef.componentInstance;
-    instance.controller = this.controller;
-    instance.project = this.project;
   }
 
   ngOnDestroy() {

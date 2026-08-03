@@ -9,18 +9,36 @@
 
       @if (controller) {
       <div class="templates-page__header-actions">
-        <button mat-stroked-button class="templates-page__refresh" (click)="loadTemplates()">
+        <button mat-raised-button color="primary" class="templates-page__refresh" (click)="loadTemplates()">
           <mat-icon>refresh</mat-icon>
           Refresh
         </button>
-        <button mat-raised-button color="primary" class="templates-page__new" [matMenuTriggerFor]="newTemplateMenu">
+        <button
+          mat-raised-button
+          color="primary"
+          class="templates-page__new"
+          [routerLink]="['/controller', controller.id, 'preferences', 'new-template']"
+          matTooltip="Install an appliance from the registry or import an appliance file"
+          matTooltipClass="custom-tooltip"
+        >
           <mat-icon>add</mat-icon>
-          New Template
+          Install appliance
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          class="templates-page__manual"
+          [matMenuTriggerFor]="manualTemplateMenu"
+          matTooltip="Create a template manually for a specific emulator"
+          matTooltipClass="custom-tooltip"
+        >
+          <mat-icon>build</mat-icon>
+          Custom template
           <mat-icon iconPositionEnd>arrow_drop_down</mat-icon>
         </button>
       </div>
 
-      <mat-menu #newTemplateMenu="matMenu">
+      <mat-menu #manualTemplateMenu="matMenu">
         <a mat-menu-item [routerLink]="['/controller', controller.id, 'preferences', 'qemu', 'addtemplate']">
           <mat-icon>memory</mat-icon>
           <span>QEMU VM</span>

@@ -147,13 +147,11 @@ import { LinkStyleEditorDialogComponent } from '@components/project-map/drawings
 import { TextEditorDialogComponent } from '@components/project-map/drawings-editors/text-editor/text-editor.component';
 import { HelpDialogComponent } from '@components/project-map/help-dialog/help-dialog.component';
 import { NodeCreatedLabelStylesFixer } from '@components/project-map/helpers/node-created-label-styles-fixer';
-import { ImportApplianceComponent } from '@components/project-map/import-appliance/import-appliance.component';
 import { InfoDialogComponent } from '@components/project-map/info-dialog/info-dialog.component';
 import { LogConsoleComponent } from '@components/project-map/log-console/log-console.component';
 import { LogEventsDataSource } from '@components/project-map/log-console/log-events-datasource';
 import { ApplianceInfoDialogComponent } from '@components/project-map/new-template-dialog/appliance-info-dialog/appliance-info-dialog.component';
 import { NewTemplateDialogComponent } from '@components/project-map/new-template-dialog/new-template-dialog.component';
-import { TemplateNameDialogComponent } from '@components/project-map/new-template-dialog/template-name-dialog/template-name-dialog.component';
 import { ConfigEditorDialogComponent } from '@components/project-map/node-editors/config-editor/config-editor.component';
 import { ConfiguratorDialogAtmSwitchComponent } from '@components/project-map/node-editors/configurator/atm_switch/configurator-atm-switch.component';
 import { ConfiguratorDialogCloudComponent } from '@components/project-map/node-editors/configurator/cloud/configurator-cloud.component';
@@ -348,7 +346,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     // StartCaptureDialogComponent,
     // LogConsoleComponent,
     // QemuImageCreatorComponent,
-    // ImportApplianceComponent,
     // WebConsoleComponent,
     // ConsoleWrapperComponent,
     // ConsoleDevicesPanelComponent,
@@ -413,7 +410,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     InstallSoftwareComponent,
     DrawLinkToolComponent,
     StartCaptureDialogComponent,
-    ImportApplianceComponent,
     QemuImageCreatorComponent,
     WebConsoleFullWindowComponent,
     AiChatComponent,
@@ -561,7 +557,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     AutocompleteComponent,
     SaveProjectDialogComponent,
     AddImageDialogComponent,
-    TemplateNameDialogComponent,
     AddBlankProjectDialogComponent,
     AddResourcePoolDialogComponent,
     GeneralPreferencesComponent,
@@ -593,7 +588,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     // VirtualBoxTemplatesComponent,
     // VMware support deprecated since 3.1.0
     // VmwareTemplatesComponent,
-    DockerTemplatesComponent,
     DockerTemplatesComponent,
     IouTemplatesComponent,
     IosTemplatesComponent,
