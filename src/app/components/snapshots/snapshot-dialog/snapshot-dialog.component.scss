@@ -16,6 +16,15 @@
     }
   }
 
+  &__create-button {
+    min-height: var(--gns3-density-control-height);
+    border-radius: 999px;
+    padding-inline: var(--gns3-density-space-4);
+    font-weight: 550;
+    text-transform: none;
+    white-space: nowrap;
+  }
+
   &__table-container {
     max-height: 400px;
     overflow-y: auto;

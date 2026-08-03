@@ -11,8 +11,15 @@
         placeholder="Filter snapshots"
       />
     </mat-form-field>
-    <button mat-button matTooltip="Create snapshot" matTooltipClass="custom-tooltip" (click)="openCreateDialog()">
-      <mat-icon>add_circle_outline</mat-icon>
+    <button
+      mat-stroked-button
+      color="primary"
+      class="snapshot-dialog__create-button"
+      matTooltip="Create snapshot"
+      matTooltipClass="custom-tooltip"
+      (click)="openCreateDialog()"
+    >
+      <mat-icon>add</mat-icon>
       Create snapshot
     </button>
   </div>

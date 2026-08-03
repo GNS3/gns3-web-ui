@@ -54,6 +54,51 @@ button.templates-page__manual {
   text-transform: none;
 }
 
+/* Keep the type-specific custom-template list headers aligned with the
+ * shared import-appliance wizard header. */
+[class*='-templates__header'] {
+  box-sizing: border-box;
+  width: 100%;
+  height: calc(
+    var(--gns3-density-space-4) * 2 + (var(--gns3-density-section-title-size) + 2px) * 1.2 + 1px
+  );
+  max-width: none;
+  margin: 0;
+  padding: 0 var(--gns3-density-page-padding);
+  gap: var(--gns3-density-space-3);
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+[class*='-templates__back-btn'],
+[class*='-templates__add-btn'] {
+  flex: 0 0 auto;
+  width: var(--gns3-density-icon-button);
+  height: var(--gns3-density-icon-button);
+  border-radius: 12px;
+}
+
+[class*='-templates__back-btn'] {
+  color: var(--mat-sys-on-primary-container);
+}
+
+[class*='-templates__add-btn'] {
+  color: var(--mat-sys-primary);
+}
+
+[class*='-templates__title'] {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding-bottom: 0;
+  color: var(--mat-sys-on-primary-container);
+  font-size: calc(var(--gns3-density-section-title-size) + 2px);
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
 /* Scope tabs */
 .templates-page__scopes {
   display: flex;
