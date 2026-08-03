@@ -89,12 +89,13 @@
 .template-card {
   position: relative;
   display: grid;
+  grid-template-rows: calc(var(--gns3-density-form-field-height) * 1.5) minmax(2.5em, auto);
   min-width: 0;
-  min-height: calc(var(--gns3-density-form-field-height) * 2);
+  min-height: calc(var(--gns3-density-form-field-height) * 2.75);
   box-sizing: border-box;
   place-items: center;
-  align-content: center;
-  gap: var(--gns3-density-space-1);
+  align-content: start;
+  gap: var(--gns3-density-space-2);
   padding: var(--gns3-density-space-2);
   border: 1px solid transparent;
   border-radius: var(--gns3-density-radius-sm);
@@ -128,13 +129,18 @@
 
 .template-card__image-wrap {
   display: grid;
-  width: var(--gns3-density-form-field-height);
-  height: var(--gns3-density-form-field-height);
+  width: calc(var(--gns3-density-form-field-height) * 1.5);
+  height: calc(var(--gns3-density-form-field-height) * 1.5);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
   place-items: center;
 }
 
 .template-card__image {
   display: block;
+  max-width: 100%;
+  max-height: 100%;
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -149,24 +155,17 @@
 
 .template-card__name {
   display: -webkit-box;
+  width: 100%;
+  min-height: 2.5em;
   max-width: 100%;
   overflow: hidden;
   font: var(--mat-sys-label-large);
+  line-height: 1.25;
   letter-spacing: 0;
   text-align: center;
   overflow-wrap: anywhere;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-}
-
-.template-card__type {
-  max-width: 100%;
-  overflow: hidden;
-  color: var(--mat-sys-on-surface-variant);
-  font: var(--mat-sys-label-small);
-  letter-spacing: 0;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .template-card__selected-icon {
