@@ -106,7 +106,6 @@ import { ChangeHostnameActionComponent } from '@components/project-map/context-m
 import { ChangeSymbolActionComponent } from '@components/project-map/context-menu/actions/change-symbol/change-symbol-action.component';
 import { ConfigActionComponent } from '@components/project-map/context-menu/actions/config-action/config-action.component';
 import { ConsoleDeviceActionBrowserComponent } from '@components/project-map/context-menu/actions/console-device-action-browser/console-device-action-browser.component';
-import { ConsoleDeviceActionComponent } from '@components/project-map/context-menu/actions/console-device-action/console-device-action.component';
 import { DeleteActionComponent } from '@components/project-map/context-menu/actions/delete-action/delete-action.component';
 import { DuplicateActionComponent } from '@components/project-map/context-menu/actions/duplicate-action/duplicate-action.component';
 import { EditConfigActionComponent } from '@components/project-map/context-menu/actions/edit-config/edit-config-action.component';
@@ -122,7 +121,6 @@ import { ImportConfigActionComponent } from '@components/project-map/context-men
 import { LockActionComponent } from '@components/project-map/context-menu/actions/lock-action/lock-action.component';
 import { MoveLayerDownActionComponent } from '@components/project-map/context-menu/actions/move-layer-down-action/move-layer-down-action.component';
 import { MoveLayerUpActionComponent } from '@components/project-map/context-menu/actions/move-layer-up-action/move-layer-up-action.component';
-import { OpenFileExplorerActionComponent } from '@components/project-map/context-menu/actions/open-file-explorer/open-file-explorer-action.component';
 import { PacketFiltersActionComponent } from '@components/project-map/context-menu/actions/packet-filters-action/packet-filters-action.component';
 import { ToggleShowFiltersIconActionComponent } from '@components/project-map/context-menu/actions/toggle-show-filters-icon-action/toggle-show-filters-icon-action.component';
 import { ReloadNodeActionComponent } from '@components/project-map/context-menu/actions/reload-node-action/reload-node-action.component';
@@ -446,7 +444,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     ReloadNodeActionComponent,
     IsolateNodeActionComponent,
     UnisolateNodeActionComponent,
-    ConsoleDeviceActionComponent,
     GlobalUploadIndicatorComponent,
     HttpConsoleNewTabActionComponent,
     ResetLinkActionComponent,
@@ -462,7 +459,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     MoveLayerUpActionComponent,
     MoveLayerDownActionComponent,
     BringToFrontActionComponent,
-    OpenFileExplorerActionComponent,
     ChangeSymbolActionComponent,
     PacketFiltersActionComponent,
     ToggleShowFiltersIconActionComponent,

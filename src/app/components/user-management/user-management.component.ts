@@ -178,16 +178,19 @@ export class UserManagementComponent implements OnInit {
 
   setScope(scope: UserScope): void {
     this.selectedScope.set(scope);
+    this.selection.clear();
     this.resetPage();
   }
 
   setSearch(value: string): void {
     this.searchText.set(value);
+    this.selection.clear();
     this.resetPage();
   }
 
   setStatusFilter(value: UserStatusFilter): void {
     this.statusFilter.set(value);
+    this.selection.clear();
     this.resetPage();
   }
 

@@ -85,8 +85,6 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort;
 
-  constructor() {}
-
   getControllers() {
     this.loading.set(true);
     const runningControllerNames = this.controllerManagement.getRunningControllers();
@@ -455,7 +453,8 @@ export class ControllerDataSource extends DataSource<Controller> {
             const valueA = isNaN(+propertyA) ? propertyA : +propertyA;
             const valueB = isNaN(+propertyB) ? propertyB : +propertyB;
 
-            return (valueA < valueB ? -1 : 1) * (this.sort.direction === 'asc' ? 1 : -1);
+            const comparison = valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+            return comparison * (this.sort.direction === 'asc' ? 1 : -1);
           });
         }
 

@@ -76,7 +76,6 @@ export class ProjectsComponent implements OnInit {
   displayedColumns = ['select', 'name', 'created_by', 'status', 'actions', 'delete'];
   public readonly version = version;
   public readonly currentYear = new Date().getFullYear();
-  isAllDelete = false;
   selection = new SelectionModel<Project>(true, []);
 
   readonly sort = viewChild<MatSort>(MatSort);
@@ -136,6 +135,13 @@ export class ProjectsComponent implements OnInit {
     { allowSignalWrites: true },
   );
 
+  /** Avoid destructive bulk actions retaining projects hidden by a filter. */
+  private _clearSelectionOnFilter = effect(() => {
+    this.searchText();
+    this.filterStatus();
+    this.selection.clear();
+  });
+
   // ── Derived: sorted + filtered display data ───────────────────
   readonly displayProjects = computed(() => {
     const search = this.searchText()?.toLowerCase() || '';
@@ -165,7 +171,8 @@ export class ProjectsComponent implements OnInit {
         const valueB = (b as any)[active];
         const valA = isNaN(+valueA) ? valueA : +valueA;
         const valB = isNaN(+valueB) ? valueB : +valueB;
-        return (valA < valB ? -1 : 1) * (direction === 'asc' ? 1 : -1);
+        const comparison = valA < valB ? -1 : valA > valB ? 1 : 0;
+        return comparison * (direction === 'asc' ? 1 : -1);
       });
     }
 
@@ -353,23 +360,16 @@ export class ProjectsComponent implements OnInit {
 
   // ── Selection ─────────────────────────────────────────────────
   isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this._projects().length;
-    return numSelected === numRows;
-  }
-
-  selectAllImages() {
-    this.isAllSelected() ? this.unChecked() : this.allChecked();
+    const displayedProjects = this.displayProjects();
+    return displayedProjects.length > 0 && displayedProjects.every((project) => this.selection.isSelected(project));
   }
 
   unChecked() {
     this.selection.clear();
-    this.isAllDelete = false;
   }
 
   allChecked() {
-    this._projects().forEach(row => this.selection.select(row));
-    this.isAllDelete = true;
+    this.displayProjects().forEach(row => this.selection.select(row));
   }
 
   // ── CRUD operations ───────────────────────────────────────────
@@ -604,14 +604,12 @@ export class ProjectsComponent implements OnInit {
   }
 
   exportPortableProjectDialog() {
-    const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
+    this.dialog.open(ExportPortableProjectComponent, {
       panelClass: ['base-dialog-panel', 'dialog-medium-panel'],
       autoFocus: false,
       disableClose: true,
       data: { controllerDetails: this.controller, projectDetails: this.project },
     });
-
-    dialogRef.afterClosed().subscribe(() => {});
   }
 
   isLightThemeEnabled() {

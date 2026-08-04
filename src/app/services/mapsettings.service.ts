@@ -378,7 +378,10 @@ export class MapSettingsService {
   }
 
   getDefaultLabelStyle(): WorkspaceTextStyle {
-    return { ...this.defaultLabelStyle };
+    return {
+      ...this.defaultLabelStyle,
+      color: this.hasDefaultLabelStyle() ? this.defaultLabelStyle.color : this.themeService.getCanvasLabelColor(),
+    };
   }
 
   hasDefaultLabelStyle(): boolean {
@@ -391,7 +394,14 @@ export class MapSettingsService {
   }
 
   getDefaultNoteStyle(): WorkspaceTextStyle {
-    return { ...this.defaultNoteStyle };
+    return {
+      ...this.defaultNoteStyle,
+      color: this.hasDefaultNoteStyle() ? this.defaultNoteStyle.color : this.themeService.getCanvasLabelColor(),
+    };
+  }
+
+  hasDefaultNoteStyle(): boolean {
+    return localStorage.getItem(MapSettingsService.NOTE_STYLE_KEY) !== null;
   }
 
   setDefaultNoteStyle(value: WorkspaceTextStyle): void {
@@ -400,7 +410,10 @@ export class MapSettingsService {
   }
 
   getDefaultLinkStyle(): WorkspaceLinkStyle {
-    return { ...this.defaultLinkStyle };
+    return {
+      ...this.defaultLinkStyle,
+      color: this.hasDefaultLinkStyle() ? this.defaultLinkStyle.color : this.themeService.getCanvasLinkColor(),
+    };
   }
 
   hasDefaultLinkStyle(): boolean {

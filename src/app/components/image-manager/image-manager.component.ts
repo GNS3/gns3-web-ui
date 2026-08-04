@@ -125,7 +125,6 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
     return this.filteredRows().slice(start, start + this.pageSize());
   });
 
-  isAllDelete = false;
   selectedPaths = new Set<string>();
   highlightedFilename: string | null = null;
 
@@ -209,11 +208,13 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   onSearchChange(value: string): void {
     this.searchText.set(value);
+    this.unChecked();
     this.resetPage();
   }
 
   onTypeFilterChange(value: string): void {
     this.filterType.set(value);
+    this.unChecked();
     this.resetPage();
   }
 
@@ -362,7 +363,6 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   unChecked(): void {
     this.selectedPaths.clear();
-    this.isAllDelete = false;
     this.lastSelectedPath = null;
   }
 
@@ -372,7 +372,6 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
         this.selectedPaths.add(row.path);
       }
     });
-    this.isAllDelete = true;
   }
 
   hasSelection(): boolean {

@@ -215,6 +215,23 @@ describe('AddBlankProjectDialogComponent', () => {
       expect(mockToasterService.error).toHaveBeenCalledWith('Cannot create new project');
     });
 
+    it('should still open a created project when applying workspace defaults fails', async () => {
+      const testProject = createMockProject('NewProject');
+      mockProjectService.list.mockReturnValue(of([]));
+      mockProjectService.add.mockReturnValue(of(testProject));
+      mockProjectService.update.mockReturnValue(throwError(() => new Error('Update failed')));
+
+      component.projectName.set('NewProject');
+      component.onAddClick();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(
+        'Project created, but workspace defaults were not applied'
+      );
+      expect(mockDialogRef.close).toHaveBeenCalled();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 1, 'project', 'proj-123']);
+    });
+
     it('should show error when checking project list fails', async () => {
       mockProjectService.list.mockReturnValue(throwError(() => ({ error: { message: 'List failed' } })));
 

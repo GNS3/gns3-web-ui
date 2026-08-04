@@ -12,6 +12,7 @@ export interface AppNotification {
 
 const NOTIFICATION_STORAGE_KEY = 'gns3-notification-history';
 const NOTIFICATION_LIMIT = 100;
+const MAX_DATE_TIMESTAMP = 8_640_000_000_000_000;
 
 @Injectable({ providedIn: 'root' })
 export class NotificationCenterService {
@@ -109,6 +110,9 @@ export class NotificationCenterService {
             typeof item?.id === 'string' &&
             typeof item?.message === 'string' &&
             typeof item?.createdAt === 'number' &&
+            Number.isFinite(item.createdAt) &&
+            item.createdAt >= 0 &&
+            item.createdAt <= MAX_DATE_TIMESTAMP &&
             typeof item?.read === 'boolean' &&
             ['success', 'info', 'warning', 'error'].includes(item?.kind)
         )

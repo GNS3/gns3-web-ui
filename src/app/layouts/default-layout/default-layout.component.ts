@@ -15,13 +15,13 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { ProgressService } from '../../common/progress/progress.service';
 import { LoggedUserComponent } from '@components/users/logged-user/logged-user.component';
 import { AiProfileDialogComponent } from '@components/user-management/ai-profile-dialog/ai-profile-dialog.component';
-import { ApiKeyManagementDialogComponent } from '@components/api-key-management/api-key-management-dialog.component';
-import { ApiKeyManagementDialogData } from '@components/api-key-management/api-key-management-dialog.component';
+import {
+  ApiKeyManagementDialogComponent,
+  ApiKeyManagementDialogData,
+} from '@components/api-key-management/api-key-management-dialog.component';
 import { Controller } from '@models/controller';
-import { Project } from '@models/project';
 import { User } from '@models/users/user';
 import { ControllerManagementService } from '@services/controller-management.service';
-import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { UserService } from '@services/user.service';
@@ -60,14 +60,13 @@ import { NotificationCenterService } from '@services/notification-center.service
 })
 export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public isInstalledSoftwareAvailable = false;
-  public isLoginPage = false;
-  public routeSubscription;
+  private routeSubscription: Subscription;
+  private breakpointSubscription: Subscription;
 
   controllerStatusSubscription: Subscription;
   shouldStopControllersOnClosing = true;
   controllerId: string | undefined | null;
   public controller: Controller;
-  public project: Project;
 
   // Sidebar state
   readonly sidenavOpened = signal(true);
@@ -98,7 +97,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
         // Recursively traverse the route tree to find controller_id
         this.controllerId = this.getParamFromRoute(this.route, 'controller_id');
         this.getData();
-        this.checkIfUserIsLoginPage();
         this.cd.markForCheck();
       });
 
@@ -126,18 +124,20 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.shouldStopControllersOnClosing = false;
 
     // Responsive sidebar: observe small screen breakpoints
-    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).subscribe((state) => {
-      const small = state.matches;
-      this.isSmallScreen.set(small);
-      if (small) {
-        this.sidenavOpened.set(false);
-        this.sidebarMode.set('over');
-      } else {
-        this.sidenavOpened.set(true);
-        this.sidebarMode.set('side');
-      }
-      this.cd.markForCheck();
-    });
+    this.breakpointSubscription = this.breakpointObserver
+      .observe([Breakpoints.XSmall, Breakpoints.Small])
+      .subscribe((state) => {
+        const small = state.matches;
+        this.isSmallScreen.set(small);
+        if (small) {
+          this.sidenavOpened.set(false);
+          this.sidebarMode.set('over');
+        } else {
+          this.sidenavOpened.set(true);
+          this.sidebarMode.set('side');
+        }
+        this.cd.markForCheck();
+      });
   }
 
   toggleSidenav() {
@@ -198,14 +198,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     });
   }
 
-  checkIfUserIsLoginPage() {
-    if (this.router.url.includes('login')) {
-      this.isLoginPage = true;
-    } else {
-      this.isLoginPage = false;
-    }
-  }
-
   logout() {
     this.controllerService.get(+this.controllerId).then((controller: Controller) => {
       // Clear refresh token
@@ -237,28 +229,58 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     return false;
   }
   getData() {
+    const requestedControllerId = this.controllerId;
+    this.controller = undefined;
     this.isAdministrator.set(false);
-    this.controllerService.get(+this.controllerId).then((controller: Controller) => {
-      this.controller = controller;
-      if (!controller) {
+
+    const numericControllerId = Number(requestedControllerId);
+    if (!Number.isInteger(numericControllerId) || numericControllerId <= 0) {
+      this.cd.markForCheck();
+      return;
+    }
+
+    this.controllerService.get(numericControllerId).then(
+      (controller: Controller) => {
+        if (this.controllerId !== requestedControllerId) {
+          return;
+        }
+
+        this.controller = controller;
+        if (!controller) {
+          this.cd.markForCheck();
+          return;
+        }
+        this.userService.getInformationAboutLoggedUser(controller).subscribe({
+          next: (user: User) => {
+            if (this.controllerId !== requestedControllerId) {
+              return;
+            }
+            this.isAdministrator.set(Boolean(user.is_superadmin));
+            this.cd.markForCheck();
+          },
+          error: () => {
+            if (this.controllerId !== requestedControllerId) {
+              return;
+            }
+            this.isAdministrator.set(false);
+            this.cd.markForCheck();
+          },
+        });
+      },
+      () => {
+        if (this.controllerId !== requestedControllerId) {
+          return;
+        }
+        this.controller = undefined;
+        this.isAdministrator.set(false);
         this.cd.markForCheck();
-        return;
       }
-      this.userService.getInformationAboutLoggedUser(controller).subscribe({
-        next: (user: User) => {
-          this.isAdministrator.set(Boolean(user.is_superadmin));
-          this.cd.markForCheck();
-        },
-        error: () => {
-          this.isAdministrator.set(false);
-          this.cd.markForCheck();
-        },
-      });
-    });
+    );
   }
 
   ngOnDestroy() {
-    this.controllerStatusSubscription.unsubscribe();
-    this.routeSubscription.unsubscribe();
+    this.controllerStatusSubscription?.unsubscribe();
+    this.routeSubscription?.unsubscribe();
+    this.breakpointSubscription?.unsubscribe();
   }
 }

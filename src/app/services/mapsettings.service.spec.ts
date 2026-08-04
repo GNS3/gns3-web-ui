@@ -339,6 +339,15 @@ describe('MapSettingsService', () => {
       });
     });
 
+    it('should keep unsaved style colors in sync with the active map theme', () => {
+      vi.spyOn(themeService, 'getCanvasLabelColor').mockReturnValue('#ffffff');
+      vi.spyOn(themeService, 'getCanvasLinkColor').mockReturnValue('#eeeeee');
+
+      expect(service.getDefaultLabelStyle().color).toBe('#ffffff');
+      expect(service.getDefaultNoteStyle().color).toBe('#ffffff');
+      expect(service.getDefaultLinkStyle().color).toBe('#eeeeee');
+    });
+
     it('should persist validated style defaults', () => {
       service.setDefaultLabelStyle({ fontFamily: 'Arial', fontSize: 12.5, fontWeight: 'normal', color: '#AABBCC' });
       service.setDefaultNoteStyle({ fontFamily: 'Verdana', fontSize: 14, fontWeight: 'bold', color: '#123456' });

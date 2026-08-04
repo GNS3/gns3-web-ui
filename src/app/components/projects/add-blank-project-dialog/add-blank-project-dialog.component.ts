@@ -143,13 +143,9 @@ export class AddBlankProjectDialogComponent {
             // Updating the defaults is best-effort — the project is already
             // created and navigable; surface a non-blocking warning.
             this.toasterService.error('Project created, but workspace defaults were not applied');
+            this.finishProjectCreation(project);
           },
-          complete: () => {
-            this.dialogRef.close();
-            this.toasterService.success(`Project ${project.name} added`);
-            this.router.navigate(['/controller', this.controller.id, 'project', project.project_id]);
-            this.onAddProject.emit(project.project_id);
-          },
+          complete: () => this.finishProjectCreation(project),
         });
       },
       error: (err) => {
@@ -157,5 +153,12 @@ export class AddBlankProjectDialogComponent {
         this.toasterService.error(message);
       },
     });
+  }
+
+  private finishProjectCreation(project: Project): void {
+    this.dialogRef.close();
+    this.toasterService.success(`Project ${project.name} added`);
+    this.router.navigate(['/controller', this.controller.id, 'project', project.project_id]);
+    this.onAddProject.emit(project.project_id);
   }
 }

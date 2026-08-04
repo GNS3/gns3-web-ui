@@ -62,6 +62,7 @@ describe('NotificationCenterService', () => {
         { id: 'valid', kind: 'success', message: 'Saved', createdAt: 1, read: false },
         { id: 'bad-kind', kind: 'debug', message: 'Ignored', createdAt: 2, read: false },
         { id: 'bad-time', kind: 'error', message: 'Ignored', createdAt: 'yesterday', read: false },
+        { id: 'out-of-range-time', kind: 'error', message: 'Ignored', createdAt: 1e300, read: false },
       ])
     );
 

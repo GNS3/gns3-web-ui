@@ -1691,14 +1691,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   exportPortableProjectDialog() {
-    const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
+    this.dialog.open(ExportPortableProjectComponent, {
       panelClass: ['base-dialog-panel', 'dialog-medium-panel'],
       autoFocus: false,
       disableClose: true,
       data: { controllerDetails: this.controller, projectDetails: this.project },
     });
-
-    dialogRef.afterClosed().subscribe((isAddes: boolean) => {});
   }
 
   public uploadImageFile(event) {

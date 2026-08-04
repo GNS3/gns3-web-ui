@@ -221,12 +221,10 @@ describe('ProjectsComponent', () => {
     it('should clear selection on unChecked', () => {
       fixture.detectChanges();
       component.selection.select(mockProjects[0]);
-      component.isAllDelete = true;
 
       component.unChecked();
 
       expect(component.selection.selected.length).toBe(0);
-      expect(component.isAllDelete).toBe(false);
     });
 
     it('should select all projects on allChecked', () => {
@@ -236,7 +234,6 @@ describe('ProjectsComponent', () => {
       component.allChecked();
 
       expect(component.selection.selected.length).toBe(2);
-      expect(component.isAllDelete).toBe(true);
     });
 
     it('should return true from isAllSelected when all selected', () => {
@@ -257,6 +254,28 @@ describe('ProjectsComponent', () => {
       const result = component.isAllSelected();
 
       expect(result).toBe(false);
+    });
+
+    it('should select only projects matching the active filters', () => {
+      fixture.detectChanges();
+      component['_projects'].set(mockProjects);
+      component.searchText.set('Project A');
+
+      component.allChecked();
+
+      expect(component.selection.selected).toEqual([mockProjects[0]]);
+      expect(component.isAllSelected()).toBe(true);
+    });
+
+    it('should clear selected projects when a filter changes', () => {
+      fixture.detectChanges();
+      component['_projects'].set(mockProjects);
+      component.selection.select(mockProjects[1]);
+
+      component.searchText.set('Project A');
+      fixture.detectChanges();
+
+      expect(component.selection.isEmpty()).toBe(true);
     });
   });
 
@@ -289,27 +308,6 @@ describe('ProjectsComponent', () => {
 
       const projectName = fixture.nativeElement.querySelector('.projects__card-name');
       expect(projectName.nextElementSibling.classList.contains('projects__card-status')).toBe(true);
-    });
-  });
-
-  describe('selectAllImages', () => {
-    it('should uncheck when all are selected', () => {
-      fixture.detectChanges();
-      component['_projects'].set([mockProjects[0]]);
-      component.selection.select(mockProjects[0]);
-
-      component.selectAllImages();
-
-      expect(component.selection.selected.length).toBe(0);
-    });
-
-    it('should select all when not all are selected', () => {
-      fixture.detectChanges();
-      component['_projects'].set(mockProjects);
-
-      component.selectAllImages();
-
-      expect(component.selection.selected.length).toBe(2);
     });
   });
 
