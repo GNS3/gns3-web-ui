@@ -19,6 +19,7 @@ jobs:
         with:
           node-version: 14.x
       - uses: c-hive/gha-yarn-cache@v1
+        continue-on-error: true
       - name: Install JS dependencies
         run: yarn install
       - name: Test
