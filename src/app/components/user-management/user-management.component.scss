@@ -40,7 +40,6 @@
   gap: var(--gns3-density-space-3);
 }
 
-button.users-page__refresh,
 button.users-page__bulk-delete,
 button.users-page__add {
   height: var(--gns3-density-control-height);
@@ -48,6 +47,22 @@ button.users-page__add {
   padding-inline: 16px;
   font-size: 14px;
   text-transform: none;
+}
+
+button.users-page__refresh {
+  height: var(--gns3-density-control-height);
+  padding-inline: 18px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-transform: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover:not([disabled]) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
+  }
 }
 
 button.users-page__bulk-delete {

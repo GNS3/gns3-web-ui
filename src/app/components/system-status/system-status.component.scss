@@ -53,9 +53,19 @@
 }
 
 .system-status__header-actions button {
-  min-width: 112px;
   height: var(--gns3-density-control-height);
-  border-radius: 10px;
+  padding-inline: 18px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-transform: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover:not([disabled]) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
+  }
 }
 
 .system-status__header-actions mat-progress-spinner {

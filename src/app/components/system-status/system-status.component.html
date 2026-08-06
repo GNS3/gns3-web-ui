@@ -17,7 +17,14 @@
       @if (lastUpdated()) {
       <span class="system-status__updated">Updated {{ lastUpdated() | date: 'mediumTime' }}</span>
       }
-      <button mat-stroked-button type="button" (click)="refresh()" [disabled]="isRefreshing()">
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        class="system-status__refresh"
+        (click)="refresh()"
+        [disabled]="isRefreshing()"
+      >
         @if (isRefreshing()) {
         <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
         } @else {
