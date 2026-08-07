@@ -510,7 +510,7 @@ describe('ProjectWebServiceHandler', () => {
       handler.handleMessage(message);
 
       expect(mockLinksDataSource.get).toHaveBeenCalledWith('l-1');
-      expect(mockMarkerFlashService.flash).toHaveBeenCalledWith('l-1', 'red', null);
+      expect(mockMarkerFlashService.flash).toHaveBeenCalledWith('l-1', 'red', null, null, 'n-1');
     });
 
     it('should flash with null when marker has no color', () => {
@@ -523,7 +523,7 @@ describe('ProjectWebServiceHandler', () => {
 
       handler.handleMessage(message);
 
-      expect(mockMarkerFlashService.flash).toHaveBeenCalledWith('l-2', null, null);
+      expect(mockMarkerFlashService.flash).toHaveBeenCalledWith('l-2', null, null, null, 'n-1');
     });
 
     it('should pass the marker highlight_duration to flash', () => {
@@ -536,7 +536,50 @@ describe('ProjectWebServiceHandler', () => {
 
       handler.handleMessage(message);
 
-      expect(mockMarkerFlashService.flash).toHaveBeenCalledWith('l-3', null, 1200);
+      expect(mockMarkerFlashService.flash).toHaveBeenCalledWith('l-3', null, 1200, null, 'n-1');
+    });
+
+    it('should pass dir + node_id to flash for the direction arrow', () => {
+      const link = createMockLink('l-4');
+      link.markers = { 'marker-l4': { bpf: 'tcp' } } as any;
+      mockLinksDataSource.get = vi.fn().mockReturnValue(link);
+
+      const event = {
+        project_id: 'p-1',
+        node_id: 'n-4',
+        link_id: 'l-4',
+        filter: 'marker-l4',
+        tag: null,
+        ts: 1,
+        len: 64,
+        dir: 'rx',
+      };
+      const message: WebServiceMessage = { action: 'marker.match', event };
+
+      handler.handleMessage(message);
+
+      expect(mockMarkerFlashService.flash).toHaveBeenCalledWith('l-4', null, null, 'rx', 'n-4');
+    });
+
+    it('should pass null dir when the event omits it (legacy uBridge)', () => {
+      const link = createMockLink('l-5');
+      link.markers = { 'marker-l5': { bpf: 'tcp' } } as any;
+      mockLinksDataSource.get = vi.fn().mockReturnValue(link);
+
+      const event = {
+        project_id: 'p-1',
+        node_id: 'n-5',
+        link_id: 'l-5',
+        filter: 'marker-l5',
+        tag: null,
+        ts: 1,
+        len: 64,
+      };
+      const message: WebServiceMessage = { action: 'marker.match', event };
+
+      handler.handleMessage(message);
+
+      expect(mockMarkerFlashService.flash).toHaveBeenCalledWith('l-5', null, null, null, 'n-5');
     });
   });
 

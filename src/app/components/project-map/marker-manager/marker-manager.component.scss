@@ -192,6 +192,15 @@
     align-items: center;
     gap: var(--gns3-density-space-2);
     margin-bottom: 4px;
+    cursor: pointer;
+  }
+
+  &__group-chevron {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--mat-sys-on-surface-variant);
+    flex-shrink: 0;
   }
 
   &__group-name {
@@ -224,6 +233,11 @@
 
     &--editing {
       background: var(--mat-sys-secondary-container);
+    }
+
+    &--disabled,
+    &--paused {
+      opacity: 0.5;
     }
   }
 
@@ -270,6 +284,12 @@
 
     &--links {
       color: var(--mat-sys-primary);
+    }
+
+    &--dir {
+      color: var(--mat-sys-on-tertiary-container);
+      background: var(--mat-sys-tertiary-container);
+      text-transform: uppercase;
     }
 
     &--inherited {
@@ -326,6 +346,15 @@
       height: 16px;
       vertical-align: middle;
     }
+  }
+
+  &__toggle-spinner {
+    --mdc-circular-progress-active-indicator-color: var(--mat-sys-primary);
+  }
+
+  &__btn-spinner {
+    // Inside mat-flat-button color="primary": arc matches the on-primary label.
+    --mdc-circular-progress-active-indicator-color: var(--mat-sys-on-primary);
   }
 }
 

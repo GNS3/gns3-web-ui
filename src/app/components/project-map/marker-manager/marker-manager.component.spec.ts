@@ -107,13 +107,18 @@ describe('MarkerManagerComponent', () => {
         tag: 1,
         color: null,
         highlight_duration: 800,
+        direction: null,
+        data_link_type: null,
       });
       component.submitDefinition();
 
       expect(markerService.createDefinition).toHaveBeenCalledWith(
         controller,
         'proj-1',
-        { name: 'icmp', bpf: 'icmp', tag: 1, highlight_duration: 800 }
+        // Definitions are direction-agnostic, so the form always maps to 'both'
+        // (dirToBody) and submitDefinition() sends it explicitly to clear any filter.
+        // data_link_type is null (Ethernet-only default) ⇒ omitted from the body.
+        { name: 'icmp', bpf: 'icmp', tag: 1, highlight_duration: 800, direction: 'both' }
       );
       expect(markerService.listDefinitions).toHaveBeenCalled();
       expect(markerService.aggregateList).toHaveBeenCalled();
@@ -127,6 +132,8 @@ describe('MarkerManagerComponent', () => {
         tag: null,
         color: null,
         highlight_duration: null,
+        direction: null,
+        data_link_type: null,
       });
       component.submitDefinition();
       expect(markerService.createDefinition).not.toHaveBeenCalled();
@@ -142,6 +149,8 @@ describe('MarkerManagerComponent', () => {
         tag: null,
         color: null,
         highlight_duration: 500,
+        direction: null,
+        data_link_type: null,
       });
       component.submitDefinition();
       expect(component.defError()).toContain('Invalid BPF expression');

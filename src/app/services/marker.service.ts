@@ -16,6 +16,21 @@ export interface MarkerWriteBody {
   color?: string;
   highlight_duration?: number | null;
   enabled?: boolean;
+  /** Optional direction filter: `"tx"` | `"rx"` | `"both"` | null (both = no filter). */
+  direction?: 'tx' | 'rx' | 'both' | null;
+  /**
+   * Link-layer encapsulation (uBridge DLT). Defaults to `"DLT_EN10MB"`. Required for
+   * serial/WAN links. Create-only on per-link markers (immutable afterwards).
+   */
+  data_link_type?: string;
+  /**
+   * Capture-side (observer) node id — the endpoint `direction` is measured from.
+   * Only honored on **create**; immutable afterwards (server ignores it on update —
+   * changing it would invert stored direction semantics). Omit/null ⇒ server
+   * auto-selects one of the link's endpoints. Not valid on project-level definitions
+   * (inherited copies always auto-select).
+   */
+  capture_node_id?: string | null;
 }
 
 /**
@@ -85,6 +100,27 @@ export class MarkerService {
     );
   }
 
+  /**
+   * Flip only a marker's `enabled` flag — the controller's fast path: signal detection +
+   * pcap recording stop/start instantly while traffic keeps forwarding (no NIO rebuild,
+   * no pcap flush). Use this for the per-row on/off switch; {@link update} still rebuilds
+   * for any other field change (BPF/tag/color/…). PUT `{ enabled }`, returns the link's
+   * markers.
+   */
+  setEnabled(
+    controller: Controller,
+    projectId: string,
+    linkId: string,
+    name: string,
+    enabled: boolean
+  ) {
+    return this.httpController.put<MarkerMap>(
+      controller,
+      `/projects/${projectId}/links/${linkId}/markers/${encodeURIComponent(name)}`,
+      { enabled }
+    );
+  }
+
   // ---- Project-level definitions (global rules, fanned out to all capable links) ----
 
   /** List all definitions + the `link_ids` each is currently bound to. */
@@ -127,6 +163,29 @@ export class MarkerService {
     return this.httpController.delete(
       controller,
       `/projects/${projectId}/marker-definitions/${encodeURIComponent(name)}`
+    );
+  }
+
+  /**
+   * Pause a definition: every inherited copy (`global-{name}`) it fanned out is toggled off
+   * via enable_packet_filter — instantly, with no NIO/pcap rebuild. The definition stores a
+   * persisted `paused` flag (read back via {@link listDefinitions}); links that later
+   * inherit a paused definition start disabled. 204, no body.
+   */
+  pauseDefinition(controller: Controller, projectId: string, name: string) {
+    return this.httpController.post<void>(
+      controller,
+      `/projects/${projectId}/marker-definitions/${encodeURIComponent(name)}/pause`,
+      {}
+    );
+  }
+
+  /** Resume a paused definition — re-enables every inherited copy. 204, no body. */
+  resumeDefinition(controller: Controller, projectId: string, name: string) {
+    return this.httpController.post<void>(
+      controller,
+      `/projects/${projectId}/marker-definitions/${encodeURIComponent(name)}/resume`,
+      {}
     );
   }
 

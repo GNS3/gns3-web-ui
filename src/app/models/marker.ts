@@ -15,6 +15,18 @@ export interface Marker {
   highlight_duration?: number | null;
   /** Source definition name — present on inherited markers only (`null` for private). */
   inherited_from?: string | null;
+  /**
+   * Optional direction filter: `"tx"` (capture sending only), `"rx"` (capture
+   * receiving only), or `null`/absent (both directions — default).
+   */
+  direction?: 'tx' | 'rx' | null;
+  /**
+   * Link-layer encapsulation for capture/pcap decode (uBridge DLT value).
+   * Defaults to `"DLT_EN10MB"` (Ethernet). Set to a WAN value — `"DLT_C_HDLC"`,
+   * `"DLT_PPP_SERIAL"`, `"DLT_FRELAY"`, `"DLT_ATM_RFC1483"` — so the BPF match
+   * and pcap decode against a serial link's IOS encapsulation.
+   */
+  data_link_type?: string;
   /** Capture-side node chosen by the server. */
   capture_node_id?: string;
   capture_adapter?: number;
@@ -39,8 +51,24 @@ export interface MarkerDefinition {
   tag?: number | null;
   color?: string | null;
   highlight_duration?: number | null;
+  /** Optional direction filter (same semantics as {@link Marker.direction}). */
+  direction?: 'tx' | 'rx' | null;
+  /**
+   * Link-layer encapsulation (uBridge DLT). Defaults to `"DLT_EN10MB"` (Ethernet
+   * only — serial links are skipped). A WAN value also covers serial links of that
+   * encapsulation while Ethernet links stay EN10MB, so one definition can serve a
+   * mixed topology. Updatable (the server re-fans-out).
+   */
+  data_link_type?: string;
   /** Links currently carrying an inherited copy (GET only). */
   link_ids?: string[];
+  /**
+   * Server-authoritative, persisted pause state: when true, every inherited copy this
+   * definition fanned out is disabled (signal + pcap off, traffic still forwards). Flipped
+   * by POST /marker-definitions/{name}/{pause|resume}; read back via GET /marker-definitions.
+   * Links inheriting a paused definition start disabled.
+   */
+  paused?: boolean;
 }
 
 /** Definitions keyed by name. */
@@ -53,6 +81,10 @@ export interface MarkerDefinitionCreateBody {
   tag?: number | null;
   color?: string;
   highlight_duration?: number | null;
+  /** Optional direction filter: `"tx"` | `"rx"` | `"both"` | null. */
+  direction?: 'tx' | 'rx' | 'both' | null;
+  /** Link-layer encapsulation (uBridge DLT). Defaults to `"DLT_EN10MB"` (Ethernet). */
+  data_link_type?: string;
 }
 
 /**
@@ -70,8 +102,8 @@ export type AggregateMarkerMap = { [key: string]: AggregateMarkerEntry };
 /**
  * Wire shape of the `marker.match` project WebSocket event.
  * The `filter` field IS the marker name (per backend contract).
- * `node_id` is the capture-side node; it is received but not highlighted
- * (per the feature's visualization decision — only the link flashes).
+ * `node_id` is the capture-side node (one of the link's two endpoints);
+ * it is not highlighted itself — it orients the direction arrow.
  */
 export interface MarkerMatchEvent {
   project_id: string;
@@ -81,4 +113,13 @@ export interface MarkerMatchEvent {
   tag?: number | null;
   ts: number;
   len: number;
+  /**
+   * Traffic direction relative to the capture node (`node_id`):
+   *  - `"tx"` → capture node is sending → flow is capture → peer
+   *  - `"rx"` → capture node is receiving → flow is peer → capture
+   *
+   * Absent or `null` for old uBridge builds that don't report direction;
+   * in that case the link flashes without an arrow (legacy behaviour).
+   */
+  dir?: 'tx' | 'rx' | null;
 }

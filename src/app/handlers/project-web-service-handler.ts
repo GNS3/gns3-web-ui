@@ -67,13 +67,16 @@ export class ProjectWebServiceHandler {
       const event = message.event as MarkerMatchEvent;
       // Resolve the marker's color + highlight_duration from link state (event carries
       // neither). `filter` is the marker name; null color ⇒ default theme color;
-      // null duration ⇒ UI default (see MarkerFlashService).
+      // null duration ⇒ UI default (see MarkerFlashService). `dir` + `node_id` orient
+      // the direction arrow; null/absent `dir` (old uBridge) ⇒ flash without arrow.
       const link = this.linksDataSource.get(event.link_id);
       const marker = link?.markers?.[event.filter];
       this.markerFlashService.flash(
         event.link_id,
         marker?.color ?? null,
-        marker?.highlight_duration ?? null
+        marker?.highlight_duration ?? null,
+        event.dir ?? null,
+        event.node_id
       );
     }
     if (message.action === 'drawing.created') {

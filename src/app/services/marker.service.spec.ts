@@ -77,6 +77,38 @@ describe('MarkerService', () => {
     });
   });
 
+  describe('definition pause/resume + per-marker enable', () => {
+    it('pauseDefinition → POST /marker-definitions/{name}/pause with empty body', () => {
+      mockHttpController.post.mockReturnValue(of(undefined));
+      service.pauseDefinition(mockController, PROJECT_ID, NAME).subscribe();
+      expect(mockHttpController.post).toHaveBeenCalledWith(
+        mockController,
+        `/projects/${PROJECT_ID}/marker-definitions/${encodeURIComponent(NAME)}/pause`,
+        {}
+      );
+    });
+
+    it('resumeDefinition → POST /marker-definitions/{name}/resume with empty body', () => {
+      mockHttpController.post.mockReturnValue(of(undefined));
+      service.resumeDefinition(mockController, PROJECT_ID, NAME).subscribe();
+      expect(mockHttpController.post).toHaveBeenCalledWith(
+        mockController,
+        `/projects/${PROJECT_ID}/marker-definitions/${encodeURIComponent(NAME)}/resume`,
+        {}
+      );
+    });
+
+    it('setEnabled → PUT /links/{lid}/markers/{name} with {enabled}', () => {
+      mockHttpController.put.mockReturnValue(of({}));
+      service.setEnabled(mockController, PROJECT_ID, LINK_ID, NAME, false).subscribe();
+      expect(mockHttpController.put).toHaveBeenCalledWith(
+        mockController,
+        `/projects/${PROJECT_ID}/links/${LINK_ID}/markers/${encodeURIComponent(NAME)}`,
+        { enabled: false }
+      );
+    });
+  });
+
   describe('per-link markers (unchanged shape)', () => {
     it('list → GET /links/{lid}/markers', () => {
       mockHttpController.get.mockReturnValue(of({}));

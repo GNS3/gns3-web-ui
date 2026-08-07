@@ -117,10 +117,26 @@ export class SelectionTool {
   }
 
   private selectedEvent(start, end) {
-    const x = Math.min(start[0], end[0]);
-    const y = Math.min(start[1], end[1]);
-    const width = Math.abs(start[0] - end[0]);
-    const height = Math.abs(start[1] - end[1]);
+    // `start`/`end` come from `transformation()`, which subtracts the pan
+    // (zeroZero + transformation.x/y) but does NOT divide by the scale k — so
+    // they are in screen-pixel space, not canvas space. Node/link coordinates
+    // live in canvas space, so we must divide by k before hit-testing.
+    // Without this, the emitted Rectangle is the wrong size and position
+    // whenever the canvas is zoomed: zoomed-out selection captures too few
+    // nodes, zoomed-in captures too many. (`moveSelection` already divides by
+    // k for the visible path, which is why the drawn box looks correct.)
+    const k = this.context.transformation.k;
+    if (!k || k === 0 || isNaN(k)) {
+      return;
+    }
+    const sx = start[0] / k;
+    const sy = start[1] / k;
+    const ex = end[0] / k;
+    const ey = end[1] / k;
+    const x = Math.min(sx, ex);
+    const y = Math.min(sy, ey);
+    const width = Math.abs(sx - ex);
+    const height = Math.abs(sy - ey);
     this.selectionEventSource.selected.next(new Rectangle(x, y, width, height));
   }
 

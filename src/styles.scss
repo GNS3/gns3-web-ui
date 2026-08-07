@@ -397,6 +397,14 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.template-menu 
   stroke-width: 5px;
 }
 
+/* Direction arrow drawn at a flashing link's midpoint when a `marker.match`
+   carries a `dir` (tx/rx). Inline fill (user-chosen hex) is set by
+   MarkerFlashService; when none is set, the default theme color below applies. */
+.marker-arrow-tx path,
+.marker-arrow-rx path {
+  fill: var(--mat-sys-primary);
+}
+
 /* =============================================
 // Curviness Anchor (Link Drag Handle)
 // ============================================= */

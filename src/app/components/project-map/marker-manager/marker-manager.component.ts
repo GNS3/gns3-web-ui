@@ -16,15 +16,18 @@ import {
   viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { AbstractControl, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatDialog } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { Subject, animationFrameScheduler, fromEvent } from 'rxjs';
 import { auditTime, switchMap, takeUntil, tap } from 'rxjs/operators';
@@ -47,6 +50,8 @@ import { MarkerRegistryService } from '@services/marker-registry.service';
 import { ToasterService } from '@services/toaster.service';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 import { WindowManagementService } from '@services/window-management.service';
+import { MarkerFormComponent } from './marker-form.component';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 interface DefinitionRow {
   name: string;
@@ -54,7 +59,10 @@ interface DefinitionRow {
   tag: number | null;
   color: string | null;
   highlight_duration: number | null;
+  direction: 'tx' | 'rx' | null;
+  data_link_type: string | null;
   linkCount: number;
+  paused: boolean;
 }
 
 interface LinkGroup {
@@ -69,7 +77,7 @@ interface GroupMarker extends AggregateMarkerEntry {
 }
 
 /** A marker definition name may not start with the reserved `global` prefix. */
-function notGlobalName(control: UntypedFormControl): { notGlobalName: true } | null {
+function notGlobalName(control: AbstractControl): { notGlobalName: true } | null {
   const v = control.value;
   if (typeof v === 'string' && v.trim().toLowerCase().startsWith('global')) {
     return { notGlobalName: true };
@@ -102,11 +110,14 @@ function notGlobalName(control: UntypedFormControl): { notGlobalName: true } | n
     MatFormFieldModule,
     MatInputModule,
     MatAutocompleteModule,
+    MatSelectModule,
     MatTooltipModule,
     MatDividerModule,
+    MatProgressSpinnerModule,
     CdkTextareaAutosize,
     ResizableDirective,
     ResizeHandleDirective,
+    MarkerFormComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -151,12 +162,28 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   readonly linkGroups = signal<LinkGroup[]>([]);
   readonly loading = signal(false);
   readonly defError = signal<string | null>(null);
-  readonly linkError = signal<string | null>(null);
+  readonly linkError = signal<{ linkId: string | null; message: string } | null>(null);
   readonly editingDefinition = signal<string | null>(null);
   /** linkId currently showing its inline "add private marker" form (Links tab). */
   readonly addingToLink = signal<string | null>(null);
   /** Marker currently being edited: { linkId, name }. */
   readonly editingMarker = signal<{ linkId: string; name: string } | null>(null);
+  /** LinkIds whose marker list is collapsed in the aggregate Links view. */
+  readonly collapsedGroups = signal<Set<string>>(new Set());
+  /** Definition name whose pause/resume request is in flight — guards double-fires + drives that row's spinner. */
+  readonly togglingDefinition = signal<string | null>(null);
+  /** `${linkId}/${name}` of the per-marker enable request in flight — guards + drives that row's spinner. */
+  readonly togglingMarker = signal<string | null>(null);
+  /** Definition name whose delete request is in flight — drives that row's spinner. */
+  readonly deletingDefinition = signal<string | null>(null);
+  /** Whether the definition create/update form is currently submitting. */
+  readonly submittingDefinition = signal(false);
+  /** `${linkId}/${name}` of the per-marker delete request in flight — drives that row's spinner. */
+  readonly deletingMarker = signal<string | null>(null);
+  /** linkId whose per-marker create form is currently submitting. */
+  readonly submittingMarker = signal<string | null>(null);
+  /** Whether the per-marker edit form is currently submitting. */
+  readonly submittingEditMarker = signal(false);
   // ---- Node selector (first step in Links tab) ----
   /** Node options (id + display name). Built once from NodesDataSource. */
   readonly nodeOptions = signal<{ id: string; name: string }[]>([]);
@@ -206,9 +233,19 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   readonly definitionForm = new UntypedFormGroup({
     name: new UntypedFormControl('', [Validators.required, notGlobalName]),
     bpf: new UntypedFormControl('', [Validators.required]),
+    // `tag` is reserved for the upcoming traffic-replay feature. There's no UI for it
+    // on definitions yet, so it stays null and submitDefinition()'s tag read is a no-op
+    // until the field ships — kept here deliberately, not dead code.
     tag: new UntypedFormControl(null),
     color: new UntypedFormControl(null),
-    highlight_duration: new UntypedFormControl(800, [Validators.required, Validators.min(1)]),
+    highlight_duration: new UntypedFormControl(800, {
+      nonNullable: true,
+      validators: [Validators.required, Validators.min(1)],
+    }),
+    direction: new UntypedFormControl('both'),
+    // `null` ⇒ Ethernet-only definition (serial links skipped). A WAN value makes the
+    // definition also cover serial links of that encapsulation; Ethernet stays EN10MB.
+    data_link_type: new UntypedFormControl(null),
   });
 
   readonly markerForm = new UntypedFormGroup({
@@ -216,7 +253,15 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     bpf: new UntypedFormControl('', [Validators.required]),
     tag: new UntypedFormControl(null),
     color: new UntypedFormControl(null),
-    highlight_duration: new UntypedFormControl(800, [Validators.required, Validators.min(1)]),
+    highlight_duration: new UntypedFormControl(800, {
+      nonNullable: true,
+      validators: [Validators.required, Validators.min(1)],
+    }),
+    direction: new UntypedFormControl('both'),
+    // `null` on Ethernet (picker hidden, backend defaults to DLT_EN10MB); seeded with the
+    // first WAN encapsulation when the form opens on a serial link (see toggleAddMarker).
+    data_link_type: new UntypedFormControl(null),
+    capture_node_id: new UntypedFormControl(null),
   });
 
   readonly markerEditForm = new UntypedFormGroup({
@@ -224,8 +269,29 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     bpf: new UntypedFormControl('', [Validators.required]),
     tag: new UntypedFormControl(null),
     color: new UntypedFormControl(null),
-    highlight_duration: new UntypedFormControl(800, [Validators.required, Validators.min(1)]),
+    highlight_duration: new UntypedFormControl(800, {
+      nonNullable: true,
+      validators: [Validators.required, Validators.min(1)],
+    }),
+    direction: new UntypedFormControl('both'),
+    // Create-only on per-link markers — disabled in edit (recreate to switch encapsulation).
+    data_link_type: new UntypedFormControl({ value: 'DLT_EN10MB', disabled: true }),
+    capture_node_id: new UntypedFormControl({ value: null, disabled: true }),
   });
+
+  /**
+   * WAN encapsulations — the only options offered in the marker forms. Setting one
+   * on a definition/per-link serial marker makes it decode serial traffic; leaving
+   * it unset means Ethernet-only (the server's default DLT_EN10MB). Same values the
+   * capture dialog uses (`start-capture.component.ts`). Cisco PPP is
+   * `DLT_PPP_SERIAL` (50), not raw `DLT_PPP` (9).
+   */
+  readonly serialDataLinkTypes: readonly { label: string; value: string }[] = [
+    { label: 'Cisco HDLC', value: 'DLT_C_HDLC' },
+    { label: 'Cisco PPP', value: 'DLT_PPP_SERIAL' },
+    { label: 'Frame Relay', value: 'DLT_FRELAY' },
+    { label: 'ATM', value: 'DLT_ATM_RFC1483' },
+  ];
 
   private boundaryService = inject(WindowBoundaryService);
   private windowManagement = inject(WindowManagementService);
@@ -237,6 +303,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   private nodesDataSource = inject(NodesDataSource);
   private markerRegistryService = inject(MarkerRegistryService);
   private toasterService = inject(ToasterService);
+  private dialog = inject(MatDialog);
 
   private dragStartX = 0;
   private dragStartY = 0;
@@ -297,7 +364,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const project = this.project();
     if (!controller || !project) return;
     this.loading.set(true);
-    this.markerService.listDefinitions(controller, project.project_id).subscribe({
+    this.markerService.listDefinitions(controller, project.project_id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (map: MarkerDefinitionMap) => {
         this.definitions.set(this.toDefinitionRows(map));
         this.loading.set(false);
@@ -337,13 +404,13 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const controller = this.controller();
     const project = this.project();
     if (!controller || !project) return;
-    this.markerService.aggregateList(controller, project.project_id).subscribe({
+    this.markerService.aggregateList(controller, project.project_id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (map: AggregateMarkerMap) => {
         this.linkGroups.set(this.buildGroups(map));
         this.cdr.markForCheck();
       },
       error: (err) => {
-        this.linkError.set(err.error?.message || err.message || 'Failed to load markers');
+        this.linkError.set({ linkId: null, message: err.error?.message || err.message || 'Failed to load markers' });
         this.cdr.markForCheck();
       },
     });
@@ -356,7 +423,11 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
       tag: d.tag ?? null,
       color: d.color ?? null,
       highlight_duration: d.highlight_duration ?? null,
+      direction: (d.direction as 'tx' | 'rx' | null) ?? null,
+      // Normalize EN10MB → null so the picker shows "Ethernet only" (blank) for defaults.
+      data_link_type: d.data_link_type && d.data_link_type !== 'DLT_EN10MB' ? d.data_link_type : null,
       linkCount: d.link_ids?.length ?? 0,
+      paused: d.paused ?? false,
     }));
   }
 
@@ -390,6 +461,27 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     return `${src.name} ${sLabel} → ${dst.name} ${dLabel}`.replace(/\s+/g, ' ').trim();
   }
 
+  /** Endpoint nodes of a link — options for the per-link "Capture node" dropdown. */
+  linkEndpoints(linkId: string): { id: string; name: string }[] {
+    const link = this.linksDataSource.get(linkId);
+    const nodes = link?.nodes;
+    if (!nodes || nodes.length === 0) return [];
+    return nodes.map((n) => {
+      const node = this.nodesDataSource.get(n.node_id);
+      return { id: n.node_id, name: node?.name ?? n.node_id };
+    });
+  }
+
+  /** Resolve a node id to its display name (falls back to the raw id). */
+  nodeName(nodeId: string): string {
+    return this.nodesDataSource.get(nodeId)?.name ?? nodeId;
+  }
+
+  /** The protocol link_type of a link (`'ethernet'` / `'serial'`; defaults to ethernet). */
+  linkTypeOf(linkId: string): string {
+    return this.linksDataSource.get(linkId)?.link_type ?? 'ethernet';
+  }
+
   // ---- definitions CRUD ----
 
   submitDefinition() {
@@ -401,6 +493,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const project = this.project();
     if (!controller || !project) return;
     this.defError.set(null);
+    this.submittingDefinition.set(true);
 
     const v = this.definitionForm.getRawValue();
     const body: MarkerDefinitionCreateBody = { name: v.name.trim(), bpf: v.bpf.trim() };
@@ -409,9 +502,18 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     if (v.color) body.color = v.color;
     const hd = this.asNumber(v.highlight_duration);
     if (hd !== null) body.highlight_duration = hd;
+    const dir = this.dirToBody(v.direction);
+    if (dir) body.direction = dir;
+    if (v.data_link_type) body.data_link_type = v.data_link_type;
 
     const editing = this.editingDefinition();
+    // An encapsulation change re-fans-out the definition: every inherited copy is rebuilt
+    // and capture restarts on each affected link (uBridge itself is unaffected). Confirm
+    // with the user before sending the PUT so they can back out.
+    const origDlt = editing ? this.definitions().find((d) => d.name === editing)?.data_link_type ?? null : null;
+    const dltChanged = !!editing && origDlt !== (v.data_link_type ?? null);
     const done = () => {
+      this.submittingDefinition.set(false);
       this.toasterService.success(`Marker definition "${body.name}" ${editing ? 'updated' : 'created'}.`);
       this.cancelEditDefinition();
       this.loadDefinitions();
@@ -420,19 +522,46 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
       this.loadAggregate();
     };
     const fail = (err: any) => {
+      this.submittingDefinition.set(false);
       const message = err.error?.message || err.message || 'Failed to save definition';
       this.defError.set(message);
       this.toasterService.error(message);
       this.cdr.markForCheck();
     };
-
-    if (editing) {
-      this.markerService.updateDefinition(controller, project.project_id, editing, body).subscribe({
+    const runUpdate = () => {
+      this.markerService.updateDefinition(controller, project.project_id, editing!, body).pipe(takeUntil(this.destroy$)).subscribe({
         next: () => done(),
         error: fail,
       });
+    };
+
+    if (editing) {
+      if (dltChanged) {
+        const ref = this.dialog.open(ConfirmationDialogComponent, {
+          data: {
+            title: 'Confirm encapsulation change',
+            message:
+              'Changing the encapsulation rebuilds this definition’s markers and restarts capture on every link it applies to. uBridge itself is unaffected. Continue?',
+            confirmButtonText: 'Save',
+            cancelButtonText: 'Cancel',
+          },
+          panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+          autoFocus: false,
+          restoreFocus: false,
+        });
+        ref.afterClosed().subscribe((ok: boolean) => {
+          if (ok) {
+            runUpdate();
+          } else {
+            this.submittingDefinition.set(false);
+            this.cdr.markForCheck();
+          }
+        });
+      } else {
+        runUpdate();
+      }
     } else {
-      this.markerService.createDefinition(controller, project.project_id, body).subscribe({
+      this.markerService.createDefinition(controller, project.project_id, body).pipe(takeUntil(this.destroy$)).subscribe({
         next: () => done(),
         error: fail,
       });
@@ -448,6 +577,8 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
       tag: row.tag,
       color: row.color,
       highlight_duration: row.highlight_duration,
+      direction: this.dirFromMarker(row.direction),
+      data_link_type: row.data_link_type ?? null,
     });
     // Name is immutable on update; disable to communicate that.
     this.definitionForm.get('name')?.disable();
@@ -466,15 +597,20 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const controller = this.controller();
     const project = this.project();
     if (!controller || !project) return;
+    // Guard against double-fires while a delete is already in flight.
+    if (this.deletingDefinition() === row.name) return;
     this.defError.set(null);
-    this.markerService.deleteDefinition(controller, project.project_id, row.name).subscribe({
+    this.deletingDefinition.set(row.name);
+    this.markerService.deleteDefinition(controller, project.project_id, row.name).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
+        this.deletingDefinition.set(null);
         this.toasterService.success(`Marker definition "${row.name}" deleted.`);
         if (this.editingDefinition() === row.name) this.cancelEditDefinition();
         this.loadDefinitions();
         this.loadAggregate();
       },
       error: (err) => {
+        this.deletingDefinition.set(null);
         const message = err.error?.message || err.message || 'Failed to delete definition';
         this.defError.set(message);
         this.toasterService.error(message);
@@ -489,6 +625,8 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   onNodeSelect(nodeId: string | null) {
     this.selectedNodeId.set(nodeId);
     this.selectedLinkId.set(null);
+    this.addingToLink.set(null);
+    this.editingMarker.set(null);
     this.linkSearchText.set('');
     this.markerForm.reset();
     this.linkError.set(null);
@@ -505,25 +643,102 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   onLinkSelect(linkId: string | null) {
     this.selectedLinkId.set(linkId);
     this.addingToLink.set(null);
+    this.editingMarker.set(null);
     this.markerForm.reset();
     this.linkError.set(null);
     this.linkSearchText.set(linkId ? this.linkName(linkId) : '');
     this.cdr.markForCheck();
   }
 
+  /**
+   * `displayWith` for the node autocomplete — maps the selected value (node id) back to
+   * its display name. Without this, mat-autocomplete writes the raw `[value]` (the UUID)
+   * into the input; on repeat selection of the same option the signal doesn't notify
+   * (equal value ⇒ no CD), so the `[value]` binding never overwrites it and the UUID sticks.
+   */
+  displayNode = (id: string | null): string => {
+    if (!id) return '';
+    return this.nodeOptions().find((o) => o.id === id)?.name ?? id;
+  };
+
+  /** `displayWith` for the link autocomplete — maps the selected link id to its display name. */
+  displayLink = (id: string | null): string => {
+    if (!id) return '';
+    return this.linkName(id);
+  };
+
   /** Clear autocomplete inputs and return to the aggregate view. */
   resetLinkSelect() {
     this.selectedNodeId.set(null);
     this.nodeSearchText.set('');
     this.selectedLinkId.set(null);
+    this.addingToLink.set(null);
+    this.editingMarker.set(null);
     this.linkSearchText.set('');
     this.linkError.set(null);
     this.cdr.markForCheck();
   }
 
+  /** Whether a link group's marker list is collapsed in the aggregate view. */
+  isGroupCollapsed(linkId: string): boolean {
+    return this.collapsedGroups().has(linkId);
+  }
+
+  /** Whether a per-marker enable request is in flight for this marker (drives its spinner). */
+  isTogglingMarker(linkId: string, name: string): boolean {
+    return this.togglingMarker() === `${linkId}/${name}`;
+  }
+
+  /** Whether a per-marker delete request is in flight for this marker (drives its spinner). */
+  isDeletingMarker(linkId: string, name: string): boolean {
+    return this.deletingMarker() === `${linkId}/${name}`;
+  }
+
+  /**
+   * Panel-level error (not scoped to a link) — e.g. an aggregate load failure. Shown at the
+   * top of the Links panel. Per-link create/edit/delete errors are scoped via {@link groupError}
+   * so they render next to the form that produced them, not up here.
+   */
+  panelError(): string | null {
+    const err = this.linkError();
+    return err && !err.linkId ? err.message : null;
+  }
+
+  /** Error message scoped to a specific link group's create/edit/delete action, or null. */
+  groupError(linkId: string): string | null {
+    const err = this.linkError();
+    return err && err.linkId === linkId ? err.message : null;
+  }
+
+  /** Toggle a link group's collapsed state (click on its header). */
+  toggleGroup(linkId: string) {
+    const next = new Set(this.collapsedGroups());
+    if (next.has(linkId)) next.delete(linkId);
+    else next.add(linkId);
+    this.collapsedGroups.set(next);
+  }
+
+  /** Ensure a group is expanded — used when opening its add/edit form so the form isn't hidden. */
+  private expandGroup(linkId: string) {
+    if (this.collapsedGroups().has(linkId)) {
+      const next = new Set(this.collapsedGroups());
+      next.delete(linkId);
+      this.collapsedGroups.set(next);
+    }
+  }
+
   toggleAddMarker(linkId: string) {
-    this.addingToLink.set(this.addingToLink() === linkId ? null : linkId);
+    const opening = this.addingToLink() !== linkId;
+    this.addingToLink.set(opening ? linkId : null);
+    // Add and edit are mutually exclusive — opening the add form closes any open edit.
+    this.editingMarker.set(null);
+    if (opening) this.expandGroup(linkId);
     this.markerForm.reset();
+    // A serial link needs a WAN encapsulation; default to the first one (Cisco HDLC),
+    // matching the capture dialog's auto-select. Ethernet links leave it null (hidden).
+    if (opening && this.linkTypeOf(linkId) === 'serial') {
+      this.markerForm.get('data_link_type')?.setValue(this.serialDataLinkTypes[0]?.value ?? null);
+    }
     this.linkError.set(null);
     this.cdr.markForCheck();
   }
@@ -537,6 +752,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const project = this.project();
     if (!controller || !project) return;
     this.linkError.set(null);
+    this.submittingMarker.set(linkId);
 
     const v = this.markerForm.getRawValue();
     const body: MarkerWriteBody = { bpf: v.bpf.trim(), name: v.name.trim() };
@@ -545,21 +761,26 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     if (v.color) body.color = v.color;
     const hd = this.asNumber(v.highlight_duration);
     if (hd !== null) body.highlight_duration = hd;
+    const dir = this.dirToBody(v.direction);
+    if (dir) body.direction = dir;
+    if (v.capture_node_id) body.capture_node_id = v.capture_node_id;
+    if (v.data_link_type) body.data_link_type = v.data_link_type;
 
-    this.markerService.create(controller, project.project_id, linkId, body).subscribe({
+    this.markerService.create(controller, project.project_id, linkId, body).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
+        this.submittingMarker.set(null);
         this.toasterService.success(`Marker "${body.name}" created.`);
-        if (this.selectedLinkId()) {
-          this.markerForm.reset();
-        } else {
-          this.toggleAddMarker(linkId);
-        }
+        // Close the create form and return to the list — same behavior in the
+        // selected-link and aggregate views. (The selected-link view previously
+        // kept the form open via markerForm.reset().)
+        this.toggleAddMarker(linkId);
         this.refreshLink(linkId);
         this.loadAggregate();
       },
       error: (err) => {
+        this.submittingMarker.set(null);
         const message = err.error?.message || err.message || 'Failed to create marker';
-        this.linkError.set(message);
+        this.linkError.set({ linkId, message });
         this.toasterService.error(message);
         this.cdr.markForCheck();
       },
@@ -570,16 +791,21 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const controller = this.controller();
     const project = this.project();
     if (!controller || !project) return;
+    const key = `${linkId}/${name}`;
+    if (this.deletingMarker() === key) return;
     this.linkError.set(null);
-    this.markerService.delete(controller, project.project_id, linkId, name).subscribe({
+    this.deletingMarker.set(key);
+    this.markerService.delete(controller, project.project_id, linkId, name).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
+        this.deletingMarker.set(null);
         this.toasterService.success(`Marker "${name}" deleted.`);
         this.refreshLink(linkId);
         this.loadAggregate();
       },
       error: (err) => {
+        this.deletingMarker.set(null);
         const message = err.error?.message || err.message || 'Failed to delete marker';
-        this.linkError.set(message);
+        this.linkError.set({ linkId, message });
         this.toasterService.error(message);
         this.cdr.markForCheck();
       },
@@ -588,6 +814,9 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
 
   startEditMarker(linkId: string, marker: GroupMarker) {
     this.editingMarker.set({ linkId, name: marker.name });
+    // Add and edit are mutually exclusive — opening an edit closes any open add form.
+    this.addingToLink.set(null);
+    this.expandGroup(linkId);
     this.linkError.set(null);
     this.markerEditForm.reset({
       name: marker.name,
@@ -595,8 +824,14 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
       tag: marker.tag ?? null,
       color: marker.color ?? null,
       highlight_duration: marker.highlight_duration ?? 800,
+      direction: this.dirFromMarker(marker.direction),
+      data_link_type: marker.data_link_type ?? 'DLT_EN10MB',
+      capture_node_id: marker.capture_node_id ?? null,
     });
     this.markerEditForm.get('name')?.disable();
+    // data_link_type is create-only on per-link markers — keep it disabled in edit.
+    this.markerEditForm.get('data_link_type')?.disable();
+    this.markerEditForm.get('capture_node_id')?.disable();
     this.cdr.markForCheck();
   }
 
@@ -616,6 +851,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const project = this.project();
     if (!controller || !project) return;
     this.linkError.set(null);
+    this.submittingEditMarker.set(true);
 
     const v = this.markerEditForm.getRawValue();
     const body: MarkerWriteBody = { bpf: v.bpf.trim() };
@@ -624,21 +860,111 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     if (v.color) body.color = v.color;
     const hd = this.asNumber(v.highlight_duration);
     if (hd !== null) body.highlight_duration = hd;
+    const dir = this.dirToBody(v.direction);
+    if (dir) body.direction = dir;
 
-    this.markerService.update(controller, project.project_id, linkId, editing.name, body).subscribe({
+    this.markerService.update(controller, project.project_id, linkId, editing.name, body).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
+        this.submittingEditMarker.set(false);
         this.toasterService.success(`Marker "${editing.name}" updated.`);
         this.editingMarker.set(null);
         this.refreshLink(linkId);
         this.loadAggregate();
       },
       error: (err) => {
+        this.submittingEditMarker.set(false);
         const message = err.error?.message || err.message || 'Failed to update marker';
-        this.linkError.set(message);
+        this.linkError.set({ linkId, message });
         this.toasterService.error(message);
         this.cdr.markForCheck();
       },
     });
+  }
+
+  // ---- per-definition pause/resume (toggles every inherited copy of a rule) ----
+
+  toggleDefinitionPaused(row: DefinitionRow) {
+    if (this.togglingDefinition() === row.name) return;
+    const controller = this.controller();
+    const project = this.project();
+    if (!controller || !project) return;
+    const wantPaused = !row.paused;
+    // Show the row's spinner while the request is in flight; don't touch the icon until
+    // the server confirms (204) — the displayed state is always authoritative. We never
+    // call loadDefinitions() here: it sets `loading` and flashes the "Loading…" block /
+    // re-renders the whole list. The 204 confirms `paused`, so we set it locally on
+    // success; loadAggregate refreshes the Links tab's inherited copies.
+    this.togglingDefinition.set(row.name);
+    const req$ = wantPaused
+      ? this.markerService.pauseDefinition(controller, project.project_id, row.name)
+      : this.markerService.resumeDefinition(controller, project.project_id, row.name);
+    req$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.togglingDefinition.set(null);
+        this.applyDefinitionPausedLocal(row.name, wantPaused);
+        this.loadAggregate();
+      },
+      error: (err) => {
+        this.togglingDefinition.set(null);
+        this.defError.set(err.error?.message || err.message || 'Failed to toggle definition');
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  /** Optimistically set a definition's `paused` in the local {@link definitions} signal
+   *  (pre-response) so the row's icon swaps instantly and no list reload is needed. */
+  private applyDefinitionPausedLocal(name: string, paused: boolean) {
+    const rows = this.definitions().map((r) => (r.name === name ? { ...r, paused } : r));
+    this.definitions.set(rows);
+  }
+
+  // ---- per-marker enable/disable (server fast path: no rebuild, no pcap flush) ----
+
+  toggleMarkerEnabled(linkId: string, marker: GroupMarker) {
+    // Inherited markers are read-only — managed via the Definitions tab.
+    if (marker.inherited_from) return;
+    const controller = this.controller();
+    const project = this.project();
+    if (!controller || !project) return;
+    // Guard against double-fires while a toggle is already in flight.
+    if (this.isTogglingMarker(linkId, marker.name)) return;
+
+    // `enabled` defaults to true when undefined; only an explicit `false` is "off".
+    const nextEnabled = marker.enabled === false;
+    // Show the row's spinner while in flight; flip the icon only after the server
+    // confirms, so the displayed state is always authoritative.
+    this.togglingMarker.set(`${linkId}/${marker.name}`);
+    this.markerService
+      .setEnabled(controller, project.project_id, linkId, marker.name, nextEnabled)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.togglingMarker.set(null);
+          this.applyEnabledLocal(linkId, marker.name, nextEnabled);
+          this.refreshLink(linkId);
+          this.loadAggregate();
+        },
+        error: (err) => {
+          this.togglingMarker.set(null);
+          this.toasterService.error(err.error?.message || err.message || 'Failed to toggle marker');
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  /**
+   * Optimistically set a marker's `enabled` in the local {@link linkGroups} signal
+   * (pre-response). {@link selectedLinkGroup} recomputes from `linkGroups`, so both the
+   * selected-link and aggregate views update together.
+   */
+  private applyEnabledLocal(linkId: string, name: string, enabled: boolean) {
+    const groups = this.linkGroups().map((g) =>
+      g.linkId !== linkId
+        ? g
+        : { ...g, markers: g.markers.map((m) => (m.name === name ? { ...m, enabled } : m)) }
+    );
+    this.linkGroups.set(groups);
   }
 
   /** Canonical 5-step refresh after a private-marker mutation on a single link. */
@@ -646,7 +972,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const controller = this.controller();
     const project = this.project();
     if (!controller || !project) return;
-    this.linkService.getLink(controller, project.project_id, linkId).subscribe({
+    this.linkService.getLink(controller, project.project_id, linkId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (link) => {
         this.linksDataSource.update(link);
         const mapLink = this.mapLinksDataSource.get(linkId);
@@ -665,6 +991,21 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     if (v === null || v === undefined || v === '') return null;
     const n = Number(v);
     return isNaN(n) ? null : n;
+  }
+
+  /**
+   * Map a form direction value to the backend value. The form uses the `'both'` sentinel
+   * because mat-select clears its selection model on `null` — a null-valued option never
+   * displays in the trigger. `'both'` is sent as `'both'` on the wire (the server treats
+   * it as "no direction filter", same as null/absent on GET).
+   */
+  private dirToBody(d: unknown): 'tx' | 'rx' | 'both' {
+    return d === 'tx' || d === 'rx' ? d : 'both';
+  }
+
+  /** Map a stored/backend direction back to the form value (`null`/`undefined` → `'both'`). */
+  private dirFromMarker(d: 'tx' | 'rx' | null | undefined): 'both' | 'tx' | 'rx' {
+    return d === 'tx' || d === 'rx' ? d : 'both';
   }
 
   // ---- window chrome (cloned from node-file-manager-inline) ----

@@ -1,0 +1,54 @@
+// Presentational marker create/edit form. Kept flat (no SCSS nesting) so the
+// grid columns apply regardless of how the styles are processed.
+.marker-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0 4px;
+  padding: 8px;
+  background: var(--mat-sys-surface-container);
+  border-radius: 6px;
+}
+
+.marker-form__row {
+  display: grid;
+  align-items: start;
+  gap: 16px;
+}
+
+.marker-form__row--full {
+  grid-template-columns: 1fr;
+}
+
+.marker-form__row--identity {
+  grid-template-columns: 2.5fr 1.5fr 0.9fr;
+}
+
+.marker-form__row--style {
+  grid-template-columns: minmax(7rem, 1.3fr) minmax(6rem, 1fr) minmax(6rem, 1fr) 1fr;
+}
+
+.marker-form__field {
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.marker-form__color {
+  cursor: pointer;
+  block-size: 20px;
+  inline-size: 100%;
+  box-sizing: border-box;
+}
+
+.marker-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  align-self: start;
+  margin-top: 18px;
+}
+
+.marker-form__submit-spinner {
+  // Spinner inside mat-flat-button color="primary": arc matches the on-primary label.
+  --mdc-circular-progress-active-indicator-color: var(--mat-sys-on-primary);
+}
