@@ -351,6 +351,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       if (this.destroyed || !this.isTopologySummaryVisible || this.instance) return;
       this.instance = this.topologySummaryContainer().createComponent(TopologySummaryComponent);
       this.instance.instance.controller = this.controller;
+      this.instance.instance.project = this.project;
+      this.instance.instance.openWebConsoleInline.subscribe((data) => this.onOpenWebConsoleInline(data));
       // In zoneless mode, createComponent doesn't automatically trigger change detection
       // We need to explicitly detect changes to ensure the component is rendered
       this.instance.changeDetectorRef.detectChanges();

@@ -2,9 +2,11 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   Input,
   OnDestroy,
   OnInit,
+  Output,
   inject,
 } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
@@ -25,6 +27,7 @@ import { NodesDataSource } from '../../cartography/datasources/nodes-datasource'
 import { Node } from '../../cartography/models/node';
 import { Compute } from '@models/compute';
 import { Controller } from '@models/controller';
+import { Project } from '@models/project';
 import { ComputeService } from '@services/compute.service';
 import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
@@ -66,6 +69,9 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   private document = inject(DOCUMENT);
 
   @Input() controller: Controller;
+  @Input() project: Project;
+
+  @Output() openWebConsoleInline = new EventEmitter<{ node: Node; controller: Controller; project: Project }>();
 
   private computesInitialized = false;
 
@@ -409,8 +415,14 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   }
 
   canOpenConsole(node: Node | null): boolean {
-    return Boolean(
-      node && node.status === 'started' && (node.console_type === 'telnet' || node.console_type === 'ssh')
+    if (!node || node.status !== 'started') {
+      return false;
+    }
+    return (
+      node.console_type === 'telnet' ||
+      node.console_type === 'ssh' ||
+      node.console_type === 'vnc' ||
+      node.console_type?.startsWith('http') === true
     );
   }
 
@@ -420,6 +432,17 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       this.toasterService.error('To open console please start the node');
       return;
     }
+
+    if (node.console_type === 'vnc' || (node.console_type && node.console_type.startsWith('http'))) {
+      // VNC and HTTP/HTTPS consoles: open an inline web console window in the workspace
+      this.openWebConsoleInline.emit({
+        node,
+        controller: this.controller,
+        project: this.project,
+      });
+      return;
+    }
+
     if (node.console_type !== 'telnet' && node.console_type !== 'ssh') {
       this.toasterService.error(
         `Console type '${node.console_type || 'none'}' is not supported in the embedded console.`

@@ -12,6 +12,7 @@ import { NodeConsoleService } from '@services/nodeConsole.service';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { Compute } from '@models/compute';
 import { Controller } from '@models/controller';
+import { Project } from '@models/project';
 import { TopologySummaryComponent } from './topology-summary.component';
 import { ResizeEvent } from 'angular-resizable-element';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -160,6 +161,28 @@ describe('TopologySummaryComponent', () => {
     show_filters_icon: true,
   };
 
+  const mockProject: Project = {
+    project_id: 'proj1',
+    name: 'Test Project',
+    filename: '',
+    path: '',
+    status: 'opened',
+    created_by: '',
+    auto_start: false,
+    auto_close: false,
+    auto_open: false,
+    scene_height: 1000,
+    scene_width: 1000,
+    show_layers: false,
+    snap_to_grid: false,
+    show_grid: false,
+    grid_size: 75,
+    drawing_grid_size: 25,
+    show_interface_labels: false,
+    variables: [],
+    readonly: false,
+  };
+
   beforeEach(async () => {
     vi.clearAllMocks();
     vi.useFakeTimers();
@@ -237,6 +260,7 @@ describe('TopologySummaryComponent', () => {
     fixture = TestBed.createComponent(TopologySummaryComponent);
     component = fixture.componentInstance;
     component.controller = mockController;
+    component.project = mockProject;
   });
 
   afterEach(() => {
@@ -1050,6 +1074,63 @@ describe('TopologySummaryComponent', () => {
       component.openConsole({ ...mockNode, status: 'stopped', console_type: 'telnet' });
 
       expect(mockToasterService.error).toHaveBeenCalledWith('To open console please start the node');
+      expect(mockNodeConsoleService.openConsoleForNode).not.toHaveBeenCalled();
+    });
+
+    describe('canOpenConsole', () => {
+      it('should allow started vnc nodes', () => {
+        expect(component.canOpenConsole({ ...mockNode, status: 'started', console_type: 'vnc' })).toBe(true);
+      });
+
+      it('should allow started http nodes', () => {
+        expect(component.canOpenConsole({ ...mockNode, status: 'started', console_type: 'http' })).toBe(true);
+      });
+
+      it('should reject stopped vnc nodes', () => {
+        expect(component.canOpenConsole({ ...mockNode, status: 'stopped', console_type: 'vnc' })).toBe(false);
+      });
+
+      it('should reject nodes without a console type', () => {
+        expect(component.canOpenConsole({ ...mockNode, status: 'started', console_type: 'none' })).toBe(false);
+        expect(component.canOpenConsole({ ...mockNode, status: 'started', console_type: '' })).toBe(false);
+      });
+
+      it('should reject a null node', () => {
+        expect(component.canOpenConsole(null)).toBe(false);
+      });
+    });
+
+    it('should emit an inline web console event for a started vnc node', () => {
+      const emitSpy = vi.spyOn(component.openWebConsoleInline, 'emit');
+      const node = { ...mockNode, status: 'started', console_type: 'vnc', console: 5900 };
+
+      component.openConsole(node);
+
+      expect(emitSpy).toHaveBeenCalledWith({ node, controller: mockController, project: mockProject });
+      expect(mockNodeConsoleService.openConsoleForNode).not.toHaveBeenCalled();
+    });
+
+    it('should not open a vnc console for a stopped node', () => {
+      const emitSpy = vi.spyOn(component.openWebConsoleInline, 'emit');
+      component.openConsole({ ...mockNode, status: 'stopped', console_type: 'vnc' });
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('To open console please start the node');
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should emit an inline web console event for an http console node', () => {
+      const emitSpy = vi.spyOn(component.openWebConsoleInline, 'emit');
+      const node = {
+        ...mockNode,
+        status: 'started',
+        console_type: 'https',
+        console_host: '192.168.1.50',
+        console: 8443,
+      };
+
+      component.openConsole(node);
+
+      expect(emitSpy).toHaveBeenCalledWith({ node, controller: mockController, project: mockProject });
       expect(mockNodeConsoleService.openConsoleForNode).not.toHaveBeenCalled();
     });
 
