@@ -64,6 +64,17 @@ export class MarkerFlashService {
   private readonly effectRef: EffectRef;
   /** Previous snapshot for diffing (composite-key → state). */
   private prev = new Map<string, FlashState>();
+  /**
+   * Per-link path-geometry cache. getTotalLength()/getPointAtLength() are sync
+   * reflows whose cost scales with the WHOLE SVG (tens of thousands of elements
+   * on large topologies). Keyed by linkId and invalidated when the path's `d`
+   * attribute changes (node dragged / link redrawn), so repeated flashes of an
+   * unchanged link skip geometry queries entirely → no reflow per flash.
+   */
+  private readonly geoCache = new Map<
+    string,
+    { d: string; len: number; pts: Map<number, { x: number; y: number } | null> }
+  >();
 
   constructor() {
     const destroyRef = inject(DestroyRef);
@@ -74,6 +85,7 @@ export class MarkerFlashService {
       this.prev.clear();
       for (const t of this.timers.values()) clearTimeout(t);
       this.timers.clear();
+      this.geoCache.clear();
     });
   }
 
@@ -185,7 +197,7 @@ export class MarkerFlashService {
     // null → remove inline color so CSS default (var(--mat-sys-primary)) applies.
     path.style('stroke', state.color ?? null);
     const slot = state.dir === 'tx' ? 'tx' : state.dir === 'rx' ? 'rx' : null;
-    this.renderDirArrow(group, path, state, slot);
+    this.renderDirArrow(id, group, path, state, slot);
   }
 
   private clearLink(id: string) {
@@ -197,6 +209,7 @@ export class MarkerFlashService {
       .style('stroke', null);
     // Remove ALL direction arrows (both tx and rx slots).
     group.selectAll('g.marker-arrow-tx, g.marker-arrow-rx').remove();
+    this.geoCache.delete(id);
   }
 
   private selectLinkGroup(id: string) {
@@ -229,6 +242,7 @@ export class MarkerFlashService {
    * capture node can't be matched to an endpoint.
    */
   private renderDirArrow(
+    linkId: string,
     group: Selection<SVGGElement, any, any, any>,
     path: Selection<SVGPathElement, any, any, any>,
     state: FlashState,
@@ -247,14 +261,25 @@ export class MarkerFlashService {
 
     const node = path.node();
     if (!node) return;
-    // jsdom (unit tests) doesn't implement path geometry — bail out quietly there.
-    let len: number;
-    try {
-      len = node.getTotalLength();
-    } catch {
-      return;
+    // Cache geometry by the path's `d`: getTotalLength() is a sync reflow whose
+    // cost scales with the whole SVG, so reuse it while the link geometry is
+    // stable (the common case during a marker flood). When `d` changes (node
+    // dragged / link redrawn) the key mismatches and we recompute. jsdom (unit
+    // tests) doesn't implement path geometry → bail out quietly there.
+    const d = node.getAttribute('d') ?? '';
+    let entry = this.geoCache.get(linkId);
+    if (!entry || entry.d !== d) {
+      let len: number;
+      try {
+        len = node.getTotalLength();
+      } catch {
+        return;
+      }
+      if (!len || !Number.isFinite(len)) return;
+      entry = { d, len, pts: new Map() };
+      this.geoCache.set(linkId, entry);
     }
-    if (!len || !Number.isFinite(len)) return;
+    const len = entry.len;
 
     // Pre-compute the direction offset once for all arrows along this link.
     const angleOffset = MarkerFlashService.arrowPointsAlongPath(state.dir, captureIsSource, captureIsTarget)
@@ -270,9 +295,9 @@ export class MarkerFlashService {
     for (let i = 0; i < count; i++) {
       let at = step * (i + 1);
       if (slot === 'rx') at += step * 0.5;
-      const behind = this.pointAt(node, Math.max(0, at - ARROW_TANGENT_EPS));
-      const ahead = this.pointAt(node, Math.min(len, at + ARROW_TANGENT_EPS));
-      const pos = this.pointAt(node, at);
+      const behind = this.getCachedPt(entry, node, Math.max(0, at - ARROW_TANGENT_EPS));
+      const ahead = this.getCachedPt(entry, node, Math.min(len, at + ARROW_TANGENT_EPS));
+      const pos = this.getCachedPt(entry, node, at);
       if (!behind || !ahead || !pos) continue;
 
       const angle = Math.atan2(ahead.y - behind.y, ahead.x - behind.x) + angleOffset;
@@ -283,6 +308,25 @@ export class MarkerFlashService {
         // null → CSS default (var(--mat-sys-primary)); hex → match the pulse color.
         .style('fill', state.color ?? null);
     }
+  }
+
+  /**
+   * Cached getPointAtLength. Like getTotalLength(), each call is a sync reflow
+   * that scales with the whole SVG, so reuse the result for a stable path.
+   * `at` is rounded to 0.01px for the key (positions are deterministic from the
+   * cached length, so identical across flashes of the same geometry).
+   */
+  private getCachedPt(
+    entry: { pts: Map<number, { x: number; y: number } | null> },
+    node: SVGPathElement,
+    at: number
+  ): { x: number; y: number } | null {
+    const key = Math.round(at * 100);
+    const cached = entry.pts.get(key);
+    if (cached !== undefined) return cached;
+    const pt = this.pointAt(node, at);
+    entry.pts.set(key, pt);
+    return pt;
   }
 
   /** Safe getPointAtLength wrapper (jsdom throws / returns non-finite values). */
