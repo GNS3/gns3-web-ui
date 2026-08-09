@@ -21,7 +21,7 @@ import { ExportPortableProjectComponent } from '@components/export-portable-proj
 import { environment } from 'environments/environment';
 import * as Mousetrap from 'mousetrap';
 import { forkJoin, from, Observable, Subscription } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import * as d3 from 'd3';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
@@ -178,6 +178,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public controller: Controller = {} as Controller;
   public projectws: WebSocket;
   public ws: WebSocket;
+  // Project WS auto-reconnect state. Reconnection is silent (no UI): the canvas
+  // just pauses updates while down, and re-fetches topology on reconnect to
+  // cover events the notification stream does not replay.
+  private projectWsIntentionalClose = false;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private reconnectAttempt = 0;
   public isProjectMapMenuVisible: boolean = false;
   public isConsoleVisible: boolean = true;
   public isTopologySummaryVisible: boolean = true;
@@ -718,50 +724,97 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.readonly = this.projectService.isReadOnly(project);
     this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
 
-    const subscription = this.projectService
-      .nodes(this.controller, project.project_id)
-      .pipe(
-        mergeMap((nodes: Node[]) => {
-          this.nodesDataSource.set(nodes);
-          nodes.filter((n) => n.status === 'started').forEach((n) => this.startedNodeIds.add(n.node_id));
-          return this.projectService.links(this.controller, project.project_id);
-        }),
-        mergeMap((links: Link[]) => {
-          this.linksDataSource.set(links);
-          this.markerRegistryService.rebuildAll(links);
-          return this.projectService.drawings(this.controller, project.project_id);
-        })
-      )
-      .subscribe({
-        next: (drawings: Drawing[]) => {
-          this.drawingsDataSource.set(drawings);
-
-          this.setUpMapCallbacks();
-          this.setUpProjectWS(project);
-
-          this.progressService.deactivate();
-        },
-        error: (err) => {
-          this.toasterService.error('Failed to load project data: ' + (err.error?.message || err.message || 'Unknown error'));
-          this.progressService.deactivate();
-          this.cd.markForCheck();
-        },
-      });
+    const subscription = this.fetchTopologyData(project).subscribe({
+      next: () => {
+        this.setUpMapCallbacks();
+        this.connectProjectWS(project);
+        this.progressService.deactivate();
+      },
+      error: (err) => {
+        this.toasterService.error('Failed to load project data: ' + (err.error?.message || err.message || 'Unknown error'));
+        this.progressService.deactivate();
+        this.cd.markForCheck();
+      },
+    });
     this.projectMapSubscription.add(subscription);
   }
 
-  setUpProjectWS(project: Project) {
+  /**
+   * Fetch nodes/links/drawings and push them into the datasources (also
+   * rebuilding the marker registry). Used both for the initial load and for
+   * re-syncing after the project WebSocket reconnects — the notification stream
+   * does not replay events missed while disconnected, so a reconnect must
+   * re-fetch to make the canvas match backend reality again.
+   */
+  private fetchTopologyData(project: Project) {
+    return this.projectService.nodes(this.controller, project.project_id).pipe(
+      tap((nodes: Node[]) => {
+        this.nodesDataSource.set(nodes);
+        nodes.filter((n) => n.status === 'started').forEach((n) => this.startedNodeIds.add(n.node_id));
+      }),
+      mergeMap(() => this.projectService.links(this.controller, project.project_id)),
+      tap((links: Link[]) => {
+        this.linksDataSource.set(links);
+        this.markerRegistryService.rebuildAll(links);
+      }),
+      mergeMap(() => this.projectService.drawings(this.controller, project.project_id)),
+      tap((drawings: Drawing[]) => {
+        this.drawingsDataSource.set(drawings);
+      })
+    );
+  }
+
+  /**
+   * Open (or reopen) the project notifications WebSocket. On an unexpected
+   * close the connection is silently reconnected with exponential backoff; on
+   * a successful reconnect the topology is re-fetched to cover any events
+   * missed while disconnected. ngOnDestroy sets projectWsIntentionalClose to
+   * stop the loop during teardown.
+   */
+  private connectProjectWS(project: Project) {
     this.projectws = new WebSocket(
       this.notificationService.projectNotificationsPath(this.controller, project.project_id)
     );
+
+    this.projectws.onopen = () => {
+      // Reconnect (attempt > 0): re-fetch topology to cover missed events.
+      // First connect (attempt 0): data was just loaded by onProjectLoad.
+      if (this.reconnectAttempt > 0) {
+        this.projectMapSubscription.add(
+          this.fetchTopologyData(project).subscribe({
+            error: (err) => {
+              console.warn('Topology resync after WS reconnect failed', err);
+            },
+          })
+        );
+      }
+      this.reconnectAttempt = 0;
+    };
 
     this.projectws.onmessage = (event: MessageEvent) => {
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
     };
 
-    this.projectws.onerror = (event: MessageEvent) => {
-      this.toasterService.error(`Connection to host lost. Error: ${event.data}`);
+    this.projectws.onclose = () => {
+      if (this.projectWsIntentionalClose) return;
+      this.scheduleReconnect(project);
     };
+
+    this.projectws.onerror = () => {
+      // onclose follows and drives the reconnect; no user-facing notice
+      // (silent reconnect). Log for debugging.
+      console.warn('Project notifications WebSocket error; will reconnect');
+    };
+  }
+
+  private scheduleReconnect(project: Project) {
+    if (this.projectWsIntentionalClose) return;
+    const attempt = this.reconnectAttempt++;
+    // Exponential backoff capped at 30s, +up to 25% jitter to avoid reconnect
+    // storms when many clients drop simultaneously.
+    const base = Math.min(30000, 1000 * 2 ** attempt);
+    const delay = Math.round(base + Math.random() * 0.25 * base);
+    this.reconnectTimer = setTimeout(() => this.connectProjectWS(project), delay);
   }
 
   setUpWS() {
@@ -1773,6 +1826,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.drawingsDataSource.clear();
     this.nodesDataSource.clear();
     this.linksDataSource.clear();
+
+    // Stop the project WS auto-reconnect loop during teardown: set the flag so
+    // the onclose handler (fired by close() below) does not schedule a reconnect.
+    this.projectWsIntentionalClose = true;
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
 
     if (this.projectws) {
       if (this.projectws.OPEN) this.projectws.close();
