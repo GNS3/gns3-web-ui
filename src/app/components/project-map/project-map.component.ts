@@ -171,8 +171,8 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
   public nodes = signal<Node[]>([]);
-  public links: Link[] = [];
-  public drawings: Drawing[] = [];
+  public links = signal<Link[]>([]);
+  public drawings = signal<Drawing[]>([]);
   public symbols: Symbol[] = [];
   public project: Project = {} as Project;
   public controller: Controller = {} as Controller;
@@ -372,7 +372,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   addSubscriptions() {
     this.projectMapSubscription.add(
       this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
-        this.drawings = drawings;
+        this.drawings.set(drawings);
         this.mapChangeDetectorRef.detectChanges();
       })
     );
@@ -453,7 +453,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.projectMapSubscription.add(
       this.linksDataSource.changes.subscribe((links: Link[]) => {
-        this.links = links;
+        this.links.set(links);
         this.mapChangeDetectorRef.detectChanges();
       })
     );
@@ -849,7 +849,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const onInterfaceLabelContextMenu = this.interfaceLabelWidget.onContextMenu.subscribe(
       (eventInterfaceLabel: InterfaceLabelContextMenu) => {
         const linkNode = this.mapLinkNodeToLinkNode.convert(eventInterfaceLabel.interfaceLabel);
-        const link = this.links.find((l) => l.link_id === eventInterfaceLabel.interfaceLabel.linkId);
+        const link = this.links().find((l) => l.link_id === eventInterfaceLabel.interfaceLabel.linkId);
         this.contextMenu().openMenuForInterfaceLabel(
           linkNode,
           link,

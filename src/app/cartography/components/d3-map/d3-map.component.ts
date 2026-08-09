@@ -84,6 +84,11 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   private onChangesDetected: Subscription;
   private subscriptions: Subscription[] = [];
   private drawLinkTool: boolean;
+  // Pending requestAnimationFrame id for the coalesced redraw. All redraw
+  // triggers funnel through scheduleRedraw(), guaranteeing at most one full
+  // redraw per frame regardless of how many WS notifications / zoom events /
+  // signal writes fire in between.
+  private rafId: number | null = null;
   protected settings = {
     show_interface_labels: true,
   };
@@ -117,6 +122,20 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       if (project && this.mapChangeDetectorRef.hasBeenDrawn) {
         this.updateGrid();
         this.mapChangeDetectorRef.detectChanges();
+      }
+    });
+
+    // Signal-driven data -> redraw. Reading the input signals here registers
+    // them as effect dependencies, so any nodes/links/drawings change schedules
+    // a single coalesced redraw (see scheduleRedraw). This replaces the old
+    // reliance on mapChangeDetectorRef + setTimeout for propagating zoneless
+    // signal inputs: inside an effect the inputs are already fresh.
+    effect(() => {
+      this.nodes();
+      this.links();
+      this.drawings();
+      if (this.mapChangeDetectorRef.hasBeenDrawn) {
+        this.scheduleRedraw();
       }
     });
   }
@@ -153,12 +172,11 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
+    // nodes/links/drawings changes are handled by the signal-driven effect in
+    // the constructor; only width/height/symbols still need ngOnChanges.
     if (
       (changes['width'] && !changes['width'].isFirstChange()) ||
       (changes['height'] && !changes['height'].isFirstChange()) ||
-      (changes['drawings'] && !changes['drawings'].isFirstChange()) ||
-      (changes['nodes'] && !changes['nodes'].isFirstChange()) ||
-      (changes['links'] && !changes['links'].isFirstChange()) ||
       (changes['symbols'] && !changes['symbols'].isFirstChange())
     ) {
       if (this.svg.empty && !this.svg.empty()) {
@@ -184,10 +202,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.onChangesDetected = this.mapChangeDetectorRef.changesDetected.subscribe(() => {
       if (this.mapChangeDetectorRef.hasBeenDrawn) {
-        // Defer redraw so Angular propagates signal inputs (nodes/links/drawings)
-        // before D3 reads them. Without this, redraw() reads stale empty arrays
-        // because zoneless change detection hasn't propagated inputs yet.
-        setTimeout(() => this.redraw());
+        this.scheduleRedraw();
       }
     });
 
@@ -199,7 +214,9 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       })
     );
 
-    this.subscriptions.push(this.mapScaleService.scaleChangeEmitter.subscribe((value: number) => this.redraw()));
+    this.subscriptions.push(
+      this.mapScaleService.scaleChangeEmitter.subscribe((value: number) => this.scheduleRedraw())
+    );
 
     this.subscriptions.push(
       this.toolsService.isMovingToolActivated.subscribe((value: boolean) => {
@@ -279,6 +296,10 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
     this.graphLayout.disconnect(this.svg);
     this.onChangesDetected.unsubscribe();
     this.subscriptions.forEach((subscription: Subscription) => {
@@ -287,7 +308,20 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public applyMapSettingsChanges() {
-    this.redraw();
+    this.scheduleRedraw();
+  }
+
+  // Coalesce redraw requests to at most one per animation frame. Every
+  // trigger (signal-driven data change via effect, changesDetected, zoom,
+  // resize, map settings) calls this instead of redraw() directly.
+  private scheduleRedraw() {
+    if (this.rafId !== null) {
+      return;
+    }
+    this.rafId = requestAnimationFrame(() => {
+      this.rafId = null;
+      this.redraw();
+    });
   }
 
   public createGraph(domElement: HTMLElement) {
@@ -354,11 +388,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private changeLayout() {
-    if (this.parentNativeElement != null) {
-      this.context.size = this.getSize();
-    }
-
-    this.redraw();
+    this.scheduleRedraw();
   }
 
   private onSymbolsChange(change: SimpleChange) {

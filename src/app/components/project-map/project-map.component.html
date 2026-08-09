@@ -163,8 +163,8 @@
     [project]="project"
     [symbols]="symbols"
     [nodes]="nodes()"
-    [links]="links"
-    [drawings]="drawings"
+    [links]="links()"
+    [drawings]="drawings()"
     [width]="project.scene_width || 2000"
     [height]="project.scene_height || 2000"
     [show-interface-labels]="isInterfaceLabelVisible"
@@ -272,7 +272,7 @@
 
   <app-progress></app-progress>
   @if (tools.draw_link) {
-  <app-draw-link-tool [links]="links"></app-draw-link-tool>
+  <app-draw-link-tool [links]="links()"></app-draw-link-tool>
   }
   <app-drawing-dragged [controller]="controller" [project]="project"></app-drawing-dragged>
   <app-drawing-resized [controller]="controller"></app-drawing-resized>

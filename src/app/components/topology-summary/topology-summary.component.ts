@@ -81,17 +81,17 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       : (this.isLightThemeEnabled = false);
     this.subscriptions.push(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
-        this.nodes = nodes;
-        this.nodes.forEach((n) => {
+        // Copy before sorting so we don't reorder the datasource's shared
+        // internal array (other subscribers receive the same reference).
+        const localNodes = [...nodes];
+        this.nodes = localNodes;
+        localNodes.forEach((n) => {
           if (n.console_host === '0.0.0.0' || n.console_host === '0:0:0:0:0:0:0:0' || n.console_host === '::') {
             n.console_host = this.controller?.host;
           }
         });
-        if (this.sortingOrder === 'asc') {
-          this.filteredNodes = nodes.sort(this.compareAsc);
-        } else {
-          this.filteredNodes = nodes.sort(this.compareDesc);
-        }
+        this.filteredNodes =
+          this.sortingOrder === 'asc' ? localNodes.sort(this.compareAsc) : localNodes.sort(this.compareDesc);
         // In zoneless mode, we need to mark for check after async updates
         this.cd.markForCheck();
       })
