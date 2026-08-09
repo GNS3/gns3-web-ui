@@ -164,7 +164,7 @@ describe('DeleteActionComponent', () => {
   });
 
   describe('delete() - nodes', () => {
-    it('should remove non-locked nodes from nodesDataSource', () => {
+    it('should NOT remove non-locked nodes locally (canvas removal is WS-driven)', () => {
       const node = createMockNode({ locked: false });
       fixture.componentRef.setInput('nodes', [node]);
       fixture.componentRef.setInput('drawings', []);
@@ -173,7 +173,7 @@ describe('DeleteActionComponent', () => {
 
       component.delete();
 
-      expect(mockNodesDataSource.remove).toHaveBeenCalledWith(node);
+      expect(mockNodesDataSource.remove).not.toHaveBeenCalled();
     });
 
     it('should call nodeService.delete() for non-locked nodes', () => {
@@ -207,15 +207,16 @@ describe('DeleteActionComponent', () => {
       fixture.componentRef.setInput('nodes', [node]);
       fixture.componentRef.setInput('drawings', []);
       fixture.componentRef.setInput('links', []);
+      fixture.componentRef.setInput('controller', mockController);
 
       component.delete();
 
-      expect(mockNodesDataSource.remove).toHaveBeenCalled();
+      expect(mockNodeService.delete).toHaveBeenCalledWith(mockController, node);
     });
   });
 
   describe('delete() - drawings', () => {
-    it('should remove non-locked drawings from drawingsDataSource', () => {
+    it('should NOT remove non-locked drawings locally (canvas removal is WS-driven)', () => {
       const drawing = createMockDrawing({ locked: false });
       fixture.componentRef.setInput('nodes', []);
       fixture.componentRef.setInput('drawings', [drawing]);
@@ -224,7 +225,7 @@ describe('DeleteActionComponent', () => {
 
       component.delete();
 
-      expect(mockDrawingsDataSource.remove).toHaveBeenCalledWith(drawing);
+      expect(mockDrawingsDataSource.remove).not.toHaveBeenCalled();
     });
 
     it('should call drawingService.delete() for non-locked drawings', () => {
@@ -264,7 +265,7 @@ describe('DeleteActionComponent', () => {
 
       component.delete();
 
-      expect(mockLinksDataSource.remove).toHaveBeenCalledWith(link);
+      expect(mockLinksDataSource.remove).not.toHaveBeenCalled();
       expect(mockLinkService.deleteLink).toHaveBeenCalledWith(mockController, link);
     });
 
@@ -321,8 +322,8 @@ describe('DeleteActionComponent', () => {
 
       component.delete();
 
-      expect(mockNodesDataSource.remove).toHaveBeenCalledWith(node);
-      expect(mockDrawingsDataSource.remove).toHaveBeenCalledWith(drawing);
+      expect(mockNodeService.delete).toHaveBeenCalledWith(mockController, node);
+      expect(mockDrawingService.delete).toHaveBeenCalledWith(mockController, drawing);
       expect(mockLinksDataSource.remove).not.toHaveBeenCalled();
     });
 
@@ -337,7 +338,7 @@ describe('DeleteActionComponent', () => {
       component.delete();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Cannot delete locked node: Locked');
-      expect(mockNodesDataSource.remove).toHaveBeenCalledWith(unlockedNode);
+      expect(mockNodesDataSource.remove).not.toHaveBeenCalled();
       expect(mockNodeService.delete).toHaveBeenCalledWith(mockController, unlockedNode);
     });
   });
