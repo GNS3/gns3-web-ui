@@ -52,7 +52,10 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
       canvas.attr('transform', () => {
         const oldK = this.context.transformation.k;
         if (!oldK || isNaN(oldK)) return;
-        const newK = Math.max(0.01, oldK - zoom / 10);
+        // Proportional zoom: each wheel notch multiplies k by ~exp(∓0.1), so the
+        // step feels uniform at every zoom level. (The old absolute −zoom/10
+        // step made one notch a 50%+ jump when zoomed far out.)
+        const newK = Math.max(0.01, oldK * Math.exp(-zoom / 10));
 
         // Cursor-centered zoom: keep the canvas point under the cursor fixed.
         // That canvas point is (svg cursor - origin - pan) / k.
