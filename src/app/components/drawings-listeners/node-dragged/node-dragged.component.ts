@@ -8,6 +8,7 @@ import { Node } from '../../../cartography/models/node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
+import { MapChangeDetectorRef } from '../../../cartography/services/map-change-detector-ref';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
@@ -25,6 +26,7 @@ export class NodeDraggedComponent implements OnInit, OnDestroy {
   private nodesDataSource = inject(NodesDataSource);
   private nodeService = inject(NodeService);
   private nodesEventSource = inject(NodesEventSource);
+  private mapChangeDetectorRef = inject(MapChangeDetectorRef);
   private toasterService = inject(ToasterService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -42,6 +44,11 @@ export class NodeDraggedComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (controllerNode: Node) => {
           this.nodesDataSource.update(controllerNode);
+          // Force an un-gated redraw to correct the DOM (see drawing-dragged for
+          // rationale): snap is computed at drag end, and if it lands on the same
+          // grid point the signature is unchanged → gated redraw skips → DOM stays
+          // at the cursor. detectChanges() → scheduleRedraw() (un-gated).
+          this.mapChangeDetectorRef.detectChanges();
         },
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to update node position';
