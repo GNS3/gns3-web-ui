@@ -94,6 +94,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   private lastNodeSig = '';
   private lastLinkSig = '';
   private lastDrawSig = '';
+  private lastViewSig = '';
   protected settings = {
     show_interface_labels: true,
   };
@@ -409,15 +410,31 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     // flood of non-visual updates — e.g. per-def marker config fanning out
     // link.updated that only changes `markers`, or node.updated that only
     // changes console/properties/command_line — from re-rendering the whole map.
+    // `viewSig` covers render-affecting state that isn't the data itself: zoom
+    // scale, viewport size (resize), and the interface-labels toggle.
     const nodeSig = this.signatureOfNodes(this.nodes());
     const linkSig = this.signatureOfLinks(this.links());
     const drawSig = this.signatureOfDrawings(this.drawings());
-    if (nodeSig === this.lastNodeSig && linkSig === this.lastLinkSig && drawSig === this.lastDrawSig) {
+    const viewSig =
+      this.context.transformation.k +
+      '|' +
+      document.documentElement.clientWidth +
+      '|' +
+      document.documentElement.clientHeight +
+      '|' +
+      this.settings.show_interface_labels;
+    if (
+      nodeSig === this.lastNodeSig &&
+      linkSig === this.lastLinkSig &&
+      drawSig === this.lastDrawSig &&
+      viewSig === this.lastViewSig
+    ) {
       return;
     }
     this.lastNodeSig = nodeSig;
     this.lastLinkSig = linkSig;
     this.lastDrawSig = drawSig;
+    this.lastViewSig = viewSig;
 
     this.graphDataManager.setNodes(this.nodes());
     this.graphDataManager.setLinks(this.links());
