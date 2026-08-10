@@ -38,6 +38,10 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
   addListener() {
     this.wheelListener = (event: WheelEvent) => {
       event.stopPropagation();
+      // In pan mode the wheel means zoom — stop the browser from ALSO scrolling
+      // the page (which requires a non-passive listener; passive:true can't
+      // preventDefault).
+      event.preventDefault();
 
       let zoom = event.deltaY;
       zoom = event.deltaMode === 0 ? zoom / 100 : zoom / 3;
@@ -57,9 +61,10 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
       });
     };
 
-    // Use passive: true since we're using CSS to prevent default zoom
+    // Non-passive so preventDefault() can stop the page from scrolling while
+    // zooming. touch-action: none in ngOnInit handles touch pinch-zoom.
     this.element.nativeElement.addEventListener('wheel', this.wheelListener as EventListenerOrEventListenerObject, {
-      passive: true,
+      passive: false,
     });
   }
 
