@@ -232,14 +232,17 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.subscriptions.push(
       this.toolsService.isMovingToolActivated.subscribe((value: boolean) => {
         this.movingToolWidget.setEnabled(value);
-        this.mapChangeDetectorRef.detectChanges();
+        // Apply the drag-binding change directly via the tool's draw() — a tool
+        // switch changes no rendering, so a full redraw is pure waste (and is
+        // very slow with thousands of nodes).
+        this.movingToolWidget.draw(this.svg, this.context);
       })
     );
 
     this.subscriptions.push(
       this.toolsService.isSelectionToolActivated.subscribe((value: boolean) => {
         this.selectionToolWidget.setEnabled(value);
-        this.mapChangeDetectorRef.detectChanges();
+        this.selectionToolWidget.draw(this.svg, this.context);
       })
     );
 
