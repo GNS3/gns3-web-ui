@@ -157,20 +157,30 @@
     </mat-menu>
   </div>
 
-  <!-- Project toolbar -->
-  <app-d3-map
-    [controller]="controller"
-    [project]="project"
-    [symbols]="symbols"
-    [nodes]="nodes()"
-    [links]="links()"
-    [drawings]="drawings()"
-    [width]="project.scene_width || 2000"
-    [height]="project.scene_height || 2000"
-    [show-interface-labels]="isInterfaceLabelVisible"
-    [readonly]="inReadOnlyMode"
-  >
-  </app-d3-map>
+  <!-- Render the map only after the project + controller data has resolved.
+       project/controller start as empty shells ({} as Project/Controller) and are
+       filled asynchronously by getData()'s HTTP chain. If d3-map instantiates
+       before that, createGraph + the first effect redraw lock the canvas origin
+       (centerX/Y) to the fallback scene size (width()/2) — and origin never
+       updates afterwards, so every open landed in a different spot depending on
+       whether the HTTP beat the first redraw. Gating on project_id makes the
+       first render use the real scene_width/height, anchoring origin correctly
+       once and for all. -->
+  @if (controller.id && project.project_id) {
+    <app-d3-map
+      [controller]="controller"
+      [project]="project"
+      [symbols]="symbols"
+      [nodes]="nodes()"
+      [links]="links()"
+      [drawings]="drawings()"
+      [width]="project.scene_width || 2000"
+      [height]="project.scene_height || 1000"
+      [show-interface-labels]="isInterfaceLabelVisible"
+      [readonly]="inReadOnlyMode"
+    >
+    </app-d3-map>
+  }
 
   <!-- Project toolbar -->
   <div id="project-toolbar">

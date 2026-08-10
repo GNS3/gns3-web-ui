@@ -347,6 +347,20 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   public createGraph(domElement: HTMLElement) {
     const rootElement = select(domElement);
     this.svg = rootElement.select<SVGSVGElement>('svg');
+    // Context is an app-lifetime singleton (provided in the eager
+    // CartographyModule), so its transformation (pan/scale), centerX/Y and size
+    // PERSIST across project open/close. Reset to a clean state here so every
+    // entry starts identically; redraw() then anchors the origin to the content
+    // center (getSize() leftSpace) from scratch.
+    this.context.transformation.x = 0;
+    this.context.transformation.y = 0;
+    this.context.transformation.k = 1;
+    this.context.centerX = null;
+    this.context.centerY = null;
+    this.context.size = new Size(0, 0);
+    this.lastNodeSig = '';
+    this.lastLinkSig = '';
+    this.lastDrawSig = '';
     this.graphLayout.connect(this.svg, this.context);
     this.graphLayout.draw(this.svg, this.context);
     this.mapChangeDetectorRef.hasBeenDrawn = true;
@@ -452,16 +466,20 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     // Recalculate after setNodes/Drawings so graphDataManager has current positions.
     this.context.size = this.getSize();
 
-    // Restore origin to prevent visual canvas shifting. The size is updated to
-    // accommodate new content, but the <g> transform origin stays stable so
-    // existing elements don't jump (same pattern as node-drag locking).
-    // The saved value starts null, and restoring null made the origin size/2 —
-    // which MOVES whenever the canvas resizes (e.g. during zoom), breaking
-    // cursor-centered zoom and shifting content. Fix the origin once, at the
-    // center of the project canvas (scene_width/2, scene_height/2 — defaults
-    // 2000x1000), so every open is deterministic and the zoom anchor holds.
-    this.context.centerX = savedCenterX ?? this.width() / 2;
-    this.context.centerY = savedCenterY ?? this.height() / 2;
+    // Origin anchor. On the FIRST redraw savedCenterX is null (createGraph
+    // reset), so adopt getSize()'s freshly-computed leftSpace/topSpace — the
+    // content-centered origin — rather than width()/2 (scene center). Scene
+    // center leaves content off-center whenever the content bbox ≠ scene center.
+    // Worse: the ngOnInit getSize() (:206) reads the app-singleton
+    // graphDataManager BEFORE this redraw's setNodes clears it, so the old
+    // width()/2 fallback anchored the first visit at scene center (off-center)
+    // while a re-visit — with leftover graphDataManager data — accidentally
+    // anchored at the previous content center. That was the "first open wrong,
+    // re-open right" symptom. Anchoring to the current getSize() result removes
+    // the dependency on leftover state and centers content on every open.
+    // On later redraws savedCenterX is non-null and stays locked (drag-lock).
+    this.context.centerX = savedCenterX ?? this.context.centerX;
+    this.context.centerY = savedCenterY ?? this.context.centerY;
 
     this.graphLayout.draw(this.svg, this.context);
     this.textEditor().activateTextEditingForDrawings();
