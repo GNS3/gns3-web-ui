@@ -40,9 +40,12 @@ let _seq = 0;
  * carries a direction (`dir`) — draws evenly-spaced arrows (鱼鳞) along the link
  * pointing toward the traffic receiver.
  *
- * State is a signal of composite-key → FlashState.  On each `flash(...)`:
- *   - the entry for that (linkId, dir) slot is (re)added
- *   - a per-slot timer is (re)set (同方向续命, 不同方向独立过期)
+ * State is a signal of composite-key → FlashState.  `flash(...)` only stages
+ * the (linkId, dir) slot into a per-frame buffer (last-write-wins); a
+ * requestAnimationFrame flush applies the whole frame's changes in ONE signal
+ * update and renews each slot's timer once (同方向续命, 不同方向独立过期).
+ * This decouples cost from the marker.match rate — N thousand matches/sec still
+ * process at ~60 flushes/sec.
  *
  * An `effect()` diffs the new map against the previous one and mutates ONLY the
  * changed link's DOM.  When a slot expires but another direction is still active
@@ -75,11 +78,30 @@ export class MarkerFlashService {
     string,
     { d: string; len: number; pts: Map<number, { x: number; y: number } | null> }
   >();
+  /**
+   * Per-frame batching buffer (composite-key → {state, ms}). `flash()` stages
+   * here (last-write-wins, O(1)) and schedules a single rAF flush; the flush
+   * applies all of the frame's changes in ONE signal update and renews timers
+   * once per key. This decouples cost from the marker.match rate — 25k
+   * matches/sec still → ~60 flushes/sec — and collapses repeated matches on the
+   * same (linkId,dir) within a frame to one entry.
+   */
+  private pending = new Map<string, { state: FlashState; ms: number }>();
+  /** Pending requestAnimationFrame id for the batch flush. */
+  private flushRaf: number | null = null;
+  /** Whether a flush is already scheduled (guard independent of the rAF id). */
+  private flushScheduled = false;
 
   constructor() {
     const destroyRef = inject(DestroyRef);
     this.effectRef = effect(() => this.applyDiff(this._flashing()));
     destroyRef.onDestroy(() => {
+      if (this.flushRaf !== null) {
+        cancelAnimationFrame(this.flushRaf);
+        this.flushRaf = null;
+      }
+      this.flushScheduled = false;
+      this.pending.clear();
       this.effectRef.destroy();
       for (const key of [...this.prev.keys()]) this.clearLink(linkIdOf(key));
       this.prev.clear();
@@ -111,25 +133,56 @@ export class MarkerFlashService {
   ) {
     const key = compKey(linkId, dir);
     const ms = durationMs && durationMs > 0 ? durationMs : this.DEFAULT_FLASH_MS;
-    clearTimeout(this.timers.get(key));
-    this.timers.set(key, setTimeout(() => this.expire(key), ms));
+    // Stage in the per-frame buffer (last-write-wins per key) and schedule a
+    // single flush. Avoids a full Map copy + signal update + effect per match;
+    // cost is decoupled from the marker.match rate.
+    this.pending.set(key, { state: { color, dir, captureNodeId, _seq: _seq++ }, ms });
+    this.scheduleFlush();
+  }
 
-    // Same-state guard: under heavy traffic (e.g. ping -f),
-    // repeated matches with identical color / direction / capture node
-    // only extend the timer — no Map copy, no signal update, no effect.
-    // Without this, every match copies the Map and fires the full diff
-    // pipeline even though the DOM is unchanged; the churn leaks into
-    // GC pressure and browser memory climbs.
-    const existing = this._flashing().get(key);
-    if (existing && existing.color === color && existing.dir === dir && existing.captureNodeId === captureNodeId) {
-      return;
+  private scheduleFlush() {
+    if (this.flushScheduled) return;
+    this.flushScheduled = true;
+    this.flushRaf = requestAnimationFrame(() => {
+      this.flushScheduled = false;
+      this.flushRaf = null;
+      this.flush();
+    });
+  }
+
+  /**
+   * Apply one frame's worth of staged flashes in a single signal update and
+   * renew each affected slot's timer once. Same (linkId,dir) repeated within the
+   * frame already collapsed to one entry in `pending`; here we additionally skip
+   * the signal update entirely when no staged state actually differs from the
+   * current one (so steady repeated matches cost only timer renewals).
+   */
+  private flush() {
+    if (this.pending.size === 0) return;
+    const updates = this.pending;
+    this.pending = new Map();
+    // Renew each slot's timer once per frame (续命).
+    for (const [key, { ms }] of updates) {
+      clearTimeout(this.timers.get(key));
+      this.timers.set(key, setTimeout(() => this.expire(key), ms));
     }
-
-    const state: FlashState = { color, dir, captureNodeId, _seq: _seq++ };
+    // Apply state changes in ONE Map copy; if nothing actually changed, return
+    // the same ref so the signal does not fire and the effect does not run.
     this._flashing.update((m) => {
-      const next = new Map(m);
-      next.set(key, state);
-      return next;
+      let next: Map<string, FlashState> | null = null;
+      for (const [key, { state }] of updates) {
+        const cur = m.get(key);
+        if (
+          !cur ||
+          cur.color !== state.color ||
+          cur.dir !== state.dir ||
+          cur.captureNodeId !== state.captureNodeId
+        ) {
+          if (next === null) next = new Map(m);
+          next.set(key, state);
+        }
+      }
+      return next ?? m;
     });
   }
 
