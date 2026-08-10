@@ -184,6 +184,17 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private projectWsIntentionalClose = false;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempt = 0;
+  /**
+   * Liveness check. The backend pushes a ping on the notification stream every
+   * ~5s, so a healthy connection always has inbound traffic. If nothing arrives
+   * for WS_LIVENESS_TIMEOUT_MS (tolerates a couple of missed pings) the TCP
+   * connection is presumed half-open — onclose would never fire on its own, so
+   * we force-close to enter the normal reconnect path.
+   */
+  private readonly WS_LIVENESS_TIMEOUT_MS = 15000;
+  private readonly WS_LIVENESS_CHECK_MS = 5000;
+  private lastWsMessageAt = 0;
+  private livenessTimer: ReturnType<typeof setInterval> | null = null;
   public isProjectMapMenuVisible: boolean = false;
   public isConsoleVisible: boolean = true;
   public isTopologySummaryVisible: boolean = true;
@@ -789,13 +800,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         );
       }
       this.reconnectAttempt = 0;
+      this.startLivenessCheck();
     };
 
     this.projectws.onmessage = (event: MessageEvent) => {
+      // Any inbound frame (incl. the periodic ping) proves the connection is
+      // alive — stamp it for the liveness check before dispatching.
+      this.lastWsMessageAt = Date.now();
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
     };
 
     this.projectws.onclose = () => {
+      this.stopLivenessCheck();
       if (this.projectWsIntentionalClose) return;
       this.scheduleReconnect(project);
     };
@@ -815,6 +831,25 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const base = Math.min(30000, 1000 * 2 ** attempt);
     const delay = Math.round(base + Math.random() * 0.25 * base);
     this.reconnectTimer = setTimeout(() => this.connectProjectWS(project), delay);
+  }
+
+  private startLivenessCheck() {
+    this.stopLivenessCheck();
+    this.lastWsMessageAt = Date.now();
+    this.livenessTimer = setInterval(() => {
+      if (Date.now() - this.lastWsMessageAt > this.WS_LIVENESS_TIMEOUT_MS) {
+        console.warn('Project WS liveness timeout — no message received, forcing reconnect');
+        this.stopLivenessCheck();
+        this.projectws?.close(); // triggers onclose → scheduleReconnect
+      }
+    }, this.WS_LIVENESS_CHECK_MS);
+  }
+
+  private stopLivenessCheck() {
+    if (this.livenessTimer !== null) {
+      clearInterval(this.livenessTimer);
+      this.livenessTimer = null;
+    }
   }
 
   setUpWS() {
@@ -1834,6 +1869,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
+    this.stopLivenessCheck();
 
     if (this.projectws) {
       if (this.projectws.OPEN) this.projectws.close();
