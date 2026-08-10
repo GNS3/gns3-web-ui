@@ -455,12 +455,13 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     // Restore origin to prevent visual canvas shifting. The size is updated to
     // accommodate new content, but the <g> transform origin stays stable so
     // existing elements don't jump (same pattern as node-drag locking).
-    // The saved value starts null (empty canvas at ngOnInit), and restoring null
-    // made the origin size/2 — which MOVES whenever the canvas resizes (e.g.
-    // during zoom), breaking cursor-centered zoom and shifting content. Fix the
-    // origin to the computed value on the first draw with content instead.
-    this.context.centerX = savedCenterX ?? this.context.centerX;
-    this.context.centerY = savedCenterY ?? this.context.centerY;
+    // The saved value starts null, and restoring null made the origin size/2 —
+    // which MOVES whenever the canvas resizes (e.g. during zoom), breaking
+    // cursor-centered zoom and shifting content. Fix the origin once, at the
+    // center of the project canvas (scene_width/2, scene_height/2 — defaults
+    // 2000x1000), so every open is deterministic and the zoom anchor holds.
+    this.context.centerX = savedCenterX ?? this.width() / 2;
+    this.context.centerY = savedCenterY ?? this.height() / 2;
 
     this.graphLayout.draw(this.svg, this.context);
     this.textEditor().activateTextEditingForDrawings();
