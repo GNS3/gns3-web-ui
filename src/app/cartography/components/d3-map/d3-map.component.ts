@@ -89,6 +89,11 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   // redraw per frame regardless of how many WS notifications / zoom events /
   // signal writes fire in between.
   private rafId: number | null = null;
+  // Visual signatures of the last-drawn nodes/links/drawings (only
+  // canvas-rendered fields). redraw() skips the full draw when none changed.
+  private lastNodeSig = '';
+  private lastLinkSig = '';
+  private lastDrawSig = '';
   protected settings = {
     show_interface_labels: true,
   };
@@ -398,6 +403,22 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   private redraw() {
     this.updateGrid();
 
+    // Visual-signature gate: skip the expensive full draw (graphDataManager
+    // conversion + D3 data-join + getBBox/getTotalLength reflows) when no
+    // canvas-rendered field changed since the last draw. This is what stops a
+    // flood of non-visual updates — e.g. per-def marker config fanning out
+    // link.updated that only changes `markers`, or node.updated that only
+    // changes console/properties/command_line — from re-rendering the whole map.
+    const nodeSig = this.signatureOfNodes(this.nodes());
+    const linkSig = this.signatureOfLinks(this.links());
+    const drawSig = this.signatureOfDrawings(this.drawings());
+    if (nodeSig === this.lastNodeSig && linkSig === this.lastLinkSig && drawSig === this.lastDrawSig) {
+      return;
+    }
+    this.lastNodeSig = nodeSig;
+    this.lastLinkSig = linkSig;
+    this.lastDrawSig = drawSig;
+
     this.graphDataManager.setNodes(this.nodes());
     this.graphDataManager.setLinks(this.links());
     this.graphDataManager.setDrawings(this.drawings());
@@ -445,5 +466,95 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.changeLayout();
+  }
+
+  /**
+   * Signature of the canvas-rendered fields of all nodes. Excludes non-visual
+   * fields (console*, command_line, node_directory, compute_id, properties,
+   * usage) so that e.g. a startup node.updated changing only console/properties
+   * does not re-render the map.
+   */
+  private signatureOfNodes(nodes: Node[]): string {
+    let s = '';
+    for (const n of nodes) {
+      s +=
+        n.node_id +
+        '|' +
+        n.x +
+        '|' +
+        n.y +
+        '|' +
+        n.z +
+        '|' +
+        n.symbol +
+        '|' +
+        n.symbol_url +
+        '|' +
+        n.width +
+        '|' +
+        n.height +
+        '|' +
+        n.status +
+        '|' +
+        n.locked +
+        '|' +
+        n.name +
+        '|' +
+        n.node_type +
+        '|' +
+        n.first_port_name +
+        '|' +
+        n.port_name_format +
+        '|' +
+        n.port_segment_size +
+        '|' +
+        JSON.stringify(n.label) +
+        '|' +
+        JSON.stringify(n.ports) +
+        '§';
+    }
+    return s;
+  }
+
+  /**
+   * Signature of the canvas-rendered fields of all links. `markers` is
+   * intentionally excluded: configuring a per-def marker fans out link.updated
+   * that changes only `markers` (which the link widget does not render — marker
+   * highlights are drawn separately by MarkerFlashService), so it must not
+   * trigger a map redraw.
+   */
+  private signatureOfLinks(links: Link[]): string {
+    let s = '';
+    for (const l of links) {
+      s +=
+        l.link_id +
+        '|' +
+        l.capturing +
+        '|' +
+        l.suspend +
+        '|' +
+        l.show_filters_icon +
+        '|' +
+        l.wireshark +
+        '|' +
+        l.link_type +
+        '|' +
+        JSON.stringify(l.filters) +
+        '|' +
+        JSON.stringify(l.link_style) +
+        '|' +
+        JSON.stringify(l.nodes) +
+        '§';
+    }
+    return s;
+  }
+
+  /** Signature of the canvas-rendered fields of all drawings (excludes project_id). */
+  private signatureOfDrawings(drawings: Drawing[]): string {
+    let s = '';
+    for (const d of drawings) {
+      s += d.drawing_id + '|' + d.x + '|' + d.y + '|' + d.z + '|' + d.rotation + '|' + d.locked + '|' + d.svg + '§';
+    }
+    return s;
   }
 }
