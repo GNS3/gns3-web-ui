@@ -89,12 +89,16 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   // redraw per frame regardless of how many WS notifications / zoom events /
   // signal writes fire in between.
   private rafId: number | null = null;
+  // Whether the coalesced redraw may be gated. Only DATA-driven redraws (the
+  // signal effect) are gated — zoom/resize/settings/tool switches always redraw,
+  // so the gate can never skip a redraw the selection tool or canvas transform
+  // needs. Any non-gated trigger in a frame downgrades the pending redraw.
+  private pendingGated = true;
   // Visual signatures of the last-drawn nodes/links/drawings (only
-  // canvas-rendered fields). redraw() skips the full draw when none changed.
+  // canvas-rendered fields). The gated data redraw skips when none changed.
   private lastNodeSig = '';
   private lastLinkSig = '';
   private lastDrawSig = '';
-  private lastViewSig = '';
   protected settings = {
     show_interface_labels: true,
   };
@@ -141,7 +145,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       this.links();
       this.drawings();
       if (this.mapChangeDetectorRef.hasBeenDrawn) {
-        this.scheduleRedraw();
+        // Data-only trigger: the redraw may be skipped if nothing visual changed.
+        this.scheduleRedraw(true);
       }
     });
   }
@@ -320,13 +325,19 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   // Coalesce redraw requests to at most one per animation frame. Every
   // trigger (signal-driven data change via effect, changesDetected, zoom,
   // resize, map settings) calls this instead of redraw() directly.
-  private scheduleRedraw() {
+  private scheduleRedraw(gated = false) {
     if (this.rafId !== null) {
+      // Already scheduled this frame: a non-gated trigger (zoom, resize,
+      // settings, tool switches) makes the coalesced redraw unconditional.
+      if (!gated) this.pendingGated = false;
       return;
     }
+    this.pendingGated = gated;
     this.rafId = requestAnimationFrame(() => {
       this.rafId = null;
-      this.redraw();
+      const runGated = this.pendingGated;
+      this.pendingGated = true;
+      this.redraw(runGated);
     });
   }
 
@@ -401,40 +412,29 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphDataManager.setSymbols(this.symbols());
   }
 
-  private redraw() {
+  private redraw(gated = false) {
     this.updateGrid();
 
-    // Visual-signature gate: skip the expensive full draw (graphDataManager
-    // conversion + D3 data-join + getBBox/getTotalLength reflows) when no
-    // canvas-rendered field changed since the last draw. This is what stops a
-    // flood of non-visual updates — e.g. per-def marker config fanning out
-    // link.updated that only changes `markers`, or node.updated that only
-    // changes console/properties/command_line — from re-rendering the whole map.
-    // `viewSig` covers render-affecting state that isn't the data itself: zoom
-    // scale, viewport size (resize), and the interface-labels toggle.
-    const nodeSig = this.signatureOfNodes(this.nodes());
-    const linkSig = this.signatureOfLinks(this.links());
-    const drawSig = this.signatureOfDrawings(this.drawings());
-    const viewSig =
-      this.context.transformation.k +
-      '|' +
-      document.documentElement.clientWidth +
-      '|' +
-      document.documentElement.clientHeight +
-      '|' +
-      this.settings.show_interface_labels;
-    if (
-      nodeSig === this.lastNodeSig &&
-      linkSig === this.lastLinkSig &&
-      drawSig === this.lastDrawSig &&
-      viewSig === this.lastViewSig
-    ) {
-      return;
+    if (gated) {
+      // Data-driven redraw (signal effect): skip the expensive full draw
+      // (graphDataManager conversion + D3 data-join + getBBox/getTotalLength
+      // reflows) when no canvas-rendered field changed since the last draw.
+      // This is what stops a flood of non-visual updates — e.g. per-def marker
+      // config fanning out link.updated that only changes `markers`, or
+      // node.updated that only changes console/properties/command_line — from
+      // re-rendering the whole map. Non-gated redraws (zoom, resize, settings,
+      // tool switches) always run: the gate must never skip a redraw the
+      // selection tool or canvas transform depends on.
+      const nodeSig = this.signatureOfNodes(this.nodes());
+      const linkSig = this.signatureOfLinks(this.links());
+      const drawSig = this.signatureOfDrawings(this.drawings());
+      if (nodeSig === this.lastNodeSig && linkSig === this.lastLinkSig && drawSig === this.lastDrawSig) {
+        return;
+      }
+      this.lastNodeSig = nodeSig;
+      this.lastLinkSig = linkSig;
+      this.lastDrawSig = drawSig;
     }
-    this.lastNodeSig = nodeSig;
-    this.lastLinkSig = linkSig;
-    this.lastDrawSig = drawSig;
-    this.lastViewSig = viewSig;
 
     this.graphDataManager.setNodes(this.nodes());
     this.graphDataManager.setLinks(this.links());

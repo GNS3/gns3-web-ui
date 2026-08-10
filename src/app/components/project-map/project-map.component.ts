@@ -389,8 +389,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   addSubscriptions() {
     this.projectMapSubscription.add(
       this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
+        // Data changes drive the redraw via D3MapComponent's data effect
+        // (gated by the visual signature). No detectChanges here: it would
+        // trigger the un-gated changesDetected path and bypass the gate.
         this.drawings.set(drawings);
-        this.mapChangeDetectorRef.detectChanges();
       })
     );
 
@@ -431,7 +433,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         if (nodesToLoad.length === 0) {
           this.nodes.set(nodes);
           if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
-          this.mapChangeDetectorRef.detectChanges();
           return;
         }
 
@@ -451,7 +452,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             });
             this.nodes.set(nodes);
             if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
-            this.mapChangeDetectorRef.detectChanges();
           },
           () => {
             // Fallback to raw URLs if blob fetch fails
@@ -462,7 +462,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             });
             this.nodes.set(nodes);
             if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
-            this.mapChangeDetectorRef.detectChanges();
           }
         );
       })
@@ -471,7 +470,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.projectMapSubscription.add(
       this.linksDataSource.changes.subscribe((links: Link[]) => {
         this.links.set(links);
-        this.mapChangeDetectorRef.detectChanges();
       })
     );
 
