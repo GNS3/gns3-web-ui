@@ -28,53 +28,75 @@ export function applyIncrementalPatches(
   let needsFullDraw = false;
 
   // ── Structural changes always require full draw (enter / exit) ──
-  if (affected.additions.nodes.length > 0 || affected.removals.nodes.length > 0) {
-    needsFullDraw = true;
-  }
-  if (affected.additions.links.length > 0 || affected.removals.links.length > 0) {
-    needsFullDraw = true;
-  }
-  if (affected.additions.drawings.length > 0 || affected.removals.drawings.length > 0) {
-    needsFullDraw = true;
-  }
+  if (affected.additions.nodes.length > 0 || affected.removals.nodes.length > 0) needsFullDraw = true;
+  if (affected.additions.links.length > 0 || affected.removals.links.length > 0) needsFullDraw = true;
+  if (affected.additions.drawings.length > 0 || affected.removals.drawings.length > 0) needsFullDraw = true;
 
-  // ── Node targeted updates ──
+  if (needsFullDraw) return true;
+
+  // ── Node / Drawing targeted updates ──
   const nodes = graphDataManager.getNodes();
-  for (const [nodeId, groups] of affected.updates) {
-    const isNodeUpdate = affected.updates.has(nodeId) && groups != null;
+  const drawings = graphDataManager.getDrawings();
 
-    if (!isNodeUpdate) continue;
+  for (const [itemId, groups] of affected.updates) {
+    const onlyXy = groups.length === 1 && groups[0] === 'xY';
+    const onlyXyZ  = groups.every((g) => g === 'xY' || g === 'z');
+    const onlyLabel = groups.length === 1 && groups[0] === 'label';
 
-    // If ONLY xY changed: targeted DOM transform update (no reflow, Repaint only)
-    if (groups.length === 1 && groups[0] === 'xY') {
-      const node = nodes.find((n) => n.id === nodeId);
+    // Node: only xY (or xY+z) → targeted transform
+    if (onlyXyZ && nodes.some((n) => n.id === itemId)) {
+      const node = nodes.find((n) => n.id === itemId);
       if (node) {
         svg
-          .select(`g.node[node_id="${d3SelectEscape(nodeId)}"]`)
+          .select(`g.node[node_id="${d3SelectEscape(itemId)}"]`)
           .select<SVGGElement>('g.node_body')
           .attr('transform', `translate(${node.x}, ${node.y})`);
       }
       continue;
     }
 
-    // Any other node change → full draw (for now; Commit 3 will add
-    // targeted updates for text/label/visual/symbol via widget patch methods)
-    needsFullDraw = true;
-  }
-
-  // ── Link / Drawing changes → full draw for now (Commit 3) ──
-  for (const [_linkId] of affected.updates) {
-    // If the key is NOT in the node updates we just handled, it's a link/drawing
-    // change that needs full draw.  We don't have targeted link/drawing patching
-    // yet, so flag it.
-  }
-  // Simpler: if any link or drawing updates exist, full draw.
-  for (const [id] of affected.updates) {
-    const isNode = nodes.some((n) => n.id === id);
-    if (!isNode) {
-      needsFullDraw = true;
-      break;
+    // Node: only label → targeted text update + getBBox (only that label)
+    if (onlyLabel && nodes.some((n) => n.id === itemId)) {
+      const node = nodes.find((n) => n.id === itemId);
+      if (node && node.label) {
+        const label = node.label;
+        const labelSel = svg.select(`g.node[node_id="${d3SelectEscape(itemId)}"]`).select('text.label');
+        if (!labelSel.empty()) {
+          labelSel
+            .attr('style', (label as any).style)
+            .text((label as any).text)
+            .attr('x', (label as any).x)
+            .attr('y', (label as any).y);
+          // Recompute the label selection rect bbox
+          const bbox = (labelSel.node() as SVGTextElement | null)?.getBBox();
+          if (bbox) {
+            svg
+              .select(`g.node[node_id="${d3SelectEscape(itemId)}"]`)
+              .select('rect.label_selection')
+              .attr('x', bbox.x)
+              .attr('y', bbox.y)
+              .attr('width', bbox.width)
+              .attr('height', bbox.height);
+          }
+        }
+      }
+      continue;
     }
+
+    // Drawing: only xY (or xY+z) → targeted transform
+    if (onlyXyZ && drawings.some((d) => d.id === itemId)) {
+      const drawing = drawings.find((d) => d.id === itemId);
+      if (drawing) {
+        svg
+          .select(`g.drawing[drawing_id="${d3SelectEscape(itemId)}"]`)
+          .select<SVGGElement>('g.drawing_body')
+          .attr('transform', `translate(${drawing.x}, ${drawing.y}) rotate(${drawing.rotation})`);
+      }
+      continue;
+    }
+
+    // Anything else → fall through to full draw
+    needsFullDraw = true;
   }
 
   return needsFullDraw;
