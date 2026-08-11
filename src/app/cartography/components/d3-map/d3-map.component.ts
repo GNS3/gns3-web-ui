@@ -24,6 +24,7 @@ import { MapScaleService } from '@services/mapScale.service';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { ToolsService } from '@services/tools.service';
 import { affectedIsEmpty, emptyAffectedIds, mergeAffected } from '../../helpers/item-signature';
+import { applyIncrementalPatches } from '../../helpers/dom-patcher';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 import { GraphDataManager } from '../../managers/graph-data-manager';
 import { MapSettingsManager } from '../../managers/map-settings-manager';
@@ -469,6 +470,18 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     // On later redraws savedCenterX is non-null and stays locked (drag-lock).
     this.context.centerX = savedCenterX ?? this.context.centerX;
     this.context.centerY = savedCenterY ?? this.context.centerY;
+
+    // For gated (data-driven) redraws try incremental DOM patches first.
+    // When only node xY positions changed, targeted transform updates on the
+    // affected g.node elements are enough — no D3 data-join, no getBBox /
+    // getTotalLength reflows.  Structural changes (add/remove) and non-xY
+    // updates fall through to full graphLayout.draw below.
+    if (gated && !applyIncrementalPatches(this.svg, affected, this.graphDataManager, this.context)) {
+      this.textEditor().activateTextEditingForDrawings();
+      this.textEditor().activateTextEditingForNodeLabels();
+      this.mapSettingsService.mapRenderedEmitter.emit(true);
+      return;
+    }
 
     this.graphLayout.draw(this.svg, this.context);
     this.textEditor().activateTextEditingForDrawings();
