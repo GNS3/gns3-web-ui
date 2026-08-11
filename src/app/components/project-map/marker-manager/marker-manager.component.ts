@@ -163,7 +163,9 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   readonly loading = signal(false);
   readonly defError = signal<string | null>(null);
   readonly linkError = signal<{ linkId: string | null; message: string } | null>(null);
+  readonly activeTabIndex = signal(0);
   readonly editingDefinition = signal<string | null>(null);
+
   /** linkId currently showing its inline "add private marker" form (Links tab). */
   readonly addingToLink = signal<string | null>(null);
   /** Marker currently being edited: { linkId, name }. */

@@ -41,9 +41,10 @@
     </div>
 
     <div class="marker-manager__body">
-      <mat-tab-group>
+      <mat-tab-group [selectedIndex]="activeTabIndex()" (selectedIndexChange)="activeTabIndex.set($event)">
         <!-- ===================== Definitions ===================== -->
         <mat-tab label="Definitions">
+          @if (activeTabIndex() === 0) {
           <div class="marker-manager__panel">
             <!-- Create / edit form -->
             <form [formGroup]="definitionForm" (ngSubmit)="submitDefinition()">
@@ -168,10 +169,12 @@
               }
             </div>
           </div>
+          }
         </mat-tab>
 
         <!-- ===================== Links (aggregate) ===================== -->
         <mat-tab label="Links">
+          @if (activeTabIndex() === 1) {
           <div class="marker-manager__panel">
             @if (panelError(); as msg) {
             <div class="marker-manager__error">{{ msg }}</div>
@@ -270,7 +273,11 @@
               <div class="marker-manager__empty">
                 No markers on any link yet. Use the selector above to pick a link and add one.
               </div>
-              }
+              } @else if (linkGroups().length > 50) {
+              <div class="marker-manager__empty">
+                {{ linkGroups().length }} links have markers. Use the <strong>Node / Link</strong> selector above to filter by a specific link.
+              </div>
+              } @else {
               @for (group of linkGroups(); track group.linkId) {
               <div class="marker-manager__group">
                 <div class="marker-manager__group-header" (click)="toggleGroup(group.linkId)">
@@ -314,9 +321,11 @@
                 }
               </div>
               }
+              }
             </div>
             }
           </div>
+          }
         </mat-tab>
       </mat-tab-group>
     </div>
