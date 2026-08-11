@@ -4,6 +4,7 @@ import { DrawingDraggedComponent } from './drawing-dragged.component';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
 import { DrawingService } from '@services/drawing.service';
+import { MapChangeDetectorRef } from '../../../cartography/services/map-change-detector-ref';
 import { ToasterService } from '@services/toaster.service';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { MapDrawing } from '../../../cartography/models/map/map-drawing';
@@ -106,6 +107,7 @@ describe('DrawingDraggedComponent', () => {
       imports: [DrawingDraggedComponent],
       providers: [
         { provide: DrawingService, useValue: mockDrawingService },
+        { provide: MapChangeDetectorRef, useValue: { detectChanges: vi.fn() } },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
         DrawingsDataSource,

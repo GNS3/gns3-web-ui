@@ -51,6 +51,58 @@ export class LayersManager {
     this.layers = {};
   }
 
+  // ── Single-item incremental API (used by GraphDataManager incremental diff) ──
+
+  public addNode(node: MapNode): void {
+    this.getLayerForKey(node.z.toString()).nodes.push(node);
+  }
+
+  public removeNode(node: MapNode): void {
+    for (const key of Object.keys(this.layers)) {
+      this.layers[key].nodes = this.layers[key].nodes.filter((n) => n.id !== node.id);
+    }
+  }
+
+  public moveNode(node: MapNode, _oldZ: number): void {
+    // node.z already holds the NEW z (set by the caller before move). Remove
+    // from any layer, then re-add so addNode routes to the new z bucket.
+    // Do NOT reset node.z to oldZ — that would undo the update.
+    this.removeNode(node);
+    this.addNode(node);
+  }
+
+  public addLink(link: MapLink): void {
+    if (!link.source || !link.target) return;
+    const key = Math.min(link.source.z, link.target.z).toString();
+    this.getLayerForKey(key).links.push(link);
+  }
+
+  public removeLink(link: MapLink): void {
+    for (const key of Object.keys(this.layers)) {
+      this.layers[key].links = this.layers[key].links.filter((l) => l.id !== link.id);
+    }
+  }
+
+  public moveLink(link: MapLink, oldSourceZ: number, oldTargetZ: number): void {
+    this.removeLink(link);
+    this.addLink(link);
+  }
+
+  public addDrawing(drawing: MapDrawing): void {
+    this.getLayerForKey(drawing.z.toString()).drawings.push(drawing);
+  }
+
+  public removeDrawing(drawing: MapDrawing): void {
+    for (const key of Object.keys(this.layers)) {
+      this.layers[key].drawings = this.layers[key].drawings.filter((d) => d.id !== drawing.id);
+    }
+  }
+
+  public moveDrawing(drawing: MapDrawing, _oldZ: number): void {
+    this.removeDrawing(drawing);
+    this.addDrawing(drawing);
+  }
+
   public getLayerForKey(key: string): Layer {
     if (!(key in this.layers)) {
       this.layers[key] = new Layer();

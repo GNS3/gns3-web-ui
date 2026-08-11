@@ -20,7 +20,7 @@ import { ExportPortableProjectComponent } from '@components/export-portable-proj
 import { environment } from 'environments/environment';
 import * as Mousetrap from 'mousetrap';
 import { forkJoin, from, Observable, Subscription } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import * as d3 from 'd3';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
@@ -172,13 +172,40 @@ import type { TopologyItemCounts } from '@utils/topology-delete-summary.util';
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
   public nodes = signal<Node[]>([]);
-  public links: Link[] = [];
-  public drawings: Drawing[] = [];
+  public links = signal<Link[]>([]);
+  public drawings = signal<Drawing[]>([]);
   public symbols: Symbol[] = [];
   public project: Project = {} as Project;
   public controller: Controller = {} as Controller;
   public projectws: WebSocket;
   public ws: WebSocket;
+  // Project WS auto-reconnect state. Reconnection is silent (no UI): the canvas
+  // just pauses updates while down, and re-fetches topology on reconnect to
+  // cover events the notification stream does not replay.
+  private projectWsIntentionalClose = false;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private reconnectAttempt = 0;
+
+  // ---- Marker notifications WebSocket (dedicated stream for marker data) ----
+  public markerWs: WebSocket;
+  private markerWsIntentionalClose = false;
+  private markerReconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private markerReconnectAttempt = 0;
+  private readonly MARKER_WS_LIVENESS_TIMEOUT_MS = 15000;
+  private readonly MARKER_WS_LIVENESS_CHECK_MS = 5000;
+  private markerLastWsMessageAt = 0;
+  private markerLivenessTimer: ReturnType<typeof setInterval> | null = null;
+  /**
+   * Liveness check. The backend pushes a ping on the notification stream every
+   * ~5s, so a healthy connection always has inbound traffic. If nothing arrives
+   * for WS_LIVENESS_TIMEOUT_MS (tolerates a couple of missed pings) the TCP
+   * connection is presumed half-open — onclose would never fire on its own, so
+   * we force-close to enter the normal reconnect path.
+   */
+  private readonly WS_LIVENESS_TIMEOUT_MS = 15000;
+  private readonly WS_LIVENESS_CHECK_MS = 5000;
+  private lastWsMessageAt = 0;
+  private livenessTimer: ReturnType<typeof setInterval> | null = null;
   public isProjectMapMenuVisible: boolean = false;
   public isConsoleVisible: boolean = true;
   public isTopologySummaryVisible: boolean = true;
@@ -365,8 +392,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   addSubscriptions() {
     this.projectMapSubscription.add(
       this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
-        this.drawings = drawings;
-        this.mapChangeDetectorRef.detectChanges();
+        // Data changes drive the redraw via D3MapComponent's data effect
+        // (gated by the visual signature). No detectChanges here: it would
+        // trigger the un-gated changesDetected path and bypass the gate.
+        this.drawings.set(drawings);
       })
     );
 
@@ -407,7 +436,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         if (nodesToLoad.length === 0) {
           this.nodes.set(nodes);
           if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
-          this.mapChangeDetectorRef.detectChanges();
           return;
         }
 
@@ -427,7 +455,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             });
             this.nodes.set(nodes);
             if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
-            this.mapChangeDetectorRef.detectChanges();
           },
           () => {
             // Fallback to raw URLs if blob fetch fails
@@ -438,7 +465,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             });
             this.nodes.set(nodes);
             if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
-            this.mapChangeDetectorRef.detectChanges();
           }
         );
       })
@@ -446,8 +472,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.projectMapSubscription.add(
       this.linksDataSource.changes.subscribe((links: Link[]) => {
-        this.links = links;
-        this.mapChangeDetectorRef.detectChanges();
+        this.links.set(links);
       })
     );
 
@@ -746,50 +771,189 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.readonly = this.projectService.isReadOnly(project);
     this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
 
-    const subscription = this.projectService
-      .nodes(this.controller, project.project_id)
-      .pipe(
-        mergeMap((nodes: Node[]) => {
-          this.nodesDataSource.set(nodes);
-          nodes.filter((n) => n.status === 'started').forEach((n) => this.startedNodeIds.add(n.node_id));
-          return this.projectService.links(this.controller, project.project_id);
-        }),
-        mergeMap((links: Link[]) => {
-          this.linksDataSource.set(links);
-          this.markerRegistryService.rebuildAll(links);
-          return this.projectService.drawings(this.controller, project.project_id);
-        })
-      )
-      .subscribe({
-        next: (drawings: Drawing[]) => {
-          this.drawingsDataSource.set(drawings);
-
-          this.setUpMapCallbacks();
-          this.setUpProjectWS(project);
-
-          this.progressService.deactivate();
-        },
-        error: (err) => {
-          this.toasterService.error('Failed to load project data: ' + (err.error?.message || err.message || 'Unknown error'));
-          this.progressService.deactivate();
-          this.cd.markForCheck();
-        },
-      });
+    const subscription = this.fetchTopologyData(project).subscribe({
+      next: () => {
+        this.setUpMapCallbacks();
+        this.connectProjectWS(project);
+        this.connectMarkerWS(project);
+        this.progressService.deactivate();
+      },
+      error: (err) => {
+        this.toasterService.error('Failed to load project data: ' + (err.error?.message || err.message || 'Unknown error'));
+        this.progressService.deactivate();
+        this.cd.markForCheck();
+      },
+    });
     this.projectMapSubscription.add(subscription);
   }
 
-  setUpProjectWS(project: Project) {
+  /**
+   * Fetch nodes/links/drawings and push them into the datasources (also
+   * rebuilding the marker registry). Used both for the initial load and for
+   * re-syncing after the project WebSocket reconnects — the notification stream
+   * does not replay events missed while disconnected, so a reconnect must
+   * re-fetch to make the canvas match backend reality again.
+   */
+  private fetchTopologyData(project: Project) {
+    return this.projectService.nodes(this.controller, project.project_id).pipe(
+      tap((nodes: Node[]) => {
+        this.nodesDataSource.set(nodes);
+        nodes.filter((n) => n.status === 'started').forEach((n) => this.startedNodeIds.add(n.node_id));
+      }),
+      mergeMap(() => this.projectService.links(this.controller, project.project_id)),
+      tap((links: Link[]) => {
+        this.linksDataSource.set(links);
+        this.markerRegistryService.rebuildAll(links);
+      }),
+      mergeMap(() => this.projectService.drawings(this.controller, project.project_id)),
+      tap((drawings: Drawing[]) => {
+        this.drawingsDataSource.set(drawings);
+      })
+    );
+  }
+
+  /**
+   * Open (or reopen) the project notifications WebSocket. On an unexpected
+   * close the connection is silently reconnected with exponential backoff; on
+   * a successful reconnect the topology is re-fetched to cover any events
+   * missed while disconnected. ngOnDestroy sets projectWsIntentionalClose to
+   * stop the loop during teardown.
+   */
+  private connectProjectWS(project: Project) {
     this.projectws = new WebSocket(
       this.notificationService.projectNotificationsPath(this.controller, project.project_id)
     );
 
+    this.projectws.onopen = () => {
+      // Reconnect (attempt > 0): re-fetch topology to cover missed events.
+      // First connect (attempt 0): data was just loaded by onProjectLoad.
+      if (this.reconnectAttempt > 0) {
+        this.projectMapSubscription.add(
+          this.fetchTopologyData(project).subscribe({
+            error: (err) => {
+              console.warn('Topology resync after WS reconnect failed', err);
+            },
+          })
+        );
+      }
+      this.reconnectAttempt = 0;
+      this.startLivenessCheck();
+    };
+
     this.projectws.onmessage = (event: MessageEvent) => {
+      // Any inbound frame (incl. the periodic ping) proves the connection is
+      // alive — stamp it for the liveness check before dispatching.
+      this.lastWsMessageAt = Date.now();
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
     };
 
-    this.projectws.onerror = (event: MessageEvent) => {
-      this.toasterService.error(`Connection to host lost. Error: ${event.data}`);
+    this.projectws.onclose = () => {
+      this.stopLivenessCheck();
+      if (this.projectWsIntentionalClose) return;
+      this.scheduleReconnect(project);
     };
+
+    this.projectws.onerror = () => {
+      // onclose follows and drives the reconnect; no user-facing notice
+      // (silent reconnect). Log for debugging.
+      console.warn('Project notifications WebSocket error; will reconnect');
+    };
+  }
+
+  private scheduleReconnect(project: Project) {
+    if (this.projectWsIntentionalClose) return;
+    const attempt = this.reconnectAttempt++;
+    // Exponential backoff capped at 30s, +up to 25% jitter to avoid reconnect
+    // storms when many clients drop simultaneously.
+    const base = Math.min(30000, 1000 * 2 ** attempt);
+    const delay = Math.round(base + Math.random() * 0.25 * base);
+    this.reconnectTimer = setTimeout(() => this.connectProjectWS(project), delay);
+  }
+
+  private startLivenessCheck() {
+    this.stopLivenessCheck();
+    this.lastWsMessageAt = Date.now();
+    this.livenessTimer = setInterval(() => {
+      if (Date.now() - this.lastWsMessageAt > this.WS_LIVENESS_TIMEOUT_MS) {
+        console.warn('Project WS liveness timeout — no message received, forcing reconnect');
+        this.stopLivenessCheck();
+        this.projectws?.close(); // triggers onclose → scheduleReconnect
+      }
+    }, this.WS_LIVENESS_CHECK_MS);
+  }
+
+  private stopLivenessCheck() {
+    if (this.livenessTimer !== null) {
+      clearInterval(this.livenessTimer);
+      this.livenessTimer = null;
+    }
+  }
+
+  // ---- Marker notifications WebSocket (dedicated stream for marker data) ----
+
+  /**
+   * Open (or reopen) the marker notifications WebSocket. Same reconnect +
+   * liveness pattern as {@link connectProjectWS}, but no topology re-fetch on
+   * reconnect — the marker stream carries only marker events and the project WS
+   * already handles topology resync.
+   */
+  private connectMarkerWS(project: Project) {
+    this.markerWs = new WebSocket(
+      this.notificationService.markerNotificationsPath(this.controller, project.project_id)
+    );
+
+    this.markerWs.onopen = () => {
+      this.markerReconnectAttempt = 0;
+      this.startMarkerLivenessCheck();
+    };
+
+    this.markerWs.onmessage = (event: MessageEvent) => {
+      // Any inbound frame (incl. the periodic ping) proves the connection is
+      // alive — stamp it for the liveness check before dispatching.
+      this.markerLastWsMessageAt = Date.now();
+      this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
+    };
+
+    this.markerWs.onclose = () => {
+      this.stopMarkerLivenessCheck();
+      if (this.markerWsIntentionalClose) return;
+      this.scheduleMarkerReconnect(project);
+    };
+
+    this.markerWs.onerror = () => {
+      // onclose follows and drives the reconnect; no user-facing notice
+      // (silent reconnect). Log for debugging.
+      console.warn('Marker notifications WebSocket error; will reconnect');
+    };
+  }
+
+  private scheduleMarkerReconnect(project: Project) {
+    if (this.markerWsIntentionalClose) return;
+    const attempt = this.markerReconnectAttempt++;
+    // Exponential backoff capped at 30s, +up to 25% jitter to avoid reconnect
+    // storms when many clients drop simultaneously.
+    const base = Math.min(30000, 1000 * 2 ** attempt);
+    const delay = Math.round(base + Math.random() * 0.25 * base);
+    this.markerReconnectTimer = setTimeout(() => this.connectMarkerWS(project), delay);
+  }
+
+  private startMarkerLivenessCheck() {
+    this.stopMarkerLivenessCheck();
+    this.markerLastWsMessageAt = Date.now();
+    this.markerLivenessTimer = setInterval(() => {
+      if (Date.now() - this.markerLastWsMessageAt > this.MARKER_WS_LIVENESS_TIMEOUT_MS) {
+        console.warn('Marker WS liveness timeout — no message received, forcing reconnect');
+        this.stopMarkerLivenessCheck();
+        this.markerWs?.close(); // triggers onclose → scheduleMarkerReconnect
+      }
+    }, this.MARKER_WS_LIVENESS_CHECK_MS);
+  }
+
+  private stopMarkerLivenessCheck() {
+    if (this.markerLivenessTimer !== null) {
+      clearInterval(this.markerLivenessTimer);
+      this.markerLivenessTimer = null;
+    }
   }
 
   setUpWS() {
@@ -877,7 +1041,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const onInterfaceLabelContextMenu = this.interfaceLabelWidget.onContextMenu.subscribe(
       (eventInterfaceLabel: InterfaceLabelContextMenu) => {
         const linkNode = this.mapLinkNodeToLinkNode.convert(eventInterfaceLabel.interfaceLabel);
-        const link = this.links.find((l) => l.link_id === eventInterfaceLabel.interfaceLabel.linkId);
+        const link = this.links().find((l) => l.link_id === eventInterfaceLabel.interfaceLabel.linkId);
         this.contextMenu().openMenuForInterfaceLabel(
           linkNode,
           link,
@@ -1816,9 +1980,30 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.nodesDataSource.clear();
     this.linksDataSource.clear();
 
+    // Stop the project WS auto-reconnect loop during teardown: set the flag so
+    // the onclose handler (fired by close() below) does not schedule a reconnect.
+    this.projectWsIntentionalClose = true;
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    this.stopLivenessCheck();
+
     if (this.projectws) {
       if (this.projectws.OPEN) this.projectws.close();
     }
+
+    // Stop the marker WS auto-reconnect loop and close the socket.
+    this.markerWsIntentionalClose = true;
+    if (this.markerReconnectTimer) {
+      clearTimeout(this.markerReconnectTimer);
+      this.markerReconnectTimer = null;
+    }
+    this.stopMarkerLivenessCheck();
+    if (this.markerWs) {
+      if (this.markerWs.OPEN) this.markerWs.close();
+    }
+
     if (this.ws) {
       if (this.ws.OPEN) this.ws.close();
     }

@@ -25,7 +25,7 @@ const ARROW_TANGENT_EPS = 6;
 
 /**
  * Composite-key helpers.  Entries are keyed by `linkId` + direction so that
- * tx and rx slots on the same link live independently (独立过期, 同方向续命).
+ * tx and rx slots on the same link live independently (independent expiry, same-direction renewal).
  * A null byte separates the two parts; linkIds are UUIDs so the separator is safe.
  */
 const SEP = '\x00';
@@ -37,12 +37,15 @@ let _seq = 0;
 
 /**
  * Flashes a link when its marker matches live traffic, and — when the match
- * carries a direction (`dir`) — draws evenly-spaced arrows (鱼鳞) along the link
+ * carries a direction (`dir`) — draws evenly-spaced arrows along the link
  * pointing toward the traffic receiver.
  *
- * State is a signal of composite-key → FlashState.  On each `flash(...)`:
- *   - the entry for that (linkId, dir) slot is (re)added
- *   - a per-slot timer is (re)set (同方向续命, 不同方向独立过期)
+ * State is a signal of composite-key → FlashState.  `flash(...)` only stages
+ * the (linkId, dir) slot into a per-frame buffer (last-write-wins); a
+ * requestAnimationFrame flush applies the whole frame's changes in ONE signal
+ * update and renews each slot's timer once (same-direction renewal, cross-direction expiry).
+ * This decouples cost from the marker.match rate — N thousand matches/sec still
+ * process at ~60 flushes/sec.
  *
  * An `effect()` diffs the new map against the previous one and mutates ONLY the
  * changed link's DOM.  When a slot expires but another direction is still active
@@ -57,31 +60,62 @@ let _seq = 0;
 export class MarkerFlashService {
   /** composite-key → flash state. */
   private readonly _flashing = signal<ReadonlyMap<string, FlashState>>(new Map());
-  /** Per-slot debounce timers (续命). */
+  /** Per-slot debounce timers. */
   private readonly timers = new Map<string, ReturnType<typeof setTimeout>>();
   /** UI default highlight duration when a marker has no `highlight_duration`. */
   private readonly DEFAULT_FLASH_MS = 800;
   private readonly effectRef: EffectRef;
   /** Previous snapshot for diffing (composite-key → state). */
   private prev = new Map<string, FlashState>();
+  /**
+   * Per-link path-geometry cache. getTotalLength()/getPointAtLength() are sync
+   * reflows whose cost scales with the WHOLE SVG (tens of thousands of elements
+   * on large topologies). Keyed by linkId and invalidated when the path's `d`
+   * attribute changes (node dragged / link redrawn), so repeated flashes of an
+   * unchanged link skip geometry queries entirely → no reflow per flash.
+   */
+  private readonly geoCache = new Map<
+    string,
+    { d: string; len: number; pts: Map<number, { x: number; y: number } | null> }
+  >();
+  /**
+   * Per-frame batching buffer (composite-key → {state, ms}). `flash()` stages
+   * here (last-write-wins, O(1)) and schedules a single rAF flush; the flush
+   * applies all of the frame's changes in ONE signal update and renews timers
+   * once per key. This decouples cost from the marker.match rate — 25k
+   * matches/sec still → ~60 flushes/sec — and collapses repeated matches on the
+   * same (linkId,dir) within a frame to one entry.
+   */
+  private pending = new Map<string, { state: FlashState; ms: number }>();
+  /** Pending requestAnimationFrame id for the batch flush. */
+  private flushRaf: number | null = null;
+  /** Whether a flush is already scheduled (guard independent of the rAF id). */
+  private flushScheduled = false;
 
   constructor() {
     const destroyRef = inject(DestroyRef);
     this.effectRef = effect(() => this.applyDiff(this._flashing()));
     destroyRef.onDestroy(() => {
+      if (this.flushRaf !== null) {
+        cancelAnimationFrame(this.flushRaf);
+        this.flushRaf = null;
+      }
+      this.flushScheduled = false;
+      this.pending.clear();
       this.effectRef.destroy();
       for (const key of [...this.prev.keys()]) this.clearLink(linkIdOf(key));
       this.prev.clear();
       for (const t of this.timers.values()) clearTimeout(t);
       this.timers.clear();
+      this.geoCache.clear();
     });
   }
 
   /**
    * Flash a link. Repeated calls with the same direction within the duration
-   * window keep that direction lit (续命).  Calls with a *different* direction
+   * window keep that direction lit.  Calls with a *different* direction
    * start an independent timer — the old direction stays active until its own
-   * timer expires (方向变化不续命).
+   * timer expires.
    *
    * @param color resolved marker color (hex), or null to use the default theme color.
    * @param durationMs how long to stay lit after the last match
@@ -99,25 +133,56 @@ export class MarkerFlashService {
   ) {
     const key = compKey(linkId, dir);
     const ms = durationMs && durationMs > 0 ? durationMs : this.DEFAULT_FLASH_MS;
-    clearTimeout(this.timers.get(key));
-    this.timers.set(key, setTimeout(() => this.expire(key), ms));
+    // Stage in the per-frame buffer (last-write-wins per key) and schedule a
+    // single flush. Avoids a full Map copy + signal update + effect per match;
+    // cost is decoupled from the marker.match rate.
+    this.pending.set(key, { state: { color, dir, captureNodeId, _seq: _seq++ }, ms });
+    this.scheduleFlush();
+  }
 
-    // Same-state guard: under heavy traffic (e.g. ping -f),
-    // repeated matches with identical color / direction / capture node
-    // only extend the timer — no Map copy, no signal update, no effect.
-    // Without this, every match copies the Map and fires the full diff
-    // pipeline even though the DOM is unchanged; the churn leaks into
-    // GC pressure and browser memory climbs.
-    const existing = this._flashing().get(key);
-    if (existing && existing.color === color && existing.dir === dir && existing.captureNodeId === captureNodeId) {
-      return;
+  private scheduleFlush() {
+    if (this.flushScheduled) return;
+    this.flushScheduled = true;
+    this.flushRaf = requestAnimationFrame(() => {
+      this.flushScheduled = false;
+      this.flushRaf = null;
+      this.flush();
+    });
+  }
+
+  /**
+   * Apply one frame's worth of staged flashes in a single signal update and
+   * renew each affected slot's timer once. Same (linkId,dir) repeated within the
+   * frame already collapsed to one entry in `pending`; here we additionally skip
+   * the signal update entirely when no staged state actually differs from the
+   * current one (so steady repeated matches cost only timer renewals).
+   */
+  private flush() {
+    if (this.pending.size === 0) return;
+    const updates = this.pending;
+    this.pending = new Map();
+    // Renew each slot's timer once per frame.
+    for (const [key, { ms }] of updates) {
+      clearTimeout(this.timers.get(key));
+      this.timers.set(key, setTimeout(() => this.expire(key), ms));
     }
-
-    const state: FlashState = { color, dir, captureNodeId, _seq: _seq++ };
+    // Apply state changes in ONE Map copy; if nothing actually changed, return
+    // the same ref so the signal does not fire and the effect does not run.
     this._flashing.update((m) => {
-      const next = new Map(m);
-      next.set(key, state);
-      return next;
+      let next: Map<string, FlashState> | null = null;
+      for (const [key, { state }] of updates) {
+        const cur = m.get(key);
+        if (
+          !cur ||
+          cur.color !== state.color ||
+          cur.dir !== state.dir ||
+          cur.captureNodeId !== state.captureNodeId
+        ) {
+          if (next === null) next = new Map(m);
+          next.set(key, state);
+        }
+      }
+      return next ?? m;
     });
   }
 
@@ -185,7 +250,7 @@ export class MarkerFlashService {
     // null → remove inline color so CSS default (var(--mat-sys-primary)) applies.
     path.style('stroke', state.color ?? null);
     const slot = state.dir === 'tx' ? 'tx' : state.dir === 'rx' ? 'rx' : null;
-    this.renderDirArrow(group, path, state, slot);
+    this.renderDirArrow(id, group, path, state, slot);
   }
 
   private clearLink(id: string) {
@@ -197,6 +262,11 @@ export class MarkerFlashService {
       .style('stroke', null);
     // Remove ALL direction arrows (both tx and rx slots).
     group.selectAll('g.marker-arrow-tx, g.marker-arrow-rx').remove();
+    // geoCache deliberately NOT deleted here: link geometry hasn't changed, and
+    // the next flash would re-trigger getTotalLength()/getPointAtLength() sync
+    // reflows on the whole SVG (~10k elements on a 1000-node topology).  The
+    // cache self-invalidates when the path's "d" attribute changes (node drag /
+    // link redraw), so persisting it across flash cycles is safe.
   }
 
   private selectLinkGroup(id: string) {
@@ -229,6 +299,7 @@ export class MarkerFlashService {
    * capture node can't be matched to an endpoint.
    */
   private renderDirArrow(
+    linkId: string,
     group: Selection<SVGGElement, any, any, any>,
     path: Selection<SVGPathElement, any, any, any>,
     state: FlashState,
@@ -247,14 +318,25 @@ export class MarkerFlashService {
 
     const node = path.node();
     if (!node) return;
-    // jsdom (unit tests) doesn't implement path geometry — bail out quietly there.
-    let len: number;
-    try {
-      len = node.getTotalLength();
-    } catch {
-      return;
+    // Cache geometry by the path's `d`: getTotalLength() is a sync reflow whose
+    // cost scales with the whole SVG, so reuse it while the link geometry is
+    // stable (the common case during a marker flood). When `d` changes (node
+    // dragged / link redrawn) the key mismatches and we recompute. jsdom (unit
+    // tests) doesn't implement path geometry → bail out quietly there.
+    const d = node.getAttribute('d') ?? '';
+    let entry = this.geoCache.get(linkId);
+    if (!entry || entry.d !== d) {
+      let len: number;
+      try {
+        len = node.getTotalLength();
+      } catch {
+        return;
+      }
+      if (!len || !Number.isFinite(len)) return;
+      entry = { d, len, pts: new Map() };
+      this.geoCache.set(linkId, entry);
     }
-    if (!len || !Number.isFinite(len)) return;
+    const len = entry.len;
 
     // Pre-compute the direction offset once for all arrows along this link.
     const angleOffset = MarkerFlashService.arrowPointsAlongPath(state.dir, captureIsSource, captureIsTarget)
@@ -270,9 +352,9 @@ export class MarkerFlashService {
     for (let i = 0; i < count; i++) {
       let at = step * (i + 1);
       if (slot === 'rx') at += step * 0.5;
-      const behind = this.pointAt(node, Math.max(0, at - ARROW_TANGENT_EPS));
-      const ahead = this.pointAt(node, Math.min(len, at + ARROW_TANGENT_EPS));
-      const pos = this.pointAt(node, at);
+      const behind = this.getCachedPt(entry, node, Math.max(0, at - ARROW_TANGENT_EPS));
+      const ahead = this.getCachedPt(entry, node, Math.min(len, at + ARROW_TANGENT_EPS));
+      const pos = this.getCachedPt(entry, node, at);
       if (!behind || !ahead || !pos) continue;
 
       const angle = Math.atan2(ahead.y - behind.y, ahead.x - behind.x) + angleOffset;
@@ -283,6 +365,25 @@ export class MarkerFlashService {
         // null → CSS default (var(--mat-sys-primary)); hex → match the pulse color.
         .style('fill', state.color ?? null);
     }
+  }
+
+  /**
+   * Cached getPointAtLength. Like getTotalLength(), each call is a sync reflow
+   * that scales with the whole SVG, so reuse the result for a stable path.
+   * `at` is rounded to 0.01px for the key (positions are deterministic from the
+   * cached length, so identical across flashes of the same geometry).
+   */
+  private getCachedPt(
+    entry: { pts: Map<number, { x: number; y: number } | null> },
+    node: SVGPathElement,
+    at: number
+  ): { x: number; y: number } | null {
+    const key = Math.round(at * 100);
+    const cached = entry.pts.get(key);
+    if (cached !== undefined) return cached;
+    const pt = this.pointAt(node, at);
+    entry.pts.set(key, pt);
+    return pt;
   }
 
   /** Safe getPointAtLength wrapper (jsdom throws / returns non-finite values). */

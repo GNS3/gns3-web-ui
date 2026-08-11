@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { Link } from '@models/link';
+import { AggregateMarkerMap } from '@models/marker';
 
 /** A marker definition in the project, projected from `link.markers` for the legend. */
 export interface MarkerEntry {
@@ -34,6 +35,28 @@ export class MarkerRegistryService {
     const entries: MarkerEntry[] = [];
     for (const link of links) {
       this.collect(link, entries);
+    }
+    this.setEntries(entries);
+  }
+
+  /**
+   * Rebuild from the aggregate marker map (GET /projects/{pid}/markers).
+   * Used when definition CRUD fans out to many links — the aggregate API has
+   * the authoritative per-link state while local link objects may be stale.
+   */
+  rebuildFromAggregate(map: AggregateMarkerMap) {
+    const entries: MarkerEntry[] = [];
+    for (const [key, entry] of Object.entries(map)) {
+      // key is "{link_id}/{name}"
+      const slashIdx = key.indexOf('/');
+      const name = slashIdx >= 0 ? key.slice(slashIdx + 1) : key;
+      entries.push({
+        name,
+        linkId: entry.link_id,
+        bpf: entry.bpf,
+        tag: entry.tag ?? null,
+        color: entry.color,
+      });
     }
     this.setEntries(entries);
   }
@@ -73,7 +96,7 @@ function sameSet(a: MarkerEntry[], b: MarkerEntry[]): boolean {
   if (a.length !== b.length) {
     return false;
   }
-  const key = (e: MarkerEntry) => `${e.linkId}\0${e.name}\0${e.bpf}\0${e.tag ?? ''}`;
+  const key = (e: MarkerEntry) => `${e.linkId}\0${e.name}\0${e.bpf}\0${e.tag ?? ''}\0${e.color ?? ''}`;
   const sa = new Set(a.map(key));
   for (const e of b) {
     if (!sa.has(key(e))) {

@@ -1,5 +1,5 @@
 import { Directive, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
-import { select } from 'd3-selection';
+import { pointer, select } from 'd3-selection';
 import { Subscription } from 'rxjs';
 import { MapScaleService } from '@services/mapScale.service';
 import { MovingEventSource } from '../events/moving-event-source';
@@ -38,6 +38,10 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
   addListener() {
     this.wheelListener = (event: WheelEvent) => {
       event.stopPropagation();
+      // In pan mode the wheel means zoom — stop the browser from ALSO scrolling
+      // the page (which requires a non-passive listener; passive:true can't
+      // preventDefault).
+      event.preventDefault();
 
       let zoom = event.deltaY;
       zoom = event.deltaMode === 0 ? zoom / 100 : zoom / 3;
@@ -46,20 +50,41 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
       const canvas = view.selectAll<SVGGElement, Context>('g.canvas').data([this.context]);
 
       canvas.attr('transform', () => {
-        this.context.transformation.k = this.context.transformation.k - zoom / 10;
+        const oldK = this.context.transformation.k;
+        if (!oldK || isNaN(oldK)) return;
+        // Proportional zoom: each wheel notch multiplies k by ~exp(∓0.1), so the
+        // step feels uniform at every zoom level. (The old absolute −zoom/10
+        // step made one notch a 50%+ jump when zoomed far out.)
+        const newK = Math.max(0.01, oldK * Math.exp(-zoom / 10));
 
-        const xTrans = this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x;
-        const yTrans = this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y;
-        const kTrans = this.context.transformation.k;
-        this.mapsScaleService.setScale(kTrans);
+        // Cursor-centered zoom: keep the canvas point under the cursor fixed.
+        // That canvas point is (svg cursor - origin - pan) / k.
+        const cursor = pointer(event, this.element.nativeElement);
+        const origin = this.context.getZeroZeroTransformationPoint();
+        const tx = origin.x + this.context.transformation.x;
+        const ty = origin.y + this.context.transformation.y;
+        const canvasX = (cursor[0] - tx) / oldK;
+        const canvasY = (cursor[1] - ty) / oldK;
 
-        return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
+        // Bake the offset into the pan (transformation.x/y) so the transform
+        // that graphLayout.draw() rebuilds after the scale change stays centered
+        // on the cursor instead of snapping back to the canvas origin.
+        this.context.transformation.k = newK;
+        this.context.transformation.x += canvasX * (oldK - newK);
+        this.context.transformation.y += canvasY * (oldK - newK);
+
+        const xTrans = origin.x + this.context.transformation.x;
+        const yTrans = origin.y + this.context.transformation.y;
+        this.mapsScaleService.setScale(newK);
+
+        return `translate(${xTrans}, ${yTrans}) scale(${newK})`;
       });
     };
 
-    // Use passive: true since we're using CSS to prevent default zoom
+    // Non-passive so preventDefault() can stop the page from scrolling while
+    // zooming. touch-action: none in ngOnInit handles touch pinch-zoom.
     this.element.nativeElement.addEventListener('wheel', this.wheelListener as EventListenerOrEventListenerObject, {
-      passive: true,
+      passive: false,
     });
   }
 

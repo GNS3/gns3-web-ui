@@ -6,6 +6,7 @@ import { NodeDraggedComponent } from './node-dragged.component';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
 import { NodeService } from '@services/node.service';
+import { MapChangeDetectorRef } from '../../../cartography/services/map-change-detector-ref';
 import { ToasterService } from '@services/toaster.service';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { MapNode } from '../../../cartography/models/map/map-node';
@@ -108,6 +109,7 @@ describe('NodeDraggedComponent', () => {
       providers: [
         { provide: NodesDataSource, useValue: mockNodesDataSource },
         { provide: NodeService, useValue: mockNodeService },
+        { provide: MapChangeDetectorRef, useValue: { detectChanges: vi.fn() } },
         { provide: NodesEventSource, useValue: mockNodesEventSource },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },

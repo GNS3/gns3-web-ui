@@ -8,6 +8,7 @@ import { MapDrawing } from '../../../cartography/models/map/map-drawing';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
+import { MapChangeDetectorRef } from '../../../cartography/services/map-change-detector-ref';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
@@ -25,6 +26,7 @@ export class DrawingDraggedComponent implements OnInit, OnDestroy {
   private drawingService = inject(DrawingService);
   private drawingsDataSource = inject(DrawingsDataSource);
   private drawingsEventSource = inject(DrawingsEventSource);
+  private mapChangeDetectorRef = inject(MapChangeDetectorRef);
   private toasterService = inject(ToasterService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -42,6 +44,12 @@ export class DrawingDraggedComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (controllerDrawing: Drawing) => {
           this.drawingsDataSource.update(controllerDrawing);
+          // Force an un-gated redraw to correct the DOM. During drag the
+          // graphDataManager datum was moved to the cursor; snap is computed at
+          // drag end. If snap lands on the same grid point (small drag) the
+          // drawings signature is unchanged and the gated redraw skips, leaving
+          // the DOM at the cursor. detectChanges() → scheduleRedraw() (un-gated).
+          this.mapChangeDetectorRef.detectChanges();
         },
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to update drawing position';

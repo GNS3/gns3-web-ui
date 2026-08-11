@@ -4,9 +4,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
-import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
-import { LinksDataSource } from '../../../../../cartography/datasources/links-datasource';
-import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Node } from '../../../../../cartography/models/node';
 import { Link } from '@models/link';
@@ -28,9 +25,6 @@ import type { TopologyItemCounts } from '@utils/topology-delete-summary.util';
 })
 export class DeleteActionComponent {
   private toasterService = inject(ToasterService);
-  private nodesDataSource = inject(NodesDataSource);
-  private drawingsDataSource = inject(DrawingsDataSource);
-  private linksDataSource = inject(LinksDataSource);
   private nodeService = inject(NodeService);
   private drawingService = inject(DrawingService);
   private linkService = inject(LinkService);
@@ -80,7 +74,10 @@ export class DeleteActionComponent {
 
     this.nodes().forEach((node) => {
       if (!node.locked) {
-        this.nodesDataSource.remove(node);
+        // Do NOT remove locally here (optimistic): the canvas removal is driven
+        // by the `node.deleted` WebSocket notification, which fires once the
+        // backend has actually deleted the node. Removing optimistically made
+        // nodes vanish before the backend confirmed the delete.
         this.nodeService.delete(this.controller(), node).subscribe({
           next: () => {
             deletedCounts.nodes++;
@@ -102,7 +99,7 @@ export class DeleteActionComponent {
 
     this.drawings().forEach((drawing) => {
       if (!drawing.locked) {
-        this.drawingsDataSource.remove(drawing);
+        // Removal driven by the `drawing.deleted` WS notification (see nodes above).
         this.drawingService.delete(this.controller(), drawing).subscribe({
           next: () => {
             deletedCounts.drawings++;
@@ -124,7 +121,7 @@ export class DeleteActionComponent {
 
     if (this.nodes().length == 0 && this.drawings().length == 0) {
       this.links().forEach((link) => {
-        this.linksDataSource.remove(link);
+        // Removal driven by the `link.deleted` WS notification (see nodes above).
         this.linkService.deleteLink(this.controller(), link).subscribe({
           next: () => {
             LinkTypeCache.remove(link.project_id, link.link_id);

@@ -20,11 +20,13 @@ import { Link } from '@models/link';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
-import { MapScaleService } from '@services/mapScale.service';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { ToolsService } from '@services/tools.service';
+import { affectedIsEmpty, emptyAffectedIds, mergeAffected } from '../../helpers/item-signature';
+import { applyIncrementalPatches } from '../../helpers/dom-patcher';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 import { GraphDataManager } from '../../managers/graph-data-manager';
+import { LayersManager } from '../../managers/layers-manager';
 import { MapSettingsManager } from '../../managers/map-settings-manager';
 import { Context } from '../../models/context';
 import { Drawing } from '../../models/drawing';
@@ -84,6 +86,16 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   private onChangesDetected: Subscription;
   private subscriptions: Subscription[] = [];
   private drawLinkTool: boolean;
+  // Pending requestAnimationFrame id for the coalesced redraw. All redraw
+  // triggers funnel through scheduleRedraw(), guaranteeing at most one full
+  // redraw per frame regardless of how many WS notifications / zoom events /
+  // signal writes fire in between.
+  private rafId: number | null = null;
+  // Whether the coalesced redraw may be gated. Only DATA-driven redraws (the
+  // signal effect) are gated — zoom/resize/settings/tool switches always redraw,
+  // so the gate can never skip a redraw the selection tool or canvas transform
+  // needs. Any non-gated trigger in a frame downgrades the pending redraw.
+  private pendingGated = true;
   protected settings = {
     show_interface_labels: true,
   };
@@ -95,6 +107,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   public drawingGridY: number = 0;
 
   private graphDataManager = inject(GraphDataManager);
+  private layersManager = inject(LayersManager);
   public context = inject(Context);
   private mapChangeDetectorRef = inject(MapChangeDetectorRef);
   private canvasSizeDetector = inject(CanvasSizeDetector);
@@ -105,7 +118,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   protected movingToolWidget = inject(MovingTool);
   public graphLayout = inject(GraphLayout);
   private toolsService = inject(ToolsService);
-  private mapScaleService = inject(MapScaleService);
   private mapSettingsService = inject(MapSettingsService);
 
   constructor() {
@@ -117,6 +129,21 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       if (project && this.mapChangeDetectorRef.hasBeenDrawn) {
         this.updateGrid();
         this.mapChangeDetectorRef.detectChanges();
+      }
+    });
+
+    // Signal-driven data -> redraw. Reading the input signals here registers
+    // them as effect dependencies, so any nodes/links/drawings change schedules
+    // a single coalesced redraw (see scheduleRedraw). This replaces the old
+    // reliance on mapChangeDetectorRef + setTimeout for propagating zoneless
+    // signal inputs: inside an effect the inputs are already fresh.
+    effect(() => {
+      this.nodes();
+      this.links();
+      this.drawings();
+      if (this.mapChangeDetectorRef.hasBeenDrawn) {
+        // Data-only trigger: the redraw may be skipped if nothing visual changed.
+        this.scheduleRedraw(true);
       }
     });
   }
@@ -153,12 +180,11 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
+    // nodes/links/drawings changes are handled by the signal-driven effect in
+    // the constructor; only width/height/symbols still need ngOnChanges.
     if (
       (changes['width'] && !changes['width'].isFirstChange()) ||
       (changes['height'] && !changes['height'].isFirstChange()) ||
-      (changes['drawings'] && !changes['drawings'].isFirstChange()) ||
-      (changes['nodes'] && !changes['nodes'].isFirstChange()) ||
-      (changes['links'] && !changes['links'].isFirstChange()) ||
       (changes['symbols'] && !changes['symbols'].isFirstChange())
     ) {
       if (this.svg.empty && !this.svg.empty()) {
@@ -174,7 +200,11 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     if (this.parentNativeElement !== null) {
       this.createGraph(this.parentNativeElement);
     }
-    this.context.size = this.getSize();
+    // context.size is already 0x0 from createGraph's reset — do NOT call
+    // getSize() here.  It runs before the first redraw's setNodes clears the
+    // app-singleton graphDataManager, so on a re-visit it reads the PREVIOUS
+    // project's nodes and leaks their content center into savedCenterX →
+    // the first redraw anchors origin to the wrong content center.
 
     // Initialize grid offsets based on project settings
     const project = this.project();
@@ -184,10 +214,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.onChangesDetected = this.mapChangeDetectorRef.changesDetected.subscribe(() => {
       if (this.mapChangeDetectorRef.hasBeenDrawn) {
-        // Defer redraw so Angular propagates signal inputs (nodes/links/drawings)
-        // before D3 reads them. Without this, redraw() reads stale empty arrays
-        // because zoneless change detection hasn't propagated inputs yet.
-        setTimeout(() => this.redraw());
+        this.scheduleRedraw();
       }
     });
 
@@ -199,19 +226,20 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       })
     );
 
-    this.subscriptions.push(this.mapScaleService.scaleChangeEmitter.subscribe((value: number) => this.redraw()));
-
     this.subscriptions.push(
       this.toolsService.isMovingToolActivated.subscribe((value: boolean) => {
         this.movingToolWidget.setEnabled(value);
-        this.mapChangeDetectorRef.detectChanges();
+        // Apply the drag-binding change directly via the tool's draw() — a tool
+        // switch changes no rendering, so a full redraw is pure waste (and is
+        // very slow with thousands of nodes).
+        this.movingToolWidget.draw(this.svg, this.context);
       })
     );
 
     this.subscriptions.push(
       this.toolsService.isSelectionToolActivated.subscribe((value: boolean) => {
         this.selectionToolWidget.setEnabled(value);
-        this.mapChangeDetectorRef.detectChanges();
+        this.selectionToolWidget.draw(this.svg, this.context);
       })
     );
 
@@ -279,6 +307,10 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
     this.graphLayout.disconnect(this.svg);
     this.onChangesDetected.unsubscribe();
     this.subscriptions.forEach((subscription: Subscription) => {
@@ -287,12 +319,46 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public applyMapSettingsChanges() {
-    this.redraw();
+    this.scheduleRedraw();
+  }
+
+  // Coalesce redraw requests to at most one per animation frame. Every
+  // trigger (signal-driven data change via effect, changesDetected, zoom,
+  // resize, map settings) calls this instead of redraw() directly.
+  private scheduleRedraw(gated = false) {
+    if (this.rafId !== null) {
+      // Already scheduled this frame: a non-gated trigger (zoom, resize,
+      // settings, tool switches) makes the coalesced redraw unconditional.
+      if (!gated) this.pendingGated = false;
+      return;
+    }
+    this.pendingGated = gated;
+    this.rafId = requestAnimationFrame(() => {
+      this.rafId = null;
+      const runGated = this.pendingGated;
+      this.pendingGated = true;
+      this.redraw(runGated);
+    });
   }
 
   public createGraph(domElement: HTMLElement) {
     const rootElement = select(domElement);
     this.svg = rootElement.select<SVGSVGElement>('svg');
+    // Context is an app-lifetime singleton (provided in the eager
+    // CartographyModule), so its transformation (pan/scale), centerX/Y and size
+    // PERSIST across project open/close. Reset to a clean state here so every
+    // entry starts identically; redraw() then anchors the origin to the content
+    // center (getSize() leftSpace) from scratch.
+    this.context.transformation.x = 0;
+    this.context.transformation.y = 0;
+    this.context.transformation.k = 1;
+    this.context.centerX = null;
+    this.context.centerY = null;
+    // LayersManager is an app-lifetime singleton — its layer buckets carry
+    // over the previous project's nodes/links/drawings, which graphLayout.draw
+    // would render as a ghost frame before the first data redraw clears them.
+    this.layersManager.clear();
+    this.context.size = new Size(0, 0);
     this.graphLayout.connect(this.svg, this.context);
     this.graphLayout.draw(this.svg, this.context);
     this.mapChangeDetectorRef.hasBeenDrawn = true;
@@ -354,23 +420,36 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private changeLayout() {
-    if (this.parentNativeElement != null) {
-      this.context.size = this.getSize();
-    }
-
-    this.redraw();
+    this.scheduleRedraw();
   }
 
   private onSymbolsChange(change: SimpleChange) {
     this.graphDataManager.setSymbols(this.symbols());
   }
 
-  private redraw() {
+  private redraw(gated = false) {
     this.updateGrid();
 
-    this.graphDataManager.setNodes(this.nodes());
-    this.graphDataManager.setLinks(this.links());
-    this.graphDataManager.setDrawings(this.drawings());
+    if (gated) {
+      // Data-driven redraw (signal effect): skip the expensive full draw
+      // (graphDataManager conversion + D3 data-join + getBBox/getTotalLength
+      // reflows) when no canvas-rendered field changed since the last draw.
+      // This is what stops a flood of non-visual updates — e.g. per-def marker
+    }
+
+    // setNodes/setLinks/setDrawings perform incremental diff internally
+    // (per-item visual-signature comparison) and return AffectedIds describing
+    // exactly which items changed and in what visual groups.  If nothing
+    // changed and this is a data-driven (gated) redraw, skip entirely — same
+    // semantic as the old signature gate, but per-item instead of one blob.
+    const affected = emptyAffectedIds();
+    mergeAffected(affected, this.graphDataManager.setNodes(this.nodes()));
+    mergeAffected(affected, this.graphDataManager.setLinks(this.links()));
+    mergeAffected(affected, this.graphDataManager.setDrawings(this.drawings()));
+
+    if (gated && affectedIsEmpty(affected)) {
+      return;
+    }
 
     // Save current origin before getSize() potentially changes it — when new
     // content extends beyond the current canvas boundary getSize() grows the
@@ -381,11 +460,32 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     // Recalculate after setNodes/Drawings so graphDataManager has current positions.
     this.context.size = this.getSize();
 
-    // Restore origin to prevent visual canvas shifting. The size is updated to
-    // accommodate new content, but the <g> transform origin stays stable so
-    // existing elements don't jump (same pattern as node-drag locking).
-    this.context.centerX = savedCenterX;
-    this.context.centerY = savedCenterY;
+    // Origin anchor. On the FIRST redraw savedCenterX is null (createGraph
+    // reset), so adopt getSize()'s freshly-computed leftSpace/topSpace — the
+    // content-centered origin — rather than width()/2 (scene center). Scene
+    // center leaves content off-center whenever the content bbox ≠ scene center.
+    // Worse: the ngOnInit getSize() (:206) reads the app-singleton
+    // graphDataManager BEFORE this redraw's setNodes clears it, so the old
+    // width()/2 fallback anchored the first visit at scene center (off-center)
+    // while a re-visit — with leftover graphDataManager data — accidentally
+    // anchored at the previous content center. That was the "first open wrong,
+    // re-open right" symptom. Anchoring to the current getSize() result removes
+    // the dependency on leftover state and centers content on every open.
+    // On later redraws savedCenterX is non-null and stays locked (drag-lock).
+    this.context.centerX = savedCenterX ?? this.context.centerX;
+    this.context.centerY = savedCenterY ?? this.context.centerY;
+
+    // For gated (data-driven) redraws try incremental DOM patches first.
+    // When only node xY positions changed, targeted transform updates on the
+    // affected g.node elements are enough — no D3 data-join, no getBBox /
+    // getTotalLength reflows.  Structural changes (add/remove) and non-xY
+    // updates fall through to full graphLayout.draw below.
+    if (gated && !applyIncrementalPatches(this.svg, affected, this.graphDataManager, this.context)) {
+      this.textEditor().activateTextEditingForDrawings();
+      this.textEditor().activateTextEditingForNodeLabels();
+      this.mapSettingsService.mapRenderedEmitter.emit(true);
+      return;
+    }
 
     this.graphLayout.draw(this.svg, this.context);
     this.textEditor().activateTextEditingForDrawings();
@@ -416,4 +516,13 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   onResize(event) {
     this.changeLayout();
   }
+
+  /**
+   * Signature of the canvas-rendered fields of all nodes. Excludes non-visual
+   * fields (console*, command_line, node_directory, compute_id, properties,
+   * usage) so that e.g. a startup node.updated changing only console/properties
+   * does not re-render the map.
+   */
+
+
 }

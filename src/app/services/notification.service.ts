@@ -49,6 +49,15 @@ export class NotificationService {
     return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/notifications/ws?token=${controller.authToken}`;
   }
 
+  markerNotificationsPath(controller: Controller, project_id: string): string {
+    let protocol: string = 'ws';
+    if (controller.protocol === 'https:') {
+      protocol = 'wss';
+    }
+
+    return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/notifications/markers/ws?token=${controller.authToken}`;
+  }
+
   connectToComputeNotifications(controller: Controller) {
     // If already connected to the same controller, skip
     if (this.ws && this.currentController === controller) {
