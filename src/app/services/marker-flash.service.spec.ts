@@ -4,7 +4,7 @@ import { MarkerFlashService } from './marker-flash.service';
 
 /**
  * MarkerFlashService stores per-(linkId, dir) flash state in the `_flashing` signal
- * and schedules independent per-slot续命 timers. flash() only stages into a per-frame
+ * and schedules independent per-slot debounce timers. flash() only stages into a per-frame
  * buffer; a requestAnimationFrame flush applies it. We assert on the signal / timer
  * behaviour directly; DOM side-effects require an SVG and are exercised manually.
  */
@@ -131,7 +131,7 @@ describe('MarkerFlashService', () => {
       expect(flashing().has(key('link-custom'))).toBe(false);
     });
 
-    it('续命: a repeat flash within the window resets the timer', async () => {
+    it('renew: a repeat flash within the window resets the timer', async () => {
       service.flash('link-renew', null); // 800ms timer
       await settle();
       vi.advanceTimersByTime(500); // 300ms left on original
@@ -143,7 +143,7 @@ describe('MarkerFlashService', () => {
       expect(flashing().has(key('link-renew'))).toBe(false);
     });
 
-    it('方向变化不续命: tx and rx coexist with independent timers', async () => {
+    it('cross-direction: tx and rx coexist with independent timers', async () => {
       // tx at t=0, rx at t=200
       service.flash('link-1', null, null, 'tx', 'node-a');
       await settle();
@@ -165,7 +165,7 @@ describe('MarkerFlashService', () => {
       expect(flashing().has(key('link-1', 'rx'))).toBe(false);
     });
 
-    it('续命 only for same direction, not across directions', async () => {
+    it('renew only for same direction, not across directions', async () => {
       service.flash('link-1', 'red', null, 'tx', 'node-a');
       await settle();
       vi.advanceTimersByTime(700); // 100ms left on tx
@@ -176,7 +176,7 @@ describe('MarkerFlashService', () => {
       vi.advanceTimersByTime(101); // tx expired, rx still active
       expect(flashing().has(key('link-1', 'tx'))).toBe(false);
       expect(flashing().has(key('link-1', 'rx'))).toBe(true);
-      // Same direction should续命
+      // Same direction should renew
       service.flash('link-1', null, null, 'rx', 'node-b');
       await settle();
       vi.advanceTimersByTime(700); // rx should still be alive (timer reset at second rx call)

@@ -25,7 +25,7 @@ const ARROW_TANGENT_EPS = 6;
 
 /**
  * Composite-key helpers.  Entries are keyed by `linkId` + direction so that
- * tx and rx slots on the same link live independently (独立过期, 同方向续命).
+ * tx and rx slots on the same link live independently (independent expiry, same-direction renewal).
  * A null byte separates the two parts; linkIds are UUIDs so the separator is safe.
  */
 const SEP = '\x00';
@@ -37,13 +37,13 @@ let _seq = 0;
 
 /**
  * Flashes a link when its marker matches live traffic, and — when the match
- * carries a direction (`dir`) — draws evenly-spaced arrows (鱼鳞) along the link
+ * carries a direction (`dir`) — draws evenly-spaced arrows along the link
  * pointing toward the traffic receiver.
  *
  * State is a signal of composite-key → FlashState.  `flash(...)` only stages
  * the (linkId, dir) slot into a per-frame buffer (last-write-wins); a
  * requestAnimationFrame flush applies the whole frame's changes in ONE signal
- * update and renews each slot's timer once (同方向续命, 不同方向独立过期).
+ * update and renews each slot's timer once (same-direction renewal, cross-direction expiry).
  * This decouples cost from the marker.match rate — N thousand matches/sec still
  * process at ~60 flushes/sec.
  *
@@ -60,7 +60,7 @@ let _seq = 0;
 export class MarkerFlashService {
   /** composite-key → flash state. */
   private readonly _flashing = signal<ReadonlyMap<string, FlashState>>(new Map());
-  /** Per-slot debounce timers (续命). */
+  /** Per-slot debounce timers. */
   private readonly timers = new Map<string, ReturnType<typeof setTimeout>>();
   /** UI default highlight duration when a marker has no `highlight_duration`. */
   private readonly DEFAULT_FLASH_MS = 800;
@@ -113,9 +113,9 @@ export class MarkerFlashService {
 
   /**
    * Flash a link. Repeated calls with the same direction within the duration
-   * window keep that direction lit (续命).  Calls with a *different* direction
+   * window keep that direction lit.  Calls with a *different* direction
    * start an independent timer — the old direction stays active until its own
-   * timer expires (方向变化不续命).
+   * timer expires.
    *
    * @param color resolved marker color (hex), or null to use the default theme color.
    * @param durationMs how long to stay lit after the last match
@@ -161,7 +161,7 @@ export class MarkerFlashService {
     if (this.pending.size === 0) return;
     const updates = this.pending;
     this.pending = new Map();
-    // Renew each slot's timer once per frame (续命).
+    // Renew each slot's timer once per frame.
     for (const [key, { ms }] of updates) {
       clearTimeout(this.timers.get(key));
       this.timers.set(key, setTimeout(() => this.expire(key), ms));
