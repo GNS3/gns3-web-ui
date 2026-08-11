@@ -23,6 +23,7 @@ import { Symbol } from '@models/symbol';
 import { MapScaleService } from '@services/mapScale.service';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { ToolsService } from '@services/tools.service';
+import { affectedIsEmpty, emptyAffectedIds, mergeAffected } from '../../helpers/item-signature';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 import { GraphDataManager } from '../../managers/graph-data-manager';
 import { MapSettingsManager } from '../../managers/map-settings-manager';
@@ -94,11 +95,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   // so the gate can never skip a redraw the selection tool or canvas transform
   // needs. Any non-gated trigger in a frame downgrades the pending redraw.
   private pendingGated = true;
-  // Visual signatures of the last-drawn nodes/links/drawings (only
-  // canvas-rendered fields). The gated data redraw skips when none changed.
-  private lastNodeSig = '';
-  private lastLinkSig = '';
-  private lastDrawSig = '';
   protected settings = {
     show_interface_labels: true,
   };
@@ -358,9 +354,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.context.centerX = null;
     this.context.centerY = null;
     this.context.size = new Size(0, 0);
-    this.lastNodeSig = '';
-    this.lastLinkSig = '';
-    this.lastDrawSig = '';
     this.graphLayout.connect(this.svg, this.context);
     this.graphLayout.draw(this.svg, this.context);
     this.mapChangeDetectorRef.hasBeenDrawn = true;
@@ -437,25 +430,21 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       // (graphDataManager conversion + D3 data-join + getBBox/getTotalLength
       // reflows) when no canvas-rendered field changed since the last draw.
       // This is what stops a flood of non-visual updates — e.g. per-def marker
-      // config fanning out link.updated that only changes `markers`, or
-      // node.updated that only changes console/properties/command_line — from
-      // re-rendering the whole map. Non-gated redraws (zoom, resize, settings,
-      // tool switches) always run: the gate must never skip a redraw the
-      // selection tool or canvas transform depends on.
-      const nodeSig = this.signatureOfNodes(this.nodes());
-      const linkSig = this.signatureOfLinks(this.links());
-      const drawSig = this.signatureOfDrawings(this.drawings());
-      if (nodeSig === this.lastNodeSig && linkSig === this.lastLinkSig && drawSig === this.lastDrawSig) {
-        return;
-      }
-      this.lastNodeSig = nodeSig;
-      this.lastLinkSig = linkSig;
-      this.lastDrawSig = drawSig;
     }
 
-    this.graphDataManager.setNodes(this.nodes());
-    this.graphDataManager.setLinks(this.links());
-    this.graphDataManager.setDrawings(this.drawings());
+    // setNodes/setLinks/setDrawings perform incremental diff internally
+    // (per-item visual-signature comparison) and return AffectedIds describing
+    // exactly which items changed and in what visual groups.  If nothing
+    // changed and this is a data-driven (gated) redraw, skip entirely — same
+    // semantic as the old signature gate, but per-item instead of one blob.
+    const affected = emptyAffectedIds();
+    mergeAffected(affected, this.graphDataManager.setNodes(this.nodes()));
+    mergeAffected(affected, this.graphDataManager.setLinks(this.links()));
+    mergeAffected(affected, this.graphDataManager.setDrawings(this.drawings()));
+
+    if (gated && affectedIsEmpty(affected)) {
+      return;
+    }
 
     // Save current origin before getSize() potentially changes it — when new
     // content extends beyond the current canvas boundary getSize() grows the
@@ -517,87 +506,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
    * usage) so that e.g. a startup node.updated changing only console/properties
    * does not re-render the map.
    */
-  private signatureOfNodes(nodes: Node[]): string {
-    let s = '';
-    for (const n of nodes) {
-      s +=
-        n.node_id +
-        '|' +
-        n.x +
-        '|' +
-        n.y +
-        '|' +
-        n.z +
-        '|' +
-        n.symbol +
-        '|' +
-        n.symbol_url +
-        '|' +
-        n.width +
-        '|' +
-        n.height +
-        '|' +
-        n.status +
-        '|' +
-        n.locked +
-        '|' +
-        n.name +
-        '|' +
-        n.node_type +
-        '|' +
-        n.first_port_name +
-        '|' +
-        n.port_name_format +
-        '|' +
-        n.port_segment_size +
-        '|' +
-        JSON.stringify(n.label) +
-        '|' +
-        JSON.stringify(n.ports) +
-        '§';
-    }
-    return s;
-  }
 
-  /**
-   * Signature of the canvas-rendered fields of all links. `markers` is
-   * intentionally excluded: configuring a per-def marker fans out link.updated
-   * that changes only `markers` (which the link widget does not render — marker
-   * highlights are drawn separately by MarkerFlashService), so it must not
-   * trigger a map redraw.
-   */
-  private signatureOfLinks(links: Link[]): string {
-    let s = '';
-    for (const l of links) {
-      s +=
-        l.link_id +
-        '|' +
-        l.capturing +
-        '|' +
-        l.suspend +
-        '|' +
-        l.show_filters_icon +
-        '|' +
-        l.wireshark +
-        '|' +
-        l.link_type +
-        '|' +
-        JSON.stringify(l.filters) +
-        '|' +
-        JSON.stringify(l.link_style) +
-        '|' +
-        JSON.stringify(l.nodes) +
-        '§';
-    }
-    return s;
-  }
 
-  /** Signature of the canvas-rendered fields of all drawings (excludes project_id). */
-  private signatureOfDrawings(drawings: Drawing[]): string {
-    let s = '';
-    for (const d of drawings) {
-      s += d.drawing_id + '|' + d.x + '|' + d.y + '|' + d.z + '|' + d.rotation + '|' + d.locked + '|' + d.svg + '§';
-    }
-    return s;
-  }
 }

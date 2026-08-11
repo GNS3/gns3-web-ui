@@ -73,6 +73,29 @@ export abstract class DataSource<T> {
     }
   }
 
+  /**
+   * Batch-apply additions and removals with a single array-copy and
+   * dataChange emission. Existing items that were mutated in-place by the
+   * caller (Object.assign) do NOT need to be passed here — only structural
+   * changes (new / dropped keys) require applyBatch.
+   */
+  public applyBatch(additions: T[], removals: T[]): void {
+    for (const item of additions) {
+      this.data = [...this.data, item];
+      this.keyIndex.set(this.getItemKey(item), this.data.length - 1);
+    }
+
+    if (removals.length > 0) {
+      const removeKeys = new Set(removals.map((r) => this.getItemKey(r)));
+      this.data = this.data.filter((item) => !removeKeys.has(this.getItemKey(item)));
+      this.reindex();
+    }
+
+    // Fresh array reference so signal consumers re-fire
+    this.data = [...this.data];
+    this.dataChange.next(this.data);
+  }
+
   public get changes() {
     return this.dataChange;
   }
