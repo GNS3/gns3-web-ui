@@ -73,7 +73,7 @@ function sameSet(a: MarkerEntry[], b: MarkerEntry[]): boolean {
   if (a.length !== b.length) {
     return false;
   }
-  const key = (e: MarkerEntry) => `${e.linkId}\0${e.name}\0${e.bpf}\0${e.tag ?? ''}`;
+  const key = (e: MarkerEntry) => `${e.linkId}\0${e.name}\0${e.bpf}\0${e.tag ?? ''}\0${e.color ?? ''}`;
   const sa = new Set(a.map(key));
   for (const e of b) {
     if (!sa.has(key(e))) {

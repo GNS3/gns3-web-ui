@@ -26,6 +26,7 @@ import { affectedIsEmpty, emptyAffectedIds, mergeAffected } from '../../helpers/
 import { applyIncrementalPatches } from '../../helpers/dom-patcher';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 import { GraphDataManager } from '../../managers/graph-data-manager';
+import { LayersManager } from '../../managers/layers-manager';
 import { MapSettingsManager } from '../../managers/map-settings-manager';
 import { Context } from '../../models/context';
 import { Drawing } from '../../models/drawing';
@@ -106,6 +107,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   public drawingGridY: number = 0;
 
   private graphDataManager = inject(GraphDataManager);
+  private layersManager = inject(LayersManager);
   public context = inject(Context);
   private mapChangeDetectorRef = inject(MapChangeDetectorRef);
   private canvasSizeDetector = inject(CanvasSizeDetector);
@@ -198,7 +200,11 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     if (this.parentNativeElement !== null) {
       this.createGraph(this.parentNativeElement);
     }
-    this.context.size = this.getSize();
+    // context.size is already 0x0 from createGraph's reset — do NOT call
+    // getSize() here.  It runs before the first redraw's setNodes clears the
+    // app-singleton graphDataManager, so on a re-visit it reads the PREVIOUS
+    // project's nodes and leaks their content center into savedCenterX →
+    // the first redraw anchors origin to the wrong content center.
 
     // Initialize grid offsets based on project settings
     const project = this.project();
@@ -348,6 +354,10 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.context.transformation.k = 1;
     this.context.centerX = null;
     this.context.centerY = null;
+    // LayersManager is an app-lifetime singleton — its layer buckets carry
+    // over the previous project's nodes/links/drawings, which graphLayout.draw
+    // would render as a ghost frame before the first data redraw clears them.
+    this.layersManager.clear();
     this.context.size = new Size(0, 0);
     this.graphLayout.connect(this.svg, this.context);
     this.graphLayout.draw(this.svg, this.context);
