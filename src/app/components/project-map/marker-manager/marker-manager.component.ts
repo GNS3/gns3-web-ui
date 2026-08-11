@@ -409,6 +409,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     this.markerService.aggregateList(controller, project.project_id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (map: AggregateMarkerMap) => {
         this.linkGroups.set(this.buildGroups(map));
+        this.markerRegistryService.rebuildFromAggregate(map);
         this.cdr.markForCheck();
       },
       error: (err) => {
@@ -518,8 +519,6 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
       this.submittingDefinition.set(false);
       this.cancelEditDefinition();
       this.loadDefinitions();
-      // The fan-out emits link.updated → registry reconciles (legend/icons); also refresh
-      // the Links tab so inherited markers appear/disappear immediately.
       this.loadAggregate();
     };
     const fail = (err: any) => {
