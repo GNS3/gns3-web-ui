@@ -231,16 +231,15 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
 
   // ---- forms ----
   readonly definitionForm = new UntypedFormGroup({
-    name: new UntypedFormControl('', { updateOn: 'blur', validators: [Validators.required, notGlobalName] }),
-    bpf: new UntypedFormControl('', { updateOn: 'blur', validators: [Validators.required] }),
+    name: new UntypedFormControl('', [Validators.required, notGlobalName]),
+    bpf: new UntypedFormControl('', [Validators.required]),
     // `tag` is reserved for the upcoming traffic-replay feature. There's no UI for it
     // on definitions yet, so it stays null and submitDefinition()'s tag read is a no-op
     // until the field ships — kept here deliberately, not dead code.
-    tag: new UntypedFormControl(null, { updateOn: 'blur' }),
-    color: new UntypedFormControl(null, { updateOn: 'blur' }),
+    tag: new UntypedFormControl(null),
+    color: new UntypedFormControl(null),
     highlight_duration: new UntypedFormControl(800, {
       nonNullable: true,
-      updateOn: 'blur',
       validators: [Validators.required, Validators.min(1)],
     }),
     direction: new UntypedFormControl('both'),
@@ -250,13 +249,12 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   });
 
   readonly markerForm = new UntypedFormGroup({
-    name: new UntypedFormControl('', { updateOn: 'blur', validators: [Validators.required, notGlobalName] }),
-    bpf: new UntypedFormControl('', { updateOn: 'blur', validators: [Validators.required] }),
-    tag: new UntypedFormControl(null, { updateOn: 'blur' }),
-    color: new UntypedFormControl(null, { updateOn: 'blur' }),
+    name: new UntypedFormControl('', [Validators.required, notGlobalName]),
+    bpf: new UntypedFormControl('', [Validators.required]),
+    tag: new UntypedFormControl(null),
+    color: new UntypedFormControl(null),
     highlight_duration: new UntypedFormControl(800, {
       nonNullable: true,
-      updateOn: 'blur',
       validators: [Validators.required, Validators.min(1)],
     }),
     direction: new UntypedFormControl('both'),
