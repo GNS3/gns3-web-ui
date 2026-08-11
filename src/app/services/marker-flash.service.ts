@@ -262,7 +262,11 @@ export class MarkerFlashService {
       .style('stroke', null);
     // Remove ALL direction arrows (both tx and rx slots).
     group.selectAll('g.marker-arrow-tx, g.marker-arrow-rx').remove();
-    this.geoCache.delete(id);
+    // geoCache deliberately NOT deleted here: link geometry hasn't changed, and
+    // the next flash would re-trigger getTotalLength()/getPointAtLength() sync
+    // reflows on the whole SVG (~10k elements on a 1000-node topology).  The
+    // cache self-invalidates when the path's "d" attribute changes (node drag /
+    // link redraw), so persisting it across flash cycles is safe.
   }
 
   private selectLinkGroup(id: string) {

@@ -307,6 +307,7 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.template-menu 
 // ============================================= */
 .ethernet_link.marker-pulse,
 .serial_link.marker-pulse {
+  transition: none;
   stroke: var(--mat-sys-primary);
   stroke-width: 5px;
 }
