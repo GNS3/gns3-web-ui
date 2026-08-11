@@ -40,6 +40,7 @@ import {
   AggregateMarkerMap,
   MarkerDefinitionCreateBody,
   MarkerDefinitionMap,
+  MarkerMap,
 } from '@models/marker';
 import { MarkerService, MarkerWriteBody } from '@services/marker.service';
 import { LinkService } from '@services/link.service';
@@ -410,6 +411,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
       next: (map: AggregateMarkerMap) => {
         this.linkGroups.set(this.buildGroups(map));
         this.markerRegistryService.rebuildFromAggregate(map);
+        this.syncLinkMarkersFromAggregate(map);
         this.cdr.markForCheck();
       },
       error: (err) => {
@@ -450,6 +452,46 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     }
     groups.sort((a, b) => a.name.localeCompare(b.name));
     return groups;
+  }
+
+  /**
+   * Write the aggregate map's authoritative per-link marker state back into the
+   * cartography + map link objects.
+   *
+   * `marker.match` resolves the flash color from
+   * `linksDataSource.get(id).markers[name].color` on demand (it does not
+   * subscribe to changes), so a definition color edit that only refreshes the
+   * legend registry leaves the stored link object stale → the flash falls back
+   * to the default theme color until a full page reload. The aggregate view
+   * (`GET /projects/{pid}/markers`) carries every marker field for every link,
+   * so rebuilding each link's `markers` from it and mutating the stored objects
+   * in place (no emit, no redraw) is enough: the next `marker.match` reads the
+   * fresh color. Replacing (not merging) also drops markers removed by a
+   * definition delete; private markers are preserved because the aggregate
+   * includes them too.
+   */
+  private syncLinkMarkersFromAggregate(map: AggregateMarkerMap) {
+    const byLink = new Map<string, MarkerMap>();
+    for (const [key, entry] of Object.entries(map)) {
+      const linkId = entry.link_id;
+      if (!linkId) continue;
+      const slashIdx = key.indexOf('/');
+      const name = slashIdx >= 0 ? key.slice(slashIdx + 1) : key;
+      let mm = byLink.get(linkId);
+      if (!mm) {
+        mm = {};
+        byLink.set(linkId, mm);
+      }
+      // Strip the aggregate-only keys; keep every Marker field (bpf/color/dir/...).
+      const { link_id: _linkId, node_id: _nodeId, ...marker } = entry;
+      mm[name] = marker;
+    }
+    for (const [linkId, markers] of byLink) {
+      const link = this.linksDataSource.get(linkId);
+      if (link) link.markers = markers;
+      const mapLink = this.mapLinksDataSource.get(linkId);
+      if (mapLink) mapLink.markers = markers;
+    }
   }
 
   private linkName(linkId: string): string {
