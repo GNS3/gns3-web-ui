@@ -20,7 +20,6 @@ import { Link } from '@models/link';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
-import { MapScaleService } from '@services/mapScale.service';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { ToolsService } from '@services/tools.service';
 import { affectedIsEmpty, emptyAffectedIds, mergeAffected } from '../../helpers/item-signature';
@@ -117,7 +116,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   protected movingToolWidget = inject(MovingTool);
   public graphLayout = inject(GraphLayout);
   private toolsService = inject(ToolsService);
-  private mapScaleService = inject(MapScaleService);
   private mapSettingsService = inject(MapSettingsService);
 
   constructor() {
@@ -220,10 +218,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
           this.graphLayout.updateSelectionHighlights(this.svg);
         }
       })
-    );
-
-    this.subscriptions.push(
-      this.mapScaleService.scaleChangeEmitter.subscribe((value: number) => this.scheduleRedraw())
     );
 
     this.subscriptions.push(
