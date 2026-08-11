@@ -101,6 +101,18 @@ export class GraphDataManager {
           if (oldZ !== undefined && oldZ !== newZ) {
             this.layersManager.moveNode(existing, Number(oldZ));
           }
+          // A node position/size change bends every link connected to it.
+          // Mark those links in affected so the dom-patcher falls through to
+          // a full draw (which recomputes link paths from source/target) —
+          // otherwise the link path DOM keeps pointing at the old coordinates.
+          if (changed.includes('xY') || changed.includes('visual')) {
+            const linkSet = this.nodeToLinks.get(n.node_id);
+            if (linkSet) {
+              for (const lid of linkSet) {
+                affected.updates.set(lid, ['linkPath']);
+              }
+            }
+          }
         }
       }
     }
@@ -113,6 +125,7 @@ export class GraphDataManager {
           this.layersManager.removeNode(m);
         }
         this.nodeSig.delete(id);
+        this.nodeToLinks.delete(id);
         affected.removals.nodes.push(id);
       }
     }
@@ -138,8 +151,13 @@ export class GraphDataManager {
     // Rebuild nodeToLinks incrementally
     const oldLinkToNodes = new Map<string, [string, string]>();
     for (const [id, l] of existingMap) {
-      if (l.source?.id && l.target?.id) {
-        oldLinkToNodes.set(id, [l.source.id, l.target.id]);
+      // Register off link.nodes[].nodeId — LinkToMapLinkConverter does NOT
+      // populate source/target (those are resolved later in assignDataToLinks);
+      // reading source?.id here is always undefined on first load.
+      const sid = l.nodes[0]?.nodeId;
+      const tid = l.nodes[1]?.nodeId;
+      if (sid && tid) {
+        oldLinkToNodes.set(id, [sid, tid]);
       }
     }
 
@@ -151,8 +169,10 @@ export class GraphDataManager {
         additions.push(converted);
         this.linkSig.set(l.link_id, sigs);
         affected.additions.links.push(l.link_id);
-        if (converted.source?.id && converted.target?.id) {
-          this.registerLinkNodes(l.link_id, converted.source.id, converted.target.id);
+        const srcId = converted.nodes[0]?.nodeId;
+        const tgtId = converted.nodes[1]?.nodeId;
+        if (srcId && tgtId) {
+          this.registerLinkNodes(l.link_id, srcId, tgtId);
         }
       } else {
         const oldSigs = this.linkSig.get(l.link_id);
@@ -168,8 +188,10 @@ export class GraphDataManager {
             if (oldPair) {
               this.unregisterLinkNodes(l.link_id, oldPair[0], oldPair[1]);
             }
-            if (existing.source?.id && existing.target?.id) {
-              this.registerLinkNodes(l.link_id, existing.source.id, existing.target.id);
+            const srcId = existing.nodes[0]?.nodeId;
+            const tgtId = existing.nodes[1]?.nodeId;
+            if (srcId && tgtId) {
+              this.registerLinkNodes(l.link_id, srcId, tgtId);
             }
           }
         }

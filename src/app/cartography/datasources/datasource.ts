@@ -80,19 +80,25 @@ export abstract class DataSource<T> {
    * changes (new / dropped keys) require applyBatch.
    */
   public applyBatch(additions: T[], removals: T[]): void {
-    for (const item of additions) {
-      this.data = [...this.data, item];
-      this.keyIndex.set(this.getItemKey(item), this.data.length - 1);
+    // Single array copy for all additions (was O(K·N) — one [...data, item]
+    // per addition). Index each new item by its position directly.
+    if (additions.length > 0) {
+      const startIdx = this.data.length;
+      this.data = [...this.data, ...additions];
+      for (let i = 0; i < additions.length; i++) {
+        this.keyIndex.set(this.getItemKey(additions[i]), startIdx + i);
+      }
     }
 
     if (removals.length > 0) {
       const removeKeys = new Set(removals.map((r) => this.getItemKey(r)));
       this.data = this.data.filter((item) => !removeKeys.has(this.getItemKey(item)));
       this.reindex();
+    } else if (additions.length === 0) {
+      // Fresh array reference so signal consumers re-fire
+      this.data = [...this.data];
     }
 
-    // Fresh array reference so signal consumers re-fire
-    this.data = [...this.data];
     this.dataChange.next(this.data);
   }
 

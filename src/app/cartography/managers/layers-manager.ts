@@ -63,9 +63,11 @@ export class LayersManager {
     }
   }
 
-  public moveNode(node: MapNode, oldZ: number): void {
+  public moveNode(node: MapNode, _oldZ: number): void {
+    // node.z already holds the NEW z (set by the caller before move). Remove
+    // from any layer, then re-add so addNode routes to the new z bucket.
+    // Do NOT reset node.z to oldZ — that would undo the update.
     this.removeNode(node);
-    node.z = oldZ; // restored by caller if needed — we just route to new layer
     this.addNode(node);
   }
 
