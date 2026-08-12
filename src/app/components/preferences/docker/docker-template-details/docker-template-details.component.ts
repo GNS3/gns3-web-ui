@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatDialog } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { finalize } from 'rxjs';
@@ -40,6 +41,7 @@ import { ConfigureCustomAdaptersDialogComponent } from '../../../project-map/nod
     MatSelectModule,
     MatChipsModule,
     MatCheckboxModule,
+    CdkTextareaAutosize,
   ],
 })
 export class DockerTemplateDetailsComponent implements OnInit {

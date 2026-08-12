@@ -65,7 +65,7 @@ export class ConsoleDeviceActionBrowserComponent {
         if (ipaddr.IPv6.isValid(host)) {
           host = `[${host}]`;
         }
-        if (node.console_type === 'telnet' || node.console_type === 'ssh') {
+        if (node.console_type === 'telnet' || node.console_type === 'ssh' || node.console_type === 'docker_exec') {
           var console_port;
           if (auxiliary === true) {
             console_port = node.properties.aux;

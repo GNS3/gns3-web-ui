@@ -121,24 +121,24 @@
               <h6>Start command</h6>
               <mat-form-field class="form-field">
                 <mat-label>Start command</mat-label>
-                <textarea matInput [value]="startCommand()" (input)="startCommand.set($event.target.value)" placeholder='Command to run when the container starts (overrides image default CMD). E.g., python app.py, nginx -g "daemon off;"'></textarea>
+                <textarea matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12" [value]="startCommand()" (input)="startCommand.set($event.target.value)" placeholder='Command to run when the container starts (overrides image default CMD). E.g., python app.py, nginx -g "daemon off;"'></textarea>
               </mat-form-field>
               <h6>Environment</h6>
               <mat-form-field class="form-field">
                 <mat-label>Environment variables</mat-label>
-                <textarea matInput [value]="environment()" (input)="environment.set($event.target.value)" placeholder="Environment variables (one per line, KEY=VALUE format). Supports: %vm-name%, %vm-id%, %project-id%, %project-path%"></textarea>
+                <textarea matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12" [value]="environment()" (input)="environment.set($event.target.value)" placeholder="Environment variables (one per line, KEY=VALUE format). Supports: %vm-name%, %vm-id%, %project-id%, %project-path%"></textarea>
               </mat-form-field>
 
               <h6>Extra hosts</h6>
               <mat-form-field class="form-field">
                 <mat-label>Extra hosts</mat-label>
-                <textarea matInput [value]="extraHosts()" (input)="extraHosts.set($event.target.value)" placeholder="Hostname to IP mappings, one per line (e.g., gns3.com:192.168.100.10)"></textarea>
+                <textarea matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12" [value]="extraHosts()" (input)="extraHosts.set($event.target.value)" placeholder="Hostname to IP mappings, one per line (e.g., gns3.com:192.168.100.10)"></textarea>
               </mat-form-field>
 
               <h6>Additional volumes</h6>
               <mat-form-field class="form-field">
                 <mat-label>Additional volumes</mat-label>
-                <textarea matInput [value]="extraVolumes()" (input)="extraVolumes.set($event.target.value)" placeholder="Container directories to persist, one per line (e.g., /data&#10;/config)"></textarea>
+                <textarea matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12" [value]="extraVolumes()" (input)="extraVolumes.set($event.target.value)" placeholder="Container directories to persist, one per line (e.g., /data&#10;/config)"></textarea>
               </mat-form-field>
             </div>
           </mat-tab>

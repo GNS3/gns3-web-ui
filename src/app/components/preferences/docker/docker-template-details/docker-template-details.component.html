@@ -222,7 +222,7 @@
         <mat-form-field class="form-field">
           <mat-label>Start command</mat-label>
           <textarea
-            matInput
+            matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12"
             [value]="startCommand()"
             (input)="startCommand.set($event.target.value)"
             type="text"
@@ -233,7 +233,7 @@
         <mat-form-field class="form-field">
           <mat-label>Environment</mat-label>
           <textarea
-            matInput
+            matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12"
             [value]="environment()"
             (input)="environment.set($event.target.value)"
             type="text"
@@ -244,7 +244,7 @@
         <mat-form-field class="form-field">
           <mat-label>Extra volumes</mat-label>
           <textarea
-            matInput
+            matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12"
             [value]="extraVolumes()"
             (input)="extraVolumes.set($event.target.value)"
             type="text"
@@ -255,7 +255,7 @@
         <mat-form-field class="form-field">
           <mat-label>Extra hosts</mat-label>
           <textarea
-            matInput
+            matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12"
             [value]="extraHosts()"
             (input)="extraHosts.set($event.target.value)"
             type="text"
@@ -275,7 +275,7 @@
       <div class="preferences__usage-form">
         <mat-form-field class="preferences__usage-field--full">
           <mat-label>Usage</mat-label>
-          <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
+          <textarea matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12" [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
         </mat-form-field>
       </div>
       }

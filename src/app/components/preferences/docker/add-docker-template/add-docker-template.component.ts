@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '@models/compute';
 import { DockerImage } from '@models/docker/docker-image';
@@ -42,6 +43,7 @@ import { ToasterService } from '@services/toaster.service';
     MatSelectModule,
     MatStepperModule,
     MatCheckboxModule,
+    CdkTextareaAutosize,
   ],
 })
 export class AddDockerTemplateComponent implements OnInit {
