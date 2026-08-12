@@ -61,18 +61,11 @@
   }
 }
 
-.adapter-label,
-.adapter-port-name {
+.adapter-label {
   font-size: 16px;
   font-weight: 500;
   color: var(--mat-sys-on-surface);
   text-align: center;
-}
-
-.adapter-port-name {
-  padding: 8px;
-  background: color-mix(in srgb, var(--mat-sys-on-surface) 5%, transparent);
-  border-radius: 4px;
 }
 
 .adapter-actions {
