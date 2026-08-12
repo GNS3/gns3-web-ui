@@ -259,7 +259,11 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
             if (ipaddr.IPv6.isValid(host)) {
               host = `[${host}]`;
             }
-            if (node.console_type === 'telnet' || node.console_type === 'ssh') {
+            if (
+              node.console_type === 'telnet' ||
+              node.console_type === 'ssh' ||
+              node.console_type === 'docker_exec'
+            ) {
               this.protocolHandlerService.open(
                 `gns3+${node.console_type}://${host}:${node.console}?name=${encodeURIComponent(node.name)}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
