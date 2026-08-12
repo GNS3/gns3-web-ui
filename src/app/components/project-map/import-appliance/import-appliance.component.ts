@@ -154,6 +154,18 @@ export class ImportApplianceComponent implements OnInit {
         template.adapters = appliance.docker.adapters;
         template.console_type = appliance.docker.console_type;
         template.image = appliance.docker.image;
+        template.start_command = appliance.docker.start_command;
+        template.environment = appliance.docker.environment;
+        template.extra_hosts = appliance.docker.extra_hosts;
+        template.extra_volumes = appliance.docker.extra_volumes || [];
+        template.custom_adapters = appliance.custom_adapters || [];
+        template.mac_address = appliance.docker.mac_address;
+        template.cpus = appliance.docker.cpus;
+        template.memory = appliance.docker.mem_limit;
+        template.console_http_path = appliance.docker.console_http_path;
+        template.console_http_port = appliance.docker.console_http_port;
+        template.console_resolution = appliance.docker.console_resolution;
+        template.usage = appliance.usage;
       } else {
         this.toasterService.error('Template type not supported');
         return;
