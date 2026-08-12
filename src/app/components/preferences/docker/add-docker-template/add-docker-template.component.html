@@ -157,7 +157,7 @@
             <mat-form-field appearance="fill" class="docker-add__field">
               <mat-label>Environment</mat-label>
               <textarea
-                matInput
+                matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12"
                 type="text"
                 [value]="environment()"
                 (input)="environment.set($event.target.value)"
