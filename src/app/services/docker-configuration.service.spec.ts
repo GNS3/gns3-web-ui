@@ -19,18 +19,19 @@ describe('DockerConfigurationService', () => {
   });
 
   describe('getConsoleTypes', () => {
-    it('should return 6 console types', () => {
+    it('should return 7 console types', () => {
       const result = service.getConsoleTypes();
-      expect(result).toHaveLength(6);
+      expect(result).toHaveLength(7);
     });
 
-    it('should include telnet, ssh, vnc, http, https, none', () => {
+    it('should include telnet, ssh, vnc, http, https, docker_exec, none', () => {
       const result = service.getConsoleTypes();
       expect(result).toContain('telnet');
       expect(result).toContain('ssh');
       expect(result).toContain('vnc');
       expect(result).toContain('http');
       expect(result).toContain('https');
+      expect(result).toContain('docker_exec');
       expect(result).toContain('none');
     });
   });
