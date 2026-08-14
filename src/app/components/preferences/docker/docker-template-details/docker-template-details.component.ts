@@ -241,9 +241,10 @@ export class DockerTemplateDetailsComponent implements OnInit {
       return;
     }
 
-    // Validate extra config files: content requires a target path
-    if (this.extraConfigs().some((c) => (!c.target || !c.target.trim()) && (c.content || '').trim())) {
-      this.toasterService.error('Extra files: file content requires a container target path');
+    // Validate extra config files (target required with content, absolute path, no '..', unique)
+    const extraConfigsValidation = this.validationService.validateExtraConfigs(this.extraConfigs());
+    if (!extraConfigsValidation.isValid) {
+      this.toasterService.error(extraConfigsValidation.errorMessage);
       return;
     }
 
@@ -268,9 +269,11 @@ export class DockerTemplateDetailsComponent implements OnInit {
     this.dockerTemplate.environment = this.environment();
     this.dockerTemplate.extra_hosts = this.extraHosts();
     this.dockerTemplate.extra_volumes = this.extraVolumes() ? this.extraVolumes().split('\n').filter((v) => v.trim()) : [];
-    this.dockerTemplate.extra_configs = this.extraConfigs()
-      .filter((c) => c.target && c.target.trim())
+    const extraConfigs = this.extraConfigs()
+      .filter((c) => (c.target || '').trim())
       .map((c) => ({ target: c.target.trim(), content: c.content ?? '' }));
+    this.dockerTemplate.extra_configs = extraConfigs;
+    this.extraConfigs.set(extraConfigs); // drop blank rows so the editor matches what was saved
     this.dockerTemplate.usage = this.usage();
 
     this.dockerService.saveTemplate(this.controller, this.dockerTemplate).subscribe({

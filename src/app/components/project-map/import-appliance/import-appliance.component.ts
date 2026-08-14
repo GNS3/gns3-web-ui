@@ -158,7 +158,9 @@ export class ImportApplianceComponent implements OnInit {
         template.environment = appliance.docker.environment;
         template.extra_hosts = appliance.docker.extra_hosts;
         template.extra_volumes = appliance.docker.extra_volumes || [];
-        template.extra_configs = appliance.docker.extra_configs || [];
+        template.extra_configs = (appliance.docker.extra_configs || [])
+          .filter((c) => (c.target || '').trim())
+          .map((c) => ({ target: c.target.trim(), content: c.content ?? '' }));
         template.custom_adapters = appliance.custom_adapters || [];
         template.mac_address = appliance.docker.mac_address;
         template.cpus = appliance.docker.cpus;

@@ -1015,7 +1015,9 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     dockerTemplate.environment = docker.environment;
     dockerTemplate.extra_hosts = docker.extra_hosts;
     dockerTemplate.extra_volumes = docker.extra_volumes || [];
-    dockerTemplate.extra_configs = docker.extra_configs || [];
+    dockerTemplate.extra_configs = (docker.extra_configs || [])
+      .filter((c) => (c.target || '').trim())
+      .map((c) => ({ target: c.target.trim(), content: c.content ?? '' }));
     dockerTemplate.custom_adapters = this.applianceToInstall.custom_adapters || [];
     dockerTemplate.mac_address = docker.mac_address;
     dockerTemplate.cpus = docker.cpus;

@@ -128,6 +128,7 @@ describe('ConfiguratorDialogDockerComponent', () => {
       validateCpus: vi.fn().mockReturnValue({ isValid: true }),
       validateConsoleHttpPath: vi.fn().mockReturnValue({ isValid: true }),
       validateEnvironment: vi.fn().mockReturnValue({ isValid: true }),
+      validateExtraConfigs: vi.fn().mockReturnValue({ isValid: true }),
     };
 
     mockNodeService = {
@@ -315,6 +316,7 @@ describe('ConfiguratorDialogDockerComponent', () => {
       mockDockerValidationService.validateCpus.mockReturnValue({ isValid: true });
       mockDockerValidationService.validateConsoleHttpPath.mockReturnValue({ isValid: true });
       mockDockerValidationService.validateEnvironment.mockReturnValue({ isValid: true });
+      mockDockerValidationService.validateExtraConfigs.mockReturnValue({ isValid: true });
     });
 
     it('should show error toast when name is empty', () => {

@@ -250,9 +250,10 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
       return;
     }
 
-    // Validate extra config files: content requires a target path
-    if (this.extraConfigs().some((c) => (!c.target || !c.target.trim()) && (c.content || '').trim())) {
-      this.toasterService.error('Extra files: file content requires a container target path');
+    // Validate extra config files (target required with content, absolute path, no '..', unique)
+    const extraConfigsValidation = this.validationService.validateExtraConfigs(this.extraConfigs());
+    if (!extraConfigsValidation.isValid) {
+      this.toasterService.error(extraConfigsValidation.errorMessage);
       return;
     }
 
@@ -273,9 +274,11 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     this.node.properties.environment = this.environment();
     this.node.properties.extra_hosts = this.extraHosts();
     this.node.properties.extra_volumes = this.extraVolumes() ? this.extraVolumes().split('\n').filter((v) => v.trim()) : [] as any;
-    this.node.properties.extra_configs = this.extraConfigs()
-      .filter((c) => c.target && c.target.trim())
+    const extraConfigs = this.extraConfigs()
+      .filter((c) => (c.target || '').trim())
       .map((c) => ({ target: c.target.trim(), content: c.content ?? '' }));
+    this.node.properties.extra_configs = extraConfigs;
+    this.extraConfigs.set(extraConfigs); // drop blank rows so the editor matches what was saved
     this.node.properties.usage = this.usage();
 
     this.nodeService.updateNode(this.controller, this.node).subscribe({
