@@ -1,4 +1,5 @@
 import { CustomAdapter } from '../qemu/qemu-custom-adapter';
+import { ExtraConfig } from './extra-config';
 
 export class DockerTemplate {
   adapters: number;
@@ -17,6 +18,7 @@ export class DockerTemplate {
   environment: string;
   extra_hosts: string;
   extra_volumes: string[];
+  extra_configs: ExtraConfig[];
   image: string;
   memory: number;
   cpus: number;

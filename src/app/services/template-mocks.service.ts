@@ -257,6 +257,7 @@ export class TemplateMocksService {
       environment: '',
       extra_hosts: '',
       extra_volumes: [],
+      extra_configs: [],
       image: '',
       memory: 0,
       cpus: 0,

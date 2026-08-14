@@ -1,4 +1,5 @@
 import { CustomAdapter } from './qemu/qemu-custom-adapter';
+import { ExtraConfig } from './templates/extra-config';
 
 export interface Image {
   compression?: string;
@@ -33,6 +34,7 @@ export interface Docker {
   environment?: string;
   extra_hosts?: string;
   extra_volumes?: string[];
+  extra_configs?: ExtraConfig[];
   mac_address?: string;
   cpus?: number;
   mem_limit?: number;

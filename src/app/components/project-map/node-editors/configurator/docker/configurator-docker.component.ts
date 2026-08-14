@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -15,6 +15,7 @@ import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
+import { ExtraConfig } from '@models/templates/extra-config';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
@@ -95,6 +96,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   readonly environment = model('');
   readonly extraHosts = model('');
   readonly extraVolumes = model('');
+  readonly extraConfigs = signal<ExtraConfig[]>([]);
   readonly usage = model('');
 
   ngOnInit() {
@@ -121,6 +123,9 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
         this.extraHosts.set(node.properties.extra_hosts || '');
         const volumes = node.properties.extra_volumes;
         this.extraVolumes.set(Array.isArray(volumes) ? volumes.join('\n') : (volumes || ''));
+        this.extraConfigs.set(
+          (node.properties.extra_configs || []).map((c) => ({ target: c.target || '', content: c.content ?? '' }))
+        );
         this.usage.set(node.properties.usage || '');
 
         this.getConfiguration();
@@ -171,6 +176,22 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     let instance = this.dialogRef.componentInstance;
     instance.controller = this.controller;
     instance.node = this.node;
+  }
+
+  addExtraConfig() {
+    this.extraConfigs.update((configs) => [...configs, { target: '', content: '' }]);
+  }
+
+  removeExtraConfig(index: number) {
+    this.extraConfigs.update((configs) => configs.filter((_, i) => i !== index));
+  }
+
+  updateExtraConfigTarget(index: number, value: string) {
+    this.extraConfigs.update((configs) => configs.map((c, i) => (i === index ? { ...c, target: value } : c)));
+  }
+
+  updateExtraConfigContent(index: number, value: string) {
+    this.extraConfigs.update((configs) => configs.map((c, i) => (i === index ? { ...c, content: value } : c)));
   }
 
   onSaveClick() {
@@ -246,6 +267,9 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     this.node.properties.environment = this.environment();
     this.node.properties.extra_hosts = this.extraHosts();
     this.node.properties.extra_volumes = this.extraVolumes() ? this.extraVolumes().split('\n').filter((v) => v.trim()) : [] as any;
+    this.node.properties.extra_configs = this.extraConfigs()
+      .filter((c) => c.target && c.target.trim())
+      .map((c) => ({ target: c.target.trim(), content: c.content ?? '' }));
     this.node.properties.usage = this.usage();
 
     this.nodeService.updateNode(this.controller, this.node).subscribe({

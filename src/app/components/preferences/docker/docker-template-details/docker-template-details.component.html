@@ -267,6 +267,34 @@
     </section>
 
     <section class="docker-details__form-card">
+      <div class="docker-details__section-header" (click)="toggleSection('extraFiles')">
+        <h3 class="docker-details__section-title">Extra files</h3>
+        <mat-icon class="docker-details__expand-icon">{{ extraFilesExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </div>
+      @if (extraFilesExpanded) {
+      <div class="form-container">
+        <h6 class="docker-details__section-subtitle">Configuration files</h6>
+        @for (config of extraConfigs(); track $index) {
+          <mat-form-field class="form-field">
+            <mat-label>Container target path</mat-label>
+            <input matInput type="text" [value]="config.target" (input)="updateExtraConfigTarget($index, $event.target.value)" placeholder="/first_boot.cfg" />
+            <button matSuffix mat-icon-button type="button" (click)="removeExtraConfig($index)" aria-label="Remove configuration file">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <mat-label>File content</mat-label>
+            <textarea matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12" [value]="config.content || ''" (input)="updateExtraConfigContent($index, $event.target.value)" placeholder="File contents injected (read-only) into the container at the target path"></textarea>
+          </mat-form-field>
+        }
+        <button mat-stroked-button class="form-field" type="button" (click)="addExtraConfig()">
+          <mat-icon>add</mat-icon> Add configuration file
+        </button>
+      </div>
+      }
+    </section>
+
+    <section class="docker-details__form-card">
       <div class="docker-details__section-header" (click)="toggleSection('usage')">
         <h3 class="docker-details__section-title">Usage</h3>
         <mat-icon class="docker-details__expand-icon">{{ usageExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>

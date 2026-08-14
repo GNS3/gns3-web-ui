@@ -143,6 +143,28 @@
             </div>
           </mat-tab>
 
+          <mat-tab label="Extra files">
+            <div class="form-container">
+              <h6>Configuration files</h6>
+              @for (config of extraConfigs(); track $index) {
+                <mat-form-field class="form-field">
+                  <mat-label>Container target path</mat-label>
+                  <input matInput type="text" [value]="config.target" (input)="updateExtraConfigTarget($index, $event.target.value)" placeholder="/first_boot.cfg" />
+                  <button matSuffix mat-icon-button type="button" (click)="removeExtraConfig($index)" aria-label="Remove configuration file">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>File content</mat-label>
+                  <textarea matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12" [value]="config.content || ''" (input)="updateExtraConfigContent($index, $event.target.value)" placeholder="File contents injected (read-only) into the container at the target path"></textarea>
+                </mat-form-field>
+              }
+              <button mat-stroked-button class="form-field" type="button" (click)="addExtraConfig()">
+                <mat-icon>add</mat-icon> Add configuration file
+              </button>
+            </div>
+          </mat-tab>
+
           <mat-tab label="Usage">
             <div class="form-container">
               <mat-form-field class="form-field">

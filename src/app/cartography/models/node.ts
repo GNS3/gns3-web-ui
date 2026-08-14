@@ -1,5 +1,6 @@
 import { Port } from '@models/port';
 import { Label } from './label';
+import { ExtraConfig } from '@models/templates/extra-config';
 
 export class PortsMapping {
   name: string;
@@ -118,6 +119,7 @@ export class Properties {
   console_http_port?: number;
   console_http_path?: string;
   extra_volumes?: string;
+  extra_configs?: ExtraConfig[];
 }
 
 export class Node {
