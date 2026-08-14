@@ -241,6 +241,12 @@ export class DockerTemplateDetailsComponent implements OnInit {
       return;
     }
 
+    // Validate extra config files: content requires a target path
+    if (this.extraConfigs().some((c) => (!c.target || !c.target.trim()) && (c.content || '').trim())) {
+      this.toasterService.error('Extra files: file content requires a container target path');
+      return;
+    }
+
     // Update dockerTemplate from model signals
     this.dockerTemplate.name = this.name();
     this.dockerTemplate.default_name_format = this.defaultNameFormat();

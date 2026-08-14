@@ -67,6 +67,7 @@ describe('DockerTemplateDetailsComponent', () => {
     memory: 0,
     cpus: 0,
     extra_volumes: [],
+    extra_configs: [],
     name: 'Test Docker',
     start_command: '',
     symbol: 'docker',

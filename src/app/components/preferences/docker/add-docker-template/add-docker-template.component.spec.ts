@@ -50,6 +50,7 @@ describe('AddDockerTemplateComponent', () => {
     memory: 0,
     cpus: 0,
     extra_volumes: [],
+    extra_configs: [],
     name: '',
     start_command: '',
     symbol: 'docker',

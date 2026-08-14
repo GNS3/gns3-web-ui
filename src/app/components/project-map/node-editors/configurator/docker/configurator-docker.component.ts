@@ -250,6 +250,12 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
       return;
     }
 
+    // Validate extra config files: content requires a target path
+    if (this.extraConfigs().some((c) => (!c.target || !c.target.trim()) && (c.content || '').trim())) {
+      this.toasterService.error('Extra files: file content requires a container target path');
+      return;
+    }
+
     // Merge signal values back into node
     this.node.name = this.nodeName();
     this.node.properties.image = this.dockerImage();
