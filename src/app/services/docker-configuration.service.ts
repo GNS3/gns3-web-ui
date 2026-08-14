@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class DockerConfigurationService {
   getConsoleTypes() {
-    return ['telnet', 'ssh', 'vnc', 'http', 'https', 'none'];
+    return ['telnet', 'ssh', 'vnc', 'http', 'https', 'docker_exec', 'none'];
   }
 
   getAuxConsoleTypes() {

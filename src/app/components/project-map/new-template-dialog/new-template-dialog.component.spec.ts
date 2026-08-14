@@ -115,7 +115,22 @@ describe('NewTemplateDialogComponent', () => {
       name: 'Docker Appliance',
       qemu: null,
       emulator: 'Docker',
-      docker: { adapters: 1, console_type: 'telnet', image: 'ubuntu:latest' },
+      custom_adapters: [{ adapter_number: 0, adapter_type: 'e1000', port_name: 'mgmt0' }],
+      docker: {
+        adapters: 1,
+        console_type: 'telnet',
+        image: 'ubuntu:latest',
+        start_command: '/sbin/init',
+        environment: 'TERM=xterm',
+        extra_hosts: 'router:192.0.2.1',
+        extra_volumes: ['/etc/network'],
+        mac_address: '02:42:ac:11:00:02',
+        cpus: 2,
+        mem_limit: 1024,
+        console_http_path: '/console',
+        console_http_port: 8080,
+        console_resolution: '1920x1080',
+      },
     } as unknown as Appliance);
 
   const createDynamipsAppliance = (): Appliance =>
@@ -1005,6 +1020,20 @@ describe('NewTemplateDialogComponent', () => {
       expect(template.name).toBe('Brand new template');
       expect(template.template_type).toBe('docker');
       expect(template.image).toBe('ubuntu:latest');
+      expect(template.start_command).toBe('/sbin/init');
+      expect(template.environment).toBe('TERM=xterm');
+      expect(template.extra_hosts).toBe('router:192.0.2.1');
+      expect(template.extra_volumes).toEqual(['/etc/network']);
+      expect(template.custom_adapters).toEqual([
+        { adapter_number: 0, adapter_type: 'e1000', port_name: 'mgmt0' },
+      ]);
+      expect(template.mac_address).toBe('02:42:ac:11:00:02');
+      expect(template.cpus).toBe(2);
+      expect(template.memory).toBe(1024);
+      expect(template.console_http_path).toBe('/console');
+      expect(template.console_http_port).toBe(8080);
+      expect(template.console_resolution).toBe('1920x1080');
+      expect(template.usage).toBe('Test usage');
     });
 
     it('should show error toast when template creation fails', () => {

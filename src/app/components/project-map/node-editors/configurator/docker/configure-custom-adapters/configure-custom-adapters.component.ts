@@ -42,18 +42,22 @@ export class ConfigureCustomAdaptersDialogComponent implements OnInit {
     if (currentAdapters.length === 0 && this.node) {
       if (!this.node.custom_adapters) {
         this.node.ports.forEach((port, i) => {
-          currentAdapters.push({ adapter_number: i, mac_address: '' });
+          currentAdapters.push({ adapter_number: i, port_name: port?.name || '', mac_address: '' });
         });
       } else {
         currentAdapters.push(
-          ...this.node.custom_adapters.map((a: any) => ({ ...a, mac_address: a.mac_address || '' }))
+          ...this.node.custom_adapters.map((a: any) => ({
+            ...a,
+            port_name: a.port_name || '',
+            mac_address: a.mac_address || '',
+          }))
         );
       }
       this.adapters.set(currentAdapters);
     } else if (currentAdapters.length > 0) {
       // Ensure mac_address defaults to empty string
       this.adapters.update((adapters) =>
-        adapters.map((a) => ({ ...a, mac_address: a.mac_address || '' }))
+        adapters.map((a) => ({ ...a, port_name: a.port_name || '', mac_address: a.mac_address || '' }))
       );
     }
   }
@@ -65,9 +69,19 @@ export class ConfigureCustomAdaptersDialogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
+  onPortNameChange(adapterNumber: number, value: string) {
+    this.adapters.update((adapters) =>
+      adapters.map((a) => (a.adapter_number === adapterNumber ? { ...a, port_name: value } : a))
+    );
+    this.cdr.markForCheck();
+  }
+
   addAdapter() {
     const maxNumber = this.adapters().reduce((max, a) => Math.max(max, a.adapter_number), -1);
-    this.adapters.update((adapters) => [...adapters, { adapter_number: maxNumber + 1, mac_address: '' }]);
+    this.adapters.update((adapters) => [
+      ...adapters,
+      { adapter_number: maxNumber + 1, port_name: '', mac_address: '' },
+    ]);
   }
 
   removeAdapter(adapterNumber: number) {

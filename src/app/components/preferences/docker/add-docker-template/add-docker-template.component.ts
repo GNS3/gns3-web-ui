@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { v4 as uuid } from 'uuid';
 import { DockerImage } from '@models/docker/docker-image';
 import { Controller } from '@models/controller';
@@ -33,6 +34,7 @@ import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/t
     MatSelectModule,
     MatStepperModule,
     TemplateInfoFieldsComponent,
+    CdkTextareaAutosize,
   ],
 })
 export class AddDockerTemplateComponent implements OnInit {

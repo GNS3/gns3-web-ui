@@ -1,3 +1,5 @@
+import { CustomAdapter } from './qemu/qemu-custom-adapter';
+
 export interface Image {
   compression?: string;
   direct_download_url?: string;
@@ -27,6 +29,16 @@ export interface Docker {
   adapters: number;
   console_type: string;
   image: string;
+  start_command?: string;
+  environment?: string;
+  extra_hosts?: string;
+  extra_volumes?: string[];
+  mac_address?: string;
+  cpus?: number;
+  mem_limit?: number;
+  console_http_path?: string;
+  console_http_port?: number;
+  console_resolution?: string;
 }
 
 export interface Dynamips {
@@ -91,6 +103,7 @@ export interface Appliance {
   vendor_url: string;
   versions: Version[];
   tags: string[];
+  custom_adapters?: CustomAdapter[];
 
   docker: Docker;
   dynamips: Dynamips;

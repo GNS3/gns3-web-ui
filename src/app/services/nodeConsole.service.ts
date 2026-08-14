@@ -101,7 +101,7 @@ export class NodeConsoleService {
     let nodesToStartCounter = 0;
     nodes.forEach((n) => {
       // opening a console in tab is supported for terminal console types
-      if (n.console_type === 'telnet' || n.console_type === 'ssh') {
+      if (n.console_type === 'telnet' || n.console_type === 'ssh' || n.console_type === 'docker_exec') {
         if (n.status === 'started') {
           let url = this.router.url.split('/');
           let urlString = `/static/web-ui/${url[1]}/${url[2]}/${url[3]}/${url[4]}/nodes/${n.node_id}`;

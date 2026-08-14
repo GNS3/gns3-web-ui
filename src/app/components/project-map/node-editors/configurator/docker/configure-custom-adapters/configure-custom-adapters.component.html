@@ -11,7 +11,15 @@
     @for (adapter of adapters(); track adapter.adapter_number; let i = $index) {
     <div class="adapter-item">
       <span class="adapter-label">Adapter {{ adapter.adapter_number }}</span>
-      <span class="adapter-port-name">eth{{ adapter.adapter_number }}</span>
+      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
+        <input
+          matInput
+          [value]="adapter.port_name"
+          (input)="onPortNameChange(adapter.adapter_number, $event.target.value)"
+          name="port_name_{{ i }}"
+          placeholder="eth{{ adapter.adapter_number }}"
+        />
+      </mat-form-field>
       <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
         <input
           matInput
@@ -36,7 +44,7 @@
       Add adapter
     </button>
     <div class="info-note-text">
-      Docker port names are fixed (eth0, eth1...). Deleting an adapter reduces the total number of adapters.
+      Port names label each adapter in the topology (the in-container interface stays eth0, eth1…). Deleting an adapter reduces the total number of adapters.
     </div>
   </div>
 </div>

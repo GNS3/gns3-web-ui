@@ -66,7 +66,7 @@ export class HttpConsoleActionComponent {
         controller,
         project,
       });
-    } else if (node.console_type === 'telnet' || node.console_type === 'ssh') {
+    } else if (node.console_type === 'telnet' || node.console_type === 'ssh' || node.console_type === 'docker_exec') {
       // Terminal console: still use embedded widget (not inline window)
       this.mapSettingsService.logConsoleSubject.next(true);
       setTimeout(() => {

@@ -962,16 +962,29 @@ export class NewTemplateDialogComponent implements OnInit {
   private buildDockerTemplate(name: string): DockerTemplate {
     const appliance = this.applianceToInstall();
     let dockerTemplate: DockerTemplate = new DockerTemplate();
-    dockerTemplate.adapters = appliance.docker.adapters;
-    dockerTemplate.console_type = appliance.docker.console_type;
+    const docker = appliance.docker;
+    dockerTemplate.adapters = docker.adapters;
+    dockerTemplate.image = docker.image;
+    dockerTemplate.console_type = docker.console_type;
+    dockerTemplate.start_command = docker.start_command;
+    dockerTemplate.environment = docker.environment;
+    dockerTemplate.extra_hosts = docker.extra_hosts;
+    dockerTemplate.extra_volumes = docker.extra_volumes || [];
+    dockerTemplate.custom_adapters = appliance.custom_adapters || [];
+    dockerTemplate.mac_address = docker.mac_address;
+    dockerTemplate.cpus = docker.cpus;
+    dockerTemplate.memory = docker.mem_limit;
+    dockerTemplate.console_http_path = docker.console_http_path;
+    dockerTemplate.console_http_port = docker.console_http_port;
+    dockerTemplate.console_resolution = docker.console_resolution;
+    dockerTemplate.template_type = 'docker';
     dockerTemplate.category = this.getCategory();
     dockerTemplate.default_name_format = appliance.default_name_format;
     dockerTemplate.symbol = appliance.symbol;
     dockerTemplate.tags = appliance.tags || [];
+    dockerTemplate.usage = appliance.usage;
     dockerTemplate.compute_id = 'local';
     dockerTemplate.template_id = uuid();
-    dockerTemplate.image = appliance.docker.image;
-    dockerTemplate.template_type = 'docker';
     dockerTemplate.name = name;
     return dockerTemplate;
   }

@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -40,6 +41,7 @@ import { EditNetworkConfigurationDialogComponent } from './edit-network-configur
     MatChipsModule,
     MatIconModule,
     MatCheckboxModule,
+    CdkTextareaAutosize,
   ],
 })
 export class ConfiguratorDialogDockerComponent implements OnInit {

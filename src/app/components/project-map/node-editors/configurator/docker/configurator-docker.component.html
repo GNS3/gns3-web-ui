@@ -168,6 +168,10 @@
                 <mat-label>Start command</mat-label>
                 <textarea
                   matInput
+                  rows="1"
+                  cdkTextareaAutosize
+                  cdkAutosizeMinRows="1"
+                  cdkAutosizeMaxRows="12"
                   [value]="startCommand()"
                   (input)="startCommand.set($event.target.value)"
                   placeholder='Command to run when the container starts (overrides image default CMD). E.g., python app.py, nginx -g "daemon off;"'
@@ -178,6 +182,10 @@
                 <mat-label>Environment variables</mat-label>
                 <textarea
                   matInput
+                  rows="1"
+                  cdkTextareaAutosize
+                  cdkAutosizeMinRows="1"
+                  cdkAutosizeMaxRows="12"
                   [value]="environment()"
                   (input)="environment.set($event.target.value)"
                   placeholder="Environment variables (one per line, KEY=VALUE format). Supports: %vm-name%, %vm-id%, %project-id%, %project-path%"
@@ -189,6 +197,10 @@
                 <mat-label>Extra hosts</mat-label>
                 <textarea
                   matInput
+                  rows="1"
+                  cdkTextareaAutosize
+                  cdkAutosizeMinRows="1"
+                  cdkAutosizeMaxRows="12"
                   [value]="extraHosts()"
                   (input)="extraHosts.set($event.target.value)"
                   placeholder="Hostname to IP mappings, one per line (e.g., gns3.com:192.168.100.10)"
@@ -200,6 +212,10 @@
                 <mat-label>Additional volumes</mat-label>
                 <textarea
                   matInput
+                  rows="1"
+                  cdkTextareaAutosize
+                  cdkAutosizeMinRows="1"
+                  cdkAutosizeMaxRows="12"
                   [value]="extraVolumes()"
                   (input)="extraVolumes.set($event.target.value)"
                   placeholder="Container directories to persist, one per line (e.g., /data&#10;/config)"
