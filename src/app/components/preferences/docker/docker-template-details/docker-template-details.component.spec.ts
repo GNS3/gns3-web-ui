@@ -67,6 +67,7 @@ describe('DockerTemplateDetailsComponent', () => {
     memory: 0,
     cpus: 0,
     extra_volumes: [],
+    extra_configs: [],
     name: 'Test Docker',
     start_command: '',
     symbol: 'docker',
@@ -145,6 +146,7 @@ describe('DockerTemplateDetailsComponent', () => {
       validateCpus: vi.fn().mockReturnValue({ isValid: true }),
       validateConsoleHttpPort: vi.fn().mockReturnValue({ isValid: true }),
       validateEnvironment: vi.fn().mockReturnValue({ isValid: true }),
+      validateExtraConfigs: vi.fn().mockReturnValue({ isValid: true }),
     };
 
     await TestBed.configureTestingModule({

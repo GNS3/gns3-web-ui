@@ -59,6 +59,7 @@ describe('CopyDockerTemplateComponent', () => {
       memory: 0,
       cpus: 0,
       extra_volumes: [],
+      extra_configs: [],
       name: 'Original Docker Container',
       start_command: '',
       symbol: 'docker',

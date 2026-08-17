@@ -124,6 +124,7 @@ describe('NewTemplateDialogComponent', () => {
         environment: 'TERM=xterm',
         extra_hosts: 'router:192.0.2.1',
         extra_volumes: ['/etc/network'],
+        extra_configs: [{ target: '/etc/gns3/startup.cfg', content: 'hostname docker-node' }],
         mac_address: '02:42:ac:11:00:02',
         cpus: 2,
         mem_limit: 1024,
@@ -1024,6 +1025,9 @@ describe('NewTemplateDialogComponent', () => {
       expect(template.environment).toBe('TERM=xterm');
       expect(template.extra_hosts).toBe('router:192.0.2.1');
       expect(template.extra_volumes).toEqual(['/etc/network']);
+      expect(template.extra_configs).toEqual([
+        { target: '/etc/gns3/startup.cfg', content: 'hostname docker-node' },
+      ]);
       expect(template.custom_adapters).toEqual([
         { adapter_number: 0, adapter_type: 'e1000', port_name: 'mgmt0' },
       ]);

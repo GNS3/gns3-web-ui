@@ -15,6 +15,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { finalize } from 'rxjs';
 import { Controller } from '@models/controller';
 import { DockerTemplate } from '@models/templates/docker-template';
+import { ExtraConfig } from '@models/templates/extra-config';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { DockerService } from '@services/docker.service';
 import { ControllerService } from '@services/controller.service';
@@ -97,6 +98,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
   environment = model('');
   extraHosts = model('');
   extraVolumes = model('');
+  extraConfigs = signal<ExtraConfig[]>([]);
   usage = model('');
   readonly isPulling = signal(false);
 
@@ -135,6 +137,9 @@ export class DockerTemplateDetailsComponent implements OnInit {
             this.environment.set(dockerTemplate.environment || '');
             this.extraHosts.set(dockerTemplate.extra_hosts || '');
             this.extraVolumes.set((dockerTemplate.extra_volumes || []).join('\n'));
+            this.extraConfigs.set(
+              (dockerTemplate.extra_configs || []).map((c) => ({ target: c.target || '', content: c.content ?? '' }))
+            );
             this.usage.set(dockerTemplate.usage || '');
             this.cd.markForCheck();
           },
@@ -166,9 +171,15 @@ export class DockerTemplateDetailsComponent implements OnInit {
 
   toggleSection(section: string) {
     switch (section) {
-      case 'general': this.generalSettingsExpanded = !this.generalSettingsExpanded; break;
-      case 'advanced': this.advancedExpanded = !this.advancedExpanded; break;
-      case 'usage': this.usageExpanded = !this.usageExpanded; break;
+      case 'general':
+        this.generalSettingsExpanded = !this.generalSettingsExpanded;
+        break;
+      case 'advanced':
+        this.advancedExpanded = !this.advancedExpanded;
+        break;
+      case 'usage':
+        this.usageExpanded = !this.usageExpanded;
+        break;
     }
   }
 
@@ -233,6 +244,13 @@ export class DockerTemplateDetailsComponent implements OnInit {
       return;
     }
 
+    // Validate extra config files (target required with content, absolute path, no '..', unique)
+    const extraConfigsValidation = this.validationService.validateExtraConfigs(this.extraConfigs());
+    if (!extraConfigsValidation.isValid) {
+      this.toasterService.error(extraConfigsValidation.errorMessage);
+      return;
+    }
+
     // Update dockerTemplate from model signals
     this.dockerTemplate.name = this.name();
     this.dockerTemplate.default_name_format = this.defaultNameFormat();
@@ -258,6 +276,11 @@ export class DockerTemplateDetailsComponent implements OnInit {
           .split('\n')
           .filter((v) => v.trim())
       : [];
+    const extraConfigs = this.extraConfigs()
+      .filter((c) => (c.target || '').trim())
+      .map((c) => ({ target: c.target.trim(), content: c.content ?? '' }));
+    this.dockerTemplate.extra_configs = extraConfigs;
+    this.extraConfigs.set(extraConfigs); // drop blank rows so the editor matches what was saved
     this.dockerTemplate.usage = this.usage();
 
     this.dockerService.saveTemplate(this.controller, this.dockerTemplate).subscribe({
@@ -350,6 +373,22 @@ export class DockerTemplateDetailsComponent implements OnInit {
         this.symbol.set(result);
       }
     });
+  }
+
+  addExtraConfig() {
+    this.extraConfigs.update((configs) => [...configs, { target: '', content: '' }]);
+  }
+
+  removeExtraConfig(index: number) {
+    this.extraConfigs.update((configs) => configs.filter((_, i) => i !== index));
+  }
+
+  updateExtraConfigTarget(index: number, value: string) {
+    this.extraConfigs.update((configs) => configs.map((c, i) => (i === index ? { ...c, target: value } : c)));
+  }
+
+  updateExtraConfigContent(index: number, value: string) {
+    this.extraConfigs.update((configs) => configs.map((c, i) => (i === index ? { ...c, content: value } : c)));
   }
 
   addTag(event: MatChipInputEvent): void {

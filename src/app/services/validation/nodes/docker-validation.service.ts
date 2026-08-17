@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ValidationService, ValidationResult } from '../base/validation.service';
+import { ExtraConfig } from '@models/templates/extra-config';
 
 /**
  * Validation service for Docker nodes and templates
@@ -208,6 +209,59 @@ export class DockerValidationService {
           errorMessage: `${sectionLabel}, line ${i + 1}: Variable name "${key}" should be uppercase (e.g., ${key.toUpperCase()}=value)`,
         };
       }
+    }
+
+    return { isValid: true };
+  }
+
+  /**
+   * Validates extra config files
+   * Target must be a unique absolute container path without '..' segments;
+   * blank rows are ignored, but content without a target is rejected
+   * Optional field - an empty list passes validation
+   *
+   * Based on GNS3 server validation:
+   * - docker_vm.py: extra config target must be an absolute path
+   */
+  validateExtraConfigs(configs: ExtraConfig[]): ValidationResult {
+    const seenTargets = new Set<string>();
+
+    for (let i = 0; i < configs.length; i++) {
+      const target = (configs[i].target || '').trim();
+      const content = (configs[i].content || '').trim();
+      const row = i + 1;
+
+      if (!target) {
+        if (content) {
+          return {
+            isValid: false,
+            errorMessage: `Extra files, row ${row}: file content requires a container target path`,
+          };
+        }
+        continue; // entirely blank row, dropped on save
+      }
+
+      if (!target.startsWith('/')) {
+        return {
+          isValid: false,
+          errorMessage: `Extra files, row ${row}: target "${target}" must be an absolute path (e.g., /firstboot.cfg)`,
+        };
+      }
+
+      if (target.split('/').includes('..')) {
+        return {
+          isValid: false,
+          errorMessage: `Extra files, row ${row}: target "${target}" must not contain '..'`,
+        };
+      }
+
+      if (seenTargets.has(target)) {
+        return {
+          isValid: false,
+          errorMessage: `Extra files, row ${row}: duplicate target path "${target}"`,
+        };
+      }
+      seenTargets.add(target);
     }
 
     return { isValid: true };
