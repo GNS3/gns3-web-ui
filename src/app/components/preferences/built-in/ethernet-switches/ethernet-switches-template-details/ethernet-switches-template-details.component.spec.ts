@@ -13,6 +13,7 @@ import { TemplateSymbolDialogComponent } from '@components/project-map/template-
 import { Controller } from '@models/controller';
 import { EthernetSwitchTemplate } from '@models/templates/ethernet-switch-template';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { By } from '@angular/platform-browser';
 
 describe('EthernetSwitchesTemplateDetailsComponent', () => {
   let component: EthernetSwitchesTemplateDetailsComponent;
@@ -98,6 +99,8 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
         ['Security devices', 'firewall'],
       ]),
       getConsoleTypesForEthernetSwitches: vi.fn().mockReturnValue(['telnet', 'none']),
+      getEtherTypesForEthernetSwitches: vi.fn().mockReturnValue(['0x8100', '0x88A8', '0x9100', '0x9200']),
+      getPortTypesForEthernetSwitches: vi.fn().mockReturnValue(['access', 'dot1q', 'qinq']),
     };
 
     mockToasterService = {
@@ -259,10 +262,6 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
     beforeEach(async () => {
       fixture.detectChanges();
       await fixture.whenStable();
-      // Mock the portsComponent ViewChild
-      component.portsComponent = {
-        ethernetPorts: mockEthernetSwitchTemplate.ports_mapping,
-      } as any;
     });
 
     it('should update ethernetSwitchTemplate from form values before saving', () => {
@@ -300,6 +299,25 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
       component.onSave();
 
       expect(mockToasterService.success).toHaveBeenCalledWith('Changes saved');
+    });
+
+    it('should retain added ports after leaving the port section', () => {
+      component.selectSection('ports');
+      fixture.detectChanges();
+      const portsComponent = fixture.debugElement.query(By.directive(PortsComponent))
+        .componentInstance as PortsComponent;
+      portsComponent.newPortNumber.set(2);
+
+      portsComponent.onAdd();
+      component.selectSection('general');
+      fixture.detectChanges();
+      component.onSave();
+
+      expect(component.ethernetSwitchTemplate.ports_mapping.map((port) => port.port_number)).toEqual([0, 1, 2]);
+      expect(mockBuiltInTemplatesService.saveTemplate).toHaveBeenCalledWith(
+        mockController,
+        expect.objectContaining({ ports_mapping: component.ethernetSwitchTemplate.ports_mapping })
+      );
     });
   });
 
@@ -461,46 +479,18 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
     });
   });
 
-  describe('toggleSection', () => {
+  describe('section navigation', () => {
     beforeEach(async () => {
       fixture.detectChanges();
       await fixture.whenStable();
     });
 
-    it('should toggle generalSettingsExpanded when section is general', () => {
-      const initialValue = component.generalSettingsExpanded();
+    it('should activate the selected section', () => {
+      component.selectSection('ports');
+      expect(component.activeSection).toBe('ports');
 
-      component.toggleSection('general');
-
-      expect(component.generalSettingsExpanded()).toBe(!initialValue);
-    });
-
-    it('should toggle portsExpanded when section is ports', () => {
-      const initialValue = component.portsExpanded();
-
-      component.toggleSection('ports');
-
-      expect(component.portsExpanded()).toBe(!initialValue);
-    });
-
-    it('should toggle usageExpanded when section is usage', () => {
-      const initialValue = component.usageExpanded();
-
-      component.toggleSection('usage');
-
-      expect(component.usageExpanded()).toBe(!initialValue);
-    });
-
-    it('should not toggle for unknown section', () => {
-      const generalInitial = component.generalSettingsExpanded();
-      const portsInitial = component.portsExpanded();
-      const usageInitial = component.usageExpanded();
-
-      component.toggleSection('unknown');
-
-      expect(component.generalSettingsExpanded()).toBe(generalInitial);
-      expect(component.portsExpanded()).toBe(portsInitial);
-      expect(component.usageExpanded()).toBe(usageInitial);
+      component.selectSection('usage');
+      expect(component.activeSection).toBe('usage');
     });
   });
 });

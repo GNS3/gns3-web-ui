@@ -24,10 +24,10 @@
       <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
     </nav>
     <section class="ethernet-switch-details__form-card">
-      <div class="ethernet-switch-details__section-header" (click)="toggleSection('general')">
+      <div class="ethernet-switch-details__section-header" (click)="selectSection('general')">
         <h3 class="ethernet-switch-details__section-title">General settings</h3>
         <mat-icon class="ethernet-switch-details__expand-icon">{{
-          generalSettingsExpanded() ? 'expand_less' : 'expand_more'
+          activeSection === 'general' ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
       @if (activeSection === 'general') {
@@ -65,7 +65,13 @@
               placeholder="Symbol"
             />
           </mat-form-field>
-          <button mat-stroked-button color="primary" class="ethernet-switch-details__symbol-btn" (click)="chooseSymbol()">
+          <button
+            mat-stroked-button
+            color="primary"
+            type="button"
+            class="ethernet-switch-details__symbol-btn"
+            (click)="chooseSymbol()"
+          >
             <mat-icon>add</mat-icon>
             Choose symbol
           </button>
@@ -116,22 +122,25 @@
     </section>
 
     <section class="ethernet-switch-details__form-card">
-      <div class="ethernet-switch-details__section-header" (click)="toggleSection('ports')">
+      <div class="ethernet-switch-details__section-header" (click)="selectSection('ports')">
         <h3 class="ethernet-switch-details__section-title">Port settings</h3>
         <mat-icon class="ethernet-switch-details__expand-icon">{{
-          portsExpanded() ? 'expand_less' : 'expand_more'
+          activeSection === 'ports' ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
       @if (activeSection === 'ports') {
-      <app-ports #ports [ethernetPorts]="ethernetSwitchTemplate.ports_mapping"></app-ports>
+      <app-ports
+        [ethernetPorts]="ethernetSwitchTemplate.ports_mapping"
+        (ethernetPortsChange)="ethernetSwitchTemplate.ports_mapping = $event"
+      ></app-ports>
       }
     </section>
 
     <section class="ethernet-switch-details__form-card">
-      <div class="ethernet-switch-details__section-header" (click)="toggleSection('usage')">
+      <div class="ethernet-switch-details__section-header" (click)="selectSection('usage')">
         <h3 class="ethernet-switch-details__section-title">Usage</h3>
         <mat-icon class="ethernet-switch-details__expand-icon">{{
-          usageExpanded() ? 'expand_less' : 'expand_more'
+          activeSection === 'usage' ? 'expand_less' : 'expand_more'
         }}</mat-icon>
       </div>
       @if (activeSection === 'usage') {

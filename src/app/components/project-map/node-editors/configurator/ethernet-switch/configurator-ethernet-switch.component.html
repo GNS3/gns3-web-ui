@@ -59,7 +59,10 @@
           </mat-form-field>
         </div>
         @if (node.properties) {
-        <app-ports #ports [ethernetPorts]="node.properties.ports_mapping"></app-ports>
+        <app-ports
+          [ethernetPorts]="node.properties.ports_mapping"
+          (ethernetPortsChange)="node.properties.ports_mapping = $event"
+        ></app-ports>
         }
       </mat-card>
     </div>

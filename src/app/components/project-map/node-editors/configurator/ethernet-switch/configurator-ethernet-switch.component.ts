@@ -1,6 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, viewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -25,8 +23,6 @@ import { ValidationService } from '@services/validation';
   // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
-    FormsModule,
     MatDialogModule,
     MatCardModule,
     MatFormFieldModule,
@@ -39,8 +35,6 @@ import { ValidationService } from '@services/validation';
   ],
 })
 export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
-  readonly portsComponent = viewChild(PortsComponent);
-
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogEthernetSwitchComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
@@ -98,7 +92,6 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
     this.node.name = this.nodeName();
     this.node.console_type = this.consoleType();
 
-    this.node.properties.ports_mapping = this.portsComponent().ethernetPorts;
     this.nodeService.updateNode(this.controller, this.node).subscribe({
       next: () => {
         this.toasterService.success(`Node ${this.node.name} updated.`);

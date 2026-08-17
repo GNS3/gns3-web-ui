@@ -1,26 +1,109 @@
 .ports {
   display: block;
   width: 100%;
-  overflow: hidden;
   flex-shrink: 0;
 }
 
-.ports__add-row {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 8px;
-  align-items: flex-start;
-  padding: 16px 24px;
+.ports__table-container {
+  overflow-x: auto;
 }
 
+.ports__table {
+  width: 100%;
+  min-width: 720px;
+}
+
+/* The node configurator applies generic cell padding to every table in the
+   dialog. Keep this reusable table on Material's density row metrics in both
+   the template page and the node dialog. */
+.ports__table .mat-mdc-header-row {
+  height: var(--mat-table-header-container-height);
+  min-height: var(--mat-table-header-container-height);
+}
+
+.ports__table .mat-mdc-row {
+  height: var(--mat-table-row-item-container-height);
+  min-height: var(--mat-table-row-item-container-height);
+}
+
+.ports__table :is(.mat-mdc-header-cell, .mat-mdc-cell) {
+  padding-block: 0;
+  padding-inline: var(--gns3-density-space-4);
+}
+
+.ports__bulk-toolbar,
+.ports__add-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gns3-density-space-2);
+  align-items: flex-start;
+  padding: var(--gns3-density-space-4) var(--gns3-density-space-5);
+}
+
+.ports__bulk-toolbar {
+  align-items: center;
+  background: var(--mat-sys-surface-container-low, rgba(0, 0, 0, 0.03));
+}
+
+.ports__selection-count {
+  min-width: 80px;
+}
+
+.ports__field {
+  min-width: 120px;
+  flex: 1 1 140px;
+}
+
+.ports__bulk-btn,
 .ports__add-btn {
-  margin-top: 4px;
-  height: 48px;
+  align-self: center;
+  white-space: nowrap;
+}
+
+.ports__cell-input {
+  width: 80px;
+  height: var(--gns3-density-control-height-sm);
+  box-sizing: border-box;
+  padding: var(--gns3-density-space-2);
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+}
+
+.ports__cell-select {
+  min-width: 90px;
+  padding-block: var(--gns3-density-space-2);
+}
+
+.ports__add-row {
+  flex-wrap: nowrap;
+  align-items: center;
+  border-top: 1px solid var(--mat-sys-outline-variant, rgba(0, 0, 0, 0.12));
+}
+
+.ports__add-row .ports__field {
+  min-width: 0;
+  flex: 1 1 0;
+}
+
+.ports__add-row .ports__add-btn {
+  flex: 0 0 auto;
 }
 
 @media (max-width: 768px) {
-  .ports__add-row {
+  .ports__add-row,
+  .ports__bulk-toolbar {
     flex-direction: column;
-    padding: 16px;
+    padding: var(--gns3-density-space-4);
+  }
+
+  .ports__add-row {
+    align-items: stretch;
+  }
+
+  .ports__field {
+    width: 100%;
   }
 }

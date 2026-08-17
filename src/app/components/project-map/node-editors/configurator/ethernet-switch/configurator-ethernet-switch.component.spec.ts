@@ -9,7 +9,6 @@ import { BuiltInTemplatesConfigurationService } from '@services/built-in-templat
 import { ValidationService } from '@services/validation';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
-import { PortsComponent } from '@components/preferences/common/ports/ports.component';
 import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
@@ -78,11 +77,6 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
     component = fixture.componentInstance;
     component.controller = mockController;
     component.node = mockNode as Node;
-    // Mock the portsComponent viewChild
-    Object.defineProperty(component, 'portsComponent', {
-      get: () => () => ({ ethernetPorts: [] }),
-      configurable: true,
-    });
     fixture.detectChanges();
   });
 

@@ -1,47 +1,169 @@
 <div class="ports">
-  <table mat-table [dataSource]="ethernetPorts" class="ports__table">
-    <ng-container matColumnDef="port_number">
-      <th mat-header-cell *matHeaderCellDef>Port number</th>
-      <td mat-cell *matCellDef="let element">{{ element.port_number }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="vlan">
-      <th mat-header-cell *matHeaderCellDef>VLAN</th>
-      <td mat-cell *matCellDef="let element">{{ element.vlan }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="type">
-      <th mat-header-cell *matHeaderCellDef>Type</th>
-      <td mat-cell *matCellDef="let element">{{ element.type }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="ethertype">
-      <th mat-header-cell *matHeaderCellDef>EtherType</th>
-      <td mat-cell *matCellDef="let element">{{ element.ethertype }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef>Actions</th>
-      <td mat-cell *matCellDef="let element">
-        <button mat-icon-button matTooltip="Delete port" matTooltipClass="custom-tooltip" (click)="delete(element)">
-          <mat-icon aria-label="Delete port">delete</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
-
-  <div class="ports__add-row">
-    <mat-form-field class="ports__field">
-      <input matInput type="number" min="0" [value]="newPortNumber()" (input)="newPortNumber.set(+$event.target.value)" placeholder="Port" />
+  <div class="ports__bulk-toolbar" role="group" aria-label="Bulk port update">
+    <span class="ports__selection-count">{{ selectedPorts.size }} selected</span>
+    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+      <mat-label>VLAN</mat-label>
+      <input
+        matInput
+        type="number"
+        min="1"
+        max="4094"
+        [value]="bulkVlan() ?? ''"
+        (input)="bulkVlan.set($event.target.value === '' ? null : +$event.target.value)"
+      />
     </mat-form-field>
-    <mat-form-field class="ports__field">
-      <input matInput type="number" min="1" max="65535" [value]="newPortVlan()" (input)="newPortVlan.set(+$event.target.value)" placeholder="VLAN" />
+    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+      <mat-label>Type</mat-label>
+      <mat-select [value]="bulkType()" (selectionChange)="updateBulkType($event.value)">
+        <mat-option value="">No change</mat-option>
+        @for (type of portTypes(); track type) {
+        <mat-option [value]="type">{{ type }}</mat-option>
+        }
+      </mat-select>
     </mat-form-field>
-    <mat-form-field class="ports__field">
-      <mat-select placeholder="Type" [value]="newPortType()" (selectionChange)="newPortType.set($event.value)">
+    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+      <mat-label>EtherType</mat-label>
+      <mat-select [value]="bulkEthertype()" (selectionChange)="updateBulkEthertype($event.value)">
+        <mat-option value="">No change</mat-option>
+        @for (type of etherTypes(); track type) {
+        <mat-option [value]="type">{{ type }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <button mat-flat-button color="primary" type="button" class="ports__bulk-btn" (click)="applyBulkChanges()">
+      Apply to ports
+    </button>
+  </div>
+
+  <div class="ports__table-container">
+    <table mat-table [dataSource]="ethernetPorts" class="ports__table">
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            aria-label="Select all ports"
+            [checked]="allPortsSelected()"
+            [indeterminate]="somePortsSelected()"
+            (change)="toggleAll($event.checked)"
+          ></mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-checkbox
+            [aria-label]="'Select port ' + element.port_number"
+            [checked]="selectedPorts.has(element)"
+            (change)="togglePort(element, $event.checked)"
+          ></mat-checkbox>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="port_number">
+        <th mat-header-cell *matHeaderCellDef>Port number</th>
+        <td mat-cell *matCellDef="let element">{{ element.port_number }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="vlan">
+        <th mat-header-cell *matHeaderCellDef>VLAN</th>
+        <td mat-cell *matCellDef="let element">
+          <input
+            class="ports__cell-input"
+            type="number"
+            min="1"
+            max="4094"
+            [value]="element.vlan"
+            [attr.aria-label]="'VLAN for port ' + element.port_number"
+            (change)="updateVlan(element, $event.target.valueAsNumber, $event.target)"
+          />
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let element">
+          <mat-select
+            class="ports__cell-select"
+            [value]="element.type"
+            [aria-label]="'Type for port ' + element.port_number"
+            (selectionChange)="updatePortType(element, $event.value)"
+          >
+            @for (type of portTypes(); track type) {
+            <mat-option [value]="type">{{ type }}</mat-option>
+            }
+          </mat-select>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="ethertype">
+        <th mat-header-cell *matHeaderCellDef>EtherType</th>
+        <td mat-cell *matCellDef="let element">
+          <mat-select
+            class="ports__cell-select"
+            [value]="element.ethertype"
+            [aria-label]="'EtherType for port ' + element.port_number"
+            (selectionChange)="updatePortEthertype(element, $event.value)"
+          >
+            @for (type of etherTypes(); track type) {
+            <mat-option [value]="type">{{ type }}</mat-option>
+            }
+          </mat-select>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let element">
+          <button
+            mat-icon-button
+            type="button"
+            aria-label="Delete port"
+            matTooltip="Delete port"
+            matTooltipClass="custom-tooltip"
+            (click)="delete(element)"
+          >
+            <mat-icon aria-hidden="true">delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+
+  <div class="ports__add-row" role="group" aria-label="Add ports">
+    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+      <mat-label>Starting port</mat-label>
+      <input
+        matInput
+        type="number"
+        min="0"
+        [value]="newPortNumber()"
+        (input)="newPortNumber.set($event.target.valueAsNumber)"
+        placeholder="Port"
+      />
+    </mat-form-field>
+    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+      <mat-label>Number of ports</mat-label>
+      <input
+        matInput
+        type="number"
+        min="1"
+        [value]="newPortCount()"
+        (input)="newPortCount.set($event.target.valueAsNumber)"
+      />
+    </mat-form-field>
+    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+      <mat-label>VLAN</mat-label>
+      <input
+        matInput
+        type="number"
+        min="1"
+        max="4094"
+        [value]="newPortVlan()"
+        (input)="newPortVlan.set($event.target.valueAsNumber)"
+        placeholder="VLAN"
+      />
+    </mat-form-field>
+    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+      <mat-select placeholder="Type" [value]="newPortType()" (selectionChange)="updateNewPortType($event.value)">
         @for (type of portTypes(); track type) {
         <mat-option [value]="type">
           {{ type }}
@@ -49,8 +171,12 @@
         }
       </mat-select>
     </mat-form-field>
-    <mat-form-field class="ports__field">
-      <mat-select placeholder="EtherType" [value]="newPortEthertype()" (selectionChange)="newPortEthertype.set($event.value)">
+    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+      <mat-select
+        placeholder="EtherType"
+        [value]="newPortEthertype()"
+        (selectionChange)="updateNewPortEthertype($event.value)"
+      >
         @for (type of etherTypes(); track type) {
         <mat-option [value]="type">
           {{ type }}
@@ -58,6 +184,6 @@
         }
       </mat-select>
     </mat-form-field>
-    <button mat-button class="ports__add-btn" (click)="onAdd()">Add</button>
+    <button mat-flat-button color="primary" class="ports__add-btn" type="button" (click)="onAdd()">Add ports</button>
   </div>
 </div>

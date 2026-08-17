@@ -1,3 +1,4 @@
+import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PortsComponent } from './ports.component';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
@@ -59,7 +60,7 @@ describe('PortsComponent', () => {
     });
   });
 
-  describe('ngOnInit', () => {
+  describe('lifecycle hooks', () => {
     it('should call getConfiguration on init', () => {
       const getConfigurationSpy = vi.spyOn(component, 'getConfiguration');
       component.ngOnInit();
@@ -76,6 +77,21 @@ describe('PortsComponent', () => {
       component.ethernetPorts = [];
       component.ngOnInit();
       expect(component.newPortNumber()).toBe(0);
+    });
+
+    it('should refresh derived state when the input port list is replaced', () => {
+      const stalePort = createMockPort({ port_number: 0 });
+      component.ethernetPorts = [stalePort];
+      component.togglePort(stalePort, true);
+
+      const replacementPorts = [createMockPort({ port_number: 0 }), createMockPort({ port_number: 1 })];
+      component.ethernetPorts = replacementPorts;
+      component.ngOnChanges({
+        ethernetPorts: new SimpleChange([stalePort], replacementPorts, false),
+      });
+
+      expect(component.newPortNumber()).toBe(2);
+      expect(component.selectedPorts.size).toBe(0);
     });
   });
 
@@ -145,7 +161,40 @@ describe('PortsComponent', () => {
       expect(component.ethernetPorts[2].name).toBe('Ethernet2');
     });
 
-    it('should preserve port properties when adding', () => {
+    it('should add a range of ports with shared settings', () => {
+      component.ethernetPorts = [];
+      component.newPortNumber.set(4);
+      component.newPortCount.set(3);
+      component.newPortVlan.set(20);
+
+      component.onAdd();
+
+      expect(component.ethernetPorts.map((port) => port.port_number)).toEqual([4, 5, 6]);
+      expect(component.ethernetPorts.every((port) => port.vlan === 20)).toBe(true);
+      expect(component.newPortNumber()).toBe(0);
+    });
+
+    it('should reject the entire range when one port already exists', () => {
+      component.ethernetPorts = [createMockPort({ port_number: 5 })];
+      component.newPortNumber.set(4);
+      component.newPortCount.set(3);
+
+      component.onAdd();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Port number 5 already exists.');
+      expect(component.ethernetPorts.map((port) => port.port_number)).toEqual([5]);
+    });
+
+    it('should reject an empty starting port instead of treating it as zero', () => {
+      component.newPortNumber.set(Number.NaN);
+
+      component.onAdd();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Port number must be a non-negative integer.');
+      expect(component.ethernetPorts).toEqual([]);
+    });
+
+    it('should use QinQ when adding a port with a non-default EtherType', () => {
       component.ethernetPorts = [];
       component.newPortNumber.set(0);
       component.newPortVlan.set(10);
@@ -153,8 +202,16 @@ describe('PortsComponent', () => {
       component.newPortEthertype.set('0x88A8');
       component.onAdd();
       expect(component.ethernetPorts[0].vlan).toBe(10);
-      expect(component.ethernetPorts[0].type).toBe('dot1q');
+      expect(component.ethernetPorts[0].type).toBe('qinq');
       expect(component.ethernetPorts[0].ethertype).toBe('0x88A8');
+    });
+
+    it('should emit the updated ports after adding', () => {
+      const emitSpy = vi.spyOn(component.ethernetPortsChange, 'emit');
+
+      component.onAdd();
+
+      expect(emitSpy).toHaveBeenCalledWith(component.ethernetPorts);
     });
   });
 
@@ -194,7 +251,134 @@ describe('PortsComponent', () => {
 
   describe('displayedColumns', () => {
     it('should have correct column definitions', () => {
-      expect(component.displayedColumns).toEqual(['port_number', 'vlan', 'type', 'ethertype', 'action']);
+      expect(component.displayedColumns).toEqual(['select', 'port_number', 'vlan', 'type', 'ethertype', 'action']);
+    });
+  });
+
+  describe('editing ports', () => {
+    it('should update an existing VLAN without recreating the port', () => {
+      const port = createMockPort();
+      component.ethernetPorts = [port];
+
+      component.updateVlan(port, 42);
+
+      expect(port.vlan).toBe(42);
+      expect(component.ethernetPorts[0]).toBe(port);
+    });
+
+    it('should reject an invalid VLAN', () => {
+      const port = createMockPort({ vlan: 10 });
+
+      component.updateVlan(port, 4095);
+
+      expect(port.vlan).toBe(10);
+      expect(mockToasterService.error).toHaveBeenCalledWith('VLAN must be between 1 and 4094.');
+    });
+
+    it('should reset EtherType when changing away from QinQ', () => {
+      const port = createMockPort({ type: 'qinq', ethertype: '0x88A8' });
+
+      component.updatePortType(port, 'access');
+
+      expect(port.type).toBe('access');
+      expect(port.ethertype).toBe('0x8100');
+    });
+
+    it('should switch to QinQ when a non-default EtherType is selected', () => {
+      const port = createMockPort({ type: 'access' });
+
+      component.updatePortEthertype(port, '0x88A8');
+
+      expect(port.type).toBe('qinq');
+      expect(port.ethertype).toBe('0x88A8');
+    });
+
+    it('should keep the add-port type and EtherType controls compatible', () => {
+      component.updateNewPortEthertype('0x88A8');
+      expect(component.newPortType()).toBe('qinq');
+
+      component.updateNewPortType('access');
+      expect(component.newPortEthertype()).toBe('0x8100');
+    });
+
+    it('should restore the displayed VLAN when an edit is invalid', () => {
+      const port = createMockPort({ vlan: 10 });
+      const input = document.createElement('input');
+      input.value = '4095';
+
+      component.updateVlan(port, 4095, input);
+
+      expect(input.value).toBe('10');
+    });
+  });
+
+  describe('bulk editing', () => {
+    it('should keep bulk type and EtherType selections compatible', () => {
+      component.updateBulkEthertype('0x88A8');
+      expect(component.bulkType()).toBe('qinq');
+
+      component.updateBulkType('access');
+      expect(component.bulkEthertype()).toBe('');
+    });
+
+    it('should apply values to all selected ports only', () => {
+      const port1 = createMockPort({ port_number: 0 });
+      const port2 = createMockPort({ port_number: 1 });
+      const port3 = createMockPort({ port_number: 2 });
+      component.ethernetPorts = [port1, port2, port3];
+      component.togglePort(port1, true);
+      component.togglePort(port3, true);
+      component.bulkVlan.set(100);
+      component.bulkType.set('dot1q');
+
+      component.applyBulkChanges();
+
+      expect(port1.vlan).toBe(100);
+      expect(port1.type).toBe('dot1q');
+      expect(port2.vlan).toBe(1);
+      expect(port3.vlan).toBe(100);
+    });
+
+    it('should select and clear all ports', () => {
+      component.ethernetPorts = [createMockPort({ port_number: 0 }), createMockPort({ port_number: 1 })];
+
+      component.toggleAll(true);
+      expect(component.allPortsSelected()).toBe(true);
+
+      component.toggleAll(false);
+      expect(component.selectedPorts.size).toBe(0);
+    });
+
+    it('should require at least one selected port', () => {
+      component.bulkVlan.set(10);
+
+      component.applyBulkChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Select at least one port to update.');
+    });
+
+    it('should apply EtherType to selected ports regardless of their port type', () => {
+      const accessPort = createMockPort({ type: 'access' });
+      component.ethernetPorts = [accessPort];
+      component.togglePort(accessPort, true);
+      component.bulkEthertype.set('0x88A8');
+
+      component.applyBulkChanges();
+
+      expect(accessPort.type).toBe('qinq');
+      expect(accessPort.ethertype).toBe('0x88A8');
+    });
+
+    it('should reset a non-default EtherType when bulk-changing away from QinQ', () => {
+      const qinqPort = createMockPort({ type: 'qinq', ethertype: '0x88A8' });
+      component.ethernetPorts = [qinqPort];
+      component.togglePort(qinqPort, true);
+      component.bulkType.set('access');
+
+      component.applyBulkChanges();
+
+      expect(qinqPort.type).toBe('access');
+      expect(qinqPort.ethertype).toBe('0x8100');
     });
   });
 
@@ -231,8 +415,23 @@ describe('PortsComponent', () => {
       component.ngOnInit();
       fixture.detectChanges();
       const compiled = fixture.nativeElement as HTMLElement;
-      const addButton = compiled.querySelector('.ports__add-btn');
+      const addButton = compiled.querySelector('.ports__add-btn') as HTMLElement;
       expect(addButton).toBeTruthy();
+      expect(addButton.classList.contains('mat-mdc-unelevated-button')).toBe(true);
+      expect(addButton.textContent.trim()).toBe('Add ports');
+    });
+
+    it('should keep EtherType selectors enabled for every port type', () => {
+      component.ethernetPorts = [createMockPort({ type: 'access' })];
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const cellSelects = fixture.nativeElement.querySelectorAll('.ports__cell-select') as NodeListOf<HTMLElement>;
+      const etherTypeSelect = cellSelects[1];
+
+      expect(etherTypeSelect).toBeTruthy();
+      expect(etherTypeSelect.classList.contains('mat-mdc-select-disabled')).toBe(false);
+      expect(etherTypeSelect.getAttribute('aria-label')).toBe('EtherType for port 0');
     });
 
     it('should have correct number of table header columns', () => {
@@ -240,7 +439,7 @@ describe('PortsComponent', () => {
       fixture.detectChanges();
       const compiled = fixture.nativeElement as HTMLElement;
       const headerCells = compiled.querySelectorAll('th[mat-header-cell]');
-      expect(headerCells.length).toBe(5);
+      expect(headerCells.length).toBe(6);
     });
   });
 });
