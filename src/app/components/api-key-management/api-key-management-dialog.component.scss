@@ -92,6 +92,7 @@ h2[mat-dialog-title] {
 
 .dialog-header-actions {
   position: absolute;
-  right: 24px;
-  top: 16px;
+  top: 50%;
+  right: var(--gns3-density-page-padding);
+  transform: translateY(-50%);
 }

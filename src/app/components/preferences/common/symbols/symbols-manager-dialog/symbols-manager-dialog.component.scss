@@ -26,6 +26,32 @@
       gap: var(--gns3-density-space-2);
       flex-wrap: wrap;
     }
+
+    button.manage-action {
+      min-width: 96px;
+      height: var(--gns3-density-control-height-sm);
+      padding-inline: var(--gns3-density-space-4);
+      border-radius: var(--gns3-density-radius-sm);
+      font-weight: 600;
+      text-transform: none;
+    }
+
+    button.manage-action--delete:not([disabled]) {
+      --mat-button-filled-container-color: var(--mat-sys-error);
+      --mat-button-filled-label-text-color: var(--mat-sys-on-error);
+      --mat-button-filled-state-layer-color: var(--mat-sys-on-error);
+      --mat-button-filled-ripple-color: color-mix(in srgb, var(--mat-sys-on-error) 12%, transparent);
+    }
+
+    button.manage-action--select {
+      --mat-button-outlined-outline-color: color-mix(in srgb, var(--mat-sys-primary) 55%, transparent);
+    }
+
+    button.manage-action--clear {
+      --mat-button-outlined-label-text-color: var(--mat-sys-on-surface);
+      --mat-button-outlined-outline-color: var(--mat-sys-outline);
+      --mat-button-outlined-state-layer-color: var(--mat-sys-on-surface);
+    }
   }
 
   .loading-message,

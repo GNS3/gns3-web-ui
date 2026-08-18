@@ -533,8 +533,29 @@ g.node text,
 }
 
 .options-item {
-  padding-left: 16px;
-  padding-right: 16px;
+  display: flex;
+  min-width: 280px;
+  flex-direction: column;
+
+  mat-checkbox {
+    display: flex;
+    width: 100%;
+    min-height: var(--gns3-menu-item-min-height, 48px);
+    box-sizing: border-box;
+    align-items: center;
+    padding-inline: var(--gns3-density-space-3);
+    transition: color 120ms ease, background-color 120ms ease;
+  }
+
+  mat-checkbox:not(.mat-mdc-checkbox-disabled):hover {
+    color: var(--mat-sys-on-surface);
+    background: var(--gns3-menu-item-hover-background);
+  }
+
+  mat-checkbox:not(.mat-mdc-checkbox-disabled):focus-within {
+    color: var(--mat-sys-on-surface);
+    background: var(--gns3-menu-item-focus-background);
+  }
 }
 
 .visible {

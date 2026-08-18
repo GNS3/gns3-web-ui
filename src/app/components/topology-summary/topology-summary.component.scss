@@ -1,5 +1,6 @@
 :host {
   --topology-row-height: 46px;
+  --topology-row-action-size: 32px;
   --topology-symbol-size: 30px;
   --topology-control-height: var(--gns3-density-control-height);
 }
@@ -387,8 +388,22 @@
 }
 
 .row-action {
-  width: 32px;
-  height: 32px;
+  --mat-icon-button-state-layer-size: var(--topology-row-action-size);
+  display: inline-flex;
+  width: var(--topology-row-action-size);
+  height: var(--topology-row-action-size);
+  align-self: center;
+  align-items: center;
+  justify-self: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+
+  mat-icon {
+    display: block;
+    margin: 0;
+    line-height: 24px;
+  }
 }
 
 .empty-state {
@@ -488,6 +503,7 @@
 
 :host-context(html[data-density='compact']) {
   --topology-row-height: 38px;
+  --topology-row-action-size: 28px;
   --topology-symbol-size: 24px;
 
   .topology-inspector {
@@ -497,10 +513,4 @@
   .node-table__header {
     min-height: 28px;
   }
-
-  .row-action {
-    width: 28px;
-    height: 28px;
-  }
-
 }

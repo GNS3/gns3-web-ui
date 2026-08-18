@@ -19,14 +19,18 @@
   align-items: center;
   gap: var(--gns3-density-space-3);
   box-sizing: border-box;
-  background: color-mix(in srgb, var(--confirmation-accent) 12%, var(--mat-sys-surface-container-low));
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
   border-bottom: 1px solid var(--mat-sys-outline-variant);
 
   h2 {
     margin: 0;
-    color: var(--mat-sys-on-surface);
-    font-size: var(--gns3-density-dialog-title-size);
+    color: var(--mat-sys-on-primary-container);
+    font-family: var(--gns3-density-section-header-font);
+    font-size: var(--gns3-density-section-header-title-size);
     font-weight: 650;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
   }
 }
 

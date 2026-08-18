@@ -199,7 +199,11 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
 body
   .cdk-overlay-container
   .cdk-overlay-pane
-  :is(.mat-mdc-menu-panel.context-menu-items, .mat-mdc-menu-panel.interface-menu-panel) {
+  :is(
+      .mat-mdc-menu-panel.context-menu-items,
+      .mat-mdc-menu-panel.interface-menu-panel,
+      .mat-mdc-menu-panel.map-settings-menu
+    ) {
   width: max-content;
   max-width: calc(100vw - 16px);
   scrollbar-width: none;
@@ -626,6 +630,18 @@ html[data-density='compact'] mat-form-field .mat-mdc-form-field-subscript-wrappe
 // ============================================= */
 .mat-mdc-menu-panel {
   --gns3-menu-item-min-height: 48px;
+  --gns3-menu-item-hover-background: color-mix(
+    in srgb,
+    var(--mat-sys-primary) 12%,
+    var(--mat-menu-container-color, var(--mat-sys-surface-container))
+  );
+  --gns3-menu-item-focus-background: color-mix(
+    in srgb,
+    var(--mat-sys-primary) 16%,
+    var(--mat-menu-container-color, var(--mat-sys-surface-container))
+  );
+  --mat-menu-item-hover-state-layer-color: var(--gns3-menu-item-hover-background);
+  --mat-menu-item-focus-state-layer-color: var(--gns3-menu-item-focus-background);
 }
 
 .mat-mdc-menu-panel .mat-mdc-menu-item {
@@ -636,16 +652,12 @@ html[data-density='compact'] .mat-mdc-menu-panel {
   --gns3-menu-item-min-height: 40px;
 }
 
-.mat-mdc-menu-panel:is(.context-menu-items, .interface-menu-panel) {
+.mat-mdc-menu-panel:is(.context-menu-items, .interface-menu-panel, .map-settings-menu) {
   --gns3-menu-item-min-height: 36px;
 
   .mat-mdc-menu-content {
     padding: 4px 0;
   }
-}
-
-html[data-density='compact'] .mat-mdc-menu-panel:is(.context-menu-items, .interface-menu-panel) {
-  --gns3-menu-item-min-height: 36px;
 }
 
 /* Workspace style controls are scoped globally so their Material fields share

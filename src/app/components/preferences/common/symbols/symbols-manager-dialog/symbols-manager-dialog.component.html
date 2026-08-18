@@ -33,16 +33,34 @@
             <p class="instructions">Select custom symbols to delete:</p>
             <div class="delete-actions">
               <button
-                mat-raised-button
-                class="destructive-button"
+                mat-flat-button
+                type="button"
+                class="manage-action manage-action--delete"
                 (click)="deleteSelectedSymbols()"
                 [disabled]="!hasSelectedSymbols()"
               >
                 <mat-icon>delete</mat-icon>
                 Delete ({{ selectedForDeletion().size }})
               </button>
-              <button mat-button (click)="selectAllCustom()" matTooltip="Select all custom symbols">Select all</button>
-              <button mat-button (click)="clearSelection()" matTooltip="Clear selection">Clear</button>
+              <button
+                mat-stroked-button
+                color="primary"
+                type="button"
+                class="manage-action manage-action--select"
+                (click)="selectAllCustom()"
+                matTooltip="Select all custom symbols"
+              >
+                Select all
+              </button>
+              <button
+                mat-stroked-button
+                type="button"
+                class="manage-action manage-action--clear"
+                (click)="clearSelection()"
+                matTooltip="Clear selection"
+              >
+                Clear
+              </button>
             </div>
           </div>
           @if (isLoading()) {

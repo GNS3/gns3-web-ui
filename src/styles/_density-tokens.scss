@@ -41,7 +41,9 @@
   --gns3-density-card-padding: 24px;
   --gns3-density-card-gap: 16px; // gap between cards / grid columns
   --gns3-density-app-header-height: 64px;
-  --gns3-density-section-header-height: 64px;
+  --gns3-density-section-header-height: calc(
+    var(--gns3-density-space-4) * 2 + var(--gns3-density-section-header-title-size) * 1.2 + 1px
+  );
   --gns3-density-section-header-padding: 12px 24px;
 
   /* ---- Corner radii ---- */
@@ -53,6 +55,8 @@
   /* ---- Typography (density-responsive) ---- */
   --gns3-density-page-title-size: 32px;
   --gns3-density-section-title-size: 21px;
+  --gns3-density-section-header-font: var(--mat-sys-title-large-font, Roboto, sans-serif);
+  --gns3-density-section-header-title-size: calc(var(--gns3-density-section-title-size) + 2px);
 }
 
 /* Compact density: scale all tokens down to the density -2 baseline. */
@@ -82,7 +86,9 @@ html[data-density='compact'] {
   --gns3-density-card-padding: 16px;
   --gns3-density-card-gap: 12px;
   --gns3-density-app-header-height: 52px;
-  --gns3-density-section-header-height: 48px;
+  --gns3-density-section-header-height: calc(
+    var(--gns3-density-space-4) * 2 + var(--gns3-density-section-header-title-size) * 1.2 + 1px
+  );
   --gns3-density-section-header-padding: 8px 16px;
 
   /* ---- Corner radii ---- */
@@ -94,4 +100,6 @@ html[data-density='compact'] {
   /* ---- Typography ---- */
   --gns3-density-page-title-size: 27px;
   --gns3-density-section-title-size: 18px;
+  --gns3-density-section-header-font: var(--mat-sys-title-large-font, Roboto, sans-serif);
+  --gns3-density-section-header-title-size: calc(var(--gns3-density-section-title-size) + 2px);
 }

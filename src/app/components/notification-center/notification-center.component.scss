@@ -1,6 +1,8 @@
 :host {
   position: relative;
-  z-index: 100;
+  // Keep notifications above floating workspace panels such as the topology
+  // inspector (900), but below Material overlays such as dialogs and menus.
+  z-index: 950;
 }
 
 .notification-center__backdrop {

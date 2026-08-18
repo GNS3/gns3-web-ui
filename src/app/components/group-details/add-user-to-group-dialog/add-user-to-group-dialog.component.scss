@@ -9,16 +9,24 @@
 // Dialog Header
 // ============================================= */
 .dialog-header {
-  padding: 20px 24px 16px;
+  display: flex;
+  min-height: var(--gns3-density-section-header-height);
+  box-sizing: border-box;
+  align-items: center;
+  padding: var(--gns3-density-section-header-padding);
   border-bottom: 1px solid var(--mat-sys-outline-variant);
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
 }
 
 .dialog-title {
   margin: 0;
-  font-size: 20px;
-  font-weight: 500;
-  color: var(--mat-sys-on-surface);
-  line-height: 1.4;
+  color: var(--mat-sys-on-primary-container);
+  font-family: var(--gns3-density-section-header-font);
+  font-size: var(--gns3-density-section-header-title-size);
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 /* =============================================
@@ -128,11 +136,14 @@
 // ============================================= */
 .dialog-actions {
   display: flex;
+  min-height: 64px;
+  box-sizing: border-box;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
+  gap: var(--gns3-density-space-2);
+  padding: 10px 18px;
   border-top: 1px solid var(--mat-sys-outline-variant);
-  background: var(--mat-sys-surface-container-low);
+  background: var(--mat-sys-surface-container);
 }
 
 .selection-info {
@@ -143,5 +154,36 @@
 
 .action-buttons {
   display: flex;
-  gap: 8px;
+  gap: var(--gns3-density-space-2);
+
+  button {
+    min-width: 92px;
+    border-radius: var(--gns3-density-radius-sm);
+    font-weight: 600;
+  }
+
+  button:first-child {
+    border: 1px solid var(--mat-sys-outline);
+    color: var(--mat-sys-on-surface);
+    background: transparent;
+  }
+
+  button[color='primary'] {
+    color: var(--mat-sys-on-primary);
+    background: var(--mat-sys-primary);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 24%, transparent);
+  }
+}
+
+:host-context(html[data-density='compact']) {
+  .dialog-actions {
+    min-height: 52px;
+    padding: 8px var(--gns3-density-space-4);
+  }
+
+  .action-buttons button {
+    min-width: 96px;
+    height: var(--gns3-density-control-height-sm);
+    min-height: var(--gns3-density-control-height-sm);
+  }
 }

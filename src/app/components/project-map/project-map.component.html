@@ -130,33 +130,31 @@
     </mat-menu>
 
     <!-- Map Settings sub-menu -->
-    <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
+    <mat-menu #viewMenu="matMenu" class="map-settings-menu" [overlapTrigger]="false">
       <div class="options-item">
         <mat-checkbox [checked]="isInterfaceLabelVisible" (change)="toggleShowInterfaceLabels($event.checked)">
-          Show interface labels </mat-checkbox
-        ><br />
+          Show interface labels
+        </mat-checkbox>
         <mat-checkbox [checked]="isConsoleVisible" (change)="toggleShowConsole($event.checked)">
-          Show console </mat-checkbox
-        ><br />
+          Show console
+        </mat-checkbox>
         <mat-checkbox [checked]="isTopologySummaryVisible" (change)="toggleShowTopologySummary($event.checked)">
-          Show topology/controllers summary </mat-checkbox
-        ><br />
+          Show topology/controllers summary
+        </mat-checkbox>
         <mat-checkbox [checked]="notificationsVisibility" (change)="toggleNotifications($event.checked)">
-          Show notification toasts </mat-checkbox
-        ><br />
-        <mat-checkbox [checked]="layersVisibility" (change)="toggleLayers($event.checked)"> Show layers </mat-checkbox
-        ><br />
+          Show notification toasts
+        </mat-checkbox>
+        <mat-checkbox [checked]="layersVisibility" (change)="toggleLayers($event.checked)"> Show layers </mat-checkbox>
         <mat-checkbox [checked]="itemLockStatusVisibility" (change)="toggleItemLockStatus($event.checked)">
           Show item lock status
         </mat-checkbox>
-        <br />
-        <mat-checkbox [checked]="gridVisibility" (change)="toggleGrid($event.checked)"> Show grid </mat-checkbox><br />
+        <mat-checkbox [checked]="gridVisibility" (change)="toggleGrid($event.checked)"> Show grid </mat-checkbox>
         <mat-checkbox [checked]="project.snap_to_grid" (change)="toggleSnapToGrid($event.checked)">
-          Snap to grid </mat-checkbox
-        ><br />
+          Snap to grid
+        </mat-checkbox>
         <mat-checkbox [checked]="symbolScaling" (change)="toggleSymbolScaling($event.checked)">
-          Scale symbols </mat-checkbox
-        ><br />
+          Scale symbols
+        </mat-checkbox>
       </div>
     </mat-menu>
   </div>
