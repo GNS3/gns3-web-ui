@@ -5,6 +5,8 @@ import { Properties } from '../node';
 
 export class MapNode implements Indexed {
   id: string;
+  aux?: number;
+  auxType?: string;
   commandLine: string;
   computeId: string;
   console: number;

@@ -123,6 +123,7 @@ export class Properties {
 }
 
 export class Node {
+  aux?: number;
   command_line: string;
   compute_id: string;
   console: number;

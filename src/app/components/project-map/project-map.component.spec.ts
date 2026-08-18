@@ -370,6 +370,7 @@ describe('ProjectMapComponent', () => {
     };
 
     mockNodeWidget = {
+      setController: vi.fn(),
       onContextMenu: new Subject<NodeContextMenu>(),
     };
 

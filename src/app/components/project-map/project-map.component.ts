@@ -547,6 +547,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           mergeMap((controller: Controller) => {
             if (!controller) this.router.navigate(['/controllers']);
             this.controller = controller;
+            this.nodeWidget.setController(controller);
             this.cd.markForCheck();
             return this.projectService.get(controller, project_id).pipe(
               map((project) => {

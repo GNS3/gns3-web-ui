@@ -21,6 +21,8 @@ export class NodeToMapNodeConverter implements Converter<Node, MapNode> {
   convert(node: Node) {
     const mapNode = new MapNode();
     mapNode.id = node.node_id;
+    mapNode.aux = node.aux;
+    mapNode.auxType = node.aux_type;
     mapNode.commandLine = node.command_line;
     mapNode.computeId = node.compute_id;
     mapNode.console = node.console;

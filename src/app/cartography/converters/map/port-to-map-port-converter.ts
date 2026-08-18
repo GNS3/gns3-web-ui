@@ -9,6 +9,7 @@ export class PortToMapPortConverter implements Converter<Port, MapPort> {
     const mapPort = new MapPort();
     mapPort.adapterNumber = port.adapter_number;
     mapPort.linkType = port.link_type;
+    mapPort.macAddress = port.mac_address;
     mapPort.name = port.name;
     mapPort.portNumber = port.port_number;
     mapPort.shortName = port.short_name;

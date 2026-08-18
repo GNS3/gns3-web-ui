@@ -1,10 +1,13 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { select } from 'd3-selection';
 
+import { Controller } from '@models/controller';
 import { MapSettingsService } from '@services/mapsettings.service';
+import { MapLinksDataSource, MapNodesDataSource } from '../datasources/map-datasource';
 import { ClickedDataEvent } from '../events/event-source';
 import { NodeClicked, NodeContextMenu } from '../events/nodes';
 import { NodesEventSource } from '../events/nodes-event-source';
+import { buildNodeSummary, buildNodeTooltip } from '../helpers/node-tooltip';
 import { SelectionManager } from '../managers/selection-manager';
 import { MapNode } from '../models/map/map-node';
 import { SVGSelection } from '../models/types';
@@ -25,13 +28,20 @@ export class NodeWidget implements Widget {
   public onContextMenu = new EventEmitter<NodeContextMenu>();
   public onContextConsoleMenu = new EventEmitter<NodeContextMenu>();
   public onNodeClicked = new EventEmitter<NodeClicked>();
+  private controller?: Controller;
 
   constructor(
     private selectionManager: SelectionManager,
     private labelWidget: LabelWidget,
     private nodesEventSource: NodesEventSource,
-    private mapSettingsService: MapSettingsService
+    private mapSettingsService: MapSettingsService,
+    private mapLinksDataSource: MapLinksDataSource,
+    private mapNodesDataSource: MapNodesDataSource
   ) {}
+
+  public setController(controller: Controller) {
+    this.controller = controller;
+  }
 
   public draw(view: SVGSelection) {
     const self = this;
@@ -49,6 +59,30 @@ export class NodeWidget implements Widget {
       .on('click', (event: any, node: MapNode) => {
         this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.pageX, event.pageY));
       });
+
+    const nodeTooltip = node_body_merge
+      .selectAll<SVGTitleElement, MapNode>('title.node_tooltip')
+      .data((node: MapNode) => [node]);
+
+    nodeTooltip
+      .enter()
+      .append<SVGTitleElement>('title')
+      .attr('class', 'node_tooltip')
+      .merge(nodeTooltip)
+      .text((node: MapNode) => buildNodeSummary(node, this.controller));
+
+    node_body_merge.on('mouseenter.node-tooltip', function (this: SVGGElement, _event: MouseEvent, node: MapNode) {
+      select(this)
+        .select<SVGTitleElement>('title.node_tooltip')
+        .text(
+          buildNodeTooltip(
+            node,
+            self.mapLinksDataSource.getItems(),
+            self.mapNodesDataSource.getItems(),
+            self.controller
+          )
+        );
+    });
 
     node_body_merge.select('.layer_label_wrapper').remove();
     if (this.mapSettingsService.isLayerNumberVisible) {
@@ -109,7 +143,7 @@ export class NodeWidget implements Widget {
             const by = h / 2 - (h / 2 - 12) / Math.SQRT2;
             return `translate(${bx}, ${by})`;
           }
-          return `translate(${w * 0.80}, ${h * 0.20})`;
+          return `translate(${w * 0.8}, ${h * 0.2})`;
         });
 
       const lockedBadge = lockStatusBadge.filter((n: MapNode) => n.locked);
