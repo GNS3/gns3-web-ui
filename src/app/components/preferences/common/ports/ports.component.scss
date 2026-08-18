@@ -42,7 +42,7 @@
 
 .ports__bulk-toolbar {
   align-items: center;
-  background: var(--mat-sys-surface-container-low, rgba(0, 0, 0, 0.03));
+  background: var(--mat-sys-surface-container-low);
 }
 
 .ports__selection-count {
@@ -80,7 +80,7 @@
 .ports__add-row {
   flex-wrap: nowrap;
   align-items: center;
-  border-top: 1px solid var(--mat-sys-outline-variant, rgba(0, 0, 0, 0.12));
+  border-top: 1px solid var(--mat-sys-outline-variant);
 }
 
 .ports__add-row .ports__field {
