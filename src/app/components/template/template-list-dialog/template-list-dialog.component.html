@@ -11,17 +11,18 @@
     <span>Add nodes</span>
   </span>
   <span class="dialog-title__actions">
-    <button
+    <a
       mat-button
       class="dialog-title__preferences"
       color="accent"
       aria-label="Template preferences"
-      (click)="onNoClick()"
-      routerLink="/controller/{{ controller?.id }}/preferences"
+      [routerLink]="['/controller', controller?.id, 'preferences']"
+      target="_blank"
+      rel="noopener"
     >
       <mat-icon>tune</mat-icon>
       <span>Template preferences</span>
-    </button>
+    </a>
     <button mat-icon-button aria-label="Close add nodes" (click)="onNoClick()">
       <mat-icon>close</mat-icon>
     </button>
