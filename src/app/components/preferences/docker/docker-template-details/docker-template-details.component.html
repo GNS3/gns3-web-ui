@@ -25,6 +25,7 @@
         Extra files
       </button>
       <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
+      <button type="button" [class.is-active]="activeSection === 'metadata'" (click)="selectSection('metadata')">Metadata</button>
     </nav>
     <section class="docker-details__form-card">
       <div class="docker-details__section-header" (click)="toggleSection('general')">
@@ -371,7 +372,12 @@
     </section>
 
     <section class="docker-details__form-card">
+      <div class="docker-details__section-header">
+        <h3 class="docker-details__section-title">Appliance metadata</h3>
+      </div>
+      @if (activeSection === 'metadata') {
       <app-template-metadata-section [(metadata)]="applianceMetadata" />
+      }
     </section>
     <div class="docker-details__actions">
       <button class="docker-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>

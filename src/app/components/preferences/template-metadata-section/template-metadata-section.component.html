@@ -1,9 +1,4 @@
 <div class="template-metadata">
-  <div class="template-metadata__section-header" (click)="toggle()">
-    <h3 class="template-metadata__section-title">Appliance metadata</h3>
-    <mat-icon class="template-metadata__expand-icon">{{ expanded() ? 'expand_less' : 'expand_more' }}</mat-icon>
-  </div>
-  @if (expanded()) {
   <div class="template-metadata__form">
     <div class="template-metadata__two-column-grid">
       @for (entry of fields; track entry.field) {
@@ -50,5 +45,4 @@
       </button>
     </div>
   </div>
-  }
 </div>

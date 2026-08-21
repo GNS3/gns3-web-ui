@@ -32,8 +32,11 @@ describe('TemplateMetadataSectionComponent', () => {
     fixture.detectChanges();
   });
 
-  it('starts collapsed like the other template sections', () => {
-    expect(comp.expanded()).toBe(false);
+  it('renders the edit form fields when mounted (hosted in the Metadata tab)', () => {
+    const text = (fixture.nativeElement as HTMLElement).textContent || '';
+    expect(text).toContain('Description');
+    expect(text).toContain('Vendor name');
+    expect(text).toContain('Remove metadata');
   });
 
   it('syncs the form when the parent loads a template (external metadata set)', () => {

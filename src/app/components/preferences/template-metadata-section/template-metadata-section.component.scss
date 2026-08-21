@@ -1,36 +1,9 @@
 /**
- * Appliance metadata section — styled after the template details dialogs'
- * collapsible form sections. The card surface is provided by the host
- * dialog's __form-card wrapper.
+ * Appliance metadata form — the card surface and section header come from the
+ * host page's __form-card section (Metadata tab).
  */
 .template-metadata {
   display: block;
-
-  &__section-header {
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
-
-    &:hover {
-      background-color: color-mix(in srgb, var(--mat-sys-on-surface) 5%, transparent);
-    }
-  }
-
-  &__section-title {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--mat-sys-on-surface-variant);
-  }
-
-  &__expand-icon {
-    color: var(--mat-sys-on-surface-variant);
-    transition: transform 0.2s ease;
-  }
 
   &__form {
     padding: 16px 24px 24px;

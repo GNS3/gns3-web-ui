@@ -47,9 +47,10 @@ const FORM_FIELDS: {
 ];
 
 /**
- * Appliance metadata section for the template details dialogs, styled after
- * their collapsible form sections (section header + expand icon, fill form
- * fields in a two-column grid).
+ * Appliance metadata form for the template details pages' Metadata tab. The
+ * host page provides the __form-card surface and section header, and mounts
+ * this component only while its tab is active; this component renders just
+ * the edit form (fields in a two-column grid).
  *
  * The server semantics are whole-object replacement (PUT with the field
  * replaces, without it preserves, null clears), so this component owns the
@@ -76,7 +77,6 @@ export class TemplateMetadataSectionComponent {
   readonly metadata = model<ApplianceMetadata | null>(null);
 
   readonly fields = FORM_FIELDS;
-  readonly expanded = signal(false);
   /** Edit-form values keyed by field name, synced from the metadata model. */
   readonly formValues = signal<{ [field: string]: string }>({});
 
@@ -94,10 +94,6 @@ export class TemplateMetadataSectionComponent {
         this.syncForm(metadata);
       }
     });
-  }
-
-  toggle() {
-    this.expanded.update((value) => !value);
   }
 
   isTruthy(value: unknown): boolean {

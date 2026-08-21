@@ -24,6 +24,9 @@
       <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">
         Usage
       </button>
+      <button type="button" [class.is-active]="activeSection === 'metadata'" (click)="selectSection('metadata')">
+        Metadata
+      </button>
     </nav>
     <section class="vpcs-template-details__form-card" [class.template-edit-panel-active]="activeSection === 'general'">
       <h3 class="vpcs-template-details__section-title">General settings</h3>
@@ -164,7 +167,8 @@
       </div>
     </section>
 
-    <section class="vpcs-template-details__form-card">
+    <section class="vpcs-template-details__form-card" [class.template-edit-panel-active]="activeSection === 'metadata'">
+      <h3 class="vpcs-template-details__section-title">Appliance metadata</h3>
       <app-template-metadata-section [(metadata)]="applianceMetadata" />
     </section>
     <div class="vpcs-template-details__actions">

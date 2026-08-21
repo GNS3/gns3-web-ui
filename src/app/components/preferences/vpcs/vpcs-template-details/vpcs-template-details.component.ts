@@ -73,7 +73,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   categories = [];
-  activeSection: 'general' | 'usage' = 'general';
+  activeSection: 'general' | 'usage' | 'metadata' = 'general';
 
   // Model signals for form fields
   templateName = model('');
@@ -237,7 +237,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     }
   }
 
-  selectSection(section: 'general' | 'usage'): void {
+  selectSection(section: 'general' | 'usage' | 'metadata'): void {
     this.activeSection = section;
   }
 }

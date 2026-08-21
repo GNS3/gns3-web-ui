@@ -22,6 +22,7 @@
       </button>
       <button type="button" [class.is-active]="activeSection === 'network'" (click)="selectSection('network')">Network</button>
       <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
+      <button type="button" [class.is-active]="activeSection === 'metadata'" (click)="selectSection('metadata')">Metadata</button>
     </nav>
     <section class="iou-template-details__form-card">
       <div class="iou-template-details__section-header" (click)="toggleSection('general')">
@@ -278,7 +279,12 @@
     </section>
 
     <section class="iou-template-details__form-card">
+      <div class="iou-template-details__section-header">
+        <h3 class="iou-template-details__section-title">Appliance metadata</h3>
+      </div>
+      @if (activeSection === 'metadata') {
       <app-template-metadata-section [(metadata)]="applianceMetadata" />
+      }
     </section>
     <div class="iou-template-details__actions">
       <button class="iou-template-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>

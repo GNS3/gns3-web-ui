@@ -26,6 +26,7 @@
       <button type="button" [class.is-active]="activeSection === 'slots'" (click)="selectSection('slots')">Slots</button>
       <button type="button" [class.is-active]="activeSection === 'advanced'" (click)="selectSection('advanced')">Advanced</button>
       <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
+      <button type="button" [class.is-active]="activeSection === 'metadata'" (click)="selectSection('metadata')">Metadata</button>
     </nav>
     <section class="ios-details__form-card">
       <div class="ios-details__section-header" (click)="toggleSection('general')">
@@ -460,7 +461,12 @@
     </section>
 
     <section class="ios-details__form-card">
+      <div class="ios-details__section-header">
+        <h3 class="ios-details__section-title">Appliance metadata</h3>
+      </div>
+      @if (activeSection === 'metadata') {
       <app-template-metadata-section [(metadata)]="applianceMetadata" />
+      }
     </section>
     <div class="ios-details__actions">
       <button class="ios-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
