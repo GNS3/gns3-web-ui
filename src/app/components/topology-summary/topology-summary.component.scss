@@ -272,6 +272,7 @@
   min-height: 0;
   flex: 1 1 auto;
   overflow: auto;
+  overflow-x: hidden;
 }
 
 .node-row {
@@ -416,7 +417,6 @@
 }
 
 .compute-list {
-  overflow-x: hidden;
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: var(--gns3-density-radius-sm);
   background: var(--mat-sys-surface-container-lowest);
