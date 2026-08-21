@@ -95,8 +95,14 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.notificationCenter.closePanel();
         // Recursively traverse the route tree to find controller_id
-        this.controllerId = this.getParamFromRoute(this.route, 'controller_id');
-        this.getData();
+        const controllerId = this.getParamFromRoute(this.route, 'controller_id');
+        // Only refetch (and reset controller/admin state) when the controller
+        // actually changed; otherwise the sidebar @if blocks collapse and
+        // re-expand on every navigation, making the Support section flicker.
+        if (controllerId !== this.controllerId) {
+          this.controllerId = controllerId;
+          this.getData();
+        }
         this.cd.markForCheck();
       });
 
