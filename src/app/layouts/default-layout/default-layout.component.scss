@@ -5,13 +5,18 @@
 
 :host {
   --layout-header-height: 64px;
+
+  /* App shell: lock the layout to the viewport height so the sidebar and
+     toolbar stay fixed while only the main content scrolls. */
+  display: block;
+  height: 100vh;
 }
 
 /* =============================================
 // Layout Container (Drawer)
 // ============================================= */
 .layout-container {
-  min-height: 100vh;
+  height: 100%;
   background: linear-gradient(135deg, var(--mat-sys-primary-container) 0%, var(--mat-sys-background) 100%);
 }
 
@@ -124,7 +129,10 @@
 .layout-content {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100%;
+  /* Material defaults .mat-drawer-content to overflow: auto; keep the layout
+     itself static so .main-content is the single scroll container. */
+  overflow: hidden;
 }
 
 /* =============================================
@@ -287,6 +295,9 @@
   overflow-y: auto;
   background: transparent;
   flex: 1;
+  /* Allow the flex child to shrink below its content height so it,
+     not the document, becomes the scroll container. */
+  min-height: 0;
 }
 
 /* =============================================
