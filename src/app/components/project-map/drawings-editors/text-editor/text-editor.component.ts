@@ -7,6 +7,7 @@ import {
   inject,
   viewChild,
   ChangeDetectorRef,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -22,6 +23,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DrawingToMapDrawingConverter } from '../../../../cartography/converters/map/drawing-to-map-drawing-converter';
 import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../../cartography/datasources/drawings-datasource';
@@ -56,11 +58,13 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
     MatButtonModule,
     MatSelectModule,
     MatOptionModule,
+    MatProgressSpinnerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextEditorDialogComponent implements OnInit {
   readonly textArea = viewChild<ElementRef>('textArea');
+  readonly isApplying = signal(false);
 
   private dialogRef = inject(MatDialogRef<TextEditorDialogComponent>);
   private drawingToMapDrawingConverter = inject(DrawingToMapDrawingConverter);
@@ -167,6 +171,7 @@ export class TextEditorDialogComponent implements OnInit {
   }
 
   onYesClick() {
+    if (this.isApplying()) return;
     if (this.formGroup.valid) {
       this.rotation = this.formGroup.get('rotation').value;
 
@@ -174,6 +179,8 @@ export class TextEditorDialogComponent implements OnInit {
         this.node.label.style = this.getStyleFromTextElement();
         this.node.label.rotation = +this.rotation;
 
+        this.isApplying.set(true);
+        this.dialogRef.disableClose = true;
         this.nodeService.updateLabel(this.controller, this.node, this.node.label).subscribe({
           next: (node: Node) => {
             this.nodesDataSource.update(node);
@@ -184,6 +191,8 @@ export class TextEditorDialogComponent implements OnInit {
           error: (err) => {
             const message = err.error?.message || err.message || 'Failed to update node label';
             this.toasterService.error(message);
+            this.isApplying.set(false);
+            this.dialogRef.disableClose = false;
             this.cdr.markForCheck();
           },
         });
@@ -192,6 +201,8 @@ export class TextEditorDialogComponent implements OnInit {
         this.label.rotation = +this.rotation;
         this.label.text = this.element.text;
 
+        this.isApplying.set(true);
+        this.dialogRef.disableClose = true;
         this.linkService.updateLink(this.controller, this.link).subscribe({
           next: (link: Link) => {
             this.linksDataSource.update(link);
@@ -202,6 +213,8 @@ export class TextEditorDialogComponent implements OnInit {
           error: (err) => {
             const message = err.error?.message || err.message || 'Failed to update link';
             this.toasterService.error(message);
+            this.isApplying.set(false);
+            this.dialogRef.disableClose = false;
             this.cdr.markForCheck();
           },
         });
@@ -214,6 +227,8 @@ export class TextEditorDialogComponent implements OnInit {
 
         this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
 
+        this.isApplying.set(true);
+        this.dialogRef.disableClose = true;
         this.drawingService.update(this.controller, this.drawing).subscribe({
           next: (controllerDrawing: Drawing) => {
             this.drawingsDataSource.update(controllerDrawing);
@@ -224,6 +239,8 @@ export class TextEditorDialogComponent implements OnInit {
           error: (err) => {
             const message = err.error?.message || err.message || 'Failed to update drawing';
             this.toasterService.error(message);
+            this.isApplying.set(false);
+            this.dialogRef.disableClose = false;
             this.cdr.markForCheck();
           },
         });

@@ -9,6 +9,7 @@ import { IouConfigurationService } from '@services/iou-configuration.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { DialogConfigService } from '@services/dialog-config.service';
+import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
 import { Controller } from '@models/controller';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -132,6 +133,7 @@ describe('IouTemplateDetailsComponent', () => {
         { provide: ToasterService, useValue: mockToasterService },
         { provide: MatDialog, useValue: mockMatDialog },
         { provide: DialogConfigService, useValue: mockDialogConfigService },
+        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
       ],
     }).compileComponents();
 

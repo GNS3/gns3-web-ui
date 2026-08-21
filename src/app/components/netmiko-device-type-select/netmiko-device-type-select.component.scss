@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+.netmiko-device-type-select__field {
+  width: 100%;
+}
+
+.netmiko-device-type-select__telnet {
+  margin-left: 8px;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--mat-sys-on-surface-variant);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 4px;
+  padding: 0 4px;
+}
+
+.netmiko-device-type-select__not-in-list {
+  font-size: 11px;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+}

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -12,6 +12,7 @@ import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
@@ -19,6 +20,7 @@ import { QemuBinary } from '@models/qemu/qemu-binary';
 import { QemuImage } from '@models/qemu/qemu-image';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
+import { TemplateService } from '@services/template.service';
 import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { QemuService } from '@services/qemu.service';
 import { ToasterService } from '@services/toaster.service';
@@ -30,6 +32,7 @@ import {
   CustomAdaptersDialogResult,
 } from '@components/preferences/common/custom-adapters/custom-adapters.component';
 import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creator.component';
+import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
 
 @Component({
   standalone: true,
@@ -51,12 +54,15 @@ import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creat
     MatIconModule,
     MatCheckboxModule,
     MatAutocompleteModule,
+    MatProgressSpinnerModule,
+    NetmikoDeviceTypeSelectComponent,
   ],
 })
 export class ConfiguratorDialogQemuComponent implements OnInit {
   private dialog = inject(MatDialog);
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogQemuComponent>);
   private nodeService = inject(NodeService);
+  private templateService = inject(TemplateService);
   private toasterService = inject(ToasterService);
   private qemuService = inject(QemuService);
   private qemuConfigurationService = inject(QemuConfigurationService);
@@ -96,6 +102,9 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   };
   dialogRefQemuImageCreator;
 
+  readonly isApplying = signal(false);
+  readonly isLoading = signal(true);
+
   // Model signals
   readonly nodeName = model('');
   readonly ram = model('');
@@ -122,6 +131,11 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   readonly options = model(''); readonly tpm = model(false);
   readonly uefi = model(false);
   readonly usage = model('');
+  readonly netmikoDeviceType = model('');
+  readonly defaultUsername = model(''); readonly defaultPassword = model('');
+  // inherited values shown as placeholders when the node fields are empty
+  readonly defaultUsernamePlaceholder = signal('');
+  readonly defaultPasswordPlaceholder = signal('');
   readonly linkedClone = model(false);
   readonly maxcpus = model('');
   readonly createConfigDisk = model(false);
@@ -166,6 +180,25 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         this.tpm.set(node.properties.tpm || false);
         this.uefi.set(node.properties.uefi || false);
         this.usage.set(node.properties.usage || '');
+        this.netmikoDeviceType.set(node.netmiko_device_type || '');
+        this.defaultUsername.set(node.default_username || '');
+        this.defaultPassword.set(node.default_password || '');
+        // empty node credentials: show the template appliance metadata as placeholder
+        if ((!node.default_username || !node.default_password) && node.template_id) {
+          this.templateService.list(this.controller).subscribe({
+            next: (templates) => {
+              const metadata = templates.find((tpl) => tpl.template_id === node.template_id)?.appliance_metadata;
+              if (metadata) {
+                this.defaultUsernamePlaceholder.set(node.default_username ? '' : (metadata.default_username as string) || '');
+                this.defaultPasswordPlaceholder.set(node.default_password ? '' : (metadata.default_password as string) || '');
+                this.cd.markForCheck();
+              }
+            },
+            error: () => {
+              // placeholder is informational only — ignore lookup failures
+            },
+          });
+        }
         this.linkedClone.set(node.properties.linked_clone ?? true);
         this.maxcpus.set(node.properties.maxcpus?.toString() || '');
         this.createConfigDisk.set(node.properties.create_config_disk ?? false);
@@ -212,11 +245,15 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         // allGlobalFiles is already loaded by qemuService.getImages() above
         this.getConfiguration();
         this.cd.markForCheck();
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load node';
         this.toasterService.error(message);
         this.cd.markForCheck();
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
       },
     });
 
@@ -481,11 +518,15 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   }
 
   onSaveClick() {
+    if (this.isApplying()) return;
+
     // Validate required fields
     const nameValidation = this.validationService.required(this.nodeName(), 'Name');
     if (!nameValidation.isValid) { this.toasterService.error(nameValidation.errorMessage); return; }
     const ramValidation = this.validationService.required(this.ram(), 'RAM');
     if (!ramValidation.isValid) { this.toasterService.error(ramValidation.errorMessage); return; }
+    const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
+    if (!netmikoValidation.isValid) { this.toasterService.error(netmikoValidation.errorMessage); return; }
 
     // Merge signal values back into node
     this.node.name = this.nodeName();
@@ -517,6 +558,9 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     this.node.properties.tpm = this.tpm();
     this.node.properties.uefi = this.uefi();
     this.node.properties.usage = this.usage();
+    this.node.netmiko_device_type = this.netmikoDeviceType().trim() || null;
+    this.node.default_username = this.defaultUsername().trim() || null;
+    this.node.default_password = this.defaultPassword().trim() || null;
     this.node.properties.linked_clone = this.linkedClone();
     this.node.properties.maxcpus = parseInt(this.maxcpus(), 10) || undefined;
     this.node.properties.create_config_disk = this.createConfigDisk();
@@ -525,6 +569,8 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     this.node.properties.adapter_type = this.adapterType();
     this.node.properties.replicate_network_connection_state = this.replicateNetworkState();
 
+    this.isApplying.set(true);
+    this.dialogRef.disableClose = true;
     this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe({
       next: () => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
@@ -533,6 +579,8 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
       error: (error) => {
         const errorMessage = error.error?.message || error.message || 'Failed to update node';
         this.toasterService.error(errorMessage);
+        this.isApplying.set(false);
+        this.dialogRef.disableClose = false;
       },
     });
   }

@@ -61,6 +61,9 @@ export class ProjectWebServiceHandler {
       const link = message.event as Link;
       this.linksDataSource.remove(link);
       this.markerRegistryService.removeLink(link.link_id);
+      // The link (and its path element) is gone — its geometry cache entry
+      // would never be used again and never evicted (app-singleton service).
+      this.markerFlashService.evictLink(link.link_id);
       this.linkNotificationEmitter.emit(message);
     }
     if (message.action === 'marker.match') {

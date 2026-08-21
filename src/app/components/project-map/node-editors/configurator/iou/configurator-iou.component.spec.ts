@@ -8,7 +8,9 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { ConfiguratorDialogIouComponent } from './configurator-iou.component';
 import { IouConfigurationService } from '@services/iou-configuration.service';
 import { NodeService } from '@services/node.service';
+import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
+import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
 import { IouValidationService } from '@services/validation';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -142,6 +144,7 @@ describe('ConfiguratorDialogIouComponent', () => {
       validatePath: vi.fn().mockReturnValue({ isValid: true }),
       validateEthernetAdapters: vi.fn().mockReturnValue({ isValid: true }),
       validateSerialAdapters: vi.fn().mockReturnValue({ isValid: true }),
+      validateNetmikoDeviceType: vi.fn().mockReturnValue({ isValid: true }),
     };
 
     mockChangeDetectorRef = {
@@ -160,7 +163,9 @@ describe('ConfiguratorDialogIouComponent', () => {
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
+        { provide: TemplateService, useValue: { list: () => of([]) } },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
         { provide: IouConfigurationService, useValue: mockConfigurationService },
         { provide: IouValidationService, useValue: mockValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
@@ -212,7 +217,9 @@ describe('ConfiguratorDialogIouComponent', () => {
         providers: [
           { provide: MatDialogRef, useValue: mockDialogRef },
           { provide: NodeService, useValue: mockNodeService },
+          { provide: TemplateService, useValue: { list: () => of([]) } },
           { provide: ToasterService, useValue: mockToasterService },
+          { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
           { provide: IouConfigurationService, useValue: mockConfigurationService },
           
         ],
@@ -245,7 +252,9 @@ describe('ConfiguratorDialogIouComponent', () => {
         providers: [
           { provide: MatDialogRef, useValue: mockDialogRef },
           { provide: NodeService, useValue: mockNodeService },
+          { provide: TemplateService, useValue: { list: () => of([]) } },
           { provide: ToasterService, useValue: mockToasterService },
+          { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
           { provide: IouConfigurationService, useValue: mockConfigurationService },
           
         ],
@@ -296,7 +305,9 @@ describe('ConfiguratorDialogIouComponent', () => {
         providers: [
           { provide: MatDialogRef, useValue: mockDialogRef },
           { provide: NodeService, useValue: mockNodeService },
+          { provide: TemplateService, useValue: { list: () => of([]) } },
           { provide: ToasterService, useValue: mockToasterService },
+          { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
           { provide: IouConfigurationService, useValue: mockConfigurationService },
           
         ],
@@ -355,7 +366,9 @@ describe('ConfiguratorDialogIouComponent', () => {
         providers: [
           { provide: MatDialogRef, useValue: mockDialogRef },
           { provide: NodeService, useValue: mockNodeService },
+          { provide: TemplateService, useValue: { list: () => of([]) } },
           { provide: ToasterService, useValue: mockToasterService },
+          { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
           { provide: IouConfigurationService, useValue: mockConfigurationService },
           
         ],

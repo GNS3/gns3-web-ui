@@ -12,6 +12,11 @@
 </div>
 
 <div class="modal-form-container">
+  @if (isLoading()) {
+    <div class="configurator-dialog-loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else {
   <div class="content">
     <div class="default-content">
       <mat-card class="matCard">
@@ -112,6 +117,30 @@
                     <mat-option [value]="type">{{ type }}</mat-option>
                     }
                   </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="three-column-grid">
+                <app-netmiko-device-type-select [(value)]="netmikoDeviceType" [controller]="controller" class="form-field" />
+                <mat-form-field class="form-field">
+                  <mat-label>Default username</mat-label>
+                  <input
+                    matInput
+                    [value]="defaultUsername()"
+                    (input)="defaultUsername.set($event.target.value)"
+                    type="text"
+                    [placeholder]="defaultUsernamePlaceholder() || 'Username to log into this node'"
+                  />
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>Default password</mat-label>
+                  <input
+                    matInput
+                    [value]="defaultPassword()"
+                    (input)="defaultPassword.set($event.target.value)"
+                    type="text"
+                    [placeholder]="defaultPasswordPlaceholder() || 'Password to log into this node'"
+                  />
                 </mat-form-field>
               </div>
 
@@ -717,9 +746,16 @@
       </mat-card>
     </div>
   </div>
+  }
 </div>
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
+  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying() || isLoading()">
+    @if (isApplying()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      Apply
+    }
+  </button>
 </div>

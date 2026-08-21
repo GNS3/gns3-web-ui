@@ -178,6 +178,32 @@
             </section>
           </div>
         </mat-step>
+
+        <mat-step [optional]="true">
+          <ng-template matStepLabel>
+            <span class="template-wizard__step-label">
+              <mat-icon>settings_ethernet</mat-icon>
+              <span class="template-wizard__step-label-text">
+                <span class="template-wizard__step-label-title">Netmiko device type</span>
+                <span class="template-wizard__step-label-description">Optional device type</span>
+              </span>
+            </span>
+          </ng-template>
+          <div class="iou-add__step-content template-wizard__panel">
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Netmiko device type</h2>
+              <p class="template-wizard__section-copy">Default device type used for netmiko-driven configuration pushes.</p>
+              <div class="iou-add__form">
+                <app-netmiko-device-type-select
+                  [(value)]="netmikoDeviceType"
+                  [controller]="controller()"
+                  appearance="fill"
+                  class="iou-add__field"
+                />
+              </div>
+            </section>
+          </div>
+        </mat-step>
       </mat-horizontal-stepper>
     </section>
 
@@ -189,7 +215,7 @@
           <mat-icon>arrow_back</mat-icon>
           Back
         </button>
-        } @if (selectedStepIndex() < 2) {
+        } @if (selectedStepIndex() < 3) {
         <button
           mat-raised-button
           color="primary"

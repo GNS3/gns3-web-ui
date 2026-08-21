@@ -8,6 +8,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  WritableSignal,
   computed,
   effect,
   inject,
@@ -51,7 +52,7 @@ import { MarkerRegistryService } from '@services/marker-registry.service';
 import { ToasterService } from '@services/toaster.service';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 import { WindowManagementService } from '@services/window-management.service';
-import { MarkerFormComponent } from './marker-form.component';
+import { MarkerFormComponent, MARKER_CAPTURE_AUTO } from './marker-form.component';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 interface DefinitionRow {
@@ -132,6 +133,8 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   private readonly WINDOW_ID = 'marker-manager';
 
   private destroy$ = new Subject<void>();
+  /** Monotonic request id for loadAggregate — stale responses are dropped. */
+  private aggregateRequestSeq = 0;
   readonly controller = input<Controller>();
   readonly project = input<Project>();
   readonly zIndex = input<number>(1000);
@@ -173,16 +176,20 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   readonly editingMarker = signal<{ linkId: string; name: string } | null>(null);
   /** LinkIds whose marker list is collapsed in the aggregate Links view. */
   readonly collapsedGroups = signal<Set<string>>(new Set());
-  /** Definition name whose pause/resume request is in flight — guards double-fires + drives that row's spinner. */
-  readonly togglingDefinition = signal<string | null>(null);
-  /** `${linkId}/${name}` of the per-marker enable request in flight — guards + drives that row's spinner. */
-  readonly togglingMarker = signal<string | null>(null);
-  /** Definition name whose delete request is in flight — drives that row's spinner. */
-  readonly deletingDefinition = signal<string | null>(null);
+  // In-flight action guards are SETS, not single slots: a single-slot signal is
+  // overwritten by a concurrent action on another row, which makes the first
+  // response clear the second row's spinner and re-enable its double-click
+  // guard while the second request is still pending.
+  /** Definition names with a pause/resume request in flight — guard double-fires + drive those rows' spinners. */
+  readonly togglingDefinition = signal<ReadonlySet<string>>(new Set());
+  /** `${linkId}/${name}` keys of per-marker enable requests in flight — guard + drive those rows' spinners. */
+  readonly togglingMarker = signal<ReadonlySet<string>>(new Set());
+  /** Definition names with a delete request in flight — drive those rows' spinners. */
+  readonly deletingDefinition = signal<ReadonlySet<string>>(new Set());
   /** Whether the definition create/update form is currently submitting. */
   readonly submittingDefinition = signal(false);
-  /** `${linkId}/${name}` of the per-marker delete request in flight — drives that row's spinner. */
-  readonly deletingMarker = signal<string | null>(null);
+  /** `${linkId}/${name}` keys of per-marker delete requests in flight — drive those rows' spinners. */
+  readonly deletingMarker = signal<ReadonlySet<string>>(new Set());
   /** linkId whose per-marker create form is currently submitting. */
   readonly submittingMarker = signal<string | null>(null);
   /** Whether the per-marker edit form is currently submitting. */
@@ -264,7 +271,9 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     // `null` on Ethernet (picker hidden, backend defaults to DLT_EN10MB); seeded with the
     // first WAN encapsulation when the form opens on a serial link (see toggleAddMarker).
     data_link_type: new UntypedFormControl(null),
-    capture_node_id: new UntypedFormControl(null),
+    // nonNullable so bare markerForm.reset() restores the sentinel instead of
+    // null (which mat-select would render as a blank trigger).
+    capture_node_id: new UntypedFormControl(MARKER_CAPTURE_AUTO, { nonNullable: true }),
   });
 
   readonly markerEditForm = new UntypedFormGroup({
@@ -279,7 +288,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     direction: new UntypedFormControl('both'),
     // Create-only on per-link markers — disabled in edit (recreate to switch encapsulation).
     data_link_type: new UntypedFormControl({ value: 'DLT_EN10MB', disabled: true }),
-    capture_node_id: new UntypedFormControl({ value: null, disabled: true }),
+    capture_node_id: new UntypedFormControl({ value: MARKER_CAPTURE_AUTO, disabled: true }),
   });
 
   /**
@@ -407,14 +416,21 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const controller = this.controller();
     const project = this.project();
     if (!controller || !project) return;
+    // loadAggregate fires from many call sites (init + after every marker
+    // CRUD); two overlapping GETs can resolve out of order, and the older
+    // (pre-mutation) response applied last would wipe markers that were just
+    // created. Track the newest request and drop stale responses.
+    const seq = ++this.aggregateRequestSeq;
     this.markerService.aggregateList(controller, project.project_id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (map: AggregateMarkerMap) => {
+        if (seq !== this.aggregateRequestSeq) return; // stale response superseded
         this.linkGroups.set(this.buildGroups(map));
         this.markerRegistryService.rebuildFromAggregate(map);
         this.syncLinkMarkersFromAggregate(map);
         this.cdr.markForCheck();
       },
       error: (err) => {
+        if (seq !== this.aggregateRequestSeq) return;
         this.linkError.set({ linkId: null, message: err.error?.message || err.message || 'Failed to load markers' });
         this.cdr.markForCheck();
       },
@@ -486,11 +502,18 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
       const { link_id: _linkId, node_id: _nodeId, ...marker } = entry;
       mm[name] = marker;
     }
-    for (const [linkId, markers] of byLink) {
-      const link = this.linksDataSource.get(linkId);
-      if (link) link.markers = markers;
-      const mapLink = this.mapLinksDataSource.get(linkId);
-      if (mapLink) mapLink.markers = markers;
+    // One pass per data source replaces AND clears: links present in the
+    // aggregate get the fresh markers, links absent from it had their markers
+    // ALL removed (e.g. their only inherited copy went away with a definition
+    // delete) — clear their stale markers too, or the deleted marker lingers
+    // on the stored link objects until a page reload.
+    for (const link of this.linksDataSource.getItems()) {
+      const markers = byLink.get(link.link_id);
+      link.markers = markers ?? (link.markers ? {} : link.markers);
+    }
+    for (const mapLink of this.mapLinksDataSource.getItems()) {
+      const markers = byLink.get(mapLink.id);
+      mapLink.markers = markers ?? (mapLink.markers ? {} : mapLink.markers);
     }
   }
 
@@ -641,19 +664,19 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const project = this.project();
     if (!controller || !project) return;
     // Guard against double-fires while a delete is already in flight.
-    if (this.deletingDefinition() === row.name) return;
+    if (this.isDeletingDefinition(row.name)) return;
     this.defError.set(null);
-    this.deletingDefinition.set(row.name);
+    this.markPending(this.deletingDefinition, row.name);
     this.markerService.deleteDefinition(controller, project.project_id, row.name).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
-        this.deletingDefinition.set(null);
+        this.clearPending(this.deletingDefinition, row.name);
         this.toasterService.success(`Marker definition "${row.name}" deleted.`);
         if (this.editingDefinition() === row.name) this.cancelEditDefinition();
         this.loadDefinitions();
         this.loadAggregate();
       },
       error: (err) => {
-        this.deletingDefinition.set(null);
+        this.clearPending(this.deletingDefinition, row.name);
         const message = err.error?.message || err.message || 'Failed to delete definition';
         this.defError.set(message);
         this.toasterService.error(message);
@@ -729,12 +752,36 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
 
   /** Whether a per-marker enable request is in flight for this marker (drives its spinner). */
   isTogglingMarker(linkId: string, name: string): boolean {
-    return this.togglingMarker() === `${linkId}/${name}`;
+    return this.togglingMarker().has(`${linkId}/${name}`);
   }
 
   /** Whether a per-marker delete request is in flight for this marker (drives its spinner). */
   isDeletingMarker(linkId: string, name: string): boolean {
-    return this.deletingMarker() === `${linkId}/${name}`;
+    return this.deletingMarker().has(`${linkId}/${name}`);
+  }
+
+  /** Whether a pause/resume request is in flight for this definition (drives its spinner). */
+  isTogglingDefinition(name: string): boolean {
+    return this.togglingDefinition().has(name);
+  }
+
+  /** Whether a delete request is in flight for this definition (drives its spinner). */
+  isDeletingDefinition(name: string): boolean {
+    return this.deletingDefinition().has(name);
+  }
+
+  /** Stage a key in an in-flight set (new Set ref so OnPush consumers refresh). */
+  private markPending(sig: WritableSignal<ReadonlySet<string>>, key: string) {
+    const next = new Set(sig());
+    next.add(key);
+    sig.set(next);
+  }
+
+  /** Remove a key from an in-flight set (new Set ref so OnPush consumers refresh). */
+  private clearPending(sig: WritableSignal<ReadonlySet<string>>, key: string) {
+    const next = new Set(sig());
+    next.delete(key);
+    sig.set(next);
   }
 
   /**
@@ -806,7 +853,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     if (hd !== null) body.highlight_duration = hd;
     const dir = this.dirToBody(v.direction);
     if (dir) body.direction = dir;
-    if (v.capture_node_id) body.capture_node_id = v.capture_node_id;
+    if (v.capture_node_id && v.capture_node_id !== MARKER_CAPTURE_AUTO) body.capture_node_id = v.capture_node_id;
     if (v.data_link_type) body.data_link_type = v.data_link_type;
 
     this.markerService.create(controller, project.project_id, linkId, body).pipe(takeUntil(this.destroy$)).subscribe({
@@ -835,18 +882,18 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const project = this.project();
     if (!controller || !project) return;
     const key = `${linkId}/${name}`;
-    if (this.deletingMarker() === key) return;
+    if (this.isDeletingMarker(linkId, name)) return;
     this.linkError.set(null);
-    this.deletingMarker.set(key);
+    this.markPending(this.deletingMarker, key);
     this.markerService.delete(controller, project.project_id, linkId, name).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
-        this.deletingMarker.set(null);
+        this.clearPending(this.deletingMarker, key);
         this.toasterService.success(`Marker "${name}" deleted.`);
         this.refreshLink(linkId);
         this.loadAggregate();
       },
       error: (err) => {
-        this.deletingMarker.set(null);
+        this.clearPending(this.deletingMarker, key);
         const message = err.error?.message || err.message || 'Failed to delete marker';
         this.linkError.set({ linkId, message });
         this.toasterService.error(message);
@@ -869,7 +916,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
       highlight_duration: marker.highlight_duration ?? 800,
       direction: this.dirFromMarker(marker.direction),
       data_link_type: marker.data_link_type ?? 'DLT_EN10MB',
-      capture_node_id: marker.capture_node_id ?? null,
+      capture_node_id: marker.capture_node_id ?? MARKER_CAPTURE_AUTO,
     });
     this.markerEditForm.get('name')?.disable();
     // data_link_type is create-only on per-link markers — keep it disabled in edit.
@@ -927,7 +974,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   // ---- per-definition pause/resume (toggles every inherited copy of a rule) ----
 
   toggleDefinitionPaused(row: DefinitionRow) {
-    if (this.togglingDefinition() === row.name) return;
+    if (this.isTogglingDefinition(row.name)) return;
     const controller = this.controller();
     const project = this.project();
     if (!controller || !project) return;
@@ -937,18 +984,18 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     // call loadDefinitions() here: it sets `loading` and flashes the "Loading…" block /
     // re-renders the whole list. The 204 confirms `paused`, so we set it locally on
     // success; loadAggregate refreshes the Links tab's inherited copies.
-    this.togglingDefinition.set(row.name);
+    this.markPending(this.togglingDefinition, row.name);
     const req$ = wantPaused
       ? this.markerService.pauseDefinition(controller, project.project_id, row.name)
       : this.markerService.resumeDefinition(controller, project.project_id, row.name);
     req$.pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
-        this.togglingDefinition.set(null);
+        this.clearPending(this.togglingDefinition, row.name);
         this.applyDefinitionPausedLocal(row.name, wantPaused);
         this.loadAggregate();
       },
       error: (err) => {
-        this.togglingDefinition.set(null);
+        this.clearPending(this.togglingDefinition, row.name);
         this.defError.set(err.error?.message || err.message || 'Failed to toggle definition');
         this.cdr.markForCheck();
       },
@@ -977,19 +1024,19 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const nextEnabled = marker.enabled === false;
     // Show the row's spinner while in flight; flip the icon only after the server
     // confirms, so the displayed state is always authoritative.
-    this.togglingMarker.set(`${linkId}/${marker.name}`);
+    this.markPending(this.togglingMarker, `${linkId}/${marker.name}`);
     this.markerService
       .setEnabled(controller, project.project_id, linkId, marker.name, nextEnabled)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.togglingMarker.set(null);
+          this.clearPending(this.togglingMarker, `${linkId}/${marker.name}`);
           this.applyEnabledLocal(linkId, marker.name, nextEnabled);
           this.refreshLink(linkId);
           this.loadAggregate();
         },
         error: (err) => {
-          this.togglingMarker.set(null);
+          this.clearPending(this.togglingMarker, `${linkId}/${marker.name}`);
           this.toasterService.error(err.error?.message || err.message || 'Failed to toggle marker');
           this.cdr.markForCheck();
         },

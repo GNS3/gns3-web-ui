@@ -4,7 +4,9 @@ import { of, Subject, throwError } from 'rxjs';
 import { ConfiguratorDialogIosComponent } from './configurator-ios.component';
 import { IosConfigurationService } from '@services/ios-configuration.service';
 import { NodeService } from '@services/node.service';
+import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
+import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
 import { IosValidationService } from '@services/validation';
 import { Node, Properties } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -127,6 +129,7 @@ describe('ConfiguratorDialogIosComponent', () => {
       validateRamForPlatform: vi.fn().mockReturnValue({ isValid: true }),
       validateNvramForPlatform: vi.fn().mockReturnValue({ isValid: true }),
       validateIomem: vi.fn().mockReturnValue({ isValid: true }),
+      validateNetmikoDeviceType: vi.fn().mockReturnValue({ isValid: true }),
     };
 
     mockConfigurationService = {
@@ -208,7 +211,9 @@ describe('ConfiguratorDialogIosComponent', () => {
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
+        { provide: TemplateService, useValue: { list: () => of([]) } },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
         { provide: IosConfigurationService, useValue: mockConfigurationService },
         { provide: IosValidationService, useValue: mockValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },

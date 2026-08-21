@@ -134,6 +134,14 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
         this.term.write('\r\n\x1b[33mConnection closed.\x1b[0m\r\n');
       };
 
+      this.socket.onopen = () => {
+        this.consoleService.sendTerminalSize(this.socket, this.term.cols, this.term.rows);
+      };
+      // fires whenever FitAddon.fit()/term.resize() changes the geometry
+      this.term.onResize(({ cols, rows }) => {
+        this.consoleService.sendTerminalSize(this.socket, cols, rows);
+      });
+
       const attachAddon = new AttachAddon(this.socket);
       this.term.loadAddon(attachAddon);
       this.xtermService.initTerminal(this.term, this.fitAddon);

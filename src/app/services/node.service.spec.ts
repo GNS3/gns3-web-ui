@@ -595,6 +595,45 @@ describe('NodeService', () => {
       );
     });
 
+    it('should include automation and credential fields in the payload', async () => {
+      const nodeWithCredentials = {
+        ...mockNode,
+        netmiko_device_type: 'cisco_xr',
+        default_username: 'admin',
+        default_password: 'secret',
+      } as Node;
+      mockHttpController.put.mockReturnValue(of(nodeWithCredentials));
+
+      await firstValueFrom(service.updateNode(mockController, nodeWithCredentials));
+
+      expect(mockHttpController.put).toHaveBeenCalledWith(
+        mockController,
+        '/projects/project-123/nodes/node-1',
+        expect.objectContaining({
+          netmiko_device_type: 'cisco_xr',
+          default_username: 'admin',
+          default_password: 'secret',
+        })
+      );
+    });
+
+    it('should forward null credential fields so they can be cleared', async () => {
+      const clearedNode = {
+        ...mockNode,
+        netmiko_device_type: null,
+        default_username: null,
+        default_password: null,
+      } as Node;
+      mockHttpController.put.mockReturnValue(of(clearedNode));
+
+      await firstValueFrom(service.updateNode(mockController, clearedNode));
+
+      const payload = mockHttpController.put.mock.calls[0][2];
+      expect(payload.netmiko_device_type).toBeNull();
+      expect(payload.default_username).toBeNull();
+      expect(payload.default_password).toBeNull();
+    });
+
     it('should emit error when updateNode fails', async () => {
       const error = new Error('Update node failed');
       mockHttpController.put.mockReturnValue(throwError(() => error));
@@ -642,6 +681,28 @@ describe('NodeService', () => {
       const payload = putCall[2];
 
       expect(payload.custom_adapters).toEqual([]);
+    });
+
+    it('should include automation and credential fields in the payload', async () => {
+      const nodeWithCredentials = {
+        ...mockNode,
+        netmiko_device_type: 'cisco_xr',
+        default_username: 'admin',
+        default_password: 'secret',
+      } as Node;
+      mockHttpController.put.mockReturnValue(of(nodeWithCredentials));
+
+      await firstValueFrom(service.updateNodeWithCustomAdapters(mockController, nodeWithCredentials));
+
+      const putCall = mockHttpController.put.mock.calls[0];
+      const payload = putCall[2];
+      expect(payload).toEqual(
+        expect.objectContaining({
+          netmiko_device_type: 'cisco_xr',
+          default_username: 'admin',
+          default_password: 'secret',
+        })
+      );
     });
 
     it('should emit error when updateNodeWithCustomAdapters fails', async () => {

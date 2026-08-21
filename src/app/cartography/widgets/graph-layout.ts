@@ -43,6 +43,18 @@ export class GraphLayout implements Widget {
     this.drawingLineTool.connect(view, context);
   }
 
+  /**
+   * Canonical canvas transform: origin anchor + user pan + scale. Everything
+   * that (re)applies the g.canvas transform must go through here so pan/zoom
+   * semantics stay in one place (d3-map's scale-change handler calls it too).
+   */
+  public canvasTransform(ctx: Context): string {
+    const xTrans = ctx.getZeroZeroTransformationPoint().x + ctx.transformation.x;
+    const yTrans = ctx.getZeroZeroTransformationPoint().y + ctx.transformation.y;
+    const kTrans = ctx.transformation.k;
+    return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
+  }
+
   draw(view: SVGSelection, context: Context) {
     view.attr('width', context.size.width).attr('height', context.size.height);
 
@@ -50,12 +62,7 @@ export class GraphLayout implements Widget {
 
     const canvasEnter = canvas.enter().append<SVGGElement>('g').attr('class', 'canvas');
 
-    canvas.merge(canvasEnter).attr('transform', (ctx: Context) => {
-      const xTrans = ctx.getZeroZeroTransformationPoint().x + ctx.transformation.x;
-      const yTrans = ctx.getZeroZeroTransformationPoint().y + ctx.transformation.y;
-      const kTrans = ctx.transformation.k;
-      return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
-    });
+    canvas.merge(canvasEnter).attr('transform', (ctx: Context) => this.canvasTransform(ctx));
 
     this.layersWidget.draw(canvas, this.layersManager.getLayersList());
 

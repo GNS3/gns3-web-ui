@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { LinkContextMenu } from '../events/event-source';
 import { LinksEventSource } from '../events/links-event-source';
 import { MultiLinkCalculatorHelper } from '../helpers/multi-link-calculator-helper';
+import { MarkerFlashService } from '@services/marker-flash.service';
 import { SelectionManager } from '../managers/selection-manager';
 import { MapLink } from '../models/map/map-link';
 import { MapLinksDataSource } from '../datasources/map-datasource';
@@ -30,7 +31,8 @@ export class LinkWidget implements Widget, OnDestroy {
     private ethernetLinkWidget: EthernetLinkWidget,
     private serialLinkWidget: SerialLinkWidget,
     private linksEventSource: LinksEventSource,
-    private mapLinksDataSource: MapLinksDataSource
+    private mapLinksDataSource: MapLinksDataSource,
+    private markerFlashService: MarkerFlashService
   ) {
     this.subscription = this.mapLinksDataSource.itemChanged.subscribe((mapLink: MapLink) => {
       this.updateFilterIconsVisibility(mapLink);
@@ -61,6 +63,13 @@ export class LinkWidget implements Widget, OnDestroy {
       const translation = this.multiLinkCalculatorHelper.linkTranslation(link.distance, link.source, link.target);
       return `translate (${translation.dx}, ${translation.dy})`;
     });
+
+    // Direction arrows are positioned in path-local coordinates, so after a
+    // redraw (e.g. an endpoint node dragged) their cached positions are stale.
+    // Remove them, then re-render for links with an ACTIVE flash — the flash
+    // state diff only re-renders on state changes, so without this a redraw
+    // mid-flash strips the arrows until the state changes or expires.
+    link_body.selectAll('g.marker-arrow-tx, g.marker-arrow-rx').remove();
 
     link_body.select('.capture-icon').remove();
     link_body
@@ -190,6 +199,10 @@ export class LinkWidget implements Widget, OnDestroy {
 
     this.serialLinkWidget.draw(link_body_merge);
     this.ethernetLinkWidget.draw(link_body_merge);
+
+    // The paths are drawn now — re-render flash arrows (removed above) along
+    // the new geometry for links that are currently flashing.
+    link_body_merge.each((l: MapLink) => this.markerFlashService.redrawArrows(l.id));
 
     link_body_merge
       .select<SVGPathElement>('path')

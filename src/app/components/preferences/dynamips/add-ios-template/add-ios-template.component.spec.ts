@@ -8,6 +8,7 @@ import { IosService } from '@services/ios.service';
 import { IosConfigurationService } from '@services/ios-configuration.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
 import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
 import { ProgressService } from 'app/common/progress/progress.service';
 import { Controller } from '@models/controller';
@@ -235,6 +236,7 @@ describe('AddIosTemplateComponent', () => {
         { provide: IosConfigurationService, useValue: mockIosConfigurationService },
         { provide: TemplateMocksService, useValue: mockTemplateMocksService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
         { provide: UploadServiceService, useValue: mockUploadServiceService },
         { provide: ProgressService, useValue: mockProgressService },
         { provide: MatSnackBar, useValue: mockMatSnackBar },

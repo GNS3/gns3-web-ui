@@ -6,6 +6,7 @@ import { Appliance } from '@models/appliance';
 @Component({
   selector: 'app-appliance-info-dialog',
   templateUrl: 'appliance-info-dialog.component.html',
+  styleUrls: ['appliance-info-dialog.component.scss'],
   imports: [MatDialogModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

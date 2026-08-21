@@ -12,6 +12,7 @@ import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import type { HostInterfaceIPAddress, NetworkInterface } from '../../../../../cartography/models/node';
@@ -45,6 +46,7 @@ import { CloudValidationService } from '@services/validation';
     MatIconModule,
     MatTableModule,
     MatTooltipModule,
+    MatProgressSpinnerModule,
     UdpTunnelsComponent,
   ],
 })
@@ -87,6 +89,9 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
 
   readonly udpTunnels = viewChild<UdpTunnelsComponent>('udpTunnels');
 
+  readonly isApplying = signal(false);
+  readonly isLoading = signal(true);
+
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
       next: (node: Node) => {
@@ -126,11 +131,15 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
           this.node.properties.ports_mapping.filter((elem) => elem.type === 'udp')
         );
 
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
         this.cd.markForCheck();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load node';
         this.toasterService.error(message);
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
         this.cd.markForCheck();
       },
     });
@@ -225,6 +234,8 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   }
 
   onSaveClick() {
+    if (this.isApplying()) return;
+
     // Validate required fields
     const nameValidation = this.validationService.validateName(this.nodeName());
     if (!nameValidation.isValid) {
@@ -284,6 +295,8 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
       .concat(this.portsMappingEthernet())
       .concat(this.portsMappingTap());
 
+    this.isApplying.set(true);
+    this.dialogRef.disableClose = true;
     this.nodeService.updateNode(this.controller, this.node).subscribe({
       next: () => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
@@ -292,6 +305,8 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
       error: (error: unknown) => {
         const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
         this.toasterService.error(errorMessage);
+        this.isApplying.set(false);
+        this.dialogRef.disableClose = false;
         this.cd.markForCheck();
       },
     });

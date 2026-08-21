@@ -25,7 +25,13 @@
   @if (!isComputing) {
   <button mat-button (click)="onCompute()" color="accent">Compute</button>
   } @if (!isComputing) {
-  <button mat-button (click)="onApply()" color="accent">Apply</button>
+  <button mat-button (click)="onApply()" color="accent" [disabled]="isApplying()">
+    @if (isApplying()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      Apply
+    }
+  </button>
   }
   <button mat-button (click)="onClose()" color="accent">Close</button>
 </div>

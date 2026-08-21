@@ -96,19 +96,63 @@ export class MarkerFlashService {
     const destroyRef = inject(DestroyRef);
     this.effectRef = effect(() => this.applyDiff(this._flashing()));
     destroyRef.onDestroy(() => {
-      if (this.flushRaf !== null) {
-        cancelAnimationFrame(this.flushRaf);
-        this.flushRaf = null;
-      }
-      this.flushScheduled = false;
-      this.pending.clear();
+      this.reset();
       this.effectRef.destroy();
-      for (const key of [...this.prev.keys()]) this.clearLink(linkIdOf(key));
-      this.prev.clear();
-      for (const t of this.timers.values()) clearTimeout(t);
-      this.timers.clear();
-      this.geoCache.clear();
     });
+  }
+
+  /**
+   * Drop the cached path geometry for a deleted link. `clearLink` (expiry)
+   * deliberately keeps the cache — the link still exists and will flash again —
+   * but a deleted link's entry would otherwise live forever (this service is an
+   * app-lifetime singleton), slowly leaking memory on churn topologies.
+   */
+  evictLink(linkId: string) {
+    this.geoCache.delete(linkId);
+  }
+
+  /**
+   * Re-render the direction arrows for a link after its widget redrew it.
+   * LinkWidget.draw() removes the arrow containers on every redraw (their
+   * path-local coordinates are stale once the path changes), but applyDiff
+   * only re-renders on flash state CHANGES — so a redraw mid-flash (endpoint
+   * dragged, parallel re-layout, theme switch) would strip the arrows for the
+   * rest of the flash window. No-op when the link isn't flashing.
+   */
+  redrawArrows(linkId: string) {
+    const best = this.bestEntryForLink(this._flashing(), linkId);
+    if (best) {
+      this.setLink(linkId, best.state);
+    }
+  }
+
+  /**
+   * Full reset (project switch). The service is an app-lifetime singleton whose
+   * DestroyRef (root injector) never fires while the app runs, so the project
+   * map must clear timers, staged flashes, DOM state and the geometry cache
+   * when the user leaves a project — otherwise the previous project's flash
+   * state and cache entries leak into the next one.
+   */
+  reset() {
+    if (this.flushRaf !== null) {
+      cancelAnimationFrame(this.flushRaf);
+      this.flushRaf = null;
+    }
+    this.flushScheduled = false;
+    this.pending.clear();
+    // The timers below would have expired these entries — clear them first so
+    // the effect diff cannot resurrect DOM/state for the previous project.
+    for (const t of this.timers.values()) clearTimeout(t);
+    this.timers.clear();
+    // Reset the signal map itself: without this, every project switch
+    // permanently retains the previous project's flash entries (composite keys
+    // are link UUIDs, never reused) — an unbounded leak in this app-singleton.
+    if (this._flashing().size > 0) {
+      this._flashing.set(new Map());
+    }
+    for (const key of [...this.prev.keys()]) this.clearLink(linkIdOf(key));
+    this.prev.clear();
+    this.geoCache.clear();
   }
 
   /**
@@ -305,16 +349,22 @@ export class MarkerFlashService {
     state: FlashState,
     slot: 'tx' | 'rx' | null
   ) {
-    // Only remove OUR slot's container — leave the other direction's arrows alone.
-    const slotClass = slot ? `marker-arrow-${slot}` : 'marker-arrow';
-    group.select(`g.${slotClass}`).remove();
-    if (!slot) return; // legacy (no dir) → pulse only, no arrows.
-
+    // Validate BEFORE touching the DOM: when the capture node no longer
+    // matches a current endpoint (stale capture after a rewired link, or a
+    // marker.match delivered before the link.updated that changed endpoints)
+    // we must bail WITHOUT removing the slot's arrows — the state diff won't
+    // re-render them (identical states are skipped), so removing here would
+    // permanently strip the flash arrows until expiry.
     const sourceId = group.attr('map-source');
     const targetId = group.attr('map-target');
     const captureIsSource = !!state.captureNodeId && state.captureNodeId === sourceId;
     const captureIsTarget = !!state.captureNodeId && state.captureNodeId === targetId;
-    if (!captureIsSource && !captureIsTarget) return;
+    if (state.captureNodeId && !captureIsSource && !captureIsTarget) return;
+
+    // Only remove OUR slot's container — leave the other direction's arrows alone.
+    const slotClass = slot ? `marker-arrow-${slot}` : 'marker-arrow';
+    group.select(`g.${slotClass}`).remove();
+    if (!slot) return; // legacy (no dir) → pulse only, no arrows.
 
     const node = path.node();
     if (!node) return;
@@ -346,7 +396,13 @@ export class MarkerFlashService {
     // Place evenly-spaced arrows along the path. When both tx and rx are active
     // simultaneously, stagger rx arrows by half a step so they don't overlap.
     const count = Math.max(MIN_ARROW_COUNT, Math.min(MAX_ARROW_COUNT, Math.round(len / ARROW_SPACING)));
-    const container = group.append<SVGGElement>('g').attr('class', slotClass);
+    // Append INSIDE g.link_body: the arrows are placed at path-local coordinates
+    // (getPointAtLength), and the path lives in g.link_body — the group that
+    // carries the parallel-link translate(dx,dy). Appending to the outer g.link
+    // would render every parallel bundle member's arrows on the unshifted
+    // centerline (up to ~±35px off in an 8-link bundle).
+    const body = group.select<SVGGElement>('g.link_body');
+    const container = (body.empty() ? group : body).append<SVGGElement>('g').attr('class', slotClass);
     const step = len / (count + 1);
 
     for (let i = 0; i < count; i++) {

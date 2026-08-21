@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -13,11 +13,19 @@ import { MatDialog } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Controller } from '@models/controller';
 import { IouTemplate } from '@models/templates/iou-template';
+import { ApplianceMetadata } from '@models/appliance-metadata';
+import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
+import {
+  applianceCredentialValue,
+  ApplianceCredentialField,
+  setApplianceCredential,
+} from '../../template-metadata-section/appliance-metadata-field';
 import { IouConfigurationService } from '@services/iou-configuration.service';
 import { IouService } from '@services/iou.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
+import { TemplateMetadataSectionComponent } from '../../template-metadata-section/template-metadata-section.component';
 import { DialogConfigService } from '@services/dialog-config.service';
 import { IouValidationService } from '@services/validation';
 
@@ -37,11 +45,13 @@ import { IouValidationService } from '@services/validation';
     RouterModule,
     MatIconModule,
     MatButtonModule,
+    TemplateMetadataSectionComponent,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatChipsModule,
     MatCheckboxModule,
+    NetmikoDeviceTypeSelectComponent,
   ],
 })
 export class IouTemplateDetailsComponent implements OnInit {
@@ -81,6 +91,10 @@ export class IouTemplateDetailsComponent implements OnInit {
   ethernetAdapters = model(0);
   serialAdapters = model(0);
   usage = model('');
+  netmikoDeviceType = model('');
+  readonly applianceMetadata = signal<ApplianceMetadata | null>(null);
+  readonly defaultUsername = computed(() => applianceCredentialValue(this.applianceMetadata(), 'default_username'));
+  readonly defaultPassword = computed(() => applianceCredentialValue(this.applianceMetadata(), 'default_password'));
   tags = model<string[]>([]);
 
   // Section collapse states
@@ -122,6 +136,8 @@ export class IouTemplateDetailsComponent implements OnInit {
             this.ethernetAdapters.set(iouTemplate.ethernet_adapters || 0);
             this.serialAdapters.set(iouTemplate.serial_adapters || 0);
             this.usage.set(iouTemplate.usage || '');
+            this.netmikoDeviceType.set(iouTemplate.netmiko_device_type || '');
+            this.applianceMetadata.set(iouTemplate.appliance_metadata ?? null);
             this.tags.set(iouTemplate.tags || []);
 
             this.cd.markForCheck();
@@ -150,6 +166,11 @@ export class IouTemplateDetailsComponent implements OnInit {
     this.router.navigate(['/controller', this.controller.id, 'preferences']);
   }
 
+  onCredentialInput(field: ApplianceCredentialField, event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.applianceMetadata.set(setApplianceCredential(this.applianceMetadata(), field, value));
+  }
+
   onSave() {
     // Validate required fields
     const nameValidation = this.validationService.validateName(this.templateName());
@@ -162,6 +183,8 @@ export class IouTemplateDetailsComponent implements OnInit {
       this.toasterService.error(pathValidation.errorMessage);
       return;
     }
+    const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
+    if (!netmikoValidation.isValid) { this.toasterService.error(netmikoValidation.errorMessage); return; }
 
     // Update iouTemplate from model signals
     this.iouTemplate.name = this.templateName();
@@ -180,6 +203,8 @@ export class IouTemplateDetailsComponent implements OnInit {
     this.iouTemplate.ethernet_adapters = this.ethernetAdapters();
     this.iouTemplate.serial_adapters = this.serialAdapters();
     this.iouTemplate.usage = this.usage();
+    this.iouTemplate.netmiko_device_type = this.netmikoDeviceType().trim() || null;
+    this.iouTemplate.appliance_metadata = this.applianceMetadata();
     this.iouTemplate.tags = this.tags();
 
     this.iouService.saveTemplate(this.controller, this.iouTemplate).subscribe({

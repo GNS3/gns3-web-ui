@@ -192,15 +192,18 @@ export class EditNetworkConfigurationDialogComponent implements OnInit {
 
     const serializedConfiguration = this.configurationPreview();
     this.saving.set(true);
+    this.dialogRef.disableClose = true;
     this.nodeService.saveNetworkConfiguration(this.controller, this.node, serializedConfiguration).subscribe({
       next: () => {
         this.saving.set(false);
+        this.dialogRef.disableClose = false;
         this.dialogRef.close();
         this.toasterService.success(`Configuration for node ${this.node.name} saved.`);
         this.cdr.markForCheck();
       },
       error: (err) => {
         this.saving.set(false);
+        this.dialogRef.disableClose = false;
         const message = err.error?.message || err.message || 'Failed to save network configuration';
         this.toasterService.error(message);
         this.cdr.markForCheck();

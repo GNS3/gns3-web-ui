@@ -6,7 +6,9 @@ import { ConfiguratorDialogQemuComponent } from './configurator-qemu.component';
 import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { QemuService } from '@services/qemu.service';
 import { NodeService } from '@services/node.service';
+import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
+import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
 import { ValidationService } from '@services/validation';
 import { ImageManagerService } from '@services/image-manager.service';
 import { Node } from '../../../../../cartography/models/node';
@@ -204,6 +206,7 @@ describe('ConfiguratorDialogQemuComponent', () => {
 
     mockValidationService = {
       required: vi.fn().mockReturnValue({ isValid: true, errorMessage: '' }),
+      validateNetmikoDeviceType: vi.fn().mockReturnValue({ isValid: true }),
     };
 
     mockImageManagerService = {
@@ -227,9 +230,11 @@ describe('ConfiguratorDialogQemuComponent', () => {
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
+        { provide: TemplateService, useValue: { list: () => of([]) } },
         { provide: QemuService, useValue: mockQemuService },
         { provide: QemuConfigurationService, useValue: mockQemuConfigurationService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
         { provide: ValidationService, useValue: mockValidationService },
         { provide: ImageManagerService, useValue: mockImageManagerService },
         { provide: ChangeDetectorRef, useValue: mockCd },

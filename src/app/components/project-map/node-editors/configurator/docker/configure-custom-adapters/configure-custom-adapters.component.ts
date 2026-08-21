@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MatDialogModule, MatDialogContent } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Node } from '../../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
@@ -17,7 +18,7 @@ import { ValidationService } from '@services/validation';
   selector: 'app-configure-custom-adapters',
   templateUrl: './configure-custom-adapters.component.html',
   styleUrl: './configure-custom-adapters.component.scss',
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, MatInputModule, MatFormFieldModule],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, MatInputModule, MatFormFieldModule, MatProgressSpinnerModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigureCustomAdaptersDialogComponent implements OnInit {
@@ -34,6 +35,7 @@ export class ConfigureCustomAdaptersDialogComponent implements OnInit {
   saveHandler: (adapters: any[]) => void;
 
   readonly adapters = model<any[]>([]);
+  readonly isApplying = signal(false);
 
   constructor() {}
 
@@ -100,6 +102,7 @@ export class ConfigureCustomAdaptersDialogComponent implements OnInit {
   }
 
   onSaveClick() {
+    if (this.isApplying()) return;
     if (this.hasInvalidMac()) {
       this.toasterService.error('One or more MAC addresses are invalid (expected XX:XX:XX:XX:XX:XX)');
       return;
@@ -112,6 +115,8 @@ export class ConfigureCustomAdaptersDialogComponent implements OnInit {
         ...a,
         mac_address: a.mac_address || null,
       }));
+      this.isApplying.set(true);
+      this.dialogRef.disableClose = true;
       this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe({
         next: () => {
           this.onCancelClick();
@@ -121,6 +126,8 @@ export class ConfigureCustomAdaptersDialogComponent implements OnInit {
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to update node with custom adapters';
           this.toasterService.error(message);
+          this.isApplying.set(false);
+          this.dialogRef.disableClose = false;
           this.cdr.markForCheck();
         },
       });

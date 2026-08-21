@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DrawingToMapDrawingConverter } from '../../../../cartography/converters/map/drawing-to-map-drawing-converter';
 import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../../cartography/datasources/drawings-datasource';
@@ -42,6 +43,7 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
     MatSelectModule,
     MatOptionModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -57,6 +59,8 @@ export class StyleEditorDialogComponent implements OnInit {
   private rotationValidator = inject(RotationValidator);
   private qtDasharrayFixer = inject(QtDasharrayFixer);
   private cd = inject(ChangeDetectorRef);
+
+  readonly isApplying = signal(false);
 
   controller: Controller;
   project: Project;
@@ -212,6 +216,7 @@ export class StyleEditorDialogComponent implements OnInit {
   }
 
   onYesClick() {
+    if (this.isApplying()) return;
     if (this.formGroup.valid) {
       if (this.element.stroke_dasharray == '') {
         this.element.stroke_width = 0;
@@ -277,6 +282,8 @@ export class StyleEditorDialogComponent implements OnInit {
 
       this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
 
+      this.isApplying.set(true);
+      this.dialogRef.disableClose = true;
       this.drawingService.update(this.controller, this.drawing).subscribe({
         next: (controllerDrawing: Drawing) => {
           this.drawingsDataSource.update(controllerDrawing);
@@ -286,6 +293,8 @@ export class StyleEditorDialogComponent implements OnInit {
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to update drawing';
           this.toasterService.error(message);
+          this.isApplying.set(false);
+          this.dialogRef.disableClose = false;
           this.cd.markForCheck();
         },
       });

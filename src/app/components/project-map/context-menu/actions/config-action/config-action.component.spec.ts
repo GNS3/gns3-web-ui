@@ -55,7 +55,8 @@ describe('ConfigActionComponent', () => {
   const baseDialogConfig = {
     panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'node-configurator-dialog-panel'],
     autoFocus: false,
-    disableClose: false,
+    // locked while node data loads; configurators unlock it when getNode() completes
+    disableClose: true,
   };
 
   const atmSwitchDialogConfig = {
@@ -66,7 +67,7 @@ describe('ConfigActionComponent', () => {
       'atm-switch-config-panel',
     ],
     autoFocus: false,
-    disableClose: false,
+    disableClose: true,
   };
 
   beforeEach(async () => {

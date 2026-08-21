@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Filter } from '@models/filter';
 import { FilterDescription } from '@models/filter-description';
 import { Link } from '@models/link';
@@ -25,6 +26,7 @@ import { ToasterService } from '@services/toaster.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -35,6 +37,8 @@ export class PacketFiltersDialogComponent implements OnInit {
   private dialogConfig = inject(DialogConfigService);
   private cdr = inject(ChangeDetectorRef);
   private toasterService = inject(ToasterService);
+
+  readonly isApplying = signal(false);
 
   controller: Controller;
   project: Project;
@@ -143,7 +147,10 @@ export class PacketFiltersDialogComponent implements OnInit {
   }
 
   onYesClick() {
+    if (this.isApplying()) return;
     this.link.filters = this.filters;
+    this.isApplying.set(true);
+    this.dialogRef.disableClose = true;
     this.linkService.updateLink(this.controller, this.link).subscribe({
       next: (link: Link) => {
         this.toasterService.success('Packet filters applied.');
@@ -153,6 +160,8 @@ export class PacketFiltersDialogComponent implements OnInit {
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to apply filters';
         this.toasterService.error(message);
+        this.isApplying.set(false);
+        this.dialogRef.disableClose = false;
         this.cdr.markForCheck();
       },
     });

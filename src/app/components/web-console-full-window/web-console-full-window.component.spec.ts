@@ -15,6 +15,9 @@ const createMockTermInstance = () => ({
   focus: vi.fn(),
   write: vi.fn(),
   attachCustomKeyEventHandler: vi.fn().mockReturnValue(true),
+  onResize: vi.fn(),
+  cols: 100,
+  rows: 32,
   options: { theme: {} },
 });
 
@@ -93,6 +96,7 @@ describe('WebConsoleFullWindowComponent', () => {
   const mockNodeConsoleService = {
     consoleResized: new Subject<ConsoleResizedEvent>(),
     getUrl: vi.fn().mockReturnValue('ws://localhost:3080/test'),
+    sendTerminalSize: vi.fn(),
   };
 
   const mockControllerService = {
@@ -196,6 +200,8 @@ describe('WebConsoleFullWindowComponent', () => {
       mockTermInstance.focus.mockClear();
       mockTermInstance.write.mockClear();
       mockTermInstance.attachCustomKeyEventHandler.mockClear();
+      mockTermInstance.onResize.mockClear();
+      mockNodeConsoleService.sendTerminalSize.mockClear();
       mockTermInstance.options.theme = {};
     }
     if (mockFitAddonInstance) {
@@ -355,6 +361,28 @@ describe('WebConsoleFullWindowComponent', () => {
       fixture.detectChanges();
       await vi.runAllTimersAsync();
       expect(mockTermInstance.open).toHaveBeenCalled();
+    });
+
+    it('should send initial terminal size when socket opens', async () => {
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+
+      const socket = (component as any).socket;
+      socket.onopen();
+
+      expect(mockNodeConsoleService.sendTerminalSize).toHaveBeenCalledWith(socket, mockTermInstance.cols, mockTermInstance.rows);
+    });
+
+    it('should subscribe to term resize and forward new geometry', async () => {
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+
+      expect(mockTermInstance.onResize).toHaveBeenCalled();
+      const onResizeCallback = mockTermInstance.onResize.mock.calls[0][0];
+      const socket = (component as any).socket;
+      onResizeCallback({ cols: 120, rows: 40 });
+
+      expect(mockNodeConsoleService.sendTerminalSize).toHaveBeenCalledWith(socket, 120, 40);
     });
 
     it('should load attach addon to terminal', async () => {

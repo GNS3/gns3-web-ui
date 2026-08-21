@@ -26,18 +26,21 @@ import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { QemuImage } from '@models/qemu/qemu-image';
 import { Controller } from '@models/controller';
+import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
 import { QemuTemplate } from '@models/templates/qemu-template';
 import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { QemuService } from '@services/qemu.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { ValidationService } from '@services/validation';
 
 @Component({
   selector: 'app-add-qemu-virtual-machine-template',
   templateUrl: './add-qemu-vm-template.component.html',
   styleUrls: ['./add-qemu-vm-template.component.scss', '../../preferences.component.scss'],
   imports: [
+    NetmikoDeviceTypeSelectComponent,
     MatIconModule,
     MatButtonModule,
     MatRadioModule,
@@ -55,6 +58,7 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   private controllerService = inject(ControllerService);
   private qemuService = inject(QemuService);
   private toasterService = inject(ToasterService);
+  private validationService = inject(ValidationService);
   private router = inject(Router);
   private templateMocksService = inject(TemplateMocksService);
   private configurationService = inject(QemuConfigurationService);
@@ -86,6 +90,7 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   selectedPlatform = model('');
   consoleType = model('');
   auxConsoleType = model('');
+  netmikoDeviceType = model('');
 
   // Step completion computed signals
   nameStepCompleted = computed(() => !!this.templateName().trim());
@@ -277,6 +282,12 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
 
   addTemplate() {
     if (this.canCreateTemplate()) {
+      const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
+      if (!netmikoValidation.isValid) {
+        this.toasterService.error(netmikoValidation.errorMessage);
+        return;
+      }
+
       const template = this.qemuTemplate();
       template.ram = this.ramMemory();
       template.platform = this.selectedPlatform();
@@ -292,6 +303,7 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
       template.compute_id = 'local';
       template.console_type = this.consoleType();
       template.aux_type = this.auxConsoleType();
+      template.netmiko_device_type = this.netmikoDeviceType().trim() || null;
 
       this.qemuService.addTemplate(this.controller(), template).subscribe({
         next: () => {

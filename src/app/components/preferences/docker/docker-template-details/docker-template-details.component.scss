@@ -116,6 +116,13 @@
       grid-column: 1 / -1;
     }
   }
+
+  .three-column-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
 }
 
 .docker-details__field,

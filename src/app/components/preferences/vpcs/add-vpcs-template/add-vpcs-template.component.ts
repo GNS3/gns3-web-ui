@@ -14,10 +14,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { v4 as uuid } from 'uuid';
 import { Controller } from '@models/controller';
+import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
 import { VpcsTemplate } from '@models/templates/vpcs-template';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { ValidationService } from '@services/validation';
 import { VpcsService } from '@services/vpcs.service';
 import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/template-info-fields.component';
 
@@ -28,6 +30,7 @@ import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/t
   templateUrl: './add-vpcs-template.component.html',
   styleUrls: ['./add-vpcs-template.component.scss', '../../preferences.component.scss'],
   imports: [
+    NetmikoDeviceTypeSelectComponent,
     ReactiveFormsModule,
     MatIconModule,
     MatButtonModule,
@@ -43,6 +46,7 @@ export class AddVpcsTemplateComponent implements OnInit {
   private vpcsService = inject(VpcsService);
   private router = inject(Router);
   private toasterService = inject(ToasterService);
+  private validationService = inject(ValidationService);
   private templateMocksService = inject(TemplateMocksService);
   private formBuilder = inject(UntypedFormBuilder);
   private cd = inject(ChangeDetectorRef);
@@ -50,6 +54,7 @@ export class AddVpcsTemplateComponent implements OnInit {
   controller?: Controller;
   templateName: string = '';
   templateNameForm: UntypedFormGroup;
+  netmikoDeviceType: string = '';
   isLocalComputerChosen: boolean = true;
   usage = model('');
   symbol = model('vpcs_guest');
@@ -90,12 +95,19 @@ export class AddVpcsTemplateComponent implements OnInit {
     if (!this.templateNameForm.invalid && this.controller) {
       this.templateName = this.templateNameForm.get('templateName').value;
 
+      const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType);
+      if (!netmikoValidation.isValid) {
+        this.toasterService.error(netmikoValidation.errorMessage);
+        return;
+      }
+
       this.templateMocksService.getVpcsTemplate().subscribe({
         next: (template: VpcsTemplate) => {
           const vpcsTemplate = template;
           vpcsTemplate.template_id = uuid();
           vpcsTemplate.name = this.templateName;
           vpcsTemplate.compute_id = 'local';
+          vpcsTemplate.netmiko_device_type = this.netmikoDeviceType.trim() || null;
           vpcsTemplate.usage = this.usage();
           vpcsTemplate.symbol = this.symbol();
 

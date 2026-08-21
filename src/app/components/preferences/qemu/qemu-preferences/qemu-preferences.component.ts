@@ -1,9 +1,10 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Controller } from '@models/controller';
 import { QemuSettings } from '@models/settings/qemu-settings';
 import { ControllerSettingsService } from '@services/controller-settings.service';
@@ -16,7 +17,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-qemu-preferences',
   templateUrl: './qemu-preferences.component.html',
   styleUrls: ['./qemu-preferences.component.scss'],
-  imports: [CommonModule, RouterModule, MatButtonModule, MatCheckboxModule, MatListModule],
+  imports: [CommonModule, RouterModule, MatButtonModule, MatCheckboxModule, MatListModule, MatProgressSpinnerModule],
 })
 export class QemuPreferencesComponent implements OnInit {
   private readonly route: ActivatedRoute = inject(ActivatedRoute);
@@ -27,6 +28,7 @@ export class QemuPreferencesComponent implements OnInit {
 
   controller: Controller;
   settings: QemuSettings;
+  readonly isApplying = signal(false);
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -56,17 +58,21 @@ export class QemuPreferencesComponent implements OnInit {
   }
 
   apply() {
+    if (this.isApplying()) return;
     if (!this.settings.enable_hardware_acceleration) {
       this.settings.require_hardware_acceleration = false;
     }
 
+    this.isApplying.set(true);
     this.controllerSettingsService.updateSettingsForQemu(this.controller, this.settings).subscribe({
       next: (qemuSettings: QemuSettings) => {
         this.toasterService.success(`Changes applied`);
+        this.isApplying.set(false);
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to apply QEMU settings';
         this.toasterService.error(message);
+        this.isApplying.set(false);
         this.cd.markForCheck();
       },
     });

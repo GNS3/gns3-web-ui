@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, signal } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
@@ -13,7 +14,7 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './change-symbol-dialog.component.html',
   styleUrls: ['./change-symbol-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatDialogModule, MatButtonModule, SymbolsComponent],
+  imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule, SymbolsComponent],
 })
 export class ChangeSymbolDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ChangeSymbolDialogComponent>);
@@ -24,6 +25,7 @@ export class ChangeSymbolDialogComponent implements OnInit {
   @Input() controller: Controller;
   @Input() node: Node;
   symbol: string;
+  readonly isApplying = signal(false);
 
   ngOnInit() {
     this.symbol = this.node.symbol;
@@ -40,6 +42,9 @@ export class ChangeSymbolDialogComponent implements OnInit {
   }
 
   onSelectClick() {
+    if (this.isApplying()) return;
+    this.isApplying.set(true);
+    this.dialogRef.disableClose = true;
     this.nodeService.updateSymbol(this.controller, this.node, this.symbol).subscribe({
       next: () => {
         this.toasterService.success(`Symbol for node "${this.node.name}" updated.`);
@@ -48,6 +53,8 @@ export class ChangeSymbolDialogComponent implements OnInit {
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to update symbol';
         this.toasterService.error(message);
+        this.isApplying.set(false);
+        this.dialogRef.disableClose = false;
         this.cd.markForCheck();
       },
     });

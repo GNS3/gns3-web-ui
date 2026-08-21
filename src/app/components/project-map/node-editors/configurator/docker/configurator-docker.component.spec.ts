@@ -13,7 +13,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ConfiguratorDialogDockerComponent } from './configurator-docker.component';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { NodeService } from '@services/node.service';
+import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
+import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
 import { DockerValidationService } from '@services/validation';
 import { Node, Properties } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -130,6 +132,7 @@ describe('ConfiguratorDialogDockerComponent', () => {
       validateConsoleHttpPath: vi.fn().mockReturnValue({ isValid: true }),
       validateEnvironment: vi.fn().mockReturnValue({ isValid: true }),
       validateExtraConfigs: vi.fn().mockReturnValue({ isValid: true }),
+      validateNetmikoDeviceType: vi.fn().mockReturnValue({ isValid: true }),
     };
 
     mockNodeService = {
@@ -166,7 +169,9 @@ describe('ConfiguratorDialogDockerComponent', () => {
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MatDialog, useValue: mockDialog },
         { provide: NodeService, useValue: mockNodeService },
+        { provide: TemplateService, useValue: { list: () => of([]) } },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
         { provide: DockerConfigurationService, useValue: mockDockerConfigurationService },
         { provide: DockerValidationService, useValue: mockDockerValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },

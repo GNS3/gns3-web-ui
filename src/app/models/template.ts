@@ -1,3 +1,5 @@
+import { ApplianceMetadata } from './appliance-metadata';
+
 export class Template {
   template_id: string;
   builtin: boolean;
@@ -9,4 +11,6 @@ export class Template {
   symbol: string;
   template_type: string;
   tags?: string[];
+  netmiko_device_type?: string | null;
+  appliance_metadata?: ApplianceMetadata | null;
 }

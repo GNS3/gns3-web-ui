@@ -82,6 +82,13 @@
     grid-template-columns: 1fr 1fr;
     gap: var(--gns3-density-card-gap);
   }
+
+  .three-column-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
 }
 
 .iou-template-details__field {

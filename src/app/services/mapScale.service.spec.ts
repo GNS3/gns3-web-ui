@@ -106,6 +106,41 @@ describe('MapScaleService', () => {
       service.resetToDefault();
       expect(emitSpy).toHaveBeenCalledWith(1);
     });
+
+    it('should reset pan (transformation.x/y) along with the scale', () => {
+      // Regression: resetting only k left the view offset at the panned
+      // location — "reset zoom" snapped the scale while the content stayed
+      // off to the side.
+      mockContext.transformation.x = 150;
+      mockContext.transformation.y = -80;
+      service.setScale(2.5);
+
+      service.resetToDefault();
+
+      expect(mockContext.transformation.x).toBe(0);
+      expect(mockContext.transformation.y).toBe(0);
+      expect(mockContext.transformation.k).toBe(1);
+      expect(service.currentScale).toBe(1);
+    });
+  });
+
+  describe('resetScaleState', () => {
+    it('should reset the tracked scale without touching the transformation or emitting', () => {
+      // Used by createGraph on project open: the transformation is reset
+      // directly, and emitting would trigger the map's scale-change apply.
+      const emitSpy = vi.spyOn(service.scaleChangeEmitter, 'emit');
+      service.setScale(2.4);
+      mockContext.transformation.k = 1;
+      mockContext.transformation.x = 0;
+      mockContext.transformation.y = 0;
+      emitSpy.mockClear();
+
+      service.resetScaleState();
+
+      expect(service.getScale()).toBe(1);
+      expect(mockContext.transformation.k).toBe(1);
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('Scale Range', () => {

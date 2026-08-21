@@ -279,4 +279,11 @@ export class DockerValidationService {
 
     return this.base.validatePortRange(portValue, 1, 65535);
   }
+
+  /**
+   * Validates netmiko device type (optional automation field)
+   */
+  validateNetmikoDeviceType(value: string): ValidationResult {
+    return this.base.validateNetmikoDeviceType(value);
+  }
 }

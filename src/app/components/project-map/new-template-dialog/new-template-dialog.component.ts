@@ -45,6 +45,7 @@ import { IosTemplate } from '@models/templates/ios-template';
 import { IouTemplate } from '@models/templates/iou-template';
 import { QemuTemplate } from '@models/templates/qemu-template';
 import { ApplianceService } from '@services/appliances.service';
+import { getVersionSettingProperties, buildApplianceMetadata, normalizeAppliance } from '@services/appliance-normalizer';
 import { ControllerService } from '@services/controller.service';
 import { DockerService } from '@services/docker.service';
 import { IosService } from '@services/ios.service';
@@ -569,7 +570,9 @@ export class NewTemplateDialogComponent implements OnInit {
     fileReader.onloadend = () => {
       this.isImportingAppliance.set(true);
       try {
-        const appliance = JSON.parse(fileReader.result as string) as Appliance;
+        // normalizeAppliance maps v8 appliance files onto the legacy shape the
+        // template builders below expect (versions/settings/platform fields).
+        const appliance = normalizeAppliance(JSON.parse(fileReader.result as string) as Appliance);
         if (!appliance || typeof appliance !== 'object' || !appliance.name) {
           this.toasterService.error(`'${file.name}' is not a valid appliance file`);
           return;
@@ -920,6 +923,8 @@ export class NewTemplateDialogComponent implements OnInit {
     iouTemplate.template_id = uuid();
     iouTemplate.path = iou_image;
     iouTemplate.template_type = 'iou';
+    iouTemplate.netmiko_device_type = appliance.netmiko_device_type || null;
+    iouTemplate.appliance_metadata = buildApplianceMetadata(appliance);
     iouTemplate.name = name;
     return iouTemplate;
   }
@@ -955,6 +960,8 @@ export class NewTemplateDialogComponent implements OnInit {
     iosTemplate.template_id = uuid();
     iosTemplate.image = ios_image;
     iosTemplate.template_type = 'dynamips';
+    iosTemplate.netmiko_device_type = appliance.netmiko_device_type || null;
+    iosTemplate.appliance_metadata = buildApplianceMetadata(appliance);
     iosTemplate.name = name;
     return iosTemplate;
   }
@@ -986,6 +993,8 @@ export class NewTemplateDialogComponent implements OnInit {
     dockerTemplate.symbol = appliance.symbol;
     dockerTemplate.tags = appliance.tags || [];
     dockerTemplate.usage = appliance.usage;
+    dockerTemplate.netmiko_device_type = appliance.netmiko_device_type || null;
+    dockerTemplate.appliance_metadata = buildApplianceMetadata(appliance);
     dockerTemplate.compute_id = 'local';
     dockerTemplate.template_id = uuid();
     dockerTemplate.name = name;
@@ -1006,22 +1015,26 @@ export class NewTemplateDialogComponent implements OnInit {
 
   private buildQemuTemplate(version: Version, name: string): QemuTemplate {
     const appliance = this.applianceToInstall();
+    // v8 appliances may override the default settings per version
+    const versionProps = getVersionSettingProperties(appliance, version) || {};
+    const qemuProps: any = { ...(appliance.qemu || {}), ...versionProps };
+
     let qemuTemplate: QemuTemplate = new QemuTemplate();
-    qemuTemplate.ram = appliance.qemu.ram;
-    qemuTemplate.adapters = appliance.qemu.adapters;
-    qemuTemplate.adapter_type = appliance.qemu.adapter_type;
-    qemuTemplate.boot_priority = appliance.qemu.boot_priority;
-    qemuTemplate.console_type = appliance.qemu.console_type;
-    qemuTemplate.hda_disk_interface = appliance.qemu.hda_disk_interface;
-    qemuTemplate.hdb_disk_interface = appliance.qemu.hdb_disk_interface;
-    qemuTemplate.hdc_disk_interface = appliance.qemu.hdc_disk_interface;
-    qemuTemplate.hdd_disk_interface = appliance.qemu.hdd_disk_interface;
-    qemuTemplate.category = this.getCategory();
-    qemuTemplate.first_port_name = appliance.first_port_name;
-    qemuTemplate.port_name_format = appliance.port_name_format;
-    qemuTemplate.port_segment_size = appliance.port_segment_size;
+    qemuTemplate.ram = qemuProps.ram;
+    qemuTemplate.adapters = qemuProps.adapters;
+    qemuTemplate.adapter_type = qemuProps.adapter_type;
+    qemuTemplate.boot_priority = qemuProps.boot_priority;
+    qemuTemplate.console_type = qemuProps.console_type;
+    qemuTemplate.hda_disk_interface = qemuProps.hda_disk_interface;
+    qemuTemplate.hdb_disk_interface = qemuProps.hdb_disk_interface;
+    qemuTemplate.hdc_disk_interface = qemuProps.hdc_disk_interface;
+    qemuTemplate.hdd_disk_interface = qemuProps.hdd_disk_interface;
+    qemuTemplate.category = version.category || this.getCategory();
+    qemuTemplate.first_port_name = qemuProps.first_port_name ?? appliance.first_port_name;
+    qemuTemplate.port_name_format = qemuProps.port_name_format ?? appliance.port_name_format;
+    qemuTemplate.port_segment_size = qemuProps.port_segment_size ?? appliance.port_segment_size;
     qemuTemplate.default_name_format = appliance.default_name_format;
-    qemuTemplate.symbol = appliance.symbol;
+    qemuTemplate.symbol = version.symbol || appliance.symbol;
     qemuTemplate.tags = appliance.tags || [];
     qemuTemplate.compute_id = 'local';
     qemuTemplate.template_id = uuid();
@@ -1032,8 +1045,11 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.hdd_disk_image = this.findControllerImageName(version.images.hdd_disk_image);
     qemuTemplate.cdrom_image = this.findControllerImageName(version.images.cdrom_image);
     qemuTemplate.template_type = 'qemu';
-    qemuTemplate.usage = appliance.usage;
-    qemuTemplate.platform = appliance.qemu.arch;
+    qemuTemplate.usage = version.usage || appliance.usage;
+    // v8 template_properties carry `platform`; v1-v6 qemu blocks use `arch`
+    qemuTemplate.platform = qemuProps.platform ?? qemuProps.arch;
+    qemuTemplate.netmiko_device_type = qemuProps.netmiko_device_type || appliance.netmiko_device_type || null;
+    qemuTemplate.appliance_metadata = buildApplianceMetadata(appliance, version);
     qemuTemplate.name = name;
     return qemuTemplate;
   }

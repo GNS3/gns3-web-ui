@@ -26,12 +26,14 @@ import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { IosImage } from '@models/images/ios-image';
 import { Controller } from '@models/controller';
+import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
 import { IosTemplate } from '@models/templates/ios-template';
 import { IosConfigurationService } from '@services/ios-configuration.service';
 import { IosService } from '@services/ios.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { ValidationService } from '@services/validation';
 import { ProgressService } from '../../../../common/progress/progress.service';
 import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/template-info-fields.component';
 
@@ -40,6 +42,7 @@ import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/t
   templateUrl: './add-ios-template.component.html',
   styleUrls: ['./add-ios-template.component.scss', '../../preferences.component.scss'],
   imports: [
+    NetmikoDeviceTypeSelectComponent,
     MatIconModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -58,6 +61,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   private controllerService = inject(ControllerService);
   private iosService = inject(IosService);
   private toasterService = inject(ToasterService);
+  private validationService = inject(ValidationService);
   private router = inject(Router);
   private templateMocksService = inject(TemplateMocksService);
   private iosConfigurationService = inject(IosConfigurationService);
@@ -77,6 +81,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   chassis = model('');
   memory = model('');
   idlepc = model('');
+  netmikoDeviceType = model('');
   usage = model('');
   symbol = model('router');
 
@@ -252,6 +257,12 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
 
   addTemplate() {
     if (this.canCreateTemplate()) {
+      const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
+      if (!netmikoValidation.isValid) {
+        this.toasterService.error(netmikoValidation.errorMessage);
+        return;
+      }
+
       const template = this.iosTemplate();
       template.template_id = uuid();
       template.image = this.imageName();
@@ -271,6 +282,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       if (this.networkAdaptersForTemplate().length > 0) this.completeAdaptersData(template);
       if (this.wicsForTemplate().length > 0) this.completeWicsData(template);
       if (this.idlepc()) template.idlepc = this.idlepc();
+      template.netmiko_device_type = this.netmikoDeviceType().trim() || null;
       template.compute_id = 'local';
 
       this.iosService.addTemplate(this.controller(), template).subscribe({

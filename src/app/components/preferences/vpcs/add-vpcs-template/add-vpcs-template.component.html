@@ -46,6 +46,12 @@
                 <input matInput required formControlName="templateName" type="text" placeholder="Template name" />
               </mat-form-field>
             </form>
+            <app-netmiko-device-type-select
+              [(value)]="netmikoDeviceType"
+              [controller]="controller"
+              appearance="outline"
+              class="vpcs-add__field"
+            />
             <app-template-info-fields [(usage)]="usage" [(symbol)]="symbol"></app-template-info-fields>
           </section>
         </section>

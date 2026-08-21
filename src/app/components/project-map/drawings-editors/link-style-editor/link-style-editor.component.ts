@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,
@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Link } from '@models/link';
 import { LinkStyle } from '@models/link-style';
 import { Project } from '@models/project';
@@ -41,6 +42,7 @@ import { StyleTranslator } from '../../../../cartography/widgets/links/style-tra
     MatSelectModule,
     MatOptionModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -54,6 +56,8 @@ export class LinkStyleEditorDialogComponent implements OnInit {
   private linkToMapLink = inject(LinkToMapLinkConverter);
   private nonNegativeValidator = inject(NonNegativeValidator);
   private cdr = inject(ChangeDetectorRef);
+
+  readonly isApplying = signal(false);
 
   controller: Controller;
   project: Project;
@@ -239,6 +243,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
   }
 
   onYesClick() {
+    if (this.isApplying()) return;
     if (this.formGroup.valid) {
       if (!this.link.link_style) {
         this.link.link_style = {} as LinkStyle;
@@ -276,6 +281,8 @@ export class LinkStyleEditorDialogComponent implements OnInit {
       const expectedFlowchartRoundness = this.link.link_style.flowchart_roundness;
       const linkTypeChanged = expectedLinkType !== originalLinkType;
 
+      this.isApplying.set(true);
+      this.dialogRef.disableClose = true;
       this.linkService.updateLinkStyle(this.controller, this.link).subscribe({
         next: (link: Link) => {
           if (!link.link_style) {
@@ -333,6 +340,8 @@ export class LinkStyleEditorDialogComponent implements OnInit {
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to update link style';
           this.toasterService.error(message);
+          this.isApplying.set(false);
+          this.dialogRef.disableClose = false;
           this.cdr.markForCheck();
         },
       });

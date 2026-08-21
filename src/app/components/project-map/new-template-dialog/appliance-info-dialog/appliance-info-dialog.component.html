@@ -1,13 +1,38 @@
 <div class="title-container">
+  @if (appliance.vendor_logo_url) {
+  <img
+    [src]="appliance.vendor_logo_url"
+    (error)="$event.target.style.display = 'none'"
+    class="appliance-info__vendor-logo"
+    alt=""
+  />
+  }
   <h1 mat-dialog-title>{{ appliance.name }}</h1>
 </div>
 <div mat-dialog-content>
   <div>Vendor: {{ appliance.vendor_name }}</div>
   <div>Status: {{ appliance.status }}</div>
   <div>Maintainer: {{ appliance.maintainer }}</div>
+  <div>Registry version: {{ appliance.registry_version }}</div>
+  @if (appliance.default_username) {
+  <div>Default username: {{ appliance.default_username }}</div>
+  }
+  @if (appliance.default_password) {
+  <div>Default password: {{ appliance.default_password }}</div>
+  }
+  @if (appliance.netmiko_device_type) {
+  <div>Netmiko device type: {{ appliance.netmiko_device_type }}</div>
+  }
   @if (appliance.qemu) {
   <div>Adapters: {{ appliance.qemu.adapters }}</div>
   <div>Console type: {{ appliance.qemu.console_type }}</div>
+  }
+  @if (appliance.docker) {
+  <div>Adapters: {{ appliance.docker.adapters }}</div>
+  <div>Console type: {{ appliance.docker.console_type }}</div>
+  }
+  @if (appliance.installation_instructions) {
+  <div class="appliance-info__instructions">{{ appliance.installation_instructions }}</div>
   }
 </div>
 <div mat-dialog-actions>

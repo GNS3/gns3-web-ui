@@ -10,5 +10,11 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
+  <button mat-raised-button color="primary" (click)="onSaveClick()" [disabled]="isApplying()">
+    @if (isApplying()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      Apply
+    }
+  </button>
 </div>

@@ -4,7 +4,9 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { ConfiguratorDialogVpcsComponent } from './configurator-vpcs.component';
 import { NodeService } from '@services/node.service';
+import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
+import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
 import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 import { ValidationService } from '@services/validation';
 import { Node } from '../../../../../cartography/models/node';
@@ -52,6 +54,7 @@ describe('ConfiguratorDialogVpcsComponent', () => {
 
     mockValidationService = {
       required: vi.fn().mockReturnValue({ isValid: true }),
+      validateNetmikoDeviceType: vi.fn().mockReturnValue({ isValid: true }),
     };
 
     mockChangeDetectorRef = {
@@ -63,7 +66,9 @@ describe('ConfiguratorDialogVpcsComponent', () => {
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
+        { provide: TemplateService, useValue: { list: () => of([]) } },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
         { provide: VpcsConfigurationService, useValue: mockVpcsConfigurationService },
         { provide: ValidationService, useValue: mockValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },

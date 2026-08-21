@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { Node } from '../../../../../cartography/models/node';
@@ -38,6 +39,7 @@ import { formatFlags, formatIpAddress, formatIpAddresses, formatInterfaceMeta } 
     MatIconModule,
     MatTableModule,
     MatTooltipModule,
+    MatProgressSpinnerModule,
   ],
 })
 export class ConfiguratorDialogNatComponent implements OnInit {
@@ -54,6 +56,9 @@ export class ConfiguratorDialogNatComponent implements OnInit {
 
   portsMappingEthernet = signal<PortsMappingEntity[]>([]);
   ethernetDisplayColumns: string[] = ['name', 'ipAddresses'];
+
+  readonly isApplying = signal(false);
+  readonly isLoading = signal(true);
 
   // Model signals
   readonly nodeName = model('');
@@ -80,11 +85,15 @@ export class ConfiguratorDialogNatComponent implements OnInit {
           this.node.properties.ports_mapping.filter((elem) => elem.type === 'ethernet')
         );
 
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
         this.cd.markForCheck();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load node';
         this.toasterService.error(message);
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
         this.cd.markForCheck();
       },
     });
@@ -101,6 +110,8 @@ export class ConfiguratorDialogNatComponent implements OnInit {
   }
 
   onSaveClick() {
+    if (this.isApplying()) return;
+
     const nameValidation = this.validationService.required(this.nodeName(), 'Name');
     if (!nameValidation.isValid) {
       this.toasterService.error(nameValidation.errorMessage || 'Name is required');
@@ -111,6 +122,8 @@ export class ConfiguratorDialogNatComponent implements OnInit {
 
     this.node.properties.ports_mapping = this.portsMappingEthernet();
 
+    this.isApplying.set(true);
+    this.dialogRef.disableClose = true;
     this.nodeService.updateNode(this.controller, this.node).subscribe({
       next: () => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
@@ -119,6 +132,8 @@ export class ConfiguratorDialogNatComponent implements OnInit {
       error: (error: unknown) => {
         const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
         this.toasterService.error(errorMessage);
+        this.isApplying.set(false);
+        this.dialogRef.disableClose = false;
         this.cd.markForCheck();
       },
     });

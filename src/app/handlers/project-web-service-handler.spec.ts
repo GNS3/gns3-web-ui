@@ -52,6 +52,7 @@ describe('ProjectWebServiceHandler', () => {
 
     mockMarkerFlashService = {
       flash: vi.fn(),
+      evictLink: vi.fn(),
     };
 
     mockMarkerRegistryService = {

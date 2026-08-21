@@ -1,8 +1,10 @@
-import { Directive, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
+import { Project } from '@models/project';
 import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
+import { GridAnchorService } from '../services/grid-anchor.service';
 
 @Directive({
   standalone: true,
@@ -15,7 +17,15 @@ export class MovingCanvasDirective implements OnInit, OnDestroy {
   private activated: boolean = false;
   private isDragging: boolean = false;
 
-  constructor(private element: ElementRef, private movingEventSource: MovingEventSource, private context: Context) {}
+  constructor(
+    private element: ElementRef,
+    private movingEventSource: MovingEventSource,
+    private context: Context,
+    private gridAnchor: GridAnchorService
+  ) {}
+
+  /** Grid sizes — needed to keep the background grid anchored while panning. */
+  @Input('project') project: Project;
 
   ngOnInit() {
     this.movingModeState = this.movingEventSource.movingModeState.subscribe((event: boolean) => {
@@ -50,6 +60,10 @@ export class MovingCanvasDirective implements OnInit, OnDestroy {
 
           return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
         });
+
+        // The grid patterns sit outside g.canvas — move their anchor with the
+        // pan so the background grid stays glued to the scene grid.
+        this.gridAnchor.apply(this.element.nativeElement, this.context, this.project);
       };
 
       this.mouseupListener = (event: MouseEvent) => {

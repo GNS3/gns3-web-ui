@@ -7,6 +7,7 @@ import { IosService } from '@services/ios.service';
 import { IosConfigurationService } from '@services/ios-configuration.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
 import { ProgressService } from '../../../../common/progress/progress.service';
 import { DialogConfigService } from '@services/dialog-config.service';
 import { Controller } from '@models/controller';
@@ -150,6 +151,7 @@ describe('IosTemplateDetailsComponent', () => {
       validateNvramForPlatform: vi.fn().mockReturnValue({ isValid: true }),
       validateMacAddress: vi.fn().mockReturnValue({ isValid: true }),
       validateIdlepc: vi.fn().mockReturnValue({ isValid: true }),
+      validateNetmikoDeviceType: vi.fn().mockReturnValue({ isValid: true }),
     };
 
     mockToasterService = {
@@ -187,6 +189,7 @@ describe('IosTemplateDetailsComponent', () => {
         { provide: IosValidationService, useValue: mockIosValidationService },
         { provide: ControllerService, useValue: mockControllerService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
         { provide: ProgressService, useValue: mockProgressService },
         { provide: DialogConfigService, useValue: mockDialogConfigService },
         { provide: MatDialog, useValue: mockDialog },

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -14,12 +14,21 @@ import { MatDialog } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Controller } from '@models/controller';
 import { VpcsTemplate } from '@models/templates/vpcs-template';
+import { ApplianceMetadata } from '@models/appliance-metadata';
+import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
+import {
+  applianceCredentialValue,
+  ApplianceCredentialField,
+  setApplianceCredential,
+} from '../../template-metadata-section/appliance-metadata-field';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 import { VpcsService } from '@services/vpcs.service';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
+import { TemplateMetadataSectionComponent } from '../../template-metadata-section/template-metadata-section.component';
 import { DialogConfigService } from '@services/dialog-config.service';
+import { ValidationService } from '@services/validation';
 
 @Component({
   standalone: true,
@@ -37,11 +46,13 @@ import { DialogConfigService } from '@services/dialog-config.service';
     RouterModule,
     MatIconModule,
     MatButtonModule,
+    TemplateMetadataSectionComponent,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatCheckboxModule,
+    NetmikoDeviceTypeSelectComponent,
     MatChipsModule,
   ],
 })
@@ -55,6 +66,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
   private dialogConfig = inject(DialogConfigService);
+  private validationService = inject(ValidationService);
 
   controller: Controller;
   vpcsTemplate: VpcsTemplate;
@@ -71,6 +83,10 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   category = model('');
   consoleType = model('');
   consoleAutoStart = model(false);
+  netmikoDeviceType = model('');
+  readonly applianceMetadata = signal<ApplianceMetadata | null>(null);
+  readonly defaultUsername = computed(() => applianceCredentialValue(this.applianceMetadata(), 'default_username'));
+  readonly defaultPassword = computed(() => applianceCredentialValue(this.applianceMetadata(), 'default_password'));
 
   // Usage & Tags
   tags = model<string[]>([]);
@@ -119,6 +135,8 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     this.consoleAutoStart.set(this.vpcsTemplate.console_auto_start || false);
     this.tags.set(this.vpcsTemplate.tags || []);
     this.usage.set(this.vpcsTemplate.usage || '');
+    this.netmikoDeviceType.set(this.vpcsTemplate.netmiko_device_type || '');
+    this.applianceMetadata.set(this.vpcsTemplate.appliance_metadata ?? null);
   }
 
   getConfiguration() {
@@ -128,6 +146,11 @@ export class VpcsTemplateDetailsComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/controller', this.controller.id, 'preferences']);
+  }
+
+  onCredentialInput(field: ApplianceCredentialField, event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.applianceMetadata.set(setApplianceCredential(this.applianceMetadata(), field, value));
   }
 
   onSave() {
@@ -141,6 +164,12 @@ export class VpcsTemplateDetailsComponent implements OnInit {
       return;
     }
 
+    const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
+    if (!netmikoValidation.isValid) {
+      this.toasterService.error(netmikoValidation.errorMessage);
+      return;
+    }
+
     // Update vpcsTemplate from model signals
     this.vpcsTemplate.name = this.templateName();
     this.vpcsTemplate.default_name_format = this.defaultName();
@@ -151,6 +180,8 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     this.vpcsTemplate.console_auto_start = this.consoleAutoStart();
     this.vpcsTemplate.tags = this.tags();
     this.vpcsTemplate.usage = this.usage();
+    this.vpcsTemplate.netmiko_device_type = this.netmikoDeviceType().trim() || null;
+    this.vpcsTemplate.appliance_metadata = this.applianceMetadata();
 
     this.vpcsService.saveTemplate(this.controller, this.vpcsTemplate).subscribe({
       next: () => {

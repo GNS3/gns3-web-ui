@@ -21,6 +21,7 @@ import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
 import { MapSettingsService } from '@services/mapsettings.service';
+import { MapScaleService } from '@services/mapScale.service';
 import { ToolsService } from '@services/tools.service';
 import { affectedIsEmpty, emptyAffectedIds, mergeAffected } from '../../helpers/item-signature';
 import { applyIncrementalPatches } from '../../helpers/dom-patcher';
@@ -33,6 +34,7 @@ import { Drawing } from '../../models/drawing';
 import { Node } from '../../models/node';
 import { Size } from '../../models/size';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
+import { GridAnchorService } from '../../services/grid-anchor.service';
 import { MovingTool } from '../../tools/moving-tool';
 import { SelectionTool } from '../../tools/selection-tool';
 import { GraphLayout } from '../../widgets/graph-layout';
@@ -91,6 +93,10 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   // redraw per frame regardless of how many WS notifications / zoom events /
   // signal writes fire in between.
   private rafId: number | null = null;
+  // Pending requestAnimationFrame id for the coalesced scale-change apply
+  // (see the scaleChangeEmitter subscription) — wheel zoom emits one event per
+  // notch, and the apply is O(n) over all nodes, so at most one per frame.
+  private scaleRafId: number | null = null;
   // Whether the coalesced redraw may be gated. Only DATA-driven redraws (the
   // signal effect) are gated — zoom/resize/settings/tool switches always redraw,
   // so the gate can never skip a redraw the selection tool or canvas transform
@@ -100,11 +106,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     show_interface_labels: true,
   };
   public gridVisibility = signal(0);
-
-  public nodeGridX: number = 0;
-  public nodeGridY: number = 0;
-  public drawingGridX: number = 0;
-  public drawingGridY: number = 0;
 
   private graphDataManager = inject(GraphDataManager);
   private layersManager = inject(LayersManager);
@@ -118,7 +119,9 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   protected movingToolWidget = inject(MovingTool);
   public graphLayout = inject(GraphLayout);
   private toolsService = inject(ToolsService);
+  private mapScaleService = inject(MapScaleService);
   private mapSettingsService = inject(MapSettingsService);
+  private gridAnchor = inject(GridAnchorService);
 
   constructor() {
     this.parentNativeElement = this.element.nativeElement;
@@ -127,8 +130,15 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     effect(() => {
       const project = this.project();
       if (project && this.mapChangeDetectorRef.hasBeenDrawn) {
-        this.updateGrid();
         this.mapChangeDetectorRef.detectChanges();
+      }
+    });
+
+    // The grid patterns (re)enter the DOM via this template @if — every apply
+    // they missed since the last redraw must be replayed once they exist.
+    effect(() => {
+      if (this.gridVisibility() && this.mapChangeDetectorRef.hasBeenDrawn) {
+        this.applyGridAnchor();
       }
     });
 
@@ -206,17 +216,38 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     // project's nodes and leaks their content center into savedCenterX →
     // the first redraw anchors origin to the wrong content center.
 
-    // Initialize grid offsets based on project settings
-    const project = this.project();
-    if (project) {
-      this.updateGrid();
-    }
-
     this.onChangesDetected = this.mapChangeDetectorRef.changesDetected.subscribe(() => {
       if (this.mapChangeDetectorRef.hasBeenDrawn) {
         this.scheduleRedraw();
       }
     });
+
+    // Toolbar / keyboard zoom (zoomIn/zoomOut/resetZoom) only mutate
+    // context.transformation.k via MapScaleService and emit scaleChangeEmitter —
+    // nothing else applies the new scale (the old scaleChange→redraw
+    // subscription was removed when wheel zoom started applying the transform
+    // directly, which left the toolbar buttons dead). Apply it here WITHOUT a
+    // full redraw: rebuild the same transform graphLayout.draw would build and
+    // keep the SVG size getSize() would recompute, so both wheel zoom (already
+    // applied the transform itself — re-applying is idempotent) and toolbar
+    // zoom stay in sync.
+    //
+    // Wheel zoom emits one event per notch; the apply is an O(n) getSize +
+    // SVG resize + reflow, so coalesce to at most one per animation frame.
+    this.subscriptions.push(
+      this.mapScaleService.scaleChangeEmitter.subscribe(() => {
+        if (!this.mapChangeDetectorRef.hasBeenDrawn) {
+          return;
+        }
+        if (this.scaleRafId !== null) {
+          return;
+        }
+        this.scaleRafId = requestAnimationFrame(() => {
+          this.scaleRafId = null;
+          this.applyScaleChange();
+        });
+      })
+    );
 
     this.subscriptions.push(
       this.mapChangeDetectorRef.selectionChangesDetected.subscribe(() => {
@@ -300,6 +331,9 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
         this.context.size = newSize;
         this.svg.attr('width', newSize.width).attr('height', newSize.height);
         this.graphLayout.draw(this.svg, this.context);
+        // Re-anchor the grid in the same frame — otherwise it sits at the old
+        // anchor until the PUT echo triggers the next redraw (visible jump).
+        this.applyGridAnchor();
         dragStartCenterX = null;
         dragStartCenterY = null;
       })
@@ -310,6 +344,10 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     if (this.rafId !== null) {
       cancelAnimationFrame(this.rafId);
       this.rafId = null;
+    }
+    if (this.scaleRafId !== null) {
+      cancelAnimationFrame(this.scaleRafId);
+      this.scaleRafId = null;
     }
     this.graphLayout.disconnect(this.svg);
     this.onChangesDetected.unsubscribe();
@@ -354,6 +392,10 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.context.transformation.k = 1;
     this.context.centerX = null;
     this.context.centerY = null;
+    // MapScaleService is equally app-singleton: sync its tracked scale with the
+    // fresh k=1 without emitting, or the first toolbar zoom click on the newly
+    // opened project would continue from the previous project's scale.
+    this.mapScaleService.resetScaleState();
     // LayersManager is an app-lifetime singleton — its layer buckets carry
     // over the previous project's nodes/links/drawings, which graphLayout.draw
     // would render as a ghost frame before the first data redraw clears them.
@@ -362,6 +404,33 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphLayout.connect(this.svg, this.context);
     this.graphLayout.draw(this.svg, this.context);
     this.mapChangeDetectorRef.hasBeenDrawn = true;
+  }
+
+  /**
+   * Apply a MapScaleService scale change to the canvas without a full redraw:
+   * recompute the canvas size (content bbox scales with k) and rebuild the
+   * g.canvas transform. Runs at most once per animation frame (coalesced in the
+   * scaleChangeEmitter subscription).
+   */
+  private applyScaleChange() {
+    // Keep the origin locked like redraw() does: getSize() recomputes
+    // centerX/Y from the scaled content bbox, which would shift the
+    // origin and make every visible element jump.
+    const savedCenterX = this.context.centerX;
+    const savedCenterY = this.context.centerY;
+    const newSize = this.getSize();
+    this.context.centerX = savedCenterX ?? this.context.centerX;
+    this.context.centerY = savedCenterY ?? this.context.centerY;
+    this.context.size = newSize;
+    this.svg.attr('width', newSize.width).attr('height', newSize.height);
+
+    // Canonical transform construction (same code graphLayout.draw uses).
+    this.svg
+      .selectAll<SVGGElement, Context>('g.canvas')
+      .data([this.context])
+      .attr('transform', this.graphLayout.canvasTransform(this.context));
+    // The tile scales with k — re-anchor the grid to the new transform.
+    this.applyGridAnchor();
   }
 
   public getSize(): Size {
@@ -428,8 +497,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private redraw(gated = false) {
-    this.updateGrid();
-
     if (gated) {
       // Data-driven redraw (signal effect): skip the expensive full draw
       // (graphDataManager conversion + D3 data-join + getBBox/getTotalLength
@@ -475,6 +542,11 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.context.centerX = savedCenterX ?? this.context.centerX;
     this.context.centerY = savedCenterY ?? this.context.centerY;
 
+    // Anchor the background grid to the (possibly new) scene origin/size.
+    // Runs after the origin lock and before the incremental-patch early
+    // return so position-only updates re-anchor the grid too.
+    this.applyGridAnchor();
+
     // For gated (data-driven) redraws try incremental DOM patches first.
     // When only node xY positions changed, targeted transform updates on the
     // affected g.node elements are enough — no D3 data-join, no getBBox /
@@ -493,23 +565,12 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.mapSettingsService.mapRenderedEmitter.emit(true);
   }
 
-  updateGrid() {
-    const project = this.project();
-    if (project.grid_size && project.grid_size > 0)
-      this.nodeGridX =
-        this.context.size.width / 2 - Math.floor(this.context.size.width / 2 / project.grid_size) * project.grid_size;
-    if (project.grid_size && project.grid_size > 0)
-      this.nodeGridY =
-        this.context.size.height / 2 - Math.floor(this.context.size.height / 2 / project.grid_size) * project.grid_size;
-
-    if (project.drawing_grid_size && project.drawing_grid_size > 0)
-      this.drawingGridX =
-        this.context.size.width / 2 -
-        Math.floor(this.context.size.width / 2 / project.drawing_grid_size) * project.drawing_grid_size;
-    if (project.drawing_grid_size && project.drawing_grid_size > 0)
-      this.drawingGridY =
-        this.context.size.height / 2 -
-        Math.floor(this.context.size.height / 2 / project.drawing_grid_size) * project.drawing_grid_size;
+  /** Re-anchor the background grid patterns to the current canvas transform. */
+  private applyGridAnchor() {
+    const svgNode = this.svg?.node();
+    if (svgNode) {
+      this.gridAnchor.apply(svgNode, this.context, this.project());
+    }
   }
 
   @HostListener('window:resize', ['$event'])

@@ -83,7 +83,9 @@ export class LayersManager {
     }
   }
 
-  public moveLink(link: MapLink, oldSourceZ: number, oldTargetZ: number): void {
+  public moveLink(link: MapLink): void {
+    // Re-bucket to the link's current layer (min(source.z, target.z)): remove
+    // from any layer, then re-add so addLink routes to the updated bucket.
     this.removeLink(link);
     this.addLink(link);
   }

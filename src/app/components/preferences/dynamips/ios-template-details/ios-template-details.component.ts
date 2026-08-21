@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, model } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, model, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -14,6 +14,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Controller } from '@models/controller';
 import { IosTemplate } from '@models/templates/ios-template';
+import { ApplianceMetadata } from '@models/appliance-metadata';
+import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
+import {
+  applianceCredentialValue,
+  ApplianceCredentialField,
+  setApplianceCredential,
+} from '../../template-metadata-section/appliance-metadata-field';
 import { IosConfigurationService } from '@services/ios-configuration.service';
 import { IosService } from '@services/ios.service';
 import { ControllerService } from '@services/controller.service';
@@ -21,6 +28,7 @@ import { ToasterService } from '@services/toaster.service';
 import { IosValidationService } from '@services/validation';
 import { ProgressService } from '../../../../common/progress/progress.service';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
+import { TemplateMetadataSectionComponent } from '../../template-metadata-section/template-metadata-section.component';
 import { DialogConfigService } from '@services/dialog-config.service';
 
 @Component({
@@ -42,9 +50,11 @@ import { DialogConfigService } from '@services/dialog-config.service';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    TemplateMetadataSectionComponent,
     MatIconModule,
     MatExpansionModule,
     MatCheckboxModule,
+    NetmikoDeviceTypeSelectComponent,
   ],
 })
 export class IosTemplateDetailsComponent implements OnInit {
@@ -104,6 +114,10 @@ export class IosTemplateDetailsComponent implements OnInit {
   readonly mmap = model(true);
   readonly sparsemem = model(true);
   readonly usage = model('');
+  readonly netmikoDeviceType = model('');
+  readonly applianceMetadata = signal<ApplianceMetadata | null>(null);
+  readonly defaultUsername = computed(() => applianceCredentialValue(this.applianceMetadata(), 'default_username'));
+  readonly defaultPassword = computed(() => applianceCredentialValue(this.applianceMetadata(), 'default_password'));
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -229,6 +243,8 @@ export class IosTemplateDetailsComponent implements OnInit {
     this.mmap.set(this.iosTemplate.mmap ?? true);
     this.sparsemem.set(this.iosTemplate.sparsemem ?? true);
     this.usage.set(this.iosTemplate.usage || '');
+    this.netmikoDeviceType.set(this.iosTemplate.netmiko_device_type || '');
+    this.applianceMetadata.set(this.iosTemplate.appliance_metadata ?? null);
   }
 
   saveSlotsData() {
@@ -255,6 +271,11 @@ export class IosTemplateDetailsComponent implements OnInit {
         delete this.iosTemplate[`wic${i}`];
       }
     }
+  }
+
+  onCredentialInput(field: ApplianceCredentialField, event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.applianceMetadata.set(setApplianceCredential(this.applianceMetadata(), field, value));
   }
 
   onSave() {
@@ -290,6 +311,8 @@ export class IosTemplateDetailsComponent implements OnInit {
       this.toasterService.error(idlepcValidation.errorMessage);
       return;
     }
+    const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
+    if (!netmikoValidation.isValid) { this.toasterService.error(netmikoValidation.errorMessage); return; }
 
     this.saveSlotsData();
 
@@ -312,6 +335,8 @@ export class IosTemplateDetailsComponent implements OnInit {
     this.iosTemplate.mmap = this.mmap();
     this.iosTemplate.sparsemem = this.sparsemem();
     this.iosTemplate.usage = this.usage();
+    this.iosTemplate.netmiko_device_type = this.netmikoDeviceType().trim() || null;
+    this.iosTemplate.appliance_metadata = this.applianceMetadata();
 
     this.iosService.saveTemplate(this.controller, this.iosTemplate).subscribe({
       next: () => {

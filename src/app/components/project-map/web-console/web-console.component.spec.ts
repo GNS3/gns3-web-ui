@@ -59,6 +59,7 @@ describe('WebConsoleComponent', () => {
     setNumberOfColumns: vi.fn(),
     setNumberOfRows: vi.fn(),
     closeConsoleForNode: vi.fn(),
+    sendTerminalSize: vi.fn(),
   };
 
   const mockThemeService = {
@@ -236,6 +237,22 @@ describe('WebConsoleComponent', () => {
     it('should create WebSocket connection', () => {
       fixture.detectChanges();
       expect(mockNodeConsoleService.getUrl).toHaveBeenCalledWith(mockController, mockNode);
+    });
+
+    it('should send initial terminal size when socket opens', () => {
+      fixture.detectChanges();
+      const WebSocketConstructor = vi.mocked(WebSocket);
+      const wsInstance = WebSocketConstructor.mock.results[0]?.value;
+      wsInstance.onopen();
+      expect(mockNodeConsoleService.sendTerminalSize).toHaveBeenCalledWith(wsInstance, component.term.cols, component.term.rows);
+    });
+
+    it('should forward resize geometry via sendTerminalSize', () => {
+      fixture.detectChanges();
+      const WebSocketConstructor = vi.mocked(WebSocket);
+      const wsInstance = WebSocketConstructor.mock.results[0]?.value;
+      component.term.resize(120, 40);
+      expect(mockNodeConsoleService.sendTerminalSize).toHaveBeenCalledWith(wsInstance, 120, 40);
     });
 
     it('should initialize terminal with fitAddon', () => {

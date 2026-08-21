@@ -6,6 +6,7 @@ import { IouService } from '@services/iou.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
 import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IouTemplate } from '@models/templates/iou-template';
@@ -132,6 +133,7 @@ describe('AddIouTemplateComponent', () => {
         { provide: IouService, useValue: mockIouService },
         { provide: TemplateMocksService, useValue: mockTemplateMocksService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
         { provide: UploadServiceService, useValue: mockUploadServiceService },
         { provide: MatSnackBar, useValue: mockSnackBar },
       ],

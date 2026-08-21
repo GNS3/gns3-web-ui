@@ -74,6 +74,15 @@ export class NodeConsoleService {
     return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${node.project_id}/nodes/${node.node_id}/console/ws?token=${controller.authToken}`;
   }
 
+  sendTerminalSize(socket: WebSocket | null, cols: number, rows: number) {
+    // Binary control frame: terminal data travels as text frames (AttachAddon),
+    // so a binary JSON frame is an unambiguous side channel the server turns
+    // into a console resize (docker exec pty / telnet NAWS / ssh pty size).
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(new Blob([JSON.stringify({ cols, rows })]));
+    }
+  }
+
   openConsolesForAllNodesInWidget(nodes: Node[]) {
     let nodesToStart = 'Please start the following nodes if you want to open consoles for them: ';
     let nodesToStartCounter = 0;

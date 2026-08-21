@@ -6,6 +6,7 @@ import { VpcsService } from '@services/vpcs.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
 import { VpcsTemplate } from '@models/templates/vpcs-template';
 import { Controller } from '@models/controller';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -92,6 +93,7 @@ describe('AddVpcsTemplateComponent', () => {
         { provide: VpcsService, useValue: mockVpcsService },
         { provide: TemplateMocksService, useValue: mockTemplateMocksService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
       ],
     }).compileComponents();
 

@@ -1739,14 +1739,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   zoomIn() {
-    this.mapScaleService.setScale(this.mapScaleService.getScale() + 0.1);
+    const currentScale = this.mapScaleService.getScale();
+    const nextScale = Math.min(MapScaleService.MAX_SCALE, currentScale + 0.1);
+    if (nextScale !== currentScale) {
+      this.mapScaleService.setScale(nextScale);
+    }
   }
 
   zoomOut() {
-    let currentScale = this.mapScaleService.getScale();
-
-    if (currentScale - 0.1 > 0) {
-      this.mapScaleService.setScale(currentScale - 0.1);
+    const currentScale = this.mapScaleService.getScale();
+    const nextScale = Math.max(MapScaleService.MIN_SCALE, currentScale - 0.1);
+    if (nextScale !== currentScale) {
+      this.mapScaleService.setScale(nextScale);
     }
   }
 
@@ -1980,6 +1984,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.drawingsDataSource.clear();
     this.nodesDataSource.clear();
     this.linksDataSource.clear();
+
+    // Marker services are app-lifetime singletons that outlive this component:
+    // clear the legend registry (stale pills until the next project's links
+    // fetch) and all flash timers / staged states / geometry cache entries.
+    this.markerRegistryService.reset();
+    this.markerFlashService.reset();
 
     // Stop the project WS auto-reconnect loop during teardown: set the flag so
     // the onclose handler (fired by close() below) does not schedule a reconnect.

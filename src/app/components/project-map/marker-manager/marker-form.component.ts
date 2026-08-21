@@ -16,6 +16,14 @@ export interface MarkerCaptureOption {
 }
 
 /**
+ * Sentinel for "server picks the capture node" in the Capture node dropdown.
+ * mat-select never displays a null-valued option as selected (it clears the
+ * model instead), so "Auto" must be a real string — mapped back to "omit the
+ * field" at the API boundary (see MarkerManagerComponent.submitMarker).
+ */
+export const MARKER_CAPTURE_AUTO = 'auto';
+
+/**
  * Shared create/edit form for per-link markers — the single source of truth for the
  * marker field layout (BPF, Name, Capture node, Direction, Highlight ms, Color).
  *
@@ -75,7 +83,7 @@ export interface MarkerCaptureOption {
         <mat-form-field class="marker-form__field">
           <mat-label>Capture node</mat-label>
           <mat-select formControlName="capture_node_id">
-            <mat-option [value]="null">Auto</mat-option>
+            <mat-option [value]="captureAuto">Auto</mat-option>
             @for (ep of captureOptions(); track ep.id) {
               <mat-option [value]="ep.id">{{ ep.name }}</mat-option>
             }
@@ -152,6 +160,8 @@ export class MarkerFormComponent {
   readonly submitLabel = computed(() => (this.mode() === 'edit' ? 'Save' : 'Add'));
   /** When true, the submit button shows a spinner and the label changes to "Saving…" / "Adding…". */
   readonly submitting = input<boolean>(false);
+  /** Sentinel value of the "Auto" capture-node option (see {@link MARKER_CAPTURE_AUTO}). */
+  readonly captureAuto = MARKER_CAPTURE_AUTO;
   readonly save = output<void>();
   readonly cancel = output<void>();
 }

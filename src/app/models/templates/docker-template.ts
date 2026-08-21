@@ -1,3 +1,4 @@
+import { ApplianceMetadata } from '../appliance-metadata';
 import { CustomAdapter } from '../qemu/qemu-custom-adapter';
 import { ExtraConfig } from './extra-config';
 
@@ -29,4 +30,6 @@ export class DockerTemplate {
   template_type: string;
   usage: string;
   tags: string[];
+  netmiko_device_type?: string | null;
+  appliance_metadata?: ApplianceMetadata | null;
 }

@@ -152,14 +152,14 @@
                 >
                   <ng-container
                     [ngTemplateOutlet]="onOffIcon"
-                    [ngTemplateOutletContext]="{ $implicit: togglingDefinition() === row.name, off: row.paused }"
+                    [ngTemplateOutletContext]="{ $implicit: isTogglingDefinition(row.name), off: row.paused }"
                   />
                 </button>
                 <button mat-icon-button (click)="startEditDefinition(row)" matTooltip="Edit">
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button mat-icon-button (click)="deleteDefinition(row)" matTooltip="Delete (clears all copies)">
-                  @if (deletingDefinition() === row.name) {
+                  @if (isDeletingDefinition(row.name)) {
                     <mat-spinner class="marker-manager__toggle-spinner" [diameter]="18" />
                   } @else {
                     <mat-icon>delete</mat-icon>

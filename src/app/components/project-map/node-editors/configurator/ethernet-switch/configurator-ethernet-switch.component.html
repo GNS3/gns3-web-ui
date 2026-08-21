@@ -12,6 +12,11 @@
 </div>
 
 <div class="modal-form-container">
+  @if (isLoading()) {
+    <div class="configurator-dialog-loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else {
   <div class="node-config__single-tab" role="tablist" aria-label="Node configuration sections">
     <div role="tab" aria-selected="true">
       <span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span>
@@ -68,9 +73,16 @@
     </div>
     }
   </div>
+  }
 </div>
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-raised-button color="primary" (click)="onSaveClick()">Apply</button>
+  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying() || isLoading()">
+    @if (isApplying()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      Apply
+    }
+  </button>
 </div>

@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, model } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+  inject,
+  model,
+  signal,
+} from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -31,6 +40,7 @@ export class IdlePCDialogComponent implements OnInit {
   idlepcs = [];
   readonly idlePC = model('');
   isComputing: boolean = false;
+  readonly isApplying = signal(false);
 
   ngOnInit() {
     this.onCompute();
@@ -78,16 +88,23 @@ export class IdlePCDialogComponent implements OnInit {
   }
 
   onApply() {
+    if (this.isApplying()) return;
     if (this.idlePC() && this.idlePC() !== '0x0') {
       this.node.properties.idlepc = this.idlePC();
+      this.isApplying.set(true);
+      this.dialogRef.disableClose = true;
       this.nodeService.updateNode(this.controller, this.node).subscribe({
         next: () => {
           this.toasterService.success(`Node ${this.node.name} updated with idle-PC value ${this.idlePC()}`);
+          this.isApplying.set(false);
+          this.dialogRef.disableClose = false;
           this.cd.markForCheck();
         },
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to update node with idle-PC value';
           this.toasterService.error(message);
+          this.isApplying.set(false);
+          this.dialogRef.disableClose = false;
           this.cd.markForCheck();
         },
       });

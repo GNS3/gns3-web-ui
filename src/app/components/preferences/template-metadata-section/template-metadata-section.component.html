@@ -1,0 +1,54 @@
+<div class="template-metadata">
+  <div class="template-metadata__section-header" (click)="toggle()">
+    <h3 class="template-metadata__section-title">Appliance metadata</h3>
+    <mat-icon class="template-metadata__expand-icon">{{ expanded() ? 'expand_less' : 'expand_more' }}</mat-icon>
+  </div>
+  @if (expanded()) {
+  <div class="template-metadata__form">
+    <div class="template-metadata__two-column-grid">
+      @for (entry of fields; track entry.field) {
+      <mat-form-field
+        appearance="fill"
+        class="template-metadata__field"
+        [class.template-metadata__field--full]="entry.multiline"
+      >
+        <mat-label>{{ entry.label }}</mat-label>
+        @if (entry.multiline) {
+        <textarea
+          matInput
+          rows="3"
+          [value]="formValues()[entry.field] || ''"
+          (input)="onInput(entry.field, $event)"
+          [placeholder]="entry.placeholder || ''"
+        ></textarea>
+        } @else {
+        <input
+          matInput
+          type="text"
+          [value]="formValues()[entry.field] || ''"
+          (input)="onInput(entry.field, $event)"
+          [placeholder]="entry.placeholder || ''"
+        />
+        }
+        @if (entry.copy && text(entry.field)) {
+        <button mat-icon-button matSuffix type="button" matTooltip="Copy {{ entry.label }}" (click)="copy(entry.field, entry.label)">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+        }
+        @if (entry.link && text(entry.field)) {
+        <button mat-icon-button matSuffix type="button" matTooltip="Open link" (click)="openLink(entry.field)">
+          <mat-icon>open_in_new</mat-icon>
+        </button>
+        }
+      </mat-form-field>
+      }
+    </div>
+    <div class="template-metadata__actions">
+      <button mat-button type="button" (click)="remove()">
+        <mat-icon>delete</mat-icon>
+        Remove metadata
+      </button>
+    </div>
+  </div>
+  }
+</div>

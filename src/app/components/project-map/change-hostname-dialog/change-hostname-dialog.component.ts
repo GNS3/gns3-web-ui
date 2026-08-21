@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import {
   UntypedFormBuilder,
   UntypedFormControl,
@@ -10,6 +10,7 @@ import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
@@ -20,7 +21,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-change-hostname-dialog-component',
   templateUrl: './change-hostname-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatDialogModule, MatButtonModule, MatInputModule, MatFormFieldModule, ReactiveFormsModule],
+  imports: [MatDialogModule, MatButtonModule, MatInputModule, MatFormFieldModule, MatProgressSpinnerModule, ReactiveFormsModule],
 })
 export class ChangeHostnameDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ChangeHostnameDialogComponent>);
@@ -33,6 +34,7 @@ export class ChangeHostnameDialogComponent implements OnInit {
   node: Node;
   inputForm: UntypedFormGroup;
   name: string;
+  readonly isApplying = signal(false);
 
   constructor() {
     // Directly use the name from the passed node on initialization
@@ -53,10 +55,13 @@ export class ChangeHostnameDialogComponent implements OnInit {
   }
 
   onSaveClick() {
+    if (this.isApplying()) return;
     if (this.inputForm.valid) {
       // Get the new name from user input in the form
       const newName = this.inputForm.get('name')?.value;
       this.node.name = newName;
+      this.isApplying.set(true);
+      this.dialogRef.disableClose = true;
       this.nodeService.updateNode(this.controller, this.node).subscribe({
         next: () => {
           this.toasterService.success(`Node ${this.node.name} updated.`);
@@ -65,6 +70,8 @@ export class ChangeHostnameDialogComponent implements OnInit {
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to update node.';
           this.toasterService.error(message);
+          this.isApplying.set(false);
+          this.dialogRef.disableClose = false;
           this.cd.markForCheck();
         },
       });

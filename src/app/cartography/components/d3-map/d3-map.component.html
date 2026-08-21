@@ -1,35 +1,14 @@
-<svg id="map" #svg class="map" preserveAspectRatio="none" appMovingCanvas appZoomingCanvas>
+<svg id="map" #svg class="map" preserveAspectRatio="none" appMovingCanvas appZoomingCanvas [project]="project()">
+  <!-- Grid pattern geometry (x/y/width/height/path) is written imperatively by
+       GridAnchorService whenever the canvas transform or size changes, so the
+       grid stays anchored to the scene grid instead of the canvas size. -->
   @if (gridVisibility() > 0 && project()) {
     <defs>
-      <pattern
-        [attr.x]="drawingGridX"
-        [attr.y]="drawingGridY"
-        id="gridDrawing"
-        [attr.width]="project().drawing_grid_size"
-        [attr.height]="project().drawing_grid_size"
-        patternUnits="userSpaceOnUse"
-      >
-        <path
-          [attr.d]="'M ' + project().drawing_grid_size + ' 0 L 0 0 0 ' + project().drawing_grid_size"
-          fill="none"
-          [attr.stroke]="'var(--gns3-grid-drawing-color)'"
-          [attr.stroke-width]="1"
-        />
+      <pattern id="gridDrawing" patternUnits="userSpaceOnUse">
+        <path fill="none" stroke="var(--gns3-grid-drawing-color)" stroke-width="1" />
       </pattern>
-      <pattern
-        [attr.x]="nodeGridX"
-        [attr.y]="nodeGridY"
-        id="gridNode"
-        [attr.width]="project().grid_size"
-        [attr.height]="project().grid_size"
-        patternUnits="userSpaceOnUse"
-      >
-        <path
-          [attr.d]="'M ' + project().grid_size + ' 0 L 0 0 0 ' + project().grid_size"
-          fill="none"
-          [attr.stroke]="'var(--gns3-grid-node-color)'"
-          [attr.stroke-width]="1"
-        />
+      <pattern id="gridNode" patternUnits="userSpaceOnUse">
+        <path fill="none" stroke="var(--gns3-grid-node-color)" stroke-width="1" />
       </pattern>
     </defs>
 

@@ -463,4 +463,25 @@ export class ValidationService {
         : formatHint || this.errorMessages.formatInvalid(fieldName, pattern.toString()),
     };
   }
+
+  /**
+   * Validates netmiko_device_type (optional automation field)
+   *
+   * Empty is valid (field is optional). When set, must be a lowercase
+   * identifier (e.g. cisco_xr, nokia_srl) so netmiko/nornir tools can
+   * identify the device CLI type.
+   */
+  validateNetmikoDeviceType(value: string): ValidationResult {
+    if (!value || value.trim() === '') {
+      return { isValid: true };
+    }
+
+    const isValid = /^[a-z0-9_]+$/.test(value.trim());
+    return {
+      isValid,
+      errorMessage: isValid
+        ? undefined
+        : 'Netmiko device type must only contain lowercase letters, digits and underscores (e.g. cisco_xr)',
+    };
+  }
 }

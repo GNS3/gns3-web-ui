@@ -244,4 +244,11 @@ export class IosValidationService {
     }
     return { isValid: true };
   }
+
+  /**
+   * Validates netmiko device type (optional automation field)
+   */
+  validateNetmikoDeviceType(value: string): ValidationResult {
+    return this.base.validateNetmikoDeviceType(value);
+  }
 }

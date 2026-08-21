@@ -377,4 +377,45 @@ describe('ValidationService', () => {
       expect(result.errorMessage).toBe('Port must be a non-negative integer');
     });
   });
+
+  describe('validateNetmikoDeviceType', () => {
+    it('should pass validation for empty string (optional field)', () => {
+      const result = service.validateNetmikoDeviceType('');
+
+      expect(result.isValid).toBe(true);
+      expect(result.errorMessage).toBeUndefined();
+    });
+
+    it('should pass validation for lowercase device type', () => {
+      const result = service.validateNetmikoDeviceType('cisco_xr');
+
+      expect(result.isValid).toBe(true);
+      expect(result.errorMessage).toBeUndefined();
+    });
+
+    it('should pass validation for device type with digits', () => {
+      const result = service.validateNetmikoDeviceType('nokia_srlinux_1');
+
+      expect(result.isValid).toBe(true);
+      expect(result.errorMessage).toBeUndefined();
+    });
+
+    it('should fail validation for uppercase letters', () => {
+      const result = service.validateNetmikoDeviceType('Cisco-XR');
+
+      expect(result.isValid).toBe(false);
+      expect(result.errorMessage).toBe(
+        'Netmiko device type must only contain lowercase letters, digits and underscores (e.g. cisco_xr)'
+      );
+    });
+
+    it('should fail validation for dashes', () => {
+      const result = service.validateNetmikoDeviceType('cisco-xr');
+
+      expect(result.isValid).toBe(false);
+      expect(result.errorMessage).toBe(
+        'Netmiko device type must only contain lowercase letters, digits and underscores (e.g. cisco_xr)'
+      );
+    });
+  });
 });

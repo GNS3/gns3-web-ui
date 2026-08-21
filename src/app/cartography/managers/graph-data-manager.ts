@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Link } from '@models/link';
+import { MarkerFlashService } from '@services/marker-flash.service';
 import { Symbol } from '@models/symbol';
 import { DrawingToMapDrawingConverter } from '../converters/map/drawing-to-map-drawing-converter';
 import { LinkToMapLinkConverter } from '../converters/map/link-to-map-link-converter';
@@ -43,6 +44,13 @@ export class GraphDataManager {
   // Maintained incrementally by setLinks and recomputed on first load.
   private nodeToLinks = new Map<string, Set<string>>();
 
+  // Ids of nodes/drawings with an ACTIVE drag gesture. DraggableSelectionComponent
+  // mutates the live datum x/y while dragging and PUTs only at drag end, so a
+  // mid-drag WS batch still carrying the pre-drag position must not reset the
+  // datum (the node would teleport back and the drag-end PUT would persist an
+  // offset position). Set by markDragging/unmarkDragging around the gesture.
+  private draggingIds = new Set<string>();
+
   constructor(
     private mapNodesDataSource: MapNodesDataSource,
     private mapLinksDataSource: MapLinksDataSource,
@@ -53,8 +61,21 @@ export class GraphDataManager {
     private drawingToMapDrawing: DrawingToMapDrawingConverter,
     private symbolToMapSymbol: SymbolToMapSymbolConverter,
     private layersManager: LayersManager,
-    private multiLinkCalculator: MultiLinkCalculatorHelper
+    private multiLinkCalculator: MultiLinkCalculatorHelper,
+    private markerFlashService: MarkerFlashService
   ) {}
+
+  public markDragging(id: string) {
+    this.draggingIds.add(id);
+  }
+
+  public unmarkDragging(id: string) {
+    this.draggingIds.delete(id);
+  }
+
+  private isDragging(id: string) {
+    return this.draggingIds.has(id);
+  }
 
   // ── Public read-access ────────────────────────────────────────
 
@@ -90,16 +111,53 @@ export class GraphDataManager {
       } else {
         const oldSigs = this.nodeSig.get(n.node_id);
         const changed = changedGroups(oldSigs?.groups, sigs.groups);
+        // Re-apply the server value even when the signature is unchanged: the
+        // live datum may have been mutated by a drag (DraggableSelectionComponent
+        // writes cursor positions into the MapNode while dragging), and a drag
+        // that snaps back onto the same signed position (small move +
+        // snap_to_grid) must still correct the datum — otherwise the drag-end
+        // redraw re-renders the cursor position and the node stays off-grid,
+        // diverging from the server.
+        //
+        // While a drag is ACTIVE the same position drift is the drag's own work,
+        // so a mid-drag WS batch carrying the pre-drag position must NOT reset
+        // the datum. Dragged items keep their live x/y (the drag-end echo
+        // corrects them); an explicit server move of the dragged item
+        // (changed.includes('xY')) still wins.
         if (changed.length > 0) {
+          const converted = this.nodeToMapNode.convert(n);
+          if (this.isDragging(n.node_id) && !changed.includes('xY')) {
+            const live = { x: existing.x, y: existing.y };
+            Object.assign(existing, converted);
+            Object.assign(existing, live);
+          } else {
+            Object.assign(existing, converted);
+          }
+          this.nodeSig.set(n.node_id, sigs);
+        } else if (!this.isDragging(n.node_id) && (existing.x !== n.x || existing.y !== n.y)) {
           const converted = this.nodeToMapNode.convert(n);
           Object.assign(existing, converted);
           this.nodeSig.set(n.node_id, sigs);
+        }
+        if (changed.length > 0) {
           affected.updates.set(n.node_id, changed);
           // Layer migration when z changes
           const oldZ = oldSigs?.groups.z;
           const newZ = sigs.groups.z;
           if (oldZ !== undefined && oldZ !== newZ) {
             this.layersManager.moveNode(existing, Number(oldZ));
+            // A node's z change also re-layers every link attached to it (a
+            // link's layer is min(source.z, target.z)); without this the full
+            // draw below renders those links from the stale layer bucket.
+            const linkSet = this.nodeToLinks.get(n.node_id);
+            if (linkSet) {
+              for (const lid of linkSet) {
+                const link = this.mapLinksDataSource.get(lid);
+                if (link) {
+                  this.layersManager.moveLink(link);
+                }
+              }
+            }
           }
           // A node position/size change bends every link connected to it.
           // Mark those links in affected so the dom-patcher falls through to
@@ -206,6 +264,12 @@ export class GraphDataManager {
           this.layersManager.removeLink(m);
         }
         this.linkSig.delete(id);
+        // The link is gone from the map — evict its flash geometry cache entry,
+        // which would otherwise live forever in the app-singleton service.
+        // (WS link.deleted evicts too, but removals arriving as data-diff
+        // replacements — project reload, server restart, diff sync — never go
+        // through the WS handler.)
+        this.markerFlashService.evictLink(id);
         const oldPair = oldLinkToNodes.get(id);
         if (oldPair) {
           this.unregisterLinkNodes(id, oldPair[0], oldPair[1]);
@@ -253,10 +317,25 @@ export class GraphDataManager {
       } else {
         const oldSigs = this.drawingSig.get(d.drawing_id);
         const changed = changedGroups(oldSigs?.groups, sigs.groups);
+        // Same drag-mutation correction as setNodes (see the comment there):
+        // re-apply the server value when the datum drifted, but keep the live
+        // x/y while the drawing is being dragged.
         if (changed.length > 0) {
+          const converted = this.drawingToMapDrawing.convert(d);
+          if (this.isDragging(d.drawing_id) && !changed.includes('xY')) {
+            const live = { x: existing.x, y: existing.y };
+            Object.assign(existing, converted);
+            Object.assign(existing, live);
+          } else {
+            Object.assign(existing, converted);
+          }
+          this.drawingSig.set(d.drawing_id, sigs);
+        } else if (!this.isDragging(d.drawing_id) && (existing.x !== d.x || existing.y !== d.y)) {
           const converted = this.drawingToMapDrawing.convert(d);
           Object.assign(existing, converted);
           this.drawingSig.set(d.drawing_id, sigs);
+        }
+        if (changed.length > 0) {
           affected.updates.set(d.drawing_id, changed);
           if (changed.includes('z')) {
             const oldZ = oldSigs?.groups.z;

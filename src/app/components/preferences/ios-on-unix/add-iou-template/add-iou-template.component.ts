@@ -25,11 +25,13 @@ import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { IouImage } from '@models/iou/iou-image';
 import { Controller } from '@models/controller';
+import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
 import { IouTemplate } from '@models/templates/iou-template';
 import { IouService } from '@services/iou.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { ValidationService } from '@services/validation';
 import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/template-info-fields.component';
 
 @Component({
@@ -37,6 +39,7 @@ import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/t
   templateUrl: './add-iou-template.component.html',
   styleUrls: ['./add-iou-template.component.scss', '../../preferences.component.scss'],
   imports: [
+    NetmikoDeviceTypeSelectComponent,
     MatIconModule,
     MatButtonModule,
     MatRadioModule,
@@ -54,6 +57,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   private controllerService = inject(ControllerService);
   private iouService = inject(IouService);
   private toasterService = inject(ToasterService);
+  private validationService = inject(ValidationService);
   private router = inject(Router);
   private templateMocksService = inject(TemplateMocksService);
   private uploadServiceService = inject(UploadServiceService);
@@ -74,6 +78,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   templateName = model('');
   imageName = model('');
   selectedType = model('');
+  netmikoDeviceType = model('');
   usage = model('');
   symbol = model('multilayer_switch');
 
@@ -197,6 +202,12 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
 
   addTemplate() {
     if (this.canCreateTemplate()) {
+      const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
+      if (!netmikoValidation.isValid) {
+        this.toasterService.error(netmikoValidation.errorMessage);
+        return;
+      }
+
       const template = this.iouTemplate();
       template.template_id = uuid();
       template.name = this.templateName();
@@ -212,6 +223,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
         template.ethernet_adapters = 2;
         template.serial_adapters = 2;
       }
+      template.netmiko_device_type = this.netmikoDeviceType().trim() || null;
 
       this.iouService.addTemplate(this.controller(), template).subscribe({
         next: () => {

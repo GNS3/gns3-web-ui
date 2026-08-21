@@ -708,8 +708,8 @@ describe('ProjectMapComponent', () => {
     mockInterfaceStatusWidget = { };
     mockLabel = { };
     mockNodesWidget = { };
-    mockMarkerFlashService = { };
-    mockMarkerRegistryService = { };
+    mockMarkerFlashService = { reset: () => {} };
+    mockMarkerRegistryService = { reset: () => {} };
 
     // Configure TestBed with cartography module and all required mocks
     // Note: CartographyModule provides 67+ services that are used by child components
@@ -1148,6 +1148,14 @@ describe('ProjectMapComponent', () => {
 
         expect(mockMapScaleService.setScale).toHaveBeenCalledWith(1.1);
       });
+
+      it('should clamp at MAX_SCALE (5, matching wheel zoom)', () => {
+        mockMapScaleService.getScale.mockReturnValue(5);
+
+        component.zoomIn();
+
+        expect(mockMapScaleService.setScale).not.toHaveBeenCalled();
+      });
     });
 
     describe('zoomOut', () => {
@@ -1159,8 +1167,16 @@ describe('ProjectMapComponent', () => {
         expect(mockMapScaleService.setScale).toHaveBeenCalledWith(0.9);
       });
 
-      it('should not decrease scale below 0.1', () => {
+      it('should clamp at MIN_SCALE (0.01, matching wheel zoom)', () => {
         mockMapScaleService.getScale.mockReturnValue(0.05);
+
+        component.zoomOut();
+
+        expect(mockMapScaleService.setScale).toHaveBeenCalledWith(0.01);
+      });
+
+      it('should not call setScale at the zoom-out floor', () => {
+        mockMapScaleService.getScale.mockReturnValue(0.01);
 
         component.zoomOut();
 

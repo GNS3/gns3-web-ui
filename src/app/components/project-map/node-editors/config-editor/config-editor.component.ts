@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef, model, signal } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -27,6 +27,7 @@ export class ConfigEditorDialogComponent implements OnInit {
 
   readonly config = model<any>('');
   readonly privateConfig = model<any>('');
+  readonly isApplying = signal(false);
 
   ngOnInit() {
     this.nodeService.getStartupConfiguration(this.controller, this.node).subscribe({
@@ -67,6 +68,9 @@ export class ConfigEditorDialogComponent implements OnInit {
   }
 
   onSaveClick() {
+    if (this.isApplying()) return;
+    this.isApplying.set(true);
+    this.dialogRef.disableClose = true;
     this.nodeService.saveConfiguration(this.controller, this.node, this.config()).subscribe({
       next: (response) => {
         if (this.node.node_type === 'iou' || this.node.node_type === 'dynamips') {
@@ -79,6 +83,8 @@ export class ConfigEditorDialogComponent implements OnInit {
             error: (err) => {
               const message = err.error?.message || err.message || 'Failed to save private configuration';
               this.toasterService.error(message);
+              this.isApplying.set(false);
+              this.dialogRef.disableClose = false;
               this.cdr.markForCheck();
             },
           });
@@ -91,6 +97,8 @@ export class ConfigEditorDialogComponent implements OnInit {
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to save configuration';
         this.toasterService.error(message);
+        this.isApplying.set(false);
+        this.dialogRef.disableClose = false;
         this.cdr.markForCheck();
       },
     });

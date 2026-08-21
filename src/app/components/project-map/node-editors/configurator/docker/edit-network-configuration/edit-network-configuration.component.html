@@ -292,12 +292,18 @@
 <div mat-dialog-actions>
   <button mat-button color="accent" type="button" [disabled]="saving()" (click)="onCancelClick()">Cancel</button>
   <button
+    mat-button
+    (click)="onSaveClick()"
+    tabindex="2"
     mat-raised-button
     color="primary"
     type="button"
     [disabled]="loading() || loadFailed() || saving()"
-    (click)="onSaveClick()"
   >
-    {{ saving() ? 'Applying…' : 'Apply' }}
+    @if (saving()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      Apply
+    }
   </button>
 </div>

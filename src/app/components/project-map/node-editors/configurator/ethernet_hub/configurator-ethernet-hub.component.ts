@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -32,6 +33,7 @@ import { ValidationService } from '@services/validation';
     MatButtonModule,
     MatChipsModule,
     MatIconModule,
+    MatProgressSpinnerModule,
   ],
 })
 export class ConfiguratorDialogEthernetHubComponent implements OnInit {
@@ -54,6 +56,12 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
   readonly nodeName = model('');
   readonly nodeNumberOfPorts = model('');
 
+  // Apply button loading state
+  readonly isApplying = signal(false);
+
+  // Node data loading state
+  readonly isLoading = signal(true);
+
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
       next: (node: Node) => {
@@ -70,11 +78,15 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
           this.node.tags = [];
         }
         this.cd.markForCheck();
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load node';
         this.toasterService.error(message);
         this.cd.markForCheck();
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
       },
     });
   }
@@ -85,6 +97,8 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
   }
 
   onSaveClick() {
+    if (this.isApplying()) return;
+
     // Validate name (required)
     const nameValidation = this.validationService.required(this.nodeName(), 'Name');
     if (!nameValidation.isValid) {
@@ -116,6 +130,8 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
       });
     }
 
+    this.isApplying.set(true);
+    this.dialogRef.disableClose = true;
     this.nodeService.updateNode(this.controller, this.node).subscribe({
       next: () => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
@@ -124,6 +140,8 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
       error: (error: unknown) => {
         const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
         this.toasterService.error(errorMessage);
+        this.isApplying.set(false);
+        this.dialogRef.disableClose = false;
         this.cd.markForCheck();
       },
     });

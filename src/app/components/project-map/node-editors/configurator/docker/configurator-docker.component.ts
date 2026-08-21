@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
@@ -18,10 +19,12 @@ import { Controller } from '@models/controller';
 import { ExtraConfig } from '@models/templates/extra-config';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { NodeService } from '@services/node.service';
+import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
 import { DockerValidationService } from '@services/validation';
 import { ConfigureCustomAdaptersDialogComponent } from './configure-custom-adapters/configure-custom-adapters.component';
 import { EditNetworkConfigurationDialogComponent } from './edit-network-configuration/edit-network-configuration.component';
+import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
 
 @Component({
   standalone: true,
@@ -42,12 +45,15 @@ import { EditNetworkConfigurationDialogComponent } from './edit-network-configur
     MatChipsModule,
     MatIconModule,
     MatCheckboxModule,
+    MatProgressSpinnerModule,
     CdkTextareaAutosize,
+    NetmikoDeviceTypeSelectComponent,
   ],
 })
 export class ConfiguratorDialogDockerComponent implements OnInit {
   private dialogReference = inject(MatDialogRef<ConfiguratorDialogDockerComponent>);
   private nodeService = inject(NodeService);
+  private templateService = inject(TemplateService);
   private toasterService = inject(ToasterService);
   private dockerConfigurationService = inject(DockerConfigurationService);
   private dialog = inject(MatDialog);
@@ -88,6 +94,9 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   };
   dialogRef;
 
+  readonly isApplying = signal(false);
+  readonly isLoading = signal(true);
+
   // Model signals
   readonly nodeName = model('');
   readonly dockerImage = model('');
@@ -107,6 +116,11 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   readonly extraVolumes = model('');
   readonly extraConfigs = signal<ExtraConfig[]>([]);
   readonly usage = model('');
+  readonly netmikoDeviceType = model('');
+  readonly defaultUsername = model(''); readonly defaultPassword = model('');
+  // inherited values shown as placeholders when the node fields are empty
+  readonly defaultUsernamePlaceholder = signal('');
+  readonly defaultPasswordPlaceholder = signal('');
 
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
@@ -136,17 +150,40 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
           (node.properties.extra_configs || []).map((c) => ({ target: c.target || '', content: c.content ?? '' }))
         );
         this.usage.set(node.properties.usage || '');
+        this.netmikoDeviceType.set(node.netmiko_device_type || '');
+        this.defaultUsername.set(node.default_username || '');
+        this.defaultPassword.set(node.default_password || '');
+        // empty node credentials: show the template appliance metadata as placeholder
+        if ((!node.default_username || !node.default_password) && node.template_id) {
+          this.templateService.list(this.controller).subscribe({
+            next: (templates) => {
+              const metadata = templates.find((tpl) => tpl.template_id === node.template_id)?.appliance_metadata;
+              if (metadata) {
+                this.defaultUsernamePlaceholder.set(node.default_username ? '' : (metadata.default_username as string) || '');
+                this.defaultPasswordPlaceholder.set(node.default_password ? '' : (metadata.default_password as string) || '');
+                this.cd.markForCheck();
+              }
+            },
+            error: () => {
+              // placeholder is informational only — ignore lookup failures
+            },
+          });
+        }
 
         this.getConfiguration();
         if (!this.node.properties.cpus) this.node.properties.cpus = 0.0;
         if (!this.node.tags) {
           this.node.tags = [];
         }
+        this.isLoading.set(false);
+        this.dialogReference.disableClose = false;
         this.cd.markForCheck();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load node';
         this.toasterService.error(message);
+        this.isLoading.set(false);
+        this.dialogReference.disableClose = false;
         this.cd.markForCheck();
       },
     });
@@ -204,6 +241,8 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   }
 
   onSaveClick() {
+    if (this.isApplying()) return;
+
     // Validate name (required)
     const nameValidation = this.validationService.validateName(this.nodeName());
     if (!nameValidation.isValid) {
@@ -266,6 +305,13 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
       return;
     }
 
+    // Validate netmiko device type format if provided
+    const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
+    if (!netmikoValidation.isValid) {
+      this.toasterService.error(netmikoValidation.errorMessage);
+      return;
+    }
+
     // Merge signal values back into node
     this.node.name = this.nodeName();
     this.node.properties.image = this.dockerImage();
@@ -289,7 +335,12 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     this.node.properties.extra_configs = extraConfigs;
     this.extraConfigs.set(extraConfigs); // drop blank rows so the editor matches what was saved
     this.node.properties.usage = this.usage();
+    this.node.netmiko_device_type = this.netmikoDeviceType().trim() || null;
+    this.node.default_username = this.defaultUsername().trim() || null;
+    this.node.default_password = this.defaultPassword().trim() || null;
 
+    this.isApplying.set(true);
+    this.dialogReference.disableClose = true;
     this.nodeService.updateNode(this.controller, this.node).subscribe({
       next: () => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
@@ -298,6 +349,8 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
       error: (error: unknown) => {
         const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
         this.toasterService.error(errorMessage);
+        this.isApplying.set(false);
+        this.dialogReference.disableClose = false;
         this.cd.markForCheck();
       },
     });

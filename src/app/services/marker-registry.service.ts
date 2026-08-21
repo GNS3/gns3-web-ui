@@ -74,6 +74,16 @@ export class MarkerRegistryService {
     this.setEntries(entries);
   }
 
+  /**
+   * Clear every entry (project switch). This service is an app-lifetime
+   * singleton that outlives the project map component, so without this the
+   * legend keeps rendering the previous project's marker pills until the new
+   * project's links fetch completes — or forever if that fetch fails.
+   */
+  reset() {
+    this._entries.set([]);
+  }
+
   private collect(link: Link, into: MarkerEntry[]) {
     if (!link.markers) {
       return;

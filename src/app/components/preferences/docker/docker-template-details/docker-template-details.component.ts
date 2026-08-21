@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -15,6 +15,13 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { finalize } from 'rxjs';
 import { Controller } from '@models/controller';
 import { DockerTemplate } from '@models/templates/docker-template';
+import { ApplianceMetadata } from '@models/appliance-metadata';
+import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
+import {
+  applianceCredentialValue,
+  ApplianceCredentialField,
+  setApplianceCredential,
+} from '../../template-metadata-section/appliance-metadata-field';
 import { ExtraConfig } from '@models/templates/extra-config';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { DockerService } from '@services/docker.service';
@@ -22,6 +29,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { DockerValidationService } from '@services/validation';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
+import { TemplateMetadataSectionComponent } from '../../template-metadata-section/template-metadata-section.component';
 import { DialogConfigService } from '@services/dialog-config.service';
 import { ConfigureCustomAdaptersDialogComponent } from '../../../project-map/node-editors/configurator/docker/configure-custom-adapters/configure-custom-adapters.component';
 
@@ -41,11 +49,13 @@ import { ConfigureCustomAdaptersDialogComponent } from '../../../project-map/nod
     RouterModule,
     MatIconModule,
     MatButtonModule,
+    TemplateMetadataSectionComponent,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatChipsModule,
     MatCheckboxModule,
+    NetmikoDeviceTypeSelectComponent,
     CdkTextareaAutosize,
   ],
 })
@@ -100,6 +110,10 @@ export class DockerTemplateDetailsComponent implements OnInit {
   extraVolumes = model('');
   extraConfigs = signal<ExtraConfig[]>([]);
   usage = model('');
+  netmikoDeviceType = model('');
+  readonly applianceMetadata = signal<ApplianceMetadata | null>(null);
+  readonly defaultUsername = computed(() => applianceCredentialValue(this.applianceMetadata(), 'default_username'));
+  readonly defaultPassword = computed(() => applianceCredentialValue(this.applianceMetadata(), 'default_password'));
   readonly isPulling = signal(false);
 
   constructor() {}
@@ -141,6 +155,8 @@ export class DockerTemplateDetailsComponent implements OnInit {
               (dockerTemplate.extra_configs || []).map((c) => ({ target: c.target || '', content: c.content ?? '' }))
             );
             this.usage.set(dockerTemplate.usage || '');
+            this.netmikoDeviceType.set(dockerTemplate.netmiko_device_type || '');
+            this.applianceMetadata.set(dockerTemplate.appliance_metadata ?? null);
             this.cd.markForCheck();
           },
           error: (err) => {
@@ -181,6 +197,11 @@ export class DockerTemplateDetailsComponent implements OnInit {
         this.usageExpanded = !this.usageExpanded;
         break;
     }
+  }
+
+  onCredentialInput(field: ApplianceCredentialField, event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.applianceMetadata.set(setApplianceCredential(this.applianceMetadata(), field, value));
   }
 
   selectSection(section: string): void { this.activeSection = section; }
@@ -251,6 +272,13 @@ export class DockerTemplateDetailsComponent implements OnInit {
       return;
     }
 
+    // Validate netmiko device type format if provided
+    const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
+    if (!netmikoValidation.isValid) {
+      this.toasterService.error(netmikoValidation.errorMessage);
+      return;
+    }
+
     // Update dockerTemplate from model signals
     this.dockerTemplate.name = this.name();
     this.dockerTemplate.default_name_format = this.defaultNameFormat();
@@ -282,6 +310,8 @@ export class DockerTemplateDetailsComponent implements OnInit {
     this.dockerTemplate.extra_configs = extraConfigs;
     this.extraConfigs.set(extraConfigs); // drop blank rows so the editor matches what was saved
     this.dockerTemplate.usage = this.usage();
+    this.dockerTemplate.netmiko_device_type = this.netmikoDeviceType().trim() || null;
+    this.dockerTemplate.appliance_metadata = this.applianceMetadata();
 
     this.dockerService.saveTemplate(this.controller, this.dockerTemplate).subscribe({
       next: () => {

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -17,6 +17,13 @@ import { QemuImage } from '@models/qemu/qemu-image';
 import { Image } from '@models/images';
 import { Controller } from '@models/controller';
 import { QemuTemplate } from '@models/templates/qemu-template';
+import { ApplianceMetadata } from '@models/appliance-metadata';
+import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
+import {
+  applianceCredentialValue,
+  ApplianceCredentialField,
+  setApplianceCredential,
+} from '../../template-metadata-section/appliance-metadata-field';
 import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { QemuService } from '@services/qemu.service';
 import { ControllerService } from '@services/controller.service';
@@ -29,6 +36,7 @@ import {
   CustomAdaptersDialogResult,
 } from '../../common/custom-adapters/custom-adapters.component';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
+import { TemplateMetadataSectionComponent } from '../../template-metadata-section/template-metadata-section.component';
 import { DialogConfigService } from '@services/dialog-config.service';
 
 @Component({
@@ -52,7 +60,9 @@ import { DialogConfigService } from '@services/dialog-config.service';
     MatSelectModule,
     MatChipsModule,
     MatCheckboxModule,
+    NetmikoDeviceTypeSelectComponent,
     MatAutocompleteModule,
+    TemplateMetadataSectionComponent,
   ],
 })
 export class QemuVmTemplateDetailsComponent implements OnInit {
@@ -150,6 +160,10 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
   // Usage & Tags
   usage = model('');
+  netmikoDeviceType = model('');
+  readonly applianceMetadata = signal<ApplianceMetadata | null>(null);
+  readonly defaultUsername = computed(() => applianceCredentialValue(this.applianceMetadata(), 'default_username'));
+  readonly defaultPassword = computed(() => applianceCredentialValue(this.applianceMetadata(), 'default_password'));
   tags = model<string[]>([]);
 
   ngOnInit() {
@@ -262,6 +276,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     this.uefi.set(this.qemuTemplate.uefi || false);
 
     this.usage.set(this.qemuTemplate.usage || '');
+    this.netmikoDeviceType.set(this.qemuTemplate.netmiko_device_type || '');
+    this.applianceMetadata.set(this.qemuTemplate.appliance_metadata ?? null);
     this.tags.set(this.qemuTemplate.tags || []);
   }
 
@@ -443,6 +459,11 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     this.router.navigate(['/controller', this.controller.id, 'preferences']);
   }
 
+  onCredentialInput(field: ApplianceCredentialField, event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.applianceMetadata.set(setApplianceCredential(this.applianceMetadata(), field, value));
+  }
+
   onSave() {
     const nameValidation = this.validationService.validateName(this.templateName());
     if (!nameValidation.isValid) {
@@ -469,6 +490,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
       this.toasterService.error(macValidation.errorMessage);
       return;
     }
+    const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
+    if (!netmikoValidation.isValid) { this.toasterService.error(netmikoValidation.errorMessage); return; }
 
     // Update qemuTemplate from model signals
     this.qemuTemplate.name = this.templateName();
@@ -518,6 +541,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     this.qemuTemplate.uefi = this.uefi();
 
     this.qemuTemplate.usage = this.usage();
+    this.qemuTemplate.netmiko_device_type = this.netmikoDeviceType().trim() || null;
+    this.qemuTemplate.appliance_metadata = this.applianceMetadata();
     this.qemuTemplate.tags = this.tags();
 
     // Custom adapters are already managed through the dialog (incremental save)

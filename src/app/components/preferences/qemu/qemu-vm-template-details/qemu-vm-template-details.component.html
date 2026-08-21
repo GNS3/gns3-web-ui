@@ -163,6 +163,35 @@
           </mat-form-field>
         </div>
 
+        <div class="three-column-grid">
+          <app-netmiko-device-type-select
+            [(value)]="netmikoDeviceType"
+            [controller]="controller"
+            appearance="fill"
+            class="qemu-template-details__field"
+          />
+          <mat-form-field appearance="fill" class="qemu-template-details__field">
+            <mat-label>Default username</mat-label>
+            <input
+              matInput
+              [value]="defaultUsername()"
+              (input)="onCredentialInput('default_username', $event)"
+              type="text"
+              placeholder="Username to log into this node"
+            />
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="qemu-template-details__field">
+            <mat-label>Default password</mat-label>
+            <input
+              matInput
+              [value]="defaultPassword()"
+              (input)="onCredentialInput('default_password', $event)"
+              type="text"
+              placeholder="Password to log into this node"
+            />
+          </mat-form-field>
+        </div>
+
         <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)"
           >Auto start console</mat-checkbox
         >
@@ -684,6 +713,10 @@
         </mat-form-field>
       </div>
       }
+    </section>
+
+    <section class="qemu-template-details__form-card">
+      <app-template-metadata-section [(metadata)]="applianceMetadata" />
     </section>
 
     <div class="qemu-template-details__actions">

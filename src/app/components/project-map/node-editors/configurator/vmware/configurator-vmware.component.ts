@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,
@@ -18,6 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
@@ -58,6 +59,7 @@ import {
     MatChipsModule,
     MatIconModule,
     MatCheckboxModule,
+    MatProgressSpinnerModule,
   ],
 })
 export class ConfiguratorDialogVmwareComponent implements OnInit {
@@ -78,6 +80,8 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
   onCloseOptions = [];
 
   networkTypes = [];
+
+  readonly isApplying = signal(false);
 
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
@@ -192,6 +196,8 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
   }
 
   onSaveClick() {
+    if (this.isApplying()) return;
+
     if (this.generalSettingsForm.valid) {
       // Merge form values back into node
       const formValues = this.generalSettingsForm.value;
@@ -205,6 +211,7 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
       this.node.properties.use_any_adapter = formValues.use_any_adapter;
       this.node.properties.usage = formValues.usage;
 
+      this.isApplying.set(true);
       this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe({
         next: () => {
           this.toasterService.success(`Node ${this.node.name} updated.`);
@@ -213,6 +220,7 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
         error: (error: unknown) => {
           const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
           this.toasterService.error(errorMessage);
+          this.isApplying.set(false);
         },
       });
     } else {

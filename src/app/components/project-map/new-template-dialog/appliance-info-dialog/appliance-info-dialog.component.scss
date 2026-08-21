@@ -1,0 +1,20 @@
+.appliance-info {
+  &__vendor-logo {
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+    vertical-align: middle;
+    object-fit: contain;
+    border-radius: 6px;
+  }
+
+  &__instructions {
+    margin-top: 12px;
+    padding: 8px 12px;
+    font-size: 13px;
+    white-space: pre-line;
+    color: var(--mat-sys-on-surface-variant);
+    background: var(--mat-sys-surface-container);
+    border-radius: 8px;
+  }
+}

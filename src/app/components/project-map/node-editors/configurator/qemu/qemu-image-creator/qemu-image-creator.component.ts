@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { QemuService, QemuDiskImageOptions } from '@services/qemu.service';
@@ -28,6 +29,7 @@ import { ValidationService } from '@services/validation';
     MatSelectModule,
     MatOptionModule,
     MatCardModule,
+    MatProgressSpinnerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -59,6 +61,8 @@ export class QemuImageCreatorComponent {
   readonly adapterType = model('');
   readonly zeroedGrain = model('');
 
+  readonly isApplying = signal(false);
+
   readonly mountPointOptions = ['hda', 'hdb', 'hdc', 'hdd'];
 
   // Format-specific options
@@ -69,6 +73,7 @@ export class QemuImageCreatorComponent {
   readonly adapterTypeOptions = ['ide', 'lsilogic', 'buslogic', 'legacyESX'];
 
   onSaveClick() {
+    if (this.isApplying()) return;
     // Validate mount point
     const mountValidation = this.validationService.required(this.mountPoint(), 'Mount point');
     if (!mountValidation.isValid) { this.toasterService.error(mountValidation.errorMessage); return; }
@@ -105,6 +110,8 @@ export class QemuImageCreatorComponent {
     if (this.adapterType()) options.adapter_type = this.adapterType();
     if (this.zeroedGrain()) options.zeroed_grain = this.zeroedGrain();
 
+    this.isApplying.set(true);
+    this.dialogRef.disableClose = true;
     this.qemuService.createDiskImage(this.controller, this.projectId, this.nodeId, this.diskName(), options).subscribe({
       next: () => {
         this.toasterService.success(`Disk image "${this.diskName()}" created.`);
@@ -113,6 +120,8 @@ export class QemuImageCreatorComponent {
       error: (error) => {
         const errorMessage = error.error?.detail || error.message || 'Failed to create image';
         this.toasterService.error(errorMessage);
+        this.isApplying.set(false);
+        this.dialogRef.disableClose = false;
       },
     });
   }

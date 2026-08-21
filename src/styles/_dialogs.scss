@@ -43,6 +43,14 @@
     margin-bottom: 4px;
   }
 
+  /* Three-column row for short fields (netmiko device type / username / password) */
+  .three-column-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+
   /* Modal form container padding */
   .modal-form-container {
     padding: 16px 24px;
@@ -125,6 +133,14 @@
   /* Dialog content - with max-height for scroll */
   .mat-mdc-dialog-content {
     max-height: calc(80vh - 140px);
+  }
+
+  /* Loading state - centered spinner while node data is fetched */
+  .configurator-dialog-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
   }
 
   /* Tab content - add spacing below tab labels */

@@ -1,3 +1,4 @@
+import { ApplianceMetadata } from '../appliance-metadata';
 export class IouTemplate {
   builtin: boolean;
   category: string;
@@ -20,4 +21,6 @@ export class IouTemplate {
   usage: string;
   use_default_iou_values: boolean;
   tags: string[];
+  netmiko_device_type?: string | null;
+  appliance_metadata?: ApplianceMetadata | null;
 }

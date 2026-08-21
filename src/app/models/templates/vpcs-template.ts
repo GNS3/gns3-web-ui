@@ -1,3 +1,4 @@
+import { ApplianceMetadata } from '../appliance-metadata';
 export interface VpcsTemplate {
   base_script_file: string;
   builtin: boolean;
@@ -12,4 +13,6 @@ export interface VpcsTemplate {
   template_type: string;
   tags?: string[];
   usage?: string;
+  netmiko_device_type?: string | null;
+  appliance_metadata?: ApplianceMetadata | null;
 }

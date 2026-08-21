@@ -33,7 +33,9 @@ export class ConfigActionComponent {
   private conf = {
     panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'node-configurator-dialog-panel'],
     autoFocus: false,
-    disableClose: false,
+    // locked while node data loads; each configurator unlocks dialogRef.disableClose
+    // in the getNode() next/error handlers (see isLoading in the configurators)
+    disableClose: true,
   };
   dialogRef;
 

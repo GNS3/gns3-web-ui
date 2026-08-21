@@ -42,7 +42,13 @@
 
     <div class="buttons-bar">
       <button mat-button color="accent" (click)="restoreDefaults()">Restore defaults</button>
-      <button mat-raised-button color="primary" (click)="apply()">Apply</button>
+      <button mat-raised-button color="primary" (click)="apply()" [disabled]="isApplying()">
+        @if (isApplying()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Apply
+        }
+      </button>
     </div>
   </div>
 </div>

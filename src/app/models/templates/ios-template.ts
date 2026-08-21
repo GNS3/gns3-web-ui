@@ -1,3 +1,4 @@
+import { ApplianceMetadata } from '../appliance-metadata';
 export class IosTemplate {
   auto_delete_disks: boolean;
   builtin: boolean;
@@ -42,4 +43,6 @@ export class IosTemplate {
   wic1?: string;
   wic2?: string;
   tags: string[];
+  netmiko_device_type?: string | null;
+  appliance_metadata?: ApplianceMetadata | null;
 }

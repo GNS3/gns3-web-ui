@@ -100,6 +100,10 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
         const lockedNodes = mapNodes.filter((item: MapNode) => item.locked);
         const selectedNodes = mapNodes.filter((item: MapNode) => !item.locked);
         selectedNodes.forEach((node: MapNode) => {
+          // While a node is dragged its live datum x/y deliberately diverge
+          // from the server — tell the graph data manager so a mid-drag WS
+          // batch doesn't reset the position under the pointer.
+          this.graphDataManager.markDragging(node.id);
           node.x += evt.dx;
           node.y += evt.dy;
 
@@ -122,6 +126,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
         let mapDrawings = selected.filter((item) => item instanceof MapDrawing);
         const selectedDrawings = mapDrawings.filter((item: MapDrawing) => !item.locked);
         selectedDrawings.forEach((drawing: MapDrawing) => {
+          this.graphDataManager.markDragging(drawing.id);
           drawing.x += evt.dx;
           drawing.y += evt.dy;
           this.drawingsWidget.redrawDrawing(svg, drawing);
@@ -187,12 +192,16 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
         const lockedNodes = mapNodes.filter((item: MapNode) => item.locked);
         const selectedNodes = mapNodes.filter((item: MapNode) => !item.locked);
         selectedNodes.forEach((item: MapNode) => {
+          // Drag over: the server echo of the PUT below carries the final
+          // position and must be allowed to correct the datum again.
+          this.graphDataManager.unmarkDragging(item.id);
           this.nodesEventSource.dragged.emit(new DraggedDataEvent<MapNode>(item, evt.dx, evt.dy));
         });
 
         let mapDrawings = selected.filter((item) => item instanceof MapDrawing);
         const selectedDrawings = mapDrawings.filter((item: MapDrawing) => !item.locked);
         selectedDrawings.forEach((item: MapDrawing) => {
+          this.graphDataManager.unmarkDragging(item.id);
           this.drawingsEventSource.dragged.emit(new DraggedDataEvent<MapDrawing>(item, evt.dx, evt.dy));
         });
 

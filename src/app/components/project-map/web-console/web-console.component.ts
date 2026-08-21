@@ -107,6 +107,14 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     };
 
+    this.socket.onopen = () => {
+      this.consoleService.sendTerminalSize(this.socket, this.term.cols, this.term.rows);
+    };
+    // fires whenever FitAddon.fit()/term.resize() changes the geometry
+    this.term.onResize(({ cols, rows }) => {
+      this.consoleService.sendTerminalSize(this.socket, cols, rows);
+    });
+
     const attachAddon = new AttachAddon(this.socket);
     this.term.loadAddon(attachAddon);
     this.xtermService.initTerminal(this.term, this.fitAddon);

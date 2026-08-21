@@ -15,8 +15,8 @@ import { GraphDataManager } from '../managers/graph-data-manager';
 
 /**
  * Apply incremental DOM patches. Returns `true` if a FULL draw is still
- * required (structural changes, z/layer migration, link recompute, or any
- * non-xY/label update).
+ * required (structural changes, z/layer migration, link recompute, label
+ * updates, or any non-xY visual change).
  */
 export function applyIncrementalPatches(
   svg: d3.Selection<SVGSVGElement, unknown, null, unknown>,
@@ -45,7 +45,6 @@ export function applyIncrementalPatches(
 
   for (const [itemId, groups] of affected.updates) {
     const onlyXy = groups.length === 1 && groups[0] === 'xY';
-    const onlyLabel = groups.length === 1 && groups[0] === 'label';
 
     // Node: only xY → targeted transform (no reflow)
     // NOTE: z is intentionally NOT included here — z changes migrate the item
@@ -73,31 +72,12 @@ export function applyIncrementalPatches(
       }
     }
 
-    // Node: only label → targeted text update + getBBox (only that label)
-    if (onlyLabel) {
-      const node = nodesById.get(itemId);
-      if (node && node.label) {
-        const labelSel = svg.select(`g.node[node_id="${d3SelectEscape(itemId)}"]`).select('text.label');
-        if (!labelSel.empty()) {
-          const label = node.label as any;
-          labelSel.attr('style', label.style).text(label.text).attr('x', label.x).attr('y', label.y);
-          const bbox = (labelSel.node() as SVGTextElement | null)?.getBBox();
-          if (bbox) {
-            svg
-              .select(`g.node[node_id="${d3SelectEscape(itemId)}"]`)
-              .select('rect.label_selection')
-              .attr('x', bbox.x)
-              .attr('y', bbox.y)
-              .attr('width', bbox.width)
-              .attr('height', bbox.height);
-          }
-        }
-        continue;
-      }
-    }
-
-    // Anything else (z/layer change, link path recompute, multi-field, unknown)
-    // → full draw.
+    // Anything else (z/layer change, link path recompute, label update,
+    // multi-field, unknown) → full draw. Labels in particular MUST go through
+    // the full LabelWidget pipeline (cssFixer / fontFixer /
+    // removeInlineFillColor) — writing the raw server style string drops
+    // unitless font-size declarations and re-introduces inline fills that
+    // override the theme.
     needsFullDraw = true;
   }
 

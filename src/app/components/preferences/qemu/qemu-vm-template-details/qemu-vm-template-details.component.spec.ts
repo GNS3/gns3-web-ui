@@ -10,6 +10,7 @@ import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { ToasterService } from '@services/toaster.service';
 import { QemuValidationService } from '@services/validation';
 import { DialogConfigService } from '@services/dialog-config.service';
+import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -142,6 +143,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
       validateFirstPortName: vi.fn().mockReturnValue({ isValid: true, errorMessage: '' }),
       validatePortSegmentSize: vi.fn().mockReturnValue({ isValid: true, errorMessage: '' }),
       validateMacAddress: vi.fn().mockReturnValue({ isValid: true, errorMessage: '' }),
+      validateNetmikoDeviceType: vi.fn().mockReturnValue({ isValid: true }),
     };
 
     mockQemuConfigurationService = {
@@ -208,6 +210,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
         { provide: DialogConfigService, useValue: mockDialogConfigService },
         { provide: ImageManagerService, useValue: mockImageManagerService },
         { provide: QemuValidationService, useValue: mockValidationService },
+        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
       ],
     }).compileComponents();
 

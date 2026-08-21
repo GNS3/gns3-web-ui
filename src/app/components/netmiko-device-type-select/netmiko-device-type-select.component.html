@@ -1,0 +1,40 @@
+<mat-form-field [appearance]="appearance()" class="netmiko-device-type-select__field">
+  <mat-label>Netmiko device type</mat-label>
+  @if (hasList()) {
+    <input
+      matInput
+      type="text"
+      [value]="value()"
+      (input)="onInput($event)"
+      (focus)="load()"
+      placeholder="Search device type…"
+      [matAutocomplete]="deviceTypeAuto"
+    />
+    @if (notInList()) {
+      <span matSuffix class="netmiko-device-type-select__not-in-list">not in list</span>
+    }
+    <mat-autocomplete #deviceTypeAuto="matAutocomplete" (optionSelected)="onOptionSelected($event.option.value)">
+      @for (group of groups(); track group.vendor) {
+        <mat-optgroup [label]="group.vendor">
+          @for (type of group.types; track type.name) {
+            <mat-option [value]="type.name">
+              {{ type.name }}
+              @if (type.telnet) {
+                <span class="netmiko-device-type-select__telnet">telnet</span>
+              }
+            </mat-option>
+          }
+        </mat-optgroup>
+      }
+    </mat-autocomplete>
+  } @else {
+    <input
+      matInput
+      type="text"
+      [value]="value()"
+      (input)="onInput($event)"
+      (focus)="load()"
+      placeholder="e.g. cisco_xr, nokia_srl"
+    />
+  }
+</mat-form-field>

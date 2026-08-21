@@ -49,6 +49,7 @@ import { GraphDataManager } from './managers/graph-data-manager';
 import { LayersManager } from './managers/layers-manager';
 import { MapSettingsManager } from './managers/map-settings-manager';
 import { Context } from './models/context';
+import { GridAnchorService } from './services/grid-anchor.service';
 import { MapChangeDetectorRef } from './services/map-change-detector-ref';
 import { EthernetLinkWidget } from './widgets/links/ethernet-link';
 import { SerialLinkWidget } from './widgets/links/serial-link';
@@ -100,6 +101,7 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     MapSettingsManager,
     FontBBoxCalculator,
     StylesToFontConverter,
+    GridAnchorService,
     EthernetLinkWidget,
     SerialLinkWidget,
     ...D3_MAP_IMPORTS,

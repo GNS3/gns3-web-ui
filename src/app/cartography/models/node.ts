@@ -156,4 +156,10 @@ export class Node {
   y: number;
   z: number;
   aux_type?: string;
+  netmiko_device_type?: string | null;
+  template_id?: string;
+  // controller-only credentials (seeded from the template appliance metadata
+  // on creation, editable per node, not sent to the compute)
+  default_username?: string | null;
+  default_password?: string | null;
 }

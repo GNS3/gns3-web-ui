@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
@@ -53,6 +54,7 @@ import { AtmSwitchValidationService } from '@services/validation';
     MatCheckboxModule,
     MatIconModule,
     MatTooltipModule,
+    MatProgressSpinnerModule,
   ],
 })
 export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
@@ -84,6 +86,12 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   readonly nodeMappingsDataSource = signal<NodeMapping[]>([]);
   readonly displayedColumns = ['portIn', 'portOut', 'actions'] as const;
 
+  // Apply button loading state
+  readonly isApplying = signal(false);
+
+  // Node data loading state
+  readonly isLoading = signal(true);
+
   constructor() {}
 
   ngOnInit() {
@@ -111,11 +119,15 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
           }))
         );
         // No markForCheck needed - signals trigger automatic update
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load node';
         this.toasterService.error(message);
         // No markForCheck needed - toasterService triggers update
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
       },
     });
   }
@@ -194,6 +206,8 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   }
 
   onSaveClick() {
+    if (this.isApplying()) return;
+
     if (!this.nameSignal()) {
       this.toasterService.error('Fill all required fields.');
       return;
@@ -214,6 +228,8 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
       {}
     );
 
+    this.isApplying.set(true);
+    this.dialogRef.disableClose = true;
     this.nodeService.updateNode(this.controller, this.node).subscribe({
       next: () => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
@@ -222,6 +238,8 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
       error: (error: unknown) => {
         const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
         this.toasterService.error(errorMessage);
+        this.isApplying.set(false);
+        this.dialogRef.disableClose = false;
         // No markForCheck needed - toasterService triggers update
       },
     });

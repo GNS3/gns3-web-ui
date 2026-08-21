@@ -1,3 +1,4 @@
+import { ApplianceMetadata } from '../appliance-metadata';
 import { CustomAdapter } from '../qemu/qemu-custom-adapter';
 
 export class QemuTemplate {
@@ -49,4 +50,6 @@ export class QemuTemplate {
   tpm: boolean;
   uefi: boolean;
   tags: string[];
+  netmiko_device_type?: string | null;
+  appliance_metadata?: ApplianceMetadata | null;
 }

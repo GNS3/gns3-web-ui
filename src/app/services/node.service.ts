@@ -142,6 +142,9 @@ export class NodeService {
       name: node.name,
       properties: node.properties,
       tags: node.tags,
+      netmiko_device_type: node.netmiko_device_type,
+      default_username: node.default_username,
+      default_password: node.default_password,
     });
   }
 
@@ -176,6 +179,9 @@ export class NodeService {
       name: node.name,
       properties: node.properties,
       tags: node.tags,
+      netmiko_device_type: node.netmiko_device_type,
+      default_username: node.default_username,
+      default_password: node.default_password,
     });
   }
 

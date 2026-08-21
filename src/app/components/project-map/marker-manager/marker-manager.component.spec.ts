@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { of, throwError } from 'rxjs';
+import { of, throwError, Subject } from 'rxjs';
 import { MarkerManagerComponent } from './marker-manager.component';
 import { MarkerService } from '@services/marker.service';
 import { LinkService } from '@services/link.service';
@@ -26,6 +26,10 @@ describe('MarkerManagerComponent', () => {
 
   const controller = { id: 1 } as Controller;
   const project = { project_id: 'proj-1' } as Project;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let linksDataSource: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let mapLinksDataSource: any;
 
   beforeEach(async () => {
     markerService = {
@@ -39,15 +43,17 @@ describe('MarkerManagerComponent', () => {
       delete: vi.fn(),
     };
     linkService = { getLink: vi.fn() };
-    registry = { reconcileLink: vi.fn() };
+    registry = { reconcileLink: vi.fn(), rebuildFromAggregate: vi.fn(), removeLink: vi.fn() };
+    linksDataSource = { get: vi.fn(), update: vi.fn(), getItems: vi.fn(() => []) };
+    mapLinksDataSource = { get: vi.fn(), update: vi.fn(), getItems: vi.fn(() => []) };
 
     await TestBed.configureTestingModule({
       imports: [MarkerManagerComponent],
       providers: [
         { provide: MarkerService, useValue: markerService },
         { provide: LinkService, useValue: linkService },
-        { provide: LinksDataSource, useValue: { get: vi.fn(), update: vi.fn(), getItems: vi.fn(() => []) } },
-        { provide: MapLinksDataSource, useValue: { get: vi.fn(), update: vi.fn() } },
+        { provide: LinksDataSource, useValue: linksDataSource },
+        { provide: MapLinksDataSource, useValue: mapLinksDataSource },
         { provide: NodesDataSource, useValue: { get: vi.fn(), getItems: vi.fn(() => []) } },
         { provide: MarkerRegistryService, useValue: registry },
         { provide: ToasterService, useValue: { success: vi.fn(), error: vi.fn() } },
@@ -188,6 +194,36 @@ describe('MarkerManagerComponent', () => {
       expect(linkService.getLink).toHaveBeenCalledWith(controller, 'proj-1', 'l1');
       expect(registry.reconcileLink).toHaveBeenCalled();
       expect(markerService.aggregateList).toHaveBeenCalled();
+    });
+  });
+
+  describe('aggregate race', () => {
+    it('drops a stale aggregate response resolving after a newer one', () => {
+      // Regression: two overlapping aggregate GETs (loadAggregate fires after
+      // every marker CRUD). The older, pre-mutation response must not apply
+      // last — its clearing loop would wipe markers that were just created.
+      const link = { link_id: 'l1', name: 'l1', markers: {} };
+      linksDataSource.get.mockReturnValue(link);
+      linksDataSource.getItems.mockReturnValue([link]);
+      mapLinksDataSource.getItems.mockReturnValue([]);
+
+      const stale = new Subject<any>();
+      const fresh = new Subject<any>();
+      markerService.aggregateList.mockReturnValueOnce(stale.asObservable()).mockReturnValueOnce(fresh.asObservable());
+
+      component.loadAggregate(); // request #1 (older)
+      component.loadAggregate(); // request #2 (newer)
+
+      // Newer response lands first and carries the just-created marker.
+      fresh.next({ 'l1/mymarker': { bpf: 'ip', link_id: 'l1', color: '#ff0000' } });
+      fresh.complete();
+      expect(link.markers).toHaveProperty('mymarker');
+
+      // Older (pre-mutation) response lands last — must be ignored.
+      stale.next({});
+      stale.complete();
+
+      expect(link.markers).toHaveProperty('mymarker');
     });
   });
 });

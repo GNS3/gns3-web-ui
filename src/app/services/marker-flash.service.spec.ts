@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, beforeAll, afterAll, vi } from 'vitest';
+import { describe, it, expect, beforeEach, beforeAll, afterAll, afterEach, vi } from 'vitest';
 import { MarkerFlashService } from './marker-flash.service';
 
 /**
@@ -104,6 +104,94 @@ describe('MarkerFlashService', () => {
 
     it('rx at the source end means peer(target)→capture(source) (against the path)', () => {
       expect(arrowAlong('rx', 'source')).toBe(false);
+    });
+  });
+
+  describe('reset (project switch)', () => {
+    it('clears the _flashing signal map', async () => {
+      service.flash('link-1', null, null, 'tx', 'node-a');
+      await settle();
+      expect(flashing().size).toBe(1);
+
+      service.reset();
+
+      // Regression: reset() cleared timers/pending/prev/geoCache but left the
+      // signal map — every project switch leaked the previous project's flash
+      // entries (composite keys are link UUIDs, never reused) in this
+      // app-singleton.
+      expect(flashing().size).toBe(0);
+    });
+
+    it('a flash after reset starts from an empty map', async () => {
+      service.flash('link-1', null);
+      await settle();
+      service.reset();
+
+      service.flash('link-2', null);
+      await settle();
+
+      expect(flashing().has(key('link-1'))).toBe(false);
+      expect(flashing().has(key('link-2'))).toBe(true);
+    });
+  });
+
+  describe('with DOM (direction arrows)', () => {
+    const svgHtml = `
+      <svg id="map">
+        <g class="link" link_id="l1" map-source="node-a" map-target="node-b">
+          <g class="link_body">
+            <path class="ethernet_link" d="M0,0 L100,0"></path>
+            <g class="marker-arrow-tx"><path d="stale-arrow"></path></g>
+          </g>
+        </g>
+      </svg>`;
+
+    const groupEl = () => document.querySelector<SVGGElement>('g.link[link_id="l1"]');
+    const arrowSlots = () => document.querySelectorAll('g.link[link_id="l1"] g.marker-arrow-tx, g.link[link_id="l1"] g.marker-arrow-rx');
+
+    beforeEach(() => {
+      document.body.innerHTML = svgHtml;
+      const path = document.querySelector<SVGPathElement>('path.ethernet_link');
+      (path as any).getTotalLength = () => 100;
+      (path as any).getPointAtLength = () => ({ x: 1, y: 1 });
+    });
+
+    afterEach(() => {
+      document.body.innerHTML = '';
+    });
+
+    it('does not remove existing arrows when the capture node matches no endpoint', async () => {
+      // Regression: renderDirArrow removed the slot container BEFORE checking
+      // the capture endpoint; a stale capture (link rewired after the match)
+      // bailed after the removal and the state diff never re-rendered it.
+      service.flash('l1', null, null, 'tx', 'stale-node');
+      await settle();
+
+      expect(groupEl().querySelectorAll('g.marker-arrow-tx').length).toBe(1);
+      expect(groupEl().querySelectorAll('g.marker-arrow-tx path').length).toBe(1);
+    });
+
+    it('re-renders arrows for a flashing link after a redraw wipes them', async () => {
+      // Regression: LinkWidget.draw() removes arrow containers on every
+      // redraw; without redrawArrows the flash kept pulsing without direction
+      // arrows until the state changed.
+      service.flash('l1', null, null, 'tx', 'node-a');
+      await settle();
+      expect(groupEl().querySelectorAll('g.marker-arrow-tx path').length).toBeGreaterThan(0);
+
+      // Simulate the link widget's redraw: it strips the arrow containers.
+      groupEl().querySelectorAll('g.marker-arrow-tx, g.marker-arrow-rx').forEach((n) => n.remove());
+      expect(arrowSlots().length).toBe(0);
+
+      service.redrawArrows('l1');
+
+      expect(groupEl().querySelectorAll('g.marker-arrow-tx path').length).toBeGreaterThan(0);
+    });
+
+    it('redrawArrows is a no-op for links without an active flash', () => {
+      service.flash('other-link', null);
+      // no settle → nothing flushed for l1; redrawArrows must not throw/touch DOM
+      expect(() => service.redrawArrows('l1')).not.toThrow();
     });
   });
 

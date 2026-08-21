@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -10,13 +10,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
+import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
 import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 import { ValidationService } from '@services/validation';
+import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
 
 @Component({
   standalone: true,
@@ -36,11 +39,14 @@ import { ValidationService } from '@services/validation';
     MatChipsModule,
     MatIconModule,
     MatCheckboxModule,
+    MatProgressSpinnerModule,
+    NetmikoDeviceTypeSelectComponent,
   ],
 })
 export class ConfiguratorDialogVpcsComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogVpcsComponent>);
   private nodeService = inject(NodeService);
+  private templateService = inject(TemplateService);
   private toasterService = inject(ToasterService);
   private vpcsConfigurationService = inject(VpcsConfigurationService);
   private cd = inject(ChangeDetectorRef);
@@ -56,6 +62,17 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
   readonly nodeName = model('');
   readonly consoleType = model('');
   readonly consoleAutoStart = model(false);
+  readonly netmikoDeviceType = model('');
+  readonly defaultUsername = model(''); readonly defaultPassword = model('');
+  // inherited values shown as placeholders when the node fields are empty
+  readonly defaultUsernamePlaceholder = signal('');
+  readonly defaultPasswordPlaceholder = signal('');
+
+  // Apply button loading state
+  readonly isApplying = signal(false);
+
+  // Node data loading state
+  readonly isLoading = signal(true);
 
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
@@ -67,17 +84,40 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
         this.nodeName.set(node.name || '');
         this.consoleType.set(node.console_type || '');
         this.consoleAutoStart.set(node.console_auto_start || false);
+        this.netmikoDeviceType.set(node.netmiko_device_type || '');
+        this.defaultUsername.set(node.default_username || '');
+        this.defaultPassword.set(node.default_password || '');
+        // empty node credentials: show the template appliance metadata as placeholder
+        if ((!node.default_username || !node.default_password) && node.template_id) {
+          this.templateService.list(this.controller).subscribe({
+            next: (templates) => {
+              const metadata = templates.find((tpl) => tpl.template_id === node.template_id)?.appliance_metadata;
+              if (metadata) {
+                this.defaultUsernamePlaceholder.set(node.default_username ? '' : (metadata.default_username as string) || '');
+                this.defaultPasswordPlaceholder.set(node.default_password ? '' : (metadata.default_password as string) || '');
+                this.cd.markForCheck();
+              }
+            },
+            error: () => {
+              // placeholder is informational only — ignore lookup failures
+            },
+          });
+        }
 
         this.getConfiguration();
         if (!this.node.tags) {
           this.node.tags = [];
         }
         this.cd.markForCheck();
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load node';
         this.toasterService.error(message);
         this.cd.markForCheck();
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
       },
     });
   }
@@ -87,6 +127,8 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
   }
 
   onSaveClick() {
+    if (this.isApplying()) return;
+
     // Validate name (required)
     const nameValidation = this.validationService.required(this.nodeName(), 'Name');
     if (!nameValidation.isValid) {
@@ -94,10 +136,21 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
       return;
     }
 
+    const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
+    if (!netmikoValidation.isValid) {
+      this.toasterService.error(netmikoValidation.errorMessage);
+      return;
+    }
+
     this.node.name = this.nodeName();
     this.node.console_type = this.consoleType();
     this.node.console_auto_start = this.consoleAutoStart();
+    this.node.netmiko_device_type = this.netmikoDeviceType().trim() || null;
+    this.node.default_username = this.defaultUsername().trim() || null;
+    this.node.default_password = this.defaultPassword().trim() || null;
 
+    this.isApplying.set(true);
+    this.dialogRef.disableClose = true;
     this.nodeService.updateNode(this.controller, this.node).subscribe({
       next: () => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
@@ -106,6 +159,8 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
       error: (error: unknown) => {
         const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
         this.toasterService.error(errorMessage);
+        this.isApplying.set(false);
+        this.dialogRef.disableClose = false;
         this.cd.markForCheck();
       },
     });

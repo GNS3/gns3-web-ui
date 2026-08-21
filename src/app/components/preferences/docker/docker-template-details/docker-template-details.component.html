@@ -222,13 +222,36 @@
               placeholder="HTTP path"
             />
           </mat-form-field>
-          <mat-checkbox
-            [checked]="consoleAutoStart()"
-            (change)="consoleAutoStart.set($event.checked)"
-            class="grid-span-2"
-          >
-            Auto start console
-          </mat-checkbox>
+          <div class="three-column-grid grid-span-2">
+            <app-netmiko-device-type-select
+              [(value)]="netmikoDeviceType"
+              [controller]="controller"
+              appearance="fill"
+              class="form-field"
+            />
+            <mat-form-field class="form-field">
+              <mat-label>Default username</mat-label>
+              <input
+                matInput
+                [value]="defaultUsername()"
+                (input)="onCredentialInput('default_username', $event)"
+                type="text"
+                placeholder="Username to log into this node"
+              />
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <mat-label>Default password</mat-label>
+              <input
+                matInput
+                [value]="defaultPassword()"
+                (input)="onCredentialInput('default_password', $event)"
+                type="text"
+                placeholder="Password to log into this node"
+              />
+            </mat-form-field>
+          </div>
+
+          <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)" class="grid-span-2"> Auto start console </mat-checkbox>
         </div>
         <button mat-button class="form-field docker-details__config-btn" (click)="editCustomAdapters()">
           Configure custom adapters
@@ -347,6 +370,9 @@
       }
     </section>
 
+    <section class="docker-details__form-card">
+      <app-template-metadata-section [(metadata)]="applianceMetadata" />
+    </section>
     <div class="docker-details__actions">
       <button class="docker-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
       <button mat-raised-button color="primary" class="docker-details__save-btn" (click)="onSave()">Save</button>

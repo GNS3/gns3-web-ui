@@ -8,6 +8,7 @@ import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
 import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
 import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
 import { Controller } from '@models/controller';
@@ -167,6 +168,7 @@ describe('AddQemuVmTemplateComponent', () => {
         { provide: ControllerService, useValue: mockControllerService },
         { provide: TemplateMocksService, useValue: mockTemplateMocksService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: MatSnackBar, useValue: mockSnackBar },
@@ -473,8 +475,8 @@ describe('AddQemuVmTemplateComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
     expect(compiled.querySelector('mat-horizontal-stepper')).toBeTruthy();
-    expect(compiled.querySelectorAll('.template-wizard__step-label')).toHaveLength(7);
-    expect(compiled.querySelectorAll('.template-wizard__step-label-description')).toHaveLength(7);
+    expect(compiled.querySelectorAll('.template-wizard__step-label')).toHaveLength(8);
+    expect(compiled.querySelectorAll('.template-wizard__step-label-description')).toHaveLength(8);
     expect(compiled.textContent).toContain('Controller type');
     expect(compiled.textContent).toContain('Run this QEMU VM locally');
     expect(compiled.querySelector('.template-wizard__notice')).toBeNull();

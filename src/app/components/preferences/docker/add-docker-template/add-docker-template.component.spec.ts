@@ -6,6 +6,7 @@ import { DockerService } from '@services/docker.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { DockerImage } from '@models/docker/docker-image';
 import { DockerTemplate } from '@models/templates/docker-template';
@@ -127,6 +128,7 @@ describe('AddDockerTemplateComponent', () => {
         { provide: DockerService, useValue: mockDockerService },
         { provide: TemplateMocksService, useValue: mockTemplateMocksService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
         { provide: DockerConfigurationService, useValue: mockConfigurationService },
       ],
     }).compileComponents();

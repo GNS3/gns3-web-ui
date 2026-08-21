@@ -11,12 +11,14 @@ import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { v4 as uuid } from 'uuid';
 import { DockerImage } from '@models/docker/docker-image';
 import { Controller } from '@models/controller';
+import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
 import { DockerTemplate } from '@models/templates/docker-template';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { DockerService } from '@services/docker.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { ValidationService } from '@services/validation';
 import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/template-info-fields.component';
 
 @Component({
@@ -26,6 +28,7 @@ import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/t
   templateUrl: './add-docker-template.component.html',
   styleUrls: ['./add-docker-template.component.scss', '../../preferences.component.scss'],
   imports: [
+    NetmikoDeviceTypeSelectComponent,
     MatIconModule,
     MatButtonModule,
     MatRadioModule,
@@ -45,6 +48,7 @@ export class AddDockerTemplateComponent implements OnInit {
   private router = inject(Router);
   private templateMocksService = inject(TemplateMocksService);
   private configurationService = inject(DockerConfigurationService);
+  private validationService = inject(ValidationService);
   private cd = inject(ChangeDetectorRef);
 
   controller?: Controller;
@@ -65,6 +69,7 @@ export class AddDockerTemplateComponent implements OnInit {
   consoleType = model('');
   auxConsoleType = model('');
   environment = model('');
+  netmikoDeviceType = model('');
   usage = model('');
   symbol = model('docker_guest');
 
@@ -159,6 +164,12 @@ export class AddDockerTemplateComponent implements OnInit {
       return;
     }
 
+    const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
+    if (!netmikoValidation.isValid) {
+      this.toasterService.error(netmikoValidation.errorMessage);
+      return;
+    }
+
     template.template_id = uuid();
     template.image = this.newImageSelected ? this.filename() : selectedImage.image;
     template.name = this.templateName();
@@ -168,6 +179,7 @@ export class AddDockerTemplateComponent implements OnInit {
     template.console_type = this.consoleType() || 'none';
     template.aux_type = this.auxConsoleType() || 'none';
     template.environment = this.environment();
+    template.netmiko_device_type = this.netmikoDeviceType().trim() || null;
     template.usage = this.usage();
     template.symbol = this.symbol();
 

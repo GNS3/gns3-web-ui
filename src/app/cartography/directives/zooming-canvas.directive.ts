@@ -1,9 +1,11 @@
-import { Directive, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, Input, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { pointer, select } from 'd3-selection';
 import { Subscription } from 'rxjs';
 import { MapScaleService } from '@services/mapScale.service';
+import { Project } from '@models/project';
 import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
+import { GridAnchorService } from '../services/grid-anchor.service';
 
 @Directive({
   standalone: true,
@@ -18,8 +20,12 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private movingEventSource: MovingEventSource,
     private context: Context,
-    private mapsScaleService: MapScaleService
+    private mapsScaleService: MapScaleService,
+    private gridAnchor: GridAnchorService
   ) {}
+
+  /** Grid sizes — needed to keep the background grid anchored while zooming. */
+  @Input('project') project: Project;
 
   ngOnInit() {
     // Disable default browser zoom via CSS for passive event listener support
@@ -55,7 +61,10 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
         // Proportional zoom: each wheel notch multiplies k by ~exp(∓0.1), so the
         // step feels uniform at every zoom level. (The old absolute −zoom/10
         // step made one notch a 50%+ jump when zoomed far out.)
-        const newK = Math.max(0.01, oldK * Math.exp(-zoom / 10));
+        const newK = Math.min(
+          MapScaleService.MAX_SCALE,
+          Math.max(MapScaleService.MIN_SCALE, oldK * Math.exp(-zoom / 10))
+        );
 
         // Cursor-centered zoom: keep the canvas point under the cursor fixed.
         // That canvas point is (svg cursor - origin - pan) / k.
@@ -79,6 +88,10 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
 
         return `translate(${xTrans}, ${yTrans}) scale(${newK})`;
       });
+
+      // The grid tile scales with k — re-anchor the background grid in the
+      // same event so it doesn't lag a frame behind the zoom.
+      this.gridAnchor.apply(this.element.nativeElement, this.context, this.project);
     };
 
     // Non-passive so preventDefault() can stop the page from scrolling while

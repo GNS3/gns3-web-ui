@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,6 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { PortsComponent } from '@components/preferences/common/ports/ports.component';
@@ -31,6 +32,7 @@ import { ValidationService } from '@services/validation';
     MatButtonModule,
     MatChipsModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     PortsComponent,
   ],
 })
@@ -52,6 +54,12 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   readonly nodeName = model('');
   readonly consoleType = model('');
 
+  // Apply button loading state
+  readonly isApplying = signal(false);
+
+  // Node data loading state
+  readonly isLoading = signal(true);
+
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe({
       next: (node: Node) => {
@@ -67,11 +75,15 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
           this.node.tags = [];
         }
         this.cd.markForCheck();
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load node';
         this.toasterService.error(message);
         this.cd.markForCheck();
+        this.isLoading.set(false);
+        this.dialogRef.disableClose = false;
       },
     });
   }
@@ -81,6 +93,8 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   }
 
   onSaveClick() {
+    if (this.isApplying()) return;
+
     // Validate name (required)
     const nameValidation = this.validationService.required(this.nodeName(), 'Name');
     if (!nameValidation.isValid) {
@@ -92,6 +106,8 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
     this.node.name = this.nodeName();
     this.node.console_type = this.consoleType();
 
+    this.isApplying.set(true);
+    this.dialogRef.disableClose = true;
     this.nodeService.updateNode(this.controller, this.node).subscribe({
       next: () => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
@@ -100,6 +116,8 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
       error: (error: unknown) => {
         const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
         this.toasterService.error(errorMessage);
+        this.isApplying.set(false);
+        this.dialogRef.disableClose = false;
         this.cd.markForCheck();
       },
     });
