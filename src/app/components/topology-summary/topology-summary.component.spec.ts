@@ -389,6 +389,27 @@ describe('TopologySummaryComponent', () => {
       expect(component.computes).toEqual(mockComputes);
     });
 
+    it('should fetch computes even when the notification cache already has data', async () => {
+      // Regression guard: the cache only contains computes that happened to
+      // emit a WS event, so it must never replace the authoritative HTTP list
+      // (otherwise the local compute never shows up).
+      mockNotificationService.hasCachedData.mockReturnValue(true);
+      mockNotificationService.getCachedComputes.mockReturnValue([
+        { compute_id: 'remote', name: 'Remote' } as Compute,
+      ]);
+      const mockComputes = [
+        { compute_id: 'local', name: 'Local' } as Compute,
+        { compute_id: 'remote', name: 'Remote' } as Compute,
+      ];
+      mockComputeService.getComputes.mockReturnValue(of(mockComputes));
+
+      component.ngOnInit();
+      await vi.runAllTimersAsync();
+
+      expect(mockComputeService.getComputes).toHaveBeenCalledWith(mockController);
+      expect(component.computes).toEqual(mockComputes);
+    });
+
     it('should call revertPosition on init', async () => {
       const revertPositionSpy = vi.spyOn(component, 'revertPosition');
 

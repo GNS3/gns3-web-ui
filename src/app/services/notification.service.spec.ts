@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { of } from 'rxjs';
 import { NotificationService, ComputeNotification } from './notification.service';
 import { Controller } from '@models/controller';
+import { Compute } from '@models/compute';
 
 // Mock environment
 vi.mock('environments/environment', () => ({
@@ -31,6 +33,7 @@ vi.stubGlobal('WebSocket', MockWebSocket);
 
 describe('NotificationService', () => {
   let service: NotificationService;
+  let mockComputeService: { getComputes: ReturnType<typeof vi.fn> };
   let mockController: Controller;
 
   beforeEach(() => {
@@ -40,7 +43,11 @@ describe('NotificationService', () => {
     // Ensure WebSocket stub is always set (prevents pollution from other tests)
     vi.stubGlobal('WebSocket', MockWebSocket);
 
-    service = new NotificationService();
+    mockComputeService = {
+      getComputes: vi.fn().mockReturnValue(of([])),
+    };
+
+    service = new NotificationService(mockComputeService as any);
 
     mockController = {
       id: 1,
@@ -285,6 +292,68 @@ describe('NotificationService', () => {
 
       expect(consoleSpy).toHaveBeenCalledWith('Compute notifications WebSocket error');
       consoleSpy.mockRestore();
+    });
+  });
+
+  describe('auto-reconnect', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should schedule a reconnect with backoff after an unexpected close', () => {
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
+
+      ws.onclose?.();
+
+      // Not reconnected immediately — first backoff is 1s..1.25s (+jitter).
+      expect(MockWebSocket.instances).toHaveLength(1);
+      vi.advanceTimersByTime(1300);
+      expect(MockWebSocket.instances).toHaveLength(2);
+      expect(MockWebSocket.instances[1].url).toBe(ws.url);
+    });
+
+    it('should not reconnect after an intentional disconnect', () => {
+      service.connectToComputeNotifications(mockController);
+      service.disconnect();
+
+      vi.advanceTimersByTime(60000);
+
+      expect(MockWebSocket.instances).toHaveLength(1);
+    });
+
+    it('should re-fetch the compute list into the cache after reconnecting', () => {
+      const computes = [{ compute_id: 'local', name: 'Local' } as Compute];
+      mockComputeService.getComputes.mockReturnValue(of(computes));
+
+      service.connectToComputeNotifications(mockController);
+      const first = MockWebSocket.instances[0];
+      first.onopen?.(); // initial connect: consumers own the initial fetch
+      expect(mockComputeService.getComputes).not.toHaveBeenCalled();
+
+      first.onclose?.(); // unexpected close → reconnect
+      vi.advanceTimersByTime(1300);
+      const second = MockWebSocket.instances[1];
+      second.onopen?.(); // reconnect: service resyncs the cache
+
+      expect(mockComputeService.getComputes).toHaveBeenCalledWith(mockController);
+      expect(service.getCachedComputes()).toEqual(computes);
+    });
+
+    it('should force-close a silent connection on liveness timeout', () => {
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
+      ws.onopen?.();
+
+      // No inbound frames at all (not even the periodic ping): the liveness
+      // check must force-close so the reconnect path takes over.
+      vi.advanceTimersByTime(21000);
+
+      expect(ws.close).toHaveBeenCalled();
     });
   });
 

@@ -122,25 +122,25 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       })
     );
 
-    if (this.notificationService.hasCachedData()) {
-      this.computes = this.notificationService.getCachedComputes();
-      this.cd.markForCheck();
-    } else {
-      this.subscriptions.push(
-        this.computeService.getComputes(this.controller).subscribe({
-          next: (computes) => {
-            this.computes = computes;
-            this.notificationService.setInitialComputes(computes);
-            this.cd.markForCheck();
-          },
-          error: (err) => {
-            const message = err.error?.message || err.message || 'Failed to load computes';
-            this.toasterService.error(message);
-            this.cd.markForCheck();
-          },
-        })
-      );
-    }
+    // The notification cache only holds computes that happened to emit a WS
+    // event (e.g. a remote compute reconnecting), so it is not guaranteed to
+    // contain the full list (the local compute rarely emits events). Always
+    // fetch the authoritative list via HTTP; the cache stream provides live
+    // updates on top of it.
+    this.subscriptions.push(
+      this.computeService.getComputes(this.controller).subscribe({
+        next: (computes) => {
+          this.computes = computes;
+          this.notificationService.setInitialComputes(computes);
+          this.cd.markForCheck();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to load computes';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        },
+      })
+    );
   }
 
   private normalizeConsoleHost(node: Node): Node {
