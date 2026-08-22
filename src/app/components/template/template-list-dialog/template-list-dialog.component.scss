@@ -59,6 +59,14 @@
   border-top: 1px solid var(--mat-sys-outline-variant);
 }
 
+/* Quiet separator between the node/compute fields and the position fields. */
+.advanced-options__divider {
+  height: 1px;
+  margin: var(--gns3-density-space-2) 0;
+  background: var(--mat-sys-outline-variant);
+  opacity: 0.5;
+}
+
 .dialog-section + .dialog-section {
   margin-top: var(--gns3-density-space-5);
   padding-top: var(--gns3-density-space-5);

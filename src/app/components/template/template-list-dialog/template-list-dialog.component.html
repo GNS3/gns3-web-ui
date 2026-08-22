@@ -93,45 +93,41 @@
       <mat-panel-title>Advanced options</mat-panel-title>
     </mat-expansion-panel-header>
 
-      <section class="dialog-section" aria-labelledby="configuration-section-title">
-        <h2 id="configuration-section-title" class="dialog-section__title">Configuration</h2>
-        <div class="dialog-fields">
-          <div [formGroup]="configurationForm">
-            <mat-form-field subscriptSizing="dynamic">
-              <mat-label>Number of nodes</mat-label>
-              <input type="number" min="1" step="1" matInput formControlName="numberOfNodes" />
-            </mat-form-field>
-          </div>
+      <div class="dialog-fields">
+        <div [formGroup]="configurationForm">
           <mat-form-field subscriptSizing="dynamic">
-            <mat-label>Compute</mat-label>
-            <mat-select
-              [value]="selectedComputeId()"
-              (selectionChange)="selectedComputeId.set($event.value)"
-              [compareWith]="compareComputes"
-            >
-              @for (compute of nodeComputes; track compute.value) {
-              <mat-option [value]="compute.value">
-                {{ compute.display }}
-              </mat-option>
-              }
-            </mat-select>
+            <mat-label>Number of nodes</mat-label>
+            <input type="number" min="1" step="1" matInput formControlName="numberOfNodes" />
           </mat-form-field>
         </div>
-      </section>
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Compute</mat-label>
+          <mat-select
+            [value]="selectedComputeId()"
+            (selectionChange)="selectedComputeId.set($event.value)"
+            [compareWith]="compareComputes"
+          >
+            @for (compute of nodeComputes; track compute.value) {
+            <mat-option [value]="compute.value">
+              {{ compute.display }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-      <section class="dialog-section" aria-labelledby="position-section-title">
-        <h2 id="position-section-title" class="dialog-section__title">Manual position</h2>
-        <form class="dialog-fields" [formGroup]="positionForm">
-          <mat-form-field subscriptSizing="dynamic">
-            <mat-label>Left</mat-label>
-            <input matInput type="number" formControlName="left" />
-          </mat-form-field>
-          <mat-form-field subscriptSizing="dynamic">
-            <mat-label>Top</mat-label>
-            <input matInput type="number" formControlName="top" />
-          </mat-form-field>
-        </form>
-      </section>
+      <div class="advanced-options__divider" role="separator"></div>
+
+      <form class="dialog-fields" [formGroup]="positionForm">
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Left (X)</mat-label>
+          <input matInput type="number" formControlName="left" />
+        </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Top (Y)</mat-label>
+          <input matInput type="number" formControlName="top" />
+        </mat-form-field>
+      </form>
     </mat-expansion-panel>
 </div>
 <div mat-dialog-actions>
