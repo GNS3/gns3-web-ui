@@ -24,14 +24,14 @@
   <mat-tab-group
     class="inspector-tabs"
     animationDuration="0ms"
-    [selectedIndex]="isTopologyVisible ? 0 : 1"
-    (selectedIndexChange)="toggleTopologyVisibility($event === 0)"
+    [selectedIndex]="selectedTabIndex"
+    (selectedIndexChange)="onTabSelectionChange($event)"
     (mousedown)="startDraggingFromTabStrip($event)"
   >
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon>map</mat-icon>
-        <span>Map topology</span>
+        <span>Topology</span>
       </ng-template>
 
       <div class="tab-content">
@@ -157,6 +157,17 @@
             <span>Open console</span>
           </button>
         </mat-menu>
+      </div>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>insights</mat-icon>
+        <span>Markers</span>
+      </ng-template>
+
+      <div class="tab-content">
+        <app-marker-legend (openMarkerManager)="openMarkerManager.emit()"></app-marker-legend>
       </div>
     </mat-tab>
 

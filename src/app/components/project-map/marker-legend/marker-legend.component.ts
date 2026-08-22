@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MarkerRegistryService } from '@services/marker-registry.service';
 
 @Component({
@@ -9,7 +11,7 @@ import { MarkerRegistryService } from '@services/marker-registry.service';
   templateUrl: './marker-legend.component.html',
   styleUrl: './marker-legend.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatTooltipModule],
+  imports: [CommonModule, MatTooltipModule, MatIconModule, MatButtonModule],
 })
 export class MarkerLegendComponent {
   private readonly registry = inject(MarkerRegistryService);

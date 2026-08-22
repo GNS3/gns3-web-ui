@@ -259,7 +259,10 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.template-menu 
   }
 
   .mat-mdc-tab {
-    min-width: 136px;
+    // Equal-width tabs that shrink with the panel (min panel width is 400px)
+    min-width: 0;
+    flex: 1 1 0;
+    padding-inline: var(--gns3-density-space-2);
   }
 
   .mdc-tab__content {

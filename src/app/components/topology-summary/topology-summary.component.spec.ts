@@ -10,6 +10,7 @@ import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { MapSettingsService } from '@services/mapsettings.service';
+import { MarkerRegistryService } from '@services/marker-registry.service';
 import { Compute } from '@models/compute';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
@@ -254,6 +255,7 @@ describe('TopologySummaryComponent', () => {
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
         { provide: NodeConsoleService, useValue: mockNodeConsoleService },
         { provide: MapSettingsService, useValue: mockMapSettingsService },
+        MarkerRegistryService,
       ],
     }).compileComponents();
 
@@ -279,7 +281,7 @@ describe('TopologySummaryComponent', () => {
 
     it('should have default initial values', () => {
       expect(component.sortingOrder).toBe('asc');
-      expect(component.isTopologyVisible).toBe(true);
+      expect(component.selectedTabIndex).toBe(0);
       expect(component.isDraggingEnabled).toBe(false);
       expect(component.startedStatusFilterEnabled).toBe(false);
       expect(component.stoppedStatusFilterEnabled).toBe(false);
@@ -689,19 +691,19 @@ describe('TopologySummaryComponent', () => {
     });
   });
 
-  describe('toggleTopologyVisibility', () => {
-    it('should set topology visibility to true', () => {
-      component.toggleTopologyVisibility(true);
+  describe('onTabSelectionChange', () => {
+    it('should select the requested tab', () => {
+      component.onTabSelectionChange(1);
 
-      expect(component.isTopologyVisible).toBe(true);
+      expect(component.selectedTabIndex).toBe(1);
     });
 
-    it('should set topology visibility to false without resetting the inspector position', () => {
+    it('should select the computes tab without resetting the inspector position', () => {
       const revertPositionSpy = vi.spyOn(component, 'revertPosition');
 
-      component.toggleTopologyVisibility(false);
+      component.onTabSelectionChange(2);
 
-      expect(component.isTopologyVisible).toBe(false);
+      expect(component.selectedTabIndex).toBe(2);
       expect(revertPositionSpy).not.toHaveBeenCalled();
     });
   });

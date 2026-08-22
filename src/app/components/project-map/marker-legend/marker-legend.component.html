@@ -1,20 +1,40 @@
-@if (entries().length > 0) {
-<div class="marker-legend" (click)="onClick()" title="Click to open Marker Manager">
-  @for (entry of entries(); track entry.name) {
-  <span
-    class="marker-legend__pill"
-    [matTooltip]="entry.bpf"
-    matTooltipPosition="above"
-    matTooltipClass="marker-legend-tooltip"
-  >
-    <span
-      class="marker-legend__swatch"
-      [style.background]="entry.color"
-      [class.marker-legend__swatch--default]="!entry.color"
-    ></span>
-    <span class="marker-legend__name">{{ entry.name }}</span>
-  </span>
+<div class="marker-legend">
+  <div class="marker-legend__header">
+    <span>{{ entries().length }} markers</span>
+    <button
+      mat-icon-button
+      type="button"
+      class="marker-legend__manage"
+      aria-label="Open marker manager"
+      matTooltip="Open marker manager"
+      matTooltipPosition="left"
+      (click)="onClick()"
+    >
+      <mat-icon>settings</mat-icon>
+    </button>
+  </div>
+
+  @if (entries().length > 0) {
+  <div class="marker-legend__list">
+    @for (entry of entries(); track entry.name) {
+    <div class="marker-legend__row" [matTooltip]="entry.bpf" matTooltipPosition="above">
+      <span
+        class="marker-legend__swatch"
+        [style.background]="entry.color"
+        [class.marker-legend__swatch--default]="!entry.color"
+      ></span>
+      <span class="marker-legend__identity">
+        <strong>{{ entry.name }}</strong>
+        <span>{{ entry.bpf }}</span>
+      </span>
+    </div>
+    }
+  </div>
+  } @else {
+  <div class="marker-legend__empty">
+    <mat-icon>insights</mat-icon>
+    <span>No markers defined</span>
+    <button mat-button type="button" (click)="onClick()">Open marker manager</button>
+  </div>
   }
-  <span class="marker-legend__label">Markers</span>
 </div>
-}

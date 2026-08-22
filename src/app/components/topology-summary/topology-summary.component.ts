@@ -33,6 +33,7 @@ import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { MapSettingsService } from '@services/mapsettings.service';
+import { MarkerLegendComponent } from '../project-map/marker-legend/marker-legend.component';
 
 @Component({
   selector: 'app-topology-summary',
@@ -55,6 +56,7 @@ import { MapSettingsService } from '@services/mapsettings.service';
     MatMenuModule,
     MatCheckboxModule,
     ResizableModule,
+    MarkerLegendComponent,
   ],
 })
 export class TopologySummaryComponent implements OnInit, OnDestroy {
@@ -72,6 +74,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   @Input() project: Project;
 
   @Output() openWebConsoleInline = new EventEmitter<{ node: Node; controller: Controller; project: Project }>();
+  @Output() openMarkerManager = new EventEmitter<void>();
 
   private computesInitialized = false;
 
@@ -89,7 +92,8 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   searchQuery = '';
   selectedNode: Node | null = null;
 
-  isTopologyVisible: boolean = true;
+  /** Selected inspector tab: 0 = Topology, 1 = Markers, 2 = Computes. */
+  selectedTabIndex: number = 0;
   isDraggingEnabled: boolean = false;
 
   ngOnInit() {
@@ -287,8 +291,8 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     localStorage.setItem('heightOfWidget', event.rectangle.height.toString());
   }
 
-  toggleTopologyVisibility(value: boolean) {
-    this.isTopologyVisible = value;
+  onTabSelectionChange(index: number) {
+    this.selectedTabIndex = index;
   }
 
   compareAsc(first: Node, second: Node) {
