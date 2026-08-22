@@ -5,12 +5,12 @@ entity name (e.g. `Project`, `Node`, `Image`).
 
 ---
 
-## 1. Standard Dialog (`base-dialog-panel`)
+## 1. Standard Dialog (`base-dialog-panel` + size class)
 
 ### Open call
 ```typescript
 this.dialog.open(EditNounDialogComponent, {
-  panelClass: ['base-dialog-panel'],
+  panelClass: ['base-dialog-panel', 'dialog-small-panel'],
   data: { noun } satisfies EditNounDialogData,
 });
 ```
@@ -73,14 +73,14 @@ export interface EditNounDialogResult { name: string; /* ... */ }
 
 ---
 
-## 2. Configurator Dialog (`base-dialog-panel` + `configurator-dialog-panel`)
+## 2. Configurator Dialog (`base-dialog-panel` + `dialog-large-panel`)
 
-Use for node / resource configuration with tabs or form grids (800px wide).
+Use for node / resource configuration with tabs or form grids (880px wide).
 
 ### Open call
 ```typescript
 this.dialog.open(ConfigureNounDialogComponent, {
-  panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+  panelClass: ['base-dialog-panel', 'dialog-large-panel', 'configurator-dialog-panel'],
   data: { noun } satisfies ConfigureNounDialogData,
 });
 ```
@@ -162,14 +162,14 @@ export interface ConfigureNounDialogResult { /* typed result */ }
 
 ---
 
-## 3. Simple Sub-Dialog (`simple-dialog-panel`)
+## 3. Simple Sub-Dialog (`dialog-medium-panel`)
 
-Use when launching a child dialog from inside another dialog (500px wide).
+Use when launching a child dialog from inside another dialog (720px wide).
 
 ### Open call
 ```typescript
 this.dialog.open(SelectNounDialogComponent, {
-  panelClass: ['simple-dialog-panel'],
+  panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'simple-dialog-panel'],
   data: { options } satisfies SelectNounDialogData,
 });
 ```
@@ -197,7 +197,7 @@ Minimal: title + one short sentence + two buttons only. No forms, no tabs.
 ### 4a. Danger (delete / remove)
 ```typescript
 this.dialog.open(ConfirmDeleteNounDialogComponent, {
-  panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+  panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
   data: { nounName: noun.name } satisfies ConfirmDeleteNounDialogData,
 });
 ```
@@ -219,7 +219,7 @@ this.dialog.open(ConfirmDeleteNounDialogComponent, {
 
 ### 4b. Warning (unlock / risky action)
 ```typescript
-panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel']
+panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel', 'dialog-small-panel']
 ```
 ```html
 <h2 mat-dialog-title>Unlock Noun?</h2>
@@ -234,9 +234,9 @@ panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel']
 </mat-dialog-actions>
 ```
 
-### 4c. Info (acknowledge / confirm)
+### 4c. Neutral (acknowledge / confirm)
 ```typescript
-panelClass: ['base-confirmation-dialog-panel', 'confirmation-info-panel']
+panelClass: ['base-confirmation-dialog-panel', 'confirmation-neutral-panel', 'dialog-small-panel']
 ```
 ```html
 <h2 mat-dialog-title>Confirm Action</h2>

@@ -22,23 +22,31 @@ writing any code.
 ## Style System Overview
 
 The project has **two parallel class hierarchies** — one for general dialogs,
-one for confirmation dialogs. Always pick the right branch.
+one for confirmation dialogs. Both are sized by the Standard Dialog System
+(SDS): a `dialog-*-panel` size class sets `--gns3-dialog-width`, and every
+dialog call site carries exactly one.
 
 ### Branch 1 — General Dialogs
 
 ```
 .base-dialog-panel          ← all dialogs inherit this
-    ├── .configurator-dialog-panel   (800px × 80vh — node config)
-    ├── .simple-dialog-panel         (500px × 80vh — sub-dialogs)
-    └── .custom-dialog-panel         (special / one-off sizing)
+    └── one size class (required):
+        ├── .dialog-small-panel         (440px — confirmations, short forms)
+        ├── .dialog-medium-panel        (720px — editors, sub-dialogs)
+        ├── .dialog-large-panel         (880px — tabs, grids, wide editors)
+        └── .dialog-extra-large-panel   (1040px — dense management tables)
 ```
+
+Legacy role classes (`configurator-dialog-panel`, `simple-dialog-panel`) may
+appear as extra array elements but no longer control sizing.
 
 | Mode | panelClass array | When to use |
 |---|---|---|
-| Standard | `['base-dialog-panel']` | Generic informational or form dialogs |
-| Configurator | `['base-dialog-panel', 'configurator-dialog-panel']` | Node / resource setup with tabs, grids |
-| Simple | `['simple-dialog-panel']` | Sub-dialogs launched from within another dialog |
-| Custom | `['base-dialog-panel', 'my-custom-panel']` | One-off sizing needs |
+| Small | `['base-dialog-panel', 'dialog-small-panel']` | Generic informational or short form dialogs |
+| Medium | `['base-dialog-panel', 'dialog-medium-panel']` | Editors, sub-dialogs launched from within another dialog |
+| Large | `['base-dialog-panel', 'dialog-large-panel', 'configurator-dialog-panel']` | Node / resource setup with tabs, grids |
+| Extra large | `['base-dialog-panel', 'dialog-extra-large-panel']` | Dense tables / management workflows |
+| Custom width | `['base-dialog-panel', 'dialog-small-panel', 'my-custom-panel']` | One-off width: set `--gns3-dialog-width` in `_dialogs.scss` deviations section |
 
 ### Branch 2 — Confirmation Dialogs
 
@@ -46,11 +54,12 @@ one for confirmation dialogs. Always pick the right branch.
 .base-confirmation-dialog-panel     ← all confirmation dialogs inherit this
     ├── .confirmation-danger-panel   (delete / remove)
     ├── .confirmation-warning-panel  (unlock / risky action)
-    └── .confirmation-info-panel     (acknowledge / confirm)
+    └── .confirmation-neutral-panel  (acknowledge / neutral confirm)
 ```
 
-> **Rule**: confirmation dialogs always use BOTH the base class AND one
-> variant class. Example: `['base-confirmation-dialog-panel', 'confirmation-danger-panel']`
+> **Rule**: confirmation dialogs always use the base class, a size class
+> (almost always `dialog-small-panel`), AND one variant class. Example:
+> `['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel']`
 
 ---
 
@@ -59,19 +68,21 @@ one for confirmation dialogs. Always pick the right branch.
 Before writing any code, answer these questions:
 
 1. **Is this a destructive / risky / informational confirmation?**
-   → Yes → Confirmation branch. Pick danger / warning / info variant.
+   → Yes → Confirmation branch. Pick danger / warning / neutral variant.
    → No → General branch. Continue.
 
-2. **Does it configure a node or resource with tabs / form grids?**
-   → Yes → `configurator-dialog-panel`
+2. **Pick a size class** — small (440) / medium (720) / large (880) /
+   extra-large (1040). Non-standard width → nearest size class + a
+   `--gns3-dialog-width` override in the `_dialogs.scss` deviations section
+   (which sits after the size classes so the override wins).
 
-3. **Is it launched from inside another dialog?**
-   → Yes → `simple-dialog-panel`
+3. **Legacy role hint still useful?** Configurator-style tabs/forms may also
+   carry `configurator-dialog-panel`; nested sub-dialogs may carry
+   `simple-dialog-panel`. These are styling aliases only — they never size.
 
-4. **Does it need a custom size?**
-   → Yes → `custom-dialog-panel` (add your own width/height in the panel CSS)
-
-5. **Otherwise** → `base-dialog-panel` alone.
+4. **Is it a specialized node configurator or Docker network editor?**
+   → Yes → `node-configurator-dialog-panel` / `docker-network-config-dialog-panel`
+   purpose-built shells (excluded from the SDS).
 
 ---
 
