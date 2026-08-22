@@ -176,7 +176,12 @@ describe('ShowNodeActionComponent', () => {
       component.showNode();
 
       expect(mockDialog.open).toHaveBeenCalledWith(InfoDialogComponent, {
-        panelClass: ['base-dialog-panel', 'show-node-action-dialog-panel', 'dialog-small-panel'],
+        panelClass: [
+          'base-dialog-panel',
+          'show-node-action-dialog-panel',
+          'dialog-small-panel',
+          'dialog-height-60-panel',
+        ],
         autoFocus: false,
         data: { node: undefined, controller: undefined },
       });
@@ -193,7 +198,12 @@ describe('ShowNodeActionComponent', () => {
       component.showNode();
 
       expect(mockDialog.open).toHaveBeenCalledWith(InfoDialogComponent, {
-        panelClass: ['base-dialog-panel', 'show-node-action-dialog-panel', 'dialog-small-panel'],
+        panelClass: [
+          'base-dialog-panel',
+          'show-node-action-dialog-panel',
+          'dialog-small-panel',
+          'dialog-height-60-panel',
+        ],
         autoFocus: false,
         data: { node: mockNode, controller: mockController },
       });

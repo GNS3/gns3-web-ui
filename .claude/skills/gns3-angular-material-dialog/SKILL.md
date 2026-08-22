@@ -40,6 +40,11 @@ dialog call site carries exactly one.
 Legacy role classes (`configurator-dialog-panel`, `simple-dialog-panel`) may
 appear as extra array elements but no longer control sizing.
 
+Optional height tiers: `dialog-height-60-panel` / `dialog-height-80-panel`
+set a fixed viewport-ratio height (60vh / 80vh). Opt-in modifiers — dialogs
+are content-sized unless they declare one. Example:
+`['base-dialog-panel', 'dialog-medium-panel', 'my-editor-panel', 'dialog-height-60-panel']`
+
 | Mode | panelClass array | When to use |
 |---|---|---|
 | Small | `['base-dialog-panel', 'dialog-small-panel']` | Generic informational or short form dialogs |

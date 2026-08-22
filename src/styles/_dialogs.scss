@@ -1866,6 +1866,25 @@ html[data-density='compact'] .node-configurator-dialog-panel {
   --gns3-dialog-width: 1040px;
 }
 
+// Optional viewport-ratio height tiers. Opt-in modifiers combined with a
+// size class: dialogs stay content-sized unless they declare one. Height is
+// scoped to the tier (not the SDS core) so purpose-built fixed-height rules
+// elsewhere keep winning. The core max-height still clamps against the
+// viewport.
+.dialog-height-60-panel {
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    height: 60vh;
+  }
+}
+
+.dialog-height-80-panel {
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    height: 80vh;
+  }
+}
+
 // Width deviations from the four standard sizes. Declared AFTER the size
 // classes so the override wins regardless of class order on the panel element.
 // Template gallery and read-only node info fit 600px.
