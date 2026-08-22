@@ -1,4 +1,13 @@
 .dialog-title {
+  /* Compact palette title bar. The global dialog-header rule in _dialogs.scss
+     consumes these tokens (min-height/padding); redefining them here on the
+     title element wins without a specificity fight: 40px buttons + 2x4px
+     padding lands the bar at ~48px (44px compact) instead of 64px. */
+  --gns3-density-section-header-height: calc(
+    var(--gns3-density-space-1) * 2 + var(--gns3-density-section-header-title-size) * 1.2 + 1px
+  );
+  --gns3-density-section-header-padding: var(--gns3-density-space-1) 16px;
+
   display: flex;
   align-items: center;
   gap: var(--gns3-density-space-4);
@@ -25,6 +34,11 @@
 .dialog-title__actions {
   flex: 0 0 auto;
   gap: var(--gns3-density-space-1);
+}
+
+/* Compact action bar: 16px padding around the 40px buttons (~56px total). */
+[mat-dialog-actions] {
+  --mat-dialog-actions-padding: 8px 16px;
 }
 
 .dialog-title__preferences {
@@ -54,9 +68,15 @@
   --mat-expansion-container-elevation-shadow: none;
   --mat-expansion-container-background-color: transparent;
 
-  margin-top: var(--gns3-density-space-5);
-  padding-top: var(--gns3-density-space-5);
+  margin-top: var(--gns3-density-space-1);
+  padding-top: var(--gns3-density-space-1);
   border-top: 1px solid var(--mat-sys-outline-variant);
+
+  /* Align the header text with the 16px content inset instead of the
+     Material default 24px. */
+  mat-expansion-panel-header {
+    padding: 0 16px;
+  }
 }
 
 /* Quiet separator between the node/compute fields and the position fields. */
@@ -98,7 +118,13 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
   gap: var(--gns3-density-space-2);
-  max-height: calc(var(--gns3-density-form-field-height) * 5);
+  /* Height sized to exactly three card rows (icon + 2-line name + card
+     padding/gap) plus the gallery's own padding and border, so no fourth
+     row peeks over the fold. */
+  max-height: calc(
+    (var(--gns3-density-form-field-height) + 2.5em + var(--gns3-density-space-2) * 3) * 3 +
+      var(--gns3-density-space-2) * 4 + 2px
+  );
   padding: var(--gns3-density-space-2);
   overflow-y: auto;
   border: 1px solid var(--mat-sys-outline-variant);

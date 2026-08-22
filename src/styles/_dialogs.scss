@@ -1837,23 +1837,23 @@ html[data-density='compact'] .node-configurator-dialog-panel {
 // ============================================= */
 
 // Template Dialog - 600px
+// The old explicit width rules never won against the Standard Dialog System
+// (which resolved --gns3-dialog-width to 720px via the legacy group below);
+// set the variable instead so 600px actually applies.
 .template-dialog-panel {
-  --mat-dialog-container-max-width: 600px;
-
-  mat-dialog-container,
-  .mat-mdc-dialog-container {
-    width: 600px;
-    max-width: 600px;
-  }
+  --gns3-dialog-width: 600px;
 }
 
 // Add-nodes dialog: the collapsed "Advanced options" expansion panel lies flat
 // on the dialog surface; body content is inset and given vertical breathing
 // room around the flattened field groups.
 .add-nodes-dialog-panel {
+  .mat-mdc-dialog-content {
+    padding: 12px 16px 0;
+  }
+
   .mat-expansion-panel-body {
-    padding: var(--gns3-density-space-2) var(--gns3-density-space-4)
-      var(--gns3-density-space-4);
+    padding: var(--gns3-density-space-2) var(--gns3-density-space-4) var(--gns3-density-space-1);
   }
 }
 
@@ -2281,8 +2281,7 @@ html[data-density='compact'] .node-configurator-dialog-panel {
     .export-config-action-dialog-panel,
     .import-config-action-dialog-panel,
     .qemu-configurator-dialog-panel,
-    .fault-injection-dialog-panel,
-    .template-dialog-panel
+    .fault-injection-dialog-panel
   ) {
   --gns3-dialog-width: 720px;
 }
