@@ -61,162 +61,93 @@ describe('InfoService', () => {
   });
 
   describe('getInfoAboutNode', () => {
-    describe('Cloud Node', () => {
-      it('should return info for cloud node', () => {
-        const cloudNode = { ...mockNode, node_type: 'cloud' as any, name: 'Cloud1' };
-        const result = service.getInfoAboutNode(cloudNode, mockController);
+    describe('Always-On Node Types', () => {
+      it.each([
+        ['cloud', 'Cloud'],
+        ['nat', 'NAT'],
+        ['ethernet_hub', 'Ethernet hub'],
+        ['ethernet_switch', 'Ethernet switch'],
+        ['frame_relay_switch', 'Frame relay switch'],
+        ['atm_switch', 'ATM switch'],
+        ['dynamips', 'Dynamips router'],
+        ['iou', 'IOU device'],
+      ])('should report %s as always on', (nodeType, label) => {
+        const node = { ...mockNode, node_type: nodeType };
+        const result = service.getInfoAboutNode(node, mockController);
 
-        expect(result).toContain('Cloud Cloud1 is always on.');
+        expect(result.alwaysOn).toBe(true);
+        expect(result.statusLabel).toBe('Always on');
+        expect(result.nodeType).toBe(nodeType);
+        expect(result.nodeTypeLabel).toBe(label);
       });
 
-      it('should include controller info for cloud node', () => {
-        const cloudNode = { ...mockNode, node_type: 'cloud' as any };
-        const result = service.getInfoAboutNode(cloudNode, mockController);
-
-        expect(result).toContain('Running on controller Test Controller with port 3080.');
-        expect(result).toContain('Controller ID: 1');
-      });
-    });
-
-    describe('NAT Node', () => {
-      it('should return info for NAT node', () => {
-        const natNode = { ...mockNode, node_type: 'nat' as any, name: 'NAT1' };
-        const result = service.getInfoAboutNode(natNode, mockController);
-
-        expect(result).toContain('NAT NAT1 is always on.');
-      });
-    });
-
-    describe('Ethernet Hub Node', () => {
-      it('should return info for ethernet hub node', () => {
-        const hubNode = { ...mockNode, node_type: 'ethernet-hub' as any, name: 'Hub1' };
+      it('should recognize ethernet hub with underscore spelling (regression)', () => {
+        // GNS3 API emits 'ethernet_hub'; a legacy hyphen check silently matched nothing.
+        const hubNode = { ...mockNode, node_type: 'ethernet_hub' as any, name: 'Hub1' };
         const result = service.getInfoAboutNode(hubNode, mockController);
 
-        expect(result).toContain('Ethernet hub Hub1 is always on.');
+        expect(result.alwaysOn).toBe(true);
+        expect(result.nodeTypeLabel).toBe('Ethernet hub');
       });
     });
 
-    describe('Ethernet Switch Node', () => {
-      it('should return info for ethernet switch node', () => {
-        const switchNode = { ...mockNode, node_type: 'ethernet_switch' as any, name: 'Switch1' };
-        const result = service.getInfoAboutNode(switchNode, mockController);
+    describe('Status-Bearing Node Types', () => {
+      it.each([
+        ['docker', 'Docker container'],
+        ['virtualbox', 'VirtualBox VM'],
+        ['vmware', 'VMware VM'],
+        ['qemu', 'QEMU VM'],
+        ['vpcs', 'VPCS host'],
+      ])('should report %s status', (nodeType, label) => {
+        const node = { ...mockNode, node_type: nodeType, status: 'started' };
+        const result = service.getInfoAboutNode(node, mockController);
 
-        expect(result).toContain('Ethernet switch Switch1 is always on.');
+        expect(result.alwaysOn).toBe(false);
+        expect(result.status).toBe('started');
+        expect(result.statusLabel).toBe('Started');
+        expect(result.nodeTypeLabel).toBe(label);
       });
-    });
 
-    describe('Frame Relay Switch Node', () => {
-      it('should return info for frame relay switch node', () => {
-        const frNode = { ...mockNode, node_type: 'frame_relay_switch' as any, name: 'FR1' };
-        const result = service.getInfoAboutNode(frNode, mockController);
-
-        expect(result).toContain('Frame relay switch FR1 is always on.');
-      });
-    });
-
-    describe('ATM Switch Node', () => {
-      it('should return info for ATM switch node', () => {
-        const atmNode = { ...mockNode, node_type: 'atm_switch' as any, name: 'ATM1' };
-        const result = service.getInfoAboutNode(atmNode, mockController);
-
-        expect(result).toContain('ATM switch ATM1 is always on.');
-      });
-    });
-
-    describe('Docker Node', () => {
-      it('should return info for Docker node with status', () => {
-        const dockerNode = { ...mockNode, node_type: 'docker' as any, name: 'Docker1', status: 'running' };
+      it('should show stopped status', () => {
+        const dockerNode = { ...mockNode, node_type: 'docker' as any, status: 'stopped' };
         const result = service.getInfoAboutNode(dockerNode, mockController);
 
-        expect(result).toContain('Docker Docker1 is running.');
+        expect(result.statusLabel).toBe('Stopped');
       });
 
-      it('should show different status for Docker node', () => {
-        const dockerNode = { ...mockNode, node_type: 'docker' as any, name: 'Docker2', status: 'stopped' };
-        const result = service.getInfoAboutNode(dockerNode, mockController);
-
-        expect(result).toContain('Docker Docker2 is stopped.');
-      });
-    });
-
-    describe('Dynamips Node', () => {
-      it('should return info for dynamips node', () => {
-        const dynamipsNode = { ...mockNode, node_type: 'dynamips' as any, name: 'Dynamips1' };
-        const result = service.getInfoAboutNode(dynamipsNode, mockController);
-
-        expect(result).toContain('Dynamips Dynamips1 is always on.');
-      });
-    });
-
-    describe('VirtualBox Node', () => {
-      it('should return info for VirtualBox node with status', () => {
-        const vbNode = { ...mockNode, node_type: 'virtualbox' as any, name: 'VB1', status: 'started' };
-        const result = service.getInfoAboutNode(vbNode, mockController);
-
-        expect(result).toContain('VirtualBox VM VB1 is started.');
-      });
-    });
-
-    describe('VMware Node', () => {
-      it('should return info for VMware node with status', () => {
-        const vmwareNode = { ...mockNode, node_type: 'vmware' as any, name: 'VMware1', status: 'running' };
-        const result = service.getInfoAboutNode(vmwareNode, mockController);
-
-        expect(result).toContain('VMware VM VMware1 is running.');
-      });
-    });
-
-    describe('QEMU Node', () => {
-      it('should return info for QEMU node with status', () => {
-        const qemuNode = { ...mockNode, node_type: 'qemu' as any, name: 'QEMU1', status: 'started' };
+      it('should show suspended status', () => {
+        const qemuNode = { ...mockNode, node_type: 'qemu' as any, status: 'suspended' };
         const result = service.getInfoAboutNode(qemuNode, mockController);
 
-        expect(result).toContain('QEMU VM QEMU1 is started.');
+        expect(result.statusLabel).toBe('Suspended');
       });
-    });
 
-    describe('IOU Node', () => {
-      it('should return info for IOU node', () => {
-        const iouNode = { ...mockNode, node_type: 'iou' as any, name: 'IOU1' };
-        const result = service.getInfoAboutNode(iouNode, mockController);
+      it('should fall back to the raw status string for unknown statuses', () => {
+        const vmwareNode = { ...mockNode, node_type: 'vmware' as any, status: 'running' };
+        const result = service.getInfoAboutNode(vmwareNode, mockController);
 
-        expect(result).toContain('IOU IOU1 is always on.');
-      });
-    });
-
-    describe('VPCS Node', () => {
-      it('should return info for VPCS node with status', () => {
-        const vpcsNode = { ...mockNode, node_type: 'vpcs' as any, name: 'VPCS1', status: 'started' };
-        const result = service.getInfoAboutNode(vpcsNode, mockController);
-
-        expect(result).toContain('Node VPCS1 is started.');
+        expect(result.statusLabel).toBe('running');
       });
     });
 
     describe('Controller Information', () => {
-      it('should include controller name and port', () => {
+      it('should include controller id, name and port', () => {
         const result = service.getInfoAboutNode(mockNode, mockController);
 
-        expect(result).toContain('Running on controller Test Controller with port 3080.');
+        expect(result.controller).toEqual({ id: 1, name: 'Test Controller', port: 3080 });
       });
 
       it('should include node ID', () => {
         const result = service.getInfoAboutNode(mockNode, mockController);
 
-        expect(result).toContain('Node ID: test-node-uuid');
+        expect(result.nodeId).toBe('test-node-uuid');
       });
 
-      it('should include controller ID', () => {
-        const result = service.getInfoAboutNode(mockNode, mockController);
-
-        expect(result).toContain('Controller ID: 1');
-      });
-
-      it('should work with different controller ports', () => {
+      it('should work with different controllers', () => {
         const customController = { ...mockController, port: 8080, name: 'Custom Controller' };
         const result = service.getInfoAboutNode(mockNode, customController);
 
-        expect(result).toContain('Running on controller Custom Controller with port 8080.');
+        expect(result.controller).toEqual({ id: 1, name: 'Custom Controller', port: 8080 });
       });
     });
 
@@ -224,48 +155,55 @@ describe('InfoService', () => {
       it('should include console info when console_type is telnet', () => {
         const result = service.getInfoAboutNode(mockNode, mockController);
 
-        expect(result).toContain('Console is on port 5000 and type is telnet.');
+        expect(result.console).toEqual({ port: 5000, type: 'telnet' });
       });
 
       it('should include console info when console_type is other types', () => {
         const nodeWithConsole = { ...mockNode, console_type: 'serial' };
         const result = service.getInfoAboutNode(nodeWithConsole, mockController);
 
-        expect(result).toContain('Console is on port 5000 and type is serial.');
+        expect(result.console).toEqual({ port: 5000, type: 'serial' });
       });
 
       it('should not include console info when console_type is none', () => {
         const nodeWithoutConsole = { ...mockNode, console_type: 'none' };
         const result = service.getInfoAboutNode(nodeWithoutConsole, mockController);
 
-        expect(result).not.toContain('Console is on port');
+        expect(result.console).toBeNull();
       });
 
       it('should not include console info when console_type is null', () => {
         const nodeWithoutConsole = { ...mockNode, console_type: 'null' };
         const result = service.getInfoAboutNode(nodeWithoutConsole, mockController);
 
-        expect(result).not.toContain('Console is on port');
+        expect(result.console).toBeNull();
+      });
+
+      it('should not include console info when console_type is empty', () => {
+        const nodeWithoutConsole = { ...mockNode, console_type: '' };
+        const result = service.getInfoAboutNode(nodeWithoutConsole, mockController);
+
+        expect(result.console).toBeNull();
       });
     });
 
     describe('Ports Information', () => {
-      it('should include all ports in info', () => {
+      it('should map all ports', () => {
         const result = service.getInfoAboutNode(mockNode, mockController);
 
-        expect(result).toContain('Port eth0 is ethernet.');
-        expect(result).toContain('Port eth1 is ethernet.');
-        expect(result).toContain('Port serial0 is serial.');
+        expect(result.ports).toEqual([
+          { name: 'eth0', linkType: 'ethernet' },
+          { name: 'eth1', linkType: 'ethernet' },
+          { name: 'serial0', linkType: 'serial' },
+        ]);
       });
 
       it('should handle empty ports array', () => {
         const nodeWithoutPorts = { ...mockNode, ports: [] };
         const result = service.getInfoAboutNode(nodeWithoutPorts, mockController);
 
-        // Should still have other info but no port info
-        expect(result.length).toBeGreaterThan(0);
-        // Verify controller info is present
-        expect(result.some((item) => item.includes('controller'))).toBe(true);
+        expect(result.ports).toEqual([]);
+        expect(result.nodeId).toBe('test-node-uuid');
       });
 
       it('should handle ports with different link types', () => {
@@ -276,112 +214,32 @@ describe('InfoService', () => {
         const nodeWithCustomPorts = { ...mockNode, ports: customPorts };
         const result = service.getInfoAboutNode(nodeWithCustomPorts, mockController);
 
-        expect(result).toContain('Port gi0/0 is gigabitethernet.');
-        expect(result).toContain('Port fa0/0 is fastethernet.');
+        expect(result.ports).toEqual([
+          { name: 'gi0/0', linkType: 'gigabitethernet' },
+          { name: 'fa0/0', linkType: 'fastethernet' },
+        ]);
       });
-    });
-  });
-
-  describe('getInfoAboutPorts', () => {
-    it('should return formatted port information', () => {
-      const result = service.getInfoAboutPorts(mockPorts);
-
-      expect(result).toContain('Ports:');
-      expect(result).toContain('link_type: ethernet');
-      expect(result).toContain('name: eth0');
-      expect(result).toContain('name: eth1');
-    });
-
-    it('should handle empty ports array', () => {
-      const result = service.getInfoAboutPorts([]);
-
-      // When no ports, it just returns "Ports" without colon and spaces trimmed
-      expect(result).toContain('Ports');
-    });
-
-    it('should handle single port', () => {
-      const singlePort = [mockPorts[0]];
-      const result = service.getInfoAboutPorts(singlePort);
-
-      expect(result).toContain('link_type: ethernet');
-      expect(result).toContain('name: eth0');
-    });
-
-    it('should format multiple ports correctly', () => {
-      const result = service.getInfoAboutPorts(mockPorts);
-
-      expect(result).toContain('ethernet');
-      expect(result).toContain('serial');
-    });
-
-    it('should handle ports with special characters in names', () => {
-      const specialPorts = [
-        { name: 'gi0/0.1', link_type: 'gigabitethernet' } as Port,
-        { name: 'fa0/0.100', link_type: 'fastethernet' } as Port,
-      ];
-      const result = service.getInfoAboutPorts(specialPorts);
-
-      expect(result).toContain('gi0/0.1');
-      expect(result).toContain('fa0/0.100');
     });
   });
 
   describe('getCommandLine', () => {
     describe('Unsupported Node Types', () => {
-      it('should return unsupported message for cloud node', () => {
-        const cloudNode = { ...mockNode, node_type: 'cloud' as any };
-        const result = service.getCommandLine(cloudNode);
+      it.each([
+        'cloud',
+        'nat',
+        'ethernet_hub',
+        'ethernet_switch',
+        'frame_relay_switch',
+        'atm_switch',
+        'dynamips',
+        'iou',
+      ])('should return unsupported info for %s node', (nodeType) => {
+        const node = { ...mockNode, node_type: nodeType, command_line: 'ignored' };
+        const result = service.getCommandLine(node);
 
-        expect(result).toBe('Command line information is not supported for this type of node.');
-      });
-
-      it('should return unsupported message for NAT node', () => {
-        const natNode = { ...mockNode, node_type: 'nat' as any };
-        const result = service.getCommandLine(natNode);
-
-        expect(result).toBe('Command line information is not supported for this type of node.');
-      });
-
-      it('should return unsupported message for ethernet hub node', () => {
-        const hubNode = { ...mockNode, node_type: 'ethernet_hub' as any };
-        const result = service.getCommandLine(hubNode);
-
-        expect(result).toBe('Command line information is not supported for this type of node.');
-      });
-
-      it('should return unsupported message for ethernet switch node', () => {
-        const switchNode = { ...mockNode, node_type: 'ethernet_switch' as any };
-        const result = service.getCommandLine(switchNode);
-
-        expect(result).toBe('Command line information is not supported for this type of node.');
-      });
-
-      it('should return unsupported message for frame relay switch node', () => {
-        const frNode = { ...mockNode, node_type: 'frame_relay_switch' as any };
-        const result = service.getCommandLine(frNode);
-
-        expect(result).toBe('Command line information is not supported for this type of node.');
-      });
-
-      it('should return unsupported message for ATM switch node', () => {
-        const atmNode = { ...mockNode, node_type: 'atm_switch' as any };
-        const result = service.getCommandLine(atmNode);
-
-        expect(result).toBe('Command line information is not supported for this type of node.');
-      });
-
-      it('should return unsupported message for dynamips node', () => {
-        const dynamipsNode = { ...mockNode, node_type: 'dynamips' as any };
-        const result = service.getCommandLine(dynamipsNode);
-
-        expect(result).toBe('Command line information is not supported for this type of node.');
-      });
-
-      it('should return unsupported message for IOU node', () => {
-        const iouNode = { ...mockNode, node_type: 'iou' as any };
-        const result = service.getCommandLine(iouNode);
-
-        expect(result).toBe('Command line information is not supported for this type of node.');
+        expect(result.kind).toBe('unsupported');
+        expect(result.commandLine).toBe('');
+        expect(result.message).toBe('Command line information is not supported for this type of node.');
       });
     });
 
@@ -394,7 +252,9 @@ describe('InfoService', () => {
         };
         const result = service.getCommandLine(dockerNode);
 
-        expect(result).toBe('docker run -it ubuntu');
+        expect(result.kind).toBe('available');
+        expect(result.commandLine).toBe('docker run -it ubuntu');
+        expect(result.message).toBe('');
       });
 
       it('should return start message for Docker node when command line is empty', () => {
@@ -405,51 +265,22 @@ describe('InfoService', () => {
         };
         const result = service.getCommandLine(dockerNode);
 
-        expect(result).toBe('Please start the node in order to get the command line information.');
+        expect(result.kind).toBe('not-running');
+        expect(result.commandLine).toBe('');
+        expect(result.message).toBe('Please start the node in order to get the command line information.');
       });
 
-      it('should return command line for VirtualBox node when available', () => {
-        const vbNode = {
-          ...mockNode,
-          node_type: 'virtualbox' as any,
-          command_line: 'VBoxHeadless --startvm vm1',
-        };
-        const result = service.getCommandLine(vbNode);
+      it.each([
+        ['virtualbox', 'VBoxHeadless --startvm vm1'],
+        ['vmware', 'vmrun -T ws start vm1'],
+        ['qemu', 'qemu-system-x86_64 -m 2048'],
+        ['vpcs', 'vpcs -p 5000'],
+      ])('should return command line for %s node when available', (nodeType, commandLine) => {
+        const node = { ...mockNode, node_type: nodeType, command_line: commandLine };
+        const result = service.getCommandLine(node);
 
-        expect(result).toBe('VBoxHeadless --startvm vm1');
-      });
-
-      it('should return command line for VMware node when available', () => {
-        const vmwareNode = {
-          ...mockNode,
-          node_type: 'vmware' as any,
-          command_line: 'vmrun -T ws start vm1',
-        };
-        const result = service.getCommandLine(vmwareNode);
-
-        expect(result).toBe('vmrun -T ws start vm1');
-      });
-
-      it('should return command line for QEMU node when available', () => {
-        const qemuNode = {
-          ...mockNode,
-          node_type: 'qemu' as any,
-          command_line: 'qemu-system-x86_64 -m 2048',
-        };
-        const result = service.getCommandLine(qemuNode);
-
-        expect(result).toBe('qemu-system-x86_64 -m 2048');
-      });
-
-      it('should return command line for VPCS node when available', () => {
-        const vpcsNode = {
-          ...mockNode,
-          node_type: 'vpcs' as any,
-          command_line: 'vpcs -p 5000',
-        };
-        const result = service.getCommandLine(vpcsNode);
-
-        expect(result).toBe('vpcs -p 5000');
+        expect(result.kind).toBe('available');
+        expect(result.commandLine).toBe(commandLine);
       });
 
       it('should return start message for supported nodes without command line', () => {
@@ -460,7 +291,8 @@ describe('InfoService', () => {
         };
         const result = service.getCommandLine(qemuNode);
 
-        expect(result).toBe('Please start the node in order to get the command line information.');
+        expect(result.kind).toBe('not-running');
+        expect(result.message).toBe('Please start the node in order to get the command line information.');
       });
     });
   });
@@ -470,7 +302,8 @@ describe('InfoService', () => {
       const nodeWithEmptyName = { ...mockNode, name: '' };
       const result = service.getInfoAboutNode(nodeWithEmptyName, mockController);
 
-      expect(result.length).toBeGreaterThan(0);
+      expect(result.nodeId).toBe('test-node-uuid');
+      expect(result.nodeTypeLabel).toBe('QEMU VM');
     });
 
     it('should handle controller with special characters in name', () => {
@@ -480,8 +313,7 @@ describe('InfoService', () => {
       };
       const result = service.getInfoAboutNode(mockNode, controllerWithSpecialName);
 
-      // Check that controller info is in the result
-      expect(result.some((item) => item.includes('Controller (Test) #1'))).toBe(true);
+      expect(result.controller.name).toBe('Controller (Test) #1');
     });
 
     it('should handle node with very long command line', () => {
@@ -492,7 +324,8 @@ describe('InfoService', () => {
       };
       const result = service.getCommandLine(nodeWithLongCmd);
 
-      expect(result).toBe(longCommandLine);
+      expect(result.kind).toBe('available');
+      expect(result.commandLine).toBe(longCommandLine);
     });
 
     it('should handle ports with null or undefined properties gracefully', () => {
@@ -503,9 +336,10 @@ describe('InfoService', () => {
       const nodeWithIssuePorts = { ...mockNode, ports: portsWithIssues } as unknown as Node;
       const result = service.getInfoAboutNode(nodeWithIssuePorts, mockController);
 
-      // Should include port info even with null/undefined link_type
-      expect(result.some((item) => item.includes('Port eth0'))).toBe(true);
-      expect(result.some((item) => item.includes('Port eth1'))).toBe(true);
+      expect(result.ports).toEqual([
+        { name: 'eth0', linkType: '' },
+        { name: 'eth1', linkType: '' },
+      ]);
     });
   });
 });

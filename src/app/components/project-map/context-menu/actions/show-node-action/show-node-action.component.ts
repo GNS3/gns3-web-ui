@@ -5,7 +5,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
-import { InfoDialogComponent } from '../../../info-dialog/info-dialog.component';
+import { InfoDialogComponent, InfoDialogData } from '../../../info-dialog/info-dialog.component';
 
 @Component({
   selector: 'app-show-node-action',
@@ -20,13 +20,10 @@ export class ShowNodeActionComponent {
   readonly controller = input<Controller>(undefined);
 
   showNode() {
-    const dialogRef = this.dialog.open(InfoDialogComponent, {
+    this.dialog.open(InfoDialogComponent, {
       panelClass: ['base-dialog-panel', 'show-node-action-dialog-panel'],
       autoFocus: false,
-      disableClose: false,
+      data: { node: this.node(), controller: this.controller() } satisfies InfoDialogData,
     });
-    let instance = dialogRef.componentInstance;
-    instance.node = this.node();
-    instance.controller = this.controller();
   }
 }

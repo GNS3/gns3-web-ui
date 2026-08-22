@@ -120,15 +120,10 @@ describe('ShowNodeActionComponent', () => {
   let fixture: ComponentFixture<ShowNodeActionComponent>;
   let component: ShowNodeActionComponent;
   let mockDialog: any;
-  let mockDialogRef: any;
-  let mockDialogInstance: any;
 
   beforeEach(async () => {
-    mockDialogInstance = {};
-    mockDialogRef = { close: vi.fn() };
     mockDialog = {
       open: vi.fn().mockReturnValue({
-        componentInstance: mockDialogInstance,
         close: vi.fn(),
       }),
     };
@@ -183,11 +178,11 @@ describe('ShowNodeActionComponent', () => {
       expect(mockDialog.open).toHaveBeenCalledWith(InfoDialogComponent, {
         panelClass: ['base-dialog-panel', 'show-node-action-dialog-panel'],
         autoFocus: false,
-        disableClose: false,
+        data: { node: undefined, controller: undefined },
       });
     });
 
-    it('should pass node and controller to dialog componentInstance', () => {
+    it('should pass node and controller to the dialog via MAT_DIALOG_DATA', () => {
       fixture.detectChanges();
       const mockNode = createMockNode();
       const mockController = createMockController();
@@ -197,17 +192,11 @@ describe('ShowNodeActionComponent', () => {
 
       component.showNode();
 
-      expect(mockDialogInstance.node).toBe(mockNode);
-      expect(mockDialogInstance.controller).toBe(mockController);
-    });
-
-    it('should open dialog with undefined inputs when node and controller not set', () => {
-      fixture.detectChanges();
-
-      component.showNode();
-
-      expect(mockDialogInstance.node).toBeUndefined();
-      expect(mockDialogInstance.controller).toBeUndefined();
+      expect(mockDialog.open).toHaveBeenCalledWith(InfoDialogComponent, {
+        panelClass: ['base-dialog-panel', 'show-node-action-dialog-panel'],
+        autoFocus: false,
+        data: { node: mockNode, controller: mockController },
+      });
     });
 
     it('should open dialog multiple times', () => {

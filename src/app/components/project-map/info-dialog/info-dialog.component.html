@@ -1,28 +1,89 @@
-<h1 mat-dialog-title>
-  {{ node.name }}
-  <button mat-icon-button class="close-btn" (click)="onCloseClick()">
-    <mat-icon>close</mat-icon>
-  </button>
-</h1>
+<h2 mat-dialog-title>{{ data.node.name }}</h2>
 
-<div class="modal-form-container">
+<mat-dialog-content>
   <mat-tab-group animationDuration="0ms">
     <mat-tab label="General information">
-      <div class="textBox">
-        @for (info of infoList; track info) {
-        <div>{{ info }}</div>
+      <div class="info-dialog__tab-body">
+        <div class="detail-row">
+          <span class="detail-row__label">Status</span>
+          <span class="detail-row__value detail-row__value--status">
+            <span class="status-dot" [attr.data-status]="statusKey"></span>
+            {{ info.statusLabel }}
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-row__label">Node type</span>
+          <span class="detail-row__value">{{ info.nodeTypeLabel }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-row__label">Node ID</span>
+          <span class="detail-row__value detail-row__value--mono"
+            ><code>{{ info.nodeId }}</code></span
+          >
+        </div>
+        <div class="detail-row">
+          <span class="detail-row__label">Console</span>
+          <span class="detail-row__value">{{ consoleLabel }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-row__label">Controller</span>
+          <span class="detail-row__value">{{ controllerLabel }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-row__label">Controller ID</span>
+          <span class="detail-row__value detail-row__value--mono"
+            ><code>{{ info.controller.id }}</code></span
+          >
+        </div>
+
+        @if (info.ports.length) {
+        <table class="info-dialog__ports-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Link type</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (port of info.ports; track port.name) {
+            <tr>
+              <td>{{ port.name }}</td>
+              <td>{{ port.linkType || '—' }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
         }
       </div>
     </mat-tab>
+
     <mat-tab label="Usage instructions">
-      <div class="textBox">
-        {{ usage }}
+      <div class="info-dialog__tab-body">
+        @if (usage) {
+        <markdown class="info-dialog__usage" [data]="usage"></markdown>
+        } @else {
+        <p class="info-dialog__empty-note">No usage information has been provided for this node.</p>
+        }
       </div>
     </mat-tab>
+
     <mat-tab label="Command line">
-      <div class="textBox">
-        {{ commandLine }}
+      <div class="info-dialog__tab-body">
+        @if (commandLineInfo.kind === 'available') {
+        <div class="info-dialog__code-header">
+          <button mat-icon-button matTooltip="Copy to clipboard" (click)="copyCommandLine()">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
+        <pre class="info-dialog__code"><code>{{ commandLineInfo.commandLine }}</code></pre>
+        } @else {
+        <p class="info-dialog__empty-note">{{ commandLineInfo.message }}</p>
+        }
       </div>
     </mat-tab>
   </mat-tab-group>
-</div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onClose()">Close</button>
+</mat-dialog-actions>

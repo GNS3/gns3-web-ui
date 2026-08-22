@@ -1,11 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
+import { HttpClientModule } from '@angular/common/http';
+import { MarkdownModule } from 'ngx-markdown';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { InfoDialogComponent } from './info-dialog.component';
-import { InfoService } from '@services/info.service';
+import { InfoService, NodeCommandLineInfo, NodeInfo } from '@services/info.service';
+import { ToasterService } from '@services/toaster.service';
 import { Node, Properties } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -14,6 +18,8 @@ describe('InfoDialogComponent', () => {
   let fixture: ComponentFixture<InfoDialogComponent>;
   let mockDialogRef: any;
   let mockInfoService: any;
+  let mockClipboard: any;
+  let mockToasterService: any;
 
   const createMockProperties = (): Properties => ({
     adapter_type: '',
@@ -125,14 +131,53 @@ describe('InfoDialogComponent', () => {
     return Object.assign({}, defaults, overrides);
   };
 
+  const createMockNodeInfo = (overrides: Partial<NodeInfo> = {}): NodeInfo => ({
+    status: 'started',
+    statusLabel: 'Started',
+    alwaysOn: false,
+    nodeType: 'qemu',
+    nodeTypeLabel: 'QEMU VM',
+    nodeId: 'node-1',
+    console: { port: 5000, type: 'telnet' },
+    controller: { id: 1, name: 'Main Controller', port: 3080 },
+    ports: [
+      { name: 'eth0', linkType: 'ethernet' },
+      { name: 'eth1', linkType: 'ethernet' },
+    ],
+    ...overrides,
+  });
+
+  const createMockCommandLineInfo = (overrides: Partial<NodeCommandLineInfo> = {}): NodeCommandLineInfo => ({
+    kind: 'available',
+    commandLine: 'telnet 127.0.0.1 5000',
+    message: '',
+    ...overrides,
+  });
+
+  const createFixture = (node: Node, controller: Controller): ComponentFixture<InfoDialogComponent> => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: { node, controller } });
+    const f = TestBed.createComponent(InfoDialogComponent);
+    f.detectChanges();
+    return f;
+  };
+
   beforeEach(async () => {
     mockDialogRef = {
       close: vi.fn(),
     };
 
     mockInfoService = {
-      getInfoAboutNode: vi.fn().mockReturnValue(['Info line 1', 'Info line 2']),
-      getCommandLine: vi.fn().mockReturnValue('telnet 127.0.0.1 5000'),
+      getInfoAboutNode: vi.fn().mockReturnValue(createMockNodeInfo()),
+      getCommandLine: vi.fn().mockReturnValue(createMockCommandLineInfo()),
+    };
+
+    mockClipboard = {
+      copy: vi.fn().mockReturnValue(true),
+    };
+
+    mockToasterService = {
+      success: vi.fn(),
+      error: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -140,236 +185,204 @@ describe('InfoDialogComponent', () => {
         MatDialogModule,
         MatButtonModule,
         MatIconModule,
-        MatProgressSpinnerModule,
+        MatTooltipModule,
         MatTabsModule,
+        HttpClientModule,
+        MarkdownModule.forRoot(),
         InfoDialogComponent,
       ],
     })
       .overrideProvider(MatDialogRef, { useValue: mockDialogRef })
       .overrideProvider(InfoService, { useValue: mockInfoService })
+      .overrideProvider(Clipboard, { useValue: mockClipboard })
+      .overrideProvider(ToasterService, { useValue: mockToasterService })
       .compileComponents();
-
-    fixture = TestBed.createComponent(InfoDialogComponent);
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('initialization', () => {
     it('should display node name in dialog title', () => {
-      const mockNode = createMockNode();
-      const mockController = createMockController();
+      fixture = createFixture(createMockNode(), createMockController());
 
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
-
-      const titleEl = fixture.nativeElement.querySelector('h1[mat-dialog-title]');
+      const titleEl = fixture.nativeElement.querySelector('h2[mat-dialog-title]');
       expect(titleEl.textContent).toContain('Test Router');
     });
 
     it('should call infoService.getInfoAboutNode with node and controller', () => {
       const mockNode = createMockNode();
       const mockController = createMockController();
-
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
+      fixture = createFixture(mockNode, mockController);
 
       expect(mockInfoService.getInfoAboutNode).toHaveBeenCalledWith(mockNode, mockController);
     });
 
     it('should call infoService.getCommandLine with node', () => {
       const mockNode = createMockNode();
-      const mockController = createMockController();
-
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
+      fixture = createFixture(mockNode, createMockController());
 
       expect(mockInfoService.getCommandLine).toHaveBeenCalledWith(mockNode);
     });
 
-    it('should populate infoList from infoService', () => {
-      const mockNode = createMockNode();
-      const mockController = createMockController();
+    it('should render structured info rows on the General information tab', () => {
+      fixture = createFixture(createMockNode(), createMockController());
 
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
-
-      const infoTabContent = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active .textBox');
-      expect(infoTabContent.textContent).toContain('Info line 1');
-      expect(infoTabContent.textContent).toContain('Info line 2');
+      const activeBody = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active');
+      const values = Array.from(activeBody.querySelectorAll('.detail-row__value')).map((el: HTMLElement) =>
+        el.textContent.trim()
+      );
+      expect(values.some((text) => text.includes('Started'))).toBe(true);
+      expect(values.some((text) => text.includes('QEMU VM'))).toBe(true);
+      expect(values.some((text) => text.includes('node-1'))).toBe(true);
+      expect(values.some((text) => text.includes('telnet (port 5000)'))).toBe(true);
+      expect(values.some((text) => text.includes('Main Controller (port 3080)'))).toBe(true);
     });
 
-    it('should display usage from node.usage', () => {
-      const mockNode = createMockNode({ usage: 'Router usage info' });
-      const mockController = createMockController();
+    it('should render a status dot keyed by node status', () => {
+      fixture = createFixture(createMockNode(), createMockController());
 
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
+      const statusDot = fixture.nativeElement.querySelector('.status-dot');
+      expect(statusDot.getAttribute('data-status')).toBe('started');
+    });
+
+    it('should render the ports table with name and link type', () => {
+      fixture = createFixture(createMockNode(), createMockController());
+
+      const rows = Array.from(fixture.nativeElement.querySelectorAll('.info-dialog__ports-table tbody tr')) as HTMLElement[];
+      expect(rows.length).toBe(2);
+      expect(rows[0].textContent).toContain('eth0');
+      expect(rows[0].textContent).toContain('ethernet');
+    });
+
+    it('should omit the ports table when the node has no ports', () => {
+      mockInfoService.getInfoAboutNode.mockReturnValue(createMockNodeInfo({ ports: [] }));
+      fixture = createFixture(createMockNode(), createMockController());
+
+      expect(fixture.nativeElement.querySelector('.info-dialog__ports-table')).toBeNull();
+    });
+  });
+
+  describe('Usage instructions tab', () => {
+    it('should render usage markdown', async () => {
+      fixture = createFixture(createMockNode({ usage: '# Router usage info' }), createMockController());
+
+      const tabLabels = fixture.nativeElement.querySelectorAll('.mat-mdc-tab');
+      tabLabels[1].click();
+      fixture.detectChanges();
+      // ngx-markdown's render() awaits parse() before inserting the compiled HTML.
+      // The global setup installs fake timers, so flush them explicitly.
+      await vi.runAllTimersAsync();
       fixture.detectChanges();
 
-      // Click on Usage instructions tab
+      const usageEl = fixture.nativeElement.querySelector('markdown.info-dialog__usage');
+      expect(usageEl).toBeTruthy();
+      expect(usageEl.textContent).toContain('Router usage info');
+    });
+
+    it('should display default message when node has no usage', () => {
+      fixture = createFixture(createMockNode({ usage: '' }), createMockController());
+
       const tabLabels = fixture.nativeElement.querySelectorAll('.mat-mdc-tab');
       tabLabels[1].click();
       fixture.detectChanges();
 
-      const activeTabContent = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active .textBox');
-      expect(activeTabContent.textContent).toContain('Router usage info');
+      const activeBody = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active');
+      expect(activeBody.textContent).toContain('No usage information has been provided for this node.');
+      expect(activeBody.querySelector('markdown')).toBeNull();
     });
+  });
 
-    it('should display commandLine from infoService', () => {
-      const mockNode = createMockNode();
-      const mockController = createMockController();
+  describe('Command line tab', () => {
+    it('should render the command line in a code block with a copy button', () => {
+      fixture = createFixture(createMockNode(), createMockController());
 
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
-
-      // Click on Command line tab
       const tabLabels = fixture.nativeElement.querySelectorAll('.mat-mdc-tab');
       tabLabels[2].click();
       fixture.detectChanges();
 
-      const activeTabContent = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active .textBox');
-      expect(activeTabContent.textContent).toContain('telnet 127.0.0.1 5000');
+      const codeBlock = fixture.nativeElement.querySelector('.info-dialog__code');
+      expect(codeBlock.textContent).toContain('telnet 127.0.0.1 5000');
+      expect(fixture.nativeElement.querySelector('.info-dialog__code-header button')).toBeTruthy();
     });
-  });
 
-  describe('when node has no usage', () => {
-    it('should display default usage message', () => {
-      const mockNode = createMockNode({ usage: '' });
-      const mockController = createMockController();
+    it('should copy the command line and show a success toast', () => {
+      fixture = createFixture(createMockNode(), createMockController());
 
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
-
-      // Click on Usage instructions tab
       const tabLabels = fixture.nativeElement.querySelectorAll('.mat-mdc-tab');
-      tabLabels[1].click();
+      tabLabels[2].click();
       fixture.detectChanges();
 
-      const activeTabContent = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active .textBox');
-      expect(activeTabContent.textContent).toContain('No usage information has been provided for this node.');
+      const copyButton = fixture.nativeElement.querySelector('.info-dialog__code-header button');
+      copyButton.click();
+
+      expect(mockClipboard.copy).toHaveBeenCalledWith('telnet 127.0.0.1 5000');
+      expect(mockToasterService.success).toHaveBeenCalledWith('Command line copied to clipboard');
+    });
+
+    it('should show an error toast when copying fails', () => {
+      mockClipboard.copy.mockReturnValue(false);
+      fixture = createFixture(createMockNode(), createMockController());
+
+      const tabLabels = fixture.nativeElement.querySelectorAll('.mat-mdc-tab');
+      tabLabels[2].click();
+      fixture.detectChanges();
+
+      const copyButton = fixture.nativeElement.querySelector('.info-dialog__code-header button');
+      copyButton.click();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to copy to clipboard');
+    });
+
+    it('should show the unsupported message without a copy button for unsupported node types', () => {
+      mockInfoService.getCommandLine.mockReturnValue(
+        createMockCommandLineInfo({
+          kind: 'unsupported',
+          commandLine: '',
+          message: 'Command line information is not supported for this type of node.',
+        })
+      );
+      fixture = createFixture(createMockNode(), createMockController());
+
+      const tabLabels = fixture.nativeElement.querySelectorAll('.mat-mdc-tab');
+      tabLabels[2].click();
+      fixture.detectChanges();
+
+      const activeBody = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active');
+      expect(activeBody.textContent).toContain('Command line information is not supported');
+      expect(fixture.nativeElement.querySelector('.info-dialog__code-header button')).toBeNull();
+    });
+
+    it('should show the start-node message when the command line is unavailable', () => {
+      mockInfoService.getCommandLine.mockReturnValue(
+        createMockCommandLineInfo({
+          kind: 'not-running',
+          commandLine: '',
+          message: 'Please start the node in order to get the command line information.',
+        })
+      );
+      fixture = createFixture(createMockNode(), createMockController());
+
+      const tabLabels = fixture.nativeElement.querySelectorAll('.mat-mdc-tab');
+      tabLabels[2].click();
+      fixture.detectChanges();
+
+      const activeBody = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active');
+      expect(activeBody.textContent).toContain('Please start the node');
     });
   });
 
-  describe('onCloseClick', () => {
-    it('should close the dialog', () => {
-      const mockNode = createMockNode();
-      const mockController = createMockController();
+  describe('onClose', () => {
+    it('should close the dialog from the footer Close button', () => {
+      fixture = createFixture(createMockNode(), createMockController());
 
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
-
-      const closeButton = fixture.nativeElement.querySelector('.close-btn');
+      const closeButton = fixture.nativeElement.querySelector('mat-dialog-actions button');
       closeButton.click();
 
       expect(mockDialogRef.close).toHaveBeenCalled();
-    });
-  });
-
-  describe('dynamips node type', () => {
-    it('should show dynamips-specific info', () => {
-      const mockNode = createMockNode({ node_type: 'dynamips', name: 'R1' });
-      const mockController = createMockController();
-      mockInfoService.getInfoAboutNode.mockReturnValue([
-        `Dynamips R1 is always on.`,
-        `Running on controller Main Controller with port 3080.`,
-        `Controller ID is 1.`,
-      ]);
-
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
-
-      const infoTabContent = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active .textBox');
-      expect(infoTabContent.textContent).toContain('Dynamips R1 is always on.');
-    });
-  });
-
-  describe('vpcs node type', () => {
-    it('should show vpcs-specific status info', () => {
-      const mockNode = createMockNode({
-        node_type: 'vpcs',
-        name: 'PC1',
-        status: 'started',
-      });
-      const mockController = createMockController();
-      mockInfoService.getInfoAboutNode.mockReturnValue([`Node PC1 is started.`]);
-
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
-
-      const infoTabContent = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active .textBox');
-      expect(infoTabContent.textContent).toContain('Node PC1 is started.');
-    });
-  });
-
-  describe('qemu node type', () => {
-    it('should show qemu-specific info with status', () => {
-      const mockNode = createMockNode({
-        node_type: 'qemu',
-        name: 'Ubuntu VM',
-        status: 'running',
-      });
-      const mockController = createMockController();
-      mockInfoService.getInfoAboutNode.mockReturnValue([`QEMU VM Ubuntu VM is running.`]);
-
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
-
-      const infoTabContent = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active .textBox');
-      expect(infoTabContent.textContent).toContain('QEMU VM Ubuntu VM is running.');
-    });
-  });
-
-  describe('command line tab', () => {
-    it('should show command line not supported message for dynamips', () => {
-      const mockNode = createMockNode({ node_type: 'dynamips' });
-      const mockController = createMockController();
-      mockInfoService.getCommandLine.mockReturnValue(
-        'Command line information is not supported for this type of node.'
-      );
-
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
-
-      // Click on Command line tab
-      const tabLabels = fixture.nativeElement.querySelectorAll('.mat-mdc-tab');
-      tabLabels[2].click();
-      fixture.detectChanges();
-
-      const activeTabContent = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active .textBox');
-      expect(activeTabContent.textContent).toContain('Command line information is not supported');
-    });
-
-    it('should show command line not supported message when command_line is unavailable', () => {
-      const mockNode = createMockNode({ node_type: 'vpcs' });
-      const mockController = createMockController();
-      mockInfoService.getCommandLine.mockReturnValue(
-        'Please start the node in order to get the command line information.'
-      );
-
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
-
-      // Click on Command line tab
-      const tabLabels = fixture.nativeElement.querySelectorAll('.mat-mdc-tab');
-      tabLabels[2].click();
-      fixture.detectChanges();
-
-      const activeTabContent = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active .textBox');
-      expect(activeTabContent.textContent).toContain('Please start the node');
     });
   });
 });

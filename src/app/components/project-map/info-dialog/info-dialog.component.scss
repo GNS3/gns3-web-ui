@@ -3,31 +3,116 @@
  * Using MD3 CSS variables
  */
 
-[mat-dialog-title] {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: var(--mat-sys-on-primary-container);
+.info-dialog__tab-body {
+  padding: 16px 0 8px;
 }
 
-.close-btn {
-  margin-left: auto;
-}
+.detail-row {
+  margin-bottom: 16px;
 
-.modal-form-container {
-  padding: 16px;
-  height: 300px;
-  display: flex;
-  flex-direction: column;
-  color: var(--mat-sys-on-surface-variant);
+  &__label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+  }
 
-  mat-tab-group {
-    flex: 1;
-    overflow: auto;
+  &__value {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface);
+
+    &--status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    &--mono code {
+      padding: 4px 8px;
+      background: var(--mat-sys-surface-container-highest);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      word-break: break-all;
+      user-select: all;
+    }
   }
 }
 
-.textBox {
+.status-dot {
+  display: inline-block;
+  flex: 0 0 12px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--mat-sys-outline);
+
+  &[data-status='started'] {
+    background: var(--custom-mat-sys-success);
+  }
+
+  &[data-status='stopped'] {
+    background: var(--mat-sys-error);
+  }
+
+  &[data-status='suspended'] {
+    background: var(--mat-sys-secondary);
+  }
+
+  &[data-status='always-on'] {
+    background: var(--mat-sys-primary);
+  }
+}
+
+.info-dialog__ports-table {
+  width: 100%;
   margin-top: 8px;
+  border-collapse: collapse;
+
+  th {
+    padding: 6px 16px 6px 0;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    text-align: left;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  td {
+    padding: 6px 16px 6px 0;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    font-size: 13px;
+    color: var(--mat-sys-on-surface);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.info-dialog__code-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.info-dialog__code {
+  display: block;
+  margin: 0;
+  padding: 16px;
+  background: var(--mat-sys-surface-container-highest);
+  color: var(--mat-sys-on-surface);
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+}
+
+.info-dialog__empty-note {
+  margin: 16px 0 8px;
+  font-size: 14px;
   color: var(--mat-sys-on-surface-variant);
 }

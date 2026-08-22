@@ -1,80 +1,112 @@
 import { Injectable } from '@angular/core';
 import { Node } from '../cartography/models/node';
-import { Port } from '@models/port';
 import { Controller } from '@models/controller';
+
+/** Node types that have no start/stop lifecycle. Underscore spelling per GNS3 API. */
+const ALWAYS_ON_NODE_TYPES = new Set<string>([
+  'cloud',
+  'nat',
+  'ethernet_hub',
+  'ethernet_switch',
+  'frame_relay_switch',
+  'atm_switch',
+  'dynamips',
+  'iou',
+]);
+
+const NODE_TYPE_LABELS: Record<string, string> = {
+  cloud: 'Cloud',
+  nat: 'NAT',
+  ethernet_hub: 'Ethernet hub',
+  ethernet_switch: 'Ethernet switch',
+  frame_relay_switch: 'Frame relay switch',
+  atm_switch: 'ATM switch',
+  docker: 'Docker container',
+  dynamips: 'Dynamips router',
+  iou: 'IOU device',
+  qemu: 'QEMU VM',
+  virtualbox: 'VirtualBox VM',
+  vmware: 'VMware VM',
+  vpcs: 'VPCS host',
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  started: 'Started',
+  stopped: 'Stopped',
+  suspended: 'Suspended',
+};
+
+export interface NodeInfoConsole {
+  port: number;
+  type: string;
+}
+
+export interface NodeInfoController {
+  id: number | string;
+  name: string;
+  port: number;
+}
+
+export interface NodeInfoPort {
+  name: string;
+  linkType: string;
+}
+
+export interface NodeInfo {
+  status: string;
+  statusLabel: string;
+  alwaysOn: boolean;
+  nodeType: string;
+  nodeTypeLabel: string;
+  nodeId: string;
+  console: NodeInfoConsole | null;
+  controller: NodeInfoController;
+  ports: NodeInfoPort[];
+}
+
+export type NodeCommandLineKind = 'available' | 'unsupported' | 'not-running';
+
+export interface NodeCommandLineInfo {
+  kind: NodeCommandLineKind;
+  commandLine: string;
+  message: string;
+}
 
 @Injectable()
 export class InfoService {
-  getInfoAboutNode(node: Node, controller: Controller): string[] {
-    let infoList: string[] = [];
-    if (node.node_type === 'cloud') {
-      infoList.push(`Cloud ${node.name} is always on.`);
-    } else if (node.node_type === 'nat') {
-      infoList.push(`NAT ${node.name} is always on.`);
-    } else if (node.node_type === 'ethernet-hub') {
-      infoList.push(`Ethernet hub ${node.name} is always on.`);
-    } else if (node.node_type === 'ethernet_switch') {
-      infoList.push(`Ethernet switch ${node.name} is always on.`);
-    } else if (node.node_type === 'frame_relay_switch') {
-      infoList.push(`Frame relay switch ${node.name} is always on.`);
-    } else if (node.node_type === 'atm_switch') {
-      infoList.push(`ATM switch ${node.name} is always on.`);
-    } else if (node.node_type === 'docker') {
-      infoList.push(`Docker ${node.name} is ${node.status}.`);
-    } else if (node.node_type === 'dynamips') {
-      infoList.push(`Dynamips ${node.name} is always on.`);
-    } else if (node.node_type === 'virtualbox') {
-      infoList.push(`VirtualBox VM ${node.name} is ${node.status}.`);
-    } else if (node.node_type === 'vmware') {
-      infoList.push(`VMware VM ${node.name} is ${node.status}.`);
-    } else if (node.node_type === 'qemu') {
-      infoList.push(`QEMU VM ${node.name} is ${node.status}.`);
-    } else if (node.node_type === 'iou') {
-      infoList.push(`IOU ${node.name} is always on.`);
-    } else if (node.node_type === 'vpcs') {
-      infoList.push(`Node ${node.name} is ${node.status}.`);
-    }
-    infoList.push(`Node ID: ${node.node_id}`);
-    infoList.push(`Running on controller ${controller.name} with port ${controller.port}.`);
-    infoList.push(`Controller ID: ${controller.id}`);
-    if (node.console_type !== 'none' && node.console_type !== 'null') {
-      infoList.push(`Console is on port ${node.console} and type is ${node.console_type}.`);
-    }
-    node.ports.forEach((port) => {
-      infoList.push(`Port ${port.name} is ${port.link_type}.`);
-    });
-    //infoList = infoList.concat(this.getInfoAboutPorts(node.ports));
-    return infoList;
+  getInfoAboutNode(node: Node, controller: Controller): NodeInfo {
+    const alwaysOn = ALWAYS_ON_NODE_TYPES.has(node.node_type);
+    return {
+      status: node.status,
+      statusLabel: alwaysOn ? 'Always on' : STATUS_LABELS[node.status] ?? node.status,
+      alwaysOn,
+      nodeType: node.node_type,
+      nodeTypeLabel: NODE_TYPE_LABELS[node.node_type] ?? node.node_type,
+      nodeId: node.node_id,
+      console:
+        node.console_type && node.console_type !== 'none' && node.console_type !== 'null'
+          ? { port: node.console, type: node.console_type }
+          : null,
+      controller: { id: controller.id, name: controller.name, port: controller.port },
+      ports: node.ports.map((port) => ({ name: port.name, linkType: port.link_type ?? '' })),
+    };
   }
 
-  getInfoAboutPorts(ports: Port[]): string {
-    let response: string = `Ports: `;
-    ports.forEach((port) => {
-      response += `link_type: ${port.link_type},\n
-                        name: ${port.name}; `;
-    });
-    response = response.substring(0, response.length - 2);
-    return response;
-  }
-
-  getCommandLine(node: Node): string {
-    if (
-      node.node_type === 'cloud' ||
-      node.node_type === 'nat' ||
-      node.node_type === 'ethernet_hub' ||
-      node.node_type === 'ethernet_switch' ||
-      node.node_type === 'frame_relay_switch' ||
-      node.node_type === 'atm_switch' ||
-      node.node_type === 'dynamips' ||
-      node.node_type === 'iou'
-    ) {
-      return 'Command line information is not supported for this type of node.';
-    } else {
-      if (node.command_line) {
-        return node.command_line;
-      } else {
-        return 'Please start the node in order to get the command line information.';
-      }
+  getCommandLine(node: Node): NodeCommandLineInfo {
+    if (ALWAYS_ON_NODE_TYPES.has(node.node_type)) {
+      return {
+        kind: 'unsupported',
+        commandLine: '',
+        message: 'Command line information is not supported for this type of node.',
+      };
     }
+    if (node.command_line) {
+      return { kind: 'available', commandLine: node.command_line, message: '' };
+    }
+    return {
+      kind: 'not-running',
+      commandLine: '',
+      message: 'Please start the node in order to get the command line information.',
+    };
   }
 }

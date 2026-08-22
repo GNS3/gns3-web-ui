@@ -198,10 +198,134 @@ app-chat-message-list {
         border-color: var(--mat-sys-primary);
 
         &::after {
-          background: linear-gradient(transparent, color-mix(in srgb, var(--mat-sys-primary) 20%, var(--mat-sys-surface-container-highest)));
+          background: linear-gradient(
+            transparent,
+            color-mix(in srgb, var(--mat-sys-primary) 20%, var(--mat-sys-surface-container-highest))
+          );
           color: var(--mat-sys-on-primary-container);
         }
       }
+    }
+  }
+}
+
+/* =============================================
+// Node Info Dialog Markdown Styles
+// (Usage instructions tab)
+// ============================================= */
+markdown.info-dialog__usage {
+  display: block;
+  line-height: 1.6;
+  word-wrap: break-word;
+  font-size: 14px;
+  color: var(--mat-sys-on-surface);
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--mat-sys-on-surface);
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: 16px;
+    margin: 12px 0 8px;
+  }
+
+  h2 {
+    font-size: 15px;
+    margin: 10px 0 6px;
+  }
+
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: 14px;
+    margin: 8px 0 4px;
+  }
+
+  p {
+    margin: 8px 0;
+  }
+
+  a {
+    color: var(--mat-sys-primary);
+    text-decoration: underline;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  ul,
+  ol {
+    padding-left: 24px;
+    margin: 4px 0;
+  }
+
+  li {
+    margin: 4px 0;
+  }
+
+  blockquote {
+    border-left: 3px solid var(--mat-sys-outline);
+    padding-left: 12px;
+    margin: 8px 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  table {
+    border-collapse: collapse;
+    margin: 8px 0;
+
+    th,
+    td {
+      border: 1px solid var(--mat-sys-outline);
+      padding: 6px 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--mat-sys-surface-container);
+      color: var(--mat-sys-on-surface);
+    }
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--mat-sys-outline);
+    margin: 12px 0;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  code {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 15%, transparent);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+  }
+
+  pre {
+    background-color: color-mix(in srgb, var(--mat-sys-surface-container-high) 80%, transparent);
+    padding: 12px;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 8px 0;
+    border: 1px solid var(--mat-sys-outline-variant);
+
+    code {
+      background-color: transparent;
+      padding: 0;
+      font-size: 13px;
     }
   }
 }
