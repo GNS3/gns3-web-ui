@@ -10,6 +10,7 @@ import {
   Output,
   inject,
   model,
+  signal,
 } from '@angular/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
@@ -28,6 +29,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -53,6 +55,10 @@ export interface TemplateDragStartRequest {
   computeId?: string;
 }
 
+type TemplateViewMode = 'grid' | 'list';
+
+const VIEW_MODE_STORAGE_KEY = 'addNodesViewMode';
+
 @Component({
   standalone: true,
   selector: 'app-template-list-dialog',
@@ -70,6 +76,7 @@ export interface TemplateDragStartRequest {
     MatSelectModule,
     MatIconModule,
     MatExpansionModule,
+    MatTooltipModule,
     DragDropModule,
   ],
 })
@@ -110,6 +117,15 @@ export class TemplateListDialogComponent implements OnInit {
   selectedType = model('all');
   selectedTemplate = model<Template | null>(null);
   selectedComputeId = model('local');
+
+  /** Template gallery layout, persisted across dialog openings. */
+  readonly viewMode = signal<TemplateViewMode>(localStorage.getItem(VIEW_MODE_STORAGE_KEY) === 'list' ? 'list' : 'grid');
+
+  toggleViewMode(): void {
+    const next: TemplateViewMode = this.viewMode() === 'grid' ? 'list' : 'grid';
+    this.viewMode.set(next);
+    localStorage.setItem(VIEW_MODE_STORAGE_KEY, next);
+  }
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: TemplateListDialogData) {
     this.controller = data.controller;

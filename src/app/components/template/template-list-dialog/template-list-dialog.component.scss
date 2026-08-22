@@ -93,6 +93,13 @@
   border-top: 1px solid var(--mat-sys-outline-variant);
 }
 
+.dialog-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gns3-density-space-2);
+}
+
 .dialog-section__title {
   margin: 0;
   color: var(--mat-sys-on-surface);
@@ -224,6 +231,63 @@
   height: 18px;
   color: var(--mat-sys-primary);
   font-size: 18px;
+}
+
+/* List view: one full-width row per template (symbol + full name + type).
+   Follows the app's list idiom (topology summary rows): uniform row height
+   with hairline separators instead of gaps, rows spanning the full box. */
+.template-gallery--list {
+  grid-template-columns: 1fr;
+  align-content: start;
+  gap: 0;
+  padding: 0;
+
+  .template-gallery__empty {
+    margin: var(--gns3-density-space-3);
+  }
+}
+
+.template-card--list {
+  grid-template-rows: none;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  min-height: var(--gns3-density-form-field-height);
+  align-content: stretch;
+  align-items: center;
+  justify-items: start;
+  gap: var(--gns3-density-space-3);
+  padding-inline: var(--gns3-density-space-3) calc(var(--gns3-density-space-3) + 24px);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .template-card__image-wrap {
+    width: 28px;
+    height: 28px;
+  }
+
+  .template-card__name {
+    min-height: 0;
+    text-align: left;
+    -webkit-line-clamp: 1;
+  }
+
+  .template-card__type {
+    justify-self: end;
+    color: var(--mat-sys-on-surface-variant);
+    font: var(--mat-sys-label-small);
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+
+  /* The corner-anchored check suits tall grid cards; center it vertically
+     so it lines up with the row content. */
+  .template-card__selected-icon {
+    top: 50%;
+    right: var(--gns3-density-space-3);
+    transform: translateY(-50%);
+  }
 }
 
 .template-gallery__empty {

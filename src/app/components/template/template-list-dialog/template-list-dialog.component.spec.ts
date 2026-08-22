@@ -333,6 +333,58 @@ describe('TemplateListDialogComponent', () => {
     });
   });
 
+  describe('view mode', () => {
+    // The view mode is read in the field initializer, so tests that verify
+    // restoration need a fresh component built after localStorage is set up.
+    const createFreshComponent = () => {
+      if (fixture) fixture.destroy();
+      fixture = TestBed.createComponent(TemplateListDialogComponent);
+      component = fixture.componentInstance;
+    };
+
+    afterEach(() => {
+      localStorage.removeItem('addNodesViewMode');
+    });
+
+    it('should default to grid view when no preference is stored', () => {
+      localStorage.removeItem('addNodesViewMode');
+      createFreshComponent();
+
+      expect(component.viewMode()).toBe('grid');
+    });
+
+    it('should restore list view from the stored preference', () => {
+      localStorage.setItem('addNodesViewMode', 'list');
+      createFreshComponent();
+
+      expect(component.viewMode()).toBe('list');
+    });
+
+    it('should fall back to grid view for unknown stored values', () => {
+      localStorage.setItem('addNodesViewMode', 'bogus');
+      createFreshComponent();
+
+      expect(component.viewMode()).toBe('grid');
+    });
+
+    it('should toggle grid to list and persist the choice', () => {
+      expect(component.viewMode()).toBe('grid');
+
+      component.toggleViewMode();
+
+      expect(component.viewMode()).toBe('list');
+      expect(localStorage.getItem('addNodesViewMode')).toBe('list');
+    });
+
+    it('should toggle list back to grid', () => {
+      component.toggleViewMode();
+      component.toggleViewMode();
+
+      expect(component.viewMode()).toBe('grid');
+      expect(localStorage.getItem('addNodesViewMode')).toBe('grid');
+    });
+  });
+
   describe('exported types', () => {
     it('should export NodeAddedEvent interface', () => {
       const event: NodeAddedEvent = {
