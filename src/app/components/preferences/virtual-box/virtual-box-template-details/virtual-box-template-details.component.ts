@@ -164,13 +164,21 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
 
   toggleSection(section: string) {
     switch (section) {
-      case 'general': this.generalSettingsExpanded = !this.generalSettingsExpanded; break;
-      case 'network': this.networkExpanded = !this.networkExpanded; break;
-      case 'usage': this.usageExpanded = !this.usageExpanded; break;
+      case 'general':
+        this.generalSettingsExpanded = !this.generalSettingsExpanded;
+        break;
+      case 'network':
+        this.networkExpanded = !this.networkExpanded;
+        break;
+      case 'usage':
+        this.usageExpanded = !this.usageExpanded;
+        break;
     }
   }
 
-  selectSection(section: string): void { this.activeSection = section; }
+  selectSection(section: string): void {
+    this.activeSection = section;
+  }
 
   openCustomAdaptersDialog() {
     // Generate complete adapter list for display
@@ -215,7 +223,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     }
 
     const dialogRef = this.dialog.open(CustomAdaptersComponent, {
-      panelClass: 'custom-adapters-dialog-panel',
+      panelClass: ['custom-adapters-dialog-panel', 'dialog-extra-large-panel'],
       data: {
         adapters: adaptersForDialog,
         networkTypes: this.networkTypes,

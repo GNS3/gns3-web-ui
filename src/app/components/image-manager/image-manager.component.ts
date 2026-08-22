@@ -278,7 +278,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   deleteFile(path: string): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Delete image?',
@@ -384,7 +384,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   installAllImages(): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-neutral-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-neutral-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Install all images?',
@@ -414,7 +414,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   pruneImages(): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Prune unused images?',
@@ -448,7 +448,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   addImageDialog(): void {
     const dialogRef = this.dialog.open(AddImageDialogComponent, {
-      panelClass: ['base-dialog-panel', 'add-image-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'add-image-dialog-panel', 'dialog-small-panel'],
       autoFocus: false,
       data: this.controller,
     });
@@ -462,7 +462,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   deleteAllFiles(): void {
     const images = this.getSelectedRows();
     const confirmationRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Delete selected images?',
@@ -484,7 +484,12 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   private openImageDeletionProgress(images: ImageTableRow[]): void {
     const dialogRef = this.dialog.open(DeleteAllImageFilesDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'delete-all-images-dialog-panel'],
+      panelClass: [
+        'base-confirmation-dialog-panel',
+        'confirmation-danger-panel',
+        'delete-all-images-dialog-panel',
+        'dialog-small-panel',
+      ],
       autoFocus: false,
       disableClose: true,
       data: {

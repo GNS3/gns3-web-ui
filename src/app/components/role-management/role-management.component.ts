@@ -178,11 +178,13 @@ export class RoleManagementComponent implements OnInit, AfterViewInit {
   onDelete(rolesToDelete: Role[]) {
     this.dialog
       .open(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
           title: rolesToDelete.length === 1 ? 'Delete role?' : 'Delete roles?',
-          message: `${rolesToDelete.length} selected ${rolesToDelete.length === 1 ? 'role' : 'roles'} will be permanently deleted.`,
+          message: `${rolesToDelete.length} selected ${
+            rolesToDelete.length === 1 ? 'role' : 'roles'
+          } will be permanently deleted.`,
           details: rolesToDelete.map((role) => role.name),
           note: 'This action cannot be undone.',
           confirmButtonText: rolesToDelete.length === 1 ? 'Delete role' : 'Delete roles',

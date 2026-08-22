@@ -1,4 +1,13 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject, signal, computed } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  OnInit,
+  model,
+  inject,
+  signal,
+  computed,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -204,7 +213,9 @@ export class DockerTemplateDetailsComponent implements OnInit {
     this.applianceMetadata.set(setApplianceCredential(this.applianceMetadata(), field, value));
   }
 
-  selectSection(section: string): void { this.activeSection = section; }
+  selectSection(section: string): void {
+    this.activeSection = section;
+  }
 
   onSave() {
     // Validate name (required)
@@ -368,7 +379,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
     }
     const dialogConfig = this.dialogConfig.openConfig('base', {
       autoFocus: false,
-      panelClass: ['base-dialog-panel', 'docker-configurator-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'docker-configurator-dialog-panel', 'dialog-extra-large-panel'],
       disableClose: true,
       data: {},
     });

@@ -132,7 +132,7 @@ describe('EditConfigActionComponent', () => {
       expect(mockDialog.open).toHaveBeenCalledWith(
         ConfigEditorDialogComponent,
         expect.objectContaining({
-          panelClass: ['base-dialog-panel', 'edit-config-action-dialog-panel'],
+          panelClass: ['base-dialog-panel', 'edit-config-action-dialog-panel', 'dialog-medium-panel'],
           autoFocus: false,
           disableClose: false,
         })
@@ -151,7 +151,7 @@ describe('EditConfigActionComponent', () => {
       expect(mockDialog.open).toHaveBeenCalledWith(
         ConfigEditorDialogComponent,
         expect.objectContaining({
-          panelClass: ['base-dialog-panel', 'edit-config-action-dialog-panel'],
+          panelClass: ['base-dialog-panel', 'edit-config-action-dialog-panel', 'dialog-medium-panel'],
           autoFocus: false,
           disableClose: false,
         })

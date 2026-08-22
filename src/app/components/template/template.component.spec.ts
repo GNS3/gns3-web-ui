@@ -444,7 +444,7 @@ describe('TemplateComponent', () => {
           hasBackdrop: false,
           restoreFocus: false,
           position: { top: '56px' },
-          panelClass: ['base-dialog-panel', 'template-dialog-panel', 'add-nodes-dialog-panel'],
+          panelClass: ['base-dialog-panel', 'template-dialog-panel', 'add-nodes-dialog-panel', 'dialog-small-panel'],
         })
       );
     });

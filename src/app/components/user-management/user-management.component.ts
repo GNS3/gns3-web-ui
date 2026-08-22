@@ -239,7 +239,7 @@ export class UserManagementComponent implements OnInit {
 
   addUser(): void {
     const dialogRef = this.dialog.open(AddUserDialogComponent, {
-      panelClass: ['base-dialog-panel', 'add-user-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'add-user-dialog-panel', 'dialog-medium-panel'],
       autoFocus: false,
       disableClose: true,
     });
@@ -257,7 +257,7 @@ export class UserManagementComponent implements OnInit {
         const data: UserDetailDialogData = { user: userData, controller: this.controller };
         this.dialog
           .open(UserDetailDialogComponent, {
-            panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+            panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-large-panel'],
             data,
             disableClose: false,
           })
@@ -274,7 +274,7 @@ export class UserManagementComponent implements OnInit {
   openAiProfileDialog(user: User): void {
     const data: AiProfileDialogData = { user, controller: this.controller };
     this.dialog.open(AiProfileDialogComponent, {
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-large-panel'],
       data,
       disableClose: false,
     });
@@ -283,7 +283,7 @@ export class UserManagementComponent implements OnInit {
   onDelete(user: User): void {
     this.dialog
       .open(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
           title: 'Delete user?',
@@ -318,12 +318,12 @@ export class UserManagementComponent implements OnInit {
     const users = [...this.selection.selected];
     this.dialog
       .open(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
           title: 'Delete users?',
           message: `${users.length} selected users will be permanently deleted.`,
-          details: users.map((user) => user.full_name ? `${user.username} (${user.full_name})` : user.username),
+          details: users.map((user) => (user.full_name ? `${user.username} (${user.full_name})` : user.username)),
           note: 'This action cannot be undone.',
           confirmButtonText: 'Delete users',
           tone: 'danger',

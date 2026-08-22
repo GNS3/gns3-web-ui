@@ -39,7 +39,7 @@ export class ExportConfigActionComponent {
       });
     } else {
       const dialogRef = this.dialog.open(ConfigDialogComponent, {
-        panelClass: ['base-dialog-panel', 'export-config-action-dialog-panel'],
+        panelClass: ['base-dialog-panel', 'export-config-action-dialog-panel', 'dialog-medium-panel'],
         autoFocus: false,
         disableClose: false,
       });

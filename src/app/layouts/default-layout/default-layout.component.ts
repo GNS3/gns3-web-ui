@@ -170,7 +170,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   openLoggedUserDialog() {
     this.dialog.open(LoggedUserComponent, {
-      panelClass: ['base-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-small-panel'],
       autoFocus: false,
       data: { controllerId: +this.controllerId },
     });
@@ -179,7 +179,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   openApiKeyManagementDialog() {
     this.controllerService.get(+this.controllerId).then((controller: Controller) => {
       this.dialog.open(ApiKeyManagementDialogComponent, {
-        panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+        panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-large-panel'],
         autoFocus: false,
         data: { controller } satisfies ApiKeyManagementDialogData,
       });
@@ -190,7 +190,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.controllerService.get(+this.controllerId).then((controller: Controller) => {
       this.userService.getInformationAboutLoggedUser(controller).subscribe((user) => {
         this.dialog.open(AiProfileDialogComponent, {
-          panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+          panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-large-panel'],
           autoFocus: false,
           data: { user, controller },
         });
@@ -210,13 +210,11 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       localStorage.removeItem(`refresh_token_${controller.id}`);
 
       controller.authToken = null;
-      this.controllerService
-        .update(controller)
-        .then((val) => {
-          // Disconnect WebSocket connection on logout
-          this.connectionManager.disconnect();
-          this.router.navigate(['/controller', controller.id, 'login']);
-        });
+      this.controllerService.update(controller).then((val) => {
+        // Disconnect WebSocket connection on logout
+        this.connectionManager.disconnect();
+        this.router.navigate(['/controller', controller.id, 'login']);
+      });
     });
   }
 

@@ -198,7 +198,7 @@ export class SymbolsComponent implements OnInit {
     };
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
       data: dialogData,
     });
 
@@ -309,7 +309,7 @@ export class SymbolsComponent implements OnInit {
     };
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
       data: dialogData,
     });
 

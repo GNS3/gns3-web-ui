@@ -94,7 +94,7 @@ export class SnapshotDialogComponent {
 
   restoreSnapshot(snapshot: Snapshot) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Restore snapshot?',
@@ -135,7 +135,7 @@ export class SnapshotDialogComponent {
 
   deleteSnapshot(snapshot: Snapshot) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Delete snapshot?',

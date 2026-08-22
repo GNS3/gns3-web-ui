@@ -30,7 +30,7 @@ export class EditTextActionComponent {
 
   editText() {
     const dialogRef = this.dialog.open(TextEditorDialogComponent, {
-      panelClass: ['base-dialog-panel', 'edit-text-action-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'edit-text-action-dialog-panel', 'dialog-medium-panel'],
       autoFocus: false,
       disableClose: false,
     });

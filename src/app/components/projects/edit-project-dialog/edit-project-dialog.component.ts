@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  inject,
-  viewChild,
-  model,
-  signal,
-  computed,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, viewChild, model, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -25,7 +16,10 @@ import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
 import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
-import { ConfirmationDialogComponent, ConfirmationDialogData } from '../../dialogs/confirmation-dialog/confirmation-dialog.component';
+import {
+  ConfirmationDialogComponent,
+  ConfirmationDialogData,
+} from '../../dialogs/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   standalone: true,
@@ -90,7 +84,13 @@ export class EditProjectDialogComponent implements OnInit {
 
   // Form validity
   readonly isFormValid = computed(() => {
-    return this.projectName().trim().length > 0 && +this.width() >= 0 && +this.height() >= 0 && +this.nodeGridSize() >= 0 && +this.drawingGridSize() >= 0;
+    return (
+      this.projectName().trim().length > 0 &&
+      +this.width() >= 0 &&
+      +this.height() >= 0 &&
+      +this.nodeGridSize() >= 0 &&
+      +this.drawingGridSize() >= 0
+    );
   });
 
   readonly isVariableFormValid = computed(() => {
@@ -135,7 +135,7 @@ export class EditProjectDialogComponent implements OnInit {
 
   deleteVariable(variable: ProjectVariable): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Delete variable?',
@@ -167,10 +167,7 @@ export class EditProjectDialogComponent implements OnInit {
     const originalSorted = [...this.originalVariables].sort((a, b) => a.name.localeCompare(b.name));
 
     for (let i = 0; i < currentSorted.length; i++) {
-      if (
-        currentSorted[i].name !== originalSorted[i].name ||
-        currentSorted[i].value !== originalSorted[i].value
-      ) {
+      if (currentSorted[i].name !== originalSorted[i].name || currentSorted[i].value !== originalSorted[i].value) {
         return true;
       }
     }
@@ -192,14 +189,15 @@ export class EditProjectDialogComponent implements OnInit {
     if (this.hasVariablesChanged()) {
       const dialogData: ConfirmationDialogData = {
         title: 'Global Variables Changed',
-        message: 'Adding or deleting project global variables will cause the GNS3 server to rebuild docker containers in the project to apply the new variables. If containers are running, this operation may take approximately 5-10 seconds. Do you want to continue?',
+        message:
+          'Adding or deleting project global variables will cause the GNS3 server to rebuild docker containers in the project to apply the new variables. If containers are running, this operation may take approximately 5-10 seconds. Do you want to continue?',
         confirmButtonText: 'Yes, apply',
         cancelButtonText: 'No, cancel',
       };
 
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
         data: dialogData,
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel', 'dialog-small-panel'],
       });
 
       dialogRef.afterClosed().subscribe((result) => {

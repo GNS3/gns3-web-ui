@@ -114,7 +114,7 @@ export class ResourcePoolDetailsComponent implements OnInit {
   deleteResource(resource: Resource): void {
     this.dialog
       .open(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
           title: 'Delete resource?',

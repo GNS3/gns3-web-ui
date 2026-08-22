@@ -162,7 +162,7 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
    */
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(AiProfileDialogComponent, {
-      panelClass: ['base-dialog-panel', 'ai-profile-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'ai-profile-dialog-panel', 'dialog-large-panel'],
       data: {
         mode: 'create',
         config: null,
@@ -185,7 +185,7 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
    */
   openEditDialog(config: LLMModelConfigResponse): void {
     const dialogRef = this.dialog.open(AiProfileDialogComponent, {
-      panelClass: ['base-dialog-panel', 'ai-profile-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'ai-profile-dialog-panel', 'dialog-large-panel'],
       data: {
         mode: 'edit',
         config: { ...config },
@@ -254,7 +254,7 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
    */
   deleteConfig(config: LLMModelConfigResponse): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Delete configuration?',

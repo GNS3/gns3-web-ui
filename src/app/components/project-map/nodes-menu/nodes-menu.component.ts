@@ -103,7 +103,7 @@ export class NodesMenuComponent {
     const actionType = String(type);
     const actionLabel = actionType.charAt(0).toUpperCase() + actionType.slice(1);
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
       disableClose: true,
       data: {

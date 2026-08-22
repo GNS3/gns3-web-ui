@@ -221,28 +221,31 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   createModal() {
     const dialogRef = this.dialog.open(AddControllerDialogComponent, {
-      panelClass: ['base-dialog-panel', 'controller-small-dialog-panel', 'add-controller-dialog-panel'],
+      panelClass: [
+        'base-dialog-panel',
+        'controller-small-dialog-panel',
+        'add-controller-dialog-panel',
+        'dialog-medium-panel',
+      ],
       autoFocus: false,
       disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((controller) => {
       if (controller) {
-        this.controllerService
-          .create(controller)
-          .then(
-            (created: Controller) => {
-              created.status = 'stopped';
-              this.controllerDatabase.addController(created);
-              this.updateControllerOnlineStatus(created);
-              this.changeDetector.markForCheck();
-            },
-            (err) => {
-              const message = err.error?.message || err.message || 'Failed to create controller';
-              this.toasterService.error(message);
-              this.changeDetector.markForCheck();
-            }
-          );
+        this.controllerService.create(controller).then(
+          (created: Controller) => {
+            created.status = 'stopped';
+            this.controllerDatabase.addController(created);
+            this.updateControllerOnlineStatus(created);
+            this.changeDetector.markForCheck();
+          },
+          (err) => {
+            const message = err.error?.message || err.message || 'Failed to create controller';
+            this.toasterService.error(message);
+            this.changeDetector.markForCheck();
+          }
+        );
       }
     });
   }
@@ -317,7 +320,12 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   editController(controller: Controller) {
     const dialogRef = this.dialog.open(EditControllerDialogComponent, {
-      panelClass: ['base-dialog-panel', 'controller-dialog-panel', 'edit-controller-dialog-panel'],
+      panelClass: [
+        'base-dialog-panel',
+        'controller-dialog-panel',
+        'edit-controller-dialog-panel',
+        'dialog-medium-panel',
+      ],
       autoFocus: false,
       disableClose: true,
       data: { controller: controller },
@@ -381,7 +389,6 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
       length: this.dataSource.filteredLength.value,
     });
   }
-
 }
 
 export class ControllerDataSource extends DataSource<Controller> {

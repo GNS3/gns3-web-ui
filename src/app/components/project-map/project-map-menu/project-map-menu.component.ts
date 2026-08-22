@@ -142,7 +142,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
   public takeScreenshot() {
     const dialogRef = this.dialog.open(ScreenshotDialogComponent, {
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'dialog-medium-panel'],
       autoFocus: false,
       disableClose: true,
     });
@@ -547,7 +547,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     const shouldLock = !this.isLocked;
     const actionLabel = shouldLock ? 'Lock' : 'Unlock';
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
       disableClose: true,
       data: {
@@ -663,7 +663,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.projectSubscriptions.forEach(subscription => subscription.unsubscribe());
+    this.projectSubscriptions.forEach((subscription) => subscription.unsubscribe());
     if (this.aiChatStateSubscription) {
       this.aiChatStateSubscription.unsubscribe();
     }
@@ -700,7 +700,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     // Import dynamically to avoid circular dependencies
     import('../fault-injection-dialog/fault-injection-dialog.component').then(({ FaultInjectionDialogComponent }) => {
       const dialogRef = this.dialog.open(FaultInjectionDialogComponent, {
-        panelClass: ['base-dialog-panel', 'fault-injection-dialog-panel'],
+        panelClass: ['base-dialog-panel', 'fault-injection-dialog-panel', 'dialog-medium-panel'],
         backdropClass: 'fault-injection-backdrop',
         autoFocus: false,
         disableClose: true,

@@ -97,7 +97,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
   private conf = {
     autoFocus: false,
-    panelClass: ['base-dialog-panel', 'qemu-configurator-dialog-panel'],
+    panelClass: ['base-dialog-panel', 'qemu-configurator-dialog-panel', 'dialog-medium-panel'],
     disableClose: true,
   };
   dialogRefQemuImageCreator;
@@ -116,23 +116,32 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   readonly auxType = model('');
   readonly consoleAutoStart = model(false);
   // HDD
-  readonly hdaDiskImage = model(''); readonly hdaDiskInterface = model('');
-  readonly hdbDiskImage = model(''); readonly hdbDiskInterface = model('');
-  readonly hdcDiskImage = model(''); readonly hdcDiskInterface = model('');
-  readonly hddDiskImage = model(''); readonly hddDiskInterface = model('');
+  readonly hdaDiskImage = model('');
+  readonly hdaDiskInterface = model('');
+  readonly hdbDiskImage = model('');
+  readonly hdbDiskInterface = model('');
+  readonly hdcDiskImage = model('');
+  readonly hdcDiskInterface = model('');
+  readonly hddDiskImage = model('');
+  readonly hddDiskInterface = model('');
   // CD/DVD
   readonly cdromImage = model('');
   // Advanced
-  readonly initrd = model(''); readonly kernelImage = model('');
-  readonly kernelCommandLine = model(''); readonly biosImage = model('');
+  readonly initrd = model('');
+  readonly kernelImage = model('');
+  readonly kernelCommandLine = model('');
+  readonly biosImage = model('');
   readonly activateCpuThrottling = model(false);
   readonly cpuThrottling = model('');
-  readonly processPriority = model(''); readonly qemuPath = model('');
-  readonly options = model(''); readonly tpm = model(false);
+  readonly processPriority = model('');
+  readonly qemuPath = model('');
+  readonly options = model('');
+  readonly tpm = model(false);
   readonly uefi = model(false);
   readonly usage = model('');
   readonly netmikoDeviceType = model('');
-  readonly defaultUsername = model(''); readonly defaultPassword = model('');
+  readonly defaultUsername = model('');
+  readonly defaultPassword = model('');
   // inherited values shown as placeholders when the node fields are empty
   readonly defaultUsernamePlaceholder = signal('');
   readonly defaultPasswordPlaceholder = signal('');
@@ -140,7 +149,8 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   readonly maxcpus = model('');
   readonly createConfigDisk = model(false);
   // Network
-  readonly adapters = model(''); readonly macAddress = model('');
+  readonly adapters = model('');
+  readonly macAddress = model('');
   readonly adapterType = model('');
   readonly replicateNetworkState = model(false);
 
@@ -189,8 +199,12 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
             next: (templates) => {
               const metadata = templates.find((tpl) => tpl.template_id === node.template_id)?.appliance_metadata;
               if (metadata) {
-                this.defaultUsernamePlaceholder.set(node.default_username ? '' : (metadata.default_username as string) || '');
-                this.defaultPasswordPlaceholder.set(node.default_password ? '' : (metadata.default_password as string) || '');
+                this.defaultUsernamePlaceholder.set(
+                  node.default_username ? '' : (metadata.default_username as string) || ''
+                );
+                this.defaultPasswordPlaceholder.set(
+                  node.default_password ? '' : (metadata.default_password as string) || ''
+                );
                 this.cd.markForCheck();
               }
             },
@@ -216,17 +230,22 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
             this.allNodeFiles = files.map((f: any) => f.path);
             // Filter disk images based on file_type from Python magic library
             this.projectDiskFiles = files
-              .filter((f: any) => f.file_type?.toLowerCase().includes('qemu') ||
-                                 f.file_type?.toLowerCase().includes('qcow') ||
-                                 f.file_type?.toLowerCase().includes('vmdk') ||
-                                 f.file_type?.toLowerCase().includes('vmware') ||
-                                 f.file_type?.toLowerCase().includes('virtual') ||
-                                 f.file_type?.toLowerCase().includes('disk image'))
+              .filter(
+                (f: any) =>
+                  f.file_type?.toLowerCase().includes('qemu') ||
+                  f.file_type?.toLowerCase().includes('qcow') ||
+                  f.file_type?.toLowerCase().includes('vmdk') ||
+                  f.file_type?.toLowerCase().includes('vmware') ||
+                  f.file_type?.toLowerCase().includes('virtual') ||
+                  f.file_type?.toLowerCase().includes('disk image')
+              )
               .map((f: any) => f.path);
             // Filter ISO images based on file_type
             this.projectIsoFiles = files
-              .filter((f: any) => f.file_type?.toLowerCase().includes('iso 9660') ||
-                                 f.file_type?.toLowerCase().includes('cd-rom'))
+              .filter(
+                (f: any) =>
+                  f.file_type?.toLowerCase().includes('iso 9660') || f.file_type?.toLowerCase().includes('cd-rom')
+              )
               .map((f: any) => f.path);
             this.cd.markForCheck();
           },
@@ -322,16 +341,22 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         this.allNodeFiles = files.map((f: any) => f.path);
         // Filter disk images based on file_type from Python magic library
         this.projectDiskFiles = files
-          .filter((f: any) => f.file_type?.toLowerCase().includes('qemu') ||
-                             f.file_type?.toLowerCase().includes('qcow') ||
-                             f.file_type?.toLowerCase().includes('vmdk') ||
-                             f.file_type?.toLowerCase().includes('vmware') ||
-                             f.file_type?.toLowerCase().includes('virtual') ||
-                             f.file_type?.toLowerCase().includes('disk image'))
+          .filter(
+            (f: any) =>
+              f.file_type?.toLowerCase().includes('qemu') ||
+              f.file_type?.toLowerCase().includes('qcow') ||
+              f.file_type?.toLowerCase().includes('vmdk') ||
+              f.file_type?.toLowerCase().includes('vmware') ||
+              f.file_type?.toLowerCase().includes('virtual') ||
+              f.file_type?.toLowerCase().includes('disk image')
+          )
           .map((f: any) => f.path);
         // Filter ISO images based on file_type
-        this.projectIsoFiles = files.filter((f: any) => f.file_type?.toLowerCase().includes('iso 9660') ||
-                                                   f.file_type?.toLowerCase().includes('cd-rom')).map((f: any) => f.path);
+        this.projectIsoFiles = files
+          .filter(
+            (f: any) => f.file_type?.toLowerCase().includes('iso 9660') || f.file_type?.toLowerCase().includes('cd-rom')
+          )
+          .map((f: any) => f.path);
         this.cd.markForCheck();
       },
       error: () => {},
@@ -341,7 +366,9 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   private refreshGlobalImages() {
     this.imageManagerService.getImages(this.controller).subscribe({
       next: (images: any[]) => {
-        this.globalIsoImages = images.filter((img: any) => img.filename?.endsWith('.iso')).map((img: any) => img.filename);
+        this.globalIsoImages = images
+          .filter((img: any) => img.filename?.endsWith('.iso'))
+          .map((img: any) => img.filename);
         this.cd.markForCheck();
       },
       error: () => {},
@@ -352,9 +379,10 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     const file = event.target.files[0];
     if (!file) return;
     const filename = file.name;
-    const upload$ = target === 'device'
-      ? this.nodeService.uploadNodeFile(this.controller, this.node.project_id, this.node.node_id, filename, file)
-      : this.imageManagerService.uploadedImage(this.controller, false, filename, file);
+    const upload$ =
+      target === 'device'
+        ? this.nodeService.uploadNodeFile(this.controller, this.node.project_id, this.node.node_id, filename, file)
+        : this.imageManagerService.uploadedImage(this.controller, false, filename, file);
     upload$.subscribe({
       next: () => {
         this.node.properties.cdrom_image = filename;
@@ -376,9 +404,10 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
   private uploadFile(file: File, signal: { set: (v: string) => void }, propKey: string, target: 'device' | 'global') {
     const filename = file.name;
-    const upload$ = target === 'device'
-      ? this.nodeService.uploadNodeFile(this.controller, this.node.project_id, this.node.node_id, filename, file)
-      : this.imageManagerService.uploadedImage(this.controller, false, filename, file);
+    const upload$ =
+      target === 'device'
+        ? this.nodeService.uploadNodeFile(this.controller, this.node.project_id, this.node.node_id, filename, file)
+        : this.imageManagerService.uploadedImage(this.controller, false, filename, file);
     upload$.subscribe({
       next: () => {
         (this.node.properties as any)[propKey] = filename;
@@ -494,7 +523,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     }
 
     const dialogRef = this.dialog.open(CustomAdaptersComponent, {
-      panelClass: 'custom-adapters-dialog-panel',
+      panelClass: ['custom-adapters-dialog-panel', 'dialog-extra-large-panel'],
       data: {
         adapters: adaptersForDialog,
         networkTypes: this.networkTypes,
@@ -522,11 +551,20 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
     // Validate required fields
     const nameValidation = this.validationService.required(this.nodeName(), 'Name');
-    if (!nameValidation.isValid) { this.toasterService.error(nameValidation.errorMessage); return; }
+    if (!nameValidation.isValid) {
+      this.toasterService.error(nameValidation.errorMessage);
+      return;
+    }
     const ramValidation = this.validationService.required(this.ram(), 'RAM');
-    if (!ramValidation.isValid) { this.toasterService.error(ramValidation.errorMessage); return; }
+    if (!ramValidation.isValid) {
+      this.toasterService.error(ramValidation.errorMessage);
+      return;
+    }
     const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
-    if (!netmikoValidation.isValid) { this.toasterService.error(netmikoValidation.errorMessage); return; }
+    if (!netmikoValidation.isValid) {
+      this.toasterService.error(netmikoValidation.errorMessage);
+      return;
+    }
 
     // Merge signal values back into node
     this.node.name = this.nodeName();

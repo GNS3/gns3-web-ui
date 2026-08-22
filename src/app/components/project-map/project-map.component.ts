@@ -512,7 +512,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         // Only open console on the transition from non-started to started
         if (wasStarted || node.status !== 'started' || !node.console_auto_start || node.console_type === 'none') return;
         if (node.console_type === 'vnc') {
-          setTimeout(() => this.onOpenWebConsoleInline({ node, controller: this.controller, project: this.project }), 500);
+          setTimeout(
+            () => this.onOpenWebConsoleInline({ node, controller: this.controller, project: this.project }),
+            500
+          );
         } else {
           this.mapSettingsService.logConsoleSubject.next(true);
           setTimeout(() => this.nodeConsoleService.openConsoleForNode(node), 500);
@@ -566,13 +569,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             this.title.setTitle(this.project.name);
 
             // Initialize visibility settings from project or fallback to localStorage/defaults
-            this.isInterfaceLabelVisible = this.project.show_interface_labels ??
-                                           this.mapSettingsService.showInterfaceLabels ??
-                                           true;
-            this.layersVisibility = this.project.show_layers ??
-                                   localStorage.getItem('layersVisibility') === 'true';
-            this.gridVisibility = this.project.show_grid ??
-                                  localStorage.getItem('gridVisibility') === 'true';
+            this.isInterfaceLabelVisible =
+              this.project.show_interface_labels ?? this.mapSettingsService.showInterfaceLabels ?? true;
+            this.layersVisibility = this.project.show_layers ?? localStorage.getItem('layersVisibility') === 'true';
+            this.gridVisibility = this.project.show_grid ?? localStorage.getItem('gridVisibility') === 'true';
 
             this.toggleShowTopologySummary(this.mapSettingsService.isTopologySummaryVisible);
             const lockKey = `itemLockStatusVisibility_${this.project.project_id}`;
@@ -707,56 +707,53 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           }
         );
 
-        selectedNodes
-          .forEach((item: MapNode) => {
-            const node = this.mapNodeToNode.convert(item);
-            this.nodeService.delete(this.controller, node).subscribe({
-              next: () => {
-                deletedCounts.nodes++;
-                completion.succeed();
-              },
-              error: (err) => {
-                completion.fail();
-                const message = err.error?.message || err.message || 'Failed to delete node';
-                this.toasterService.error(message);
-                this.cd.markForCheck();
-              },
-            });
+        selectedNodes.forEach((item: MapNode) => {
+          const node = this.mapNodeToNode.convert(item);
+          this.nodeService.delete(this.controller, node).subscribe({
+            next: () => {
+              deletedCounts.nodes++;
+              completion.succeed();
+            },
+            error: (err) => {
+              completion.fail();
+              const message = err.error?.message || err.message || 'Failed to delete node';
+              this.toasterService.error(message);
+              this.cd.markForCheck();
+            },
           });
+        });
 
-        selectedLinks
-          .forEach((item: MapLink) => {
-            const link = this.mapLinkToLink.convert(item);
-            this.linkService.deleteLink(this.controller, link).subscribe({
-              next: () => {
-                deletedCounts.links++;
-                completion.succeed();
-              },
-              error: (err) => {
-                completion.fail();
-                const message = err.error?.message || err.message || 'Failed to delete link';
-                this.toasterService.error(message);
-                this.cd.markForCheck();
-              },
-            });
+        selectedLinks.forEach((item: MapLink) => {
+          const link = this.mapLinkToLink.convert(item);
+          this.linkService.deleteLink(this.controller, link).subscribe({
+            next: () => {
+              deletedCounts.links++;
+              completion.succeed();
+            },
+            error: (err) => {
+              completion.fail();
+              const message = err.error?.message || err.message || 'Failed to delete link';
+              this.toasterService.error(message);
+              this.cd.markForCheck();
+            },
           });
+        });
 
-        selectedDrawings
-          .forEach((item: MapDrawing) => {
-            const drawing = this.mapDrawingToDrawing.convert(item);
-            this.drawingService.delete(this.controller, drawing).subscribe({
-              next: () => {
-                deletedCounts.drawings++;
-                completion.succeed();
-              },
-              error: (err) => {
-                completion.fail();
-                const message = err.error?.message || err.message || 'Failed to delete drawing';
-                this.toasterService.error(message);
-                this.cd.markForCheck();
-              },
-            });
+        selectedDrawings.forEach((item: MapDrawing) => {
+          const drawing = this.mapDrawingToDrawing.convert(item);
+          this.drawingService.delete(this.controller, drawing).subscribe({
+            next: () => {
+              deletedCounts.drawings++;
+              completion.succeed();
+            },
+            error: (err) => {
+              completion.fail();
+              const message = err.error?.message || err.message || 'Failed to delete drawing';
+              this.toasterService.error(message);
+              this.cd.markForCheck();
+            },
           });
+        });
       }
     });
   }
@@ -779,7 +776,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.progressService.deactivate();
       },
       error: (err) => {
-        this.toasterService.error('Failed to load project data: ' + (err.error?.message || err.message || 'Unknown error'));
+        this.toasterService.error(
+          'Failed to load project data: ' + (err.error?.message || err.message || 'Unknown error')
+        );
         this.progressService.deactivate();
         this.cd.markForCheck();
       },
@@ -1009,7 +1008,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const onNodeContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       const selectedItems = this.selectionManager.getSelected();
 
-      if (this.selectionManager.isSelected(eventNode.node) && this.openMenuForSelection(selectedItems, eventNode.event)) {
+      if (
+        this.selectionManager.isSelected(eventNode.node) &&
+        this.openMenuForSelection(selectedItems, eventNode.event)
+      ) {
         return;
       }
 
@@ -1152,7 +1154,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
                   err.error?.message || err.message || 'Failed to load nodes'
                 );
               }
-              this.toasterService.error('Failed to load nodes: ' + (err.error?.message || err.message || 'Unknown error'));
+              this.toasterService.error(
+                'Failed to load nodes: ' + (err.error?.message || err.message || 'Unknown error')
+              );
               this.cd.markForCheck();
             },
           });
@@ -1534,7 +1538,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     // Calculate index based on position in open windows list
     const openWindows = this.getWebWiresharkInlineWindows();
-    const index = openWindows.findIndex(w => w.link_id === linkId);
+    const index = openWindows.findIndex((w) => w.link_id === linkId);
 
     // Console icon always takes first slot
     let baseOffset = this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP;
@@ -1563,7 +1567,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     // Calculate index based on position in open windows list
     const openWindows = this.getWebConsoleInlineWindows();
-    const index = openWindows.findIndex(w => w.node_id === nodeId);
+    const index = openWindows.findIndex((w) => w.node_id === nodeId);
 
     // Console icon always takes first slot
     let baseOffset = this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP;
@@ -1580,7 +1584,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    */
   public toggleWebConsoleMinimize(nodeId: string): void {
     const windowId = `console-${nodeId}`;
-    const isMinimized = this.windowManagement.minimizedWindows().some(w => w.id === windowId);
+    const isMinimized = this.windowManagement.minimizedWindows().some((w) => w.id === windowId);
     if (isMinimized) {
       this.windowManagement.restoreWindow(windowId);
     } else {
@@ -1593,7 +1597,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    * Toggle console minimize/restore
    */
   public toggleConsoleMinimize(): void {
-    const isMinimized = this.windowManagement.minimizedWindows().some(w => w.id === 'console');
+    const isMinimized = this.windowManagement.minimizedWindows().some((w) => w.id === 'console');
     if (isMinimized) {
       this.windowManagement.restoreWindow('console');
     } else {
@@ -1607,7 +1611,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    */
   public toggleWiresharkMinimize(linkId: string): void {
     const windowId = `wireshark-${linkId}`;
-    const isMinimized = this.windowManagement.minimizedWindows().some(w => w.id === windowId);
+    const isMinimized = this.windowManagement.minimizedWindows().some((w) => w.id === windowId);
     if (isMinimized) {
       this.windowManagement.restoreWindow(windowId);
     } else {
@@ -1782,7 +1786,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(EditProjectDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'edit-project-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'edit-project-dialog-panel', 'dialog-large-panel'],
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
@@ -2057,12 +2061,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public isFileManagerMinimized(nodeId: string): boolean {
-    return this.windowManagement.minimizedWindows().some(w => w.id === 'filemgr-' + nodeId);
+    return this.windowManagement.minimizedWindows().some((w) => w.id === 'filemgr-' + nodeId);
   }
 
   public toggleFileManagerMinimize(nodeId: string) {
     const id = `filemgr-${nodeId}`;
-    if (this.windowManagement.minimizedWindows().some(w => w.id === id)) {
+    if (this.windowManagement.minimizedWindows().some((w) => w.id === id)) {
       this.windowManagement.restoreWindow(id);
     } else {
       this.windowManagement.minimizeWindow(id, 'filemgr');

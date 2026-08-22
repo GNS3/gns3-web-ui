@@ -531,7 +531,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
     const narrowViewport = this.document.defaultView?.matchMedia?.('(max-width: 720px)')?.matches ?? false;
     const projectHeaderHeight = this.document.documentElement.dataset['density'] === 'compact' ? '48px' : '56px';
     const dialogRef = this.dialog.open(TemplateListDialogComponent, {
-      panelClass: ['base-dialog-panel', 'template-dialog-panel', 'add-nodes-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'template-dialog-panel', 'add-nodes-dialog-panel', 'dialog-small-panel'],
       data: {
         controller: this.controller(),
         project: this.project(),

@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject, signal, computed, model } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  OnInit,
+  inject,
+  signal,
+  computed,
+  model,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -175,7 +185,12 @@ export class GroupDetailDialogComponent implements OnInit {
   openAddUserDialog(): void {
     this.dialog
       .open(AddUserToGroupDialogComponent, {
-        panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'add-user-to-group-dialog-panel'],
+        panelClass: [
+          'base-dialog-panel',
+          'simple-dialog-panel',
+          'add-user-to-group-dialog-panel',
+          'dialog-medium-panel',
+        ],
         data: { controller: this.controller, group: this.group },
       })
       .afterClosed()
@@ -189,7 +204,7 @@ export class GroupDetailDialogComponent implements OnInit {
   openRemoveUserDialog(user: User): void {
     this.dialog
       .open(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
           title: 'Remove user from group?',
@@ -219,7 +234,7 @@ export class GroupDetailDialogComponent implements OnInit {
 
   openUserDetailDialog(user: User): void {
     this.dialog.open(UserDetailDialogComponent, {
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-large-panel'],
       data: { user, controller: this.controller } as UserDetailDialogData,
     });
   }

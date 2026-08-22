@@ -376,18 +376,21 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const project = this.project();
     if (!controller || !project) return;
     this.loading.set(true);
-    this.markerService.listDefinitions(controller, project.project_id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (map: MarkerDefinitionMap) => {
-        this.definitions.set(this.toDefinitionRows(map));
-        this.loading.set(false);
-        this.cdr.markForCheck();
-      },
-      error: (err) => {
-        this.defError.set(err.error?.message || err.message || 'Failed to load definitions');
-        this.loading.set(false);
-        this.cdr.markForCheck();
-      },
-    });
+    this.markerService
+      .listDefinitions(controller, project.project_id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (map: MarkerDefinitionMap) => {
+          this.definitions.set(this.toDefinitionRows(map));
+          this.loading.set(false);
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.defError.set(err.error?.message || err.message || 'Failed to load definitions');
+          this.loading.set(false);
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   private buildNodeOptions() {
@@ -421,20 +424,23 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     // (pre-mutation) response applied last would wipe markers that were just
     // created. Track the newest request and drop stale responses.
     const seq = ++this.aggregateRequestSeq;
-    this.markerService.aggregateList(controller, project.project_id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (map: AggregateMarkerMap) => {
-        if (seq !== this.aggregateRequestSeq) return; // stale response superseded
-        this.linkGroups.set(this.buildGroups(map));
-        this.markerRegistryService.rebuildFromAggregate(map);
-        this.syncLinkMarkersFromAggregate(map);
-        this.cdr.markForCheck();
-      },
-      error: (err) => {
-        if (seq !== this.aggregateRequestSeq) return;
-        this.linkError.set({ linkId: null, message: err.error?.message || err.message || 'Failed to load markers' });
-        this.cdr.markForCheck();
-      },
-    });
+    this.markerService
+      .aggregateList(controller, project.project_id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (map: AggregateMarkerMap) => {
+          if (seq !== this.aggregateRequestSeq) return; // stale response superseded
+          this.linkGroups.set(this.buildGroups(map));
+          this.markerRegistryService.rebuildFromAggregate(map);
+          this.syncLinkMarkersFromAggregate(map);
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          if (seq !== this.aggregateRequestSeq) return;
+          this.linkError.set({ linkId: null, message: err.error?.message || err.message || 'Failed to load markers' });
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   private toDefinitionRows(map: MarkerDefinitionMap): DefinitionRow[] {
@@ -595,10 +601,13 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     };
     const runUpdate = () => {
-      this.markerService.updateDefinition(controller, project.project_id, editing!, body).pipe(takeUntil(this.destroy$)).subscribe({
-        next: () => done(),
-        error: fail,
-      });
+      this.markerService
+        .updateDefinition(controller, project.project_id, editing!, body)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => done(),
+          error: fail,
+        });
     };
 
     if (editing) {
@@ -611,7 +620,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
             confirmButtonText: 'Save',
             cancelButtonText: 'Cancel',
           },
-          panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+          panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel', 'dialog-small-panel'],
           autoFocus: false,
           restoreFocus: false,
         });
@@ -627,10 +636,13 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
         runUpdate();
       }
     } else {
-      this.markerService.createDefinition(controller, project.project_id, body).pipe(takeUntil(this.destroy$)).subscribe({
-        next: () => done(),
-        error: fail,
-      });
+      this.markerService
+        .createDefinition(controller, project.project_id, body)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => done(),
+          error: fail,
+        });
     }
   }
 
@@ -667,22 +679,25 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     if (this.isDeletingDefinition(row.name)) return;
     this.defError.set(null);
     this.markPending(this.deletingDefinition, row.name);
-    this.markerService.deleteDefinition(controller, project.project_id, row.name).pipe(takeUntil(this.destroy$)).subscribe({
-      next: () => {
-        this.clearPending(this.deletingDefinition, row.name);
-        this.toasterService.success(`Marker definition "${row.name}" deleted.`);
-        if (this.editingDefinition() === row.name) this.cancelEditDefinition();
-        this.loadDefinitions();
-        this.loadAggregate();
-      },
-      error: (err) => {
-        this.clearPending(this.deletingDefinition, row.name);
-        const message = err.error?.message || err.message || 'Failed to delete definition';
-        this.defError.set(message);
-        this.toasterService.error(message);
-        this.cdr.markForCheck();
-      },
-    });
+    this.markerService
+      .deleteDefinition(controller, project.project_id, row.name)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.clearPending(this.deletingDefinition, row.name);
+          this.toasterService.success(`Marker definition "${row.name}" deleted.`);
+          if (this.editingDefinition() === row.name) this.cancelEditDefinition();
+          this.loadDefinitions();
+          this.loadAggregate();
+        },
+        error: (err) => {
+          this.clearPending(this.deletingDefinition, row.name);
+          const message = err.error?.message || err.message || 'Failed to delete definition';
+          this.defError.set(message);
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   // ---- private per-link marker create / delete (Links tab) ----
@@ -856,25 +871,28 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     if (v.capture_node_id && v.capture_node_id !== MARKER_CAPTURE_AUTO) body.capture_node_id = v.capture_node_id;
     if (v.data_link_type) body.data_link_type = v.data_link_type;
 
-    this.markerService.create(controller, project.project_id, linkId, body).pipe(takeUntil(this.destroy$)).subscribe({
-      next: () => {
-        this.submittingMarker.set(null);
-        this.toasterService.success(`Marker "${body.name}" created.`);
-        // Close the create form and return to the list — same behavior in the
-        // selected-link and aggregate views. (The selected-link view previously
-        // kept the form open via markerForm.reset().)
-        this.toggleAddMarker(linkId);
-        this.refreshLink(linkId);
-        this.loadAggregate();
-      },
-      error: (err) => {
-        this.submittingMarker.set(null);
-        const message = err.error?.message || err.message || 'Failed to create marker';
-        this.linkError.set({ linkId, message });
-        this.toasterService.error(message);
-        this.cdr.markForCheck();
-      },
-    });
+    this.markerService
+      .create(controller, project.project_id, linkId, body)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.submittingMarker.set(null);
+          this.toasterService.success(`Marker "${body.name}" created.`);
+          // Close the create form and return to the list — same behavior in the
+          // selected-link and aggregate views. (The selected-link view previously
+          // kept the form open via markerForm.reset().)
+          this.toggleAddMarker(linkId);
+          this.refreshLink(linkId);
+          this.loadAggregate();
+        },
+        error: (err) => {
+          this.submittingMarker.set(null);
+          const message = err.error?.message || err.message || 'Failed to create marker';
+          this.linkError.set({ linkId, message });
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   deleteMarker(linkId: string, name: string) {
@@ -885,21 +903,24 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     if (this.isDeletingMarker(linkId, name)) return;
     this.linkError.set(null);
     this.markPending(this.deletingMarker, key);
-    this.markerService.delete(controller, project.project_id, linkId, name).pipe(takeUntil(this.destroy$)).subscribe({
-      next: () => {
-        this.clearPending(this.deletingMarker, key);
-        this.toasterService.success(`Marker "${name}" deleted.`);
-        this.refreshLink(linkId);
-        this.loadAggregate();
-      },
-      error: (err) => {
-        this.clearPending(this.deletingMarker, key);
-        const message = err.error?.message || err.message || 'Failed to delete marker';
-        this.linkError.set({ linkId, message });
-        this.toasterService.error(message);
-        this.cdr.markForCheck();
-      },
-    });
+    this.markerService
+      .delete(controller, project.project_id, linkId, name)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.clearPending(this.deletingMarker, key);
+          this.toasterService.success(`Marker "${name}" deleted.`);
+          this.refreshLink(linkId);
+          this.loadAggregate();
+        },
+        error: (err) => {
+          this.clearPending(this.deletingMarker, key);
+          const message = err.error?.message || err.message || 'Failed to delete marker';
+          this.linkError.set({ linkId, message });
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   startEditMarker(linkId: string, marker: GroupMarker) {
@@ -953,22 +974,25 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const dir = this.dirToBody(v.direction);
     if (dir) body.direction = dir;
 
-    this.markerService.update(controller, project.project_id, linkId, editing.name, body).pipe(takeUntil(this.destroy$)).subscribe({
-      next: () => {
-        this.submittingEditMarker.set(false);
-        this.toasterService.success(`Marker "${editing.name}" updated.`);
-        this.editingMarker.set(null);
-        this.refreshLink(linkId);
-        this.loadAggregate();
-      },
-      error: (err) => {
-        this.submittingEditMarker.set(false);
-        const message = err.error?.message || err.message || 'Failed to update marker';
-        this.linkError.set({ linkId, message });
-        this.toasterService.error(message);
-        this.cdr.markForCheck();
-      },
-    });
+    this.markerService
+      .update(controller, project.project_id, linkId, editing.name, body)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.submittingEditMarker.set(false);
+          this.toasterService.success(`Marker "${editing.name}" updated.`);
+          this.editingMarker.set(null);
+          this.refreshLink(linkId);
+          this.loadAggregate();
+        },
+        error: (err) => {
+          this.submittingEditMarker.set(false);
+          const message = err.error?.message || err.message || 'Failed to update marker';
+          this.linkError.set({ linkId, message });
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   // ---- per-definition pause/resume (toggles every inherited copy of a rule) ----
@@ -1050,9 +1074,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
    */
   private applyEnabledLocal(linkId: string, name: string, enabled: boolean) {
     const groups = this.linkGroups().map((g) =>
-      g.linkId !== linkId
-        ? g
-        : { ...g, markers: g.markers.map((m) => (m.name === name ? { ...m, enabled } : m)) }
+      g.linkId !== linkId ? g : { ...g, markers: g.markers.map((m) => (m.name === name ? { ...m, enabled } : m)) }
     );
     this.linkGroups.set(groups);
   }
@@ -1062,19 +1084,21 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     const controller = this.controller();
     const project = this.project();
     if (!controller || !project) return;
-    this.linkService.getLink(controller, project.project_id, linkId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (link) => {
-        this.linksDataSource.update(link);
-        const mapLink = this.mapLinksDataSource.get(linkId);
-        if (mapLink) {
-          mapLink.markers = link.markers;
-          this.mapLinksDataSource.update(mapLink);
-        }
-        this.markerRegistryService.reconcileLink(link);
-      },
-      error: (err) =>
-        this.toasterService.error(err.error?.message || err.message || 'Failed to refresh link'),
-    });
+    this.linkService
+      .getLink(controller, project.project_id, linkId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (link) => {
+          this.linksDataSource.update(link);
+          const mapLink = this.mapLinksDataSource.get(linkId);
+          if (mapLink) {
+            mapLink.markers = link.markers;
+            this.mapLinksDataSource.update(mapLink);
+          }
+          this.markerRegistryService.reconcileLink(link);
+        },
+        error: (err) => this.toasterService.error(err.error?.message || err.message || 'Failed to refresh link'),
+      });
   }
 
   private asNumber(v: unknown): number | null {

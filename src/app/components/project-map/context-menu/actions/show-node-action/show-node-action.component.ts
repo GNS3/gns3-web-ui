@@ -21,7 +21,7 @@ export class ShowNodeActionComponent {
 
   showNode() {
     this.dialog.open(InfoDialogComponent, {
-      panelClass: ['base-dialog-panel', 'show-node-action-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'show-node-action-dialog-panel', 'dialog-small-panel'],
       autoFocus: false,
       data: { node: this.node(), controller: this.controller() } satisfies InfoDialogData,
     });

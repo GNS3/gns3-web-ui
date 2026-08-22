@@ -180,11 +180,13 @@ export class GroupManagementComponent implements OnInit, AfterViewInit {
   onDelete(groupsToDelete: Group[]) {
     this.dialog
       .open(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
           title: groupsToDelete.length === 1 ? 'Delete group?' : 'Delete groups?',
-          message: `${groupsToDelete.length} selected ${groupsToDelete.length === 1 ? 'group' : 'groups'} will be permanently deleted.`,
+          message: `${groupsToDelete.length} selected ${
+            groupsToDelete.length === 1 ? 'group' : 'groups'
+          } will be permanently deleted.`,
           details: groupsToDelete.map((group) => group.name),
           note: 'This action cannot be undone.',
           confirmButtonText: groupsToDelete.length === 1 ? 'Delete group' : 'Delete groups',
@@ -216,7 +218,7 @@ export class GroupManagementComponent implements OnInit, AfterViewInit {
 
   openGroupDetailDialog(group: Group) {
     this.dialog.open(GroupDetailDialogComponent, {
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-large-panel'],
       data: { group, controller: this.controller } as GroupDetailDialogData,
       maxWidth: '90vw',
     });
@@ -224,7 +226,7 @@ export class GroupManagementComponent implements OnInit, AfterViewInit {
 
   openGroupAiProfileDialog(group: Group) {
     this.dialog.open(GroupAiProfileDialogComponent, {
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-large-panel'],
       data: { group, controller: this.controller } as GroupAiProfileDialogData,
     });
   }

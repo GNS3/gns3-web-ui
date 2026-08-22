@@ -155,11 +155,13 @@ export class ResourcePoolsManagementComponent implements OnInit, AfterViewInit {
   onDelete(resourcePoolToDelete: ResourcePool[]) {
     this.dialog
       .open(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
           title: resourcePoolToDelete.length === 1 ? 'Delete resource pool?' : 'Delete resource pools?',
-          message: `${resourcePoolToDelete.length} selected ${resourcePoolToDelete.length === 1 ? 'pool' : 'pools'} will be permanently deleted.`,
+          message: `${resourcePoolToDelete.length} selected ${
+            resourcePoolToDelete.length === 1 ? 'pool' : 'pools'
+          } will be permanently deleted.`,
           details: resourcePoolToDelete.map((pool) => pool.name),
           note: 'This action cannot be undone.',
           confirmButtonText: resourcePoolToDelete.length === 1 ? 'Delete pool' : 'Delete pools',
@@ -175,7 +177,9 @@ export class ResourcePoolsManagementComponent implements OnInit, AfterViewInit {
           forkJoin(observables).subscribe({
             next: () => {
               this.toasterService.success(
-                `${resourcePoolToDelete.length} resource ${resourcePoolToDelete.length === 1 ? 'pool' : 'pools'} deleted.`
+                `${resourcePoolToDelete.length} resource ${
+                  resourcePoolToDelete.length === 1 ? 'pool' : 'pools'
+                } deleted.`
               );
               this.refresh();
             },

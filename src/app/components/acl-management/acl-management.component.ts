@@ -165,7 +165,7 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
 
   addACE() {
     const dialogRef = this.dialog.open(AddAceDialogComponent, {
-      panelClass: ['base-dialog-panel', 'add-ace-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'add-ace-dialog-panel', 'dialog-extra-large-panel'],
       autoFocus: false,
       disableClose: true,
       data: { endpoints: this.endpoints() },
@@ -178,7 +178,7 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
   onDelete(ace: ACE) {
     this.dialog
       .open(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
           title: 'Delete access rule?',
@@ -219,7 +219,7 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
     const selectedAces = [...this.selection.selected];
     this.dialog
       .open(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
           title: 'Delete access rules?',

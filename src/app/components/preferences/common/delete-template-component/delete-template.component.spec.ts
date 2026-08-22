@@ -94,7 +94,7 @@ describe('DeleteTemplateComponent', () => {
     component.deleteItem(templateName, templateId);
 
     expect((component as any).dialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Delete template?',

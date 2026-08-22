@@ -23,7 +23,7 @@ export class IdlePcActionComponent {
 
   idlePC() {
     const dialogRef = this.dialog.open(IdlePCDialogComponent, {
-      panelClass: ['base-dialog-panel', 'idle-pc-action-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'idle-pc-action-dialog-panel', 'dialog-small-panel'],
       autoFocus: false,
       disableClose: false,
     });

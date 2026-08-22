@@ -80,7 +80,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   ];
   private conf = {
     autoFocus: false,
-    panelClass: ['base-dialog-panel', 'docker-configurator-dialog-panel'],
+    panelClass: ['base-dialog-panel', 'docker-configurator-dialog-panel', 'dialog-extra-large-panel'],
     disableClose: true,
   };
   private networkConfigurationDialog = {
@@ -117,7 +117,8 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   readonly extraConfigs = signal<ExtraConfig[]>([]);
   readonly usage = model('');
   readonly netmikoDeviceType = model('');
-  readonly defaultUsername = model(''); readonly defaultPassword = model('');
+  readonly defaultUsername = model('');
+  readonly defaultPassword = model('');
   // inherited values shown as placeholders when the node fields are empty
   readonly defaultUsernamePlaceholder = signal('');
   readonly defaultPasswordPlaceholder = signal('');
@@ -145,7 +146,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
         this.environment.set(node.properties.environment || '');
         this.extraHosts.set(node.properties.extra_hosts || '');
         const volumes = node.properties.extra_volumes;
-        this.extraVolumes.set(Array.isArray(volumes) ? volumes.join('\n') : (volumes || ''));
+        this.extraVolumes.set(Array.isArray(volumes) ? volumes.join('\n') : volumes || '');
         this.extraConfigs.set(
           (node.properties.extra_configs || []).map((c) => ({ target: c.target || '', content: c.content ?? '' }))
         );
@@ -159,8 +160,12 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
             next: (templates) => {
               const metadata = templates.find((tpl) => tpl.template_id === node.template_id)?.appliance_metadata;
               if (metadata) {
-                this.defaultUsernamePlaceholder.set(node.default_username ? '' : (metadata.default_username as string) || '');
-                this.defaultPasswordPlaceholder.set(node.default_password ? '' : (metadata.default_password as string) || '');
+                this.defaultUsernamePlaceholder.set(
+                  node.default_username ? '' : (metadata.default_username as string) || ''
+                );
+                this.defaultPasswordPlaceholder.set(
+                  node.default_password ? '' : (metadata.default_password as string) || ''
+                );
                 this.cd.markForCheck();
               }
             },
@@ -328,7 +333,11 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     this.node.properties.console_http_path = this.consoleHttpPath();
     this.node.properties.environment = this.environment();
     this.node.properties.extra_hosts = this.extraHosts();
-    this.node.properties.extra_volumes = this.extraVolumes() ? this.extraVolumes().split('\n').filter((v) => v.trim()) : [] as any;
+    this.node.properties.extra_volumes = this.extraVolumes()
+      ? this.extraVolumes()
+          .split('\n')
+          .filter((v) => v.trim())
+      : ([] as any);
     const extraConfigs = this.extraConfigs()
       .filter((c) => (c.target || '').trim())
       .map((c) => ({ target: c.target.trim(), content: c.content ?? '' }));

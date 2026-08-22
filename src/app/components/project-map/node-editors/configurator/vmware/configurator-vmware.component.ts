@@ -173,7 +173,7 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
     }
 
     const dialogRef = this.dialog.open(CustomAdaptersComponent, {
-      panelClass: 'custom-adapters-dialog-panel',
+      panelClass: ['custom-adapters-dialog-panel', 'dialog-extra-large-panel'],
       data: {
         adapters: adaptersForDialog,
         networkTypes: this.networkTypes,

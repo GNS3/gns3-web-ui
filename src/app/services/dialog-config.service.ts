@@ -94,8 +94,7 @@ export class DialogConfigService {
       panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'add-controller-dialog-panel'],
     });
 
-    // Custom Adapters Dialog
-    // Size defined in CSS: .custom-adapters-dialog-panel (1000px)
+    // Custom Adapters Dialog - extra-large (1040px) adapter grid.
     this.configs.set('customAdapters', {
       ...extraLargeConfig,
       panelClass: ['base-dialog-panel', 'dialog-extra-large-panel', 'custom-adapters-dialog-panel'],
@@ -107,14 +106,13 @@ export class DialogConfigService {
       panelClass: ['base-dialog-panel', 'dialog-large-panel', 'edit-project-dialog-panel'],
     });
 
-    // Add ACE Dialog
-    // Size defined in CSS: .add-ace-dialog-panel (1000px)
+    // Add ACE Dialog - extra-large (1040px) rule editor.
     this.configs.set('addAce', {
       ...configuratorConfig,
       panelClass: ['base-dialog-panel', 'dialog-extra-large-panel', 'add-ace-dialog-panel'],
     });
 
-    // Start Capture Dialog - simple dialog (500px)
+    // Start Capture Dialog - simple dialog (medium, 720px)
     this.configs.set('startCapture', {
       ...simpleConfig,
       panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'simple-dialog-panel'],
@@ -132,7 +130,7 @@ export class DialogConfigService {
       panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'simple-dialog-panel'],
     });
 
-    // Help Dialog - simple dialog (500px)
+    // Help Dialog - simple dialog (medium, 720px)
     this.configs.set('helpDialog', {
       ...simpleConfig,
       panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'simple-dialog-panel'],

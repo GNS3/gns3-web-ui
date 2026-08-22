@@ -212,7 +212,7 @@ describe('IdlePcActionComponent', () => {
       component.idlePC();
 
       expect(mockDialog.open).toHaveBeenCalledWith(IdlePCDialogComponent, {
-        panelClass: ['base-dialog-panel', 'idle-pc-action-dialog-panel'],
+        panelClass: ['base-dialog-panel', 'idle-pc-action-dialog-panel', 'dialog-small-panel'],
         autoFocus: false,
         disableClose: false,
       });

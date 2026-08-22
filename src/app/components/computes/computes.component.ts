@@ -196,7 +196,7 @@ export class ComputesComponent implements OnInit, OnDestroy {
 
   openAddDialog() {
     const dialogRef = this.dialog.open(AddComputeDialogComponent, {
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'dialog-medium-panel'],
       autoFocus: false,
       disableClose: true,
       data: { controller: this.controller },
@@ -224,7 +224,7 @@ export class ComputesComponent implements OnInit, OnDestroy {
     this.computeService.getCompute(this.controller, compute.compute_id).subscribe({
       next: (fullCompute) => {
         const dialogRef = this.dialog.open(AddComputeDialogComponent, {
-          panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+          panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'dialog-medium-panel'],
           autoFocus: false,
           disableClose: true,
           data: { controller: this.controller, compute: fullCompute },
@@ -256,7 +256,7 @@ export class ComputesComponent implements OnInit, OnDestroy {
 
   deleteCompute(compute: Compute) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
       disableClose: true,
       data: {

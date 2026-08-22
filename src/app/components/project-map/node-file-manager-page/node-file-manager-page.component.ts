@@ -1,4 +1,15 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal, computed, model, viewChild, ElementRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  inject,
+  input,
+  signal,
+  computed,
+  model,
+  viewChild,
+  ElementRef,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -136,14 +147,24 @@ export class NodeFileManagerPageComponent implements OnInit {
 
   subdirs = computed(() => {
     const entries = this.getDirCache(this.currentPath());
-    return entries.filter((f: any) => f.file_type === 'directory').map((d: any) => ({
-      name: d.path.split('/').pop()!,
-      path: d.path,
-    }));
+    return entries
+      .filter((f: any) => f.file_type === 'directory')
+      .map((d: any) => ({
+        name: d.path.split('/').pop()!,
+        path: d.path,
+      }));
   });
 
   viewItems = computed(() => {
-    const dirs = this.subdirs().map(d => ({ isDir: true as const, name: d.name, path: d.path, size: 0, created_at: '', modified_at: '', file_type: 'directory' }));
+    const dirs = this.subdirs().map((d) => ({
+      isDir: true as const,
+      name: d.name,
+      path: d.path,
+      size: 0,
+      created_at: '',
+      modified_at: '',
+      file_type: 'directory',
+    }));
     const files = this.currentFiles().map((f: any) => ({ isDir: false as const, name: this.fileName(f), ...f }));
     return [...dirs, ...files];
   });
@@ -172,7 +193,7 @@ export class NodeFileManagerPageComponent implements OnInit {
 
   private addToTree(dirPath: string, entries: any[]) {
     const tree = this.treeNodes();
-    const exists = tree.some(n => n.path === dirPath);
+    const exists = tree.some((n) => n.path === dirPath);
     if (exists) return;
     const name = dirPath.split('/').pop() || dirPath;
     tree.push({ name, path: dirPath, expanded: false, loading: false });
@@ -201,7 +222,7 @@ export class NodeFileManagerPageComponent implements OnInit {
   treeIsLastChild(path: string): boolean {
     const parts = path.split('/');
     const parent = parts.slice(0, -1).join('/');
-    const siblings = this.treeNodes().filter(n => {
+    const siblings = this.treeNodes().filter((n) => {
       const np = n.path.split('/');
       np.pop();
       return np.join('/') === parent;
@@ -236,7 +257,7 @@ export class NodeFileManagerPageComponent implements OnInit {
           this.loading.set(false);
           this.toaster.error('Failed to load controller');
           this.cd.markForCheck();
-        },
+        }
       );
     }
   }
@@ -257,7 +278,11 @@ export class NodeFileManagerPageComponent implements OnInit {
         this.loading.set(false);
         this.cd.markForCheck();
       },
-      error: (err) => { this.error.set(err.error?.message || err.message || 'Failed to load files'); this.loading.set(false); this.cd.markForCheck(); },
+      error: (err) => {
+        this.error.set(err.error?.message || err.message || 'Failed to load files');
+        this.loading.set(false);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -272,7 +297,9 @@ export class NodeFileManagerPageComponent implements OnInit {
         }
         this.cd.markForCheck();
       },
-      error: (err) => { this.toaster.error(err.error?.message || err.message || 'Failed to load directory'); },
+      error: (err) => {
+        this.toaster.error(err.error?.message || err.message || 'Failed to load directory');
+      },
     });
   }
 
@@ -339,7 +366,12 @@ export class NodeFileManagerPageComponent implements OnInit {
         this.updateLineCount(content);
         this.cd.markForCheck();
       },
-      error: (err) => { this.toaster.error(err.error?.message || err.message || 'Failed to load file'); this.loadingContent.set(false); this.cancelEdit(); this.cd.markForCheck(); },
+      error: (err) => {
+        this.toaster.error(err.error?.message || err.message || 'Failed to load file');
+        this.loadingContent.set(false);
+        this.cancelEdit();
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -349,12 +381,25 @@ export class NodeFileManagerPageComponent implements OnInit {
     this.saving.set(true);
     const ctrl = this.controller();
     this.nodeService.saveNodeFileContent(ctrl, this.projectId, this.nodeId, file.path, this.editContent()).subscribe({
-      next: () => { this.toaster.success(`File "${file.path}" saved.`); this.saving.set(false); this.editingFile.set(null); this.loadFiles(); this.cd.markForCheck(); },
-      error: (err) => { this.toaster.error(err.error?.message || err.message || 'Failed to save file'); this.saving.set(false); this.cd.markForCheck(); },
+      next: () => {
+        this.toaster.success(`File "${file.path}" saved.`);
+        this.saving.set(false);
+        this.editingFile.set(null);
+        this.loadFiles();
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        this.toaster.error(err.error?.message || err.message || 'Failed to save file');
+        this.saving.set(false);
+        this.cd.markForCheck();
+      },
     });
   }
 
-  cancelEdit() { this.editingFile.set(null); this.editContent.set(''); }
+  cancelEdit() {
+    this.editingFile.set(null);
+    this.editContent.set('');
+  }
 
   onEditorScroll(event: Event) {
     const textarea = event.target as HTMLElement;
@@ -362,7 +407,9 @@ export class NodeFileManagerPageComponent implements OnInit {
     if (gutter) gutter.scrollTop = textarea.scrollTop;
   }
 
-  updateLineCount(content: string) { this.lineCount.set((content.match(/\n/g) || []).length + 1); }
+  updateLineCount(content: string) {
+    this.lineCount.set((content.match(/\n/g) || []).length + 1);
+  }
 
   onContentChange(value: string) {
     this.editContent.set(value);
@@ -371,13 +418,16 @@ export class NodeFileManagerPageComponent implements OnInit {
   }
 
   getLineState(num: number): 'modified' | 'added' | 'unchanged' {
-    const orig = this.originalLines(), curr = this.currentLines();
+    const orig = this.originalLines(),
+      curr = this.currentLines();
     const idx = num - 1;
     if (idx < orig.length && idx < curr.length) return orig[idx] !== curr[idx] ? 'modified' : 'unchanged';
     return idx < curr.length ? 'added' : 'unchanged';
   }
 
-  lineNumbers(): number[] { return Array.from({ length: this.lineCount() }, (_, i) => i + 1); }
+  lineNumbers(): number[] {
+    return Array.from({ length: this.lineCount() }, (_, i) => i + 1);
+  }
 
   // ── Upload ──
   onUploadClick() {
@@ -385,7 +435,10 @@ export class NodeFileManagerPageComponent implements OnInit {
     input.type = 'file';
     input.style.display = 'none';
     document.body.appendChild(input);
-    input.addEventListener('change', (e) => { this.onFileSelected(e); document.body.removeChild(input); });
+    input.addEventListener('change', (e) => {
+      this.onFileSelected(e);
+      document.body.removeChild(input);
+    });
     input.click();
   }
 
@@ -428,14 +481,25 @@ export class NodeFileManagerPageComponent implements OnInit {
     // Chromium File System Access API path
     if (picker) {
       let handle: any;
-      try { handle = await picker({ suggestedName: file.path }); } catch { return; }
+      try {
+        handle = await picker({ suggestedName: file.path });
+      } catch {
+        return;
+      }
       this.downloading.set(true);
       this.downloadProgress.set(0);
       try {
-        await this.nodeService.streamNodeFileToFile(this.controller(), this.projectId, this.nodeId, file.path, handle, (d) => {
-          this.downloadProgress.set(file.size > 0 ? Math.min(Math.round(d / file.size * 100), 100) : 0);
-          this.cd.markForCheck();
-        });
+        await this.nodeService.streamNodeFileToFile(
+          this.controller(),
+          this.projectId,
+          this.nodeId,
+          file.path,
+          handle,
+          (d) => {
+            this.downloadProgress.set(file.size > 0 ? Math.min(Math.round((d / file.size) * 100), 100) : 0);
+            this.cd.markForCheck();
+          }
+        );
         this.downloading.set(false);
         this.downloadProgress.set(0);
         this.toaster.success(`File "${file.path}" downloaded.`);
@@ -476,10 +540,12 @@ export class NodeFileManagerPageComponent implements OnInit {
   deleteFile(file: any) {
     const isDir = file.isDir || file.file_type === 'directory';
     const ref = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
       data: {
         title: isDir ? 'Delete directory' : 'Delete file',
-        message: `Are you sure you want to delete "${file.path}"?${isDir ? ' This will permanently remove the directory and all its contents.' : ''}`,
+        message: `Are you sure you want to delete "${file.path}"?${
+          isDir ? ' This will permanently remove the directory and all its contents.' : ''
+        }`,
         confirmButtonText: isDir ? 'Delete directory' : 'Delete',
         cancelButtonText: 'Cancel',
       },
@@ -500,13 +566,17 @@ export class NodeFileManagerPageComponent implements OnInit {
           }
           // Remove from tree nodes
           if (file.isDir || file.file_type === 'directory') {
-            this.treeNodes.set(this.treeNodes().filter(n => n.path !== file.path && !n.path.startsWith(file.path + '/')));
+            this.treeNodes.set(
+              this.treeNodes().filter((n) => n.path !== file.path && !n.path.startsWith(file.path + '/'))
+            );
           }
           this.cd.markForCheck();
         },
-        error: (err) => { this.toaster.error(err.error?.message || err.message || 'Delete failed'); this.cd.markForCheck(); },
+        error: (err) => {
+          this.toaster.error(err.error?.message || err.message || 'Delete failed');
+          this.cd.markForCheck();
+        },
       });
     });
   }
-
 }

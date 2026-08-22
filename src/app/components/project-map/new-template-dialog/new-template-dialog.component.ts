@@ -45,7 +45,11 @@ import { IosTemplate } from '@models/templates/ios-template';
 import { IouTemplate } from '@models/templates/iou-template';
 import { QemuTemplate } from '@models/templates/qemu-template';
 import { ApplianceService } from '@services/appliances.service';
-import { getVersionSettingProperties, buildApplianceMetadata, normalizeAppliance } from '@services/appliance-normalizer';
+import {
+  getVersionSettingProperties,
+  buildApplianceMetadata,
+  normalizeAppliance,
+} from '@services/appliance-normalizer';
 import { ControllerService } from '@services/controller.service';
 import { DockerService } from '@services/docker.service';
 import { IosService } from '@services/ios.service';
@@ -186,9 +190,7 @@ export class NewTemplateDialogComponent implements OnInit {
 
   readonly lastStepIndex = computed(() => (this.requiresImages() ? 3 : 2));
 
-  readonly browseStepTitle = computed(() =>
-    this.action() === 'install' ? 'Choose appliance' : 'Import appliance'
-  );
+  readonly browseStepTitle = computed(() => (this.action() === 'install' ? 'Choose appliance' : 'Import appliance'));
 
   readonly browseStepDescription = computed(() =>
     this.action() === 'install' ? 'Select from the registry' : 'Upload a .gns3a file'
@@ -426,8 +428,7 @@ export class NewTemplateDialogComponent implements OnInit {
    * editing. Mirrors the behaviour of the manual template creation pages.
    */
   goBack(): void {
-    const controllerId =
-      this.controller?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id') ?? '', 10);
+    const controllerId = this.controller?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id') ?? '', 10);
     this.router.navigate(['/controller', controllerId, 'preferences']);
   }
 
@@ -699,65 +700,67 @@ export class NewTemplateDialogComponent implements OnInit {
 
     this.computeChecksumMd5(file, false, (percent) => {
       this.uploadServiceService.processBarCount(percent);
-    }).then((output) => {
-      if (this.checksumCancelled) return;
+    })
+      .then((output) => {
+        if (this.checksumCancelled) return;
 
-      const imageToInstall = this.applianceToInstall()?.images?.find((n) => n.filename === imageName);
+        const imageToInstall = this.applianceToInstall()?.images?.find((n) => n.filename === imageName);
 
-      // Defensive: an imported .gns3a may reference a version image that is
-      // missing from the top-level images array. Bail out cleanly instead of
-      // crashing on imageToInstall.md5sum and leaving the wizard stuck.
-      if (!imageToInstall) {
+        // Defensive: an imported .gns3a may reference a version image that is
+        // missing from the top-level images array. Bail out cleanly instead of
+        // crashing on imageToInstall.md5sum and leaving the wizard stuck.
+        if (!imageToInstall) {
+          this.resetUploadState();
+          this.toasterService.error(`Image '${imageName}' was not found in the appliance definition`);
+          this.cd.markForCheck();
+          return;
+        }
+
+        if (imageToInstall.md5sum !== output) {
+          // Close the checksum snackbar so it does not linger behind the dialog.
+          this.uploadServiceService.processBarCount(null);
+          this.uploadServiceService.setMessage('');
+          this.uploadServiceService.setComputing(false);
+          this.progressService.deactivate();
+          const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+            autoFocus: '.cancel-button',
+            disableClose: true,
+            panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel', 'dialog-small-panel'],
+            data: {
+              title: 'Use image with a different checksum?',
+              message: `The selected file has MD5 checksum ${output}, but ${imageToInstall.md5sum} was expected.`,
+              note: 'Only continue if you trust this image.',
+              confirmButtonText: 'Use image',
+              tone: 'warning',
+              icon: 'verified_user',
+            },
+          });
+          dialogRef.afterClosed().subscribe((answer: boolean) => {
+            if (answer) {
+              this.openSnackBar();
+              this.uploadServiceService.setMessage('Uploading');
+              this.uploadServiceService.setComputing(false);
+              this.importImageFile(imageName);
+            } else {
+              this.resetUploadState();
+              this.cd.markForCheck();
+            }
+          });
+        } else {
+          this.uploadServiceService.setMessage('Uploading');
+          this.uploadServiceService.setComputing(false);
+          this.uploadServiceService.processBarCount(0);
+          this.importImageFile(imageName);
+        }
+      })
+      .catch((err) => {
+        // A local read error must close the progress UI and clear the queued
+        // file; otherwise the wizard remains in a stale checksum phase.
+        if (this.checksumCancelled) return;
         this.resetUploadState();
-        this.toasterService.error(`Image '${imageName}' was not found in the appliance definition`);
+        this.toasterService.error(typeof err === 'string' ? err : 'MD5 computation failed - error reading the file');
         this.cd.markForCheck();
-        return;
-      }
-
-      if (imageToInstall.md5sum !== output) {
-        // Close the checksum snackbar so it does not linger behind the dialog.
-        this.uploadServiceService.processBarCount(null);
-        this.uploadServiceService.setMessage('');
-        this.uploadServiceService.setComputing(false);
-        this.progressService.deactivate();
-        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-          autoFocus: '.cancel-button',
-          disableClose: true,
-          panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
-          data: {
-            title: 'Use image with a different checksum?',
-            message: `The selected file has MD5 checksum ${output}, but ${imageToInstall.md5sum} was expected.`,
-            note: 'Only continue if you trust this image.',
-            confirmButtonText: 'Use image',
-            tone: 'warning',
-            icon: 'verified_user',
-          },
-        });
-        dialogRef.afterClosed().subscribe((answer: boolean) => {
-          if (answer) {
-            this.openSnackBar();
-            this.uploadServiceService.setMessage('Uploading');
-            this.uploadServiceService.setComputing(false);
-            this.importImageFile(imageName);
-          } else {
-            this.resetUploadState();
-            this.cd.markForCheck();
-          }
-        });
-      } else {
-        this.uploadServiceService.setMessage('Uploading');
-        this.uploadServiceService.setComputing(false);
-        this.uploadServiceService.processBarCount(0);
-        this.importImageFile(imageName);
-      }
-    }).catch((err) => {
-      // A local read error must close the progress UI and clear the queued
-      // file; otherwise the wizard remains in a stale checksum phase.
-      if (this.checksumCancelled) return;
-      this.resetUploadState();
-      this.toasterService.error(typeof err === 'string' ? err : 'MD5 computation failed - error reading the file');
-      this.cd.markForCheck();
-    });
+      });
   }
 
   private importImageFile(imageName: string) {
@@ -844,14 +847,17 @@ export class NewTemplateDialogComponent implements OnInit {
    * Check if all images in a version are ready
    */
   isVersionComplete(version: Version): boolean {
-    return this.getVersionImageCount(version) > 0 && this.getVersionReadyCount(version) === this.getVersionImageCount(version);
+    return (
+      this.getVersionImageCount(version) > 0 &&
+      this.getVersionReadyCount(version) === this.getVersionImageCount(version)
+    );
   }
 
   openConfirmationDialog(message: string, link: string) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       autoFocus: '.cancel-button',
       disableClose: true,
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-neutral-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-neutral-panel', 'dialog-small-panel'],
       data: {
         title: 'Open external download?',
         message,
@@ -1128,11 +1134,7 @@ export class NewTemplateDialogComponent implements OnInit {
       .join(', ');
   }
 
-  private computeChecksumMd5(
-    file: File,
-    encode = false,
-    onProgress?: (percent: number) => void
-  ): Promise<string> {
+  private computeChecksumMd5(file: File, encode = false, onProgress?: (percent: number) => void): Promise<string> {
     return new Promise((resolve, reject) => {
       const chunkSize = 2097152;
       const spark = new SparkMD5.ArrayBuffer();

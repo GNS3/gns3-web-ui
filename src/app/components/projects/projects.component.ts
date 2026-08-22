@@ -132,7 +132,7 @@ export class ProjectsComponent implements OnInit {
         paginator.firstPage();
       }
     },
-    { allowSignalWrites: true },
+    { allowSignalWrites: true }
   );
 
   /** Avoid destructive bulk actions retaining projects hidden by a filter. */
@@ -151,15 +151,13 @@ export class ProjectsComponent implements OnInit {
     // Filter by name or created_by
     if (search) {
       projects = projects.filter(
-        p =>
-          p.name.toLowerCase().includes(search) ||
-          (p.created_by && p.created_by.toLowerCase().includes(search)),
+        (p) => p.name.toLowerCase().includes(search) || (p.created_by && p.created_by.toLowerCase().includes(search))
       );
     }
 
     // Filter by status
     if (statusFilter !== 'all') {
-      projects = projects.filter(p => p.status === statusFilter);
+      projects = projects.filter((p) => p.status === statusFilter);
     }
 
     // Sort
@@ -234,9 +232,7 @@ export class ProjectsComponent implements OnInit {
     this.settings = this.settingsService.getAll();
 
     // Subscribe to external refresh requests
-    this.projectService.projectListSubject
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.refresh());
+    this.projectService.projectListSubject.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.refresh());
 
     // Subscribe to global project notifications for incremental updates
     this.notificationService.projectNotificationEmitter
@@ -324,9 +320,9 @@ export class ProjectsComponent implements OnInit {
 
   // ── WebSocket notification handler ────────────────────────────
   private handleProjectNotification(notification: ProjectNotification): void {
-    this._projects.update(projects => {
+    this._projects.update((projects) => {
       const list = [...projects];
-      const index = list.findIndex(p => p.project_id === notification.event.project_id);
+      const index = list.findIndex((p) => p.project_id === notification.event.project_id);
       switch (notification.action) {
         case 'project.created':
           if (index === -1) list.push(notification.event);
@@ -350,7 +346,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   private setProjectLoading(projectId: string, loading: boolean): void {
-    this._loadingProjects.update(set => {
+    this._loadingProjects.update((set) => {
       const next = new Set(set);
       if (loading) next.add(projectId);
       else next.delete(projectId);
@@ -369,7 +365,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   allChecked() {
-    this.displayProjects().forEach(row => this.selection.select(row));
+    this.displayProjects().forEach((row) => this.selection.select(row));
   }
 
   // ── CRUD operations ───────────────────────────────────────────
@@ -482,7 +478,7 @@ export class ProjectsComponent implements OnInit {
     const dialogRef = this.dialog.open(EditProjectDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'edit-project-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'edit-project-dialog-panel', 'dialog-large-panel'],
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
@@ -551,11 +547,13 @@ export class ProjectsComponent implements OnInit {
   deleteAllFiles() {
     const projects = this.selection.selected;
     const confirmationRef = this.dialog.open(ConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Delete selected projects?',
-        message: `${projects.length} selected ${projects.length === 1 ? 'project' : 'projects'} will be permanently deleted.`,
+        message: `${projects.length} selected ${
+          projects.length === 1 ? 'project' : 'projects'
+        } will be permanently deleted.`,
         details: projects.map((project) => project.name || project.project_id),
         note: 'This action cannot be undone.',
         confirmButtonText: projects.length === 1 ? 'Delete project' : 'Delete projects',
@@ -573,7 +571,12 @@ export class ProjectsComponent implements OnInit {
 
   private openProjectDeletionProgress(projects: Project[]): void {
     const dialogRef = this.dialog.open(ConfirmationDeleteAllProjectsComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'delete-all-projects-dialog-panel'],
+      panelClass: [
+        'base-confirmation-dialog-panel',
+        'confirmation-danger-panel',
+        'delete-all-projects-dialog-panel',
+        'dialog-small-panel',
+      ],
       autoFocus: false,
       disableClose: true,
       data: {

@@ -487,25 +487,6 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
 }
 
 /* =============================================
-// Information Dialog Panel
-// For general information and MD5 confirmation
-// ============================================= */
-.information-dialog-panel {
-  .mat-mdc-dialog-content {
-    color: var(--mat-sys-on-surface-variant);
-    font-size: 14px;
-    line-height: 1.6;
-  }
-
-  .information-dialog__message {
-    margin: 0;
-    color: var(--mat-sys-on-surface-variant);
-    font-size: 14px;
-    line-height: 1.6;
-  }
-}
-
-/* =============================================
 // Confirmation Danger Panel
 // For dangerous operations (delete, remove, etc.)
 // ============================================= */
@@ -534,22 +515,6 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
   button.mat-mdc-raised-button {
     background-color: var(--mat-sys-tertiary);
     color: var(--mat-sys-on-tertiary);
-  }
-}
-
-/* =============================================
-// Confirmation Info Panel
-// For informational confirmations
-// ============================================= */
-.confirmation-info-panel {
-  .mat-mdc-dialog-surface {
-    border: 1px solid var(--mat-sys-primary-container);
-  }
-
-  .confirm-button,
-  button.mat-mdc-raised-button {
-    background-color: var(--mat-sys-primary);
-    color: var(--mat-sys-on-primary);
   }
 }
 
@@ -1471,16 +1436,8 @@ html[data-density='compact'] .node-configurator-dialog-panel {
   }
 }
 
-// Docker Configurator - 800px
+// Docker Configurator (standalone template-details shell)
 .docker-configurator-dialog-panel:not(.node-configurator-dialog-panel) {
-  --mat-dialog-container-max-width: 800px;
-
-  mat-dialog-container,
-  .mat-mdc-dialog-container {
-    width: 800px;
-    max-width: 800px;
-  }
-
   /* Two column grid layout for form fields */
   .two-column-grid {
     display: grid;
@@ -1530,14 +1487,6 @@ html[data-density='compact'] .node-configurator-dialog-panel {
 /* =============================================
 // Other Component Dialogs
 // ============================================= */
-
-// Template Dialog - 600px
-// The old explicit width rules never won against the Standard Dialog System
-// (which resolved --gns3-dialog-width to 720px via the legacy group below);
-// set the variable instead so 600px actually applies.
-.template-dialog-panel {
-  --gns3-dialog-width: 600px;
-}
 
 // Add-nodes dialog: the collapsed "Advanced options" expansion panel lies flat
 // on the dialog surface; body content is inset and given vertical breathing
@@ -1899,66 +1848,8 @@ html[data-density='compact'] .node-configurator-dialog-panel {
   }
 }
 
-// Legacy assignments kept as compatibility aliases while callers migrate to
-// dialog-small-panel, dialog-medium-panel, dialog-large-panel, and
-// dialog-extra-large-panel.
-:is(.configurator-dialog-panel:not(.node-configurator-dialog-panel), .edit-project-dialog-panel) {
-  --gns3-dialog-width: 880px;
-}
-
-:is(
-    .custom-adapters-dialog-panel,
-    .add-ace-dialog-panel,
-    .docker-configurator-dialog-panel:not(.node-configurator-dialog-panel),
-    .code-block-dialog-panel
-  ) {
-  --gns3-dialog-width: 1040px;
-}
-
-.ai-profile-dialog-panel {
-  --gns3-dialog-width: 880px;
-}
-
-// Node info dialog - read-only key/value content fits 600px.
-.show-node-action-dialog-panel {
-  --gns3-dialog-width: 600px;
-}
-
-:is(
-    .simple-dialog-panel,
-    .change-symbol-dialog-panel,
-    .controller-dialog-panel,
-    .controller-small-dialog-panel,
-    .edit-controller-dialog-panel,
-    .add-controller-dialog-panel,
-    .add-user-dialog-panel,
-    .edit-text-action-dialog-panel,
-    .edit-style-action-dialog-panel,
-    .edit-config-action-dialog-panel,
-    .export-config-action-dialog-panel,
-    .import-config-action-dialog-panel,
-    .qemu-configurator-dialog-panel,
-    .fault-injection-dialog-panel
-  ) {
-  --gns3-dialog-width: 720px;
-}
-
-:is(
-    .base-confirmation-dialog-panel,
-    .information-dialog-panel,
-    .question-dialog-panel,
-    .choose-name-dialog-panel,
-    .add-blank-project-dialog-panel,
-    .import-project-dialog-panel,
-    .add-image-dialog-panel,
-    .delete-all-images-dialog-panel,
-    .delete-all-projects-dialog-panel,
-    .change-user-password-dialog-panel,
-    .idle-pc-action-dialog-panel
-  ) {
-  --gns3-dialog-width: 440px;
-}
-
+// The four standard sizes are the single width source for the SDS shell;
+// every dialog call site declares exactly one of them.
 .dialog-small-panel {
   --gns3-dialog-width: 440px;
 }
@@ -1973,6 +1864,13 @@ html[data-density='compact'] .node-configurator-dialog-panel {
 
 .dialog-extra-large-panel {
   --gns3-dialog-width: 1040px;
+}
+
+// Width deviations from the four standard sizes. Declared AFTER the size
+// classes so the override wins regardless of class order on the panel element.
+// Template gallery and read-only node info fit 600px.
+:is(.template-dialog-panel, .show-node-action-dialog-panel) {
+  --gns3-dialog-width: 600px;
 }
 
 // Shared destructive actions use semantic error tokens in every dialog size.
@@ -1996,19 +1894,7 @@ button.destructive-icon-button {
 
 // Short dialogs still need a clear content area between their title and
 // action row. This also covers legacy forms without mat-dialog-content.
-:is(
-    .dialog-small-panel,
-    .information-dialog-panel,
-    .question-dialog-panel,
-    .choose-name-dialog-panel,
-    .add-blank-project-dialog-panel,
-    .import-project-dialog-panel,
-    .add-image-dialog-panel,
-    .delete-all-images-dialog-panel,
-    .delete-all-projects-dialog-panel,
-    .change-user-password-dialog-panel,
-    .idle-pc-action-dialog-panel
-  ) {
+.dialog-small-panel {
   .mat-mdc-dialog-content,
   .modal-form-container {
     padding-block: 24px;
@@ -2076,20 +1962,7 @@ html[data-density='compact'] .mat-mdc-dialog-actions {
   }
 }
 
-html[data-density='compact']
-  :is(
-    .dialog-small-panel,
-    .information-dialog-panel,
-    .question-dialog-panel,
-    .choose-name-dialog-panel,
-    .add-blank-project-dialog-panel,
-    .import-project-dialog-panel,
-    .add-image-dialog-panel,
-    .delete-all-images-dialog-panel,
-    .delete-all-projects-dialog-panel,
-    .change-user-password-dialog-panel,
-    .idle-pc-action-dialog-panel
-  ) {
+html[data-density='compact'] .dialog-small-panel {
   .mat-mdc-dialog-content,
   .modal-form-container {
     padding-block: 16px;

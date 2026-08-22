@@ -59,7 +59,7 @@ export class LockActionComponent implements OnChanges {
       const action = isLocking ? 'lock' : 'unlock';
 
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
           title: `${action === 'lock' ? 'Lock' : 'Unlock'} selected items?`,
@@ -96,10 +96,9 @@ export class LockActionComponent implements OnChanges {
     const completion = createActionCompletion(operationCount, (count) => {
       this.projectService.projectUpdateLockIcon();
       if (count > 0) {
-        this.toasterService.success(
-          `Lock status updated for ${count} ${count === 1 ? 'item' : 'items'}.`,
-          { showToast: false }
-        );
+        this.toasterService.success(`Lock status updated for ${count} ${count === 1 ? 'item' : 'items'}.`, {
+          showToast: false,
+        });
       }
     });
 

@@ -1,4 +1,13 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, signal, inject, computed } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  OnInit,
+  model,
+  signal,
+  inject,
+  computed,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -404,7 +413,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     }
 
     const dialogRef = this.dialog.open(CustomAdaptersComponent, {
-      panelClass: 'custom-adapters-dialog-panel',
+      panelClass: ['custom-adapters-dialog-panel', 'dialog-extra-large-panel'],
       data: {
         adapters: adaptersForDialog,
         networkTypes: this.networkTypes,
@@ -491,7 +500,10 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
       return;
     }
     const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
-    if (!netmikoValidation.isValid) { this.toasterService.error(netmikoValidation.errorMessage); return; }
+    if (!netmikoValidation.isValid) {
+      this.toasterService.error(netmikoValidation.errorMessage);
+      return;
+    }
 
     // Update qemuTemplate from model signals
     this.qemuTemplate.name = this.templateName();
@@ -604,14 +616,28 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
   toggleSection(section: string): void {
     switch (section) {
-      case 'general': this.generalSettingsExpanded = !this.generalSettingsExpanded; break;
-      case 'hdd': this.hddExpanded = !this.hddExpanded; break;
-      case 'cddvd': this.cdDvdExpanded = !this.cdDvdExpanded; break;
-      case 'network': this.networkExpanded = !this.networkExpanded; break;
-      case 'advanced': this.advancedExpanded = !this.advancedExpanded; break;
-      case 'usage': this.usageExpanded = !this.usageExpanded; break;
+      case 'general':
+        this.generalSettingsExpanded = !this.generalSettingsExpanded;
+        break;
+      case 'hdd':
+        this.hddExpanded = !this.hddExpanded;
+        break;
+      case 'cddvd':
+        this.cdDvdExpanded = !this.cdDvdExpanded;
+        break;
+      case 'network':
+        this.networkExpanded = !this.networkExpanded;
+        break;
+      case 'advanced':
+        this.advancedExpanded = !this.advancedExpanded;
+        break;
+      case 'usage':
+        this.usageExpanded = !this.usageExpanded;
+        break;
     }
   }
 
-  selectSection(section: string): void { this.activeSection = section; }
+  selectSection(section: string): void {
+    this.activeSection = section;
+  }
 }

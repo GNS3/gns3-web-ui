@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, Inject, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  Inject,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,8 +22,14 @@ import { ApiKey } from '@models/api/api-key';
 import { ApiKeyService } from '@services/api-key.service';
 import { ToasterService } from '@services/toaster.service';
 import { AddApiKeyDialogComponent } from './add-api-key-dialog/add-api-key-dialog.component';
-import { ApiKeyDisplayDialogComponent, ApiKeyDisplayDialogData } from './api-key-display-dialog/api-key-display-dialog.component';
-import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
+import {
+  ApiKeyDisplayDialogComponent,
+  ApiKeyDisplayDialogData,
+} from './api-key-display-dialog/api-key-display-dialog.component';
+import {
+  ConfirmationDialogComponent,
+  ConfirmationDialogData,
+} from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { filter } from 'rxjs';
 
 export interface ApiKeyManagementDialogData {
@@ -91,50 +106,56 @@ export class ApiKeyManagementDialogComponent implements OnInit {
   // ── Data fetching ─────────────────────────────────────────────
   private loadKeys() {
     this.isLoading.set(true);
-    this.apiKeyService.list(this.data.controller).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (keys) => {
-        this._keys.set(keys);
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        this.isLoading.set(false);
-        this.toasterService.error(err.error?.message || err.message || 'Failed to load API keys');
-      },
-    });
+    this.apiKeyService
+      .list(this.data.controller)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (keys) => {
+          this._keys.set(keys);
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          this.toasterService.error(err.error?.message || err.message || 'Failed to load API keys');
+        },
+      });
   }
 
   // ── Actions ───────────────────────────────────────────────────
   onCreate() {
     this.dialog
       .open(AddApiKeyDialogComponent, {
-        panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'add-api-key-dialog-panel'],
+        panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'add-api-key-dialog-panel', 'dialog-medium-panel'],
         autoFocus: false,
         disableClose: true,
       })
       .afterClosed()
       .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
       .subscribe((name: string) => {
-        this.apiKeyService.create(this.data.controller, name).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-          next: (response) => {
-            this.loadKeys();
-            this.dialog.open(ApiKeyDisplayDialogComponent, {
-              panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
-              autoFocus: false,
-              disableClose: true,
-              data: { response } satisfies ApiKeyDisplayDialogData,
-            });
-          },
-          error: (err) => {
-            this.toasterService.error(err.error?.message || err.message || 'Failed to create API key');
-          },
-        });
+        this.apiKeyService
+          .create(this.data.controller, name)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: (response) => {
+              this.loadKeys();
+              this.dialog.open(ApiKeyDisplayDialogComponent, {
+                panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'dialog-medium-panel'],
+                autoFocus: false,
+                disableClose: true,
+                data: { response } satisfies ApiKeyDisplayDialogData,
+              });
+            },
+            error: (err) => {
+              this.toasterService.error(err.error?.message || err.message || 'Failed to create API key');
+            },
+          });
       });
   }
 
   onRevoke(key: ApiKey) {
     this.dialog
       .open(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         data: {
           title: 'Revoke API Key',
           message: `Are you sure you want to revoke "${key.name}"? Any services using this key will immediately lose access. You can restore it later.`,
@@ -145,22 +166,25 @@ export class ApiKeyManagementDialogComponent implements OnInit {
       .afterClosed()
       .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        this.apiKeyService.revoke(this.data.controller, key.api_key_id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-          next: (response) => {
-            this.toasterService.success(response.message || 'API key revoked');
-            this.loadKeys();
-          },
-          error: (err) => {
-            this.toasterService.error(err.error?.message || err.message || 'Failed to revoke API key');
-          },
-        });
+        this.apiKeyService
+          .revoke(this.data.controller, key.api_key_id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: (response) => {
+              this.toasterService.success(response.message || 'API key revoked');
+              this.loadKeys();
+            },
+            error: (err) => {
+              this.toasterService.error(err.error?.message || err.message || 'Failed to revoke API key');
+            },
+          });
       });
   }
 
   onRestore(key: ApiKey) {
     this.dialog
       .open(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel', 'dialog-small-panel'],
         data: {
           title: 'Restore API Key',
           message: `Restore "${key.name}"? It will become active again.`,
@@ -171,22 +195,25 @@ export class ApiKeyManagementDialogComponent implements OnInit {
       .afterClosed()
       .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        this.apiKeyService.restore(this.data.controller, key.api_key_id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-          next: (response) => {
-            this.toasterService.success(response.message || 'API key restored');
-            this.loadKeys();
-          },
-          error: (err) => {
-            this.toasterService.error(err.error?.message || err.message || 'Failed to restore API key');
-          },
-        });
+        this.apiKeyService
+          .restore(this.data.controller, key.api_key_id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: (response) => {
+              this.toasterService.success(response.message || 'API key restored');
+              this.loadKeys();
+            },
+            error: (err) => {
+              this.toasterService.error(err.error?.message || err.message || 'Failed to restore API key');
+            },
+          });
       });
   }
 
   onPermanentDelete(key: ApiKey) {
     this.dialog
       .open(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         data: {
           title: 'Permanently Delete API Key',
           message: `Delete "${key.name}" permanently? This action cannot be undone.`,
@@ -197,15 +224,18 @@ export class ApiKeyManagementDialogComponent implements OnInit {
       .afterClosed()
       .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        this.apiKeyService.delete(this.data.controller, key.api_key_id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-          next: () => {
-            this.toasterService.success('API key permanently deleted');
-            this.loadKeys();
-          },
-          error: (err) => {
-            this.toasterService.error(err.error?.message || err.message || 'Failed to delete API key');
-          },
-        });
+        this.apiKeyService
+          .delete(this.data.controller, key.api_key_id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              this.toasterService.success('API key permanently deleted');
+              this.loadKeys();
+            },
+            error: (err) => {
+              this.toasterService.error(err.error?.message || err.message || 'Failed to delete API key');
+            },
+          });
       });
   }
 

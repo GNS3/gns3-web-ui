@@ -40,7 +40,7 @@ export class ImportConfigActionComponent {
     this.fileInput().nativeElement.value = '';
     if (this.node().node_type !== 'vpcs') {
       const dialogRef = this.dialog.open(ConfigDialogComponent, {
-        panelClass: ['base-dialog-panel', 'import-config-action-dialog-panel'],
+        panelClass: ['base-dialog-panel', 'import-config-action-dialog-panel', 'dialog-medium-panel'],
         autoFocus: false,
         disableClose: false,
       });
@@ -79,7 +79,9 @@ export class ImportConfigActionComponent {
             this.cdr.markForCheck();
           },
           error: (error) => {
-            this.toasterService.error(error.error?.message || error.message || 'Failed to import startup configuration');
+            this.toasterService.error(
+              error.error?.message || error.message || 'Failed to import startup configuration'
+            );
             this.cdr.markForCheck();
           },
         });
@@ -90,7 +92,9 @@ export class ImportConfigActionComponent {
             this.cdr.markForCheck();
           },
           error: (error) => {
-            this.toasterService.error(error.error?.message || error.message || 'Failed to import private configuration');
+            this.toasterService.error(
+              error.error?.message || error.message || 'Failed to import private configuration'
+            );
             this.cdr.markForCheck();
           },
         });

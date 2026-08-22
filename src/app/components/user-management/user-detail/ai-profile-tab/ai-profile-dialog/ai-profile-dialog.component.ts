@@ -252,31 +252,29 @@ export class AiProfileDialogComponent implements OnInit {
   private createForm(): FormGroup {
     this.customFieldsArray = this.fb.array([]);
 
-    return this.fb.group(
-      {
-        name: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(1),
-            Validators.maxLength(100),
-            Validators.pattern(/^[a-zA-Z0-9_-]+$/),
-            this.duplicateNameValidator(),
-          ],
+    return this.fb.group({
+      name: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(1),
+          Validators.maxLength(100),
+          Validators.pattern(/^[a-zA-Z0-9_-]+$/),
+          this.duplicateNameValidator(),
         ],
-        model_type: ['text', Validators.required],
-        provider: ['', Validators.required],
-        model: ['', Validators.required],
-        api_key: ['', [Validators.required, Validators.minLength(10)]],
-        base_url: [''],
-        temperature: [0.7, [Validators.min(0), Validators.max(2)]],
-        context_limit: [128, [Validators.required, Validators.min(1), Validators.max(10000)]],
-        context_strategy: ['balanced'],
-        copilot_mode: ['teaching_assistant'],
-        is_default: [false],
-        customFields: this.customFieldsArray,
-      },
-    );
+      ],
+      model_type: ['text', Validators.required],
+      provider: ['', Validators.required],
+      model: ['', Validators.required],
+      api_key: ['', [Validators.required, Validators.minLength(10)]],
+      base_url: [''],
+      temperature: [0.7, [Validators.min(0), Validators.max(2)]],
+      context_limit: [128, [Validators.required, Validators.min(1), Validators.max(10000)]],
+      context_strategy: ['balanced'],
+      copilot_mode: ['teaching_assistant'],
+      is_default: [false],
+      customFields: this.customFieldsArray,
+    });
   }
 
   /**
@@ -533,7 +531,7 @@ export class AiProfileDialogComponent implements OnInit {
    */
   openCustomModeHelp(): void {
     this.dialog.open(ModelTypeHelpDialogComponent, {
-      panelClass: ['base-dialog-panel', 'ai-profile-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'ai-profile-dialog-panel', 'dialog-large-panel'],
     });
   }
 

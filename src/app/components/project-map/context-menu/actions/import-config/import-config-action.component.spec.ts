@@ -175,7 +175,7 @@ describe('ImportConfigActionComponent', () => {
       component.triggerClick();
 
       expect(mockDialog.open).toHaveBeenCalledWith(ConfigDialogComponent, {
-        panelClass: ['base-dialog-panel', 'import-config-action-dialog-panel'],
+        panelClass: ['base-dialog-panel', 'import-config-action-dialog-panel', 'dialog-medium-panel'],
         autoFocus: false,
         disableClose: false,
       });

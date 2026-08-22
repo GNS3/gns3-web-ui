@@ -456,7 +456,12 @@ describe('GroupDetailDialogComponent', () => {
       component.openAddUserDialog();
 
       expect(mockDialog.open).toHaveBeenCalledWith(AddUserToGroupDialogComponent, {
-        panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'add-user-to-group-dialog-panel'],
+        panelClass: [
+          'base-dialog-panel',
+          'simple-dialog-panel',
+          'add-user-to-group-dialog-panel',
+          'dialog-medium-panel',
+        ],
         data: { controller: mockController, group: mockGroup },
       });
     });
@@ -489,7 +494,7 @@ describe('GroupDetailDialogComponent', () => {
       component.openRemoveUserDialog(mockUser);
 
       expect(mockDialog.open).toHaveBeenCalledWith(ConfirmationDialogComponent, {
-        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
           title: 'Remove user from group?',
@@ -555,7 +560,7 @@ describe('GroupDetailDialogComponent', () => {
       component.openUserDetailDialog(mockUser);
 
       expect(mockDialog.open).toHaveBeenCalledWith(UserDetailDialogComponent, {
-        panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+        panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-large-panel'],
         data: { user: mockUser, controller: mockController },
       });
     });
