@@ -1847,6 +1847,15 @@ html[data-density='compact'] .node-configurator-dialog-panel {
   }
 }
 
+// Add-nodes dialog: the collapsed "Advanced options" expansion panel lies flat
+// on the dialog surface; body content is inset so the Configuration / Manual
+// position sections read as nested inside the panel rather than flush with it.
+.add-nodes-dialog-panel {
+  .mat-expansion-panel-body {
+    padding: 0 var(--gns3-density-space-4);
+  }
+}
+
 // Controller Dialogs - 350px/400px
 .controller-dialog-panel {
   --mat-dialog-container-max-width: 400px;

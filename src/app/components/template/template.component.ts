@@ -334,7 +334,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
           // Fallback to local on error
           const nodeAddedEvent: NodeAddedEvent = {
             template: template,
-            controller: preferredComputeId || 'local',
+            computeId: preferredComputeId || 'local',
             numberOfNodes,
             x: finalX,
             y: finalY,
@@ -501,7 +501,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
 
     const nodeAddedEvent: NodeAddedEvent = {
       template: node.template,
-      controller: computeId,
+      computeId,
       numberOfNodes: node.numberOfNodes,
       x: node.x,
       y: node.y,

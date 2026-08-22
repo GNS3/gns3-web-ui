@@ -27,6 +27,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -68,6 +69,7 @@ export interface TemplateDragStartRequest {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    MatExpansionModule,
     DragDropModule,
   ],
 })
@@ -101,7 +103,7 @@ export class TemplateListDialogComponent implements OnInit {
   positionForm: UntypedFormGroup;
   templates: Template[] = [];
   filteredTemplates: Template[] = [];
-  nodeControllers: { display: string; value: string }[] = [{ display: 'local', value: 'local' }];
+  nodeComputes: { display: string; value: string }[] = [{ display: 'local', value: 'local' }];
 
   // Model signals for two-way binding
   searchText = model('');
@@ -162,13 +164,13 @@ export class TemplateListDialogComponent implements OnInit {
                 value: c.compute_id,
               };
             });
-          this.nodeControllers = [{ display: 'local', value: 'local' }, ...remoteComputes];
+          this.nodeComputes = [{ display: 'local', value: 'local' }, ...remoteComputes];
           this.cd.markForCheck();
         },
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to load computes';
           this.toasterService.error(message);
-          this.nodeControllers = [{ display: 'local', value: 'local' }];
+          this.nodeComputes = [{ display: 'local', value: 'local' }];
           this.cd.markForCheck();
         },
       });
@@ -178,13 +180,13 @@ export class TemplateListDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  compareControllers(a: string, b: string): boolean {
+  compareComputes(a: string, b: string): boolean {
     return a === b;
   }
 
   selectTemplate(template: Template): void {
     this.selectedTemplate.set(template);
-    if (template.compute_id && this.nodeControllers.some((controller) => controller.value === template.compute_id)) {
+    if (template.compute_id && this.nodeComputes.some((compute) => compute.value === template.compute_id)) {
       this.selectedComputeId.set(template.compute_id);
     }
   }
@@ -265,7 +267,7 @@ export class TemplateListDialogComponent implements OnInit {
       } else {
         const nodeAddedEvent: NodeAddedEvent = {
           template: this.selectedTemplate(),
-          controller: this.selectedComputeId(),
+          computeId: this.selectedComputeId(),
           numberOfNodes: this.configurationForm.get('numberOfNodes').value,
           x: x,
           y: y,
@@ -278,7 +280,7 @@ export class TemplateListDialogComponent implements OnInit {
 
 export interface NodeAddedEvent {
   template: Template;
-  controller: string;
+  computeId: string;
   name?: string;
   numberOfNodes: number;
   x: number;

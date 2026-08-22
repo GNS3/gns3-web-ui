@@ -316,7 +316,7 @@ describe('TemplateComponent', () => {
 
       const emittedEvent = emitSpy.mock.calls[0][0] as NodeAddedEvent;
       expect(emittedEvent.template).toBe(template);
-      expect(emittedEvent.controller).toBe('local');
+      expect(emittedEvent.computeId).toBe('local');
       expect(emittedEvent.numberOfNodes).toBe(1);
       expect(typeof emittedEvent.x).toBe('number');
       expect(typeof emittedEvent.y).toBe('number');
@@ -330,7 +330,7 @@ describe('TemplateComponent', () => {
 
       const emittedEvent = emitSpy.mock.calls[0][0] as NodeAddedEvent;
       expect(emittedEvent.numberOfNodes).toBe(4);
-      expect(emittedEvent.controller).toBe('local');
+      expect(emittedEvent.computeId).toBe('local');
     });
 
     it('should ignore a palette drop outside the topology', () => {
@@ -464,7 +464,7 @@ describe('TemplateComponent', () => {
       const emitSpy = vi.spyOn(component.nodeCreationChange, 'emit');
       const event = {
         template: createMockTemplate('t1', 'Router', 'vpcs'),
-        controller: 'local',
+        computeId: 'local',
         numberOfNodes: 3,
         x: 0,
         y: 0,
@@ -638,7 +638,7 @@ describe('TemplateComponent', () => {
         expect(cdrSpy).toHaveBeenCalled();
         expect(emitSpy).toHaveBeenCalled();
         const emittedEvent = emitSpy.mock.calls[0][0] as NodeAddedEvent;
-        expect(emittedEvent.controller).toBe('local');
+        expect(emittedEvent.computeId).toBe('local');
       });
 
       it('should use fallback message when getComputes error has no message', async () => {

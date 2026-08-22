@@ -141,13 +141,13 @@ describe('TemplateListDialogComponent', () => {
       expect(component.project).toEqual(mockProject);
     });
 
-    it('should show the controller field before a template is selected', () => {
+    it('should show the compute field before a template is selected', () => {
       fixture.detectChanges();
 
       const labels = Array.from(fixture.nativeElement.querySelectorAll('mat-label')).map((label: Element) =>
         label.textContent?.trim()
       );
-      expect(labels).toContain('Controller');
+      expect(labels).toContain('Compute');
       expect(component.selectedComputeId()).toBe('local');
     });
   });
@@ -192,7 +192,7 @@ describe('TemplateListDialogComponent', () => {
         component.ngOnInit();
         fixture.detectChanges();
 
-        expect(component.nodeControllers).toEqual([{ display: 'local', value: 'local' }]);
+        expect(component.nodeComputes).toEqual([{ display: 'local', value: 'local' }]);
       });
 
       it('should call markForCheck when getComputes fails', async () => {
@@ -246,8 +246,8 @@ describe('TemplateListDialogComponent', () => {
       expect(typeof (TemplateListDialogComponent.prototype as any).onNoClick).toBe('function');
     });
 
-    it('should have compareControllers method', () => {
-      expect(typeof (TemplateListDialogComponent.prototype as any).compareControllers).toBe('function');
+    it('should have compareComputes method', () => {
+      expect(typeof (TemplateListDialogComponent.prototype as any).compareComputes).toBe('function');
     });
 
     it('should have filterTemplates method', () => {
@@ -327,7 +327,7 @@ describe('TemplateListDialogComponent', () => {
       component.onAddClick();
 
       expect(emitSpy).toHaveBeenCalledWith(
-        expect.objectContaining({ template, controller: 'local', numberOfNodes: 1, x: 0, y: 0 })
+        expect.objectContaining({ template, computeId: 'local', numberOfNodes: 1, x: 0, y: 0 })
       );
       expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
@@ -337,13 +337,13 @@ describe('TemplateListDialogComponent', () => {
     it('should export NodeAddedEvent interface', () => {
       const event: NodeAddedEvent = {
         template: {} as any,
-        controller: 'local',
+        computeId: 'local',
         numberOfNodes: 1,
         x: 0,
         y: 0,
       };
       expect(event.template).toBeDefined();
-      expect(event.controller).toBe('local');
+      expect(event.computeId).toBe('local');
       expect(event.numberOfNodes).toBe(1);
     });
 

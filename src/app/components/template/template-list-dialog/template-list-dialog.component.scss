@@ -45,6 +45,20 @@
   gap: var(--gns3-density-space-3);
 }
 
+/* Advanced options: flattened expansion panel lying on the dialog surface
+   (no elevation, no own background) — token overrides avoid specificity
+   fights with .mat-expansion-panel's :not([class*=mat-elevation-z]) rule.
+   Separated from the template gallery by the same divider treatment
+   .dialog-section + .dialog-section uses, so it reads as its own block. */
+.advanced-options {
+  --mat-expansion-container-elevation-shadow: none;
+  --mat-expansion-container-background-color: transparent;
+
+  margin-top: var(--gns3-density-space-5);
+  padding-top: var(--gns3-density-space-5);
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+
 .dialog-section + .dialog-section {
   margin-top: var(--gns3-density-space-5);
   padding-top: var(--gns3-density-space-5);

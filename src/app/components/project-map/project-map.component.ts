@@ -1108,7 +1108,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         nodeAddedEvent.template,
         nodeAddedEvent.x,
         nodeAddedEvent.y,
-        nodeAddedEvent.controller
+        nodeAddedEvent.computeId
       )
       .subscribe(
         (node: Node) => {

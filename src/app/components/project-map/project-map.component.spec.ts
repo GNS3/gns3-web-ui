@@ -894,7 +894,7 @@ describe('ProjectMapComponent', () => {
       mockProjectService.nodes.mockReturnValue(of([]));
       const event = {
         template: { name: 'Router' },
-        controller: 'local',
+        computeId: 'local',
         numberOfNodes: 3,
         x: 0,
         y: 0,
