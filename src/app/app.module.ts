@@ -65,10 +65,8 @@ import { DockerTemplateDetailsComponent } from '@components/preferences/docker/d
 import { DockerTemplatesComponent } from '@components/preferences/docker/docker-templates/docker-templates.component';
 import { AddIosTemplateComponent } from '@components/preferences/dynamips/add-ios-template/add-ios-template.component';
 import { CopyIosTemplateComponent } from '@components/preferences/dynamips/copy-ios-template/copy-ios-template.component';
-import { DynamipsPreferencesComponent } from '@components/preferences/dynamips/dynamips-preferences/dynamips-preferences.component';
 import { IosTemplateDetailsComponent } from '@components/preferences/dynamips/ios-template-details/ios-template-details.component';
 import { IosTemplatesComponent } from '@components/preferences/dynamips/ios-templates/ios-templates.component';
-import { GeneralPreferencesComponent } from '@components/preferences/general/general-preferences.component';
 import { AddIouTemplateComponent } from '@components/preferences/ios-on-unix/add-iou-template/add-iou-template.component';
 import { CopyIouTemplateComponent } from '@components/preferences/ios-on-unix/copy-iou-template/copy-iou-template.component';
 import { IouTemplateDetailsComponent } from '@components/preferences/ios-on-unix/iou-template-details/iou-template-details.component';
@@ -76,7 +74,6 @@ import { IouTemplatesComponent } from '@components/preferences/ios-on-unix/iou-t
 import { PreferencesComponent } from '@components/preferences/preferences.component';
 import { AddQemuVmTemplateComponent } from '@components/preferences/qemu/add-qemu-vm-template/add-qemu-vm-template.component';
 import { CopyQemuVmTemplateComponent } from '@components/preferences/qemu/copy-qemu-vm-template/copy-qemu-vm-template.component';
-import { QemuPreferencesComponent } from '@components/preferences/qemu/qemu-preferences/qemu-preferences.component';
 import { QemuVmTemplateDetailsComponent } from '@components/preferences/qemu/qemu-vm-template-details/qemu-vm-template-details.component';
 import { QemuVmTemplatesComponent } from '@components/preferences/qemu/qemu-vm-templates/qemu-vm-templates.component';
 // VirtualBox support deprecated since 3.1.0
@@ -90,7 +87,6 @@ import { QemuVmTemplatesComponent } from '@components/preferences/qemu/qemu-vm-t
 // import { VmwareTemplateDetailsComponent } from '@components/preferences/vmware/vmware-template-details/vmware-template-details.component';
 // import { VmwareTemplatesComponent } from '@components/preferences/vmware/vmware-templates/vmware-templates.component';
 import { AddVpcsTemplateComponent } from '@components/preferences/vpcs/add-vpcs-template/add-vpcs-template.component';
-import { VpcsPreferencesComponent } from '@components/preferences/vpcs/vpcs-preferences/vpcs-preferences.component';
 import { VpcsTemplateDetailsComponent } from '@components/preferences/vpcs/vpcs-template-details/vpcs-template-details.component';
 import { VpcsTemplatesComponent } from '@components/preferences/vpcs/vpcs-templates/vpcs-templates.component';
 import { ChangeHostnameDialogComponent } from '@components/project-map/change-hostname-dialog/change-hostname-dialog.component';
@@ -250,7 +246,6 @@ import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { QemuService } from '@services/qemu.service';
 import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
 import { ControllerManagementService } from '@services/controller-management.service';
-import { ControllerSettingsService } from '@services/controller-settings.service';
 import { ServerSettingsService } from '@services/server-settings.service';
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
@@ -556,7 +551,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     AddImageDialogComponent,
     AddBlankProjectDialogComponent,
     AddResourcePoolDialogComponent,
-    GeneralPreferencesComponent,
     SettingsComponent,
     NodeSelectInterfaceComponent,
     ImportProjectDialogComponent,
@@ -570,14 +564,11 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     DirectLinkComponent,
     BuiltInPreferencesComponent,
     PreferencesComponent,
-    DynamipsPreferencesComponent,
     PortsComponent,
-    VpcsPreferencesComponent,
     // VMware support deprecated since 3.1.0
     // VmwarePreferencesComponent,
     // VirtualBox support deprecated since 3.1.0
     // VirtualBoxPreferencesComponent,
-    QemuPreferencesComponent,
     QemuVmTemplatesComponent,
     DeleteTemplateComponent,
     VpcsTemplatesComponent,
@@ -644,7 +635,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     ControllerDatabase,
     ProjectNameValidator,
     ToolsService,
-    ControllerSettingsService,
     ServerSettingsService,
     QemuService,
     VpcsService,

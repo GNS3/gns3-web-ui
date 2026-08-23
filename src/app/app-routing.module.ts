@@ -133,7 +133,6 @@ const routes: Routes = [
         component: NewTemplateDialogComponent,
         canActivate: [LoginGuard],
       },
-      // { path: 'controller/:controller_id/preferences/general', component: GeneralPreferencesComponent },
       {
         path: 'controller/:controller_id/computes',
         component: ComputesComponent,
@@ -193,7 +192,6 @@ const routes: Routes = [
         canActivate: [LoginGuard],
       },
 
-      //{ path: 'controller/:controller_id/preferences/dynamips', component: DynamipsPreferencesComponent },
       {
         path: 'controller/:controller_id/preferences/dynamips/templates',
         component: IosTemplatesComponent,
@@ -215,7 +213,6 @@ const routes: Routes = [
         canActivate: [LoginGuard],
       },
 
-      // { path: 'controller/:controller_id/preferences/qemu', component: QemuPreferencesComponent },
       {
         path: 'controller/:controller_id/preferences/qemu/templates',
         component: QemuVmTemplatesComponent,
@@ -237,7 +234,6 @@ const routes: Routes = [
         canActivate: [LoginGuard],
       },
 
-      // { path: 'controller/:controller_id/preferences/vpcs', component: VpcsPreferencesComponent },
       {
         path: 'controller/:controller_id/preferences/vpcs/templates',
         component: VpcsTemplatesComponent,
