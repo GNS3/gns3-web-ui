@@ -21,6 +21,10 @@ export interface SettingsFieldMeta {
   // default is resolved on the server (e.g. the hostname-derived server name).
   defaultValue?: SettingsFieldValue;
   restartRequired: boolean;
+  // Layout hint: 'half' shares the row with its neighbour, 'third' fits three
+  // fields per row, 'two-thirds' pairs with a 'third' (roughly 65/35);
+  // unmarked fields occupy a full row.
+  width?: 'half' | 'third' | 'two-thirds';
 }
 
 export interface SettingsGroupMeta {
@@ -100,35 +104,35 @@ export const SETTINGS_METADATA: SettingsSectionMeta[] = [
       id: 'general',
       label: 'General',
       fields: [
-        { key: 'local', label: 'Local server', type: 'boolean', defaultValue: false, hint: 'Trust all local requests (typical for desktop installs)' },
         { key: 'name', label: 'Server name', type: 'string', hint: 'Announced to computes and clients; defaults to the hostname' },
-        { key: 'report_errors', label: 'Report errors', type: 'boolean', defaultValue: true, hint: 'Send crash reports to the GNS3 team' },
+        { key: 'local', label: 'Local server', type: 'boolean', width: 'half', defaultValue: false, hint: 'Trust all local requests (typical for desktop installs)' },
+        { key: 'report_errors', label: 'Report errors', type: 'boolean', width: 'half', defaultValue: true, hint: 'Send crash reports to the GNS3 team' },
       ],
     },
     {
       id: 'network',
       label: 'Network and security',
       fields: [
-        { key: 'protocol', label: 'Protocol', type: 'enum', defaultValue: 'http', options: [{ value: 'http', label: 'HTTP' }, { value: 'https', label: 'HTTPS' }] },
-        { key: 'host', label: 'Listen host', type: 'string', defaultValue: '0.0.0.0' },
-        { key: 'port', label: 'Listen port', type: 'int', defaultValue: 3080, min: PORT_MIN, max: PORT_MAX },
-        { key: 'enable_ssl', label: 'Enable SSL', type: 'boolean', defaultValue: false },
-        { key: 'certfile', label: 'Certificate file', type: 'string', defaultValue: null, hint: 'PEM file with the server certificate' },
-        { key: 'certkey', label: 'Certificate key', type: 'string', defaultValue: null, hint: 'PEM file with the certificate private key' },
+        { key: 'protocol', label: 'Protocol', type: 'enum', width: 'third', defaultValue: 'http', options: [{ value: 'http', label: 'HTTP' }, { value: 'https', label: 'HTTPS' }] },
+        { key: 'host', label: 'Listen host', type: 'string', width: 'third', defaultValue: '0.0.0.0' },
+        { key: 'port', label: 'Listen port', type: 'int', width: 'third', defaultValue: 3080, min: PORT_MIN, max: PORT_MAX },
+        { key: 'enable_ssl', label: 'Enable SSL', type: 'boolean', width: 'half', defaultValue: false },
+        { key: 'enable_http_auth', label: 'HTTP authentication', type: 'boolean', width: 'half', defaultValue: true, hint: 'Require authentication for the API' },
+        { key: 'certfile', label: 'Certificate file', type: 'string', width: 'half', defaultValue: null, hint: 'PEM file with the server certificate' },
+        { key: 'certkey', label: 'Certificate key', type: 'string', width: 'half', defaultValue: null, hint: 'PEM file with the certificate private key' },
         { key: 'secrets_dir', label: 'Secrets directory', type: 'string', defaultValue: null, hint: 'Directory holding server secrets (JWT key, generated passwords)' },
-        { key: 'enable_http_auth', label: 'HTTP authentication', type: 'boolean', defaultValue: true, hint: 'Require authentication for the API' },
       ],
     },
     {
       id: 'paths',
       label: 'Paths',
       fields: [
-        { key: 'images_path', label: 'Images', type: 'string', defaultValue: '~/GNS3/images' },
-        { key: 'projects_path', label: 'Projects', type: 'string', defaultValue: '~/GNS3/projects' },
-        { key: 'appliances_path', label: 'Appliances', type: 'string', defaultValue: '~/GNS3/appliances' },
-        { key: 'symbols_path', label: 'Symbols', type: 'string', defaultValue: '~/GNS3/symbols' },
-        { key: 'configs_path', label: 'Configs', type: 'string', defaultValue: '~/GNS3/configs' },
-        { key: 'resources_path', label: 'Resources', type: 'string', defaultValue: null, hint: 'Base directory for GNS3 resources (defaults to the package location)' },
+        { key: 'images_path', label: 'Images', type: 'string', width: 'half', defaultValue: '~/GNS3/images' },
+        { key: 'projects_path', label: 'Projects', type: 'string', width: 'half', defaultValue: '~/GNS3/projects' },
+        { key: 'appliances_path', label: 'Appliances', type: 'string', width: 'half', defaultValue: '~/GNS3/appliances' },
+        { key: 'symbols_path', label: 'Symbols', type: 'string', width: 'half', defaultValue: '~/GNS3/symbols' },
+        { key: 'configs_path', label: 'Configs', type: 'string', width: 'half', defaultValue: '~/GNS3/configs' },
+        { key: 'resources_path', label: 'Resources', type: 'string', width: 'half', defaultValue: null, hint: 'Base directory for GNS3 resources (defaults to the package location)' },
         { key: 'additional_images_paths', label: 'Additional image paths', type: 'list', defaultValue: [], hint: 'Extra directories scanned for images' },
       ],
     },
@@ -136,8 +140,8 @@ export const SETTINGS_METADATA: SettingsSectionMeta[] = [
       id: 'images',
       label: 'Images',
       fields: [
-        { key: 'allow_raw_images', label: 'Allow raw images', type: 'boolean', defaultValue: true, hint: 'Allow mounting raw disk images' },
-        { key: 'auto_discover_images', label: 'Auto-discover images', type: 'boolean', defaultValue: true },
+        { key: 'allow_raw_images', label: 'Allow raw images', type: 'boolean', width: 'half', defaultValue: true, hint: 'Allow mounting raw disk images' },
+        { key: 'auto_discover_images', label: 'Auto-discover images', type: 'boolean', width: 'half', defaultValue: true },
       ],
     },
     {
@@ -145,55 +149,56 @@ export const SETTINGS_METADATA: SettingsSectionMeta[] = [
       label: 'Console and port ranges',
       fields: [
         { key: 'allow_remote_console', label: 'Allow remote consoles', type: 'boolean', defaultValue: false, hint: 'Let consoles listen on interfaces other than loopback' },
-        { key: 'console_start_port_range', label: 'Console ports from', type: 'int', defaultValue: 5000, min: PORT_MIN, max: PORT_MAX },
-        { key: 'console_end_port_range', label: 'Console ports to', type: 'int', defaultValue: 10000, min: PORT_MIN, max: PORT_MAX },
-        { key: 'vnc_console_start_port_range', label: 'VNC console ports from', type: 'int', defaultValue: VNC_PORT_MIN, min: VNC_PORT_MIN, max: PORT_MAX },
-        { key: 'vnc_console_end_port_range', label: 'VNC console ports to', type: 'int', defaultValue: 10000, min: VNC_PORT_MIN, max: PORT_MAX },
-        { key: 'udp_start_port_range', label: 'UDP ports from', type: 'int', defaultValue: 10000, min: PORT_MIN, max: PORT_MAX },
-        { key: 'udp_end_port_range', label: 'UDP ports to', type: 'int', defaultValue: 30000, min: PORT_MIN, max: PORT_MAX },
+        { key: 'console_start_port_range', label: 'Console ports from', type: 'int', width: 'half', defaultValue: 5000, min: PORT_MIN, max: PORT_MAX },
+        { key: 'console_end_port_range', label: 'Console ports to', type: 'int', width: 'half', defaultValue: 10000, min: PORT_MIN, max: PORT_MAX },
+        { key: 'vnc_console_start_port_range', label: 'VNC console ports from', type: 'int', width: 'half', defaultValue: VNC_PORT_MIN, min: VNC_PORT_MIN, max: PORT_MAX },
+        { key: 'vnc_console_end_port_range', label: 'VNC console ports to', type: 'int', width: 'half', defaultValue: 10000, min: VNC_PORT_MIN, max: PORT_MAX },
+        { key: 'udp_start_port_range', label: 'UDP ports from', type: 'int', width: 'half', defaultValue: 10000, min: PORT_MIN, max: PORT_MAX },
+        { key: 'udp_end_port_range', label: 'UDP ports to', type: 'int', width: 'half', defaultValue: 30000, min: PORT_MIN, max: PORT_MAX },
       ],
     },
     {
       id: 'ubridge',
       label: 'uBridge and marker',
       fields: [
-        { key: 'ubridge_path', label: 'uBridge path', type: 'string', defaultValue: 'ubridge' },
+        { key: 'ubridge_path', label: 'uBridge path', type: 'string', width: 'half', defaultValue: 'ubridge' },
         {
           key: 'ubridge_control_transport',
           label: 'uBridge control transport',
           type: 'enum',
+          width: 'half',
           defaultValue: 'unix',
           options: [
             { value: 'unix', label: 'Unix socket (recommended)' },
             { value: 'tcp', label: 'TCP (legacy)' },
           ],
         },
-        { key: 'marker_listen_host', label: 'Marker listen host', type: 'string', defaultValue: '127.0.0.1', hint: 'Traffic-insight UDP sink bind address' },
-        { key: 'marker_listen_port', label: 'Marker listen port', type: 'int', defaultValue: 3070, min: 0, max: PORT_MAX, hint: '0 lets the server pick a free port' },
+        { key: 'marker_listen_host', label: 'Marker listen host', type: 'string', width: 'half', defaultValue: '127.0.0.1', hint: 'Traffic-insight UDP sink bind address' },
+        { key: 'marker_listen_port', label: 'Marker listen port', type: 'int', width: 'half', defaultValue: 3070, min: 0, max: PORT_MAX, hint: '0 lets the server pick a free port' },
       ],
     },
     {
       id: 'compute-auth',
       label: 'Compute authentication',
       fields: [
-        { key: 'compute_username', label: 'Compute username', type: 'string', defaultValue: 'gns3', hint: 'Username computes use to authenticate with the controller' },
-        { key: 'compute_password', label: 'Compute password', type: 'secret', defaultValue: '', hint: 'Shared secret for computes; generated automatically when unset' },
+        { key: 'compute_username', label: 'Compute username', type: 'string', width: 'half', defaultValue: 'gns3', hint: 'Username computes use to authenticate with the controller' },
+        { key: 'compute_password', label: 'Compute password', type: 'secret', width: 'half', defaultValue: '', hint: 'Shared secret for computes; generated automatically when unset' },
       ],
     },
     {
       id: 'networking',
       label: 'Networking',
       fields: [
-        { key: 'allowed_interfaces', label: 'Allowed interfaces', type: 'list', defaultValue: [], hint: 'Restrict cloud/NAT interfaces; empty allows all' },
-        { key: 'default_nat_interface', label: 'Default NAT interface', type: 'string', defaultValue: null },
+        { key: 'allowed_interfaces', label: 'Allowed interfaces', type: 'list', width: 'half', defaultValue: [], hint: 'Restrict cloud/NAT interfaces; empty allows all' },
+        { key: 'default_nat_interface', label: 'Default NAT interface', type: 'string', width: 'half', defaultValue: null },
       ],
     },
     {
       id: 'builtin',
       label: 'Builtin content',
       fields: [
-        { key: 'enable_builtin_templates', label: 'Enable builtin templates', type: 'boolean', defaultValue: true },
-        { key: 'install_builtin_appliances', label: 'Install builtin appliances', type: 'boolean', defaultValue: true },
+        { key: 'enable_builtin_templates', label: 'Enable builtin templates', type: 'boolean', width: 'half', defaultValue: true },
+        { key: 'install_builtin_appliances', label: 'Install builtin appliances', type: 'boolean', width: 'half', defaultValue: true },
         {
           key: 'default_symbol_theme',
           label: 'Default symbol theme',
@@ -215,8 +220,8 @@ export const SETTINGS_METADATA: SettingsSectionMeta[] = [
       id: 'skills',
       label: 'Skills repository',
       fields: [
-        { key: 'skills_repo_url', label: 'Repository URL', type: 'string', defaultValue: 'https://github.com/gns3/gns3-skills.git' },
-        { key: 'skills_repo_branch', label: 'Branch', type: 'string', defaultValue: 'main' },
+        { key: 'skills_repo_url', label: 'Repository URL', type: 'string', width: 'two-thirds', defaultValue: 'https://github.com/gns3/gns3-skills.git' },
+        { key: 'skills_repo_branch', label: 'Branch', type: 'string', width: 'third', defaultValue: 'main' },
         { key: 'skills_auto_update', label: 'Auto-update', type: 'boolean', defaultValue: true },
       ],
     },
@@ -235,17 +240,17 @@ export const SETTINGS_METADATA: SettingsSectionMeta[] = [
       id: 'jwt',
       label: 'JSON Web Tokens',
       fields: [
-        { key: 'jwt_algorithm', label: 'Algorithm', type: 'string', defaultValue: 'HS256' },
-        { key: 'jwt_access_token_expire_minutes', label: 'Access token expiry (minutes)', type: 'int', defaultValue: 1440, min: 1 },
-        { key: 'jwt_refresh_token_expire_minutes', label: 'Refresh token expiry (minutes)', type: 'int', defaultValue: 43200, min: 1 },
+        { key: 'jwt_algorithm', label: 'Algorithm', type: 'string', width: 'third', defaultValue: 'HS256' },
+        { key: 'jwt_access_token_expire_minutes', label: 'Access token expiry (minutes)', type: 'int', width: 'third', defaultValue: 1440, min: 1 },
+        { key: 'jwt_refresh_token_expire_minutes', label: 'Refresh token expiry (minutes)', type: 'int', width: 'third', defaultValue: 43200, min: 1 },
       ],
     },
     {
       id: 'default-admin',
       label: 'Default administrator',
       fields: [
-        { key: 'default_admin_username', label: 'Username', type: 'string', defaultValue: 'admin', hint: 'Seeded when the users database is created' },
-        { key: 'default_admin_password', label: 'Password', type: 'secret', defaultValue: 'admin', hint: 'Resetting restores the built-in default "admin" — change it after the next start' },
+        { key: 'default_admin_username', label: 'Username', type: 'string', width: 'half', defaultValue: 'admin', hint: 'Seeded when the users database is created' },
+        { key: 'default_admin_password', label: 'Password', type: 'secret', width: 'half', defaultValue: 'admin', hint: 'Resetting restores the built-in default "admin" — change it after the next start' },
       ],
     },
   ]),
@@ -261,11 +266,11 @@ export const SETTINGS_METADATA: SettingsSectionMeta[] = [
       id: 'general',
       label: 'General',
       fields: [
-        { key: 'allocate_aux_console_ports', label: 'Allocate aux console ports', type: 'boolean', defaultValue: false },
-        { key: 'mmap_support', label: 'Memory-mapped I/O support', type: 'boolean', defaultValue: true },
         { key: 'dynamips_path', label: 'Dynamips path', type: 'string', defaultValue: 'dynamips' },
-        { key: 'sparse_memory_support', label: 'Sparse memory support', type: 'boolean', defaultValue: true },
-        { key: 'ghost_ios_support', label: 'Ghost IOS support', type: 'boolean', defaultValue: true },
+        { key: 'allocate_aux_console_ports', label: 'Allocate aux console ports', type: 'boolean', width: 'half', defaultValue: false },
+        { key: 'mmap_support', label: 'Memory-mapped I/O support', type: 'boolean', width: 'half', defaultValue: true },
+        { key: 'sparse_memory_support', label: 'Sparse memory support', type: 'boolean', width: 'half', defaultValue: true },
+        { key: 'ghost_ios_support', label: 'Ghost IOS support', type: 'boolean', width: 'half', defaultValue: true },
       ],
     },
   ]),
@@ -292,10 +297,10 @@ export const SETTINGS_METADATA: SettingsSectionMeta[] = [
       id: 'advanced',
       label: 'Advanced',
       fields: [
-        { key: 'enable_hardware_acceleration', label: 'Hardware acceleration (KVM/HAXM)', type: 'boolean', defaultValue: true },
-        { key: 'require_hardware_acceleration', label: 'Require hardware acceleration', type: 'boolean', defaultValue: false, hint: 'Fail VM start when acceleration is unavailable' },
-        { key: 'allow_unsafe_options', label: 'Allow unsafe options', type: 'boolean', defaultValue: false, hint: 'Permit arbitrary Qemu command-line options' },
         { key: 'ovmf_firmware_dir', label: 'OVMF firmware directory', type: 'string', defaultValue: '/usr/share/OVMF' },
+        { key: 'enable_hardware_acceleration', label: 'Hardware acceleration (KVM/HAXM)', type: 'boolean', width: 'half', defaultValue: true },
+        { key: 'require_hardware_acceleration', label: 'Require hardware acceleration', type: 'boolean', width: 'half', defaultValue: false, hint: 'Fail VM start when acceleration is unavailable' },
+        { key: 'allow_unsafe_options', label: 'Allow unsafe options', type: 'boolean', defaultValue: false, hint: 'Permit arbitrary Qemu command-line options' },
       ],
     },
   ]),
@@ -305,11 +310,11 @@ export const SETTINGS_METADATA: SettingsSectionMeta[] = [
       label: 'General',
       fields: [
         { key: 'enabled', label: 'Enabled', type: 'boolean', defaultValue: true },
-        { key: 'image', label: 'Container image', type: 'string', defaultValue: 'gns3/web-wireshark:latest' },
-        { key: 'network_subnet', label: 'Network subnet', type: 'string', defaultValue: '172.31.0.0/22' },
-        { key: 'memory', label: 'Memory limit', type: 'string', defaultValue: '2g' },
-        { key: 'cpus', label: 'CPU limit', type: 'float', defaultValue: 1.0, min: 0 },
-        { key: 'pids_limit', label: 'PIDs limit', type: 'int', defaultValue: 1000, min: 0 },
+        { key: 'image', label: 'Container image', type: 'string', width: 'half', defaultValue: 'gns3/web-wireshark:latest' },
+        { key: 'network_subnet', label: 'Network subnet', type: 'string', width: 'half', defaultValue: '172.31.0.0/22' },
+        { key: 'memory', label: 'Memory limit', type: 'string', width: 'third', defaultValue: '2g' },
+        { key: 'cpus', label: 'CPU limit', type: 'float', width: 'third', defaultValue: 1.0, min: 0 },
+        { key: 'pids_limit', label: 'PIDs limit', type: 'int', width: 'third', defaultValue: 1000, min: 0 },
       ],
     },
   ]),

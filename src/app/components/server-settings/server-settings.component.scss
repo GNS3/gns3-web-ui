@@ -215,8 +215,13 @@
   }
 }
 
+// Six-column grid: unmarked fields span everything, 'half' fields pair up and
+// 'third' fields fit three per row (see SettingsFieldMeta.width).
 .server-settings__group {
   padding: var(--gns3-density-space-4) var(--gns3-density-page-padding) var(--gns3-density-space-5);
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--gns3-density-space-1) var(--gns3-density-space-2);
 
   & + & {
     border-top: 1px solid var(--mat-sys-outline-variant);
@@ -224,7 +229,8 @@
 }
 
 .server-settings__group-title {
-  margin: 0 0 var(--gns3-density-space-3);
+  grid-column: 1 / -1;
+  margin: 0 0 var(--gns3-density-space-2);
   color: var(--mat-sys-on-surface-variant);
   font-size: 13px;
   font-weight: 650;
@@ -233,12 +239,21 @@
 }
 
 .server-settings__field {
+  grid-column: 1 / -1;
   padding: var(--gns3-density-space-2) var(--gns3-density-space-2) var(--gns3-density-space-2)
     var(--gns3-density-space-3);
   border-radius: var(--gns3-density-radius-md);
 
-  & + & {
-    margin-top: var(--gns3-density-space-1);
+  &--half {
+    grid-column: span 3;
+  }
+
+  &--third {
+    grid-column: span 2;
+  }
+
+  &--two-thirds {
+    grid-column: span 4;
   }
 
   &--dirty {
@@ -247,11 +262,16 @@
   }
 }
 
+// Toggle rows hug their content: label, switch, then the field tools — no
+// stretching, so paired toggles read as a compact checklist.
 .server-settings__toggle-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--gns3-density-space-5);
+  gap: var(--gns3-density-space-4);
+
+  .server-settings__field-tools {
+    padding-top: 0;
+  }
 }
 
 .server-settings__field-copy {
@@ -302,6 +322,28 @@
   }
 }
 
+// Side-by-side cells are too narrow for the stacked control layout: keep the
+// control and its tools on one row and let the control fill the cell. This
+// also overrides the stacked variant used by secret fields.
+.server-settings__field--half,
+.server-settings__field--third {
+  .server-settings__control-row {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--gns3-density-space-2);
+  }
+
+  .server-settings__control {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+  }
+
+  .server-settings__field-tools {
+    padding-top: var(--gns3-density-space-2);
+  }
+}
+
 .server-settings__restart {
   width: 18px;
   height: 18px;
@@ -345,6 +387,15 @@
   margin-right: 6px;
 }
 
+// Medium screens: three-across rows get cramped next to the category nav —
+// let them degrade to two per row (and uneven pairs become 50/50).
+@media (max-width: 1080px) {
+  .server-settings__field--third,
+  .server-settings__field--two-thirds {
+    grid-column: span 3;
+  }
+}
+
 @media (max-width: 720px) {
   .server-settings__header {
     padding: var(--gns3-density-space-5) var(--gns3-density-page-padding) var(--gns3-density-space-3);
@@ -373,10 +424,12 @@
 
   .server-settings__group {
     padding: var(--gns3-density-space-4) var(--gns3-density-space-4) var(--gns3-density-space-5);
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .server-settings__toggle-row {
-    gap: var(--gns3-density-space-4);
+  .server-settings__field--half,
+  .server-settings__field--third {
+    grid-column: 1 / -1;
   }
 }
 

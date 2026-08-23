@@ -109,6 +109,9 @@
                   <div
                     class="server-settings__field"
                     [class.server-settings__field--dirty]="isFieldDirty(section, field)"
+                    [class.server-settings__field--half]="field.width === 'half'"
+                    [class.server-settings__field--third]="field.width === 'third'"
+                    [class.server-settings__field--two-thirds]="field.width === 'two-thirds'"
                   >
                     @switch (field.type) {
                       @case ('boolean') {
@@ -119,6 +122,11 @@
                               <span class="server-settings__field-hint">{{ field.hint }}</span>
                             }
                           </div>
+                          <mat-slide-toggle
+                            [checked]="!!valueOf(section, field)"
+                            (change)="setValue(section.name, field.key, $event.checked)"
+                            [aria-label]="field.label"
+                          ></mat-slide-toggle>
                           <div class="server-settings__field-tools">
                             @if (field.restartRequired) {
                               <mat-icon
@@ -140,11 +148,6 @@
                                 <mat-icon>restart_alt</mat-icon>
                               </button>
                             }
-                            <mat-slide-toggle
-                              [checked]="!!valueOf(section, field)"
-                              (change)="setValue(section.name, field.key, $event.checked)"
-                              [aria-label]="field.label"
-                            ></mat-slide-toggle>
                           </div>
                         </div>
                       }
