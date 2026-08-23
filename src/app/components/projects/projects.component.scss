@@ -136,6 +136,11 @@ button.projects__view-toggle-btn {
 // ============================================= */
 .projects__main {
   display: flex;
+  // Let each column size its own height (table/grid fit their rows, the
+  // details panel pins to the viewport) instead of stretching to match the
+  // tallest sibling — otherwise a short table shows blank space below its
+  // paginator when the details panel is open.
+  align-items: flex-start;
   gap: 20px;
   max-width: 1600px;
   margin: 0 auto;
@@ -650,7 +655,7 @@ mat-cell {
 // Details Panel
 // ============================================= */
 .projects__details {
-  width: clamp(380px, 30vw, 460px);
+  width: clamp(520px, 44vw, 720px);
   flex-shrink: 0;
   background: var(--mat-sys-surface);
   border-radius: 16px;
@@ -658,7 +663,11 @@ mat-cell {
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 176px);
+  // Fixed viewport height, decoupled from the project list (the parent's
+  // align-items: flex-start keeps the row from stretching either column).
+  // Viewport-ratio height sitting between the SDS 60/80 dialog tiers;
+  // min-height guards short windows.
+  height: 70vh;
   min-height: 360px;
   animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: sticky;
@@ -729,6 +738,29 @@ mat-cell {
   opacity: 0.72;
 }
 
+/* ── Inline rows: several short items share one line ───────── */
+.projects__detail-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gns3-density-space-3);
+}
+
+.projects__detail-row .projects__detail-item {
+  flex: 1 1 150px;
+  min-width: 0;
+}
+
+/* Narrower label so three items fit side by side in the panel */
+.projects__detail-row .projects__detail-label {
+  width: 60px;
+}
+
+/* Left-align the value next to its label — cells are narrow, so the global
+   right-alignment reads as two-end justification inside a shared row */
+.projects__detail-row .projects__detail-value {
+  text-align: left;
+}
+
 /* Icon column — fixed width */
 .projects__detail-icon {
   width: 22px;
@@ -791,14 +823,15 @@ mat-cell {
   --markdown-viewer-font-size: 13px;
   --markdown-viewer-heading-scale: 0.85;
   flex: 0 0 100%;
-  max-height: min(420px, 40vh);
   margin-top: 8px;
   padding: 10px 12px;
   box-sizing: border-box;
-  overflow: auto;
   border-radius: 10px;
   background: var(--mat-sys-surface-container-low);
   overflow-wrap: anywhere;
+  // No max-height/overflow here: the description grows with its content and
+  // .projects__details-body (flex: 1 + overflow-y: auto) is the single scroll
+  // container for the whole panel.
   // Markdown element typography lives in src/styles/_markdown.scss (runtime
   // HTML carries no encapsulation attribute); the token scales it to 13px.
 }
@@ -1014,6 +1047,7 @@ button.projects__details-action-btn {
   .projects__details {
     position: static;
     width: 100%;
+    height: auto;
     max-height: none;
   }
 

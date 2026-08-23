@@ -387,47 +387,52 @@
         </div>
 
         <div class="projects__details-body">
-          <!-- Status -->
-          <div class="projects__detail-item">
-            <span class="projects__detail-icon">
-              <span
-                class="projects__detail-status-dot"
-                [class.projects__detail-status-dot--opened]="project.status === 'opened'"
-                [class.projects__detail-status-dot--closed]="project.status === 'closed'"
-              ></span>
-            </span>
-            <span class="projects__detail-label">Status</span>
-            <span class="projects__detail-value">{{ project.status === 'opened' ? 'Running' : 'Stopped' }}</span>
+          <!-- Status / Owner / Access share one line -->
+          <div class="projects__detail-row">
+            <!-- Status -->
+            <div class="projects__detail-item">
+              <span class="projects__detail-icon">
+                <span
+                  class="projects__detail-status-dot"
+                  [class.projects__detail-status-dot--opened]="project.status === 'opened'"
+                  [class.projects__detail-status-dot--closed]="project.status === 'closed'"
+                ></span>
+              </span>
+              <span class="projects__detail-label">Status</span>
+              <span class="projects__detail-value">{{ project.status === 'opened' ? 'Running' : 'Stopped' }}</span>
+            </div>
+
+            <!-- Owner -->
+            @if (project.created_by) {
+            <div class="projects__detail-item">
+              <span class="projects__detail-icon"><mat-icon>person</mat-icon></span>
+              <span class="projects__detail-label">Owner</span>
+              <span class="projects__detail-value">{{ project.created_by }}</span>
+            </div>
+            }
+
+            <!-- Access -->
+            <div class="projects__detail-item">
+              <span class="projects__detail-icon"><mat-icon>lock</mat-icon></span>
+              <span class="projects__detail-label">Access</span>
+              <span class="projects__detail-value">{{ project.readonly ? 'Read-only' : 'Read/Write' }}</span>
+            </div>
           </div>
 
-          <!-- Owner -->
-          @if (project.created_by) {
-          <div class="projects__detail-item">
-            <span class="projects__detail-icon"><mat-icon>person</mat-icon></span>
-            <span class="projects__detail-label">Owner</span>
-            <span class="projects__detail-value">{{ project.created_by }}</span>
-          </div>
-          }
-
-          <!-- Access -->
-          <div class="projects__detail-item">
-            <span class="projects__detail-icon"><mat-icon>lock</mat-icon></span>
-            <span class="projects__detail-label">Access</span>
-            <span class="projects__detail-value">{{ project.readonly ? 'Read-only' : 'Read/Write' }}</span>
-          </div>
-
-          <!-- Nodes & Links (from stats) -->
+          <!-- Nodes & Links (from stats) share one line -->
           @if (projectStats(); as stats) {
-          <div class="projects__detail-item">
-            <span class="projects__detail-icon"><mat-icon>device_hub</mat-icon></span>
-            <span class="projects__detail-label">Nodes</span>
-            <span class="projects__detail-value">{{ stats.nodes }}</span>
-          </div>
+          <div class="projects__detail-row">
+            <div class="projects__detail-item">
+              <span class="projects__detail-icon"><mat-icon>device_hub</mat-icon></span>
+              <span class="projects__detail-label">Nodes</span>
+              <span class="projects__detail-value">{{ stats.nodes }}</span>
+            </div>
 
-          <div class="projects__detail-item">
-            <span class="projects__detail-icon"><mat-icon>link</mat-icon></span>
-            <span class="projects__detail-label">Links</span>
-            <span class="projects__detail-value">{{ stats.links }}</span>
+            <div class="projects__detail-item">
+              <span class="projects__detail-icon"><mat-icon>link</mat-icon></span>
+              <span class="projects__detail-label">Links</span>
+              <span class="projects__detail-value">{{ stats.links }}</span>
+            </div>
           </div>
 
           @if (stats.drawings > 0) {
