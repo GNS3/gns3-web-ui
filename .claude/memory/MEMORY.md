@@ -15,3 +15,4 @@ Project-specific memory and context for GNS3 Web UI.
 
 - [Add User Dialog Fixes](add-user-dialog-fixes.md) — Layout, autocomplete UX, chip selection, and scrollbar fixes
 - [Dialog Input Patterns](dialog-input-patterns.md) — Autocomplete single-select, chip multi-select, and scrollbar prevention patterns
+- [Dialog SDS Pane Width Cap](dialog-sds-pane-width-cap.md) — Dialogs collapse to 560px unless the SDS feeds `--gns3-dialog-width` into Material's `--mat-dialog-container-max-width` pane token
