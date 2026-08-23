@@ -274,7 +274,7 @@ export class UserManagementComponent implements OnInit {
   openAiProfileDialog(user: User): void {
     const data: AiProfileDialogData = { user, controller: this.controller };
     this.dialog.open(AiProfileDialogComponent, {
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-large-panel'],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-extra-large-panel'],
       data,
       disableClose: false,
     });

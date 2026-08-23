@@ -226,7 +226,7 @@ export class GroupManagementComponent implements OnInit, AfterViewInit {
 
   openGroupAiProfileDialog(group: Group) {
     this.dialog.open(GroupAiProfileDialogComponent, {
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-large-panel'],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-extra-large-panel'],
       data: { group, controller: this.controller } as GroupAiProfileDialogData,
     });
   }

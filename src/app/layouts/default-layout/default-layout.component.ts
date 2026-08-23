@@ -190,7 +190,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.controllerService.get(+this.controllerId).then((controller: Controller) => {
       this.userService.getInformationAboutLoggedUser(controller).subscribe((user) => {
         this.dialog.open(AiProfileDialogComponent, {
-          panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-large-panel'],
+          panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-extra-large-panel'],
           autoFocus: false,
           data: { user, controller },
         });
