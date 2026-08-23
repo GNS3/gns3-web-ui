@@ -12,6 +12,7 @@
  *
  *   app-markdown-viewer.my-message-class {
  *     --markdown-viewer-font-size: 16px;
+ *     --markdown-viewer-heading-scale: 0.85; // shrink all h1–h6 together
  *     white-space: pre-wrap;
  *   }
  */
@@ -23,7 +24,8 @@ app-markdown-viewer {
   color: var(--markdown-viewer-text-color, var(--mat-sys-on-surface));
   word-wrap: break-word;
 
-  // Headings — em-based so one font-size token scales everything
+  // Headings — em-based so the font-size token scales everything;
+  // heading-scale multiplies all heading sizes together
   h1,
   h2,
   h3,
@@ -35,28 +37,28 @@ app-markdown-viewer {
   }
 
   h1 {
-    font-size: 1.25em;
+    font-size: calc(1.25em * var(--markdown-viewer-heading-scale, 1));
     margin: 12px 0 8px;
   }
 
   h2 {
-    font-size: 1.125em;
+    font-size: calc(1.125em * var(--markdown-viewer-heading-scale, 1));
     margin: 10px 0 6px;
   }
 
   h3 {
-    font-size: 1em;
+    font-size: calc(1em * var(--markdown-viewer-heading-scale, 1));
     margin: 8px 0 4px;
   }
 
   h4 {
-    font-size: 0.9375em;
+    font-size: calc(0.9375em * var(--markdown-viewer-heading-scale, 1));
     margin: 8px 0 4px;
   }
 
   h5,
   h6 {
-    font-size: 0.875em;
+    font-size: calc(0.875em * var(--markdown-viewer-heading-scale, 1));
     margin: 8px 0 4px;
   }
 

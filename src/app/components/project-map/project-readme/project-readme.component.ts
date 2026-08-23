@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, AfterViewInit, inject, signal } from '@angular/core';
-import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
@@ -10,7 +10,7 @@ import { MarkdownViewerComponent } from '../../../common/markdown-viewer/markdow
   selector: 'app-project-readme',
   templateUrl: './project-readme.component.html',
   styleUrl: './project-readme.component.scss',
-  imports: [MatDialogModule, MatButtonModule, MarkdownViewerComponent],
+  imports: [MatDialogTitle, MatDialogContent, MatDialogActions, MatButtonModule, MarkdownViewerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectReadmeComponent implements AfterViewInit {

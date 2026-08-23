@@ -1,4 +1,6 @@
-.textWrapper {
-  height: 500px;
-  overflow-y: scroll;
+// Element typography comes from src/styles/_markdown.scss; only the reading
+// density is personalized here (compact headings, roomier line height).
+.project-readme__content {
+  --markdown-viewer-heading-scale: 0.85;
+  --markdown-viewer-line-height: 1.65;
 }

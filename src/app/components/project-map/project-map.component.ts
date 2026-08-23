@@ -1965,7 +1965,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public showReadme() {
     const dialogRef = this.dialog.open(ProjectReadmeComponent, {
-      panelClass: ['base-dialog-panel', 'dialog-medium-panel'],
+      panelClass: ['base-dialog-panel', 'dialog-extra-large-panel', 'dialog-height-80-panel'],
       autoFocus: false,
       disableClose: true,
     });

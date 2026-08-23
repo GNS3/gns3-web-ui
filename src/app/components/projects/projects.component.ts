@@ -480,7 +480,7 @@ export class ProjectsComponent implements OnInit {
     const dialogRef = this.dialog.open(EditProjectDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'edit-project-dialog-panel', 'dialog-large-panel'],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'edit-project-dialog-panel', 'dialog-extra-large-panel'],
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
