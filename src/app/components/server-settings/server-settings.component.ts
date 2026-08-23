@@ -37,6 +37,10 @@ import {
   SettingsFieldValue,
 } from '@models/server-settings/settings-metadata';
 import {
+  SettingsSectionSchemas,
+  enrichSettingsMetadata,
+} from '@models/server-settings/settings-schema';
+import {
   SecretState,
   buildSettingsUpdate,
   collectDirtyKeys,
@@ -68,7 +72,12 @@ import { ToasterService } from '@services/toaster.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServerSettingsComponent implements OnInit, OnDestroy {
-  readonly sections = SETTINGS_METADATA;
+  // Compiled skeleton until the server's OpenAPI document arrives, then the
+  // same skeleton with server-truth hints, defaults, bounds and enum choices.
+  readonly sections = computed<SettingsSectionMeta[]>(() => {
+    const schemas = this.sectionSchemas();
+    return schemas ? enrichSettingsMetadata(SETTINGS_METADATA, schemas) : SETTINGS_METADATA;
+  });
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   readonly secretMask = SECRET_MASK;
 
@@ -87,6 +96,7 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
   readonly loadError = signal<string | null>(null);
   readonly isSaving = signal(false);
   readonly activeSection = signal<ServerSettingsSectionName>('Server');
+  readonly sectionSchemas = signal<SettingsSectionSchemas | null>(null);
   readonly formValues = signal<ServerSettings | null>(null);
   readonly pendingRemoves = signal<ReadonlySet<string>>(new Set());
   readonly secrets = signal<Record<string, SecretState>>({});
@@ -95,7 +105,7 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
   readonly externalChange = signal(false);
 
   readonly activeSectionMeta = computed<SettingsSectionMeta | undefined>(() =>
-    this.sections.find((section) => section.name === this.activeSection())
+    this.sections().find((section) => section.name === this.activeSection())
   );
 
   readonly dirtyKeys = computed<ReadonlySet<string>>(() => {
@@ -103,7 +113,7 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
     if (!form || !this.initialValues) {
       return new Set();
     }
-    return collectDirtyKeys(this.sections, this.initialValues, form, this.pendingRemoves(), this.secrets());
+    return collectDirtyKeys(this.sections(), this.initialValues, form, this.pendingRemoves(), this.secrets());
   });
 
   readonly isDirty = computed(() => this.dirtyKeys().size > 0);
@@ -121,6 +131,7 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
       (controller: Controller) => {
         this.controller = controller;
         this.loadSettings();
+        this.loadSchema();
       },
       () => {
         this.loadError.set('Failed to load the controller');
@@ -275,7 +286,7 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
       return;
     }
     const payload = buildSettingsUpdate(
-      this.sections,
+      this.sections(),
       this.initialValues,
       form,
       this.pendingRemoves(),
@@ -332,6 +343,20 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
         this.cd.markForCheck();
       },
     });
+  }
+
+  // Enrichment never blocks or breaks the form: failures resolve to null and
+  // the compiled metadata keeps driving the page.
+  private loadSchema() {
+    if (!this.controller) {
+      return;
+    }
+    this.subscriptions.add(
+      this.serverSettingsService.getSettingsSchemas(this.controller).subscribe((schemas) => {
+        this.sectionSchemas.set(schemas);
+        this.cd.markForCheck();
+      })
+    );
   }
 
   private refetchSettings(silent: boolean) {

@@ -80,7 +80,7 @@
 
     <div class="server-settings__layout">
       <nav class="server-settings__categories" aria-label="Server settings sections">
-        @for (section of sections; track section.name) {
+        @for (section of sections(); track section.name) {
           <button
             type="button"
             class="server-settings__category"
