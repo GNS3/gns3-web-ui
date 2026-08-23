@@ -1,0 +1,316 @@
+// Metadata driving the server settings form: one descriptor per writable
+// /v3/settings option, grouped per section. Field constraints and defaults
+// mirror gns3server/schemas/config.py; RESTART_REQUIRED mirrors the fixed
+// option set in gns3server/api/routes/controller/settings.py.
+
+import { ServerSettingsSectionName } from './server-settings';
+
+export type SettingsFieldValue = boolean | number | string | string[] | null;
+
+export type FieldType = 'boolean' | 'int' | 'float' | 'string' | 'enum' | 'list' | 'secret';
+
+export interface SettingsFieldMeta {
+  key: string;
+  label: string;
+  type: FieldType;
+  hint?: string;
+  min?: number;
+  max?: number;
+  options?: { value: string; label: string }[];
+  // Server built-in default (gns3server/schemas/config.py); omitted when the
+  // default is resolved on the server (e.g. the hostname-derived server name).
+  defaultValue?: SettingsFieldValue;
+  restartRequired: boolean;
+}
+
+export interface SettingsGroupMeta {
+  id: string;
+  label: string;
+  fields: SettingsFieldMeta[];
+}
+
+export interface SettingsSectionMeta {
+  name: ServerSettingsSectionName;
+  label: string;
+  icon: string;
+  groups: SettingsGroupMeta[];
+}
+
+// Options that only take effect after a server restart — verbatim from
+// gns3server/api/routes/controller/settings.py (RESTART_REQUIRED).
+export const RESTART_REQUIRED = new Set<string>([
+  'Server.host',
+  'Server.port',
+  'Server.protocol',
+  'Server.enable_ssl',
+  'Server.certfile',
+  'Server.certkey',
+  'Server.secrets_dir',
+  'Server.images_path',
+  'Server.projects_path',
+  'Server.appliances_path',
+  'Server.symbols_path',
+  'Server.configs_path',
+  'Server.resources_path',
+  'Server.console_start_port_range',
+  'Server.console_end_port_range',
+  'Server.vnc_console_start_port_range',
+  'Server.vnc_console_end_port_range',
+  'Server.udp_start_port_range',
+  'Server.udp_end_port_range',
+  'Server.enable_builtin_templates',
+  'Server.install_builtin_appliances',
+  'Server.skills_repo_url',
+  'Server.skills_repo_branch',
+  'Server.skills_auto_update',
+  'Server.ubridge_path',
+  'Controller.default_admin_username',
+  'Controller.default_admin_password',
+]);
+
+type SettingsFieldDescriptor = Omit<SettingsFieldMeta, 'restartRequired'>;
+
+function buildSection(
+  name: ServerSettingsSectionName,
+  label: string,
+  icon: string,
+  groups: { id: string; label: string; fields: SettingsFieldDescriptor[] }[],
+): SettingsSectionMeta {
+  return {
+    name,
+    label,
+    icon,
+    groups: groups.map((group) => ({
+      ...group,
+      fields: group.fields.map((field) => ({
+        ...field,
+        restartRequired: RESTART_REQUIRED.has(`${name}.${field.key}`),
+      })),
+    })),
+  };
+}
+
+const PORT_MIN = 1;
+const PORT_MAX = 65535;
+const VNC_PORT_MIN = 5900;
+
+export const SETTINGS_METADATA: SettingsSectionMeta[] = [
+  buildSection('Server', 'Server', 'dns', [
+    {
+      id: 'general',
+      label: 'General',
+      fields: [
+        { key: 'local', label: 'Local server', type: 'boolean', defaultValue: false, hint: 'Trust all local requests (typical for desktop installs)' },
+        { key: 'name', label: 'Server name', type: 'string', hint: 'Announced to computes and clients; defaults to the hostname' },
+        { key: 'report_errors', label: 'Report errors', type: 'boolean', defaultValue: true, hint: 'Send crash reports to the GNS3 team' },
+      ],
+    },
+    {
+      id: 'network',
+      label: 'Network and security',
+      fields: [
+        { key: 'protocol', label: 'Protocol', type: 'enum', defaultValue: 'http', options: [{ value: 'http', label: 'HTTP' }, { value: 'https', label: 'HTTPS' }] },
+        { key: 'host', label: 'Listen host', type: 'string', defaultValue: '0.0.0.0' },
+        { key: 'port', label: 'Listen port', type: 'int', defaultValue: 3080, min: PORT_MIN, max: PORT_MAX },
+        { key: 'enable_ssl', label: 'Enable SSL', type: 'boolean', defaultValue: false },
+        { key: 'certfile', label: 'Certificate file', type: 'string', defaultValue: null, hint: 'PEM file with the server certificate' },
+        { key: 'certkey', label: 'Certificate key', type: 'string', defaultValue: null, hint: 'PEM file with the certificate private key' },
+        { key: 'secrets_dir', label: 'Secrets directory', type: 'string', defaultValue: null, hint: 'Directory holding server secrets (JWT key, generated passwords)' },
+        { key: 'enable_http_auth', label: 'HTTP authentication', type: 'boolean', defaultValue: true, hint: 'Require authentication for the API' },
+      ],
+    },
+    {
+      id: 'paths',
+      label: 'Paths',
+      fields: [
+        { key: 'images_path', label: 'Images', type: 'string', defaultValue: '~/GNS3/images' },
+        { key: 'projects_path', label: 'Projects', type: 'string', defaultValue: '~/GNS3/projects' },
+        { key: 'appliances_path', label: 'Appliances', type: 'string', defaultValue: '~/GNS3/appliances' },
+        { key: 'symbols_path', label: 'Symbols', type: 'string', defaultValue: '~/GNS3/symbols' },
+        { key: 'configs_path', label: 'Configs', type: 'string', defaultValue: '~/GNS3/configs' },
+        { key: 'resources_path', label: 'Resources', type: 'string', defaultValue: null, hint: 'Base directory for GNS3 resources (defaults to the package location)' },
+        { key: 'additional_images_paths', label: 'Additional image paths', type: 'list', defaultValue: [], hint: 'Extra directories scanned for images' },
+      ],
+    },
+    {
+      id: 'images',
+      label: 'Images',
+      fields: [
+        { key: 'allow_raw_images', label: 'Allow raw images', type: 'boolean', defaultValue: true, hint: 'Allow mounting raw disk images' },
+        { key: 'auto_discover_images', label: 'Auto-discover images', type: 'boolean', defaultValue: true },
+      ],
+    },
+    {
+      id: 'console',
+      label: 'Console and port ranges',
+      fields: [
+        { key: 'allow_remote_console', label: 'Allow remote consoles', type: 'boolean', defaultValue: false, hint: 'Let consoles listen on interfaces other than loopback' },
+        { key: 'console_start_port_range', label: 'Console ports from', type: 'int', defaultValue: 5000, min: PORT_MIN, max: PORT_MAX },
+        { key: 'console_end_port_range', label: 'Console ports to', type: 'int', defaultValue: 10000, min: PORT_MIN, max: PORT_MAX },
+        { key: 'vnc_console_start_port_range', label: 'VNC console ports from', type: 'int', defaultValue: VNC_PORT_MIN, min: VNC_PORT_MIN, max: PORT_MAX },
+        { key: 'vnc_console_end_port_range', label: 'VNC console ports to', type: 'int', defaultValue: 10000, min: VNC_PORT_MIN, max: PORT_MAX },
+        { key: 'udp_start_port_range', label: 'UDP ports from', type: 'int', defaultValue: 10000, min: PORT_MIN, max: PORT_MAX },
+        { key: 'udp_end_port_range', label: 'UDP ports to', type: 'int', defaultValue: 30000, min: PORT_MIN, max: PORT_MAX },
+      ],
+    },
+    {
+      id: 'ubridge',
+      label: 'uBridge and marker',
+      fields: [
+        { key: 'ubridge_path', label: 'uBridge path', type: 'string', defaultValue: 'ubridge' },
+        {
+          key: 'ubridge_control_transport',
+          label: 'uBridge control transport',
+          type: 'enum',
+          defaultValue: 'unix',
+          options: [
+            { value: 'unix', label: 'Unix socket (recommended)' },
+            { value: 'tcp', label: 'TCP (legacy)' },
+          ],
+        },
+        { key: 'marker_listen_host', label: 'Marker listen host', type: 'string', defaultValue: '127.0.0.1', hint: 'Traffic-insight UDP sink bind address' },
+        { key: 'marker_listen_port', label: 'Marker listen port', type: 'int', defaultValue: 3070, min: 0, max: PORT_MAX, hint: '0 lets the server pick a free port' },
+      ],
+    },
+    {
+      id: 'compute-auth',
+      label: 'Compute authentication',
+      fields: [
+        { key: 'compute_username', label: 'Compute username', type: 'string', defaultValue: 'gns3', hint: 'Username computes use to authenticate with the controller' },
+        { key: 'compute_password', label: 'Compute password', type: 'secret', defaultValue: '', hint: 'Shared secret for computes; generated automatically when unset' },
+      ],
+    },
+    {
+      id: 'networking',
+      label: 'Networking',
+      fields: [
+        { key: 'allowed_interfaces', label: 'Allowed interfaces', type: 'list', defaultValue: [], hint: 'Restrict cloud/NAT interfaces; empty allows all' },
+        { key: 'default_nat_interface', label: 'Default NAT interface', type: 'string', defaultValue: null },
+      ],
+    },
+    {
+      id: 'builtin',
+      label: 'Builtin content',
+      fields: [
+        { key: 'enable_builtin_templates', label: 'Enable builtin templates', type: 'boolean', defaultValue: true },
+        { key: 'install_builtin_appliances', label: 'Install builtin appliances', type: 'boolean', defaultValue: true },
+        {
+          key: 'default_symbol_theme',
+          label: 'Default symbol theme',
+          type: 'enum',
+          defaultValue: 'Affinity-square-blue',
+          options: [
+            { value: 'Classic', label: 'Classic' },
+            { value: 'Affinity-square-blue', label: 'Affinity square blue' },
+            { value: 'Affinity-square-red', label: 'Affinity square red' },
+            { value: 'Affinity-square-gray', label: 'Affinity square gray' },
+            { value: 'Affinity-circle-blue', label: 'Affinity circle blue' },
+            { value: 'Affinity-circle-red', label: 'Affinity circle red' },
+            { value: 'Affinity-circle-gray', label: 'Affinity circle gray' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'skills',
+      label: 'Skills repository',
+      fields: [
+        { key: 'skills_repo_url', label: 'Repository URL', type: 'string', defaultValue: 'https://github.com/gns3/gns3-skills.git' },
+        { key: 'skills_repo_branch', label: 'Branch', type: 'string', defaultValue: 'main' },
+        { key: 'skills_auto_update', label: 'Auto-update', type: 'boolean', defaultValue: true },
+      ],
+    },
+    {
+      id: 'mcp',
+      label: 'MCP transport security',
+      fields: [
+        { key: 'mcp_enable_dns_rebinding_protection', label: 'DNS rebinding protection', type: 'boolean', defaultValue: false },
+        { key: 'mcp_allowed_hosts', label: 'Allowed hosts', type: 'list', defaultValue: [], hint: 'host:* patterns, e.g. localhost:*' },
+        { key: 'mcp_allowed_origins', label: 'Allowed origins', type: 'list', defaultValue: [] },
+      ],
+    },
+  ]),
+  buildSection('Controller', 'Controller', 'shield', [
+    {
+      id: 'jwt',
+      label: 'JSON Web Tokens',
+      fields: [
+        { key: 'jwt_algorithm', label: 'Algorithm', type: 'string', defaultValue: 'HS256' },
+        { key: 'jwt_access_token_expire_minutes', label: 'Access token expiry (minutes)', type: 'int', defaultValue: 1440, min: 1 },
+        { key: 'jwt_refresh_token_expire_minutes', label: 'Refresh token expiry (minutes)', type: 'int', defaultValue: 43200, min: 1 },
+      ],
+    },
+    {
+      id: 'default-admin',
+      label: 'Default administrator',
+      fields: [
+        { key: 'default_admin_username', label: 'Username', type: 'string', defaultValue: 'admin', hint: 'Seeded when the users database is created' },
+        { key: 'default_admin_password', label: 'Password', type: 'secret', defaultValue: 'admin', hint: 'Resetting restores the built-in default "admin" — change it after the next start' },
+      ],
+    },
+  ]),
+  buildSection('VPCS', 'VPCS', 'terminal', [
+    {
+      id: 'general',
+      label: 'General',
+      fields: [{ key: 'vpcs_path', label: 'VPCS path', type: 'string', defaultValue: 'vpcs' }],
+    },
+  ]),
+  buildSection('Dynamips', 'Dynamips', 'memory', [
+    {
+      id: 'general',
+      label: 'General',
+      fields: [
+        { key: 'allocate_aux_console_ports', label: 'Allocate aux console ports', type: 'boolean', defaultValue: false },
+        { key: 'mmap_support', label: 'Memory-mapped I/O support', type: 'boolean', defaultValue: true },
+        { key: 'dynamips_path', label: 'Dynamips path', type: 'string', defaultValue: 'dynamips' },
+        { key: 'sparse_memory_support', label: 'Sparse memory support', type: 'boolean', defaultValue: true },
+        { key: 'ghost_ios_support', label: 'Ghost IOS support', type: 'boolean', defaultValue: true },
+      ],
+    },
+  ]),
+  buildSection('IOU', 'IOU', 'lan', [
+    {
+      id: 'general',
+      label: 'General',
+      fields: [
+        { key: 'iourc_path', label: 'IOURC file', type: 'string', defaultValue: null, hint: 'Path to the Cisco IOU license file' },
+        { key: 'license_check', label: 'License check', type: 'boolean', defaultValue: true },
+      ],
+    },
+  ]),
+  buildSection('Qemu', 'Qemu', 'developer_board', [
+    {
+      id: 'general',
+      label: 'General',
+      fields: [
+        { key: 'enable_monitor', label: 'Enable Qemu monitor', type: 'boolean', defaultValue: true },
+        { key: 'monitor_host', label: 'Monitor host', type: 'string', defaultValue: '127.0.0.1' },
+      ],
+    },
+    {
+      id: 'advanced',
+      label: 'Advanced',
+      fields: [
+        { key: 'enable_hardware_acceleration', label: 'Hardware acceleration (KVM/HAXM)', type: 'boolean', defaultValue: true },
+        { key: 'require_hardware_acceleration', label: 'Require hardware acceleration', type: 'boolean', defaultValue: false, hint: 'Fail VM start when acceleration is unavailable' },
+        { key: 'allow_unsafe_options', label: 'Allow unsafe options', type: 'boolean', defaultValue: false, hint: 'Permit arbitrary Qemu command-line options' },
+        { key: 'ovmf_firmware_dir', label: 'OVMF firmware directory', type: 'string', defaultValue: '/usr/share/OVMF' },
+      ],
+    },
+  ]),
+  buildSection('WebWireshark', 'Web Wireshark', 'insights', [
+    {
+      id: 'general',
+      label: 'General',
+      fields: [
+        { key: 'enabled', label: 'Enabled', type: 'boolean', defaultValue: true },
+        { key: 'image', label: 'Container image', type: 'string', defaultValue: 'gns3/web-wireshark:latest' },
+        { key: 'network_subnet', label: 'Network subnet', type: 'string', defaultValue: '172.31.0.0/22' },
+        { key: 'memory', label: 'Memory limit', type: 'string', defaultValue: '2g' },
+        { key: 'cpus', label: 'CPU limit', type: 'float', defaultValue: 1.0, min: 0 },
+        { key: 'pids_limit', label: 'PIDs limit', type: 'int', defaultValue: 1000, min: 0 },
+      ],
+    },
+  ]),
+];

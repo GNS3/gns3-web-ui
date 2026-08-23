@@ -94,6 +94,16 @@
           mat-list-item
           class="sidebar__nav-item"
           routerLinkActive="active"
+          [routerLink]="['/controller', controllerId, 'server-settings']"
+          (click)="isSmallScreen() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>dns</mat-icon>
+          <span matListItemTitle>Server settings</span>
+        </a>
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
           [routerLink]="['/controller', controllerId, 'management', 'users']"
           (click)="isSmallScreen() && sidenav.close()"
         >

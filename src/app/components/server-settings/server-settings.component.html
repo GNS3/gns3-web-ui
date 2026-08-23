@@ -1,0 +1,343 @@
+<div class="server-settings">
+  <header class="server-settings__header">
+    <h1 class="server-settings__title">Server settings</h1>
+    <p class="server-settings__subtitle">
+      Configuration of the GNS3 server (gns3_server.conf). Only changed options are submitted.
+    </p>
+  </header>
+
+  @if (isLoading()) {
+    <div class="server-settings__state">
+      <mat-spinner [diameter]="40"></mat-spinner>
+    </div>
+  } @else if (loadError(); as error) {
+    <div class="server-settings__state">
+      <p class="server-settings__state-message" role="alert">{{ error }}</p>
+      <button mat-stroked-button type="button" (click)="retryLoad()">Retry</button>
+    </div>
+  } @else if (formValues()) {
+    @if (restartBanner(); as options) {
+      <div class="server-settings__banner server-settings__banner--warning" role="status">
+        <mat-icon>restart_alt</mat-icon>
+        <div class="server-settings__banner-content">
+          <strong>Restart required</strong>
+          <span>These changes take effect after the server restarts:</span>
+          <div class="server-settings__banner-options">
+            @for (option of options; track option) {
+              <code>{{ option }}</code>
+            }
+          </div>
+        </div>
+        <button
+          mat-icon-button
+          type="button"
+          class="server-settings__banner-dismiss"
+          (click)="restartBanner.set(null)"
+          aria-label="Dismiss restart notice"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
+
+    @if (externalChange()) {
+      <div class="server-settings__banner server-settings__banner--info" role="status">
+        <mat-icon>sync</mat-icon>
+        <div class="server-settings__banner-content">
+          <strong>Changed by another session</strong>
+          <span>The server settings were updated elsewhere. Review your unsaved changes before saving.</span>
+        </div>
+        <button
+          mat-icon-button
+          type="button"
+          class="server-settings__banner-dismiss"
+          (click)="externalChange.set(false)"
+          aria-label="Dismiss notice"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
+
+    @if (serverError(); as failure) {
+      <div class="server-settings__banner server-settings__banner--error" role="alert">
+        <mat-icon>error</mat-icon>
+        <div class="server-settings__banner-content">
+          <strong>Could not save the settings</strong>
+          <span>{{ failure.message }}</span>
+        </div>
+        <button
+          mat-icon-button
+          type="button"
+          class="server-settings__banner-dismiss"
+          (click)="serverError.set(null)"
+          aria-label="Dismiss error"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
+
+    <div class="server-settings__layout">
+      <nav class="server-settings__categories" aria-label="Server settings sections">
+        @for (section of sections; track section.name) {
+          <button
+            type="button"
+            class="server-settings__category"
+            [class.server-settings__category--active]="activeSection() === section.name"
+            [attr.aria-current]="activeSection() === section.name ? 'page' : null"
+            (click)="selectSection(section.name)"
+          >
+            <mat-icon>{{ section.icon }}</mat-icon>
+            <span>{{ section.label }}</span>
+          </button>
+        }
+      </nav>
+
+      @if (activeSectionMeta(); as section) {
+        <main class="server-settings__content">
+          <section class="server-settings__panel" [attr.aria-labelledby]="'server-settings-' + section.name">
+            <div class="server-settings__panel-header">
+              <h2 [id]="'server-settings-' + section.name">{{ section.label }}</h2>
+            </div>
+
+            @for (group of section.groups; track group.id) {
+              <div class="server-settings__group">
+                <h3 class="server-settings__group-title">{{ group.label }}</h3>
+
+                @for (field of group.fields; track field.key) {
+                  <div
+                    class="server-settings__field"
+                    [class.server-settings__field--dirty]="isFieldDirty(section, field)"
+                  >
+                    @switch (field.type) {
+                      @case ('boolean') {
+                        <div class="server-settings__toggle-row">
+                          <div class="server-settings__field-copy">
+                            <span class="server-settings__field-label">{{ field.label }}</span>
+                            @if (field.hint) {
+                              <span class="server-settings__field-hint">{{ field.hint }}</span>
+                            }
+                          </div>
+                          <div class="server-settings__field-tools">
+                            @if (field.restartRequired) {
+                              <mat-icon
+                                class="server-settings__restart"
+                                matTooltip="Takes effect after a server restart"
+                                [attr.aria-label]="field.label + ' requires a server restart'"
+                                >restart_alt</mat-icon
+                              >
+                            }
+                            @if (canRevert(section, field)) {
+                              <button
+                                mat-icon-button
+                                type="button"
+                                class="server-settings__revert"
+                                matTooltip="Reset to default"
+                                [attr.aria-label]="'Reset ' + field.label + ' to default'"
+                                (click)="revertField(section, field)"
+                              >
+                                <mat-icon>restart_alt</mat-icon>
+                              </button>
+                            }
+                            <mat-slide-toggle
+                              [checked]="!!valueOf(section, field)"
+                              (change)="setValue(section.name, field.key, $event.checked)"
+                              [aria-label]="field.label"
+                            ></mat-slide-toggle>
+                          </div>
+                        </div>
+                      }
+                      @case ('list') {
+                        <div class="server-settings__control-row server-settings__control-row--stacked">
+                          <mat-form-field appearance="fill" class="server-settings__control server-settings__control--wide">
+                            <mat-label>{{ field.label }}</mat-label>
+                            <mat-chip-grid #chipList>
+                              @for (item of listValueOf(section, field); track $index) {
+                                <mat-chip (removed)="removeListItem(section, field, item)">
+                                  {{ item }}
+                                  <mat-icon matChipRemove>cancel</mat-icon>
+                                </mat-chip>
+                              }
+                            </mat-chip-grid>
+                            <input
+                              matInput
+                              placeholder="Add a value"
+                              [matChipInputFor]="chipList"
+                              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                              (matChipInputTokenEnd)="addListItem(section, field, $event)"
+                              [aria-label]="'Add value to ' + field.label"
+                            />
+                            @if (field.hint) {
+                              <mat-hint>{{ field.hint }}</mat-hint>
+                            }
+                          </mat-form-field>
+                          <div class="server-settings__field-tools">
+                            @if (field.restartRequired) {
+                              <mat-icon
+                                class="server-settings__restart"
+                                matTooltip="Takes effect after a server restart"
+                                [attr.aria-label]="field.label + ' requires a server restart'"
+                                >restart_alt</mat-icon
+                              >
+                            }
+                            @if (canRevert(section, field)) {
+                              <button
+                                mat-icon-button
+                                type="button"
+                                class="server-settings__revert"
+                                matTooltip="Reset to default"
+                                [attr.aria-label]="'Reset ' + field.label + ' to default'"
+                                (click)="revertField(section, field)"
+                              >
+                                <mat-icon>restart_alt</mat-icon>
+                              </button>
+                            }
+                          </div>
+                        </div>
+                      }
+                      @case ('secret') {
+                        <div class="server-settings__control-row server-settings__control-row--stacked">
+                          <mat-form-field appearance="fill" class="server-settings__control server-settings__control--wide">
+                            <mat-label>{{ field.label }}</mat-label>
+                            @if (secretState(section, field).state === 'clear') {
+                              <input
+                                matInput
+                                type="text"
+                                value="Will be reset to its default"
+                                disabled
+                                [aria-label]="field.label"
+                              />
+                            } @else {
+                              <input
+                                matInput
+                                type="password"
+                                autocomplete="new-password"
+                                placeholder="Leave empty to keep the current value"
+                                value=""
+                                (input)="onSecretInput(section, field, $event)"
+                                [aria-label]="field.label"
+                              />
+                            }
+                            <mat-hint align="end">{{
+                              secretIsSet(section, field) ? 'A value is set' : 'Not set'
+                            }}</mat-hint>
+                            @if (field.hint) {
+                              <mat-hint>{{ field.hint }}</mat-hint>
+                            }
+                          </mat-form-field>
+                          <div class="server-settings__field-tools">
+                            @if (field.restartRequired) {
+                              <mat-icon
+                                class="server-settings__restart"
+                                matTooltip="Takes effect after a server restart"
+                                [attr.aria-label]="field.label + ' requires a server restart'"
+                                >restart_alt</mat-icon
+                              >
+                            }
+                            <button
+                              mat-icon-button
+                              type="button"
+                              class="server-settings__revert"
+                              [class.server-settings__revert--active]="secretState(section, field).state === 'clear'"
+                              matTooltip="Reset to default"
+                              [attr.aria-label]="'Reset ' + field.label + ' to default'"
+                              (click)="revertField(section, field)"
+                            >
+                              <mat-icon>restart_alt</mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                      }
+                      @default {
+                        <div class="server-settings__control-row">
+                          <mat-form-field appearance="fill" class="server-settings__control">
+                            <mat-label>{{ field.label }}</mat-label>
+                            @if (field.type === 'enum') {
+                              <mat-select
+                                [value]="valueOf(section, field)"
+                                (selectionChange)="setValue(section.name, field.key, $event.value)"
+                                [aria-label]="field.label"
+                              >
+                                @for (option of field.options ?? []; track option.value) {
+                                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                                }
+                              </mat-select>
+                            } @else {
+                              <input
+                                matInput
+                                [type]="field.type === 'string' ? 'text' : 'number'"
+                                [min]="field.min"
+                                [max]="field.max"
+                                [step]="field.type === 'float' ? 'any' : 1"
+                                [value]="valueOf(section, field) ?? ''"
+                                (input)="field.type === 'string' ? onTextInput(section, field, $event) : onNumberInput(section, field, $event)"
+                                [aria-label]="field.label"
+                              />
+                            }
+                            @if (field.hint) {
+                              <mat-hint>{{ field.hint }}</mat-hint>
+                            }
+                          </mat-form-field>
+                          <div class="server-settings__field-tools">
+                            @if (field.restartRequired) {
+                              <mat-icon
+                                class="server-settings__restart"
+                                matTooltip="Takes effect after a server restart"
+                                [attr.aria-label]="field.label + ' requires a server restart'"
+                                >restart_alt</mat-icon
+                              >
+                            }
+                            @if (canRevert(section, field)) {
+                              <button
+                                mat-icon-button
+                                type="button"
+                                class="server-settings__revert"
+                                matTooltip="Reset to default"
+                                [attr.aria-label]="'Reset ' + field.label + ' to default'"
+                                (click)="revertField(section, field)"
+                              >
+                                <mat-icon>restart_alt</mat-icon>
+                              </button>
+                            }
+                          </div>
+                        </div>
+                      }
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </section>
+        </main>
+      }
+    </div>
+
+    <footer class="server-settings__footer">
+      @if (isDirty()) {
+        <span class="server-settings__unsaved-status" role="status">Unsaved changes</span>
+      }
+      <span class="server-settings__footer-spacer"></span>
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="discardChanges()"
+        [disabled]="!isDirty() || isSaving()"
+      >
+        Discard
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        (click)="save()"
+        [disabled]="!isDirty() || isSaving()"
+      >
+        @if (isSaving()) {
+          <mat-progress-spinner [diameter]="18" mode="indeterminate"></mat-progress-spinner>
+        }
+        Save changes
+      </button>
+    </footer>
+  }
+</div>

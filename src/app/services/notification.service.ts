@@ -3,6 +3,7 @@ import { environment } from 'environments/environment';
 import { Controller } from '@models/controller';
 import { Compute } from '@models/compute';
 import { Project } from '@models/project';
+import { SettingsUpdatedEvent } from '@models/server-settings/server-settings';
 import { ComputeService } from '@services/compute.service';
 
 export interface ComputeNotification {
@@ -13,6 +14,11 @@ export interface ComputeNotification {
 export interface ProjectNotification {
   action: 'project.created' | 'project.opened' | 'project.closed' | 'project.updated' | 'project.deleted';
   event: Project;
+}
+
+export interface ServerSettingsNotification {
+  action: 'settings.updated';
+  event: SettingsUpdatedEvent;
 }
 
 @Injectable()
@@ -41,6 +47,13 @@ export class NotificationService {
 
   // Event emitter for project notifications
   public projectNotificationEmitter = new EventEmitter<ProjectNotification>();
+
+  // Event emitter for server settings notifications
+  public serverSettingsNotificationEmitter = new EventEmitter<ServerSettingsNotification>();
+
+  // Emitted after an unexpected WS reconnect: the notification stream does not
+  // replay events missed while disconnected, so consumers resync over HTTP.
+  public wsReconnected = new EventEmitter<void>();
 
   // EventEmitter for cache updates
   public computeCacheUpdated = new EventEmitter<Compute[]>();
@@ -109,6 +122,7 @@ export class NotificationService {
       this.startLivenessCheck();
       if (isReconnect) {
         this.resyncComputesAfterReconnect();
+        this.wsReconnected.emit();
       }
     };
 
@@ -251,6 +265,9 @@ export class NotificationService {
       case 'project.updated':
       case 'project.deleted':
         this.projectNotificationEmitter.emit(message as ProjectNotification);
+        break;
+      case 'settings.updated':
+        this.serverSettingsNotificationEmitter.emit(message as ServerSettingsNotification);
         break;
     }
   }

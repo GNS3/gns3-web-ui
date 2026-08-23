@@ -251,6 +251,7 @@ import { QemuService } from '@services/qemu.service';
 import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
 import { ControllerManagementService } from '@services/controller-management.service';
 import { ControllerSettingsService } from '@services/controller-settings.service';
+import { ServerSettingsService } from '@services/server-settings.service';
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { SettingsService } from '@services/settings.service';
@@ -644,6 +645,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     ProjectNameValidator,
     ToolsService,
     ControllerSettingsService,
+    ServerSettingsService,
     QemuService,
     VpcsService,
     TemplateMocksService,

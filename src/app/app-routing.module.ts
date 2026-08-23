@@ -51,6 +51,7 @@ import { ProjectsComponent } from '@components/projects/projects.component';
 import { ControllersComponent } from '@components/controllers/controllers.component';
 import { ConsoleComponent } from '@components/settings/console/console.component';
 import { SettingsComponent } from '@components/settings/settings.component';
+import { ServerSettingsComponent } from '@components/server-settings/server-settings.component';
 import { SystemStatusComponent } from '@components/system-status/system-status.component';
 import { WebConsoleFullWindowComponent } from '@components/web-console-full-window/web-console-full-window.component';
 import { NodeFileManagerPageComponent } from '@components/project-map/node-file-manager-page/node-file-manager-page.component';
@@ -98,6 +99,11 @@ const routes: Routes = [
       { path: 'controller/:controller_id/help', component: HelpComponent },
       { path: 'controller/:controller_id/settings', component: SettingsComponent },
       { path: 'controller/:controller_id/settings/console', component: ConsoleComponent },
+      {
+        path: 'controller/:controller_id/server-settings',
+        component: ServerSettingsComponent,
+        canActivate: [LoginGuard, AdministratorGuard],
+      },
       {
         path: 'controller/:controller_id/management/pools/:pool_id',
         component: ResourcePoolDetailsComponent,
