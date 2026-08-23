@@ -1774,11 +1774,19 @@ html[data-density='compact'] .node-configurator-dialog-panel {
     .custom-adapters-dialog-panel
   ):not(.node-configurator-dialog-panel):not(.docker-network-config-dialog-panel) {
   --gns3-dialog-max-height: calc(100vh - 32px);
+  // The viewport cap lives in its own custom property on purpose: the CSS
+  // pipeline strips calc() from min() arguments, and Chrome drops the whole
+  // declaration when a var() shares a min() with the resulting bare sum.
+  --gns3-dialog-viewport-cap: calc(100vw - 32px);
+  // Material caps the overlay pane itself at --mat-dialog-container-max-width
+  // (560px fallback) and the pane constrains the whole flex chain, so the SDS
+  // must feed its width into that token or every dialog collapses to 560px.
+  --mat-dialog-container-max-width: min(var(--gns3-dialog-width, 440px), var(--gns3-dialog-viewport-cap));
 
   mat-dialog-container,
   .mat-mdc-dialog-container {
-    width: min(var(--gns3-dialog-width, 440px), calc(100vw - 32px));
-    max-width: min(var(--gns3-dialog-width, 440px), calc(100vw - 32px));
+    width: min(var(--gns3-dialog-width, 440px), var(--gns3-dialog-viewport-cap));
+    max-width: min(var(--gns3-dialog-width, 440px), var(--gns3-dialog-viewport-cap));
     max-height: var(--gns3-dialog-max-height);
   }
 
