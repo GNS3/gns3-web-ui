@@ -256,6 +256,10 @@
     grid-column: span 4;
   }
 
+  &--half-row {
+    grid-column: 1 / -1;
+  }
+
   &--dirty {
     background: color-mix(in srgb, var(--mat-sys-primary) 7%, transparent);
     box-shadow: inset 2px 0 0 var(--mat-sys-primary);
@@ -344,6 +348,12 @@
   }
 }
 
+// A 'half-row' field owns its row but keeps a half-width control — the empty
+// right half matches the paired-cell rhythm above it.
+.server-settings__field--half-row .server-settings__control {
+  width: 50%;
+}
+
 .server-settings__restart {
   width: 18px;
   height: 18px;
@@ -430,6 +440,10 @@
   .server-settings__field--half,
   .server-settings__field--third {
     grid-column: 1 / -1;
+  }
+
+  .server-settings__field--half-row .server-settings__control {
+    width: 100%;
   }
 }
 

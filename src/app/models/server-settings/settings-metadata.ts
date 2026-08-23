@@ -24,9 +24,10 @@ export interface SettingsFieldMeta {
   defaultValue?: SettingsFieldValue;
   restartRequired: boolean;
   // Layout hint: 'half' shares the row with its neighbour, 'third' fits three
-  // fields per row, 'two-thirds' pairs with a 'third' (roughly 65/35);
-  // unmarked fields occupy a full row.
-  width?: 'half' | 'third' | 'two-thirds';
+  // fields per row, 'two-thirds' pairs with a 'third' (roughly 65/35),
+  // 'half-row' is a half-width control on a row of its own; unmarked fields
+  // occupy a full row.
+  width?: 'half' | 'third' | 'two-thirds' | 'half-row';
 }
 
 export interface SettingsGroupMeta {
@@ -106,7 +107,7 @@ export const SETTINGS_METADATA: SettingsSectionMeta[] = [
       id: 'general',
       label: 'General',
       fields: [
-        { key: 'name', label: 'Server name', type: 'string' },
+        { key: 'name', label: 'Server name', type: 'string', width: 'half-row' },
         { key: 'local', label: 'Local server', type: 'boolean', width: 'half', defaultValue: false },
         { key: 'report_errors', label: 'Report errors', type: 'boolean', width: 'half', defaultValue: true },
       ],
@@ -122,7 +123,7 @@ export const SETTINGS_METADATA: SettingsSectionMeta[] = [
         { key: 'enable_http_auth', label: 'HTTP authentication', type: 'boolean', width: 'half', defaultValue: true },
         { key: 'certfile', label: 'Certificate file', type: 'string', width: 'half', defaultValue: null },
         { key: 'certkey', label: 'Certificate key', type: 'string', width: 'half', defaultValue: null },
-        { key: 'secrets_dir', label: 'Secrets directory', type: 'string', defaultValue: null },
+        { key: 'secrets_dir', label: 'Secrets directory', type: 'string', width: 'half', defaultValue: null },
       ],
     },
     {
@@ -205,6 +206,7 @@ export const SETTINGS_METADATA: SettingsSectionMeta[] = [
           key: 'default_symbol_theme',
           label: 'Default symbol theme',
           type: 'enum',
+          width: 'half',
           defaultValue: 'Affinity-square-blue',
           options: [
             { value: 'Classic', label: 'Classic' },
@@ -222,8 +224,8 @@ export const SETTINGS_METADATA: SettingsSectionMeta[] = [
       id: 'skills',
       label: 'Skills repository',
       fields: [
-        { key: 'skills_repo_url', label: 'Repository URL', type: 'string', width: 'two-thirds', defaultValue: 'https://github.com/gns3/gns3-skills.git' },
-        { key: 'skills_repo_branch', label: 'Branch', type: 'string', width: 'third', defaultValue: 'main' },
+        { key: 'skills_repo_url', label: 'Repository URL', type: 'string', width: 'half', defaultValue: 'https://github.com/gns3/gns3-skills.git' },
+        { key: 'skills_repo_branch', label: 'Branch', type: 'string', width: 'half', defaultValue: 'main' },
         { key: 'skills_auto_update', label: 'Auto-update', type: 'boolean', defaultValue: true },
       ],
     },
