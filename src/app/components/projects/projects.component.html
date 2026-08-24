@@ -460,8 +460,9 @@
             </div>
           </div>
 
-          <!-- Nodes & Links (from stats) share one line -->
-          @if (projectStats(); as stats) {
+          <!-- Nodes & Links share one line — counts come from the .gns3 file
+               when the preview is loaded (closed projects have zero server stats) -->
+          @if (displayStats(); as stats) {
           <div class="projects__detail-row">
             <div class="projects__detail-item">
               <span class="projects__detail-icon"><mat-icon>device_hub</mat-icon></span>

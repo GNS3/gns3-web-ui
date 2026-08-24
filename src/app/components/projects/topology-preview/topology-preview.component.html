@@ -2,6 +2,8 @@
   #viewport
   class="topology-preview__viewport"
   [class.topology-preview__viewport--panel]="variant() === 'panel'"
+  [class.topology-preview__viewport--light-bg]="mapBgClass()['topology-preview__viewport--light-bg']"
+  [class.topology-preview__viewport--dark-bg]="mapBgClass()['topology-preview__viewport--dark-bg']"
 >
   <app-d3-map
     class="topology-preview__map"
