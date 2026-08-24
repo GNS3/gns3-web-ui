@@ -472,10 +472,16 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     for (const drawing of mapDrawings) {
+      // Count the drawing's box (parsed from its svg root), not just the
+      // origin point — text/shapes extend right/down from (x, y) and a
+      // point-only bbox lets the canvas edge clip them (e.g. multi-line text
+      // at the bottom of the content).
+      const drawingWidth = (drawing.element?.width ?? 0) * scale;
+      const drawingHeight = (drawing.element?.height ?? 0) * scale;
       minX = Math.min(minX, drawing.x * scale);
-      maxX = Math.max(maxX, drawing.x * scale);
+      maxX = Math.max(maxX, drawing.x * scale + drawingWidth);
       minY = Math.min(minY, drawing.y * scale);
-      maxY = Math.max(maxY, drawing.y * scale);
+      maxY = Math.max(maxY, drawing.y * scale + drawingHeight);
     }
 
     // Asymmetric canvas: allocate exactly the space needed on each side of the
