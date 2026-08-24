@@ -17,9 +17,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap, Router, RouterModule } from '@angular/router';
 import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
-import { environment } from 'environments/environment';
+
 import * as Mousetrap from 'mousetrap';
-import { forkJoin, from, Observable, Subscription } from 'rxjs';
+import { from, Observable, Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import * as d3 from 'd3';
@@ -83,6 +83,7 @@ import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.se
 import { ControllerService } from '@services/controller.service';
 import { Settings, SettingsService } from '@services/settings.service';
 import { SymbolService } from '@services/symbol.service';
+import { NodeSymbolResolverService } from '@services/node-symbol-resolver.service';
 import { ToasterService } from '@services/toaster.service';
 import { ToolsService } from '@services/tools.service';
 import { ThemeService } from '@services/theme.service';
@@ -323,6 +324,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private mapLinksDataSource = inject(MapLinksDataSource);
   private markerRegistryService = inject(MarkerRegistryService);
   private markerFlashService = inject(MarkerFlashService);
+  private nodeSymbolResolver = inject(NodeSymbolResolverService);
   private mapDrawingsDataSource = inject(MapDrawingsDataSource);
   private mapSymbolsDataSource = inject(MapSymbolsDataSource);
   private mapSettingsService = inject(MapSettingsService);
@@ -415,57 +417,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           nodeSymbolCache.set(node.node_id, node.symbol);
         }
 
-        const nodesToLoad = nodes.filter((node: Node) => !node.symbol_url);
-
-        // Fetch dimensions for any node with unknown size
-        nodesToLoad.forEach((node: Node) => {
-          if (node.width == 0 && node.height == 0) {
-            this.symbolService.getDimensions(this.controller, node.symbol).subscribe({
-              next: (symbolDimensions) => {
-                node.width = symbolDimensions.width;
-                node.height = symbolDimensions.height;
-              },
-              error: (err) => {
-                console.error('Failed to get symbol dimensions:', err);
-              },
-            });
-          }
-        });
-
-        if (nodesToLoad.length === 0) {
-          this.nodes.set(nodes);
+        // Resolve symbol URLs / dimensions in one pass, then publish. The
+        // resolver completes only after dimensions are applied, so the first
+        // render already has correct label centering.
+        this.nodeSymbolResolver.resolve(this.controller, nodes).subscribe((resolved: Node[]) => {
+          this.nodes.set(resolved);
           if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
-          return;
-        }
-
-        // Build a map from node -> rawUrl for all nodes that need loading
-        const nodeRawUrlMap = new Map<Node, string>();
-        nodesToLoad.forEach((node: Node) => {
-          nodeRawUrlMap.set(node, `/symbols/${node.symbol}/raw`);
         });
-
-        // Deduplicate: only 1 fetch per unique symbol URL (shareReplay(1) in getSymbolBlobUrl handles concurrent callers)
-        const uniqueRawUrls = Array.from(new Set(nodeRawUrlMap.values()));
-        forkJoin(uniqueRawUrls.map((url) => this.symbolService.getSymbolBlobUrl(this.controller, url))).subscribe(
-          (blobUrls: string[]) => {
-            const blobUrlMap = new Map(uniqueRawUrls.map((url, i) => [url, blobUrls[i]]));
-            nodesToLoad.forEach((node: Node) => {
-              node.symbol_url = blobUrlMap.get(nodeRawUrlMap.get(node));
-            });
-            this.nodes.set(nodes);
-            if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
-          },
-          () => {
-            // Fallback to raw URLs if blob fetch fails
-            nodesToLoad.forEach((node: Node) => {
-              node.symbol_url = `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${
-                environment.current_version
-              }${nodeRawUrlMap.get(node)}`;
-            });
-            this.nodes.set(nodes);
-            if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
-          }
-        );
       })
     );
 

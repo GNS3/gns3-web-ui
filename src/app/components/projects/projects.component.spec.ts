@@ -11,6 +11,7 @@ import { ProjectService } from '@services/project.service';
 import { SettingsService, Settings } from '@services/settings.service';
 import { ProgressService } from '../../common/progress/progress.service';
 import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
+import { TopologyPreviewService } from '@services/topology-preview.service';
 import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
 import { NotificationService, ProjectNotification } from '@services/notification.service';
@@ -26,6 +27,7 @@ describe('ProjectsComponent', () => {
   let mockSettingsService: any;
   let mockProgressService: any;
   let mockRecentlyOpenedProjectService: any;
+  let mockTopologyPreviewService: any;
   let mockThemeService: any;
   let mockToasterService: any;
   let mockNotificationService: any;
@@ -87,6 +89,11 @@ describe('ProjectsComponent', () => {
       setcontrollerIdProjectList: vi.fn(),
     };
 
+    mockTopologyPreviewService = {
+      load: vi.fn().mockReturnValue(of({ nodes: [], links: [], drawings: [] })),
+      invalidate: vi.fn(),
+    };
+
     mockThemeService = {
       getActualTheme: vi.fn().mockReturnValue('dark'),
       darkMode$: of(false),
@@ -126,6 +133,7 @@ describe('ProjectsComponent', () => {
         { provide: SettingsService, useValue: mockSettingsService },
         { provide: ProgressService, useValue: mockProgressService },
         { provide: RecentlyOpenedProjectService, useValue: mockRecentlyOpenedProjectService },
+        { provide: TopologyPreviewService, useValue: mockTopologyPreviewService },
         { provide: ThemeService, useValue: mockThemeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: NotificationService, useValue: mockNotificationService },

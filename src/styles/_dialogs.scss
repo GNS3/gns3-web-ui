@@ -1900,6 +1900,27 @@ html[data-density='compact'] .node-configurator-dialog-panel {
   --gns3-dialog-width: 600px;
 }
 
+// Static topology preview: 70% of the viewport in both axes. Width flows
+// through the SDS (--gns3-dialog-width is auto-capped by the viewport cap);
+// 70vh sits between the 60/80 tiers, so it is set here like the other
+// deviations.
+.topology-preview-dialog-panel {
+  --gns3-dialog-width: 70vw;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    height: 70vh;
+  }
+
+  .mat-mdc-dialog-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+}
+
 // Shared destructive actions use semantic error tokens in every dialog size.
 button.destructive-button {
   color: var(--mat-sys-on-error);

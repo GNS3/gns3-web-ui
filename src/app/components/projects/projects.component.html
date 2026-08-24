@@ -387,6 +387,47 @@
         </div>
 
         <div class="projects__details-body">
+          <!-- Static topology preview from the raw .gns3 file (works for closed projects) -->
+          @switch (previewState()) {
+            @case ('loading') {
+              <div class="projects__preview">
+                <mat-spinner class="projects__preview-spinner" [diameter]="24"></mat-spinner>
+              </div>
+            }
+            @case ('error') {
+              <div class="projects__preview">
+                <span class="projects__preview-note">Topology preview unavailable</span>
+              </div>
+            }
+            @case ('empty') {
+              <div class="projects__preview">
+                <span class="projects__preview-note">Empty topology</span>
+              </div>
+            }
+            @default {
+              @if (!previewEnlarged()) {
+                <button
+                  type="button"
+                  class="projects__preview-thumb"
+                  (click)="openTopologyPreview()"
+                  matTooltip="Enlarge topology preview"
+                  matTooltipClass="custom-tooltip"
+                  matTooltipPosition="below"
+                  aria-label="Enlarge topology preview"
+                >
+                  <app-topology-preview
+                    variant="panel"
+                    [controller]="controller"
+                    [project]="project"
+                    [nodes]="previewTopology()!.nodes"
+                    [links]="previewTopology()!.links"
+                    [drawings]="previewTopology()!.drawings"
+                  />
+                </button>
+              }
+            }
+          }
+
           <!-- Status / Owner / Access share one line -->
           <div class="projects__detail-row">
             <!-- Status -->

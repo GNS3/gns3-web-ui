@@ -836,6 +836,54 @@ mat-cell {
   // HTML carries no encapsulation attribute); the token scales it to 13px.
 }
 
+/* ── Static topology preview card (top of the details panel) ── */
+/* Placeholder (loading / error / empty) and the clickable thumbnail share
+   the same card look; the card sits above the metadata rows so the map and
+   the description never stack into one visual blob. */
+.projects__preview,
+.projects__preview-thumb {
+  box-sizing: border-box;
+  width: 100%;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 10px;
+  background: var(--mat-sys-surface-container-low);
+}
+
+/* Placeholder states keep a fixed height. */
+.projects__preview {
+  flex-shrink: 0;
+  height: 200px;
+}
+
+.projects__preview-note {
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/* The thumbnail's height follows the map's rendered aspect ratio (set by
+   TopologyPreviewComponent). flex-shrink: 0 is essential — the details body
+   is a column flex container and the absolutely-positioned svg has no
+   intrinsic min-height, so shrink would collapse the card to a sliver. */
+.projects__preview-thumb {
+  flex-shrink: 0;
+  height: auto;
+  min-height: 160px;
+  padding: 0;
+  cursor: zoom-in;
+  text-align: inherit;
+
+  app-topology-preview {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
 /* Status dot in the icon column */
 .projects__detail-status-dot {
   width: 10px;
