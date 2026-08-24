@@ -761,6 +761,17 @@ mat-cell {
   text-align: left;
 }
 
+/* Count triplet (Nodes/Links/Drawings): equal thirds so the row never wraps,
+   with content-sized labels — "Drawings" overflows the shared 60px column */
+.projects__detail-row--stats .projects__detail-item {
+  flex: 1 1 0;
+}
+
+.projects__detail-row--stats .projects__detail-label {
+  width: auto;
+  margin-right: 6px;
+}
+
 /* Icon column — fixed width */
 .projects__detail-icon {
   width: 22px;
@@ -902,28 +913,22 @@ mat-cell {
   box-shadow: 0 0 6px color-mix(in srgb, var(--mat-sys-error) 50%, transparent);
 }
 
-/* Details action buttons */
+/* Details action buttons — single centered icon row; tooltips carry the
+   labels (five text buttons overflow the panel width) */
 .projects__details-actions {
-  padding: 14px 20px 18px;
+  padding: 12px 20px 16px;
   border-top: 1px solid var(--mat-sys-outline-variant);
   background: color-mix(in srgb, var(--mat-sys-surface-container) 72%, transparent);
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: var(--gns3-density-space-2);
 }
 
 button.projects__details-action-btn {
   --projects-details-action-color: var(--mat-sys-on-surface-variant);
-  width: 100%;
-  border-radius: 12px;
-  text-transform: none;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  height: 40px;
 
   mat-icon {
-    margin-right: 4px;
     color: var(--projects-details-action-color);
   }
 }

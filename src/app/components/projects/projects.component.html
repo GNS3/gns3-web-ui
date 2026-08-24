@@ -460,10 +460,11 @@
             </div>
           </div>
 
-          <!-- Nodes & Links share one line — counts come from the .gns3 file
-               when the preview is loaded (closed projects have zero server stats) -->
+          <!-- Node / link / drawing counts share one line — counts come from the
+               .gns3 file when the preview is loaded (closed projects have zero
+               server stats) -->
           @if (displayStats(); as stats) {
-          <div class="projects__detail-row">
+          <div class="projects__detail-row projects__detail-row--stats">
             <div class="projects__detail-item">
               <span class="projects__detail-icon"><mat-icon>device_hub</mat-icon></span>
               <span class="projects__detail-label">Nodes</span>
@@ -475,15 +476,15 @@
               <span class="projects__detail-label">Links</span>
               <span class="projects__detail-value">{{ stats.links }}</span>
             </div>
-          </div>
 
-          @if (stats.drawings > 0) {
-          <div class="projects__detail-item">
-            <span class="projects__detail-icon"><mat-icon>draw</mat-icon></span>
-            <span class="projects__detail-label">Drawings</span>
-            <span class="projects__detail-value">{{ stats.drawings }}</span>
+            @if (stats.drawings > 0) {
+            <div class="projects__detail-item">
+              <span class="projects__detail-icon"><mat-icon>draw</mat-icon></span>
+              <span class="projects__detail-label">Drawings</span>
+              <span class="projects__detail-value">{{ stats.drawings }}</span>
+            </div>
+            }
           </div>
-          }
 
           @if (stats.snapshots > 0) {
           <div class="projects__detail-item">
@@ -520,69 +521,68 @@
           }
         </div>
 
-        <!-- Details Action Buttons -->
+        <!-- Details Action Buttons — one compact icon row (tooltips carry the
+             labels; five text buttons don't fit the panel width) -->
         <div class="projects__details-actions">
           @if (project.status === 'closed') {
           <button
-            mat-raised-button
-            color="primary"
+            mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--start"
             (click)="open(project); closeDetails()"
             matTooltip="Start project"
+            aria-label="Start project"
           >
             <mat-icon>play_arrow</mat-icon>
-            Start
           </button>
           } @if (project.status === 'opened') {
           <button
-            mat-raised-button
+            mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--stop"
             (click)="close(project)"
             matTooltip="Stop project"
+            aria-label="Stop project"
           >
             <mat-icon>pause</mat-icon>
-            Stop
           </button>
           }
           <button
-            mat-stroked-button
+            mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--edit"
             (click)="editProject(project)"
             matTooltip="Edit project"
+            aria-label="Edit project"
           >
             <mat-icon>edit</mat-icon>
-            Edit
           </button>
           @if (project.status === 'closed') {
           <button
-            mat-stroked-button
+            mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--duplicate"
             (click)="duplicate(project)"
             matTooltip="Duplicate project"
+            aria-label="Duplicate project"
           >
             <mat-icon>content_copy</mat-icon>
-            Duplicate
           </button>
           }
           <button
-            mat-stroked-button
+            mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--export"
             (click)="exportSelectProject(project)"
             matTooltip="Export project"
+            aria-label="Export project"
           >
             <mat-icon>file_download</mat-icon>
-            Export
           </button>
           @if (project.status === 'closed') {
           <button
-            mat-stroked-button
-            color="warn"
+            mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--delete"
             (click)="delete(project); closeDetails()"
             matTooltip="Delete project"
+            aria-label="Delete project"
           >
             <mat-icon>delete</mat-icon>
-            Delete
           </button>
           }
         </div>
