@@ -33,7 +33,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FileItem, FileUploader, ParsedResponseHeaders, FileUploadModule } from 'ng2-file-upload';
 import * as SparkMD5 from 'spark-md5';
-import { timer } from 'rxjs';
+import { Subject, timer } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { v4 as uuid } from 'uuid';
 import { ProgressService } from '../../../common/progress/progress.service';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
@@ -309,16 +310,32 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   private onControllerReady(): void {
+    // When the review step's input binds for the first time, Angular cancels
+    // the in-flight name check and re-runs it silently (emitEvent: false), so
+    // statusChanges never reports the final status and nameValid would stay
+    // stuck on its initial false value. The completion subject below mirrors
+    // the outcome of every check, including those silent rounds.
+    const nameCheckCompleted = new Subject<boolean>();
+
     this.templateNameControl = new UntypedFormControl(
       '',
       [Validators.required, this.projectNameValidator.get],
-      [templateNameAsyncValidator(this.controller, this.templateService)]
+      [
+        (control: UntypedFormControl) =>
+          templateNameAsyncValidator(this.controller, this.templateService)(control).pipe(
+            tap((result) => nameCheckCompleted.next(result === null))
+          ),
+      ]
     );
     this.templateNameControl.statusChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       // Do not allow submission while the duplicate-name check is pending.
       // Otherwise a fast click can create a duplicate before the async
       // validator has had a chance to report the error.
       this.nameValid.set(this.templateNameControl.status === 'VALID');
+    });
+    nameCheckCompleted.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((isValid) => {
+      this.nameValid.set(isValid);
+      this.cd.markForCheck();
     });
 
     this.loadAppliances();

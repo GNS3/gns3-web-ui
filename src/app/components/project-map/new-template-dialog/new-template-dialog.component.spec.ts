@@ -486,6 +486,22 @@ describe('NewTemplateDialogComponent', () => {
       expect(component.selectedVersion()).toBeNull();
       expect(component.selectedImage()).toBeNull();
     });
+
+    it('should keep nameValid in sync when Angular re-runs the name check silently', async () => {
+      vi.useFakeTimers();
+      try {
+        component.selectAppliance(createDockerAppliance());
+        // Simulate the review step's input binding for the first time: Angular
+        // cancels the in-flight check and re-runs it with emitEvent: false, so
+        // the final VALID status is never reported through statusChanges.
+        component.templateNameControl.updateValueAndValidity({ emitEvent: false });
+        await vi.runAllTimersAsync();
+        expect(component.templateNameControl.status).toBe('VALID');
+        expect(component.nameValid()).toBe(true);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
   });
 
   describe('requiresImages and lastStepIndex', () => {
