@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MarkdownModule } from 'ngx-markdown';
+import { MarkdownViewerComponent } from '../../../../common/markdown-viewer/markdown-viewer.component';
 import { ProjectService } from '@services/project.service';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
@@ -18,7 +18,7 @@ import { Subject, Subscription } from 'rxjs';
   templateUrl: './readme-editor.component.html',
   styleUrls: ['./readme-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MarkdownModule],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MarkdownViewerComponent],
 })
 export class ReadmeEditorComponent implements OnInit, OnDestroy {
   readonly controller = input<Controller>(undefined);

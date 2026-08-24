@@ -60,7 +60,7 @@
     <mat-tab label="Usage instructions">
       <div class="info-dialog__tab-body">
         @if (usage) {
-        <markdown class="info-dialog__usage" [data]="usage"></markdown>
+        <app-markdown-viewer class="info-dialog__usage" [data]="usage"></app-markdown-viewer>
         } @else {
         <p class="info-dialog__empty-note">No usage information has been provided for this node.</p>
         }

@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MarkdownModule } from 'ngx-markdown';
+import { MarkdownViewerComponent } from '../../../common/markdown-viewer/markdown-viewer.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -22,7 +22,7 @@ export interface InfoDialogData {
   templateUrl: './info-dialog.component.html',
   styleUrl: './info-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, MatTabsModule, MarkdownModule],
+  imports: [MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, MatTabsModule, MarkdownViewerComponent],
 })
 export class InfoDialogComponent {
   protected readonly dialogRef = inject(MatDialogRef<InfoDialogComponent>);

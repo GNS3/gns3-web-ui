@@ -278,7 +278,7 @@ describe('InfoDialogComponent', () => {
       await vi.runAllTimersAsync();
       fixture.detectChanges();
 
-      const usageEl = fixture.nativeElement.querySelector('markdown.info-dialog__usage');
+      const usageEl = fixture.nativeElement.querySelector('app-markdown-viewer.info-dialog__usage');
       expect(usageEl).toBeTruthy();
       expect(usageEl.textContent).toContain('Router usage info');
     });
@@ -292,7 +292,7 @@ describe('InfoDialogComponent', () => {
 
       const activeBody = fixture.nativeElement.querySelector('.mat-mdc-tab-body-active');
       expect(activeBody.textContent).toContain('No usage information has been provided for this node.');
-      expect(activeBody.querySelector('markdown')).toBeNull();
+      expect(activeBody.querySelector('app-markdown-viewer')).toBeNull();
     });
   });
 

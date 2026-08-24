@@ -15,10 +15,9 @@ import {
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MarkdownModule } from 'ngx-markdown';
 import { ChatMessage, ToolCall, ToolResult } from '@models/ai-chat.interface';
 import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-details-dialog.component';
-import { CodeBlockDialogComponent, CodeBlockDialogData } from './code-block-dialog.component';
+import { MarkdownViewerComponent } from '../../../common/markdown-viewer/markdown-viewer.component';
 
 /**
  * AI Chat Message List Component
@@ -27,7 +26,7 @@ import { CodeBlockDialogComponent, CodeBlockDialogData } from './code-block-dial
  */
 @Component({
   selector: 'app-chat-message-list',
-  imports: [CommonModule, MatIconModule, MatDialogModule, MarkdownModule],
+  imports: [CommonModule, MatIconModule, MatDialogModule, MarkdownViewerComponent],
   templateUrl: './chat-message-list.component.html',
   styleUrls: ['./chat-message-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -72,117 +71,11 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked, Af
   }
 
   ngAfterViewInit(): void {
-    // Setup code block collapse functionality
-    this.setupCodeBlockCollapse();
-
     // Initialize scroll position to bottom for new conversations
     const messageContainer = this.messageContainer().nativeElement;
     if (messageContainer && this.messages().length === 0) {
       messageContainer.scrollTop = 0;
     }
-  }
-
-  /**
-   * Setup code block collapse for long code blocks (>50 lines)
-   */
-  private setupCodeBlockCollapse(): void {
-    // Use event delegation for dynamically added markdown content
-    const messageContainer = this.messageContainer().nativeElement;
-
-    // Observer to detect new markdown content
-    const observer = new MutationObserver(() => {
-      this.processCodeBlocks(messageContainer);
-      this.wrapTables(messageContainer);
-    });
-
-    observer.observe(messageContainer, {
-      childList: true,
-      subtree: true,
-    });
-
-    // Initial processing
-    this.processCodeBlocks(messageContainer);
-    this.wrapTables(messageContainer);
-  }
-
-  /**
-   * Process all code blocks and add collapse functionality to long ones
-   */
-  private processCodeBlocks(container: HTMLElement): void {
-    const codeBlocks = container.querySelectorAll('markdown pre');
-
-    codeBlocks.forEach((pre) => {
-      // Skip if already processed
-      if (pre.hasAttribute('data-code-processed')) {
-        return;
-      }
-
-      const code = pre.querySelector('code');
-      if (!code) {
-        return;
-      }
-
-      // Count lines
-      const lines = code.textContent?.split('\n').length || 0;
-
-      // Mark as processed
-      pre.setAttribute('data-code-processed', 'true');
-
-      // If code block has more than 50 lines, add collapse functionality
-      if (lines > 50) {
-        pre.classList.add('code-block-collapsible');
-        pre.setAttribute('title', `Click to view full code (${lines} lines)`);
-
-        // Add click handler
-        pre.addEventListener('click', (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          this.openCodeBlockDialog(code.innerHTML, code.className);
-        });
-      }
-    });
-  }
-
-  /**
-   * Wrap all tables in scrollable containers
-   */
-  private wrapTables(container: HTMLElement): void {
-    const tables = container.querySelectorAll('markdown table');
-
-    tables.forEach((table) => {
-      // Skip if already wrapped
-      if (table.parentElement?.classList.contains('markdown-table-wrapper')) {
-        return;
-      }
-
-      // Create wrapper div
-      const wrapper = document.createElement('div');
-      wrapper.className = 'markdown-table-wrapper';
-
-      // Insert wrapper before table
-      table.parentNode?.insertBefore(wrapper, table);
-
-      // Move table into wrapper
-      wrapper.appendChild(table);
-    });
-  }
-
-  /**
-   * Open code block in dialog
-   */
-  private openCodeBlockDialog(code: string, languageClass: string): void {
-    // Extract language from className (e.g., "language-typescript" -> "typescript")
-    const language = languageClass.match(/language-(\w+)/)?.[1] || undefined;
-
-    const data: CodeBlockDialogData = {
-      code,
-      language,
-    };
-
-    this.dialog.open(CodeBlockDialogComponent, {
-      data,
-      panelClass: ['base-dialog-panel', 'code-block-dialog-panel', 'dialog-extra-large-panel'],
-    });
   }
 
   /**

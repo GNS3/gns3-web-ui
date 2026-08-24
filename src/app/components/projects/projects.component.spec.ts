@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, of, throwError, Subject } from 'rxjs';
+import { MarkdownModule } from 'ngx-markdown';
 import { ProjectsComponent } from './projects.component';
 import { ProjectService } from '@services/project.service';
 import { SettingsService, Settings } from '@services/settings.service';
@@ -88,6 +89,7 @@ describe('ProjectsComponent', () => {
 
     mockThemeService = {
       getActualTheme: vi.fn().mockReturnValue('dark'),
+      darkMode$: of(false),
     };
 
     mockToasterService = {
@@ -118,7 +120,7 @@ describe('ProjectsComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [ProjectsComponent],
+      imports: [ProjectsComponent, MarkdownModule.forRoot()],
       providers: [
         { provide: ProjectService, useValue: mockProjectService },
         { provide: SettingsService, useValue: mockSettingsService },
@@ -280,10 +282,15 @@ describe('ProjectsComponent', () => {
   });
 
   describe('Project details', () => {
-    it('should load and display a README description after selecting a project', () => {
+    it('should load and display a README description after selecting a project', async () => {
       fixture.detectChanges();
 
       component.selectProject(mockProjects[0]);
+      fixture.detectChanges();
+
+      // ngx-markdown's render() awaits parse() before inserting the compiled HTML.
+      // The global setup installs fake timers, so flush them explicitly.
+      await vi.runAllTimersAsync();
       fixture.detectChanges();
 
       const description = fixture.nativeElement.querySelector('.projects__detail-description');

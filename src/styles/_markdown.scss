@@ -1,259 +1,73 @@
 /**
  * Global Markdown Styles
- * Handles markdown rendering across the application
- * Primary usage: AI Chat message list
+ *
+ * Unified styling for the shared MarkdownViewerComponent
+ * (src/app/common/markdown-viewer/). The inner HTML is rendered at runtime by
+ * ngx-markdown and carries no encapsulation attributes, so descendant rules
+ * must live here, scoped by the element selector.
+ *
+ * Personalization contract: call sites override the --markdown-viewer-*
+ * tokens (and inheritable properties like white-space) on the host element
+ * from their own SCSS — no global edits needed:
+ *
+ *   app-markdown-viewer.my-message-class {
+ *     --markdown-viewer-font-size: 16px;
+ *     white-space: pre-wrap;
+ *   }
  */
 
-/* =============================================
-// AI Chat Markdown Styles
-// ============================================= */
-app-chat-message-list {
-  markdown {
-    display: block;
-    line-height: 1.4;
-    word-wrap: break-word;
-    white-space: pre-wrap; // Preserve whitespace in markdown
-    font-size: 16px;
-    color: var(--mat-sys-on-surface);
-
-    // Headings
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      color: var(--mat-sys-on-surface);
-      font-weight: 600;
-    }
-
-    h1 {
-      font-size: 18px;
-      margin: 12px 0 8px;
-    }
-
-    h2 {
-      font-size: 16px;
-      margin: 10px 0 6px;
-    }
-
-    h3 {
-      font-size: 15px;
-      margin: 8px 0 4px;
-    }
-
-    h4 {
-      font-size: 14px;
-      margin: 8px 0 4px;
-    }
-
-    h5,
-    h6 {
-      font-size: 13px;
-      margin: 8px 0 4px;
-    }
-
-    // Paragraphs
-    p {
-      margin: 8px 0;
-    }
-
-    // Links
-    a {
-      color: var(--mat-sys-primary);
-      text-decoration: underline;
-
-      &:hover {
-        color: var(--mat-sys-primary);
-        text-decoration: none;
-        font-weight: 500;
-      }
-    }
-
-    // Lists
-    ul,
-    ol {
-      padding-left: 24px;
-      margin: 4px 0;
-    }
-
-    // Nested lists
-    ul ul,
-    ol ol,
-    ul ol,
-    ol ul {
-      margin: 4px 0;
-    }
-
-    li {
-      margin: 4px 0;
-    }
-
-    // Blockquotes
-    blockquote {
-      border-left: 3px solid var(--mat-sys-outline);
-      padding-left: 12px;
-      margin: 8px 0;
-      color: var(--mat-sys-on-surface-variant);
-    }
-
-    // Tables - wrap in scrollable container
-    .markdown-table-wrapper {
-      overflow-x: auto;
-      margin: 8px 0;
-      border-radius: 4px;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: auto; // Let table determine natural width
-      margin: 0; // Remove margin since wrapper handles spacing
-    }
-
-    th,
-    td {
-      border: 1px solid var(--mat-sys-outline);
-      padding: 8px 12px;
-      text-align: left;
-    }
-
-    th {
-      background-color: var(--mat-sys-surface-container);
-      color: var(--mat-sys-on-surface);
-    }
-
-    // Table row hover
-    tbody tr:hover {
-      background-color: var(--mat-sys-surface-container-low);
-    }
-
-    // Table zebra striping
-    tbody tr:nth-child(even) {
-      background-color: color-mix(in srgb, var(--mat-sys-surface-container-low) 50%, transparent);
-    }
-
-    // Horizontal rule
-    hr {
-      border: none;
-      border-top: 1px solid var(--mat-sys-outline);
-      margin: 12px 0;
-    }
-
-    // Images
-    img {
-      max-width: 100%;
-      height: auto;
-    }
-
-    // Inline code
-    code {
-      background-color: color-mix(in srgb, var(--mat-sys-on-surface) 15%, transparent);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 1em;
-    }
-
-    // Code blocks
-    pre {
-      background-color: color-mix(in srgb, var(--mat-sys-surface-container-high) 80%, transparent);
-      padding: 12px;
-      border-radius: 4px;
-      overflow-x: auto;
-      margin: 8px 0;
-      font-size: 14px;
-      border: 1px solid var(--mat-sys-outline-variant);
-
-      code {
-        background-color: transparent;
-        padding: 0;
-        font-size: 14px;
-      }
-    }
-
-    // Collapsible code blocks (>50 lines)
-    pre.code-block-collapsible {
-      position: relative;
-      cursor: pointer;
-      max-height: 400px;
-      overflow: hidden;
-      transition: max-height 0.3s ease;
-
-      &::after {
-        content: '▼ View full code (click to expand)';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: linear-gradient(transparent, var(--mat-sys-surface-container-highest));
-        padding: 24px 12px 12px;
-        font-size: 12px;
-        color: var(--mat-sys-primary);
-        text-align: center;
-        font-weight: 500;
-        pointer-events: none;
-      }
-
-      &:hover {
-        border-color: var(--mat-sys-primary);
-
-        &::after {
-          background: linear-gradient(
-            transparent,
-            color-mix(in srgb, var(--mat-sys-primary) 20%, var(--mat-sys-surface-container-highest))
-          );
-          color: var(--mat-sys-on-primary-container);
-        }
-      }
-    }
-  }
-}
-
-/* =============================================
-// Node Info Dialog Markdown Styles
-// (Usage instructions tab)
-// ============================================= */
-markdown.info-dialog__usage {
+app-markdown-viewer {
   display: block;
-  line-height: 1.6;
+  font-size: var(--markdown-viewer-font-size, 14px);
+  line-height: var(--markdown-viewer-line-height, 1.5);
+  color: var(--markdown-viewer-text-color, var(--mat-sys-on-surface));
   word-wrap: break-word;
-  font-size: 14px;
-  color: var(--mat-sys-on-surface);
 
+  // Headings — em-based so one font-size token scales everything
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    color: var(--mat-sys-on-surface);
-    font-weight: 600;
+    color: var(--markdown-viewer-text-color, var(--mat-sys-on-surface));
+    font-weight: var(--markdown-viewer-heading-weight, 600);
   }
 
   h1 {
-    font-size: 16px;
+    font-size: 1.25em;
     margin: 12px 0 8px;
   }
 
   h2 {
-    font-size: 15px;
+    font-size: 1.125em;
     margin: 10px 0 6px;
   }
 
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-size: 14px;
+  h3 {
+    font-size: 1em;
     margin: 8px 0 4px;
   }
 
+  h4 {
+    font-size: 0.9375em;
+    margin: 8px 0 4px;
+  }
+
+  h5,
+  h6 {
+    font-size: 0.875em;
+    margin: 8px 0 4px;
+  }
+
+  // Paragraphs
   p {
     margin: 8px 0;
   }
 
+  // Links
   a {
-    color: var(--mat-sys-primary);
+    color: var(--markdown-viewer-link-color, var(--mat-sys-primary));
     text-decoration: underline;
 
     &:hover {
@@ -261,9 +75,10 @@ markdown.info-dialog__usage {
     }
   }
 
+  // Lists
   ul,
   ol {
-    padding-left: 24px;
+    padding-left: 1.7em;
     margin: 4px 0;
   }
 
@@ -271,6 +86,7 @@ markdown.info-dialog__usage {
     margin: 4px 0;
   }
 
+  // Blockquotes
   blockquote {
     border-left: 3px solid var(--mat-sys-outline);
     padding-left: 12px;
@@ -278,54 +94,119 @@ markdown.info-dialog__usage {
     color: var(--mat-sys-on-surface-variant);
   }
 
-  table {
-    border-collapse: collapse;
+  // Tables - wrapped in a scrollable container by the viewer component
+  .markdown-table-wrapper {
+    overflow-x: auto;
     margin: 8px 0;
-
-    th,
-    td {
-      border: 1px solid var(--mat-sys-outline);
-      padding: 6px 12px;
-      text-align: left;
-    }
-
-    th {
-      background-color: var(--mat-sys-surface-container);
-      color: var(--mat-sys-on-surface);
-    }
+    border-radius: 4px;
   }
 
+  table {
+    border-collapse: collapse;
+    width: auto; // Let table determine natural width
+    margin: 0; // Remove margin since wrapper handles spacing
+  }
+
+  th,
+  td {
+    border: 1px solid var(--mat-sys-outline);
+    padding: 8px 12px;
+    text-align: left;
+  }
+
+  th {
+    background-color: var(--mat-sys-surface-container);
+    color: var(--mat-sys-on-surface);
+  }
+
+  // Table row hover
+  tbody tr:hover {
+    background-color: var(--mat-sys-surface-container-low);
+  }
+
+  // Table zebra striping
+  tbody tr:nth-child(even) {
+    background-color: color-mix(in srgb, var(--mat-sys-surface-container-low) 50%, transparent);
+  }
+
+  // Horizontal rule
   hr {
     border: none;
     border-top: 1px solid var(--mat-sys-outline);
     margin: 12px 0;
   }
 
+  // Images
   img {
     max-width: 100%;
     height: auto;
   }
 
+  // Inline code
   code {
-    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 15%, transparent);
+    background-color: var(
+      --markdown-viewer-code-bg,
+      color-mix(in srgb, var(--mat-sys-on-surface) 15%, transparent)
+    );
     padding: 2px 6px;
     border-radius: 4px;
     font-family: monospace;
-    font-size: 13px;
+    font-size: 0.9em;
   }
 
+  // Code blocks
   pre {
-    background-color: color-mix(in srgb, var(--mat-sys-surface-container-high) 80%, transparent);
+    background-color: var(
+      --markdown-viewer-pre-bg,
+      color-mix(in srgb, var(--mat-sys-surface-container-high) 80%, transparent)
+    );
     padding: 12px;
     border-radius: 4px;
     overflow-x: auto;
     margin: 8px 0;
-    border: 1px solid var(--mat-sys-outline-variant);
+    font-size: 0.9em;
+    border: 1px solid var(--markdown-viewer-pre-border, var(--mat-sys-outline-variant));
 
     code {
       background-color: transparent;
       padding: 0;
-      font-size: 13px;
+      font-size: 1em;
+    }
+  }
+
+  // Collapsible code blocks (>50 lines, click opens full view dialog)
+  pre.code-block-collapsible {
+    position: relative;
+    cursor: pointer;
+    max-height: 400px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+
+    &::after {
+      content: '▼ View full code (click to expand)';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, var(--mat-sys-surface-container-highest));
+      padding: 24px 12px 12px;
+      font-size: 12px;
+      color: var(--mat-sys-primary);
+      text-align: center;
+      font-weight: 500;
+      pointer-events: none;
+    }
+
+    &:hover {
+      border-color: var(--mat-sys-primary);
+
+      &::after {
+        background: linear-gradient(
+          transparent,
+          color-mix(in srgb, var(--mat-sys-primary) 20%, var(--mat-sys-surface-container-highest))
+        );
+        color: var(--mat-sys-on-primary-container);
+      }
     }
   }
 }

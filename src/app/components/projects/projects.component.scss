@@ -788,6 +788,7 @@ mat-cell {
 }
 
 .projects__detail-description {
+  --markdown-viewer-font-size: 13px;
   flex: 0 0 100%;
   max-height: 180px;
   margin-top: 8px;
@@ -796,11 +797,9 @@ mat-cell {
   overflow: auto;
   border-radius: 10px;
   background: var(--mat-sys-surface-container-low);
-  color: var(--mat-sys-on-surface);
-  font-size: 13px;
-  line-height: 1.5;
-  white-space: pre-wrap;
   overflow-wrap: anywhere;
+  // Markdown element typography lives in src/styles/_markdown.scss (runtime
+  // HTML carries no encapsulation attribute); the token scales it to 13px.
 }
 
 /* Status dot in the icon column */

@@ -9,7 +9,7 @@
       </div>
       <div class="gns3-chat-message-list__content">
         <div class="gns3-chat-message-list__bubble gns3-chat-message-list__bubble--user">
-          <markdown class="gns3-chat-message-list__text" [data]="message.content"></markdown>
+          <app-markdown-viewer class="gns3-chat-message-list__text" [data]="message.content"></app-markdown-viewer>
         </div>
         <div class="gns3-chat-message-list__time">{{ formatTime(message.created_at) }}</div>
       </div>
@@ -27,7 +27,7 @@
           class="gns3-chat-message-list__bubble gns3-chat-message-list__bubble--assistant"
           [class.gns3-chat-message-list__bubble--streaming]="isStreaming() && message === lastAssistantMessage"
         >
-          <markdown class="gns3-chat-message-list__text" [data]="message.content"></markdown>
+          <app-markdown-viewer class="gns3-chat-message-list__text" [data]="message.content"></app-markdown-viewer>
           @if (isStreaming() && message === lastAssistantMessage && message.content) {
           <svg class="gns3-chat-message-list__streaming-logo" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -81,7 +81,7 @@
     @if (message.role === 'system') {
     <div class="gns3-chat-message-list__message">
       <div class="gns3-chat-message-list__bubble gns3-chat-message-list__bubble--system">
-        <markdown class="gns3-chat-message-list__text" [data]="message.content"></markdown>
+        <app-markdown-viewer class="gns3-chat-message-list__text" [data]="message.content"></app-markdown-viewer>
       </div>
     </div>
     }

@@ -2,8 +2,8 @@
 @if (!isEditing()) {
   <div class="readme-preview-container">
     @if (markdown()) {
-    <div class="textWrapper markdown-body">
-      <markdown [data]="markdown()"></markdown>
+    <div class="textWrapper">
+      <app-markdown-viewer [data]="markdown()"></app-markdown-viewer>
     </div>
     } @else {
     <div class="readme-empty-state">

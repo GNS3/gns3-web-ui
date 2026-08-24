@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ChangeDetectorRef, importProvidersFrom } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ProjectReadmeComponent } from './project-readme.component';
 import { ProjectService } from '@services/project.service';
+import { ThemeService } from '@services/theme.service';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 import { of } from 'rxjs';
+import { MarkdownModule } from 'ngx-markdown';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ProjectReadmeComponent', () => {
@@ -14,17 +14,14 @@ describe('ProjectReadmeComponent', () => {
   let fixture: ComponentFixture<ProjectReadmeComponent>;
   let mockDialogRef: any;
   let mockProjectService: any;
-  let mockSanitizer: any;
   let mockController: Controller;
   let mockProject: Project;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockDialogRef = {
       close: vi.fn(),
-    };
-
-    mockSanitizer = {
-      bypassSecurityTrustHtml: vi.fn((html: string) => html as SafeHtml),
     };
 
     mockProjectService = {
@@ -71,11 +68,11 @@ describe('ProjectReadmeComponent', () => {
     } as Project;
 
     await TestBed.configureTestingModule({
-      imports: [ProjectReadmeComponent],
+      imports: [ProjectReadmeComponent, MarkdownModule.forRoot()],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: ProjectService, useValue: mockProjectService },
-        { provide: DomSanitizer, useValue: mockSanitizer },
+        { provide: ThemeService, useValue: { darkMode$: of(false) } },
       ],
     }).compileComponents();
 
@@ -86,7 +83,9 @@ describe('ProjectReadmeComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('Creation', () => {
@@ -94,8 +93,8 @@ describe('ProjectReadmeComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should have initial empty readmeHtml', () => {
-      expect(component.readmeHtml).toBe('');
+    it('should have initial empty readme', () => {
+      expect(component.readme()).toBe('');
     });
   });
 
@@ -107,7 +106,7 @@ describe('ProjectReadmeComponent', () => {
   });
 
   describe('ngAfterViewInit', () => {
-    it('should fetch readme file and set readmeHtml when file exists', () => {
+    it('should fetch readme file and set readme when file exists', () => {
       const markdownContent = '# Test README\n\nThis is a test.';
       mockProjectService.getReadmeFile.mockReturnValue(of(markdownContent));
 
@@ -115,16 +114,16 @@ describe('ProjectReadmeComponent', () => {
       fixture.detectChanges();
 
       expect(mockProjectService.getReadmeFile).toHaveBeenCalledWith(mockController, mockProject.project_id);
-      expect(component.readmeHtml).toBeTruthy();
+      expect(component.readme()).toBe(markdownContent);
     });
 
-    it('should not set readmeHtml when file is null', () => {
+    it('should keep readme empty when file is null', () => {
       mockProjectService.getReadmeFile.mockReturnValue(of(null));
 
       component.ngAfterViewInit();
       fixture.detectChanges();
 
-      expect(component.readmeHtml).toBe('');
+      expect(component.readme()).toBe('');
     });
   });
 });

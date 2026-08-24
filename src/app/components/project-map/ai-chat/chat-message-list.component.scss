@@ -222,8 +222,15 @@
 // =============================================
 // Message Text
 // =============================================
-// NOTE: Markdown styles moved to src/styles/_markdown.scss
-// This ensures proper rendering without style encapsulation issues
+// Markdown element typography lives in src/styles/_markdown.scss (runtime HTML
+// carries no encapsulation attribute). Chat personalizes the shared viewer via
+// its CSS tokens + inheritable properties, which pass through the host element.
+
+app-markdown-viewer.gns3-chat-message-list__text {
+  --markdown-viewer-font-size: 16px;
+  --markdown-viewer-line-height: 1.4;
+  white-space: pre-wrap; // Preserve whitespace in streaming markdown
+}
 
 .gns3-chat-message-list__time {
   font-size: 12px;

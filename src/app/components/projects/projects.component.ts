@@ -45,6 +45,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { version } from '../../version';
+import { MarkdownViewerComponent } from '../../common/markdown-viewer/markdown-viewer.component';
 
 @Component({
   selector: 'app-projects',
@@ -52,6 +53,7 @@ import { version } from '../../version';
   styleUrl: './projects.component.scss',
   imports: [
     CommonModule,
+    MarkdownViewerComponent,
     FormsModule,
     RouterModule,
     MatDialogModule,

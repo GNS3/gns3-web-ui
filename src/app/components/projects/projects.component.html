@@ -468,7 +468,7 @@
           <div class="projects__detail-item projects__detail-item--description">
             <span class="projects__detail-icon"><mat-icon>description</mat-icon></span>
             <span class="projects__detail-label">Description</span>
-            <div class="projects__detail-description">{{ projectDescription() }}</div>
+            <app-markdown-viewer class="projects__detail-description" [data]="projectDescription()"></app-markdown-viewer>
           </div>
           }
         </div>
