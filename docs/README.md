@@ -93,6 +93,7 @@ docs/
 | [Console Devices Panel](./features/console/devices-panel-implementation.md) | Console devices panel (v2.0.0) |
 | [VNC Console](./features/console/vnc-console-implementation.md) | VNC console implementation |
 | [Custom Adapters](./features/custom-adapters/custom-adapters-implementation.md) | Custom adapters implementation |
+| [Markdown Viewer](./features/markdown-viewer/markdown-viewer-implementation.md) | ⭐ Shared markdown rendering: token API, post-render behavior |
 | [Symbols Guide](./features/symbols/symbols-guide.md) | Node symbols support (SVG/PNG/JPG/GIF) |
 | [WebSocket Connection Management](./features/websocket/connection-management.md) | Simple controller connection management service |
 | [Web Wireshark Overview](./features/web-wireshark/overview.md) | ⭐ Browser-based packet capture and analysis |
