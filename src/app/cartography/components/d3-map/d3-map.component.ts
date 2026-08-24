@@ -400,6 +400,11 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     // over the previous project's nodes/links/drawings, which graphLayout.draw
     // would render as a ghost frame before the first data redraw clears them.
     this.layersManager.clear();
+    // GraphDataManager equally outlives the component: without a reset, a new
+    // mount fed the same items (preview thumbnail ↔ dialog share one cached
+    // dataset) diffs them as unchanged, never rebuilds the layers and draws
+    // an empty canvas.
+    this.graphDataManager.reset();
     this.context.size = new Size(0, 0);
     this.graphLayout.connect(this.svg, this.context);
     this.graphLayout.draw(this.svg, this.context);

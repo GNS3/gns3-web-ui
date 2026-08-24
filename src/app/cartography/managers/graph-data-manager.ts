@@ -84,6 +84,24 @@ export class GraphDataManager {
   public getDrawings() { return this.mapDrawingsDataSource.getItems(); }
   public getSymbols() { return this.mapSymbolsDataSource.getItems(); }
 
+  /**
+   * Clear all singleton state. Called from D3MapComponent.createGraph: the
+   * manager outlives the component, and a fresh mount that receives the SAME
+   * items (e.g. preview thumbnail ↔ dialog passing one cached dataset) would
+   * diff them as "no change" — no additions, no layers rebuild — and render
+   * an empty canvas even though layersManager was cleared.
+   */
+  public reset() {
+    this.mapNodesDataSource.set([]);
+    this.mapLinksDataSource.set([]);
+    this.mapDrawingsDataSource.set([]);
+    this.nodeSig.clear();
+    this.linkSig.clear();
+    this.drawingSig.clear();
+    this.nodeToLinks.clear();
+    this.draggingIds.clear();
+  }
+
   // ── Incremental setters (return AffectedIds for dom-patcher) ───
 
   public setNodes(nodes: Node[]): AffectedIds {

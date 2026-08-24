@@ -82,6 +82,16 @@ svg#map {
   background: var(--gns3-map-bg, var(--mat-sys-surface));
 }
 
+/* Static topology preview: the whole map is CSS-scaled to fit its viewport;
+   keep link strokes at their designed width so they stay visible at thumbnail
+   scales (a 2px stroke at 0.1 scale would vanish, looking like "links are
+   not rendered"). Scoped to the preview viewport — the live project map is
+   untouched. Runtime-created elements carry no encapsulation attribute, so
+   this must live in a global stylesheet. */
+.topology-preview__viewport g.link path {
+  vector-effect: non-scaling-stroke;
+}
+
 /* Node selection grayscale effect: keep status badges colored */
 svg#map g.node_body.selected > image {
   filter: grayscale(100%);

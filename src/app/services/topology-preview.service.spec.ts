@@ -8,6 +8,9 @@ import { Gns3ProjectFile } from '../models/gns3-file';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 
+// The test setup installs fake timers and the service subscribes on the
+// asyncScheduler (so the loading → ready transition always renders) — every
+// load must be drained with runAllTimersAsync.
 describe('TopologyPreviewService', () => {
   let service: TopologyPreviewService;
   let mockProjectService: any;
@@ -40,6 +43,21 @@ describe('TopologyPreviewService', () => {
     },
   };
 
+  /** Subscribe, flush the asyncScheduler timer, and resolve with the emission. */
+  async function loadOnce(ctrl: Controller = controller, proj: Project = project): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) =>
+      service.load(ctrl, proj).subscribe({ next: resolve, error: reject })
+    );
+    await vi.runAllTimersAsync();
+    return promise;
+  }
+
+  /** Fire-and-forget load with the scheduler flushed. */
+  async function loadBackground(ctrl: Controller = controller, proj: Project = project): Promise<void> {
+    service.load(ctrl, proj).subscribe();
+    await vi.runAllTimersAsync();
+  }
+
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -62,7 +80,7 @@ describe('TopologyPreviewService', () => {
   });
 
   it('maps the file and resolves symbols before emitting', async () => {
-    const result = await new Promise<any>((resolve) => service.load(controller, project).subscribe(resolve));
+    const result = await loadOnce();
 
     expect(mockProjectService.gns3file).toHaveBeenCalledWith(controller, 'proj-1');
     expect(mockResolver.resolve).toHaveBeenCalledWith(controller, expect.anything());
@@ -72,53 +90,62 @@ describe('TopologyPreviewService', () => {
   });
 
   it('caches per controller+project — second load does not refetch', async () => {
-    await new Promise<void>((resolve) => service.load(controller, project).subscribe(() => resolve()));
-    await new Promise<void>((resolve) => service.load(controller, project).subscribe(() => resolve()));
+    await loadOnce();
+    await loadOnce();
 
     expect(mockProjectService.gns3file).toHaveBeenCalledTimes(1);
   });
 
   it('keys the cache per controller port', async () => {
-    await new Promise<void>((resolve) => service.load(controller, project).subscribe(() => resolve()));
-    await new Promise<void>((resolve) => service.load(otherController, project).subscribe(() => resolve()));
+    await loadOnce();
+    await loadOnce(otherController);
 
     expect(mockProjectService.gns3file).toHaveBeenCalledTimes(2);
   });
 
   it('evicts failed loads so a retry refetches', async () => {
     mockProjectService.gns3file.mockReturnValueOnce(throwError(() => new Error('boom')));
-    await new Promise<void>((resolve) =>
-      service.load(controller, project).subscribe({ error: () => resolve() })
-    );
+    await loadOnce().catch(() => undefined);
 
     // The failed entry must not be replayed.
-    await new Promise<void>((resolve) => service.load(controller, project).subscribe(() => resolve()));
+    await loadOnce();
 
     expect(mockProjectService.gns3file).toHaveBeenCalledTimes(2);
   });
 
   it('invalidate(projectId) drops only matching entries', async () => {
-    service.load(controller, project).subscribe();
-    service.load(controller, { project_id: 'proj-2' } as Project).subscribe();
+    await loadBackground();
+    await loadBackground(controller, { project_id: 'proj-2' } as Project);
 
     service.invalidate('proj-1');
 
-    await new Promise<void>((resolve) => service.load(controller, project).subscribe(() => resolve()));
-    await new Promise<void>((resolve) =>
-      service.load(controller, { project_id: 'proj-2' } as Project).subscribe(() => resolve())
-    );
+    await loadOnce();
+    await loadOnce(controller, { project_id: 'proj-2' } as Project);
 
     // proj-1 evicted → refetch; proj-2 still cached.
     expect(mockProjectService.gns3file).toHaveBeenCalledTimes(3);
   });
 
   it('invalidate() clears everything', async () => {
-    service.load(controller, project).subscribe();
+    await loadBackground();
 
     service.invalidate();
 
-    await new Promise<void>((resolve) => service.load(controller, project).subscribe(() => resolve()));
+    await loadOnce();
 
     expect(mockProjectService.gns3file).toHaveBeenCalledTimes(2);
+  });
+
+  it('always emits asynchronously, even on a cache hit', async () => {
+    await loadOnce();
+
+    let emitted = false;
+    service.load(controller, project).subscribe(() => {
+      emitted = true;
+    });
+    // Before the scheduler fires, the loading state must still be observable.
+    expect(emitted).toBe(false);
+    await vi.runAllTimersAsync();
+    expect(emitted).toBe(true);
   });
 });
