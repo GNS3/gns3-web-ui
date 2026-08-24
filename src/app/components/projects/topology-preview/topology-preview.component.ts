@@ -89,30 +89,77 @@ export class TopologyPreviewComponent {
     });
   }
 
-  /** Uniformly scale the svg (already content-centered) to fit the viewport. Idempotent and cheap. */
+  /**
+   * Uniformly scale the rendered content to fit the viewport. Idempotent and
+   * cheap.
+   *
+   * The fit box is the measured content bbox (g.canvas getBBox mapped into
+   * svg coordinates), not the svg canvas itself: getSize() pads the canvas to
+   * at least half the browser viewport per side, so fitting the canvas would
+   * shrink small topologies into their padding and report the padded aspect
+   * ratio as the topology's. Falls back to the whole svg until the first
+   * draw populates the canvas group.
+   */
   private recomputeScale(): void {
     const viewport = this.viewport()?.nativeElement;
     if (!viewport) return;
     const svg = viewport.querySelector('svg');
     if (!svg) return;
-    const width = parseFloat(svg.getAttribute('width') ?? '');
-    const height = parseFloat(svg.getAttribute('height') ?? '');
-    if (!width || !height) return;
+    const svgWidth = parseFloat(svg.getAttribute('width') ?? '');
+    const svgHeight = parseFloat(svg.getAttribute('height') ?? '');
+    if (!svgWidth || !svgHeight) return;
+
+    const fit = this.measureContentBox(svg) ?? { x: 0, y: 0, width: svgWidth, height: svgHeight };
 
     if (this.variant() === 'panel') {
-      // The thumbnail card follows the map's actually-rendered aspect ratio
-      // (width fills the panel, height = width × svgH/svgW), clamped so an
-      // extreme topology cannot blow up the details panel. The dialog variant
-      // instead fills whatever height its container gives it.
+      // The thumbnail card follows the content's aspect ratio (width fills the
+      // panel, height = width × contentH/contentW), clamped so an extreme
+      // topology cannot blow up the details panel. The dialog variant instead
+      // fills whatever height its container gives it.
       const maxHeight = Math.min(PANEL_MAX_HEIGHT, Math.round(window.innerHeight * 0.45));
-      const heightByRatio = Math.round((viewport.clientWidth * height) / width);
+      const heightByRatio = Math.round((viewport.clientWidth * fit.height) / fit.width);
       viewport.style.height = `${Math.max(PANEL_MIN_HEIGHT, Math.min(heightByRatio, maxHeight))}px`;
     }
 
-    // Uniformly scale the svg into the viewport. The svg (with its imperative
-    // width/height attributes) sizes the absolutely-positioned host, so the
-    // CSS transform is purely visual and nothing collapses.
-    const scale = Math.min(viewport.clientWidth / width, viewport.clientHeight / height);
+    const padding = 16;
+    const scale = Math.min(
+      viewport.clientWidth / (fit.width + 2 * padding),
+      viewport.clientHeight / (fit.height + 2 * padding)
+    );
+
+    // The host CSS centers the svg box at the viewport center; re-center on
+    // the content bbox center, which differs from the svg center whenever the
+    // canvas padding is asymmetric (left/right space are computed
+    // independently in getSize()).
+    const shiftX = (svgWidth / 2 - (fit.x + fit.width / 2)) * scale;
+    const shiftY = (svgHeight / 2 - (fit.y + fit.height / 2)) * scale;
+
     viewport.style.setProperty('--topology-preview-scale', String(scale));
+    viewport.style.setProperty('--topology-preview-shift-x', `${shiftX}px`);
+    viewport.style.setProperty('--topology-preview-shift-y', `${shiftY}px`);
+  }
+
+  /**
+   * Content bbox in svg coordinates, or null when the canvas group has not
+   * been drawn yet. g.canvas holds only rendered content (grid rects and
+   * tool overlays live on the svg root), and its transform
+   * (translate + scale, GraphLayout.canvasTransform) maps scene coords to
+   * svg coords.
+   */
+  private measureContentBox(svg: SVGElement): { x: number; y: number; width: number; height: number } | null {
+    const canvas = svg.querySelector<SVGGElement>('g.canvas');
+    if (!canvas) return null;
+    const bbox = canvas.getBBox();
+    if (!bbox.width || !bbox.height) return null;
+
+    const transforms = canvas.transform.baseVal;
+    const translate = transforms.numberOfItems > 0 ? transforms.getItem(0).matrix : null;
+    const k = transforms.numberOfItems > 1 ? transforms.getItem(1).matrix.a || 1 : 1;
+    return {
+      x: bbox.x * k + (translate?.e ?? 0),
+      y: bbox.y * k + (translate?.f ?? 0),
+      width: bbox.width * k,
+      height: bbox.height * k,
+    };
   }
 }
