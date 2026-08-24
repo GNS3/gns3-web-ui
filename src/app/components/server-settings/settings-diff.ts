@@ -9,6 +9,7 @@ import {
   ServerSettingsUpdate,
 } from '@models/server-settings/server-settings';
 import {
+  SettingsFieldMeta,
   SettingsFieldValue,
   SettingsSectionMeta,
 } from '@models/server-settings/settings-metadata';
@@ -30,6 +31,11 @@ export function valuesEqual(a: SettingsFieldValue, b: SettingsFieldValue): boole
 
 export function fieldId(section: string, key: string): string {
   return `${section}.${key}`;
+}
+
+/** Fields of every group in a section, flattened (lib es2018 has no Array.flatMap). */
+function sectionFields(section: SettingsSectionMeta): SettingsFieldMeta[] {
+  return section.groups.reduce<SettingsFieldMeta[]>((fields, group) => fields.concat(group.fields), []);
 }
 
 function clamp(value: number, min?: number, max?: number): number {
@@ -66,7 +72,7 @@ export function collectDirtyKeys(
 ): Set<string> {
   const dirty = new Set<string>();
   for (const section of metadata) {
-    for (const field of section.groups.flatMap((group) => group.fields)) {
+    for (const field of sectionFields(section)) {
       const id = fieldId(section.name, field.key);
       if (field.type === 'secret') {
         if (secrets[id] && secrets[id].state !== 'unchanged') {
@@ -102,7 +108,7 @@ export function buildSettingsUpdate(
 ): ServerSettingsUpdate {
   const update: ServerSettingsUpdate = {};
   for (const section of metadata) {
-    for (const field of section.groups.flatMap((group) => group.fields)) {
+    for (const field of sectionFields(section)) {
       const id = fieldId(section.name, field.key);
       let value: SettingsFieldValue | undefined;
 
