@@ -82,12 +82,11 @@ svg#map {
   background: var(--gns3-map-bg, var(--mat-sys-surface));
 }
 
-/* Static topology preview: the whole map is CSS-scaled to fit its viewport;
-   keep link strokes at their designed width so they stay visible at thumbnail
-   scales (a 2px stroke at 0.1 scale would vanish, looking like "links are
-   not rendered"). Scoped to the preview viewport — the live project map is
-   untouched. Runtime-created elements carry no encapsulation attribute, so
-   this must live in a global stylesheet. */
+/* Static topology preview: the whole map is CSS-scaled to fit its viewport.
+   Link strokes keep their designed width (e.g. 2px) instead of shrinking with
+   the scale, matching the live project map look. Scoped to the preview
+   viewport — the live project map is untouched. Runtime-created elements
+   carry no encapsulation attribute, so this lives in a global stylesheet. */
 .topology-preview__viewport g.link path {
   vector-effect: non-scaling-stroke;
 }
@@ -112,10 +111,15 @@ svg#map g.selection-line-tool path.selection {
 // =============================================
 // Colors for text labels and links that adapt to
 // the canvas background (light vs dark).
-// Usage: .project-map--light-bg or .project-map--dark-bg
+// Usage: .project-map--light-bg / .project-map--dark-bg on the live map,
+// .topology-preview__viewport--light-bg / --dark-bg on the static preview.
+// The static preview hosts the same <svg id="map"> (via d3-map) — without
+// these variables there, var(--gns3-canvas-link-color) resolves to nothing
+// and link strokes fall back to `none`, i.e. links are invisible.
 // ============================================= */
 
-.project-map {
+.project-map,
+.topology-preview__viewport {
   /* Default (light) colors */
   --gns3-canvas-label-color: #000000;
   --gns3-canvas-link-color: #000000;

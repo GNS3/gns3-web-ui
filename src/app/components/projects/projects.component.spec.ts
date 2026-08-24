@@ -91,7 +91,6 @@ describe('ProjectsComponent', () => {
 
     mockTopologyPreviewService = {
       load: vi.fn().mockReturnValue(of({ nodes: [], links: [], drawings: [] })),
-      invalidate: vi.fn(),
     };
 
     mockThemeService = {

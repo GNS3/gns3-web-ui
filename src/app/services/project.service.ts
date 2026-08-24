@@ -84,7 +84,14 @@ export class ProjectService {
 
   // Raw .gns3 topology file from disk — works for closed projects too.
   gns3file(controller: Controller, project_id: string) {
-    return this.httpController.get<Gns3ProjectFile>(controller, `/projects/${project_id}/gns3file`);
+    // The FileResponse carries ETag/Last-Modified but no Cache-Control, so
+    // browsers heuristically cache it for hours and a normal reload (F5) never
+    // revalidates — the topology preview would keep rendering a stale file
+    // after the project is edited elsewhere. `no-cache` forces revalidation:
+    // an unchanged file answers 304 via the ETag, a changed one comes fresh.
+    return this.httpController.get<Gns3ProjectFile>(controller, `/projects/${project_id}/gns3file`, {
+      headers: { 'Cache-Control': 'no-cache' },
+    });
   }
 
   add(controller: Controller, project_name: string, project_id: string): Observable<any> {

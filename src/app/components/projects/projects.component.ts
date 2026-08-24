@@ -113,6 +113,22 @@ export class ProjectsComponent implements OnInit {
   // only one <app-d3-map> exists at a time (its state managers are singletons).
   readonly previewEnlarged = signal(false);
 
+  /**
+   * Nodes/Links/Drawings counts shown in the details panel. For closed
+   * projects getStatistics reports zeros — count them from the .gns3 file
+   * data instead. Snapshots are server-only and keep the stats value.
+   */
+  readonly displayStats = computed<ProjectStatistics | null>(() => {
+    const topology = this.previewTopology();
+    if (!topology) return this.projectStats();
+    return {
+      ...(this.projectStats() ?? ({} as ProjectStatistics)),
+      nodes: topology.nodes.length,
+      links: topology.links.length,
+      drawings: topology.drawings.length,
+    };
+  });
+
   // ── Status filter ─────────────────────────────────────────────
   readonly filterStatus = signal<string>('all');
 
@@ -376,9 +392,14 @@ export class ProjectsComponent implements OnInit {
 
   // ── WebSocket notification handler ────────────────────────────
   private handleProjectNotification(notification: ProjectNotification): void {
-    // A closed project's file may have changed while open; a deleted one is gone.
-    if (notification.action === 'project.closed' || notification.action === 'project.deleted') {
-      this.topologyPreviewService.invalidate(notification.event.project_id);
+    // The .gns3 file is rewritten when a project is edited or closed
+    // elsewhere — reload the preview of the currently selected project so the
+    // panel always reflects the file on disk.
+    if (
+      (notification.action === 'project.closed' || notification.action === 'project.updated') &&
+      this.selectedProject()?.project_id === notification.event.project_id
+    ) {
+      this.loadProjectTopology(notification.event);
     }
     this._projects.update((projects) => {
       const list = [...projects];

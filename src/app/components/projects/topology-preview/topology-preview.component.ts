@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   ElementRef,
   afterNextRender,
@@ -16,6 +17,7 @@ import { Drawing } from '../../../cartography/models/drawing';
 import { Node } from '../../../cartography/models/node';
 import { D3MapComponent } from '../../../cartography/components/d3-map/d3-map.component';
 import { MapSettingsService } from '@services/mapsettings.service';
+import { ThemeService } from '@services/theme.service';
 
 // Height clamp (px) for the panel thumbnail's aspect-driven height.
 const PANEL_MIN_HEIGHT = 160;
@@ -49,8 +51,24 @@ export class TopologyPreviewComponent {
 
   private readonly viewport = viewChild.required<ElementRef<HTMLElement>>('viewport');
   private readonly mapSettingsService = inject(MapSettingsService);
+  private readonly themeService = inject(ThemeService);
   private readonly destroyRef = inject(DestroyRef);
   private resizeObserver: ResizeObserver | null = null;
+
+  /**
+   * The map's canvas-element color variables (--gns3-canvas-link-color etc.)
+   * are scoped to .project-map--light-bg/--dark-bg. The preview hosts the
+   * same svg#map, so it must apply the same light/dark class — otherwise
+   * var() resolves to nothing and link strokes render as `none`.
+   */
+  readonly mapBgClass = computed(() => {
+    const mapTheme = this.themeService.savedMapTheme;
+    const isDark = mapTheme === 'auto' ? this.themeService.isDarkMode() : mapTheme.startsWith('dark-');
+    return {
+      'topology-preview__viewport--dark-bg': isDark,
+      'topology-preview__viewport--light-bg': !isDark,
+    };
+  });
 
   constructor() {
     // Every d3-map redraw (data arrival, window resize, settings) rewrites
@@ -91,6 +109,9 @@ export class TopologyPreviewComponent {
       viewport.style.height = `${Math.max(PANEL_MIN_HEIGHT, Math.min(heightByRatio, maxHeight))}px`;
     }
 
+    // Uniformly scale the svg into the viewport. The svg (with its imperative
+    // width/height attributes) sizes the absolutely-positioned host, so the
+    // CSS transform is purely visual and nothing collapses.
     const scale = Math.min(viewport.clientWidth / width, viewport.clientHeight / height);
     viewport.style.setProperty('--topology-preview-scale', String(scale));
   }

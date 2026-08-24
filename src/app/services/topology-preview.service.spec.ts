@@ -31,7 +31,6 @@ describe('TopologyPreviewService', () => {
     password: '',
     tokenExpired: false,
   } as Controller;
-  const otherController = { ...controller, port: 3081 } as Controller;
   const project = { project_id: 'proj-1' } as Project;
 
   const file: Gns3ProjectFile = {
@@ -44,18 +43,12 @@ describe('TopologyPreviewService', () => {
   };
 
   /** Subscribe, flush the asyncScheduler timer, and resolve with the emission. */
-  async function loadOnce(ctrl: Controller = controller, proj: Project = project): Promise<any> {
+  async function loadOnce(): Promise<any> {
     const promise = new Promise<any>((resolve, reject) =>
-      service.load(ctrl, proj).subscribe({ next: resolve, error: reject })
+      service.load(controller, project).subscribe({ next: resolve, error: reject })
     );
     await vi.runAllTimersAsync();
     return promise;
-  }
-
-  /** Fire-and-forget load with the scheduler flushed. */
-  async function loadBackground(ctrl: Controller = controller, proj: Project = project): Promise<void> {
-    service.load(ctrl, proj).subscribe();
-    await vi.runAllTimersAsync();
   }
 
   beforeEach(() => {
@@ -89,56 +82,24 @@ describe('TopologyPreviewService', () => {
     expect(result.nodes[0].project_id).toBe('proj-1');
   });
 
-  it('caches per controller+project — second load does not refetch', async () => {
-    await loadOnce();
-    await loadOnce();
-
-    expect(mockProjectService.gns3file).toHaveBeenCalledTimes(1);
-  });
-
-  it('keys the cache per controller port', async () => {
-    await loadOnce();
-    await loadOnce(otherController);
-
-    expect(mockProjectService.gns3file).toHaveBeenCalledTimes(2);
-  });
-
-  it('evicts failed loads so a retry refetches', async () => {
+  it('propagates load errors to the consumer', async () => {
     mockProjectService.gns3file.mockReturnValueOnce(throwError(() => new Error('boom')));
-    await loadOnce().catch(() => undefined);
 
-    // The failed entry must not be replayed.
-    await loadOnce();
+    // Handler attached at subscribe time — a later `.rejects` would miss the
+    // fake-timer flush window and surface as an unhandled rejection.
+    const outcome = new Promise<unknown>((resolve) => {
+      service.load(controller, project).subscribe({
+        next: (value) => resolve(value),
+        error: (err) => resolve(err),
+      });
+    });
+    const result = await vi.runAllTimersAsync().then(() => outcome);
 
-    expect(mockProjectService.gns3file).toHaveBeenCalledTimes(2);
+    expect(result).toBeInstanceOf(Error);
+    expect((result as Error).message).toBe('boom');
   });
 
-  it('invalidate(projectId) drops only matching entries', async () => {
-    await loadBackground();
-    await loadBackground(controller, { project_id: 'proj-2' } as Project);
-
-    service.invalidate('proj-1');
-
-    await loadOnce();
-    await loadOnce(controller, { project_id: 'proj-2' } as Project);
-
-    // proj-1 evicted → refetch; proj-2 still cached.
-    expect(mockProjectService.gns3file).toHaveBeenCalledTimes(3);
-  });
-
-  it('invalidate() clears everything', async () => {
-    await loadBackground();
-
-    service.invalidate();
-
-    await loadOnce();
-
-    expect(mockProjectService.gns3file).toHaveBeenCalledTimes(2);
-  });
-
-  it('always emits asynchronously, even on a cache hit', async () => {
-    await loadOnce();
-
+  it('always emits asynchronously', async () => {
     let emitted = false;
     service.load(controller, project).subscribe(() => {
       emitted = true;
