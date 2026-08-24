@@ -115,5 +115,35 @@ describe('ApplianceService', () => {
 
       expect(result).toBeInstanceOf(Observable);
     });
+
+    it('should normalize v8 appliances like getAppliances does', () => {
+      const v8Appliance = {
+        name: 'v8 Appliance',
+        category: 'router',
+        settings: [
+          {
+            name: 'Default',
+            default: true,
+            template_type: 'qemu',
+            template_properties: { ram: 2048, adapters: 2 },
+          },
+        ],
+      } as unknown as Appliance;
+      mockHttpController.get.mockReturnValue(of([v8Appliance]));
+
+      const emitted: Appliance[] = [];
+      service.updateAppliances(mockController).subscribe((appliances) => emitted.push(...appliances));
+
+      expect(emitted[0].qemu).toEqual({ ram: 2048, adapters: 2 });
+    });
+
+    it('should tolerate a null response', () => {
+      mockHttpController.get.mockReturnValue(of(null));
+
+      const emitted: Appliance[] = [];
+      service.updateAppliances(mockController).subscribe((appliances) => emitted.push(...appliances));
+
+      expect(emitted).toEqual([]);
+    });
   });
 });

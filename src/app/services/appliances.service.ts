@@ -28,6 +28,8 @@ export class ApplianceService {
   }
 
   updateAppliances(controller: Controller): Observable<Appliance[]> {
-    return this.httpController.get<Appliance[]>(controller, '/appliances?update=yes') as Observable<Appliance[]>;
+    return (this.httpController.get<Appliance[]>(controller, '/appliances?update=yes') as Observable<Appliance[]>).pipe(
+      map((appliances) => (appliances || []).map((appliance) => normalizeAppliance(appliance)))
+    );
   }
 }
