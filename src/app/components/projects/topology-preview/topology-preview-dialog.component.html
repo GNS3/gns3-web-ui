@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>{{ data.project.name }}</h2>
+
+<mat-dialog-content class="topology-preview-dialog__content">
+  <app-topology-preview
+    variant="dialog"
+    [controller]="data.controller"
+    [project]="data.project"
+    [nodes]="data.topology.nodes"
+    [links]="data.topology.links"
+    [drawings]="data.topology.drawings"
+  />
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="dialogRef.close()">Close</button>
+</mat-dialog-actions>

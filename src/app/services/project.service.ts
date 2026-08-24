@@ -5,6 +5,7 @@ import { Drawing } from '../cartography/models/drawing';
 import { Node } from '../cartography/models/node';
 import { Link } from '@models/link';
 import { Project } from '@models/project';
+import { Gns3ProjectFile } from '@models/gns3-file';
 import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
 import { RecentlyOpenedProjectService } from './recentlyOpenedProject.service';
@@ -79,6 +80,11 @@ export class ProjectService {
 
   drawings(controller: Controller, project_id: string) {
     return this.httpController.get<Drawing[]>(controller, `/projects/${project_id}/drawings`);
+  }
+
+  // Raw .gns3 topology file from disk — works for closed projects too.
+  gns3file(controller: Controller, project_id: string) {
+    return this.httpController.get<Gns3ProjectFile>(controller, `/projects/${project_id}/gns3file`);
   }
 
   add(controller: Controller, project_name: string, project_id: string): Observable<any> {

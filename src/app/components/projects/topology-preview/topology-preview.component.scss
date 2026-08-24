@@ -1,0 +1,33 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+.topology-preview__viewport {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Panel thumbnail: pointer events fall through to the enlarge button. The
+   viewport height is set from the map's rendered aspect ratio by
+   recomputeScale() (inline style wins over this initial fallback). */
+.topology-preview__viewport--panel {
+  pointer-events: none;
+  flex: none;
+  height: 200px;
+}
+
+/* d3-map sizes the svg imperatively to the (content-centered) canvas; scale
+   it uniformly into the viewport instead of fighting those attributes. */
+.topology-preview__map {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(var(--topology-preview-scale, 1));
+}

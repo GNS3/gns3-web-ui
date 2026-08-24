@@ -46,6 +46,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { version } from '../../version';
 import { MarkdownViewerComponent } from '../../common/markdown-viewer/markdown-viewer.component';
+import { TopologyPreviewComponent } from './topology-preview/topology-preview.component';
+import {
+  TopologyPreviewDialogComponent,
+  TopologyPreviewDialogData,
+} from './topology-preview/topology-preview-dialog.component';
+import { TopologyPreviewService } from '@services/topology-preview.service';
+import { TopologyPreviewData } from '@services/gns3-file.mapper';
 
 @Component({
   selector: 'app-projects',
@@ -68,6 +75,7 @@ import { MarkdownViewerComponent } from '../../common/markdown-viewer/markdown-v
     MatProgressSpinnerModule,
     MatPaginatorModule,
     MatTooltipModule,
+    TopologyPreviewComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -97,6 +105,13 @@ export class ProjectsComponent implements OnInit {
   readonly selectedProject = signal<Project | null>(null);
   readonly projectStats = signal<ProjectStatistics | null>(null);
   readonly projectDescription = signal('');
+
+  // ── Static topology preview (from the raw .gns3 file) ────────
+  readonly previewTopology = signal<TopologyPreviewData | null>(null);
+  readonly previewState = signal<'loading' | 'ready' | 'empty' | 'error'>('loading');
+  // True while the enlarged dialog is open — unmounts the panel thumbnail so
+  // only one <app-d3-map> exists at a time (its state managers are singletons).
+  readonly previewEnlarged = signal(false);
 
   // ── Status filter ─────────────────────────────────────────────
   readonly filterStatus = signal<string>('all');
@@ -216,6 +231,7 @@ export class ProjectsComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
   private themeService = inject(ThemeService);
+  private topologyPreviewService = inject(TopologyPreviewService);
 
   ngOnInit() {
     this.controller = this.route.snapshot.data['controller'];
@@ -266,12 +282,16 @@ export class ProjectsComponent implements OnInit {
     this.projectDescription.set('');
     this.loadProjectStats(project);
     this.loadProjectDescription(project);
+    this.loadProjectTopology(project);
   }
 
   closeDetails() {
     this.selectedProject.set(null);
     this.projectStats.set(null);
     this.projectDescription.set('');
+    this.previewTopology.set(null);
+    this.previewState.set('loading');
+    this.previewEnlarged.set(false);
   }
 
   private loadProjectStats(project: Project) {
@@ -306,6 +326,40 @@ export class ProjectsComponent implements OnInit {
     });
   }
 
+  /** Load the static topology preview from the raw .gns3 file (cached per project). */
+  private loadProjectTopology(project: Project) {
+    this.previewTopology.set(null);
+    this.previewState.set('loading');
+    this.topologyPreviewService.load(this.controller, project).subscribe({
+      next: (topology: TopologyPreviewData) => {
+        if (this.selectedProject()?.project_id !== project.project_id) return;
+        this.previewTopology.set(topology);
+        const empty =
+          topology.nodes.length === 0 && topology.links.length === 0 && topology.drawings.length === 0;
+        this.previewState.set(empty ? 'empty' : 'ready');
+      },
+      error: () => {
+        if (this.selectedProject()?.project_id !== project.project_id) return;
+        this.previewState.set('error');
+      },
+    });
+  }
+
+  /** Enlarge the panel thumbnail to a 70% viewport dialog. */
+  openTopologyPreview(): void {
+    const project = this.selectedProject();
+    const topology = this.previewTopology();
+    if (!project || !topology || this.previewState() !== 'ready') return;
+    this.previewEnlarged.set(true);
+    this.dialog
+      .open(TopologyPreviewDialogComponent, {
+        panelClass: ['base-dialog-panel', 'dialog-large-panel', 'topology-preview-dialog-panel'],
+        data: { controller: this.controller, project, topology } satisfies TopologyPreviewDialogData,
+      })
+      .afterClosed()
+      .subscribe(() => this.previewEnlarged.set(false));
+  }
+
   // ── Data fetching ─────────────────────────────────────────────
   refresh() {
     this.projectService.list(this.controller).subscribe({
@@ -322,6 +376,10 @@ export class ProjectsComponent implements OnInit {
 
   // ── WebSocket notification handler ────────────────────────────
   private handleProjectNotification(notification: ProjectNotification): void {
+    // A closed project's file may have changed while open; a deleted one is gone.
+    if (notification.action === 'project.closed' || notification.action === 'project.deleted') {
+      this.topologyPreviewService.invalidate(notification.event.project_id);
+    }
     this._projects.update((projects) => {
       const list = [...projects];
       const index = list.findIndex((p) => p.project_id === notification.event.project_id);

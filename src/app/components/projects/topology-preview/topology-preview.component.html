@@ -1,0 +1,18 @@
+<div
+  #viewport
+  class="topology-preview__viewport"
+  [class.topology-preview__viewport--panel]="variant() === 'panel'"
+>
+  <app-d3-map
+    class="topology-preview__map"
+    [controller]="controller()"
+    [project]="project()"
+    [nodes]="nodes()"
+    [links]="links()"
+    [drawings]="drawings()"
+    [width]="project().scene_width || 2000"
+    [height]="project().scene_height || 1000"
+    [show-interface-labels]="true"
+    [readonly]="true"
+  />
+</div>
