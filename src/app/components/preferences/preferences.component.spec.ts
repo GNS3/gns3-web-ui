@@ -189,6 +189,20 @@ describe('PreferencesComponent', () => {
     expect(deleteItem).toHaveBeenCalledWith('Edge Router', 'qemu-1');
   });
 
+  it('removes a deleted template from local state without refetching the list', () => {
+    const listCallsBefore = mockTemplateService.list.mock.calls.length;
+    component.selectTemplate(templates[0]);
+
+    component.onTemplateDeleted('qemu-1');
+    fixture.detectChanges();
+
+    expect(component.templates().map((template) => template.template_id)).toEqual(['docker-1', 'switch-1']);
+    expect(component.filteredTemplates()).toHaveLength(2);
+    expect(component.selectedTemplate()).toBeNull();
+    expect(component.loading()).toBe(false);
+    expect(mockTemplateService.list.mock.calls.length).toBe(listCallsBefore);
+  });
+
   it('provides readable type labels and resource summaries', () => {
     expect(component.templateTypeLabel('ethernet_switch')).toBe('Ethernet Switch');
     expect(component.templateTypeLabel('custom_emulator')).toBe('Custom Emulator');

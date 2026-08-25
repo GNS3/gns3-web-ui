@@ -350,11 +350,18 @@ export class PreferencesComponent implements OnInit {
     }
   }
 
+  /**
+   * Removes a deleted template from local state instead of refetching the
+   * whole list: the delete event only fires after the server confirmed the
+   * deletion, and the signal -> computed -> trackBy chain updates the DOM
+   * surgically (no full-table reload flicker).
+   */
   onTemplateDeleted(templateId: string): void {
+    this.templates.update((templates) => templates.filter((template) => template.template_id !== templateId));
     if (this.selectedTemplate()?.template_id === templateId) {
       this.closeDetails();
     }
-    this.loadTemplates();
+    this.ensureValidPage();
   }
 
   trackTemplate(_index: number, template: TemplateListItem): string {
