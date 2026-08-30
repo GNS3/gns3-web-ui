@@ -87,7 +87,14 @@
   justify-content: flex-start;
   min-width: 0;
   padding: 24px 16px 24px 24px;
-  overflow: visible;
+  /* Long wizards (e.g. Docker's nine steps) must not stretch the card beyond
+     the viewport: cap the step rail at the visible height so it scrolls
+     internally instead of forcing page-level scrolling on short screens.
+     The offset covers the app header, wizard header, actions bar and the
+     card's outer margins. */
+  max-height: calc(100vh - var(--gns3-density-app-header-height) - 200px);
+  overflow-x: hidden;
+  overflow-y: auto;
   border-right: 1px solid var(--mat-sys-outline-variant);
   white-space: normal;
   background: color-mix(in srgb, var(--mat-sys-surface-container-low) 58%, transparent);
@@ -853,7 +860,9 @@ html[data-density='compact'] {
     flex-direction: row;
     gap: 6px;
     padding: 12px;
+    max-height: none;
     overflow-x: auto;
+    overflow-y: hidden;
     border-right: 0;
     border-bottom: 1px solid var(--mat-sys-outline-variant);
   }
