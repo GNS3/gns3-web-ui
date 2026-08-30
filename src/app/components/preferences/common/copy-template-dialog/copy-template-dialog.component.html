@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Copy template</h2>
+
+<mat-dialog-content>
+  <p class="copy-template-dialog__hint">
+    The copy will inherit all settings from "{{ data.templateName }}".
+  </p>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field class="form-field">
+      <mat-label>Template name</mat-label>
+      <input matInput type="text" formControlName="templateName" cdkFocusInitial />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid" (click)="submit()">
+    Copy template
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,12 @@
+/**
+ * GNS3 Copy Template Dialog Component Styles
+ * Panel sizing comes from the Standard Dialog System (dialog-small-panel);
+ * only the hint paragraph styling is local, like confirmation-dialog.
+ */
+
+.copy-template-dialog__hint {
+  margin: 0 0 14px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 14px;
+  line-height: 1.5;
+}

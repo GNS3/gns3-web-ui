@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,12 +13,14 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { filter } from 'rxjs';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
 import { ControllerService } from '@services/controller.service';
 import { SymbolService } from '@services/symbol.service';
 import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
+import { CopyTemplateDialogComponent, CopyTemplateDialogData } from './common/copy-template-dialog/copy-template-dialog.component';
 import { DeleteTemplateComponent } from './common/delete-template-component/delete-template.component';
 
 type TemplateViewMode = 'list' | 'grid';
@@ -146,6 +149,7 @@ export class PreferencesComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private dialog = inject(MatDialog);
   private controllerService = inject(ControllerService);
   private templateService = inject(TemplateService);
   private symbolService = inject(SymbolService);
@@ -329,19 +333,34 @@ export class PreferencesComponent implements OnInit {
     }
   }
 
+  /**
+   * Duplicates a template through a name-prompt dialog: the copy keeps every
+   * setting of the source and only the id/name change server-side. The
+   * created template is appended to local state (same surgical-update
+   * approach as onTemplateDeleted — no full-list reload flicker).
+   */
   duplicateTemplate(template: TemplateListItem): void {
     if (!this.canDuplicate(template)) {
       return;
     }
-    this.router.navigate([
-      '/controller',
-      this.controller.id,
-      'preferences',
-      template.template_type,
-      'templates',
-      template.template_id,
-      'copy',
-    ]);
+    this.dialog
+      .open(CopyTemplateDialogComponent, {
+        panelClass: ['base-dialog-panel', 'dialog-small-panel'],
+        data: { templateName: template.name } satisfies CopyTemplateDialogData,
+      })
+      .afterClosed()
+      .pipe(filter(Boolean))
+      .subscribe((newName: string) => {
+        this.templateService.duplicate(this.controller, template.template_id, newName).subscribe({
+          next: (created: Template) => {
+            this.templates.update((templates) => [...templates, created as TemplateListItem]);
+            this.toasterService.success(`Template ${newName} created.`);
+          },
+          error: (err) => {
+            this.toasterService.error(err.error?.message || err.message || 'Failed to copy template');
+          },
+        });
+      });
   }
 
   deleteTemplate(template: TemplateListItem, deleteComponent: DeleteTemplateComponent): void {

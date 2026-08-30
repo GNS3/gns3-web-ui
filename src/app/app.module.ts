@@ -41,54 +41,38 @@ import { HelpComponent } from '@components/help/help.component';
 import { InstallSoftwareComponent } from '@components/installed-software/install-software/install-software.component';
 import { InstalledSoftwareComponent } from '@components/installed-software/installed-software.component';
 import { PageNotFoundComponent } from '@components/page-not-found/page-not-found.component';
-import { BuiltInPreferencesComponent } from '@components/preferences/built-in/built-in-preferences.component';
 import { CloudNodesAddTemplateComponent } from '@components/preferences/built-in/cloud-nodes/cloud-nodes-add-template/cloud-nodes-add-template.component';
 import { CloudNodesTemplateDetailsComponent } from '@components/preferences/built-in/cloud-nodes/cloud-nodes-template-details/cloud-nodes-template-details.component';
-import { CloudNodesTemplatesComponent } from '@components/preferences/built-in/cloud-nodes/cloud-nodes-templates/cloud-nodes-templates.component';
 import { EthernetHubsAddTemplateComponent } from '@components/preferences/built-in/ethernet-hubs/ethernet-hubs-add-template/ethernet-hubs-add-template.component';
 import { EthernetHubsTemplateDetailsComponent } from '@components/preferences/built-in/ethernet-hubs/ethernet-hubs-template-details/ethernet-hubs-template-details.component';
-import { EthernetHubsTemplatesComponent } from '@components/preferences/built-in/ethernet-hubs/ethernet-hubs-templates/ethernet-hubs-templates.component';
 import { EthernetSwitchesAddTemplateComponent } from '@components/preferences/built-in/ethernet-switches/ethernet-switches-add-template/ethernet-switches-add-template.component';
 import { EthernetSwitchesTemplateDetailsComponent } from '@components/preferences/built-in/ethernet-switches/ethernet-switches-template-details/ethernet-switches-template-details.component';
-import { EthernetSwitchesTemplatesComponent } from '@components/preferences/built-in/ethernet-switches/ethernet-switches-templates/ethernet-switches-templates.component';
 import { CustomAdaptersTableComponent } from '@components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 import { CustomAdaptersComponent } from '@components/preferences/common/custom-adapters/custom-adapters.component';
 import { DeleteTemplateComponent } from '@components/preferences/common/delete-template-component/delete-template.component';
-import { EmptyTemplatesListComponent } from '@components/preferences/common/empty-templates-list/empty-templates-list.component';
 import { PortsComponent } from '@components/preferences/common/ports/ports.component';
 import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 import { SymbolsComponent } from '@components/preferences/common/symbols/symbols.component';
 import { UdpTunnelsComponent } from '@components/preferences/common/udp-tunnels/udp-tunnels.component';
 import { AddDockerTemplateComponent } from '@components/preferences/docker/add-docker-template/add-docker-template.component';
-import { CopyDockerTemplateComponent } from '@components/preferences/docker/copy-docker-template/copy-docker-template.component';
 import { DockerTemplateDetailsComponent } from '@components/preferences/docker/docker-template-details/docker-template-details.component';
-import { DockerTemplatesComponent } from '@components/preferences/docker/docker-templates/docker-templates.component';
 import { AddIosTemplateComponent } from '@components/preferences/dynamips/add-ios-template/add-ios-template.component';
-import { CopyIosTemplateComponent } from '@components/preferences/dynamips/copy-ios-template/copy-ios-template.component';
 import { IosTemplateDetailsComponent } from '@components/preferences/dynamips/ios-template-details/ios-template-details.component';
-import { IosTemplatesComponent } from '@components/preferences/dynamips/ios-templates/ios-templates.component';
 import { AddIouTemplateComponent } from '@components/preferences/ios-on-unix/add-iou-template/add-iou-template.component';
-import { CopyIouTemplateComponent } from '@components/preferences/ios-on-unix/copy-iou-template/copy-iou-template.component';
 import { IouTemplateDetailsComponent } from '@components/preferences/ios-on-unix/iou-template-details/iou-template-details.component';
-import { IouTemplatesComponent } from '@components/preferences/ios-on-unix/iou-templates/iou-templates.component';
 import { PreferencesComponent } from '@components/preferences/preferences.component';
 import { AddQemuVmTemplateComponent } from '@components/preferences/qemu/add-qemu-vm-template/add-qemu-vm-template.component';
-import { CopyQemuVmTemplateComponent } from '@components/preferences/qemu/copy-qemu-vm-template/copy-qemu-vm-template.component';
 import { QemuVmTemplateDetailsComponent } from '@components/preferences/qemu/qemu-vm-template-details/qemu-vm-template-details.component';
-import { QemuVmTemplatesComponent } from '@components/preferences/qemu/qemu-vm-templates/qemu-vm-templates.component';
 // VirtualBox support deprecated since 3.1.0
 // import { AddVirtualBoxTemplateComponent } from '@components/preferences/virtual-box/add-virtual-box-template/add-virtual-box-template.component';
 // import { VirtualBoxPreferencesComponent } from '@components/preferences/virtual-box/virtual-box-preferences/virtual-box-preferences.component';
 // import { VirtualBoxTemplateDetailsComponent } from '@components/preferences/virtual-box/virtual-box-template-details/virtual-box-template-details.component';
-// import { VirtualBoxTemplatesComponent } from '@components/preferences/virtual-box/virtual-box-templates/virtual-box-templates.component';
 // VMware support deprecated since 3.1.0
 // import { AddVmwareTemplateComponent } from '@components/preferences/vmware/add-vmware-template/add-vmware-template.component';
 // import { VmwarePreferencesComponent } from '@components/preferences/vmware/vmware-preferences/vmware-preferences.component';
 // import { VmwareTemplateDetailsComponent } from '@components/preferences/vmware/vmware-template-details/vmware-template-details.component';
-// import { VmwareTemplatesComponent } from '@components/preferences/vmware/vmware-templates/vmware-templates.component';
 import { AddVpcsTemplateComponent } from '@components/preferences/vpcs/add-vpcs-template/add-vpcs-template.component';
 import { VpcsTemplateDetailsComponent } from '@components/preferences/vpcs/vpcs-template-details/vpcs-template-details.component';
-import { VpcsTemplatesComponent } from '@components/preferences/vpcs/vpcs-templates/vpcs-templates.component';
 import { ChangeHostnameDialogComponent } from '@components/project-map/change-hostname-dialog/change-hostname-dialog.component';
 import { ChangeSymbolDialogComponent } from '@components/project-map/change-symbol-dialog/change-symbol-dialog.component';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
@@ -422,7 +406,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     ProgressComponent,
     PrivilegeComponent,
     SystemStatusComponent,
-    EmptyTemplatesListComponent,
     ConsoleComponent,
     DrawingAddedComponent,
     DrawingDraggedComponent,
@@ -531,10 +514,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     DockerTemplateDetailsComponent,
     AddIouTemplateComponent,
     IouTemplateDetailsComponent,
-    CopyQemuVmTemplateComponent,
-    CopyIosTemplateComponent,
-    CopyIouTemplateComponent,
-    CopyDockerTemplateComponent,
     DataSourceFilter,
     AuthImageFilter,
     NodesMenuComponent,
@@ -562,28 +541,17 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     SnapshotMenuItemComponent,
     AddControllerDialogComponent,
     DirectLinkComponent,
-    BuiltInPreferencesComponent,
     PreferencesComponent,
     PortsComponent,
     // VMware support deprecated since 3.1.0
     // VmwarePreferencesComponent,
     // VirtualBox support deprecated since 3.1.0
     // VirtualBoxPreferencesComponent,
-    QemuVmTemplatesComponent,
     DeleteTemplateComponent,
-    VpcsTemplatesComponent,
     // VirtualBox support deprecated since 3.1.0
-    // VirtualBoxTemplatesComponent,
     // VMware support deprecated since 3.1.0
-    // VmwareTemplatesComponent,
-    DockerTemplatesComponent,
-    IouTemplatesComponent,
-    IosTemplatesComponent,
     IosTemplateDetailsComponent,
     AddQemuVmTemplateComponent,
-    EthernetSwitchesTemplatesComponent,
-    EthernetHubsTemplatesComponent,
-    CloudNodesTemplatesComponent,
     CdkTableModule,
     CartographyModule,
     FileUploadModule,

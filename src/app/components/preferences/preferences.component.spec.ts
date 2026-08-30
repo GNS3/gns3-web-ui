@@ -6,15 +6,17 @@ import { ControllerService } from '@services/controller.service';
 import { SymbolService } from '@services/symbol.service';
 import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PreferencesComponent } from './preferences.component';
+import { CopyTemplateDialogComponent } from './common/copy-template-dialog/copy-template-dialog.component';
 
 describe('PreferencesComponent', () => {
   let component: PreferencesComponent;
   let fixture: ComponentFixture<PreferencesComponent>;
   let router: Router;
-  let mockTemplateService: { list: ReturnType<typeof vi.fn>; deleteTemplate: ReturnType<typeof vi.fn> };
+  let mockTemplateService: { list: ReturnType<typeof vi.fn>; deleteTemplate: ReturnType<typeof vi.fn>; duplicate: ReturnType<typeof vi.fn> };
+  let mockToasterService: { error: ReturnType<typeof vi.fn>; success: ReturnType<typeof vi.fn> };
 
   const controller = {
     id: 1,
@@ -66,6 +68,12 @@ describe('PreferencesComponent', () => {
     mockTemplateService = {
       list: vi.fn().mockReturnValue(of(templates)),
       deleteTemplate: vi.fn().mockReturnValue(of({})),
+      duplicate: vi.fn(),
+    };
+
+    mockToasterService = {
+      error: vi.fn(),
+      success: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -88,7 +96,7 @@ describe('PreferencesComponent', () => {
           provide: SymbolService,
           useValue: { getSymbolBlobUrl: vi.fn().mockReturnValue(of('blob:http://localhost/template-symbol')) },
         },
-        { provide: ToasterService, useValue: { error: vi.fn(), success: vi.fn() } },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     }).compileComponents();
 
@@ -177,6 +185,48 @@ describe('PreferencesComponent', () => {
     expect(component.canConfigure(templates[0])).toBe(true);
     expect(component.canDuplicate(templates[2])).toBe(false);
     expect(component.canConfigure(templates[2])).toBe(false);
+  });
+
+  it('duplicates a template via the name dialog and appends the copy to local state', () => {
+    const created = { ...templates[0], template_id: 'qemu-1-copy', name: 'Copy of Edge Router' };
+    mockTemplateService.duplicate.mockReturnValue(of(created));
+    const openSpy = vi.spyOn(component['dialog'], 'open').mockReturnValue({
+      afterClosed: () => of('Copy of Edge Router'),
+    } as any);
+
+    const listCallsBefore = mockTemplateService.list.mock.calls.length;
+    component.duplicateTemplate(templates[0]);
+
+    expect(openSpy).toHaveBeenCalledWith(CopyTemplateDialogComponent, {
+      panelClass: ['base-dialog-panel', 'dialog-small-panel'],
+      data: { templateName: 'Edge Router' },
+    });
+    expect(mockTemplateService.duplicate).toHaveBeenCalledWith(controller, 'qemu-1', 'Copy of Edge Router');
+    expect(component.templates()).toHaveLength(4);
+    expect(component.templates()[component.templates().length - 1]?.name).toBe('Copy of Edge Router');
+    expect(mockToasterService.success).toHaveBeenCalledWith('Template Copy of Edge Router created.');
+    expect(mockTemplateService.list.mock.calls.length).toBe(listCallsBefore);
+  });
+
+  it('shows an error toaster when duplicating a template fails', () => {
+    mockTemplateService.duplicate.mockReturnValue(throwError(() => ({ error: { message: 'Copy failed' } })));
+    vi.spyOn(component['dialog'], 'open').mockReturnValue({
+      afterClosed: () => of('Copy of Edge Router'),
+    } as any);
+
+    component.duplicateTemplate(templates[0]);
+
+    expect(mockToasterService.error).toHaveBeenCalledWith('Copy failed');
+    expect(component.templates()).toHaveLength(3);
+  });
+
+  it('does not open the copy dialog for unsupported templates', () => {
+    const openSpy = vi.spyOn(component['dialog'], 'open');
+
+    component.duplicateTemplate(templates[2]);
+
+    expect(openSpy).not.toHaveBeenCalled();
+    expect(mockTemplateService.duplicate).not.toHaveBeenCalled();
   });
 
   it('delegates custom-template deletion to the existing confirmation workflow', () => {
