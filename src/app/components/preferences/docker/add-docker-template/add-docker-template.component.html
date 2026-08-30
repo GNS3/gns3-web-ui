@@ -90,18 +90,31 @@
                   </mat-select>
                 </mat-form-field>
                 } @if (newImageSelected) {
-                <mat-form-field appearance="fill" class="docker-add__field">
-                  <mat-label>Image name</mat-label>
-                  <input
-                    matInput
-                    required
-                    class="filename"
-                    type="text"
-                    [value]="filename()"
-                    (input)="filename.set($event.target.value)"
-                    placeholder="Image name"
-                  />
-                </mat-form-field>
+                <div class="docker-add__image-row">
+                  <mat-form-field appearance="fill" class="docker-add__field">
+                    <mat-label>Image name</mat-label>
+                    <input
+                      matInput
+                      required
+                      class="filename"
+                      type="text"
+                      [value]="filename()"
+                      (input)="filename.set($event.target.value)"
+                      placeholder="Image name"
+                    />
+                  </mat-form-field>
+                  <button
+                    mat-stroked-button
+                    color="primary"
+                    class="docker-add__pull-btn"
+                    type="button"
+                    [disabled]="isPulling() || !filename().trim()"
+                    (click)="pullImage()"
+                  >
+                    <mat-icon>cloud_download</mat-icon>
+                    {{ isPulling() ? 'Pulling…' : 'Pull image' }}
+                  </button>
+                </div>
                 }
               </div>
             </section>

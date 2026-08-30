@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { finalize } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { DockerImage } from '@models/docker/docker-image';
 import { Controller } from '@models/controller';
@@ -60,6 +61,7 @@ export class AddDockerTemplateComponent implements OnInit {
   newImageSelected: boolean = false;
   isLocalComputerChosen: boolean = true;
   readonly selectedStepIndex = signal(0);
+  readonly isPulling = signal(false);
 
   // Model signals for form fields
   filename = model('');
@@ -123,6 +125,46 @@ export class AddDockerTemplateComponent implements OnInit {
 
   setDiskImage(value: string) {
     this.newImageSelected = value === 'newImage';
+  }
+
+  /**
+   * Pulls the named image on the local compute while the wizard is still open,
+   * so the template is created against an image that is already present.
+   */
+  pullImage() {
+    const image = this.filename().trim();
+    const controller = this.controller;
+    if (!image || !controller || this.isPulling()) {
+      return;
+    }
+
+    this.isPulling.set(true);
+    this.dockerService
+      .pullImage(controller, image, 'local')
+      .pipe(
+        finalize(() => {
+          this.isPulling.set(false);
+          this.cd.markForCheck();
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.toasterService.success(`Docker image '${image}' pulled`);
+          // Refresh the list so the pulled image also shows under "Existing image".
+          // The pull already succeeded, so a refresh failure is not worth a toaster.
+          this.dockerService.getImages(controller).subscribe({
+            next: (images) => {
+              this.dockerImages = images;
+              this.cd.markForCheck();
+            },
+            error: () => {},
+          });
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || `Failed to pull Docker image '${image}'`;
+          this.toasterService.error(message);
+        },
+      });
   }
 
   canAdvance(): boolean {

@@ -87,6 +87,27 @@
   width: 100%;
 }
 
+/* "Image name" + inline "Pull image" action, mirroring the template editor. */
+.docker-add__image-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gns3-density-card-gap);
+}
+
+.docker-add__image-row .docker-add__field {
+  flex: 1;
+}
+
+.docker-add__image-row .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* Match the "Pull image" button height to the Image name field so it sits flush. */
+.docker-add__image-row .docker-add__pull-btn {
+  align-self: stretch;
+  white-space: nowrap;
+}
+
 /* =============================================
 // Actions
 // ============================================= */
@@ -147,6 +168,14 @@
 
   .docker-add__step-content {
     padding: 12px 16px 20px;
+  }
+
+  .docker-add__image-row {
+    flex-direction: column;
+  }
+
+  .docker-add__pull-btn {
+    width: 100%;
   }
 
   .docker-add__actions {

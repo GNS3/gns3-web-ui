@@ -102,6 +102,7 @@ describe('AddDockerTemplateComponent', () => {
     mockDockerService = {
       getImages: vi.fn().mockReturnValue(of(mockDockerImages)),
       addTemplate: vi.fn().mockReturnValue(of(mockDockerTemplate)),
+      pullImage: vi.fn().mockReturnValue(of(undefined)),
     };
 
     mockTemplateMocksService = {
@@ -247,6 +248,41 @@ describe('AddDockerTemplateComponent', () => {
       component.setDiskImage('existingImage');
 
       expect(component.newImageSelected).toBe(false);
+    });
+  });
+
+  describe('pullImage', () => {
+    it('should not pull when the image name is empty', () => {
+      component.filename.set('   ');
+
+      component.pullImage();
+
+      expect(mockDockerService.pullImage).not.toHaveBeenCalled();
+      expect(component.isPulling()).toBe(false);
+    });
+
+    it('should pull the trimmed image name on the local compute and refresh the image list', () => {
+      component.filename.set('  nginx:1.27  ');
+      // The harness runs ngOnInit twice (explicit call + first detectChanges),
+      // so assert the pull adds exactly one refresh instead of an absolute count.
+      const getImagesCallsBefore = mockDockerService.getImages.mock.calls.length;
+
+      component.pullImage();
+
+      expect(mockDockerService.pullImage).toHaveBeenCalledWith(mockController, 'nginx:1.27', 'local');
+      expect(mockToasterService.success).toHaveBeenCalledWith("Docker image 'nginx:1.27' pulled");
+      expect(component.isPulling()).toBe(false);
+      expect(mockDockerService.getImages.mock.calls.length).toBe(getImagesCallsBefore + 1);
+    });
+
+    it('should show an error toaster and reset isPulling when the pull fails', () => {
+      mockDockerService.pullImage.mockReturnValue(throwError(() => ({ error: { message: 'Pull failed' } })));
+      component.filename.set('nginx:1.27');
+
+      component.pullImage();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Pull failed');
+      expect(component.isPulling()).toBe(false);
     });
   });
 
