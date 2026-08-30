@@ -98,6 +98,8 @@
 }
 
 .template-edit-tabs {
+  position: sticky;
+  top: var(--gns3-density-app-header-height);
   display: flex;
   grid-column: 1;
   grid-row: 1 / span 2;
@@ -371,6 +373,7 @@ button[class*='__browse-btn'] {
   }
 
   .template-edit-tabs {
+    position: static;
     grid-column: 1;
     grid-row: auto;
     flex-direction: row;
