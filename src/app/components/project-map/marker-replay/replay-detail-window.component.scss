@@ -30,6 +30,11 @@
 
 // Size comes from the inline width/height bindings (resize-driven); only
 // shape, chrome and typography live here.
+//
+// NO overflow:hidden: the resize handles live entirely OUTSIDE the border
+// box (see below) and would be clipped — the old handles' 4px outward reach
+// never actually worked because of it. The header/body carry the corner
+// radii instead so the rounded chrome survives without clipping.
 .gns3-replay__window {
   position: fixed;
   display: flex;
@@ -39,7 +44,6 @@
   border-radius: 8px;
   box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent),
     0 4px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
-  overflow: hidden;
 
   &--unanchored {
     border-color: var(--mat-sys-outline-variant);
@@ -75,6 +79,9 @@
   gap: 6px;
   padding: 4px 8px;
   background: var(--mat-sys-surface-container);
+  // Inner radius (outer 8px − 2px border) — the header paints the top
+  // corners now that the window itself no longer clips (no overflow:hidden).
+  border-radius: 6px 6px 0 0;
   border-bottom: 1px solid var(--mat-sys-outline-variant);
   flex-shrink: 0;
   cursor: move;
@@ -206,6 +213,8 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  // Bottom counterpart of the header's radius (see the window comment).
+  border-radius: 0 0 6px 6px;
 }
 
 .gns3-replay__detail-state {
@@ -235,74 +244,81 @@
   justify-content: flex-end;
 }
 
-// ---- resize handles (geometry cloned from marker-manager) ----
+// ---- resize handles: entirely OUTSIDE the window ----
 
+// Zero inward reach, on purpose: the old handles overlapped 8px INTO the
+// window, right across the body scrollbar's thumb zone (the cursor turned
+// ew-resize over it and drags resized the window instead of scrolling).
+// Resizing now lives wholly beyond the borders — the cursor flips as it
+// crosses an edge outward. Trade-offs accepted: a window clamped hard
+// against a viewport edge loses that side's handle (grab another edge),
+// and snapped neighbours share the 12px seam gutter.
 .gns3-replay__resize-handle {
   position: absolute;
   z-index: 100;
   background: transparent;
 
   &--top {
-    top: -4px;
+    top: -10px;
     left: 12px;
     right: 12px;
-    height: 12px;
+    height: 10px;
     cursor: ns-resize;
   }
 
   &--right {
     top: 12px;
-    right: -4px;
+    right: -10px;
     bottom: 12px;
-    width: 12px;
+    width: 10px;
     cursor: ew-resize;
   }
 
   &--bottom {
-    bottom: 0;
+    bottom: -10px;
     left: 12px;
     right: 12px;
-    height: 12px;
+    height: 10px;
     cursor: ns-resize;
   }
 
   &--left {
     top: 12px;
-    left: -4px;
+    left: -10px;
     bottom: 12px;
-    width: 12px;
+    width: 10px;
     cursor: ew-resize;
   }
 
   &--top-left {
-    top: -6px;
-    left: -6px;
-    width: 20px;
-    height: 20px;
+    top: -16px;
+    left: -16px;
+    width: 16px;
+    height: 16px;
     cursor: nwse-resize;
   }
 
   &--top-right {
-    top: -6px;
-    right: -6px;
-    width: 20px;
-    height: 20px;
+    top: -16px;
+    right: -16px;
+    width: 16px;
+    height: 16px;
     cursor: nesw-resize;
   }
 
   &--bottom-left {
-    bottom: 0;
-    left: -6px;
-    width: 20px;
-    height: 20px;
+    bottom: -16px;
+    left: -16px;
+    width: 16px;
+    height: 16px;
     cursor: nesw-resize;
   }
 
   &--bottom-right {
-    bottom: 0;
-    right: -6px;
-    width: 20px;
-    height: 20px;
+    bottom: -16px;
+    right: -16px;
+    width: 16px;
+    height: 16px;
     cursor: nwse-resize;
   }
 }
