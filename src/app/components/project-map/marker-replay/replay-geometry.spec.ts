@@ -137,18 +137,19 @@ describe('snapRect (magnetic drag snap)', () => {
   const sibling = { left: 200, top: 300, width: 440, height: 320 };
   const mine = { width: 440, height: 320 };
 
-  it('attaches flush when my left lands near the sibling’s right edge', () => {
-    // Dragged to left 646+10 — within threshold of sibling.right (640).
+  it('attaches BESIDE the sibling (one seam gap) when my left lands near its right edge', () => {
+    // Dragged to left 650 — within threshold of sibling.right + seam (652).
     const r = snapRect({ left: 650, top: 100, ...mine }, [sibling]);
-    expect(r.left).toBe(640); // sibling.left + sibling.width
+    expect(r.left).toBe(652); // sibling.left + sibling.width + DOCK_GAP
     expect(r.top).toBe(100); // nothing near vertically
   });
 
-  it('attaches me on the sibling’s left when my right edge approaches it', () => {
+  it('attaches me on the sibling’s left (one seam gap) when my right edge approaches it', () => {
     const rightSibling = { left: 700, top: 300, width: 440, height: 320 };
-    // Dragged to left 265 → my right edge is 705, 5px past the sibling's 700.
-    const r = snapRect({ left: 265, top: 100, ...mine }, [rightSibling]);
-    expect(r.left).toBe(260); // sibling.left - my width → right edges flush at 700
+    // Dragged to left 255 → my right edge is 695; the seam target is
+    // 700 − 12 − 440 = 248 (right edges 12px apart, handles don't stack).
+    const r = snapRect({ left: 255, top: 100, ...mine }, [rightSibling]);
+    expect(r.left).toBe(248); // sibling.left - DOCK_GAP - my width
   });
 
   it('aligns tops across rows (columns without perpendicular overlap)', () => {
@@ -180,18 +181,18 @@ describe('clusterAppend (new pins join the arranged cluster)', () => {
   const arranged = { left: 500, top: 300, width: 440, height: 360 };
   const mine = { width: 440, height: 360 };
 
-  it('attaches flush right, top-aligned with the rightmost arranged window', () => {
-    expect(clusterAppend([arranged], mine, { width: 1920, height: 1080 })).toEqual({ left: 940, top: 300 });
+  it('attaches right with one seam gap, top-aligned with the rightmost window', () => {
+    expect(clusterAppend([arranged], mine, { width: 1920, height: 1080 })).toEqual({ left: 952, top: 300 });
   });
 
-  it('wraps flush below the cluster when the viewport right edge is reached', () => {
-    // 940 + 440 > 1000 − 16 → new row below, aligned with the cluster's left.
-    expect(clusterAppend([arranged], mine, { width: 1000, height: 1080 })).toEqual({ left: 500, top: 660 });
+  it('wraps below the cluster (one seam) when the viewport right edge is reached', () => {
+    // 952 + 440 > 1000 − 16 → new row below, aligned with the cluster's left.
+    expect(clusterAppend([arranged], mine, { width: 1000, height: 1080 })).toEqual({ left: 500, top: 672 });
   });
 
   it('picks the rightmost of several arranged windows', () => {
     const second = { left: 940, top: 300, width: 300, height: 360 };
-    expect(clusterAppend([arranged, second], mine, { width: 1920, height: 1080 })).toEqual({ left: 1240, top: 300 });
+    expect(clusterAppend([arranged, second], mine, { width: 1920, height: 1080 })).toEqual({ left: 1252, top: 300 });
   });
 
   it('null with nothing arranged — the caller docks instead', () => {
@@ -200,7 +201,7 @@ describe('clusterAppend (new pins join the arranged cluster)', () => {
 
   it('clamps when the cluster sits near the viewport edges', () => {
     const edge = { left: 1600, top: 900, width: 300, height: 200 };
-    // Wraps below (1900+440 overflows) at left 1600/top 1100 — both clamp.
+    // Wraps below (1912+440 overflows) at left 1600/top 1112 — both clamp.
     expect(clusterAppend([edge], mine, { width: 1920, height: 1080 })).toEqual({ left: 1480, top: 720 });
   });
 });

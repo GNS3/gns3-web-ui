@@ -83,7 +83,13 @@ export function placeWindow(
 /** Default dock tile size — the user's last manual resize overrides it. */
 export const DOCK_TILE_W = 440;
 export const DOCK_TILE_H = 360;
-/** Gap between dock tiles and rows. */
+/**
+ * Gap between windows — dock tiles/rows, magnetically-snapped seams and
+ * cluster appends alike. NOT zero on purpose: every window's edge resize
+ * handles reach 8px inward (and 4px outward), so a zero-gap seam stacks both
+ * windows' handle strips directly on the left one's scrollbar and makes it
+ * unclickable. One constant keeps every window-to-window contact the same.
+ */
 export const DOCK_GAP = 12;
 /** Right reserve so tiles don't slide under the docked replay panel. */
 export const DOCK_RIGHT_RESERVE = 296;
@@ -146,9 +152,10 @@ export const SNAP_THRESHOLD = 12;
 
 /**
  * Magnetic snap of a dragged pinned window against its settled siblings'
- * rects: within {@link SNAP_THRESHOLD} an edge attaches flush (side-by-side)
- * or aligns (column/row), per axis independently — the nearest candidate per
- * axis wins, so dragging two windows together builds flush comparison grids.
+ * rects: within {@link SNAP_THRESHOLD} an edge attaches BESIDE the sibling
+ * (one {@link DOCK_GAP} seam — see its comment) or aligns with it
+ * (column/row), per axis independently — the nearest candidate per axis
+ * wins, so dragging two windows together builds tidy comparison grids.
  * No perpendicular-overlap requirement: aligning to a window in another row is
  * exactly how tidy columns get built.
  */
@@ -158,16 +165,18 @@ export function snapRect(tentative: Rect, siblings: Rect[], threshold: number = 
   let bestX = threshold + 1;
   let bestY = threshold + 1;
   for (const s of siblings) {
-    // My LEFT may attach to: the sibling's left (align), its right edge
-    // (I sit on its right), or its left minus my width (I sit on its left).
-    for (const cx of [s.left, s.left + s.width, s.left - tentative.width]) {
+    // My LEFT may attach to: the sibling's left (align), its right edge plus
+    // the seam (I sit on its right), or its left minus the seam and my width
+    // (I sit on its left). The seam keeps both windows' resize handles — and
+    // the left one's scrollbar — mutually reachable.
+    for (const cx of [s.left, s.left + s.width + DOCK_GAP, s.left - DOCK_GAP - tentative.width]) {
       const d = Math.abs(cx - tentative.left);
       if (d < bestX) {
         bestX = d;
         left = cx;
       }
     }
-    for (const cy of [s.top, s.top + s.height, s.top - tentative.height]) {
+    for (const cy of [s.top, s.top + s.height + DOCK_GAP, s.top - DOCK_GAP - tentative.height]) {
       const d = Math.abs(cy - tentative.top);
       if (d < bestY) {
         bestY = d;
@@ -181,12 +190,12 @@ export function snapRect(tentative: Rect, siblings: Rect[], threshold: number = 
 // ---- cluster join (new pins beside hand-arranged windows) -----------------
 
 /**
- * Where a NEW pinned window joins the user's hand-arranged cluster: flush
- * (zero-gap — the same contact magnetic snapping produces) right of the
- * RIGHTMOST arranged window, top-aligned with it; when the viewport's right
- * edge is reached the cluster wraps to a fresh row flush BELOW, aligned with
- * the leftmost arranged window. Null when nothing is arranged — the caller
- * docks into the comparison row instead.
+ * Where a NEW pinned window joins the user's hand-arranged cluster: right of
+ * the RIGHTMOST arranged window, top-aligned with it, one {@link DOCK_GAP}
+ * seam away (the same contact magnetic snapping produces); when the viewport's
+ * right edge is reached the cluster wraps to a fresh row below — again one
+ * seam — aligned with the leftmost arranged window. Null when nothing is
+ * arranged — the caller docks into the comparison row instead.
  */
 export function clusterAppend(
   arranged: Rect[],
@@ -195,13 +204,13 @@ export function clusterAppend(
 ): { left: number; top: number } | null {
   if (arranged.length === 0) return null;
   const rightmost = arranged.reduce((a, b) => (a.left + a.width >= b.left + b.width ? a : b));
-  let left = rightmost.left + rightmost.width;
+  let left = rightmost.left + rightmost.width + DOCK_GAP;
   let top = rightmost.top;
   if (left + mine.width > viewport.width - VIEWPORT_MARGIN) {
     const bottom = arranged.reduce((a, b) => (a.top + a.height >= b.top + b.height ? a : b));
     const leftmost = arranged.reduce((a, b) => (a.left <= b.left ? a : b));
     left = leftmost.left;
-    top = bottom.top + bottom.height;
+    top = bottom.top + bottom.height + DOCK_GAP;
   }
   // Clamp into the viewport (a cluster near an edge may still overlap it).
   left = Math.max(0, Math.min(left, Math.max(0, viewport.width - mine.width)));

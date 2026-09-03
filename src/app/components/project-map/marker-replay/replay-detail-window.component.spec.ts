@@ -14,7 +14,7 @@ import { LinksDataSource } from '../../../cartography/datasources/links-datasour
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Controller } from '@models/controller';
 import { ReplayFrame, ReplayFrameDetail, ReplayRangeResponse } from '@models/marker-replay';
-import { dockSlot } from './replay-geometry';
+import { DOCK_GAP, dockSlot } from './replay-geometry';
 
 describe('ReplayDetailWindowComponent', () => {
   let fixture: ComponentFixture<ReplayDetailWindowComponent>;
@@ -520,10 +520,12 @@ describe('ReplayDetailWindowComponent', () => {
       fixture.detectChanges();
       await flushFrames();
 
-      // Joined the cluster: flush right of pin #1 (440 wide), top-aligned,
-      // freed (part of the arrangement) rather than docked at the bottom row.
+      // Joined the cluster: one SEAM (DOCK_GAP) right of pin #1 (440 wide),
+      // top-aligned, freed (part of the arrangement) rather than docked at the
+      // bottom row. The seam keeps both windows' resize handles off each
+      // other's scrollbars.
       expect(component.dragPinned()).toBe(true);
-      expect(component.winLeft()).toBe(arrangedLeft + 440);
+      expect(component.winLeft()).toBe(arrangedLeft + 440 + DOCK_GAP);
       expect(component.winTop()).toBe(arrangedTop);
       expect(svc.dockedPinIds()).toEqual([]); // both windows live in the cluster
     });
