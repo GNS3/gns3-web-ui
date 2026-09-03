@@ -3,12 +3,19 @@
 // ONE text colour, protocols stand out by weight alone, indentation is
 // guide-rail columns rather than padded whitespace.
 
+// The toolbar is WINDOW CHROME, not scroll content: it sits inside the
+// window-body's scrollport but must stay pinned at its top — otherwise the
+// search bar (and its n/m counter) scrolls out of view with the tree.
 .gns3-replay__tree-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1; // above the rows scrolling underneath
   display: flex;
   align-items: center;
   gap: 2px;
   padding: 2px 6px 2px 10px;
   border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface); // opaque — rows pass under, not through
   flex-shrink: 0;
 }
 
