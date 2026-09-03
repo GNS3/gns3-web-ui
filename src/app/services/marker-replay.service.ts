@@ -156,6 +156,12 @@ export class MarkerReplayService {
   readonly emptySecond = signal(false);
   /** Bookmarked frames in timeline order, session-only. */
   readonly bookmarks = signal<ReplayFrame[]>([]);
+  /**
+   * SHARED text-search query for every protocol tree (live + pinned windows):
+   * typing it once lights up the matches across ALL hops being compared —
+   * each tree keeps its own match count and position. Empty string = off.
+   */
+  readonly searchQuery = signal('');
   readonly detail = signal<DetailState>({ status: 'idle' });
   /**
    * Frames frozen into comparison windows ({@link PINNED_CAP} max, oldest

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest';
 import { ProtocolTreeComponent } from './protocol-tree.component';
-import { collectKeys, flattenTree, rowText } from './protocol-tree';
+import { ancestorKeys, collectKeys, flattenTree, rowSearchText, rowText } from './protocol-tree';
 import { ProtocolTreeNode } from '@models/marker-replay';
 
 describe('protocol-tree pure helpers', () => {
@@ -84,6 +84,18 @@ describe('protocol-tree pure helpers', () => {
     expect(rowText({ ...ttl, showname: undefined, show: undefined })).toBe('ip.ttl');
   });
 
+  it('rowSearchText joins name + displayed text lowercased; the raw hex value never matches', () => {
+    expect(rowSearchText(ttl)).toBe('ip.ttl time to live: 64');
+    expect(rowSearchText({ ...ttl, showname: undefined })).toBe('ip.ttl 64');
+    const fcs = { ...ttl, name: 'ip.fcs', showname: 'Frame check sequence', show: undefined, value: 'deadbeef' };
+    expect(rowSearchText(fcs)).not.toContain('deadbeef');
+  });
+
+  it('ancestorKeys walks the index path upward, stopping at the root', () => {
+    expect(ancestorKeys('/0/1/2')).toEqual(['/0/1', '/0']);
+    expect(ancestorKeys('/0')).toEqual([]);
+  });
+
   it('rows carry a semantic name-path (the diff keyspace), occurrence-disambiguated', () => {
     const rows = flattenTree(tree, new Set(['/0', '/0/1']));
     expect(rows.map((r) => r.path)).toEqual(['ip', 'ip/ip.ttl', 'ip/ip.flags', 'ip/ip.flags/ip.flags.rb']);
@@ -113,6 +125,8 @@ describe('protocol-tree pure helpers', () => {
 describe('ProtocolTreeComponent', () => {
   let fixture: ComponentFixture<ProtocolTreeComponent>;
   let component: ProtocolTreeComponent;
+  /** Element appended to the body inside a test (focus needs attachment). */
+  let attached: HTMLElement | null = null;
 
   const ttl: ProtocolTreeNode = {
     element: 'field',
@@ -131,6 +145,16 @@ describe('ProtocolTreeComponent', () => {
     children: [ttl, { ...ttl, name: 'ip.checksum', showname: 'Header Checksum: 0x1234', hide: 'yes' }],
   };
 
+  // Per the unit-testing skill: zoneless async tests run under fake timers
+  // (real macrotask awaits starve) — they also flush the search effects.
+  beforeAll(() => {
+    vi.useFakeTimers();
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   beforeEach(async () => {
     vi.clearAllMocks();
     await TestBed.configureTestingModule({ imports: [ProtocolTreeComponent] }).compileComponents();
@@ -140,6 +164,12 @@ describe('ProtocolTreeComponent', () => {
   });
 
   afterEach(() => {
+    // Track DOM appended to the body (focus tests) so failures can't leak it.
+    if (attached) {
+      attached.remove();
+      attached = null;
+    }
+    vi.clearAllTimers();
     if (fixture) fixture.destroy();
   });
 
@@ -194,7 +224,7 @@ describe('ProtocolTreeComponent', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
     const buttons = el.querySelectorAll<HTMLButtonElement>('.gns3-replay__tree-tool');
-    expect(buttons.length).toBe(2);
+    expect(buttons.length).toBe(3); // expand, collapse, 🔍
 
     buttons[0].click(); // expand all
     fixture.detectChanges();
@@ -245,6 +275,137 @@ describe('ProtocolTreeComponent', () => {
       fixture.componentRef.setInput('changedPaths', null);
       fixture.detectChanges();
       expect((fixture.nativeElement as HTMLElement).textContent).not.toContain('differ');
+    });
+  });
+
+  describe('text search', () => {
+    // eth › ip › {ttl, flags › rb} — matches can hide TWO levels deep.
+    const rb: ProtocolTreeNode = { ...ttl, name: 'ip.flags.rb', showname: 'Reserved bit: Not set' };
+    const flags: ProtocolTreeNode = { ...ttl, name: 'ip.flags', showname: 'Flags: 0x4000', children: [rb] };
+    const deepTree: ProtocolTreeNode[] = [
+      {
+        element: 'proto',
+        name: 'eth',
+        showname: 'Ethernet II, Src: 00:11:22:33:44:55',
+        children: [
+          {
+            element: 'proto',
+            name: 'ip',
+            showname: 'Internet Protocol Version 4, Src: 10.0.0.1',
+            children: [ttl, flags],
+          },
+        ],
+      },
+    ];
+
+    /** Effects (auto-expand, scroll, focus) flush under fake timers, then re-render. */
+    async function flush() {
+      await vi.runAllTimersAsync();
+      fixture.detectChanges();
+    }
+
+    it('reveals matches inside collapsed branches, highlights them and shows n/m', async () => {
+      fixture.componentRef.setInput('tree', deepTree);
+      fixture.detectChanges();
+      expect(rows().length).toBe(1); // collapsed start
+
+      fixture.componentRef.setInput('searchQuery', 'time to live');
+      await flush();
+
+      // Ancestors auto-expanded: eth › ip › ip.ttl visible; the flags sibling
+      // still renders (collapsed — a row exists whether or not it's open).
+      expect(rows().length).toBe(4);
+      const hit = rows()[2] as HTMLElement;
+      expect(hit.getAttribute('data-key')).toBe('/0/0/0');
+      expect(hit.classList).toContain('gns3-replay__tree-row--match');
+      expect(hit.classList).toContain('gns3-replay__tree-row--match-current');
+      expect((fixture.nativeElement as HTMLElement).textContent).toContain('1/1');
+    });
+
+    it('matching is case-insensitive over names and display text, never the raw hex value', async () => {
+      fixture.componentRef.setInput('tree', deepTree);
+      fixture.detectChanges();
+
+      fixture.componentRef.setInput('searchQuery', 'TTL'); // field NAME hit
+      await flush();
+      expect(component.matchCount()).toBe(1);
+
+      fixture.componentRef.setInput('searchQuery', 'RESERVED'); // showname hit, case-folded
+      await flush();
+      expect(component.matchCount()).toBe(1); // the rb row
+      // eth › ip › ttl › flags(open) › rb — every level revealed.
+      expect(rows().length).toBe(5);
+
+      // "40" appears in ttl's hex VALUE and in flags' "0x4000" showname — only
+      // the displayed text counts.
+      fixture.componentRef.setInput('searchQuery', '40');
+      await flush();
+      expect(component.matchCount()).toBe(1);
+      expect(component.matches()[0].node.name).toBe('ip.flags');
+    });
+
+    it('Enter walks the matches in order with wraparound; Shift+Enter goes back', async () => {
+      fixture.componentRef.setInput('tree', deepTree);
+      fixture.componentRef.setInput('searchQuery', 'flags'); // hits ip.flags + ip.flags.rb
+      await flush();
+      expect(component.matchCount()).toBe(2);
+      expect(component.currentMatchKey()).toBe('/0/0/1');
+      expect((fixture.nativeElement as HTMLElement).textContent).toContain('1/2');
+
+      const input = (fixture.nativeElement as HTMLElement).querySelector<HTMLInputElement>(
+        '.gns3-replay__search-input'
+      )!;
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      await flush();
+      expect(component.currentMatchKey()).toBe('/0/0/1/0');
+      expect((fixture.nativeElement as HTMLElement).textContent).toContain('2/2');
+
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      await flush(); // wraps back to the first
+      expect(component.currentMatchKey()).toBe('/0/0/1');
+
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', shiftKey: true, bubbles: true }));
+      await flush(); // Shift+Enter steps backwards
+      expect(component.currentMatchKey()).toBe('/0/0/1/0');
+    });
+
+    it('clearing the query drops the highlights but keeps the revealed branches', async () => {
+      fixture.componentRef.setInput('tree', deepTree);
+      fixture.componentRef.setInput('searchQuery', 'time to live');
+      await flush();
+      expect(rows().length).toBe(4); // eth › ip › ttl + collapsed flags
+
+      fixture.componentRef.setInput('searchQuery', '');
+      await flush();
+
+      expect(component.matchCount()).toBe(0);
+      expect(rows().length).toBe(4); // still expanded — browse what search opened
+      rows().forEach((r) => expect(r.classList).not.toContain('gns3-replay__tree-row--match'));
+    });
+
+    it('🔍 opens the bar focused; Esc closes it and clears the query', async () => {
+      fixture.detectChanges();
+      const el = fixture.nativeElement as HTMLElement;
+      document.body.appendChild(el); // jsdom only assigns focus to attached elements
+      attached = el;
+
+      const searchBtn = el.querySelectorAll<HTMLButtonElement>('.gns3-replay__tree-tool')[2];
+      searchBtn.click();
+      await flush();
+
+      const input = el.querySelector<HTMLInputElement>('.gns3-replay__search-input')!;
+      expect(input).toBeTruthy();
+      expect(document.activeElement).toBe(input);
+
+      input.value = 'ttl'; // typing publishes the (model) query
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      await flush();
+      expect(component.searchQuery()).toBe('ttl');
+
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      await flush();
+      expect(component.searchQuery()).toBe('');
+      expect(el.querySelector('.gns3-replay__search-input')).toBeNull();
     });
   });
 });

@@ -49,11 +49,42 @@
     color: var(--mat-sys-on-surface);
   }
 
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+
+    // :hover still matches disabled buttons in CSS — keep them inert-looking.
+    &:hover {
+      background: transparent;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
   mat-icon {
     font-size: 15px;
     width: 15px;
     height: 15px;
   }
+}
+
+// Find-in-packet bar — takes the toolbar row over while active (see template).
+.gns3-replay__search-input {
+  flex: 1;
+  min-width: 0;
+  height: 22px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--mat-sys-on-surface);
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 11px;
+}
+
+.gns3-replay__search-count {
+  font-size: 10px;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .gns3-replay__tree {
@@ -111,6 +142,27 @@
   &--changed-subtree {
     .gns3-replay__tree-chevron {
       color: var(--mat-sys-tertiary);
+    }
+  }
+
+  // Text search: every hit tints secondary; the CURRENT hit is the strongest
+  // accent on a row. Cascade order keeps the priority match-current >
+  // selected > changed when several land on the same row.
+  &--match {
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+
+    .gns3-replay__tree-chevron {
+      color: var(--mat-sys-on-secondary-container);
+    }
+  }
+
+  &--match-current {
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+
+    .gns3-replay__tree-chevron {
+      color: var(--mat-sys-on-primary);
     }
   }
 }

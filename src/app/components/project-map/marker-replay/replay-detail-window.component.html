@@ -102,7 +102,7 @@
         <span>Decoding frame…</span>
       </div>
     } @else if (detailOk(); as ok) {
-      <app-protocol-tree [tree]="ok.detail.tree" [changedPaths]="changedPaths()" />
+      <app-protocol-tree [tree]="ok.detail.tree" [changedPaths]="changedPaths()" [(searchQuery)]="svc.searchQuery" />
     } @else if (detailError(); as err) {
       <div class="gns3-replay__detail-error">
         <span>{{ errorMessage() }}</span>

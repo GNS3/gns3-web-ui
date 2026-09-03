@@ -560,6 +560,29 @@ describe('ReplayDetailWindowComponent', () => {
       expect(leaf.classList.contains('gns3-replay__tree-row--changed')).toBe(true);
     });
 
+    it('the search bar rides the SHARED query — outside writes highlight, typing publishes', async () => {
+      await load();
+      svc.detail.set({ status: 'ok', detail });
+      fixture.detectChanges();
+
+      const el: HTMLElement = fixture.nativeElement;
+      // The query typed in ANOTHER window arrives via the shared signal…
+      svc.searchQuery.set('time to live');
+      await flushFrames();
+
+      // Collapsed ancestors auto-revealed: geninfo never renders, so ip + ttl.
+      const hit = el.querySelectorAll('.gns3-replay__tree-row')[1];
+      expect(hit.classList.contains('gns3-replay__tree-row--match')).toBe(true);
+      expect(el.querySelector<HTMLInputElement>('.gns3-replay__search-input')).toBeTruthy();
+
+      // …and typing HERE publishes back to the shared signal for every window.
+      const input = el.querySelector<HTMLInputElement>('.gns3-replay__search-input')!;
+      input.value = 'ttl';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      fixture.detectChanges();
+      expect(svc.searchQuery()).toBe('ttl');
+    });
+
     it("a pinned window's failed decode retries through the pin, not the live pipeline", async () => {
       await load();
       const pin = {

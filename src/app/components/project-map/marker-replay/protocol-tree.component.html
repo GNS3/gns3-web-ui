@@ -1,18 +1,56 @@
 <div class="gns3-replay__tree-toolbar">
-  <span class="gns3-replay__tree-summary">protocol tree</span>
-  @if (changedPaths(); as cp) {
-    @if (cp.size) {
-      <span class="gns3-replay__tree-diff-count" matTooltip="Fields differing across the pinned frames">
-        {{ cp.size }} differ
-      </span>
-    }
-  }
-  @if (hasExpandable()) {
-    <button class="gns3-replay__tree-tool" matTooltip="Expand all" (click)="expandAll()">
-      <mat-icon>unfold_more</mat-icon>
+  @if (searchOpen() || searchQuery()) {
+    <!-- Search mode takes the toolbar row over — dock tiles (~440px) have no
+         room for both. ✕/Esc clears the SHARED query in every window. -->
+    <input
+      #searchInput
+      class="gns3-replay__search-input"
+      type="text"
+      placeholder="Find in packet…"
+      spellcheck="false"
+      [value]="searchQuery()"
+      (input)="onSearchInput($event)"
+      (keydown)="onSearchKey($event)"
+    />
+    <span class="gns3-replay__search-count">{{ matchLabel() }}</span>
+    <button
+      class="gns3-replay__tree-tool"
+      [disabled]="!matchCount()"
+      (click)="prevMatch()"
+      matTooltip="Previous match (Shift+Enter)"
+    >
+      <mat-icon>keyboard_arrow_up</mat-icon>
     </button>
-    <button class="gns3-replay__tree-tool" matTooltip="Collapse all" (click)="collapseAll()">
-      <mat-icon>unfold_less</mat-icon>
+    <button
+      class="gns3-replay__tree-tool"
+      [disabled]="!matchCount()"
+      (click)="nextMatch()"
+      matTooltip="Next match (Enter)"
+    >
+      <mat-icon>keyboard_arrow_down</mat-icon>
+    </button>
+    <button class="gns3-replay__tree-tool" (click)="closeSearch()" matTooltip="Close search (Esc)">
+      <mat-icon>close</mat-icon>
+    </button>
+  } @else {
+    <span class="gns3-replay__tree-summary">protocol tree</span>
+    @if (changedPaths(); as cp) {
+      @if (cp.size) {
+        <span class="gns3-replay__tree-diff-count" matTooltip="Fields differing across the pinned frames">
+          {{ cp.size }} differ
+        </span>
+      }
+    }
+    @if (hasExpandable()) {
+      <button class="gns3-replay__tree-tool" matTooltip="Expand all" (click)="expandAll()">
+        <mat-icon>unfold_more</mat-icon>
+      </button>
+      <button class="gns3-replay__tree-tool" matTooltip="Collapse all" (click)="collapseAll()">
+        <mat-icon>unfold_less</mat-icon>
+      </button>
+    }
+    <button class="gns3-replay__tree-tool" matTooltip="Find in packet details" (click)="openSearch()">
+      <mat-icon>search</mat-icon>
     </button>
   }
 </div>
@@ -25,7 +63,10 @@
       [class.gns3-replay__tree-row--selected]="selectedKey() === row.key"
       [class.gns3-replay__tree-row--changed]="changedPaths()?.has(row.path) ?? false"
       [class.gns3-replay__tree-row--changed-subtree]="diffAncestors().has(row.path)"
+      [class.gns3-replay__tree-row--match]="matchPaths().has(row.path)"
+      [class.gns3-replay__tree-row--match-current]="currentMatchKey() === row.key"
       (click)="toggle(row)"
+      [attr.data-key]="row.key"
       [title]="rowTooltip(row.node)"
     >
       @for (g of guides(row.depth); track $index) {

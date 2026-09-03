@@ -30,6 +30,29 @@ export function rowText(n: ProtocolTreeNode): string {
   return n.showname ?? (n.show !== undefined ? `${n.name}: ${n.show}` : n.name);
 }
 
+/**
+ * Case-insensitive search haystack for a row: the field NAME plus its
+ * displayed text (showname, else show) — so both literals ("Time to Live:
+ * 64") and field names ("ttl") find their row. The raw hex `value` is
+ * deliberately excluded: a query like "40" would light up half the hex
+ * column; Wireshark's find-in-details matches displayed text too.
+ */
+export function rowSearchText(n: ProtocolTreeNode): string {
+  return `${n.name} ${n.showname ?? n.show ?? ''}`.toLowerCase();
+}
+
+/** Row keys of every ancestor ("/0/1/0" → ["/0/1", "/0"]) — reveal set for search. */
+export function ancestorKeys(key: string): string[] {
+  const out: string[] = [];
+  let k = key;
+  for (;;) {
+    const cut = k.lastIndexOf('/');
+    if (cut <= 0) return out;
+    k = k.slice(0, cut);
+    out.push(k);
+  }
+}
+
 /** Hover context: raw field name, show/value attributes, byte range. */
 export function rowTooltip(n: ProtocolTreeNode): string {
   const parts = [n.show ?? '', n.value ?? ''].filter(Boolean);
