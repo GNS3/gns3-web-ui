@@ -1,0 +1,111 @@
+.gns3-replay {
+  position: fixed;
+  top: 80px;
+  right: 16px;
+  width: 264px;
+  max-height: calc(100vh - 200px);
+  display: flex;
+  flex-direction: column;
+  background: var(--mat-sys-surface);
+  border: 2px solid var(--mat-sys-outline);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent),
+    0 4px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    background: var(--mat-sys-surface-container);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    user-select: none;
+    flex-shrink: 0;
+  }
+
+  &__icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--mat-sys-primary);
+  }
+
+  &__title {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  &__title-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    white-space: nowrap;
+  }
+
+  &__tag {
+    font-size: 11px;
+    color: var(--mat-sys-on-surface-variant);
+    background: var(--mat-sys-surface-container-high);
+    border-radius: 8px;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+
+  &__position {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--mat-sys-on-surface-variant);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__close {
+    // Size via MDC's token (padding = (state-layer − icon)/2) so the icon
+    // stays concentric with the hover/press circle — hardcoding width/height
+    // leaves the default 8px padding (computed for a 40px button) and the
+    // icon drifts off-center. Icon keeps its default 24px box.
+    --mat-icon-button-state-layer-size: 28px;
+    flex-shrink: 0;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+  }
+
+  &__state {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 12px;
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__state--error {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    color: var(--mat-sys-error);
+  }
+
+  &__state-spinner {
+    flex-shrink: 0;
+  }
+
+  &__retry {
+    align-self: flex-start;
+  }
+
+  &__placeholder {
+    padding: 16px 12px;
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

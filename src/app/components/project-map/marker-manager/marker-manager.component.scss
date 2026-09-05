@@ -296,6 +296,10 @@
       color: var(--mat-sys-on-secondary-container);
       background: var(--mat-sys-secondary-container);
     }
+
+    &--tag {
+      color: var(--mat-sys-primary);
+    }
   }
 
   // Match the configurator-dialog style: no appearance, full-width cells
@@ -439,5 +443,93 @@
     height: 20px;
     cursor: nwse-resize;
     background: transparent;
+  }
+}
+
+// ---- Replay tab (tag aggregate) ----
+
+.gns3-replay-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: var(--mat-sys-surface-container);
+
+    &:hover {
+      background: var(--mat-sys-surface-container-high);
+    }
+  }
+
+  &__tag {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mat-sys-primary);
+    background: var(--mat-sys-primary-container);
+    border-radius: 8px;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+
+  &__meta {
+    font-size: 11px;
+    color: var(--mat-sys-on-surface-variant);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__chip {
+    font-size: 10px;
+    border-radius: 8px;
+    padding: 1px 6px;
+    white-space: nowrap;
+
+    &--capturing {
+      color: var(--mat-sys-on-error-container);
+      background: var(--mat-sys-error-container);
+    }
+  }
+
+  &__action {
+    min-width: 0;
+  }
+
+  &__pause-panel {
+    margin: 0 8px 6px;
+    padding: 10px 12px;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 6px;
+    background: var(--mat-sys-surface-container-low);
+  }
+
+  &__pause-title {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin-bottom: 6px;
+  }
+
+  &__pause-list {
+    margin: 0 0 8px;
+    padding-left: 18px;
+    font-size: 11px;
+    color: var(--mat-sys-on-surface-variant);
+
+    li {
+      margin-bottom: 2px;
+      word-break: break-word;
+    }
+  }
+
+  &__pause-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
   }
 }

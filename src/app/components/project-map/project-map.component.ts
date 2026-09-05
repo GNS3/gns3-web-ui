@@ -123,6 +123,7 @@ import { NodeDraggedComponent } from '../drawings-listeners/node-dragged/node-dr
 import { NodeLabelDraggedComponent } from '../drawings-listeners/node-label-dragged/node-label-dragged.component';
 import { TextAddedComponent } from '../drawings-listeners/text-added/text-added.component';
 import { MarkerManagerComponent } from './marker-manager/marker-manager.component';
+import { MarkerReplayOverlayComponent } from './marker-replay/marker-replay-overlay.component';
 import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edited.component';
 import { createActionCompletion } from '@utils/action-completion.util';
 import { NotificationCenterComponent } from '@components/notification-center/notification-center.component';
@@ -166,6 +167,7 @@ import type { TopologyItemCounts } from '@utils/topology-delete-summary.util';
     TextAddedComponent,
     TextEditedComponent,
     MarkerManagerComponent,
+    MarkerReplayOverlayComponent,
     NotificationCenterComponent,
   ],
 })
@@ -217,6 +219,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public symbolScaling: boolean = true;
   public isAIChatVisible: boolean = false;
   public isMarkerManagerVisible: boolean = false;
+  public isMarkerReplayVisible: boolean = false;
+  public markerReplayTag: number | null = null;
 
   // Track multiple Web Wireshark inline windows
   // Key is link_id, value is the Link object
@@ -240,6 +244,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public consoleZIndex: number = this.baseZIndex;
   public aiChatZIndex: number = this.baseZIndex;
   public markerManagerZIndex: number = this.baseZIndex;
+  public markerReplayZIndex: number = this.baseZIndex;
 
   // Taskbar icon positioning
   private readonly TASKBAR_BASE_LEFT = 20;
@@ -1435,6 +1440,33 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public bringMarkerManagerToFront() {
     this.zIndexCounter++;
     this.markerManagerZIndex = this.baseZIndex + this.zIndexCounter;
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Open the singleton tag-replay overlay for a tag (emitted by the Marker
+   * Manager's Replay tab). Replaces any replay already open — one session at a
+   * time, matching the overlay's component-scoped replay service.
+   */
+  public openMarkerReplay(tag: number) {
+    this.isMarkerReplayVisible = true;
+    this.markerReplayTag = tag;
+    this.zIndexCounter++;
+    this.markerReplayZIndex = this.baseZIndex + this.zIndexCounter;
+    this.cd.markForCheck();
+  }
+
+  /** Close the replay overlay (its service teardown clears the link highlight). */
+  public closeMarkerReplay() {
+    this.isMarkerReplayVisible = false;
+    this.markerReplayTag = null;
+    this.cd.markForCheck();
+  }
+
+  /** Bring the replay overlay to front. */
+  public bringMarkerReplayToFront() {
+    this.zIndexCounter++;
+    this.markerReplayZIndex = this.baseZIndex + this.zIndexCounter;
     this.cd.markForCheck();
   }
 

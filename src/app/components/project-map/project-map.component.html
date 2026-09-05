@@ -277,7 +277,19 @@
     [zIndex]="markerManagerZIndex"
     (closeWindow)="closeMarkerManager()"
     (windowFocused)="bringMarkerManagerToFront()"
+    (startReplay)="openMarkerReplay($event)"
   ></app-marker-manager>
+  }
+
+  @if (project && isMarkerReplayVisible && markerReplayTag !== null) {
+  <app-marker-replay-overlay
+    [controller]="controller"
+    [project]="project"
+    [tag]="markerReplayTag"
+    [zIndex]="markerReplayZIndex"
+    (closeWindow)="closeMarkerReplay()"
+    (windowFocused)="bringMarkerReplayToFront()"
+  ></app-marker-replay-overlay>
   }
 
   <app-progress></app-progress>

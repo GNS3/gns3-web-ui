@@ -60,7 +60,7 @@
                   }
                 </mat-form-field>
               </div>
-              <div style="display: grid; grid-template-columns: 3.0fr 0.9fr 0.8fr 0.5fr auto auto; gap: 16px; align-items: start;">
+              <div style="display: grid; grid-template-columns: 2.7fr 0.7fr 0.9fr 0.8fr 0.5fr auto auto; gap: 16px; align-items: start;">
                 <mat-form-field class="form-field">
                   <mat-label>Name</mat-label>
                   <span matTextPrefix class="global-prefix">global-&nbsp;</span>
@@ -70,6 +70,10 @@
                     } @if (definitionForm.get('name')?.hasError('notGlobalName')) {
                     <mat-error>Name cannot start with "global"</mat-error>
                     }
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>Tag</mat-label>
+                  <input matInput type="number" formControlName="tag" placeholder="—" min="0" />
                 </mat-form-field>
                 <mat-form-field class="form-field">
                   <mat-label>Serial encapsulation</mat-label>
@@ -134,6 +138,10 @@
                 ></span>
                 <span class="marker-manager__row-name">global-{{ row.name }}</span>
                 <span class="marker-manager__row-bpf">{{ row.bpf }}</span>
+
+                @if (row.tag !== null) {
+                <span class="marker-manager__chip marker-manager__chip--tag" title="Replay tag">#{{ row.tag }}</span>
+                }
 
                 @if (row.highlight_duration !== null) {
                 <span class="marker-manager__chip">{{ row.highlight_duration }}ms</span>
@@ -323,6 +331,86 @@
               }
               }
             </div>
+            }
+          </div>
+          }
+        </mat-tab>
+
+        <!-- ===================== Replay (tag aggregate) ===================== -->
+        <mat-tab label="Replay">
+          @if (activeTabIndex() === 2) {
+          <div class="marker-manager__panel gns3-replay-tags">
+            @if (loading()) {
+              <div class="marker-manager__empty">Loading…</div>
+            } @else if (tags().length === 0) {
+              <div class="marker-manager__empty">
+                No tagged markers yet — set a Tag on a definition or a link marker to build a replay timeline.
+              </div>
+            }
+
+            @for (row of tags(); track row.tag) {
+              <div class="gns3-replay-tags__row">
+                <span class="gns3-replay-tags__tag">#{{ row.tag }}</span>
+                <span class="gns3-replay-tags__meta">
+                  {{ row.markers.length }} marker{{ row.markers.length === 1 ? '' : 's' }} on
+                  {{ row.linkCount }} link{{ row.linkCount === 1 ? '' : 's' }}
+                </span>
+                @if (row.enabled.length > 0) {
+                  <span
+                    class="gns3-replay-tags__chip gns3-replay-tags__chip--capturing"
+                    title="Replay needs every marker under the tag paused"
+                  >
+                    {{ row.enabled.length }} capturing
+                  </span>
+                }
+                <span class="marker-manager__row-spacer"></span>
+                <button mat-flat-button color="primary" class="gns3-replay-tags__action" (click)="startReplayFor(row)">
+                  @if (pausingTag() === row.tag) {
+                    Pausing…
+                  } @else if (row.enabled.length > 0) {
+                    Pause &amp; replay
+                  } @else {
+                    Replay
+                  }
+                </button>
+              </div>
+
+              @if (pausePanelTag() === row.tag && row.enabled.length > 0) {
+              <div class="gns3-replay-tags__pause-panel">
+                <div class="gns3-replay-tags__pause-title">Pause these markers to unlock replay:</div>
+                <ul class="gns3-replay-tags__pause-list">
+                  @for (m of row.enabled; track m.link_id + '/' + m.name) {
+                    <li>
+                      {{ linkLabel(m.link_id) }} — {{ m.name }}
+                      @if (m.inherited_from) {
+                        <span
+                          class="marker-manager__chip marker-manager__chip--inherited"
+                          matTooltip="Global rule — paused via its definition"
+                          >inherited</span
+                        >
+                      }
+                    </li>
+                  }
+                </ul>
+                <div class="gns3-replay-tags__pause-actions">
+                  <button mat-stroked-button type="button" [disabled]="pausingTag() !== null" (click)="pausePanelTag.set(null)">
+                    Cancel
+                  </button>
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    [disabled]="pausingTag() !== null"
+                    (click)="pauseAllAndReplay(row)"
+                  >
+                    @if (pausingTag() === row.tag) {
+                      Pausing…
+                    } @else {
+                      Pause all &amp; replay
+                    }
+                  </button>
+                </div>
+              </div>
+              }
             }
           </div>
           }

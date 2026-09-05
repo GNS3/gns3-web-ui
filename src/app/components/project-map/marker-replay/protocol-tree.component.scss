@@ -1,0 +1,206 @@
+// Wireshark-style tree: monospace throughout (bit-mask rows like
+// "0100 .... = Version: 4" only keep their alignment in a fixed-width font),
+// ONE text colour, protocols stand out by weight alone, indentation is
+// guide-rail columns rather than padded whitespace.
+
+// The toolbar is WINDOW CHROME, not scroll content: it sits inside the
+// window-body's scrollport but must stay pinned at its top — otherwise the
+// search bar (and its n/m counter) scrolls out of view with the tree.
+.gns3-replay__tree-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1; // above the rows scrolling underneath
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 6px 2px 10px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface); // opaque — rows pass under, not through
+  flex-shrink: 0;
+}
+
+.gns3-replay__tree-summary {
+  margin-right: auto;
+  font-size: 10px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// Cross-window diff counter (pinned comparison) — tertiary, matching the
+// changed-leaf highlight below.
+.gns3-replay__tree-diff-count {
+  font-size: 10px;
+  color: var(--mat-sys-on-tertiary-container);
+  background: var(--mat-sys-tertiary-container);
+  border-radius: 8px;
+  padding: 1px 7px;
+  white-space: nowrap;
+}
+
+.gns3-replay__tree-tool {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--mat-sys-on-surface-variant);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--mat-sys-surface-container);
+    color: var(--mat-sys-on-surface);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+
+    // :hover still matches disabled buttons in CSS — keep them inert-looking.
+    &:hover {
+      background: transparent;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+}
+
+// Find-in-packet bar — takes the toolbar row over while active (see template).
+.gns3-replay__search-input {
+  flex: 1;
+  min-width: 0;
+  height: 22px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--mat-sys-on-surface);
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 11px;
+}
+
+.gns3-replay__search-count {
+  font-size: 10px;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.gns3-replay__tree {
+  padding: 2px 6px 8px 0;
+}
+
+.gns3-replay__tree-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 20px;
+  padding-right: 8px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 11px;
+  color: var(--mat-sys-on-surface);
+  cursor: default;
+
+  &:hover {
+    background: var(--mat-sys-surface-container);
+  }
+
+  &--proto {
+    font-weight: 700;
+  }
+
+  // Wireshark's blue row highlight: select on click.
+  &--selected {
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+
+    .gns3-replay__tree-chevron {
+      color: var(--mat-sys-on-primary-container);
+    }
+
+    // The guide rails pass through the highlight without disappearing.
+    .gns3-replay__tree-guide {
+      border-left-color: color-mix(in srgb, var(--mat-sys-on-primary-container) 25%, transparent);
+    }
+  }
+
+  // Cross-window diff: a leaf whose value differs across the pinned frames.
+  // Kept compatible with selection (selection wins on the pair via cascade
+  // order — both are single-class variants).
+  &--changed {
+    background: var(--mat-sys-tertiary-container);
+    color: var(--mat-sys-on-tertiary-container);
+
+    .gns3-replay__tree-chevron {
+      color: var(--mat-sys-on-tertiary-container);
+    }
+  }
+
+  // A collapsed row with a changed leaf somewhere inside — subtle flag so the
+  // collapsed protocol list still shows WHERE to expand.
+  &--changed-subtree {
+    .gns3-replay__tree-chevron {
+      color: var(--mat-sys-tertiary);
+    }
+  }
+
+  // Text search: every hit tints secondary; the CURRENT hit is the strongest
+  // accent on a row. Cascade order keeps the priority match-current >
+  // selected > changed when several land on the same row.
+  &--match {
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+
+    .gns3-replay__tree-chevron {
+      color: var(--mat-sys-on-secondary-container);
+    }
+  }
+
+  &--match-current {
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+
+    .gns3-replay__tree-chevron {
+      color: var(--mat-sys-on-primary);
+    }
+  }
+}
+
+// One 12px column per ancestor level; the hairline on its left edge lands at
+// the parent row's chevron, so consecutive levels read as vertical rails that
+// stay aligned across rows.
+.gns3-replay__tree-guide {
+  width: 12px;
+  align-self: stretch;
+  flex-shrink: 0;
+  border-left: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 80%, transparent);
+}
+
+.gns3-replay__tree-chevron {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.gns3-replay__tree-leaf {
+  width: 14px;
+  flex-shrink: 0;
+}
+
+.gns3-replay__tree-text {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

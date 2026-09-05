@@ -1,0 +1,204 @@
+@use './marker-replay-styles' as replay;
+
+.gns3-replay__timeline {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.gns3-replay__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 2px 4px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  flex-shrink: 0;
+}
+
+.gns3-replay__step-btn,
+.gns3-replay__bookmark-btn,
+.gns3-replay__pin-btn {
+  // Size via MDC's own tokens so its arithmetic (padding = (state-layer −
+  // icon)/2) keeps the icon concentric with the hover/press circle. Hardcoding
+  // width/height alone leaves the default 8px padding (computed for 40/24) and
+  // the icon sits off-center inside the circle.
+  --mat-icon-button-state-layer-size: 32px;
+  --mat-icon-button-icon-size: 20px;
+
+  // .mat-icon's box is hardcoded 24px — align it with the icon-size token.
+  mat-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.gns3-replay__bookmark-icon--active {
+  color: var(--mat-sys-tertiary);
+}
+
+.gns3-replay__tape {
+  position: relative;
+  height: replay.$tape-viewport-h;
+  overflow: hidden;
+  cursor: ns-resize;
+  flex-shrink: 0;
+}
+
+.gns3-replay__scroller {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  will-change: transform;
+}
+
+.gns3-replay__line {
+  position: absolute;
+  left: 24px;
+  right: 58px;
+  height: 2px;
+  margin-top: 4px;
+  background: var(--mat-sys-outline-variant);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--mat-sys-on-surface-variant);
+  }
+
+  &--current {
+    height: 3px;
+    margin-top: 3.5px;
+    background: var(--mat-sys-primary);
+  }
+
+  &--bookmarked::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: -5px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid var(--mat-sys-tertiary);
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+  }
+}
+
+.gns3-replay__bucket {
+  position: absolute;
+  left: 24px;
+  right: 58px;
+  height: 8px;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.gns3-replay__bucket-bar {
+  height: 6px;
+  border-radius: 2px;
+  background: var(--mat-sys-outline-variant);
+}
+
+.gns3-replay__bucket--current .gns3-replay__bucket-bar {
+  background: var(--mat-sys-primary);
+}
+
+.gns3-replay__bucket-count {
+  font-size: 10px;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+}
+
+.gns3-replay__tick {
+  position: absolute;
+  right: 8px;
+  width: 46px;
+  height: 10px;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.gns3-replay__tick::before {
+  content: '';
+  width: 6px;
+  height: 1px;
+  background: var(--mat-sys-outline);
+  margin-right: 4px;
+}
+
+.gns3-replay__tick-label {
+  font-size: 9px;
+  line-height: 1;
+  color: var(--mat-sys-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+
+.gns3-replay__cursor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 8px);
+  height: 16px;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gns3-replay__cursor::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  right: 56px;
+  height: 2px;
+  background: var(--mat-sys-primary);
+  opacity: 0.9;
+}
+
+.gns3-replay__cursor-label {
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mat-sys-on-primary);
+  background: var(--mat-sys-primary);
+  border-radius: 8px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.gns3-replay__tape-hint {
+  padding: 4px 12px;
+  font-size: 11px;
+  color: var(--mat-sys-on-surface-variant);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.gns3-replay__bookmarks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 8px;
+  max-height: 92px;
+  overflow-y: auto;
+}
+
+.gns3-replay__bookmark-chip {
+  min-width: 0;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 10px;
+
+  &--active {
+    color: var(--mat-sys-on-tertiary-container);
+    border-color: var(--mat-sys-tertiary);
+  }
+}

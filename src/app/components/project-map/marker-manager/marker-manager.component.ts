@@ -30,7 +30,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
-import { Subject, animationFrameScheduler, fromEvent } from 'rxjs';
+import { Subject, animationFrameScheduler, forkJoin, fromEvent } from 'rxjs';
 import { auditTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
 
@@ -76,6 +76,15 @@ interface LinkGroup {
 /** An aggregate marker with its resolved name (parsed from the `"{link_id}/{name}"` key). */
 interface GroupMarker extends AggregateMarkerEntry {
   name: string;
+}
+
+/** Replay tab row: every aggregate marker sharing one tag (client-side grouping). */
+interface TagRow {
+  tag: number;
+  markers: GroupMarker[];
+  /** Markers still capturing (`enabled !== false`) — replay requires ALL paused. */
+  enabled: GroupMarker[];
+  linkCount: number;
 }
 
 /** A marker definition name may not start with the reserved `global` prefix. */
@@ -141,6 +150,8 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
 
   @Output() closeWindow = new EventEmitter<void>();
   @Output() windowFocused = new EventEmitter<void>();
+  /** Emitted when the user starts a tag replay (Replay tab) — opens the overlay. */
+  @Output() startReplay = new EventEmitter<number>();
 
   public style: WindowStyle = {
     position: 'fixed',
@@ -239,6 +250,35 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     return existing ?? { linkId: sel, name: this.linkName(sel), markers: [] };
   });
 
+  // ---- Replay tab (tag aggregate) ----
+  /** Tags present across the aggregate markers, sorted; drives the Replay tab list. */
+  readonly tags = computed<TagRow[]>(() => {
+    const byTag = new Map<number, GroupMarker[]>();
+    for (const group of this.linkGroups()) {
+      for (const m of group.markers) {
+        if (m.tag === null || m.tag === undefined) continue;
+        const arr = byTag.get(m.tag) ?? [];
+        arr.push(m);
+        byTag.set(m.tag, arr);
+      }
+    }
+    const rows: TagRow[] = [];
+    for (const [tag, markers] of byTag) {
+      rows.push({
+        tag,
+        markers,
+        enabled: markers.filter((m) => m.enabled !== false),
+        linkCount: new Set(markers.map((m) => m.link_id)).size,
+      });
+    }
+    rows.sort((a, b) => a.tag - b.tag);
+    return rows;
+  });
+  /** Tag whose inline "pause all & replay" panel is expanded. */
+  readonly pausePanelTag = signal<number | null>(null);
+  /** Tag with a pause-all batch in flight — guards double clicks. */
+  readonly pausingTag = signal<number | null>(null);
+
   // ---- forms ----
   readonly definitionForm = new UntypedFormGroup({
     name: new UntypedFormControl('', [Validators.required, notGlobalName]),
@@ -332,6 +372,11 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
       if (isMin !== this.isMinimizedSignal()) {
         this.isMinimizedSignal.set(isMin);
       }
+    });
+    // Entering the Replay tab refreshes the aggregate — the tag list's
+    // "still capturing" state must be fresh (it gates the replay flow).
+    effect(() => {
+      if (this.activeTabIndex() === 2) this.loadAggregate();
     });
   }
 
@@ -554,6 +599,78 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   /** The protocol link_type of a link (`'ethernet'` / `'serial'`; defaults to ethernet). */
   linkTypeOf(linkId: string): string {
     return this.linksDataSource.get(linkId)?.link_type ?? 'ethernet';
+  }
+
+  /** Public link display name for templates (Replay tab's pause panel). */
+  linkLabel(linkId: string): string {
+    return this.linkName(linkId);
+  }
+
+  // ---- tag replay (Replay tab) ----
+
+  /**
+   * Replay button per tag. Tags with no capturing markers replay immediately;
+   * tags with any still-enabled marker expand the inline "pause all & replay"
+   * panel instead (the server's tag gate would 409 otherwise).
+   */
+  startReplayFor(row: TagRow): void {
+    if (this.pausingTag() !== null) return;
+    if (row.enabled.length > 0) {
+      this.pausePanelTag.set(this.pausePanelTag() === row.tag ? null : row.tag);
+      return;
+    }
+    this.pausePanelTag.set(null);
+    this.startReplay.emit(row.tag);
+  }
+
+  /**
+   * One-click "pause every marker under the tag, then replay". Two pause paths:
+   * inherited copies are project-level rules the server REFUSES to write
+   * per-link, so they pause once via their source definition
+   * ({@link MarkerService.pauseDefinition} toggles off every fanned-out copy);
+   * private markers pause per-link via {@link MarkerService.setEnabled} (the
+   * controller's fast path — no NIO rebuild). Then refresh both lists and hand
+   * the tag to the replay overlay.
+   */
+  pauseAllAndReplay(row: TagRow): void {
+    const controller = this.controller();
+    const project = this.project();
+    if (!controller || !project || this.pausingTag() !== null || row.enabled.length === 0) return;
+    this.pausingTag.set(row.tag);
+
+    // Distinct definitions behind the still-enabled inherited copies — one
+    // pause call each, however many links the rule fanned out to (idempotent;
+    // every copy of a definition carries its tag, so nothing outside this tag
+    // is touched). Private markers go one-by-one through the per-link path.
+    const definitions = new Set(
+      row.enabled.filter((m) => m.inherited_from).map((m) => m.inherited_from!)
+    );
+    const privates = row.enabled.filter((m) => !m.inherited_from);
+    forkJoin([
+      ...[...definitions].map((name) =>
+        this.markerService.pauseDefinition(controller, project.project_id, name)
+      ),
+      ...privates.map((m) =>
+        this.markerService.setEnabled(controller, project.project_id, m.link_id, m.name, false)
+      ),
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.pausingTag.set(null);
+          this.pausePanelTag.set(null);
+          this.toasterService.success(`Paused ${row.enabled.length} marker(s) under tag ${row.tag}.`);
+          this.loadAggregate();
+          this.loadDefinitions(); // the definitions' `paused` flags changed too
+          this.startReplay.emit(row.tag);
+        },
+        error: (err) => {
+          this.pausingTag.set(null);
+          const message = err.error?.message || err.message || 'Failed to pause markers';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   // ---- definitions CRUD ----

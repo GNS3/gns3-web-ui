@@ -413,6 +413,17 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.template-menu 
   fill: var(--mat-sys-primary);
 }
 
+/* Marker tag replay: persistent highlight on the current frame's source link
+   (toggled by MarkerReplayService while the replay overlay is open). Tertiary
+   distinguishes it from the live .marker-pulse (primary); the two can coexist
+   on one link — the flash's inline stroke wins while it lasts. */
+.ethernet_link.marker-replay-active,
+.serial_link.marker-replay-active {
+  transition: none;
+  stroke: var(--mat-sys-tertiary);
+  stroke-width: 5px;
+}
+
 /* =============================================
 // Curviness Anchor (Link Drag Handle)
 // ============================================= */
