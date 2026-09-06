@@ -772,16 +772,20 @@ button.templates-page__action--delete {
   }
 }
 
-.templates-page__description p {
-  margin: 8px 0 0;
-  padding: 10px 12px;
+.templates-page__description app-markdown-viewer {
+  // Card shell for the rendered markdown; typography itself comes from the
+  // global app-markdown-viewer styles, personalized here via the
+  // --markdown-viewer-* tokens. Padding is slim because the global paragraph
+  // margin (8px) completes the visual inset inside the card.
+  display: block;
+  margin-top: 8px;
+  padding: 2px 12px;
   border-radius: 10px;
-  color: var(--mat-sys-on-surface);
   background: var(--mat-sys-surface-container-low);
-  font-size: 13px;
-  line-height: 1.5;
-  white-space: pre-wrap;
   overflow-wrap: anywhere;
+  --markdown-viewer-font-size: 13px;
+  --markdown-viewer-line-height: 1.5;
+  --markdown-viewer-heading-scale: 0.85;
 }
 
 .templates-page__detail-row {

@@ -447,7 +447,7 @@
           @if (template.usage) {
           <section class="templates-page__description">
             <span>Description</span>
-            <p>{{ template.usage }}</p>
+            <app-markdown-viewer [data]="template.usage" />
           </section>
           }
 

@@ -20,6 +20,7 @@ import { ControllerService } from '@services/controller.service';
 import { SymbolService } from '@services/symbol.service';
 import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
+import { MarkdownViewerComponent } from '../../common/markdown-viewer/markdown-viewer.component';
 import { CopyTemplateDialogComponent, CopyTemplateDialogData } from './common/copy-template-dialog/copy-template-dialog.component';
 import { DeleteTemplateComponent } from './common/delete-template-component/delete-template.component';
 
@@ -63,6 +64,7 @@ type TemplateListItem = Template &
     MatTableModule,
     MatTooltipModule,
     DeleteTemplateComponent,
+    MarkdownViewerComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
