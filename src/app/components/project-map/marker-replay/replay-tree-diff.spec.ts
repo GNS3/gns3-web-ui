@@ -2,32 +2,30 @@ import { describe, it, expect } from 'vitest';
 import { ProtocolTreeNode } from '@models/marker-replay';
 import { diffTrees, ancestorPaths } from './replay-tree-diff';
 
-/** Minimal IPv4-ish tree: proto › leaves, plus one hidden combination field. */
+/**
+ * Minimal IPv4-ish sharkd tree: proto › leaves. `label` is both the display
+ * text and the comparison value — there is no separate hex/value layer.
+ */
 const hopTree = (ttl: string, srcMac: string): ProtocolTreeNode[] => [
   {
     element: 'proto',
     name: 'eth',
-    showname: 'Ethernet II',
-    children: [
-      // value (hex) tracks srcMac — the diff compares value first, so a
-      // display-only `show` drift must NOT count as a packet change.
-      { element: 'field', name: 'eth.src', showname: `Source: ${srcMac}`, show: srcMac, value: srcMac.split(':').join(''), children: [] },
-      { element: 'field', name: 'eth.addr', showname: 'combo', hide: 'yes', children: [] },
-    ],
+    label: 'Ethernet II',
+    children: [{ element: 'field', name: 'eth.src', label: `Source: ${srcMac}`, children: [] }],
   },
   {
     element: 'proto',
     name: 'ip',
-    showname: 'Internet Protocol Version 4',
+    label: 'Internet Protocol Version 4',
     children: [
-      { element: 'field', name: 'ip.ttl', showname: `Time to Live: ${ttl}`, show: ttl, value: ttl === '64' ? '40' : '3f', children: [] },
-      { element: 'field', name: 'ip.src', showname: 'Source: 10.0.0.1', show: '10.0.0.1', value: '0a000001', children: [] },
+      { element: 'field', name: 'ip.ttl', label: `Time to Live: ${ttl}`, children: [] },
+      { element: 'field', name: 'ip.src', label: 'Source: 10.0.0.1', children: [] },
     ],
   },
 ];
 
 describe('diffTrees', () => {
-  it('flags only the leaves whose values differ across trees', () => {
+  it('flags only the leaves whose labels differ across trees', () => {
     const changed = diffTrees([hopTree('64', 'aa:aa'), hopTree('63', 'aa:aa'), hopTree('62', 'aa:aa')]);
     // Same packet across hops: TTL decrements, everything else identical.
     expect(changed.has('ip/ip.ttl')).toBe(true);
@@ -55,8 +53,8 @@ describe('diffTrees', () => {
       {
         element: 'proto',
         name: 'vlan',
-        showname: '802.1Q',
-        children: [{ element: 'field', name: 'vlan.id', showname: 'ID: 10', show: '10', children: [] }],
+        label: '802.1Q Virtual LAN',
+        children: [{ element: 'field', name: 'vlan.id', label: 'ID: 10', children: [] }],
       },
     ];
     const changed = diffTrees([hopTree('64', 'aa:aa'), withVlan]);
@@ -65,16 +63,18 @@ describe('diffTrees', () => {
     expect(changed.has('ip/ip.ttl')).toBe(false);
   });
 
-  it('ignores hidden (filter-combination) fields, matching the renderer', () => {
-    const changed = diffTrees([hopTree('64', 'aa:aa'), hopTree('63', 'bb:bb')]);
-    expect(changed.has('eth/eth.addr')).toBe(false);
-  });
-
-  it('display-only drift (same hex value) is not a packet change', () => {
-    const a = hopTree('64', 'aa:aa');
-    const b = hopTree('64', 'aa:aa');
-    b[0].children![0].showname = 'Source: resolved-host.example'; // same value hex
-    expect(diffTrees([a, b]).size).toBe(0);
+  it('never descends into undisplayed plumbing protos (geninfo)', () => {
+    const withPlumbing = (v: string): ProtocolTreeNode[] => [
+      ...hopTree('64', 'aa:aa'),
+      {
+        element: 'proto',
+        name: 'geninfo',
+        label: 'General information',
+        children: [{ element: 'field', name: 'num', label: `Number: ${v}`, children: [] }],
+      },
+    ];
+    const changed = diffTrees([withPlumbing('1'), withPlumbing('2')]);
+    expect(changed.has('geninfo/num')).toBe(false);
   });
 
   it('disambiguates repeated sibling names instead of colliding paths', () => {
@@ -82,17 +82,17 @@ describe('diffTrees', () => {
       {
         element: 'proto',
         name: 'tcp',
-        showname: 'TCP',
+        label: 'Transmission Control Protocol',
         children: [
-          { element: 'field', name: 'tcp.options', showname: 'A: 1', show: '1', children: [] },
-          { element: 'field', name: 'tcp.options', showname: 'B: 1', show: '1', children: [] },
+          { element: 'field', name: 'tcp.options', label: 'A: 1', children: [] },
+          { element: 'field', name: 'tcp.options', label: 'B: 1', children: [] },
         ],
       },
     ];
     // Only the SECOND tcp.options differs — the first must stay unchanged.
     const a = tree();
     const b = tree();
-    b[0].children![1].show = '2';
+    b[0].children![1].label = 'B: 2';
     const diff = diffTrees([a, b]);
     expect(diff.has('tcp/tcp.options[0]')).toBe(false);
     expect(diff.has('tcp/tcp.options[1]')).toBe(true);

@@ -1,0 +1,178 @@
+// Wireshark-style packet list: a monospace div-grid with a sticky column
+// header (the topology-summary table pattern — no mat-table, rows must stay
+// cheap enough for 5000-frame full mode).
+
+.gns3-replay__list {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+}
+
+.gns3-replay__list-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--mat-sys-surface);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  flex-shrink: 0;
+}
+
+// Back affordance while inside a materialized second.
+.gns3-replay__list-back {
+  display: block;
+  width: 100%;
+  padding: 3px 10px;
+  border: none;
+  background: var(--mat-sys-surface-container);
+  color: var(--mat-sys-primary);
+  font-size: 10px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high);
+  }
+}
+
+.gns3-replay__list-cols {
+  display: grid;
+  padding: 4px 10px 3px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+
+  &--frames {
+    grid-template-columns: 44px 76px minmax(150px, 1fr) 58px 42px minmax(110px, 2fr);
+    gap: 8px;
+  }
+
+  &--buckets {
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 8px;
+    padding-left: 54px;
+  }
+}
+
+.gns3-replay__list-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.gns3-replay__row {
+  display: grid;
+  grid-template-columns: 44px 76px minmax(150px, 1fr) 58px 42px minmax(110px, 2fr);
+  gap: 8px;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 10px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 11px;
+  color: var(--mat-sys-on-surface);
+  cursor: default;
+  outline: none;
+
+  &:hover {
+    background: var(--mat-sys-surface-container);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1px var(--mat-sys-primary);
+  }
+
+  // The Wireshark bg/fg inline colors bind null while selected — this class
+  // is the only color source then (see the component's rowBackground note).
+  &--selected {
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+}
+
+.gns3-replay__cell {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &--num,
+  &--len {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &--time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  &--proto {
+    font-weight: 600;
+  }
+}
+
+.gns3-replay__bucket-row {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 10px 0 54px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 11px;
+  color: var(--mat-sys-on-surface);
+  cursor: pointer;
+  outline: none;
+
+  &:hover {
+    background: var(--mat-sys-surface-container);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1px var(--mat-sys-primary);
+  }
+
+  &--current {
+    color: var(--mat-sys-primary);
+  }
+}
+
+.gns3-replay__bucket-barzone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.gns3-replay__bucket-bar {
+  height: 6px;
+  border-radius: 2px;
+  background: var(--mat-sys-outline-variant);
+  flex-shrink: 0;
+}
+
+.gns3-replay__bucket-row--current .gns3-replay__bucket-bar {
+  background: var(--mat-sys-primary);
+}
+
+.gns3-replay__bucket-count {
+  font-size: 10px;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+}
+
+.gns3-replay__list-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.gns3-replay__list-spinner {
+  flex-shrink: 0;
+}

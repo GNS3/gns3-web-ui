@@ -3,7 +3,7 @@ import { ProtocolTreeNode } from '@models/marker-replay';
 /**
  * Pure helpers for the flat (non-recursive) protocol-tree renderer.
  *
- * The decoded PDML tree is immutable per frame, so rows are derived state:
+ * The decoded sharkd tree is immutable per frame, so rows are derived state:
  * a depth-first flattening that only descends into nodes whose key sits in
  * the caller's expansion set. Keeping this pure makes collapse/expand,
  * "expand all" and selection trivial signal updates in the component — no
@@ -25,20 +25,18 @@ export interface FlatRow {
   hasChildren: boolean;
 }
 
-/** Row text: the showname, else `name: show`, else the bare name. */
+/** Row text: sharkd's single display label. */
 export function rowText(n: ProtocolTreeNode): string {
-  return n.showname ?? (n.show !== undefined ? `${n.name}: ${n.show}` : n.name);
+  return n.label;
 }
 
 /**
- * Case-insensitive search haystack for a row: the field NAME plus its
- * displayed text (showname, else show) — so both literals ("Time to Live:
- * 64") and field names ("ttl") find their row. The raw hex `value` is
- * deliberately excluded: a query like "40" would light up half the hex
- * column; Wireshark's find-in-details matches displayed text too.
+ * Case-insensitive search haystack for a row: the field NAME plus its display
+ * label — so both literals ("Time to Live: 64") and field names ("ttl") find
+ * their row. Wireshark's find-in-details matches displayed text too.
  */
 export function rowSearchText(n: ProtocolTreeNode): string {
-  return `${n.name} ${n.showname ?? n.show ?? ''}`.toLowerCase();
+  return `${n.name} ${n.label}`.toLowerCase();
 }
 
 /** Row keys of every ancestor ("/0/1/0" → ["/0/1", "/0"]) — reveal set for search. */
@@ -53,32 +51,28 @@ export function ancestorKeys(key: string): string[] {
   }
 }
 
-/** Hover context: raw field name, show/value attributes, byte range. */
+/** Hover context: display label, ready filter expression, byte range. */
 export function rowTooltip(n: ProtocolTreeNode): string {
-  const parts = [n.show ?? '', n.value ?? ''].filter(Boolean);
-  let text = parts.length ? `${n.name} · ${parts.join(' · ')}` : n.showname || n.name;
+  let text = n.label || n.name;
+  if (n.filter_expr) text += `  ·  ${n.filter_expr}`;
   if (n.pos !== undefined && n.size !== undefined) text += `  [${n.pos}+${n.size}]`;
   return text;
 }
 
 /**
- * Protos tshark emits as PDML plumbing that Wireshark's GUI never displays
- * (`geninfo` duplicates the `frame` proto's Number/Length/Time fields).
+ * Protos the tshark-era PDML emitted as plumbing that Wireshark's GUI never
+ * displays (`geninfo` duplicates the `frame` proto's Number/Length/Time
+ * fields). sharkd's tree is the GUI tree and should never carry them — the
+ * guard stays as harmless insurance against engine changes.
  */
 const UNDISPLAYED_PROTOS = new Set(['geninfo']);
 
 /**
- * Whether a node renders at all. tshark marks filter-only combination fields
- * (`ip.addr`, `ip.host`, `eth.addr`, OUI, resolved duplicates…) with
- * `hide="yes"` — Wireshark hides them, so we do too. "true" is tolerated for
- * robustness; missing/other values display.
+ * Whether a node renders at all. The sharkd tree carries no `hide` attribute
+ * (it is already the GUI tree), so only the plumbing-proto guard remains.
  */
 export function isHidden(n: ProtocolTreeNode): boolean {
-  return (
-    n.hide === 'yes' ||
-    n.hide === 'true' ||
-    (n.element === 'proto' && UNDISPLAYED_PROTOS.has(n.name))
-  );
+  return n.element === 'proto' && UNDISPLAYED_PROTOS.has(n.name);
 }
 
 /** Direct children that render — hidden filter-combination noise is dropped. */

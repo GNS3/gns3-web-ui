@@ -1,0 +1,81 @@
+// Shared resize-handle styles for the replay floating windows (main window
+// and pinned comparison windows). Consumed via `@use` from each component's
+// SCSS so the rules land inside BOTH components' style encapsulation.
+
+// ---- resize handles: entirely OUTSIDE the window ----
+
+// Zero inward reach, on purpose: handles overlapping INTO the window would sit
+// right across the content scrollbar's thumb zone (the cursor would flip to
+// ew-resize over it and drags would resize instead of scroll). Resizing lives
+// wholly beyond the borders. Trade-offs accepted: a window clamped hard
+// against a viewport edge loses that side's handle (grab another edge), and
+// snapped neighbours share the 12px seam gutter.
+.gns3-replay__resize-handle {
+  position: absolute;
+  z-index: 100;
+  background: transparent;
+
+  &--top {
+    top: -10px;
+    left: 12px;
+    right: 12px;
+    height: 10px;
+    cursor: ns-resize;
+  }
+
+  &--right {
+    top: 12px;
+    right: -10px;
+    bottom: 12px;
+    width: 10px;
+    cursor: ew-resize;
+  }
+
+  &--bottom {
+    bottom: -10px;
+    left: 12px;
+    right: 12px;
+    height: 10px;
+    cursor: ns-resize;
+  }
+
+  &--left {
+    top: 12px;
+    left: -10px;
+    bottom: 12px;
+    width: 10px;
+    cursor: ew-resize;
+  }
+
+  &--top-left {
+    top: -16px;
+    left: -16px;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+  }
+
+  &--top-right {
+    top: -16px;
+    right: -16px;
+    width: 16px;
+    height: 16px;
+    cursor: nesw-resize;
+  }
+
+  &--bottom-left {
+    bottom: -16px;
+    left: -16px;
+    width: 16px;
+    height: 16px;
+    cursor: nesw-resize;
+  }
+
+  &--bottom-right {
+    bottom: -16px;
+    right: -16px;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+  }
+}

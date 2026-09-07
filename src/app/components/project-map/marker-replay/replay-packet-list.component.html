@@ -1,0 +1,77 @@
+<div class="gns3-replay__list">
+  <!-- Sticky header: Wireshark column rail; in a materialized second a back
+       affordance sits above it. -->
+  <div class="gns3-replay__list-head">
+    @if (svc.inWindow()) {
+      <button class="gns3-replay__list-back" (click)="svc.exitWindow()">
+        ‹ All seconds · second {{ (svc.currentBucketIndex() ?? 0) + 1 }} / {{ svc.buckets().length }}
+      </button>
+    }
+    @if (svc.browsingFrames()) {
+      <div class="gns3-replay__list-cols gns3-replay__list-cols--frames">
+        <span>#</span>
+        <span>Time</span>
+        <span>Source → Destination</span>
+        <span>Proto</span>
+        <span>Len</span>
+        <span>Info</span>
+      </div>
+    } @else {
+      <div class="gns3-replay__list-cols gns3-replay__list-cols--buckets">
+        <span>Time</span>
+        <span>Frames per second</span>
+      </div>
+    }
+  </div>
+
+  <div class="gns3-replay__list-scroll">
+    @if (svc.browsingFrames()) {
+      @for (f of svc.frames(); track trackFrame($index, f); let i = $index) {
+        <div
+          class="gns3-replay__row"
+          [class.gns3-replay__row--selected]="i === svc.currentFrameIndex()"
+          [style.background]="rowBackground(f, i === svc.currentFrameIndex())"
+          [style.color]="rowColor(f, i === svc.currentFrameIndex())"
+          role="row"
+          tabindex="0"
+          (click)="svc.setCurrentIndex(i)"
+          (keydown)="onRowKey($event, i)"
+          [title]="f.info ?? ''"
+        >
+          <span class="gns3-replay__cell gns3-replay__cell--num">{{ f.frame_number }}</span>
+          <span class="gns3-replay__cell gns3-replay__cell--time">{{ frameTime(f.ts) }}</span>
+          <span class="gns3-replay__cell gns3-replay__cell--addr">{{ addressLabel(f) }}</span>
+          <span class="gns3-replay__cell gns3-replay__cell--proto">{{ f.proto ?? '—' }}</span>
+          <span class="gns3-replay__cell gns3-replay__cell--len">{{ f.len }}</span>
+          <span class="gns3-replay__cell gns3-replay__cell--info">{{ f.info ?? '' }}</span>
+        </div>
+      }
+    } @else {
+      @for (b of svc.buckets(); track b.ts; let i = $index) {
+        <div
+          class="gns3-replay__bucket-row"
+          [class.gns3-replay__bucket-row--current]="i === svc.currentBucketIndex() && svc.materializing()"
+          role="row"
+          tabindex="0"
+          (click)="svc.setCurrentBucket(i)"
+        >
+          <span class="gns3-replay__cell gns3-replay__cell--time">{{ frameTime(b.ts) }}</span>
+          <span class="gns3-replay__bucket-barzone">
+            <span class="gns3-replay__bucket-bar" [style.width.px]="bucketBarWidth(b)"></span>
+            @if (i === svc.currentBucketIndex()) {
+              <span class="gns3-replay__bucket-count">{{ b.count }}</span>
+            }
+          </span>
+        </div>
+      }
+      @if (svc.materializing()) {
+        <div class="gns3-replay__list-hint">
+          <mat-spinner class="gns3-replay__list-spinner" [diameter]="16"></mat-spinner>
+          <span>Loading second…</span>
+        </div>
+      } @else if (svc.emptySecond()) {
+        <div class="gns3-replay__list-hint">No frames in this second</div>
+      }
+    }
+  </div>
+</div>

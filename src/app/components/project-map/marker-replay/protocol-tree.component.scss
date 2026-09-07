@@ -204,3 +204,52 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+// "Apply as filter" per-row button (sharkd's ready-made filter_expr) — the
+// tree-tool ghost recipe at 18px, quiet (45% opacity) until hovered.
+.gns3-replay__tree-filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  margin-left: 4px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.45;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 1;
+    background: var(--mat-sys-surface-container);
+  }
+
+  mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+  }
+}
+
+// Protocol-added (computed) fields — Wireshark renders them italic. The
+// accent row states (selected/changed/match) keep their own text colour:
+// a span-level colour would out-rank the state's row-level one.
+.gns3-replay__tree-row--generated {
+  .gns3-replay__tree-text {
+    font-style: italic;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &.gns3-replay__tree-row--selected,
+  &.gns3-replay__tree-row--changed,
+  &.gns3-replay__tree-row--match,
+  &.gns3-replay__tree-row--match-current {
+    .gns3-replay__tree-text {
+      color: inherit;
+    }
+  }
+}

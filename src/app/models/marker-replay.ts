@@ -24,6 +24,21 @@ export interface ReplayFrame {
   marker: string;
   /** 1-based record number inside the source pcap. */
   frame_number: number;
+  /**
+   * Wireshark list-column summaries (sharkd engine). `src`/`dst` fall back to
+   * the layer-2 address for non-IP traffic, same as Wireshark's columns.
+   */
+  src?: string | null;
+  dst?: string | null;
+  proto?: string | null;
+  info?: string | null;
+  /**
+   * Wireshark coloring-rule row colors, hex WITHOUT the '#' prefix
+   * ("fff3d6"). Runtime DATA colors — applied via inline `[style]` bindings
+   * (`'#' + bg`), not SCSS, so the hardcoded-color rule never applies.
+   */
+  bg?: string | null;
+  fg?: string | null;
 }
 
 /** Per-source stats from the range response (one entry per marker under the tag). */
@@ -65,21 +80,24 @@ export interface ReplayFramesResponse {
 }
 
 /**
- * PDML-isomorphic protocol tree node. `element` distinguishes `<proto>` from
- * `<field>`; every other key mirrors a PDML attribute and EVERY value stays a
- * string — numeric interpretation is client-side business only.
+ * Protocol tree node decoded by the server's sharkd engine. `element`
+ * distinguishes protocol rows from field rows; `label` is the single display
+ * text (Wireshark-style) and `filter_expr` a ready-made display filter for the
+ * field ("ip.ttl == 64" — click-to-filter). Every attribute except `generated`
+ * stays a string — numeric interpretation is client-side business only.
  */
 export interface ProtocolTreeNode {
   element: 'proto' | 'field';
   name: string;
-  showname: string;
-  show?: string;
-  value?: string;
+  label: string;
+  /** Ready display-filter expression addressing this field with its value. */
+  filter_expr?: string;
   size?: string;
   pos?: string;
-  hide?: string;
-  mask?: string;
-  unmaskedvalue?: string;
+  /** Expert-info severity name ("Chat"/"Warn"/"Error") when present. */
+  expert?: string;
+  /** Protocol-added (computed) field — Wireshark shows these italic. */
+  generated?: boolean;
   children?: ProtocolTreeNode[];
 }
 
@@ -92,7 +110,6 @@ export interface ReplayFrameDetail {
     marker: string;
     frame_number: number;
   };
-  tshark_version: string;
   /** Mapped node count — client-side sanity check against `tree`. */
   field_count: number;
   /** Raw frame bytes (hex). Not rendered in v1; kept for the future hex view. */
@@ -107,7 +124,7 @@ export type DetailState =
   | { status: 'ok'; detail: ReplayFrameDetail }
   | {
       status: 'error';
-      /** `unavailable` = 501/502 (tshark), `missing` = 404 (stale ts), `network` = transport. */
+      /** `unavailable` = 501/502 (sharkd missing/failed), `missing` = 404 (stale ts), `network` = transport. */
       kind: 'unavailable' | 'missing' | 'network';
       message: string;
       frame: ReplayFrame;

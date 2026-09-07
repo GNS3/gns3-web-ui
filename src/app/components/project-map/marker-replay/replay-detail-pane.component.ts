@@ -1,0 +1,108 @@
+import { ChangeDetectionStrategy, Component, computed, inject, input, model, output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+import { MarkerReplayService } from '@services/marker-replay.service';
+import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { DetailState, ReplayFrame } from '@models/marker-replay';
+import { formatDelta, formatFrameTime } from './replay-timeline-math';
+import { ProtocolTreeComponent } from './protocol-tree.component';
+
+/**
+ * The shared packet-detail BODY (Wireshark's details pane): protocol crumbs,
+ * metadata chips and the decoded tree with its state machine. Purely
+ * presentational — hosts own the lifecycle:
+ *
+ *  - the main replay window's RIGHT pane (live: `svc.detail()`,
+ *    `svc.currentFrame()`);
+ *  - every pinned comparison window (its own frozen frame + detail state).
+ *
+ * Recovery actions are OUTPUTS so each host decides what "retry"/"recover"
+ * means (live: re-fire the pipeline / reload the timeline; a pin: retry its
+ * decode / close a stale snapshot). The find-in-packet query stays TWO-WAY
+ * bound to the session-shared signal, and the tree's per-row
+ * "Apply as filter" clicks bubble upward the same way.
+ */
+@Component({
+  selector: 'app-replay-detail-pane',
+  templateUrl: './replay-detail-pane.component.html',
+  styleUrl: './replay-detail-pane.component.scss',
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatTooltipModule, MatProgressSpinnerModule, ProtocolTreeComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ReplayDetailPaneComponent {
+  /** The frame this pane describes (the live cursor's, or a pin's frozen one). */
+  readonly frame = input.required<ReplayFrame>();
+  /** The detail lifecycle to render (live: shared; pin: its own). */
+  readonly state = input.required<DetailState>();
+  /** Cross-window diff paths; null when there is nothing to compare against. */
+  readonly changedPaths = input<ReadonlySet<string> | null>(null);
+  /** Stale-ts (404) recovery: reload the timeline (live) or close the snapshot (pin). */
+  readonly missingAction = input<'reload' | 'close'>('reload');
+
+  /** Shared find-in-packet query — bound to the session signal at every host. */
+  readonly searchQuery = model('');
+  /** Re-fire the decode (live pipeline or the pin's own). */
+  readonly retry = output<void>();
+  /** Stale-ts recovery (host decides: reload timeline / unpin). */
+  readonly reload = output<void>();
+  /** A tree field's ready-made display filter (Wireshark's Apply as Filter). */
+  readonly applyFilter = output<string>();
+
+  private readonly svc = inject(MarkerReplayService);
+  private readonly linksDataSource = inject(LinksDataSource);
+  private readonly nodesDataSource = inject(NodesDataSource);
+
+  readonly detailOk = computed(() => {
+    const d = this.state();
+    return d.status === 'ok' ? d : null;
+  });
+  readonly detailError = computed(() => {
+    const d = this.state();
+    return d.status === 'error' ? d : null;
+  });
+  readonly errorMessage = computed(() => {
+    const d = this.state();
+    if (d.status !== 'error') return '';
+    if (d.kind === 'unavailable') return 'Frame detail unavailable — the sharkd engine is not usable on this server.';
+    if (d.kind === 'missing') return 'Frame data is stale — the capture may have been rebuilt.';
+    return d.message;
+  });
+  readonly missingLabel = computed(() => (this.missingAction() === 'close' ? 'Close' : 'Reload timeline'));
+
+  /** Protocol chain for the crumbs row (ETH › IPV4 › TCP …) once decoded. */
+  readonly breadcrumb = computed(() => {
+    const ok = this.detailOk();
+    // Skip plumbing (`geninfo`) and the capture-metadata `frame` proto — the
+    // crumbs are the network-protocol chain, like Wireshark's protocol column.
+    return ok
+      ? ok.detail.tree
+          .filter((n) => n.element === 'proto' && n.name !== 'geninfo' && n.name !== 'frame')
+          .map((n) => n.name.toUpperCase())
+      : [];
+  });
+
+  frameTime(ts: string): string {
+    return formatFrameTime(ts);
+  }
+
+  deltaLabel(ts: string): string {
+    const frames = this.svc.frames();
+    return frames.length ? formatDelta(ts, frames[0].ts) : '';
+  }
+
+  /** Link display name ("A → B", cf. marker-manager's linkName). */
+  linkLabel(linkId: string): string {
+    const link = this.linksDataSource.get(linkId);
+    const nodes = link?.nodes;
+    if (!nodes || nodes.length < 2) return linkId.slice(0, 8);
+    const src = this.nodesDataSource.get(nodes[0].node_id);
+    const dst = this.nodesDataSource.get(nodes[1].node_id);
+    if (!src || !dst) return linkId.slice(0, 8);
+    return `${src.name} → ${dst.name}`;
+  }
+}

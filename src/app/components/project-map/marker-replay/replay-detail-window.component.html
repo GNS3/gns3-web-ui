@@ -1,19 +1,17 @@
-@if (activeFrame(); as frame) {
 <!-- Full-viewport leader-line overlay: a plain "this window describes this
-     link" callout — dot at the link end, NOT a traffic-direction arrow. The
-     LIVE window's line is outline grey; a PINNED snapshot's is primary (same
-     family as its --snapshot border), keeping the window→hop association
-     visible while the snapshots sit in the dock row. -->
+     link" callout — dot at the link end, NOT a traffic-direction arrow. A
+     PINNED snapshot's line is primary (same family as its --snapshot border),
+     keeping the window→hop association visible while the snapshots sit in the
+     dock row. -->
 @if (anchored() && leader(); as l) {
-<svg class="gns3-replay__leader" [class.gns3-replay__leader--pin]="!isLive()" [style.z-index]="zVal()">
+<svg class="gns3-replay__leader gns3-replay__leader--pin" [style.z-index]="zVal()">
   <line class="gns3-replay__leader-line" [attr.x1]="l.x1" [attr.y1]="l.y1" [attr.x2]="l.x2" [attr.y2]="l.y2"></line>
   <circle class="gns3-replay__leader-dot" [attr.cx]="l.x2" [attr.cy]="l.y2" r="4"></circle>
 </svg>
 }
 
 <div
-  class="gns3-replay__window"
-  [class.gns3-replay__window--snapshot]="!isLive()"
+  class="gns3-replay__window gns3-replay__window--snapshot"
   [class.gns3-replay__window--unanchored]="!anchored()"
   [class.gns3-replay__window--resizing]="resizing()"
   [class.gns3-replay__window--dragging]="dragging()"
@@ -39,93 +37,38 @@
   <div class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
 
   <div class="gns3-replay__window-header" (mousedown)="onHeaderMouseDown($event)">
-    <mat-icon class="gns3-replay__window-icon">{{ isLive() ? 'frame_inspect' : 'push_pin' }}</mat-icon>
-    <span class="gns3-replay__window-title">{{ frame.marker }}</span>
-    <span class="gns3-replay__window-frame">#{{ frame.frame_number }}</span>
+    <mat-icon class="gns3-replay__window-icon">push_pin</mat-icon>
+    <span class="gns3-replay__window-title">{{ pinned().frame.marker }}</span>
+    <span class="gns3-replay__window-frame">#{{ pinned().frame.frame_number }}</span>
     @if (dragPinned()) {
       <button
         class="gns3-replay__window-reanchor"
-        [matTooltip]="isLive() ? 'Dragged — click to re-anchor beside the link' : 'Dragged — click to return to the comparison row'"
+        matTooltip="Dragged — click to return to the comparison row"
         (click)="reanchor()"
       >
         <mat-icon>anchor</mat-icon>
       </button>
     }
-    @if (isLive()) {
-      <button
-        class="gns3-replay__window-reanchor gns3-replay__window-pin"
-        [class.gns3-replay__window-reanchor--disabled]="alreadyPinned()"
-        [disabled]="alreadyPinned()"
-        [matTooltip]="alreadyPinned() ? 'Already pinned for comparison' : 'Freeze this frame into a comparison window'"
-        (click)="pinCurrent()"
-      >
-        <mat-icon>push_pin</mat-icon>
-      </button>
-    } @else {
-      <button
-        class="gns3-replay__window-reanchor gns3-replay__window-close"
-        matTooltip="Close this comparison window"
-        (click)="unpinCurrent()"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    }
+    <button
+      class="gns3-replay__window-reanchor gns3-replay__window-close"
+      matTooltip="Close this comparison window"
+      (click)="unpinCurrent()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
     @if (!anchored()) {
       <span class="gns3-replay__window-hint" matTooltip="This frame's link is not on the map">unanchored</span>
     }
   </div>
 
-  @if (breadcrumb().length) {
-    <div class="gns3-replay__crumbs">
-      @for (c of breadcrumb(); track $index) {
-        @if (!$first) {
-          <span class="gns3-replay__crumb-sep">›</span>
-        }
-        <span class="gns3-replay__crumb">{{ c }}</span>
-      }
-    </div>
-  }
-
-  <div class="gns3-replay__meta-chips">
-    <span class="gns3-replay__chip">{{ frameTime(frame.ts) }}</span>
-    @if (deltaLabel(frame.ts); as delta) {
-      <span class="gns3-replay__chip">{{ delta }}</span>
-    }
-    <span class="gns3-replay__chip">{{ frame.len }} B</span>
-    <span class="gns3-replay__chip">{{ linkLabel(frame.link_id) }}</span>
-  </div>
-
-  <div class="gns3-replay__window-body">
-    @if (detailState().status === 'loading') {
-      <div class="gns3-replay__detail-state">
-        <mat-spinner class="gns3-replay__detail-spinner" [diameter]="20"></mat-spinner>
-        <span>Decoding frame…</span>
-      </div>
-    } @else if (detailOk(); as ok) {
-      <app-protocol-tree [tree]="ok.detail.tree" [changedPaths]="changedPaths()" [(searchQuery)]="svc.searchQuery" />
-    } @else if (detailError(); as err) {
-      <div class="gns3-replay__detail-error">
-        <span>{{ errorMessage() }}</span>
-        <div class="gns3-replay__detail-error-actions">
-          <!-- Live window: a 404 means the capture was rebuilt — the timeline
-               reload re-syncs everything. A pinned snapshot can't recover from
-               a stale ts, so it just closes. -->
-          @if (err.kind === 'missing') {
-            @if (isLive()) {
-              <button mat-stroked-button (click)="svc.reloadTimeline()">Reload timeline</button>
-            } @else {
-              <button mat-stroked-button (click)="unpinCurrent()">Close</button>
-            }
-          } @else {
-            <button mat-stroked-button (click)="isLive() ? svc.retryDetail() : retryCurrentPin()">Retry</button>
-          }
-        </div>
-      </div>
-    } @else {
-      <div class="gns3-replay__detail-state">
-        <span>{{ isLive() ? 'Scroll the timeline and settle on a frame to decode it.' : 'Decoding did not run — Retry.' }}</span>
-      </div>
-    }
-  </div>
+  <app-replay-detail-pane
+    [frame]="pinned().frame"
+    [state]="pinned().state"
+    [changedPaths]="changedPaths()"
+    missingAction="close"
+    [(searchQuery)]="svc.searchQuery"
+    (reload)="unpinCurrent()"
+    (retry)="retryCurrentPin()"
+    (applyFilter)="onPaneApplyFilter($event)"
+  />
 </div>
-}

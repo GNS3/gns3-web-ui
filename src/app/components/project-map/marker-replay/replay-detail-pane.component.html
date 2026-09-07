@@ -1,0 +1,53 @@
+<!-- The host guarantees a frame exists (@if guards instantiation). -->
+@if (breadcrumb().length) {
+  <div class="gns3-replay__crumbs">
+    @for (c of breadcrumb(); track $index) {
+      @if (!$first) {
+        <span class="gns3-replay__crumb-sep">›</span>
+      }
+      <span class="gns3-replay__crumb">{{ c }}</span>
+    }
+  </div>
+}
+
+<div class="gns3-replay__meta-chips">
+  <span class="gns3-replay__chip">{{ frameTime(frame().ts) }}</span>
+  @if (deltaLabel(frame().ts); as delta) {
+    <span class="gns3-replay__chip">{{ delta }}</span>
+  }
+  <span class="gns3-replay__chip">{{ frame().len }} B</span>
+  <span class="gns3-replay__chip">{{ linkLabel(frame().link_id) }}</span>
+</div>
+
+<div class="gns3-replay__pane-body">
+  @if (state().status === 'loading') {
+    <div class="gns3-replay__detail-state">
+      <mat-spinner class="gns3-replay__detail-spinner" [diameter]="20"></mat-spinner>
+      <span>Decoding frame…</span>
+    </div>
+  } @else if (detailOk(); as ok) {
+    <app-protocol-tree
+      [tree]="ok.detail.tree"
+      [changedPaths]="changedPaths()"
+      [(searchQuery)]="searchQuery"
+      (applyFilter)="applyFilter.emit($event)"
+    />
+  } @else if (detailError(); as err) {
+    <div class="gns3-replay__detail-error">
+      <span>{{ errorMessage() }}</span>
+      <div class="gns3-replay__detail-error-actions">
+        <!-- Stale ts (404): the capture was rebuilt. A live pane re-syncs via a
+             timeline reload; a pinned snapshot cannot recover and closes. -->
+        @if (err.kind === 'missing') {
+          <button mat-stroked-button (click)="reload.emit()">{{ missingLabel() }}</button>
+        } @else {
+          <button mat-stroked-button (click)="retry.emit()">Retry</button>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="gns3-replay__detail-state">
+      <span>No frame decoded yet.</span>
+    </div>
+  }
+</div>

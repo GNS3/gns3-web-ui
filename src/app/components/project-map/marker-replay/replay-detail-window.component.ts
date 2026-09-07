@@ -12,22 +12,17 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Subscription } from 'rxjs';
 import { select } from 'd3-selection';
 import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
 
-import { MarkerReplayService, sameReplayFrame } from '@services/marker-replay.service';
+import { MarkerReplayService } from '@services/marker-replay.service';
 import { MapScaleService } from '@services/mapScale.service';
 import { MapSettingsService } from '@services/mapsettings.service';
-import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
-import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { PinnedDetail } from '@models/marker-replay';
-import { formatDelta, formatFrameTime } from './replay-timeline-math';
-import { clusterAppend, DOCK_TILE_H, DOCK_TILE_W, dockSlot, placeWindow, snapRect } from './replay-geometry';
-import { ProtocolTreeComponent } from './protocol-tree.component';
+import { clampRect, clusterAppend, DOCK_TILE_H, DOCK_TILE_W, dockSlot, snapRect } from './replay-geometry';
+import { ReplayDetailPaneComponent } from './replay-detail-pane.component';
 
 /** Leader-line endpoint pair in viewport px (window edge → link anchor). */
 interface Leader {
@@ -38,62 +33,45 @@ interface Leader {
 }
 
 /**
- * A frame's detail window — instantiated twice over:
- *  - LIVE (no {@link pinned} input): follows the timeline cursor
- *    (`svc.currentFrame()`), ANCHORED beside its source link with a leader
- *    line (dot at the link end — a "this window describes this link" callout,
- *    never a traffic arrow), plus a 📌 button that freezes the current frame
- *    into a pinned snapshot;
- *  - PINNED ({@link pinned} set): a frozen comparison snapshot (Wireshark's
- *    "open packet in a new window") showing the cross-window diff
- *    ({@link changedPaths}). A NEW snapshot joins the user's hand-arranged
- *    cluster when one exists ({@link clusterAppend} — flush beside the
- *    arranged windows, so arrange the first and later pins stack up next to
- *    it); otherwise it DOCKS in the deterministic bottom comparison row
- *    ({@link dockSlot} — uniform tiles, left→right, wrapping upward). The
- *    header's link chip identifies the hop.
+ * A PINNED comparison window (Wireshark's "open packet in a new window"): a
+ * frozen frame snapshot showing the cross-window diff ({@link changedPaths})
+ * inside the shared {@link ReplayDetailPaneComponent} body.
+ *
+ * A NEW snapshot joins the user's hand-arranged cluster when one exists
+ * ({@link clusterAppend} — flush beside the arranged windows, so arrange the
+ * first and later pins stack up next to it); otherwise it DOCKS in the
+ * deterministic bottom comparison row ({@link dockSlot} — uniform tiles,
+ * left→right, wrapping upward). The header's link chip identifies the hop.
  *
  * Reposition triggers: a MutationObserver on `g.canvas`'s transform attribute
  * (pan rewrites it without emitting ANY event — the zoom directive at least
  * bumps MapScaleService), plus `MapScaleService.scaleChangeEmitter` (toolbar
  * zoom), `MapSettingsService.mapRenderedEmitter` (node drags / data redraws)
  * and window resize — all funnelled into ONE rAF-coalesced reposition pass.
- * Pinned windows also reflow when siblings are pinned/unpinned (index shift).
+ * The dock row REFLOWS when siblings are pinned/unpinned (index shift).
  *
- * The live anchor uses the link path's bounding-box CENTER in viewport
+ * The leader anchors at the link path's bounding-box CENTER in viewport
  * coordinates (`getBoundingClientRect`), so every map transform — including
  * the parallel-link bundle translate — is already applied by the browser.
  *
- * SIZING: the user drag-resizes the window (mwlResizable, the same chrome as
- * marker-manager). Live: the anchoring engine stays authoritative for
- * POSITION — after a resize the window is re-placed with its new size.
- * Pinned: while DOCKED the slot owns both position and size; dragging or
- * resizing frees the window (it keeps the user's spot/size, clamped), and
- * `reanchor()` re-docks it.
+ * SIZING: the user drag-resizes the window (mwlResizable). While DOCKED the
+ * slot owns both position and size; dragging or resizing frees the window (it
+ * keeps the user's spot/size, clamped), and `reanchor()` re-docks it.
  */
 @Component({
   selector: 'app-replay-detail-window',
   templateUrl: './replay-detail-window.component.html',
   styleUrl: './replay-detail-window.component.scss',
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTooltipModule,
-    MatProgressSpinnerModule,
-    ProtocolTreeComponent,
-    ResizableDirective,
-    ResizeHandleDirective,
-  ],
+  imports: [CommonModule, MatIconModule, MatTooltipModule, ReplayDetailPaneComponent, ResizableDirective, ResizeHandleDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
   readonly zIndex = input(1000);
   /** Focus stacking boost from the overlay's click-to-front counter. */
   readonly zBoost = input(0);
-  /** Set → PINNED mode: the window freezes this snapshot instead of the cursor. */
-  readonly pinned = input<PinnedDetail | null>(null);
-  /** Cross-window diff paths (pinned mode; null on the live window). */
+  /** The frozen snapshot this window shows. */
+  readonly pinned = input.required<PinnedDetail>();
+  /** Cross-window diff paths (computed by the overlay over every decoded pin). */
   readonly changedPaths = input<ReadonlySet<string> | null>(null);
   /** Any mousedown inside the window — the overlay raises it above its siblings. */
   readonly windowFocused = output<void>();
@@ -101,26 +79,20 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
   readonly svc = inject(MarkerReplayService);
   private readonly mapScale = inject(MapScaleService);
   private readonly mapSettings = inject(MapSettingsService);
-  private readonly linksDataSource = inject(LinksDataSource);
-  private readonly nodesDataSource = inject(NodesDataSource);
 
-  readonly DEFAULT_W = 440;
-  readonly DEFAULT_H = 420;
   readonly MIN_W = 320;
   readonly MIN_H = 220;
-  /** Fallback position while no anchor has ever resolved (top-right, below toolbar). */
-  private readonly FALLBACK = { left: 0, top: 80 };
 
   /** User-owned window size (drag-resize); placement consumes both. */
-  readonly winWidth = signal(this.DEFAULT_W);
-  readonly winHeight = signal(this.DEFAULT_H);
-  readonly winLeft = signal(this.FALLBACK.left);
-  readonly winTop = signal(this.FALLBACK.top);
+  readonly winWidth = signal(DOCK_TILE_W);
+  readonly winHeight = signal(DOCK_TILE_H);
+  readonly winLeft = signal(0);
+  readonly winTop = signal(80);
   /**
-   * True once the user has DRAGGED the window: it leaves auto-anchor mode and
-   * stays at the dropped spot (clamped to the viewport) while the leader line
-   * keeps tracking the link. `reanchor()` snaps back to placed mode. (Distinct
-   * from the {@link pinned} INPUT — a frozen comparison snapshot.)
+   * True once the user has DRAGGED the window out of the dock row (or a new
+   * pin joined the hand-arranged cluster): it keeps the dropped spot (clamped
+   * to the viewport) while the leader line keeps tracking the link.
+   * `reanchor()` snaps back to the dock row.
    */
   readonly dragPinned = signal(false);
   /** True while a header drag gesture is in flight. */
@@ -129,55 +101,16 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
   readonly anchored = signal(false);
   /** Leader line geometry; null while unanchored. */
   readonly leader = signal<Leader | null>(null);
-  /** True while a resize gesture is in flight (suppresses anchor re-placement). */
+  /** True while a resize gesture is in flight. */
   readonly resizing = signal(false);
   /**
-   * Whether this pinned window has had its FIRST placement pass — the join-the
-   *-cluster decision only applies to a brand-new window, never to reflows of
-   * an already placed one.
+   * Whether this window has had its FIRST placement pass — the join-the-cluster
+   * decision only applies to a brand-new window, never to reflows of an
+   * already placed one.
    */
   private placed = false;
 
-  /** Type-narrowed views of the detail state for the template. */
-  readonly isLive = computed(() => this.pinned() === null);
-  /** The frame this window describes: its own snapshot, or the cursor's. */
-  readonly activeFrame = computed(() => this.pinned()?.frame ?? this.svc.currentFrame());
-  /** Own detail lifecycle in pinned mode; the shared one when live. */
-  readonly detailState = computed(() => this.pinned()?.state ?? this.svc.detail());
-  /** Live-window 📌 state: disabled once this exact frame is already pinned. */
-  readonly alreadyPinned = computed(() => {
-    const frame = this.activeFrame();
-    return !!frame && this.svc.pinnedDetails().some((p) => sameReplayFrame(p.frame, frame));
-  });
   readonly zVal = computed(() => this.zIndex() + this.zBoost());
-  readonly detailOk = computed(() => {
-    const d = this.detailState();
-    return d.status === 'ok' ? d : null;
-  });
-  readonly detailError = computed(() => {
-    const d = this.detailState();
-    return d.status === 'error' ? d : null;
-  });
-  readonly errorMessage = computed(() => {
-    const d = this.detailState();
-    if (d.status !== 'error') return '';
-    if (d.kind === 'unavailable') return 'Frame detail unavailable — tshark is not usable on this server.';
-    if (d.kind === 'missing') return 'Frame data is stale — the capture may have been rebuilt.';
-    return d.message;
-  });
-
-  /** Protocol chain for the crumbs row (ETH › IPV4 › TCP …) once decoded. */
-  readonly breadcrumb = computed(() => {
-    const ok = this.detailOk();
-    // Skip PDML plumbing (`geninfo`) and the capture-metadata `frame` proto —
-    // the crumbs are the network-protocol chain, like Wireshark's protocol
-    // column (eth:ethertype:ip:icmp).
-    return ok
-      ? ok.detail.tree
-          .filter((n) => n.element === 'proto' && n.name !== 'geninfo' && n.name !== 'frame')
-          .map((n) => n.name.toUpperCase())
-      : [];
-  });
 
   private observer: MutationObserver | null = null;
   private readonly subs: Subscription[] = [];
@@ -185,20 +118,13 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
   private rafPending = false;
 
   constructor() {
-    // LIVE frame changes may move to another link — re-anchor. Pinned windows
-    // never follow the cursor (their frame is frozen), but the dock row
-    // REFLOWS when siblings are pinned/unpinned (index shifts).
+    // The dock row REFLOWS when siblings are pinned/unpinned (index shifts)
+    // and on docked↔freed flips (a sibling dragged out of the row re-indexes
+    // everyone's dock slots). A pin's own frame is frozen — no cursor follows.
     effect(() => {
-      if (!this.pinned() && this.svc.currentFrame()) this.requestReposition();
-    });
-    effect(() => {
-      if (this.pinned()) {
-        // Reflow on pin/unpin AND on docked↔freed flips (a sibling dragged out
-        // of the row re-indexes everyone's dock slots).
-        this.svc.pinnedDetails();
-        this.svc.dockVersion();
-        this.requestReposition();
-      }
+      this.svc.pinnedDetails();
+      this.svc.dockVersion();
+      this.requestReposition();
     });
   }
 
@@ -250,86 +176,71 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
     }
   }
 
-  /** Recompute anchor → window placement → leader line. One pass. */
+  /** Recompute dock/cluster placement → leader line. One pass. */
   private reposition(): void {
     const vw = typeof window !== 'undefined' ? window.innerWidth : this.winWidth();
     const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
     const minTop = 64; // project toolbar
+    const pin = this.pinned();
 
-    if (!this.isLive()) {
-      const pin = this.pinned()!;
+    if (!this.dragPinned() && !this.placed) {
+      // FIRST placement: join the user's hand-arranged cluster (flush beside
+      // the arranged windows) when one exists — only otherwise dock.
       const target = this.svc.userWindowSize() ?? { width: DOCK_TILE_W, height: DOCK_TILE_H };
-      if (!this.dragPinned() && !this.placed) {
-        // FIRST placement: join the user's hand-arranged cluster (flush beside
-        // the arranged windows) when one exists — only otherwise dock.
-        const arranged = this.svc.freedPinRects();
-        const pos = arranged.length ? clusterAppend(arranged, target, { width: vw, height: vh }) : null;
-        if (pos) {
-          this.winWidth.set(target.width);
-          this.winHeight.set(target.height);
-          this.winLeft.set(pos.left);
-          this.winTop.set(pos.top);
-          this.dragPinned.set(true); // part of the cluster now — stays put
-        } else {
-          const docked = this.svc.dockedPinIds();
-          const idx = docked.indexOf(pin.id);
-          const slot = dockSlot(
-            idx >= 0 ? idx : docked.length, // not yet reported → next free slot
-            idx >= 0 ? docked.length : docked.length + 1,
-            { width: vw, height: vh },
-            this.svc.userWindowSize() ?? undefined
-          );
-          this.winLeft.set(slot.left);
-          this.winTop.set(slot.top);
-          this.winWidth.set(slot.width);
-          this.winHeight.set(slot.height);
-        }
-      } else if (this.dragPinned()) {
-        // Freed by drag/resize/join: keep the user's spot, clamped to the viewport.
-        this.winLeft.set(Math.min(Math.max(this.winLeft(), 0), Math.max(0, vw - this.winWidth())));
-        this.winTop.set(Math.min(Math.max(this.winTop(), minTop), Math.max(minTop, vh - this.winHeight())));
+      const arranged = this.svc.freedPinRects();
+      const pos = arranged.length ? clusterAppend(arranged, target, { width: vw, height: vh }) : null;
+      if (pos) {
+        this.winWidth.set(target.width);
+        this.winHeight.set(target.height);
+        this.winLeft.set(pos.left);
+        this.winTop.set(pos.top);
+        this.dragPinned.set(true); // part of the cluster now — stays put
       } else {
-        // Already docked: re-slot against the docked-only indices (compacts
-        // when a sibling is dragged out of the row, relaxes when it returns).
         const docked = this.svc.dockedPinIds();
-        const idx = Math.max(0, docked.indexOf(pin.id));
-        const slot = dockSlot(idx, docked.length, { width: vw, height: vh }, this.svc.userWindowSize() ?? undefined);
+        const idx = docked.indexOf(pin.id);
+        const slot = dockSlot(
+          idx >= 0 ? idx : docked.length, // not yet reported → next free slot
+          idx >= 0 ? docked.length : docked.length + 1,
+          { width: vw, height: vh },
+          this.svc.userWindowSize() ?? undefined
+        );
         this.winLeft.set(slot.left);
         this.winTop.set(slot.top);
         this.winWidth.set(slot.width);
         this.winHeight.set(slot.height);
       }
-      this.placed = true;
-      this.updateLeader();
-      this.reportRect();
-      return;
-    }
-
-    if (this.dragPinned()) {
-      // Pinned by drag: keep the user's spot, just never let it escape the
-      // viewport (the browser window may have shrunk underneath it).
-      this.winLeft.set(Math.min(Math.max(this.winLeft(), 0), Math.max(0, vw - this.winWidth())));
-      this.winTop.set(Math.min(Math.max(this.winTop(), minTop), Math.max(minTop, vh - this.winHeight())));
+    } else if (this.dragPinned()) {
+      // Freed by drag/resize/join: keep the user's spot, clamped to the viewport.
+      const r = clampRect(
+        { left: this.winLeft(), top: this.winTop(), width: this.winWidth(), height: this.winHeight() },
+        { width: vw, height: vh },
+        minTop
+      );
+      this.winLeft.set(r.left);
+      this.winTop.set(r.top);
     } else {
-      const frame = this.activeFrame();
-      if (!frame) return;
-      const anchor = this.linkCenterScreen(frame.link_id);
-      if (anchor) {
-        const { rect } = placeWindow(anchor, { width: this.winWidth(), height: this.winHeight() }, { width: vw, height: vh, topOffset: 64 });
-        this.winLeft.set(rect.left);
-        this.winTop.set(rect.top);
-      }
+      // Already docked: re-slot against the docked-only indices (compacts
+      // when a sibling is dragged out of the row, relaxes when it returns).
+      const docked = this.svc.dockedPinIds();
+      const idx = Math.max(0, docked.indexOf(pin.id));
+      const slot = dockSlot(idx, docked.length, { width: vw, height: vh }, this.svc.userWindowSize() ?? undefined);
+      this.winLeft.set(slot.left);
+      this.winTop.set(slot.top);
+      this.winWidth.set(slot.width);
+      this.winHeight.set(slot.height);
     }
+    this.placed = true;
     this.updateLeader();
+    this.reportRect();
   }
 
   /**
-   * Point the leader at the current link from wherever the window sits —
-   * placed OR pinned. The window end attaches to the edge facing the anchor.
+   * Point the leader at the snapshot's source link from wherever the window
+   * sits — docked or freed. The window end attaches to the edge facing the
+   * anchor.
    */
   private updateLeader(): void {
-    const frame = this.activeFrame();
-    if (!frame) return;
+    const frame = this.pinned().frame;
     const anchor = this.linkCenterScreen(frame.link_id);
     if (!anchor) {
       // Link not on the map (deleted) — keep the last position, drop the leader.
@@ -361,7 +272,7 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
     return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
   }
 
-  // ---- drag-resize (mwlResizable; position stays anchor-owned) ----
+  // ---- drag-resize (mwlResizable; position stays dock/cluster-owned) ----
 
   /**
    * Arrow property on purpose: the library invokes the callback as
@@ -392,23 +303,22 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
     this.winWidth.set(width);
     this.winHeight.set(height);
     this.resizing.set(false);
-    // Remember the chosen size for the session — later pins dock at it.
+    // Remember the chosen size for the session — later pins dock at it. A
+    // docked snapshot owns its size, so resizing one frees it (the dock would
+    // otherwise snap the size back).
     this.svc.rememberWindowSize(width, height);
-    // A docked snapshot owns its size — resizing one frees it (the dock would
-    // otherwise snap the size back); the live window re-places with the new
-    // size as before.
-    if (!this.isLive() && !this.dragPinned()) this.dragPinned.set(true);
+    if (!this.dragPinned()) this.dragPinned.set(true);
     this.requestReposition();
   }
 
-  // ---- manual position (header drag pins, re-anchor releases) ----
+  // ---- manual position (header drag frees, re-anchor re-docks) ----
 
   /** In-flight drag teardown, set while a header gesture is active. */
   private cleanupDrag: (() => void) | null = null;
 
   /**
-   * Dragging the header moves the window and, on release, PINS it there
-   * (auto-anchor off). A plain header click without movement does not pin.
+   * Dragging the header moves the window and, on release, FREEs it from the
+   * dock row. A plain header click without movement does not free it.
    */
   onHeaderMouseDown(e: MouseEvent): void {
     if (e.button !== 0) return;
@@ -429,21 +339,15 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
       moved = true;
       const vw = typeof window !== 'undefined' ? window.innerWidth : this.winWidth();
       const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
-      let nextLeft = startLeft + dx;
-      let nextTop = startTop + dy;
-      // Pinned windows magnetically snap against their settled siblings —
-      // dragging several together builds flush comparison grids.
-      const pin = this.pinned();
-      if (pin) {
-        const snapped = snapRect(
-          { left: nextLeft, top: nextTop, width: this.winWidth(), height: this.winHeight() },
-          this.svc.pinSiblingRects(pin.id)
-        );
-        nextLeft = snapped.left;
-        nextTop = snapped.top;
-      }
-      this.winLeft.set(Math.min(Math.max(nextLeft, 0), Math.max(0, vw - this.winWidth())));
-      this.winTop.set(Math.min(Math.max(nextTop, minTop), Math.max(minTop, vh - this.winHeight())));
+      // Magnetize against settled siblings — dragging several together builds
+      // flush comparison grids.
+      const snapped = snapRect(
+        { left: startLeft + dx, top: startTop + dy, width: this.winWidth(), height: this.winHeight() },
+        this.svc.pinSiblingRects(this.pinned().id)
+      );
+      const r = clampRect(snapped, { width: vw, height: vh }, minTop);
+      this.winLeft.set(r.left);
+      this.winTop.set(r.top);
       this.updateLeader();
     };
     const onUp = (): void => {
@@ -451,8 +355,8 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
       this.dragging.set(false);
       if (moved) this.dragPinned.set(true);
       // Full reposition pass — clamps the dropped spot AND republishes this
-      // pinned window's rect so siblings snap against where it LANDED, not
-      // where it started.
+      // window's rect so siblings snap against where it LANDED, not where it
+      // started.
       this.requestReposition();
     };
 
@@ -470,67 +374,40 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
     this.cleanupDrag = null;
   }
 
-  /** Snap back to auto-placement — beside its link (live) / into the dock row (pinned). */
+  /** Snap back into the dock row. */
   reanchor(): void {
     this.dragPinned.set(false);
     this.requestReposition();
   }
 
-  /** Publish this pinned window's settled rect (+ docked/freed state). */
+  /** Publish this window's settled rect (+ docked/freed state). */
   private reportRect(): void {
-    const pin = this.pinned();
-    if (pin) {
-      this.svc.reportPinRect(
-        pin.id,
-        {
-          left: this.winLeft(),
-          top: this.winTop(),
-          width: this.winWidth(),
-          height: this.winHeight(),
-        },
-        !this.dragPinned()
-      );
-    }
+    this.svc.reportPinRect(
+      this.pinned().id,
+      {
+        left: this.winLeft(),
+        top: this.winTop(),
+        width: this.winWidth(),
+        height: this.winHeight(),
+      },
+      !this.dragPinned()
+    );
   }
 
-  // ---- pinned-snapshot actions ----
+  // ---- snapshot actions ----
 
-  /** Live window's 📌 — freeze the cursor's frame into a comparison window. */
-  pinCurrent(): void {
-    this.svc.pinCurrent();
-  }
-
-  /** Pinned window's ✕ — drop the snapshot. */
+  /** ✕ — drop the snapshot. */
   unpinCurrent(): void {
-    const p = this.pinned();
-    if (p) this.svc.unpin(p.id);
+    this.svc.unpin(this.pinned().id);
   }
 
-  /** Pinned window's failed decode — try again. */
+  /** Failed decode — try again. */
   retryCurrentPin(): void {
-    const p = this.pinned();
-    if (p) this.svc.retryPin(p.id);
+    this.svc.retryPin(this.pinned().id);
   }
 
-  // ---- template helpers ----
-
-  frameTime(ts: string): string {
-    return formatFrameTime(ts);
-  }
-
-  deltaLabel(ts: string): string {
-    const frames = this.svc.frames();
-    return frames.length ? formatDelta(ts, frames[0].ts) : '';
-  }
-
-  /** Link display name ("A → B", cf. marker-manager's linkName). */
-  linkLabel(linkId: string): string {
-    const link = this.linksDataSource.get(linkId);
-    const nodes = link?.nodes;
-    if (!nodes || nodes.length < 2) return linkId.slice(0, 8);
-    const src = this.nodesDataSource.get(nodes[0].node_id);
-    const dst = this.nodesDataSource.get(nodes[1].node_id);
-    if (!src || !dst) return linkId.slice(0, 8);
-    return `${src.name} → ${dst.name}`;
+  /** A tree field's filter expression — re-filters the main list (the pin stays frozen). */
+  onPaneApplyFilter(expr: string): void {
+    this.svc.applyFilter(expr);
   }
 }

@@ -30,34 +30,42 @@ export function sameReplayFrame(a: ReplayFrame, b: ReplayFrame): boolean {
 /** Cache key = identity tuple (ts alone would collide across links). */
 const detailKey = (f: ReplayFrame) => `${f.ts}\x00${f.node_id}\x00${f.link_id}\x00${f.marker}`;
 
-/** How long the index must be stable before the detail (tshark) request fires. */
+/** How long the index must be stable before the detail (sharkd) request fires. */
 export const DETAIL_DEBOUNCE_MS = 200;
 /** How long a bucket must stay current before it materializes its frames. */
 export const BUCKET_SETTLE_MS = 200;
 const DETAIL_CACHE_CAP = 50;
-const BOOKMARK_CAP = 100;
 /** Max frozen comparison windows per session; the oldest pin drops past it. */
 const PINNED_CAP = 8;
 /** Materialized seconds kept for instant revisit (frames are shared refs). */
 const MATERIALIZED_CAP = 60;
 /** Persistent CSS class on the current frame's link path (styled in styles.scss). */
 const LINK_HIGHLIGHT_CLASS = 'marker-replay-active';
-
-/** Why the range fetch failed — gate/missing close the overlay, network retries inline. */
-export type RangeErrorKind = 'gate' | 'missing' | 'network';
+/** Server-side cap on display-filter length — mirror it client-side. */
+const FILTER_MAX_CHARS = 2000;
 
 /**
- * REST client + session state for marker tag aggregated replay.
+ * Why the range fetch failed. `gate`/`missing` close the window;
+ * `network` retries inline; `unavailable` (501 — sharkd missing) shows a
+ * full-window notice; `filter` (400 — bad display filter) stays INLINE in
+ * the filter bar and keeps the last good list rendered.
+ */
+export type RangeErrorKind = 'gate' | 'missing' | 'network' | 'unavailable' | 'filter';
+
+/**
+ * REST client + session state for marker tag aggregated replay — the engine
+ * under the Wireshark-style packet list + detail window.
  *
- * Component-scoped (provided by the replay overlay, dies with it — every cache
+ * Component-scoped (provided by the replay window, dies with it — every cache
  * and signal below is per-session by construction). Two deliberately separated
  * performance regimes mirror the server contract:
- *  - **Timeline browsing** — one `range` call (+ one `frames` call per settled
- *    second in truncated/bucket mode); NEVER invokes tshark.
- *  - **Frame detail** — one tshark decode per frame the user settles on,
- *    debounced ({@link DETAIL_DEBOUNCE_MS}) so continuous scrubbing issues zero
- *    requests; stale in-flight requests are cancelled (switchMap). 501/502
- *    affects the opened frame only.
+ *  - **List browsing** — one `range` call (+ one `frames` call per opened
+ *    second in truncated/bucket mode), both optionally narrowed by a server-side
+ *    display filter (Wireshark display-filter semantics — the field values live in the
+ *    decodes, so filtering can ONLY happen server-side).
+ *  - **Frame detail** — one sharkd decode per frame the user settles on,
+ *    debounced ({@link DETAIL_DEBOUNCE_MS}) so quick list clicks issue zero
+ *    requests; stale in-flight requests are cancelled (switchMap).
  *
  * Contract red lines enforced here:
  *  - `ts` round-trips VERBATIM — frames are navigated by ARRAY INDEX (server
@@ -75,19 +83,23 @@ export class MarkerReplayService {
   // ---- HTTP --------------------------------------------------------------
 
   /**
-   * Timeline metadata + the full merged frame list (cap 5000). Over the cap the
+   * List metadata + the full merged frame list (cap 5000). Over the cap the
    * response carries `truncated: true` and `buckets` instead of `frames` —
    * branch on `truncated` before touching `frames`. `start`/`end` are null when
-   * nothing was captured.
+   * nothing was captured. `filter` (display-filter expression) narrows the
+   * whole response server-side — counts, slices and buckets all recompute over
+   * the matching frames only.
    */
   replayRange(
     controller: Controller,
     projectId: string,
-    tag: number
+    tag: number,
+    filter?: string
   ): Observable<ReplayRangeResponse> {
+    const qs = filter ? `?filter=${encodeURIComponent(filter)}` : '';
     return this.httpController.get<ReplayRangeResponse>(
       controller,
-      `/projects/${projectId}/markers/tags/${tag}/replay/range`
+      `/projects/${projectId}/markers/tags/${tag}/replay/range${qs}`
     );
   }
 
@@ -95,6 +107,8 @@ export class MarkerReplayService {
    * Frames with ts in `[ts, ts + windowMs]`, merged across every source of the
    * tag. An empty window is a NORMAL, successful answer (`{"frames": []}`).
    * `ts` is interpolated verbatim — typically a bucket's "….000000" string.
+   * Pass the SAME filter the range was loaded with, or materialized seconds
+   * diverge from the filtered histogram.
    */
   replayFrames(
     controller: Controller,
@@ -102,11 +116,14 @@ export class MarkerReplayService {
     tag: number,
     ts: string,
     windowMs: number = 1000,
-    limit: number = 1000
+    limit: number = 1000,
+    filter?: string
   ): Observable<ReplayFramesResponse> {
+    const qs =
+      `?ts=${ts}&window_ms=${windowMs}&limit=${limit}` + (filter ? `&filter=${encodeURIComponent(filter)}` : '');
     return this.httpController.get<ReplayFramesResponse>(
       controller,
-      `/projects/${projectId}/markers/tags/${tag}/replay/frames?ts=${ts}&window_ms=${windowMs}&limit=${limit}`
+      `/projects/${projectId}/markers/tags/${tag}/replay/frames${qs}`
     );
   }
 
@@ -116,7 +133,7 @@ export class MarkerReplayService {
    * `node_id`, `link_id` locate the record; `marker` names the source pcap
    * (URL-encoded — names may contain spaces/slashes). Errors: 404 = ts no
    * longer matches the file (capture rebuilt — suggest a timeline reload);
-   * 501/502 = tshark missing/failed (detail only, browsing unaffected).
+   * 501/502 = sharkd missing/failed.
    */
   replayFrameDetail(
     controller: Controller,
@@ -135,27 +152,39 @@ export class MarkerReplayService {
   readonly tag = signal<number>(-1);
   readonly loadingRange = signal(false);
   readonly rangeError = signal<string | null>(null);
-  /** `gate` (409) / `missing` (404) close the overlay; `network` retries inline. */
+  /** `gate` (409) / `missing` (404) close the window; see {@link RangeErrorKind}. */
   readonly rangeErrorKind = signal<RangeErrorKind | null>(null);
+  /** Draft text in the filter bar (kept editable after a 400 so it can be fixed). */
+  readonly filter = signal('');
+  /**
+   * The filter the CURRENT list was loaded with — only ever set on HTTP
+   * success, so a rejected filter leaves both it and the rendered data alone.
+   */
+  readonly appliedFilter = signal('');
+  /** Inline filter-bar error (400 syntax / over-length); null when healthy. */
+  readonly filterError = signal<string | null>(null);
   readonly mode = signal<TimelineMode>('frames');
-  /** Global frame count from the range response (header display in bucket mode). */
+  /**
+   * Frame count of the CURRENT (possibly filtered) range response — drives
+   * "matched" in the header and the empty-filtered state.
+   */
   readonly totalFrames = signal(0);
+  /** Unfiltered total, captured on every unfiltered load — "of N" in the header. */
+  readonly totalUnfiltered = signal(0);
   readonly buckets = signal<ReplayBucket[]>([]);
   /**
-   * The list the tape navigates: the full timeline in `frames` mode, or the
-   * currently materialized second in `buckets` mode (empty while on the bucket
-   * tape). Server order is authoritative — never re-sorted.
+   * The list the packet list navigates: the full timeline in `frames` mode, or
+   * the currently materialized second in `buckets` mode (empty while on the
+   * bucket rows). Server order is authoritative — never re-sorted.
    */
   readonly frames = signal<ReplayFrame[]>([]);
   readonly currentFrameIndex = signal(0);
   readonly currentBucketIndex = signal<number | null>(null);
-  /** True while the tape shows frame rows INSIDE a materialized second. */
+  /** True while the list shows frame rows INSIDE a materialized second. */
   readonly inWindow = signal(false);
   readonly materializing = signal(false);
-  /** Last settled second legitimately contained no frames (stays on bucket tape). */
+  /** Last settled second legitimately contained no frames (stays on bucket rows). */
   readonly emptySecond = signal(false);
-  /** Bookmarked frames in timeline order, session-only. */
-  readonly bookmarks = signal<ReplayFrame[]>([]);
   /**
    * SHARED text-search query for every protocol tree (live + pinned windows):
    * typing it once lights up the matches across ALL hops being compared —
@@ -172,7 +201,7 @@ export class MarkerReplayService {
   private pinSeq = 0;
 
   readonly currentFrame = computed(() => this.frames()[this.currentFrameIndex()] ?? null);
-  /** Whether the tape currently navigates frames (vs. bucket bars). */
+  /** Whether the list currently shows frame rows (vs. bucket bars). */
   readonly browsingFrames = computed(() => this.mode() === 'frames' || this.inWindow());
   readonly isEmpty = computed(
     () => this.tag() >= 0 && !this.loadingRange() && this.rangeError() === null && this.totalFrames() === 0
@@ -187,10 +216,12 @@ export class MarkerReplayService {
   private readonly materialized = new Map<number, ReplayFrame[]>();
   private pipelinesReady = false;
   private highlightedLinkId: string | null = null;
-  /** Bookmark jump waiting for its second to materialize. */
-  private pendingJump: ReplayFrame | null = null;
-  /** Which end of a freshly materialized window to land on (edge crossing). */
-  private pendingLanding: 'start' | 'end' | null = null;
+  /**
+   * Bumped on every successful range load. An in-flight materialization from a
+   * PREVIOUS filter must not resolve into the new list (load() does not route
+   * through the bucket pipeline, so switchMap cannot cancel it).
+   */
+  private rangeEpoch = 0;
 
   // ---- Session lifecycle -------------------------------------------------
 
@@ -220,7 +251,7 @@ export class MarkerReplayService {
         )
         .subscribe((state) => this.detail.set(state));
       // Bucket materialization: a bucket must stay current before its second
-      // is fetched (fast wheeling over the histogram fires nothing).
+      // is fetched (quick bucket-row clicks fire nothing).
       this.bucketTrigger$
         .pipe(
           debounceTime(BUCKET_SETTLE_MS),
@@ -229,32 +260,38 @@ export class MarkerReplayService {
         )
         .subscribe();
     }
-    this.load();
+    this.load('');
   }
 
   /**
-   * Fetch (or re-fetch, on 404 recovery) the range response and split modes.
+   * Fetch the range response for `candidateFilter` and split modes. The OLD
+   * list stays rendered (dimmed by the host) until the response lands — a
+   * rejected filter (400) therefore keeps the last good data on screen.
    * Branches on `truncated` BEFORE touching `frames` (the key is absent when
    * truncated — a 100k-frame tag must never reach `frames.map`).
    */
-  load(): void {
+  private load(candidateFilter: string): void {
     if (!this.controller || this.tag() < 0) return;
     this.loadingRange.set(true);
     this.rangeError.set(null);
     this.rangeErrorKind.set(null);
-    this.clearWindowState();
-    this.replayRange(this.controller, this.projectId, this.tag())
+    this.filterError.set(null);
+    this.replayRange(this.controller, this.projectId, this.tag(), candidateFilter || undefined)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (range) => {
           this.loadingRange.set(false);
+          this.appliedFilter.set(candidateFilter);
           this.totalFrames.set(range.frame_count);
+          if (!candidateFilter) this.totalUnfiltered.set(range.frame_count);
+          this.rangeEpoch++;
+          this.clearWindowState();
           this.materialized.clear();
           if (range.truncated) {
             this.mode.set('buckets');
             this.buckets.set(range.buckets ?? []);
             this.currentBucketIndex.set(0);
-            // Settle into the first second straight away so the tape has content.
+            // Settle into the first second straight away so the list has content.
             this.bucketTrigger$.next(0);
           } else {
             this.mode.set('frames');
@@ -270,8 +307,22 @@ export class MarkerReplayService {
           this.loadingRange.set(false);
           const message = err.error?.message || err.message || 'Failed to load replay timeline';
           const status = this.errStatus(err);
+          const sentFilter = !!candidateFilter;
           const kind: RangeErrorKind =
-            status === 409 ? 'gate' : status === 404 ? 'missing' : 'network';
+            status === 409
+              ? 'gate'
+              : status === 404
+                ? 'missing'
+                : status === 501
+                  ? 'unavailable'
+                  : status === 400 && sentFilter
+                    ? 'filter'
+                    : 'network';
+          if (kind === 'filter') {
+            // User-input error: inline in the filter bar, data untouched, no toast.
+            this.filterError.set(message);
+            return;
+          }
           this.rangeErrorKind.set(kind);
           this.rangeError.set(message);
           this.toaster.error(message);
@@ -303,36 +354,8 @@ export class MarkerReplayService {
   }
 
   /**
-   * Step by `delta` frames (frames tape) or buckets (bucket tape). Crossing a
-   * materialized window's edge in bucket mode exits to the adjacent bucket —
-   * landing on its last frame when moving backwards (closest in time).
-   */
-  stepBy(delta: number): void {
-    if (delta === 0) return;
-    if (this.browsingFrames()) {
-      const frames = this.frames();
-      if (frames.length === 0) return;
-      const next = this.currentFrameIndex() + delta;
-      if (next >= 0 && next < frames.length) {
-        this.setCurrentIndex(next);
-        return;
-      }
-      if (this.mode() === 'frames') {
-        this.setCurrentIndex(next < 0 ? 0 : frames.length - 1);
-        return;
-      }
-      // Bucket mode: spilled past the materialized second → adjacent bucket.
-      this.pendingLanding = next < 0 ? 'end' : 'start';
-      const changed = this.setCurrentBucket((this.currentBucketIndex() ?? 0) + (next < 0 ? -1 : 1));
-      if (!changed) this.pendingLanding = null; // clamped at a timeline end — stay put
-      return;
-    }
-    this.setCurrentBucket((this.currentBucketIndex() ?? 0) + delta);
-  }
-
-  /**
    * Select a bucket (clamped) and schedule materialization. Existing window
-   * state is dropped immediately (the tape falls back to bucket bars until the
+   * state is dropped immediately (the list falls back to bucket rows until the
    * frames arrive). Returns whether the selection actually changed.
    */
   setCurrentBucket(index: number): boolean {
@@ -350,48 +373,38 @@ export class MarkerReplayService {
     return true;
   }
 
-  // ---- Bookmarks ---------------------------------------------------------
-
-  /** Bookmark/unbookmark the current frame (tuple identity; cap {@link BOOKMARK_CAP}). */
-  toggleBookmark(): void {
-    const frame = this.currentFrame();
-    if (!frame) return;
-    const list = this.bookmarks();
-    const idx = list.findIndex((b) => sameReplayFrame(b, frame));
-    if (idx >= 0) {
-      this.bookmarks.set(list.filter((_, k) => k !== idx));
-      return;
-    }
-    const next = [...list, frame];
-    if (next.length > BOOKMARK_CAP) next.shift();
-    this.bookmarks.set(next);
+  /** Leave a materialized second — back to the per-second bucket rows. */
+  exitWindow(): void {
+    if (!this.inWindow()) return;
+    this.inWindow.set(false);
+    this.frames.set([]);
+    this.currentFrameIndex.set(0);
+    this.emptySecond.set(false);
+    this.applyHighlight(null);
   }
 
-  isBookmarked(frame: ReplayFrame | null): boolean {
-    if (!frame) return false;
-    return this.bookmarks().some((b) => sameReplayFrame(b, frame));
-  }
+  // ---- Display filter ------------------------------------------------------
 
   /**
-   * Jump to a bookmarked frame. In bucket mode the containing second
-   * materializes first, then the exact frame is located inside it.
+   * Apply a display filter (Wireshark-style): the SERVER evaluates it against
+   * the decodes and recomputes counts/slices/buckets. The draft is kept on
+   * rejection so the user can fix it; over-length is rejected client-side
+   * without a request.
    */
-  jumpToBookmark(frame: ReplayFrame): void {
-    if (this.mode() === 'frames') {
-      const idx = this.frames().findIndex((f) => sameReplayFrame(f, frame));
-      if (idx >= 0) this.setCurrentIndex(idx);
+  applyFilter(raw: string): void {
+    const text = raw.trim();
+    this.filter.set(text);
+    if (text.length > FILTER_MAX_CHARS) {
+      this.filterError.set(`Filter is longer than ${FILTER_MAX_CHARS} characters`);
       return;
     }
-    const sec = Math.floor(Number(frame.ts));
-    const bucketIdx = this.buckets().findIndex((b) => Math.floor(Number(b.ts)) === sec);
-    if (bucketIdx < 0) return; // bookmark outside the current histogram (stale)
-    if (bucketIdx === this.currentBucketIndex() && this.inWindow()) {
-      const idx = this.frames().findIndex((f) => sameReplayFrame(f, frame));
-      if (idx >= 0) this.setCurrentIndex(idx);
-      return;
-    }
-    this.pendingJump = frame;
-    this.setCurrentBucket(bucketIdx);
+    this.load(text);
+  }
+
+  /** Drop the filter and reload the full list. */
+  clearFilter(): void {
+    this.filter.set('');
+    this.load('');
   }
 
   // ---- Pinned comparison windows ------------------------------------------
@@ -520,9 +533,9 @@ export class MarkerReplayService {
     if (frame) this.detailTrigger$.next(frame);
   }
 
-  /** Re-run the range request (404 recovery after a capture was rebuilt). */
+  /** Re-run the range request with the CURRENT filter (404 recovery, Retry). */
   reloadTimeline(): void {
-    this.load();
+    this.load(this.appliedFilter());
   }
 
   // ---- Link highlight ----------------------------------------------------
@@ -562,8 +575,6 @@ export class MarkerReplayService {
     this.currentFrameIndex.set(0);
     this.currentBucketIndex.set(null);
     this.emptySecond.set(false);
-    this.pendingJump = null;
-    this.pendingLanding = null;
     this.detail.set({ status: 'idle' });
   }
 
@@ -598,8 +609,10 @@ export class MarkerReplayService {
 
   /**
    * Materialize bucket `i`'s second: fetch its frames (`ts` VERBATIM from the
-   * bucket), cache for instant revisit, and enter the frame tape. Cached and
-   * empty results never hit the network.
+   * bucket, with the SAME filter the range was loaded with), cache for instant
+   * revisit, and enter them as the list's rows. Cached and empty results never
+   * hit the network. Results from a superseded range load (filter change) are
+   * discarded via the epoch guard.
    */
   private materializeSecond(i: number): Observable<null> {
     const bucket = this.buckets()[i];
@@ -610,10 +623,12 @@ export class MarkerReplayService {
       return of(null);
     }
     this.materializing.set(true);
-    return this.replayFrames(this.controller, this.projectId, this.tag(), bucket.ts).pipe(
+    const epoch = this.rangeEpoch;
+    const filter = this.appliedFilter();
+    return this.replayFrames(this.controller, this.projectId, this.tag(), bucket.ts, 1000, 1000, filter || undefined).pipe(
       map((res) => res.frames),
       catchError((err) => {
-        // Window fetch failed (gate race / network): stay on the bucket tape.
+        // Window fetch failed (gate race / network): stay on the bucket rows.
         const message = err.error?.message || err.message || 'Failed to load frames for this second';
         this.toaster.error(message);
         this.materializing.set(false);
@@ -621,7 +636,7 @@ export class MarkerReplayService {
       }),
       tap((frames) => {
         this.materializing.set(false);
-        if (frames === null) return;
+        if (frames === null || epoch !== this.rangeEpoch) return;
         this.materialized.set(i, frames);
         while (this.materialized.size > MATERIALIZED_CAP) {
           const oldest = this.materialized.keys().next().value;
@@ -638,22 +653,12 @@ export class MarkerReplayService {
     );
   }
 
-  /** Switch the tape to frame rows inside a materialized second. */
+  /** Switch the list to frame rows inside a materialized second (first row selected). */
   private enterWindow(frames: ReplayFrame[]): void {
     this.frames.set(frames);
     this.inWindow.set(true);
-    const landing = this.pendingLanding ?? 'start';
-    this.pendingLanding = null;
-    let index = landing === 'end' ? frames.length - 1 : 0;
-    const jump = this.pendingJump;
-    this.pendingJump = null;
-    if (jump) {
-      const found = frames.findIndex((f) => sameReplayFrame(f, jump));
-      if (found >= 0) index = found;
-    }
-    index = Math.max(0, index);
-    this.currentFrameIndex.set(index);
-    this.detailTrigger$.next(frames[index]);
-    this.applyHighlight(frames[index].link_id);
+    this.currentFrameIndex.set(0);
+    this.detailTrigger$.next(frames[0]);
+    this.applyHighlight(frames[0].link_id);
   }
 }

@@ -8,9 +8,8 @@ describe('protocol-tree pure helpers', () => {
   const ttl: ProtocolTreeNode = {
     element: 'field',
     name: 'ip.ttl',
-    showname: 'Time to Live: 64',
-    show: '64',
-    value: '40',
+    label: 'Time to Live: 64',
+    filter_expr: 'ip.ttl == 64',
     size: '1',
     pos: '22',
     children: [],
@@ -18,14 +17,14 @@ describe('protocol-tree pure helpers', () => {
   const flags: ProtocolTreeNode = {
     element: 'field',
     name: 'ip.flags',
-    showname: 'Flags: 0x4000',
-    children: [{ ...ttl, name: 'ip.flags.rb', showname: 'Reserved bit: Not set' }],
+    label: 'Flags: 0x4000',
+    children: [{ ...ttl, name: 'ip.flags.rb', label: 'Reserved bit: Not set', filter_expr: undefined }],
   };
   const ip: ProtocolTreeNode = {
     element: 'proto',
     name: 'ip',
-    showname: 'Internet Protocol Version 4, Src: 10.0.0.1',
-    children: [ttl, flags, { ...ttl, name: 'ip.padding', hide: 'yes' }],
+    label: 'Internet Protocol Version 4, Src: 10.0.0.1',
+    children: [ttl, flags],
   };
   const tree = [ip];
 
@@ -46,49 +45,30 @@ describe('protocol-tree pure helpers', () => {
     expect(deep[3].depth).toBe(2);
   });
 
-  it('hide="yes" fields never produce rows (real tshark marks filter-only combination fields this way)', () => {
-    const rows = flattenTree(tree, new Set(['/0']));
-    expect(rows.some((r) => r.node.name === 'ip.padding')).toBe(false);
-  });
-
-  it('drops hide="yes" AND hide="true", plus the geninfo plumbing proto', () => {
+  it('the geninfo plumbing proto never produces rows (insurance guard)', () => {
     const geninfo: ProtocolTreeNode = {
       element: 'proto',
       name: 'geninfo',
-      showname: 'General information',
+      label: 'General information',
       children: [],
     };
-    const real = [
-      geninfo,
-      {
-        ...ip,
-        children: [
-          ttl,
-          { ...ttl, name: 'ip.addr', showname: 'Source or Destination Address: 10.1.10.101', hide: 'yes' },
-          { ...ttl, name: 'ip.host', showname: 'Source or Destination Host: 10.1.10.101', hide: 'true' },
-        ],
-      },
-    ];
-    const rows = flattenTree(real, new Set(['/1']));
-    expect(rows.map((r) => r.node.name)).toEqual(['ip', 'ip.ttl']);
-    expect(collectKeys(real)).toEqual(['/1']);
+    const rows = flattenTree([geninfo, ip], new Set(['/1']));
+    expect(rows.map((r) => r.node.name)).toEqual(['ip', 'ip.ttl', 'ip.flags']);
+    expect(collectKeys([geninfo, ip])).toEqual(['/1', '/1/1']);
   });
 
   it('collectKeys returns every child-bearing key (the expand-all set)', () => {
     expect(collectKeys(tree)).toEqual(['/0', '/0/1']);
   });
 
-  it('rowText prefers showname, falls back to "name: show", then the name', () => {
+  it('rowText is the sharkd display label', () => {
     expect(rowText(ttl)).toBe('Time to Live: 64');
-    expect(rowText({ ...ttl, showname: undefined })).toBe('ip.ttl: 64');
-    expect(rowText({ ...ttl, showname: undefined, show: undefined })).toBe('ip.ttl');
   });
 
-  it('rowSearchText joins name + displayed text lowercased; the raw hex value never matches', () => {
+  it('rowSearchText joins name + label lowercased; filter_expr is not part of the haystack', () => {
     expect(rowSearchText(ttl)).toBe('ip.ttl time to live: 64');
-    expect(rowSearchText({ ...ttl, showname: undefined })).toBe('ip.ttl 64');
-    const fcs = { ...ttl, name: 'ip.fcs', showname: 'Frame check sequence', show: undefined, value: 'deadbeef' };
-    expect(rowSearchText(fcs)).not.toContain('deadbeef');
+    // The ready-made filter expression ("ip.ttl == 64") must not leak hits.
+    expect(rowSearchText(ttl)).not.toContain('== 64');
   });
 
   it('ancestorKeys walks the index path upward, stopping at the root', () => {
@@ -100,17 +80,15 @@ describe('protocol-tree pure helpers', () => {
     const rows = flattenTree(tree, new Set(['/0', '/0/1']));
     expect(rows.map((r) => r.path)).toEqual(['ip', 'ip/ip.ttl', 'ip/ip.flags', 'ip/ip.flags/ip.flags.rb']);
 
-    // A repeated sibling name gets [k] suffixes so paths never collide — even
-    // when a hidden field sits between them (hidden nodes stay uncounted).
+    // A repeated sibling name gets [k] suffixes so paths never collide.
     const repeats: ProtocolTreeNode[] = [
       {
         element: 'proto',
         name: 'tcp',
-        showname: 'TCP',
+        label: 'Transmission Control Protocol',
         children: [
-          { ...ttl, name: 'tcp.option' },
-          { ...ttl, name: 'tcp.pad', hide: 'yes' },
-          { ...ttl, name: 'tcp.option', showname: 'Second option' },
+          { ...ttl, name: 'tcp.option', label: 'First option' },
+          { ...ttl, name: 'tcp.option', label: 'Second option' },
         ],
       },
     ];
@@ -131,9 +109,8 @@ describe('ProtocolTreeComponent', () => {
   const ttl: ProtocolTreeNode = {
     element: 'field',
     name: 'ip.ttl',
-    showname: 'Time to Live: 64',
-    show: '64',
-    value: '40',
+    label: 'Time to Live: 64',
+    filter_expr: 'ip.ttl == 64',
     size: '1',
     pos: '22',
     children: [],
@@ -141,8 +118,8 @@ describe('ProtocolTreeComponent', () => {
   const ipProto: ProtocolTreeNode = {
     element: 'proto',
     name: 'ip',
-    showname: 'Internet Protocol Version 4, Src: 10.0.0.1, Dst: 10.0.0.2',
-    children: [ttl, { ...ttl, name: 'ip.checksum', showname: 'Header Checksum: 0x1234', hide: 'yes' }],
+    label: 'Internet Protocol Version 4, Src: 10.0.0.1, Dst: 10.0.0.2',
+    children: [ttl, { ...ttl, name: 'ip.checksum', label: 'Header Checksum: 0x1234', filter_expr: undefined }],
   };
 
   // Per the unit-testing skill: zoneless async tests run under fake timers
@@ -184,12 +161,12 @@ describe('ProtocolTreeComponent', () => {
     expect((fixture.nativeElement as HTMLElement).textContent).not.toContain('Time to Live');
   });
 
-  it('clicking a protocol row selects it and expands its children; hide fields stay out', () => {
+  it('clicking a protocol row selects it and expands its children', () => {
     fixture.detectChanges();
     (rows()[0] as HTMLElement).click();
     fixture.detectChanges();
 
-    expect(rows().length).toBe(2); // proto + ttl (checksum is hide="true")
+    expect(rows().length).toBe(3); // proto + ttl + checksum
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Time to Live: 64');
     expect(rows()[0].classList).toContain('gns3-replay__tree-row--selected');
 
@@ -228,7 +205,7 @@ describe('ProtocolTreeComponent', () => {
 
     buttons[0].click(); // expand all
     fixture.detectChanges();
-    expect(rows().length).toBe(2); // proto + ttl in this fixture
+    expect(rows().length).toBe(3);
 
     buttons[1].click(); // collapse all
     fixture.detectChanges();
@@ -243,6 +220,38 @@ describe('ProtocolTreeComponent', () => {
     const leaf = rows()[1] as HTMLElement;
     expect(leaf.querySelector('.gns3-replay__tree-chevron')).toBeNull();
     expect(leaf.querySelector('.gns3-replay__tree-leaf')).toBeTruthy();
+  });
+
+  it('a field with filter_expr shows an Apply-as-filter button that emits without selecting', () => {
+    fixture.detectChanges();
+    (rows()[0] as HTMLElement).click();
+    fixture.detectChanges();
+
+    const ttlRow = rows()[1] as HTMLElement;
+    const btn = ttlRow.querySelector<HTMLButtonElement>('.gns3-replay__tree-filter-btn');
+    expect(btn).toBeTruthy();
+    expect(ttlRow.querySelector('.gns3-replay__tree-filter-btn')).toBeTruthy(); // checksum has no expr → none
+
+    const emitted: string[] = [];
+    component.applyFilter.subscribe((e) => emitted.push(e));
+    btn!.click();
+    fixture.detectChanges();
+
+    expect(emitted).toEqual(['ip.ttl == 64']);
+    // stopPropagation: the row itself neither selects nor toggles.
+    expect(ttlRow.classList).not.toContain('gns3-replay__tree-row--selected');
+    expect(rows().length).toBe(3);
+  });
+
+  it('generated (protocol-added) rows render with the italic variant', () => {
+    fixture.componentRef.setInput('tree', [
+      { ...ipProto, children: [{ ...ttl, generated: true }] },
+    ]);
+    fixture.detectChanges();
+    (rows()[0] as HTMLElement).click();
+    fixture.detectChanges();
+
+    expect(rows()[1].classList).toContain('gns3-replay__tree-row--generated');
   });
 
   describe('cross-window diff highlight', () => {
@@ -280,18 +289,18 @@ describe('ProtocolTreeComponent', () => {
 
   describe('text search', () => {
     // eth › ip › {ttl, flags › rb} — matches can hide TWO levels deep.
-    const rb: ProtocolTreeNode = { ...ttl, name: 'ip.flags.rb', showname: 'Reserved bit: Not set' };
-    const flags: ProtocolTreeNode = { ...ttl, name: 'ip.flags', showname: 'Flags: 0x4000', children: [rb] };
+    const rb: ProtocolTreeNode = { ...ttl, name: 'ip.flags.rb', label: 'Reserved bit: Not set', filter_expr: undefined };
+    const flags: ProtocolTreeNode = { ...ttl, name: 'ip.flags', label: 'Flags: 0x4000', filter_expr: undefined, children: [rb] };
     const deepTree: ProtocolTreeNode[] = [
       {
         element: 'proto',
         name: 'eth',
-        showname: 'Ethernet II, Src: 00:11:22:33:44:55',
+        label: 'Ethernet II, Src: 00:11:22:33:44:55',
         children: [
           {
             element: 'proto',
             name: 'ip',
-            showname: 'Internet Protocol Version 4, Src: 10.0.0.1',
+            label: 'Internet Protocol Version 4, Src: 10.0.0.1',
             children: [ttl, flags],
           },
         ],
@@ -322,7 +331,7 @@ describe('ProtocolTreeComponent', () => {
       expect((fixture.nativeElement as HTMLElement).textContent).toContain('1/1');
     });
 
-    it('matching is case-insensitive over names and display text, never the raw hex value', async () => {
+    it('matching is case-insensitive over names and labels; filter_expr never leaks hits', async () => {
       fixture.componentRef.setInput('tree', deepTree);
       fixture.detectChanges();
 
@@ -330,18 +339,22 @@ describe('ProtocolTreeComponent', () => {
       await flush();
       expect(component.matchCount()).toBe(1);
 
-      fixture.componentRef.setInput('searchQuery', 'RESERVED'); // showname hit, case-folded
+      fixture.componentRef.setInput('searchQuery', 'RESERVED'); // label hit, case-folded
       await flush();
       expect(component.matchCount()).toBe(1); // the rb row
       // eth › ip › ttl › flags(open) › rb — every level revealed.
       expect(rows().length).toBe(5);
 
-      // "40" appears in ttl's hex VALUE and in flags' "0x4000" showname — only
-      // the displayed text counts.
+      // "40" appears in ttl's filter_expr ("ip.ttl == 64" has none, but the
+      // expr format "== 64" must not match) and in flags' label "0x4000".
       fixture.componentRef.setInput('searchQuery', '40');
       await flush();
       expect(component.matchCount()).toBe(1);
       expect(component.matches()[0].node.name).toBe('ip.flags');
+
+      fixture.componentRef.setInput('searchQuery', '== 64'); // expr-only text
+      await flush();
+      expect(component.matchCount()).toBe(0);
     });
 
     it('Enter walks the matches in order with wraparound; Shift+Enter goes back', async () => {
