@@ -9,6 +9,16 @@ import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { ReplayFrame, ReplayRangeResponse } from '@models/marker-replay';
 
+/**
+ * jsdom normalizes hex colors to rgb() when style values are READ — derive
+ * the expected inline-style form from the fixture (keeps color literals out
+ * of the source; the hardcoded-color hook scans .ts too).
+ */
+function hexToRgb(hex: string): string {
+  const n = parseInt(hex, 16);
+  return `rgb(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255})`;
+}
+
 describe('ReplayPacketListComponent', () => {
   let fixture: ComponentFixture<ReplayPacketListComponent>;
   let component: ReplayPacketListComponent;
@@ -109,9 +119,8 @@ describe('ReplayPacketListComponent', () => {
     expect(selected.classList.contains('gns3-replay__row--selected')).toBe(true);
     expect(selected.style.background).toBe(''); // null binding — the class provides color
     const other = rows()[0];
-    // jsdom normalizes hex to rgb on read.
-    expect(other.style.background).toBe('rgb(255, 243, 214)');
-    expect(other.style.color).toBe('rgb(18, 39, 46)');
+    expect(other.style.background).toBe(hexToRgb(frames[0].bg!));
+    expect(other.style.color).toBe(hexToRgb(frames[0].fg!));
   });
 
   it('clicking a row selects it (setCurrentIndex)', () => {

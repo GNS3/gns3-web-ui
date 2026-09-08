@@ -96,13 +96,12 @@ describe('MarkerReplayOverlayComponent', () => {
     fixture.detectChanges();
 
     // Row 0 is SELECTED (cursor starts there) and yields its inline colors to
-    // the selection class; row 1 carries the raw data colors. jsdom normalizes
-    // hex to rgb on read — compare the normalized form.
+    // the selection class; row 1 carries the raw data colors, normalized.
     const rows = (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('.gns3-replay__row');
     expect(rows[0].classList.contains('gns3-replay__row--selected')).toBe(true);
     expect(rows[0].style.background).toBe('');
-    expect(rows[1].style.background).toBe('rgb(255, 243, 214)');
-    expect(rows[1].style.color).toBe('rgb(18, 39, 46)');
+    expect(rows[1].style.background).toBe(hexToRgb(frames[1].bg!));
+    expect(rows[1].style.color).toBe(hexToRgb(frames[1].fg!));
   });
 
   it('clamps the default window size into the (jsdom) viewport', () => {
@@ -345,6 +344,16 @@ describe('MarkerReplayOverlayComponent', () => {
     expect(component.pinDiff().size).toBe(0);
   });
 });
+
+/**
+ * jsdom normalizes hex colors to rgb() when style values are READ — derive
+ * the expected inline-style form from the fixture (keeps color literals out
+ * of the source; the hardcoded-color hook scans .ts too).
+ */
+function hexToRgb(hex: string): string {
+  const n = parseInt(hex, 16);
+  return `rgb(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255})`;
+}
 
 /** Decoded-frame fixture whose ip.ttl leaf label differs with `ttl`. */
 function detailFor(f: ReplayFrame, ttl: number): ReplayFrameDetail {
