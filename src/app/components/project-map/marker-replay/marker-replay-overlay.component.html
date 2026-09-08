@@ -106,6 +106,7 @@
             <app-replay-detail-pane
               [frame]="frame"
               [state]="svc.detail()"
+              [holdDetail]="svc.lastOkDetail()"
               [(searchQuery)]="svc.searchQuery"
               (retry)="svc.retryDetail()"
               (reload)="svc.reloadTimeline()"

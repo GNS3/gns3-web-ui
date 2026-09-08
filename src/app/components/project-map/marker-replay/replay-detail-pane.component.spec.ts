@@ -97,6 +97,22 @@ describe('ReplayDetailPaneComponent', () => {
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('No frame decoded yet.');
   });
 
+  it('holds the previous tree with ZERO intermediate rendering while the next decode runs', () => {
+    fixture.componentRef.setInput('holdDetail', detail);
+    fixture.componentRef.setInput('state', { status: 'loading' });
+    fixture.detectChanges();
+
+    const el: HTMLElement = fixture.nativeElement;
+    // The held tree stays mounted…
+    expect(el.querySelector('.gns3-replay__tree-row')).toBeTruthy();
+    expect(el.textContent).toContain('Internet Protocol Version 4');
+    // …and NOTHING intermediate appears: no spinner, no hint row, no progress
+    // line — any of those blinking in and out for a few dozen ms IS flicker.
+    expect(el.querySelector('.gns3-replay__detail-spinner')).toBeNull();
+    expect(el.querySelector('.gns3-replay__decoding-line')).toBeNull();
+    expect(el.querySelector('.gns3-replay__decoding-hint')).toBeNull();
+  });
+
   it('unavailable errors explain the sharkd dependency and Retry re-emits', () => {
     fixture.componentRef.setInput('state', {
       status: 'error',

@@ -193,6 +193,12 @@ export class MarkerReplayService {
   readonly searchQuery = signal('');
   readonly detail = signal<DetailState>({ status: 'idle' });
   /**
+   * The last SUCCESSFUL live decode — lets the detail pane keep the previous
+   * tree rendered (dimmed) while the next frame decodes, instead of flashing
+   * the loading spinner on every list click. Null until the first decode.
+   */
+  readonly lastOkDetail = signal<ReplayFrameDetail | null>(null);
+  /**
    * Frames frozen into comparison windows ({@link PINNED_CAP} max, oldest
    * drops). Each entry owns its detail lifecycle so a snapshot survives both
    * cursor moves and detail-cache (LRU) eviction.
@@ -249,7 +255,13 @@ export class MarkerReplayService {
             frame ? this.fetchDetail(frame) : of<DetailState>({ status: 'idle' })
           )
         )
-        .subscribe((state) => this.detail.set(state));
+        .subscribe((state) => {
+          this.detail.set(state);
+          // Remember the last successful decode — the pane keeps its tree
+          // rendered (dimmed) while the next one is in flight instead of
+          // flashing through a loading spinner on every row click.
+          if (state.status === 'ok') this.lastOkDetail.set(state.detail);
+        });
       // Bucket materialization: a bucket must stay current before its second
       // is fetched (quick bucket-row clicks fire nothing).
       this.bucketTrigger$
@@ -576,6 +588,7 @@ export class MarkerReplayService {
     this.currentBucketIndex.set(null);
     this.emptySecond.set(false);
     this.detail.set({ status: 'idle' });
+    this.lastOkDetail.set(null);
   }
 
   private fetchDetail(frame: ReplayFrame): Observable<DetailState> {

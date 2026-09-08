@@ -72,6 +72,15 @@
   flex-direction: column;
 }
 
+// Mid-decode hold: the previous tree stays mounted, untouched — see the
+// template comment for why NOTHING may render in between.
+.gns3-replay__tree-hold {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
 .gns3-replay__detail-state {
   display: flex;
   align-items: center;

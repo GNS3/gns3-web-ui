@@ -8,7 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MarkerReplayService } from '@services/marker-replay.service';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
-import { DetailState, ReplayFrame } from '@models/marker-replay';
+import { DetailState, ReplayFrame, ReplayFrameDetail } from '@models/marker-replay';
 import { formatDelta, formatFrameTime } from './replay-timeline-math';
 import { ProtocolTreeComponent } from './protocol-tree.component';
 
@@ -43,6 +43,13 @@ export class ReplayDetailPaneComponent {
   readonly changedPaths = input<ReadonlySet<string> | null>(null);
   /** Stale-ts (404) recovery: reload the timeline (live) or close the snapshot (pin). */
   readonly missingAction = input<'reload' | 'close'>('reload');
+  /**
+   * The previous successful decode (live host only). While the next frame
+   * decodes, its tree keeps rendering DIMMED instead of the pane flashing
+   * through the loading spinner — the tree component stays mounted, so the
+   * toolbar and search state do not flicker either.
+   */
+  readonly holdDetail = input<ReplayFrameDetail | null>(null);
 
   /** Shared find-in-packet query — bound to the session signal at every host. */
   readonly searchQuery = model('');
@@ -65,6 +72,12 @@ export class ReplayDetailPaneComponent {
     const d = this.state();
     return d.status === 'error' ? d : null;
   });
+  /** What the tree area renders: the fresh decode, else the held one mid-flight. */
+  readonly shownDetail = computed<ReplayFrameDetail | null>(() => {
+    const s = this.state();
+    if (s.status === 'ok') return s.detail;
+    return s.status === 'loading' ? this.holdDetail() : null;
+  });
   readonly errorMessage = computed(() => {
     const d = this.state();
     if (d.status !== 'error') return '';
@@ -74,13 +87,13 @@ export class ReplayDetailPaneComponent {
   });
   readonly missingLabel = computed(() => (this.missingAction() === 'close' ? 'Close' : 'Reload timeline'));
 
-  /** Protocol chain for the crumbs row (ETH › IPV4 › TCP …) once decoded. */
+  /** Protocol chain for the crumbs row (ETH › IPV4 › TCP …) — follows the SHOWN tree. */
   readonly breadcrumb = computed(() => {
-    const ok = this.detailOk();
+    const d = this.shownDetail();
     // Skip plumbing (`geninfo`) and the capture-metadata `frame` proto — the
     // crumbs are the network-protocol chain, like Wireshark's protocol column.
-    return ok
-      ? ok.detail.tree
+    return d
+      ? d.tree
           .filter((n) => n.element === 'proto' && n.name !== 'geninfo' && n.name !== 'frame')
           .map((n) => n.name.toUpperCase())
       : [];

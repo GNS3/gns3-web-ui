@@ -20,18 +20,26 @@
 </div>
 
 <div class="gns3-replay__pane-body">
-  @if (state().status === 'loading') {
+  @if (shownDetail(); as d) {
+    <!-- Decoding with the previous tree held: NOTHING is rendered in between —
+         no spinner swap, no dimming (an opacity toggle reads as a blink), no
+         hint row or progress line (appearing for a few dozen ms, it IS the
+         flicker). The old tree simply swaps in place when the decode lands;
+         local decodes are fast enough to need no feedback. -->
+    <div class="gns3-replay__tree-hold">
+      <app-protocol-tree
+        [tree]="d.tree"
+        [changedPaths]="changedPaths()"
+        [(searchQuery)]="searchQuery"
+        (applyFilter)="applyFilter.emit($event)"
+      />
+    </div>
+  } @else if (state().status === 'loading') {
+    <!-- First decode — nothing to hold yet. -->
     <div class="gns3-replay__detail-state">
       <mat-spinner class="gns3-replay__detail-spinner" [diameter]="20"></mat-spinner>
       <span>Decoding frame…</span>
     </div>
-  } @else if (detailOk(); as ok) {
-    <app-protocol-tree
-      [tree]="ok.detail.tree"
-      [changedPaths]="changedPaths()"
-      [(searchQuery)]="searchQuery"
-      (applyFilter)="applyFilter.emit($event)"
-    />
   } @else if (detailError(); as err) {
     <div class="gns3-replay__detail-error">
       <span>{{ errorMessage() }}</span>
