@@ -9,10 +9,11 @@
     }
     @if (svc.browsingFrames()) {
       <div class="gns3-replay__list-cols gns3-replay__list-cols--frames">
-        <span>Time</span>
-        <span>Source → Destination</span>
-        <span>Proto</span>
-        <span>Len</span>
+        <span class="gns3-replay__col-head">Time<button class="gns3-replay__col-grip" (mousedown)="startColDrag($event, 'time')" title="Drag to resize"></button></span>
+        <span class="gns3-replay__col-head">Source<button class="gns3-replay__col-grip" (mousedown)="startColDrag($event, 'src')" title="Drag to resize"></button></span>
+        <span class="gns3-replay__col-head">Destination<button class="gns3-replay__col-grip" (mousedown)="startColDrag($event, 'dst')" title="Drag to resize"></button></span>
+        <span class="gns3-replay__col-head">Proto<button class="gns3-replay__col-grip" (mousedown)="startColDrag($event, 'proto')" title="Drag to resize"></button></span>
+        <span class="gns3-replay__col-head">Len<button class="gns3-replay__col-grip" (mousedown)="startColDrag($event, 'len')" title="Drag to resize"></button></span>
         <span>Info</span>
       </div>
     } @else {
@@ -38,7 +39,8 @@
           [title]="f.info ?? ''"
         >
           <span class="gns3-replay__cell gns3-replay__cell--time">{{ frameTime(f.ts) }}</span>
-          <span class="gns3-replay__cell gns3-replay__cell--addr">{{ addressLabel(f) }}</span>
+          <span class="gns3-replay__cell gns3-replay__cell--addr">{{ f.src ?? '—' }}</span>
+          <span class="gns3-replay__cell gns3-replay__cell--addr">{{ f.dst ?? '—' }}</span>
           <span class="gns3-replay__cell gns3-replay__cell--proto">{{ f.proto ?? '—' }}</span>
           <span class="gns3-replay__cell gns3-replay__cell--len">{{ f.len }}</span>
           <span class="gns3-replay__cell gns3-replay__cell--info">{{ f.info ?? '' }}</span>

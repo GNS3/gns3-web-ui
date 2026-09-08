@@ -46,9 +46,14 @@
   text-transform: uppercase;
   color: var(--mat-sys-on-surface-variant);
 
+  // Frame columns come from the host-level variable the resize grips write —
+  // one style write per mousemove re-grids header AND every row via
+  // inheritance (no change detection over the up-to-5000 rows).
   &--frames {
-    grid-template-columns: 104px minmax(150px, 1fr) 58px 42px minmax(110px, 2fr);
-    gap: 8px;
+    grid-template-columns: var(
+      --gns3-replay-cols,
+      104px minmax(100px, 1fr) minmax(100px, 1fr) 58px 42px minmax(110px, 2fr)
+    );
   }
 
   &--buckets {
@@ -57,16 +62,55 @@
   }
 }
 
+// Wireshark-style column separators — HEADER ONLY: data rows stay clean.
+// The separator is the header cell's right border plus inter-column padding
+// (NO grid gap on the frames grid — a gap would leave the line floating 8px
+// away from the next column). The last column (Info) has no border.
+.gns3-replay__col-head {
+  border-right: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 70%, transparent);
+}
+
+.gns3-replay__list-cols--frames > :last-child {
+  border-right: none;
+}
+
+// Resizable header cell: the grip sits on its right edge; padding keeps the
+// label clear of the separator line.
+.gns3-replay__col-head {
+  position: relative;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 8px;
+}
+
+.gns3-replay__col-grip {
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  right: -5px;
+  width: 9px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: col-resize;
+
+  &:hover,
+  &:active {
+    background: color-mix(in srgb, var(--mat-sys-primary) 35%, transparent);
+  }
+}
+
 .gns3-replay__list-scroll {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
+  overflow: auto; // columns may be dragged wider than the pane
 }
 
 .gns3-replay__row {
   display: grid;
-  grid-template-columns: 104px minmax(150px, 1fr) 58px 42px minmax(110px, 2fr);
-  gap: 8px;
+  grid-template-columns: var(--gns3-replay-cols, 104px minmax(100px, 1fr) minmax(100px, 1fr) 58px 42px minmax(110px, 2fr));
   align-items: center;
   min-height: 22px;
   padding: 0 10px;
@@ -97,6 +141,9 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  // Inter-column breathing room (the frames grid has no gap — see the
+  // separator comment above).
+  padding-right: 8px;
 
   &--len {
     text-align: right;

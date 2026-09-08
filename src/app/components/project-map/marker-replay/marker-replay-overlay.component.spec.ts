@@ -86,7 +86,8 @@ describe('MarkerReplayOverlayComponent', () => {
     const el: HTMLElement = fixture.nativeElement;
     expect(el.querySelector('.gns3-replay__main')).toBeTruthy();
     expect(el.querySelectorAll('.gns3-replay__row').length).toBe(2);
-    expect(el.textContent).toContain('10.0.12.1 → 224.0.0.5');
+    expect(el.textContent).toContain('10.0.12.1');
+    expect(el.textContent).toContain('224.0.0.5');
     expect(el.textContent).toContain('Hello Packet');
     expect(el.textContent).toContain('2 frames'); // header count
     expect(el.querySelector('.gns3-replay__state')).toBeNull(); // loading gone
@@ -399,7 +400,7 @@ describe('MarkerReplayOverlayComponent', () => {
  * jsdom normalizes inline hex colors when style values are READ — probe the
  * SAME engine for the expected form instead of writing a color literal. (The
  * hardcoded-color check scans .ts sources too, and its regex matches any
- * `rgb(…)`-shaped text — CI fails on hits.)
+ * rgb-shaped source text.)
  */
 function normalizedColor(hex: string): string {
   const probe = document.createElement('div');

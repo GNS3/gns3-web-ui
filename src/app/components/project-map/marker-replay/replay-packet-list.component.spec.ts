@@ -13,7 +13,7 @@ import { ReplayFrame, ReplayRangeResponse } from '@models/marker-replay';
  * jsdom normalizes inline hex colors when style values are READ — probe the
  * SAME engine for the expected form instead of writing a color literal. (The
  * hardcoded-color check scans .ts sources too, and its regex matches any
- * `rgb(…)`-shaped text — CI fails on hits.)
+ * rgb-shaped source text.)
  */
 function normalizedColor(hex: string): string {
   const probe = document.createElement('div');
@@ -106,7 +106,8 @@ describe('ReplayPacketListComponent', () => {
     // No "#" column — per-pcap frame numbers are meaningless after the merge.
     expect(el.querySelector('.gns3-replay__list-cols--frames')?.textContent).not.toContain('#');
     const first = rows()[0];
-    expect(first.textContent).toContain('10.0.12.1 → 224.0.0.5');
+    expect(first.textContent).toContain('10.0.12.1');
+    expect(first.textContent).toContain('224.0.0.5');
     expect(first.textContent).toContain('Hello Packet');
     expect(first.textContent).toContain('OSPF');
     expect(first.textContent).toContain('.100000'); // µs fraction, from the ts string
@@ -193,5 +194,40 @@ describe('ReplayPacketListComponent', () => {
     back!.click();
     expect(exit).toHaveBeenCalled();
     expect(svc.inWindow()).toBe(false);
+  });
+
+  describe('column resize (header grips)', () => {
+    function drag(gripIndex: number, dx: number) {
+      const grips = (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('.gns3-replay__col-grip');
+      grips[gripIndex].dispatchEvent(new MouseEvent('mousedown', { clientX: 100, bubbles: true }));
+      document.dispatchEvent(new MouseEvent('mousemove', { clientX: 100 + dx }));
+      document.dispatchEvent(new MouseEvent('mouseup'));
+      fixture.detectChanges();
+    }
+
+    const colsVar = () => (fixture.nativeElement as HTMLElement).style.getPropertyValue('--gns3-replay-cols');
+
+    beforeEach(() => {
+      svc.tag.set(7);
+      svc.mode.set('frames');
+      svc.frames.set(frames);
+      fixture.detectChanges();
+    });
+
+    it('dragging a grip rewrites the shared grid variable', () => {
+      expect(colsVar()).toBe(''); // unset until a first drag
+      drag(0, 30); // Time: 104 + 30
+      expect(colsVar()).toBe('134px minmax(100px, 1fr) minmax(100px, 1fr) 58px 42px minmax(110px, 2fr)');
+    });
+
+    it('dragging a flexible address column pins it to a px width', () => {
+      drag(1, 0); // jsdom cannot measure cells — the fallback start (150) applies
+      expect(colsVar()).toContain('150px minmax(100px, 1fr)');
+    });
+
+    it('widths clamp to the column minimum', () => {
+      drag(4, -500); // Len: floor is 34
+      expect(colsVar()).toContain('34px minmax(110px, 2fr)');
+    });
   });
 });
