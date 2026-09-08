@@ -10,13 +10,15 @@ import { Controller } from '@models/controller';
 import { ReplayFrame, ReplayRangeResponse } from '@models/marker-replay';
 
 /**
- * jsdom normalizes hex colors to rgb() when style values are READ — derive
- * the expected inline-style form from the fixture (keeps color literals out
- * of the source; the hardcoded-color hook scans .ts too).
+ * jsdom normalizes inline hex colors when style values are READ — probe the
+ * SAME engine for the expected form instead of writing a color literal. (The
+ * hardcoded-color check scans .ts sources too, and its regex matches any
+ * `rgb(…)`-shaped text — CI fails on hits.)
  */
-function hexToRgb(hex: string): string {
-  const n = parseInt(hex, 16);
-  return `rgb(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255})`;
+function normalizedColor(hex: string): string {
+  const probe = document.createElement('div');
+  probe.style.color = `#${hex}`;
+  return probe.style.color;
 }
 
 describe('ReplayPacketListComponent', () => {
@@ -101,10 +103,13 @@ describe('ReplayPacketListComponent', () => {
     const el: HTMLElement = fixture.nativeElement;
     expect(rows().length).toBe(2);
     expect(el.querySelectorAll('.gns3-replay__list-cols--frames').length).toBe(1);
+    // No "#" column — per-pcap frame numbers are meaningless after the merge.
+    expect(el.querySelector('.gns3-replay__list-cols--frames')?.textContent).not.toContain('#');
     const first = rows()[0];
     expect(first.textContent).toContain('10.0.12.1 → 224.0.0.5');
     expect(first.textContent).toContain('Hello Packet');
     expect(first.textContent).toContain('OSPF');
+    expect(first.textContent).toContain('.100000'); // µs fraction, from the ts string
     expect(first.getAttribute('title')).toBe('Hello Packet'); // native tooltip
   });
 
@@ -119,8 +124,8 @@ describe('ReplayPacketListComponent', () => {
     expect(selected.classList.contains('gns3-replay__row--selected')).toBe(true);
     expect(selected.style.background).toBe(''); // null binding — the class provides color
     const other = rows()[0];
-    expect(other.style.background).toBe(hexToRgb(frames[0].bg!));
-    expect(other.style.color).toBe(hexToRgb(frames[0].fg!));
+    expect(other.style.background).toBe(normalizedColor(frames[0].bg!));
+    expect(other.style.color).toBe(normalizedColor(frames[0].fg!));
   });
 
   it('clicking a row selects it (setCurrentIndex)', () => {

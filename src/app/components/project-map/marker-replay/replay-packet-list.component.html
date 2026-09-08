@@ -9,7 +9,6 @@
     }
     @if (svc.browsingFrames()) {
       <div class="gns3-replay__list-cols gns3-replay__list-cols--frames">
-        <span>#</span>
         <span>Time</span>
         <span>Source → Destination</span>
         <span>Proto</span>
@@ -38,7 +37,6 @@
           (keydown)="onRowKey($event, i)"
           [title]="f.info ?? ''"
         >
-          <span class="gns3-replay__cell gns3-replay__cell--num">{{ f.frame_number }}</span>
           <span class="gns3-replay__cell gns3-replay__cell--time">{{ frameTime(f.ts) }}</span>
           <span class="gns3-replay__cell gns3-replay__cell--addr">{{ addressLabel(f) }}</span>
           <span class="gns3-replay__cell gns3-replay__cell--proto">{{ f.proto ?? '—' }}</span>
@@ -55,7 +53,7 @@
           tabindex="0"
           (click)="svc.setCurrentBucket(i)"
         >
-          <span class="gns3-replay__cell gns3-replay__cell--time">{{ frameTime(b.ts) }}</span>
+          <span class="gns3-replay__cell gns3-replay__cell--time">{{ secondTime(b.ts) }}</span>
           <span class="gns3-replay__bucket-barzone">
             <span class="gns3-replay__bucket-bar" [style.width.px]="bucketBarWidth(b)"></span>
             @if (i === svc.currentBucketIndex()) {

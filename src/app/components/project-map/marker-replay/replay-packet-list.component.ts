@@ -4,7 +4,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { ReplayBucket, ReplayFrame } from '@models/marker-replay';
 import { MarkerReplayService } from '@services/marker-replay.service';
-import { bucketBarWidth as bucketBarWidthFor, formatFrameTime, maxBucketCount } from './replay-timeline-math';
+import {
+  bucketBarWidth as bucketBarWidthFor,
+  formatFrameTime,
+  formatSeconds,
+  maxBucketCount,
+} from './replay-timeline-math';
 
 /** Full-bar reference width (px) for the per-second density bars. */
 const BUCKET_FULL_PX = 150;
@@ -43,6 +48,11 @@ export class ReplayPacketListComponent {
 
   frameTime(ts: string): string {
     return formatFrameTime(ts);
+  }
+
+  /** Bucket rows are whole seconds — no µs fraction noise. */
+  secondTime(ts: string): string {
+    return formatSeconds(Math.floor(Number(ts)));
   }
 
   // The null-on-selected trick is LOAD-BEARING: an inline style always

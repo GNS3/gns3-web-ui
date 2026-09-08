@@ -22,9 +22,15 @@ export function formatSeconds(sec: number): string {
   return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
 }
 
-/** Frame ts string → local "HH:MM:SS" (display only — the string itself never changes). */
+/**
+ * Frame ts string → local "HH:MM:SS.ffffff" (µs precision, straight from the
+ * string's fraction — no float rounding). Display only; the string itself
+ * never changes and never travels back to the server.
+ */
 export function formatFrameTime(ts: string): string {
-  return formatSeconds(Math.floor(Number(ts)));
+  const [sec, frac = ''] = ts.split('.');
+  const micros = (frac + '000000').slice(0, 6);
+  return `${formatSeconds(Number(sec))}.${micros}`;
 }
 
 /** Wireshark-style relative time: "+1.234s" from the list's first frame. */

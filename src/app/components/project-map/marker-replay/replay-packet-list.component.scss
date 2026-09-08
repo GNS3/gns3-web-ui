@@ -47,14 +47,13 @@
   color: var(--mat-sys-on-surface-variant);
 
   &--frames {
-    grid-template-columns: 44px 76px minmax(150px, 1fr) 58px 42px minmax(110px, 2fr);
+    grid-template-columns: 104px minmax(150px, 1fr) 58px 42px minmax(110px, 2fr);
     gap: 8px;
   }
 
   &--buckets {
-    grid-template-columns: 76px minmax(0, 1fr);
+    grid-template-columns: 104px minmax(0, 1fr);
     gap: 8px;
-    padding-left: 54px;
   }
 }
 
@@ -66,7 +65,7 @@
 
 .gns3-replay__row {
   display: grid;
-  grid-template-columns: 44px 76px minmax(150px, 1fr) 58px 42px minmax(110px, 2fr);
+  grid-template-columns: 104px minmax(150px, 1fr) 58px 42px minmax(110px, 2fr);
   gap: 8px;
   align-items: center;
   min-height: 22px;
@@ -99,7 +98,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 
-  &--num,
   &--len {
     text-align: right;
     font-variant-numeric: tabular-nums;
@@ -116,11 +114,11 @@
 
 .gns3-replay__bucket-row {
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
+  grid-template-columns: 104px minmax(0, 1fr);
   gap: 8px;
   align-items: center;
   min-height: 22px;
-  padding: 0 10px 0 54px;
+  padding: 0 10px;
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
   font-size: 11px;
   color: var(--mat-sys-on-surface);

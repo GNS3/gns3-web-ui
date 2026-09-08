@@ -101,8 +101,8 @@ describe('MarkerReplayOverlayComponent', () => {
     const rows = (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('.gns3-replay__row');
     expect(rows[0].classList.contains('gns3-replay__row--selected')).toBe(true);
     expect(rows[0].style.background).toBe('');
-    expect(rows[1].style.background).toBe(hexToRgb(frames[1].bg!));
-    expect(rows[1].style.color).toBe(hexToRgb(frames[1].fg!));
+    expect(rows[1].style.background).toBe(normalizedColor(frames[1].bg!));
+    expect(rows[1].style.color).toBe(normalizedColor(frames[1].fg!));
   });
 
   it('clamps the default window size into the (jsdom) viewport', () => {
@@ -396,13 +396,15 @@ describe('MarkerReplayOverlayComponent', () => {
 });
 
 /**
- * jsdom normalizes hex colors to rgb() when style values are READ — derive
- * the expected inline-style form from the fixture (keeps color literals out
- * of the source; the hardcoded-color hook scans .ts too).
+ * jsdom normalizes inline hex colors when style values are READ — probe the
+ * SAME engine for the expected form instead of writing a color literal. (The
+ * hardcoded-color check scans .ts sources too, and its regex matches any
+ * `rgb(…)`-shaped text — CI fails on hits.)
  */
-function hexToRgb(hex: string): string {
-  const n = parseInt(hex, 16);
-  return `rgb(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255})`;
+function normalizedColor(hex: string): string {
+  const probe = document.createElement('div');
+  probe.style.color = `#${hex}`;
+  return probe.style.color;
 }
 
 /** Decoded-frame fixture whose ip.ttl leaf label differs with `ttl`. */

@@ -3,11 +3,18 @@ import { bucketBarWidth, formatDelta, formatFrameTime, formatSeconds, maxBucketC
 import { ReplayBucket } from '@models/marker-replay';
 
 describe('formatSeconds / formatFrameTime', () => {
-  it('formats local HH:MM:SS from a ts string', () => {
-    const d = new Date(1788196663.226372 * 1000);
-    const expected = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
-    expect(formatFrameTime('1788196663.226372')).toBe(expected);
-    expect(formatSeconds(Math.floor(1788196663.226372))).toBe(expected);
+  it('formats local HH:MM:SS.ffffff — the µs fraction straight from the string', () => {
+    const d = new Date(1788196663 * 1000);
+    const hms = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+    expect(formatFrameTime('1788196663.226372')).toBe(`${hms}.226372`);
+    expect(formatSeconds(Math.floor(1788196663.226372))).toBe(hms);
+  });
+
+  it('pads the fraction to six digits and tolerates a fraction-less ts', () => {
+    const d = new Date(1788196663 * 1000);
+    const hms = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+    expect(formatFrameTime('1788196663.22')).toBe(`${hms}.220000`);
+    expect(formatFrameTime('1788196663')).toBe(`${hms}.000000`);
   });
 });
 
