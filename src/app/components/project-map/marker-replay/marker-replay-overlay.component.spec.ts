@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of, throwError, Subject } from 'rxjs';
 import { MarkerReplayOverlayComponent } from './marker-replay-overlay.component';
 import { MarkerReplayService } from '@services/marker-replay.service';
+import { WindowManagementService } from '@services/window-management.service';
 import { HttpController } from '@services/http-controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { MapScaleService } from '@services/mapScale.service';
@@ -285,6 +286,55 @@ describe('MarkerReplayOverlayComponent', () => {
     component.closeWindow.subscribe(emitted);
     (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.gns3-replay__close')!.click();
     expect(emitted).toHaveBeenCalled();
+  });
+
+  it('minimizing hides the main window but keeps pinned comparison windows floating', () => {
+    mockHttp.get.mockImplementation((_c: any, url: string) =>
+      of(url.includes('frame/detail') ? detailFor(frames[0], 64) : range)
+    );
+    fixture.detectChanges();
+    svc.pinnedDetails.set([{ id: 1, frame: frames[0], state: { status: 'ok', detail: detailFor(frames[0], 64) } }]);
+    fixture.detectChanges();
+
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('.gns3-replay__main')).toBeTruthy();
+    (el.querySelector<HTMLButtonElement>('.gns3-replay__minimize')!).click();
+    fixture.detectChanges();
+
+    expect(component.minimized()).toBe(true);
+    expect(el.querySelector('.gns3-replay__main')).toBeNull(); // window hidden…
+    expect(el.querySelector('.gns3-replay__window')).toBeTruthy(); // …pin alive
+
+    TestBed.inject(WindowManagementService).restoreWindow('replay-main');
+    fixture.detectChanges();
+    expect(component.minimized()).toBe(false);
+    expect(el.querySelector('.gns3-replay__main')).toBeTruthy();
+  });
+
+  it('collapsing the detail pane NARROWS the window; expanding restores its width', () => {
+    mockHttp.get.mockReturnValue(of(range));
+    fixture.detectChanges();
+
+    const el: HTMLElement = fixture.nativeElement;
+    const wide = component.winWidth();
+    expect(el.querySelector('.gns3-replay__right')).toBeTruthy();
+
+    (el.querySelector<HTMLButtonElement>('.gns3-replay__pane-toggle')!).click();
+    fixture.detectChanges();
+    expect(component.detailOpen()).toBe(false);
+    expect(el.querySelector('.gns3-replay__right')).toBeNull();
+    expect(el.querySelectorAll('.gns3-replay__row').length).toBe(2); // list keeps rendering
+    expect(component.winWidth()).toBe(component.LIST_ONLY_W); // narrowed to the list
+    // The collapsed minimum follows the mode — a list-only window may shrink
+    // below the two-pane minimum.
+    expect(component.validate({ rectangle: { width: component.LIST_MIN_W, height: 500 } } as any)).toBe(true);
+    expect(component.validate({ rectangle: { width: component.LIST_MIN_W - 1, height: 500 } } as any)).toBe(false);
+
+    (el.querySelector<HTMLButtonElement>('.gns3-replay__pane-toggle')!).click();
+    fixture.detectChanges();
+    expect(component.detailOpen()).toBe(true);
+    expect(el.querySelector('.gns3-replay__right')).toBeTruthy();
+    expect(component.winWidth()).toBe(wide); // restored
   });
 
   it('renders one pinned window per snapshot OUTSIDE the main window', () => {

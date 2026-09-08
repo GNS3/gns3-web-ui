@@ -439,6 +439,20 @@
         <span class="inline-taskbar__label">Markers</span>
       </div>
     }
+
+    <!-- Tag Replay main-window taskbar icon (singleton; pinned comparison windows are unaffected) -->
+    @if (project && isMarkerReplayVisible && markerReplayTag !== null) {
+      <div
+        class="inline-taskbar__icon"
+        [class.inline-taskbar__icon--minimized]="windowManagement.minimizedWindows().some(w => w.id === 'replay-main')"
+        [style.left.px]="getReplayTaskbarLeft()"
+        (click)="toggleReplayMinimize()"
+        [title]="windowManagement.minimizedWindows().some(w => w.id === 'replay-main') ? 'Tag Replay - Click to restore' : 'Tag Replay - Click to minimize'"
+      >
+        <mat-icon class="inline-taskbar__icon-type">history</mat-icon>
+        <span class="inline-taskbar__label">Replay</span>
+      </div>
+    }
   </div>
 </div>
 

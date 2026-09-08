@@ -1,6 +1,8 @@
 <!-- The MAIN Wireshark-style window. Pins render AFTER it (outside the window
      div, fixed positioning) — see the component docblock for the z-order
-     contract that keeps 'main' above never-clicked pins. -->
+     contract that keeps 'main' above never-clicked pins. MINIMIZED: the window
+     div unmounts but the component (session service, pins) stays alive. -->
+@if (!minimized()) {
 <div
   class="gns3-replay__main"
   [class.gns3-replay__main--dragging]="dragging()"
@@ -39,6 +41,14 @@
       [matTooltip]="alreadyPinned() ? 'Already pinned for comparison' : 'Freeze this frame into a comparison window'"
     >
       <mat-icon>push_pin</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      class="gns3-replay__minimize"
+      (click)="minimize()"
+      matTooltip="Minimize to taskbar (pinned comparison windows stay)"
+    >
+      <mat-icon>remove</mat-icon>
     </button>
     <button mat-icon-button class="gns3-replay__close" (click)="close()" matTooltip="Close replay">
       <mat-icon>close</mat-icon>
@@ -100,26 +110,43 @@
     } @else {
       <div class="gns3-replay__panes">
         <app-replay-packet-list class="gns3-replay__left" />
-        <div class="gns3-replay__divider"></div>
-        <div class="gns3-replay__right">
-          @if (svc.currentFrame(); as frame) {
-            <app-replay-detail-pane
-              [frame]="frame"
-              [state]="svc.detail()"
-              [holdDetail]="svc.lastOkDetail()"
-              [(searchQuery)]="svc.searchQuery"
-              (retry)="svc.retryDetail()"
-              (reload)="svc.reloadTimeline()"
-              (applyFilter)="onPaneApplyFilter($event)"
-            />
-          } @else {
-            <div class="gns3-replay__state"><span>Select a frame to decode it.</span></div>
-          }
-        </div>
+        @if (detailOpen()) {
+          <button
+            class="gns3-replay__pane-toggle"
+            (click)="toggleDetail()"
+            matTooltip="Hide packet details (window narrows to the list)"
+          >
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+          <div class="gns3-replay__right">
+            @if (svc.currentFrame(); as frame) {
+              <app-replay-detail-pane
+                [frame]="frame"
+                [state]="svc.detail()"
+                [holdDetail]="svc.lastOkDetail()"
+                [(searchQuery)]="svc.searchQuery"
+                (retry)="svc.retryDetail()"
+                (reload)="svc.reloadTimeline()"
+                (applyFilter)="onPaneApplyFilter($event)"
+              />
+            } @else {
+              <div class="gns3-replay__state"><span>Select a frame to decode it.</span></div>
+            }
+          </div>
+        } @else {
+          <button
+            class="gns3-replay__pane-toggle"
+            (click)="toggleDetail()"
+            matTooltip="Show packet details"
+          >
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+        }
       </div>
     }
   </div>
 </div>
+}
 
 <!-- Pinned comparison windows: fixed-position (viewport space), must live
      OUTSIDE the main window div so no ancestor clipping/stacking context

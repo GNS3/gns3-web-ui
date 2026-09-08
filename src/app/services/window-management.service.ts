@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 
 export interface MinimizedWindow {
   id: string;
-  type: 'console' | 'wireshark' | 'filemgr' | 'marker';
+  type: 'console' | 'wireshark' | 'filemgr' | 'marker' | 'replay';
   linkId?: string;
 }
 
@@ -20,7 +20,7 @@ export class WindowManagementService {
   /**
    * Add a window to minimized list
    */
-  minimizeWindow(id: string, type: 'console' | 'wireshark' | 'filemgr' | 'marker', linkId?: string): void {
+  minimizeWindow(id: string, type: 'console' | 'wireshark' | 'filemgr' | 'marker' | 'replay', linkId?: string): void {
     const current = this.minimizedWindowsSignal();
     if (!current.find(w => w.id === id)) {
       this.minimizedWindowsSignal.set([...current, { id, type, linkId }]);
@@ -45,7 +45,7 @@ export class WindowManagementService {
   /**
    * Toggle window minimize state
    */
-  toggleMinimize(id: string, type: 'console' | 'wireshark' | 'filemgr' | 'marker', linkId?: string): void {
+  toggleMinimize(id: string, type: 'console' | 'wireshark' | 'filemgr' | 'marker' | 'replay', linkId?: string): void {
     if (this.isMinimized(id)) {
       this.restoreWindow(id);
     } else {
@@ -56,7 +56,7 @@ export class WindowManagementService {
   /**
    * Get minimized windows by type
    */
-  getMinimizedByType(type: 'console' | 'wireshark' | 'filemgr' | 'marker'): MinimizedWindow[] {
+  getMinimizedByType(type: 'console' | 'wireshark' | 'filemgr' | 'marker' | 'replay'): MinimizedWindow[] {
     return this.minimizedWindowsSignal().filter(w => w.type === type);
   }
 

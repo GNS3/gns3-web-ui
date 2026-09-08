@@ -21,6 +21,7 @@ import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 import { ProtocolTreeNode } from '@models/marker-replay';
 import { MarkerReplayService, sameReplayFrame } from '@services/marker-replay.service';
+import { WindowManagementService } from '@services/window-management.service';
 import { clampRect } from './replay-geometry';
 import { diffTrees } from './replay-tree-diff';
 import { ReplayPacketListComponent } from './replay-packet-list.component';
@@ -72,12 +73,32 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   readonly windowFocused = output<void>();
 
   readonly svc = inject(MarkerReplayService);
+  private readonly windowManagement = inject(WindowManagementService);
+
+  /** Taskbar/minimize registry id (see {@link minimize}). */
+  private readonly WINDOW_ID = 'replay-main';
+  /**
+   * True while the main window is MINIMIZED (hidden via the taskbar). The
+   * component — and with it the session service, the LRU and every PINNED
+   * comparison window — stays alive; only the window div unmounts. ✕ remains
+   * the full close (session destroyed).
+   */
+  readonly minimized = signal(false);
+  /** Whether the right detail pane shows (session preference, default open). */
+  readonly detailOpen = signal(true);
 
   readonly DEFAULT_W = 1100;
   readonly DEFAULT_H = 640;
-  readonly MIN_W = 760;
   readonly MIN_H = 420;
+  /** Min width with BOTH panes visible (the right pane alone needs ~340px). */
+  readonly OPEN_MIN_W = 760;
+  /** Min width collapsed to the list only — the Wireshark columns fit at ~560. */
+  readonly LIST_MIN_W = 560;
+  /** Width the window takes when the detail pane hides (list-only). */
+  readonly LIST_ONLY_W = 640;
   private readonly DEFAULT_TOP = 80; // below the project toolbar
+  /** Width while the detail pane was last OPEN — restored on re-expand. */
+  private wideWidth = 0;
 
   readonly winLeft = signal(0);
   readonly winTop = signal(this.DEFAULT_TOP);
@@ -132,6 +153,11 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
       const kind = this.svc.rangeErrorKind();
       if (kind === 'gate' || kind === 'missing') this.closeWindow.emit();
     });
+    // Taskbar minimize/restore sync (the marker-manager pattern).
+    effect(() => {
+      const isMin = this.windowManagement.minimizedWindows().some((w) => w.id === this.WINDOW_ID);
+      if (isMin !== this.minimized()) this.minimized.set(isMin);
+    });
   }
 
   ngOnInit(): void {
@@ -139,7 +165,7 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
     // the viewport (jsdom's default 1024×768 exercises the clamp).
     const vw = typeof window !== 'undefined' ? window.innerWidth : this.DEFAULT_W;
     const vh = typeof window !== 'undefined' ? window.innerHeight : this.DEFAULT_H;
-    const width = Math.min(this.DEFAULT_W, Math.max(this.MIN_W, vw - 32));
+    const width = Math.min(this.DEFAULT_W, Math.max(this.OPEN_MIN_W, vw - 32));
     const height = Math.min(this.DEFAULT_H, Math.max(this.MIN_H, vh - 96));
     const r = clampRect(
       { left: Math.round((vw - width) / 2), top: this.DEFAULT_TOP, width, height },
@@ -161,6 +187,15 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
 
   close(): void {
     this.closeWindow.emit();
+  }
+
+  /**
+   * Hide the main window to the taskbar (restore from there). Pinned
+   * comparison windows keep floating — comparing against the map is exactly
+   * what minimizing is FOR.
+   */
+  minimize(): void {
+    this.windowManagement.minimizeWindow(this.WINDOW_ID, 'replay');
   }
 
   // ---- focus fleet (main window + pins) ----
@@ -198,6 +233,44 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   /** A tree field's filter_expr (from either pane) — apply it to the list. */
   onPaneApplyFilter(expr: string): void {
     this.svc.applyFilter(expr);
+  }
+
+  /** Mode-dependent minimum width (both panes vs. list only). */
+  private currentMinW(): number {
+    return this.detailOpen() ? this.OPEN_MIN_W : this.LIST_MIN_W;
+  }
+
+  /**
+   * Collapse/expand the detail pane. Collapsing NARROWS the window to the
+   * list-only width (a full-width window for one list is dead weight over the
+   * map); expanding restores the width it had while open. The left edge stays
+   * put — the window shrinks/grows to the right (viewport-clamped).
+   */
+  toggleDetail(): void {
+    const open = !this.detailOpen();
+    if (open) {
+      this.detailOpen.set(true);
+      if (this.wideWidth) this.applyWidth(this.wideWidth);
+    } else {
+      this.wideWidth = this.winWidth();
+      this.detailOpen.set(false);
+      this.applyWidth(this.LIST_ONLY_W);
+    }
+  }
+
+  /** Set the window width (mode-min clamped, viewport-clamped, left edge kept). */
+  private applyWidth(width: number): void {
+    const vw = typeof window !== 'undefined' ? window.innerWidth : width;
+    const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
+    const w = Math.min(Math.max(width, this.currentMinW()), Math.max(vw - 32, this.currentMinW()));
+    this.winWidth.set(w);
+    const r = clampRect(
+      { left: this.winLeft(), top: this.winTop(), width: w, height: this.winHeight() },
+      { width: vw, height: vh },
+      64
+    );
+    this.winLeft.set(r.left);
+    this.winTop.set(r.top);
   }
 
   // ---- window drag (header) + resize (mwlResizable) ----
@@ -251,7 +324,7 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   readonly validate = (event: ResizeEvent): boolean => {
     const w = event.rectangle.width;
     const h = event.rectangle.height;
-    if (w !== undefined && w < this.MIN_W) return false;
+    if (w !== undefined && w < this.currentMinW()) return false;
     if (h !== undefined && h < this.MIN_H) return false;
     return true;
   };
@@ -263,7 +336,8 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   onResizeEnd(event: ResizeEvent): void {
     const vw = typeof window !== 'undefined' ? window.innerWidth : this.winWidth();
     const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
-    const width = Math.min(Math.max(event.rectangle.width || this.winWidth(), this.MIN_W), Math.max(vw - 32, this.MIN_W));
+    const minW = this.currentMinW();
+    const width = Math.min(Math.max(event.rectangle.width || this.winWidth(), minW), Math.max(vw - 32, minW));
     const height = Math.min(Math.max(event.rectangle.height || this.winHeight(), this.MIN_H), Math.max(vh - 96, this.MIN_H));
     this.winWidth.set(width);
     this.winHeight.set(height);
