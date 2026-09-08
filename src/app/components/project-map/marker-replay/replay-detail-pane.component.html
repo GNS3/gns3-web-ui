@@ -16,7 +16,16 @@
     <span class="gns3-replay__chip">{{ delta }}</span>
   }
   <span class="gns3-replay__chip">{{ frame().len }} B</span>
-  <span class="gns3-replay__chip">{{ linkLabel(frame().link_id) }}</span>
+  <!-- The capture-source link — clickable: narrows the packet list to this
+       link (click again to widen back). Same list in live pane and pins. -->
+  <button
+    type="button"
+    class="gns3-replay__chip gns3-replay__chip--link"
+    (click)="applyLinkFilter.emit(frame().link_id)"
+    matTooltip="Show only frames captured on this link"
+  >
+    {{ linkLabel(frame().link_id) }}
+  </button>
 </div>
 
 <div class="gns3-replay__pane-body">

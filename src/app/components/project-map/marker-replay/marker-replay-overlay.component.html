@@ -38,25 +38,22 @@
       class="gns3-replay__pin"
       [disabled]="!svc.currentFrame() || alreadyPinned()"
       (click)="svc.pinCurrent()"
-      [matTooltip]="alreadyPinned() ? 'Already pinned for comparison' : 'Freeze this frame into a comparison window'"
+      [matTooltip]="alreadyPinned() ? 'Already pinned' : 'Pin frame'"
     >
       <mat-icon>push_pin</mat-icon>
     </button>
-    <button
-      mat-icon-button
-      class="gns3-replay__minimize"
-      (click)="minimize()"
-      matTooltip="Minimize to taskbar (pinned comparison windows stay)"
-    >
+    <button mat-icon-button class="gns3-replay__minimize" (click)="minimize()" matTooltip="Minimize">
       <mat-icon>remove</mat-icon>
     </button>
-    <button mat-icon-button class="gns3-replay__close" (click)="close()" matTooltip="Close replay">
+    <button mat-icon-button class="gns3-replay__close" (click)="close()" matTooltip="Close">
       <mat-icon>close</mat-icon>
     </button>
   </div>
 
-  <!-- Display filter — evaluated SERVER-side (tshark -Y semantics over the
-       decodes); Enter applies, a 400 lands inline below. -->
+  <!-- Two independent narrowings, combined AND-style server-side: the display
+       filter (tshark -Y semantics over the decodes; Enter applies, a 400 lands
+       inline below) and the capture-link pick (the merged list otherwise gives
+       no hint which link a row came from). -->
   <div class="gns3-replay__filterbar">
     <mat-icon class="gns3-replay__filterbar-icon">filter_alt</mat-icon>
     <input
@@ -69,11 +66,38 @@
       (keydown)="onFilterKey($event)"
     />
     @if (svc.filter()) {
-      <button class="gns3-replay__filter-clear" matTooltip="Clear filter" (click)="svc.clearFilter()">
+      <button class="gns3-replay__filter-clear" matTooltip="Clear display filter" (click)="svc.clearFilter()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+    <span class="gns3-replay__filterbar-sep"></span>
+    <button
+      type="button"
+      class="gns3-replay__link-pick"
+      [class.gns3-replay__link-pick--active]="svc.appliedLink()"
+      matTooltip="Narrow the list to one captured link"
+      [matMenuTriggerFor]="linkMenu"
+    >
+      <mat-icon>cable</mat-icon>
+      <span class="gns3-replay__link-pick-label">{{ linkPickLabel() }}</span>
+      <mat-icon class="gns3-replay__link-caret">arrow_drop_down</mat-icon>
+    </button>
+    @if (svc.appliedLink()) {
+      <button class="gns3-replay__filter-clear" matTooltip="Show all links" (click)="svc.applyLinkFilter(null)">
         <mat-icon>close</mat-icon>
       </button>
     }
   </div>
+  <mat-menu #linkMenu="matMenu">
+    <button mat-menu-item (click)="svc.applyLinkFilter(null)">
+      All links ({{ svc.totalUnfiltered() }})
+    </button>
+    @for (o of linkOptions(); track o.link_id) {
+      <button mat-menu-item (click)="svc.applyLinkFilter(o.link_id)">
+        {{ o.label }} ({{ o.count }})
+      </button>
+    }
+  </mat-menu>
   @if (svc.filterError(); as fe) {
     <div class="gns3-replay__filter-error">{{ fe }}</div>
   }
@@ -100,9 +124,9 @@
       }
     } @else if (svc.isEmpty()) {
       <div class="gns3-replay__state">
-        @if (svc.appliedFilter()) {
-          <span>No frames match this filter.</span>
-          <button mat-stroked-button (click)="svc.clearFilter()">Clear filter</button>
+        @if (svc.appliedFilter() || svc.appliedLink()) {
+          <span>{{ emptyFiltersLabel() }}</span>
+          <button mat-stroked-button (click)="svc.clearAllFilters()">Clear filters</button>
         } @else {
           <span>No frames captured under this tag. Pause markers after traffic, then replay.</span>
         }
@@ -111,11 +135,7 @@
       <div class="gns3-replay__panes">
         <app-replay-packet-list class="gns3-replay__left" />
         @if (detailOpen()) {
-          <button
-            class="gns3-replay__pane-toggle"
-            (click)="toggleDetail()"
-            matTooltip="Hide packet details (window narrows to the list)"
-          >
+          <button class="gns3-replay__pane-toggle" (click)="toggleDetail()" matTooltip="Hide packet details">
             <mat-icon>chevron_right</mat-icon>
           </button>
           <div class="gns3-replay__right">
@@ -128,6 +148,7 @@
                 (retry)="svc.retryDetail()"
                 (reload)="svc.reloadTimeline()"
                 (applyFilter)="onPaneApplyFilter($event)"
+                (applyLinkFilter)="svc.applyLinkFilter($event)"
               />
             } @else {
               <div class="gns3-replay__state"><span>Select a frame to decode it.</span></div>

@@ -167,6 +167,62 @@
   overflow-wrap: anywhere;
 }
 
+// Visual split between the display-filter half and the link pick.
+.gns3-replay__filterbar-sep {
+  width: 1px;
+  height: 16px;
+  flex-shrink: 0;
+  background: var(--mat-sys-outline-variant);
+}
+
+// Capture-link picker — same compact register as the filter input.
+.gns3-replay__link-pick {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 24px;
+  max-width: 45%;
+  padding: 0 2px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 11px;
+  cursor: pointer;
+
+  .mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: var(--mat-sys-surface-container);
+  }
+
+  &--active {
+    color: var(--mat-sys-primary);
+
+    .gns3-replay__link-pick-label {
+      font-weight: 600;
+    }
+  }
+}
+
+.gns3-replay__link-pick-label {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gns3-replay__link-caret {
+  // The caret hugs the label tighter than the leading icon.
+  margin-left: -6px;
+}
+
 .gns3-replay__body {
   display: flex;
   flex-direction: column;

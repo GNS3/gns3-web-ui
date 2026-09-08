@@ -10,6 +10,7 @@ import { LinksDataSource } from '../../../cartography/datasources/links-datasour
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { DetailState, ReplayFrame, ReplayFrameDetail } from '@models/marker-replay';
 import { formatDelta, formatFrameTime } from './replay-timeline-math';
+import { linkLabel as formatLinkLabel } from '../helpers/link-label';
 import { ProtocolTreeComponent } from './protocol-tree.component';
 
 /**
@@ -59,6 +60,8 @@ export class ReplayDetailPaneComponent {
   readonly reload = output<void>();
   /** A tree field's ready-made display filter (Wireshark's Apply as Filter). */
   readonly applyFilter = output<string>();
+  /** The link chip's pick — narrow the list to this frame's capture link. */
+  readonly applyLinkFilter = output<string>();
 
   private readonly svc = inject(MarkerReplayService);
   private readonly linksDataSource = inject(LinksDataSource);
@@ -108,14 +111,8 @@ export class ReplayDetailPaneComponent {
     return frames.length ? formatDelta(ts, frames[0].ts) : '';
   }
 
-  /** Link display name ("A → B", cf. marker-manager's linkName). */
+  /** Link display name ("A → B") — the shared cartography join. */
   linkLabel(linkId: string): string {
-    const link = this.linksDataSource.get(linkId);
-    const nodes = link?.nodes;
-    if (!nodes || nodes.length < 2) return linkId.slice(0, 8);
-    const src = this.nodesDataSource.get(nodes[0].node_id);
-    const dst = this.nodesDataSource.get(nodes[1].node_id);
-    if (!src || !dst) return linkId.slice(0, 8);
-    return `${src.name} → ${dst.name}`;
+    return formatLinkLabel(linkId, this.linksDataSource, this.nodesDataSource);
   }
 }

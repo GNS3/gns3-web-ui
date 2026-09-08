@@ -53,6 +53,7 @@ import { ToasterService } from '@services/toaster.service';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 import { WindowManagementService } from '@services/window-management.service';
 import { MarkerFormComponent, MARKER_CAPTURE_AUTO } from './marker-form.component';
+import { linkLabel } from '../helpers/link-label';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 interface DefinitionRow {
@@ -569,15 +570,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   }
 
   private linkName(linkId: string): string {
-    const link = this.linksDataSource.get(linkId);
-    const nodes = link?.nodes;
-    if (!nodes || nodes.length < 2) return linkId.slice(0, 8);
-    const src = this.nodesDataSource.get(nodes[0].node_id);
-    const dst = this.nodesDataSource.get(nodes[1].node_id);
-    if (!src || !dst) return linkId.slice(0, 8);
-    const sLabel = nodes[0].label?.text ?? '';
-    const dLabel = nodes[1].label?.text ?? '';
-    return `${src.name} ${sLabel} → ${dst.name} ${dLabel}`.replace(/\s+/g, ' ').trim();
+    return linkLabel(linkId, this.linksDataSource, this.nodesDataSource, true);
   }
 
   /** Endpoint nodes of a link — options for the per-link "Capture node" dropdown. */

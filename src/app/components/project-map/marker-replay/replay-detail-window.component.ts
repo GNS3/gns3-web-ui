@@ -410,4 +410,9 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
   onPaneApplyFilter(expr: string): void {
     this.svc.applyFilter(expr);
   }
+
+  /** The link chip in a pinned pane — narrows the main list the same way. */
+  onPaneApplyLinkFilter(linkId: string): void {
+    this.svc.applyLinkFilter(linkId);
+  }
 }

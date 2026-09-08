@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
 
@@ -22,6 +23,9 @@ import { Project } from '@models/project';
 import { ProtocolTreeNode } from '@models/marker-replay';
 import { MarkerReplayService, sameReplayFrame } from '@services/marker-replay.service';
 import { WindowManagementService } from '@services/window-management.service';
+import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { linkLabel as formatLinkLabel } from '../helpers/link-label';
 import { clampRect } from './replay-geometry';
 import { diffTrees } from './replay-tree-diff';
 import { ReplayPacketListComponent } from './replay-packet-list.component';
@@ -54,6 +58,7 @@ import { ReplayDetailWindowComponent } from './replay-detail-window.component';
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
+    MatMenuModule,
     MatProgressSpinnerModule,
     ReplayPacketListComponent,
     ReplayDetailPaneComponent,
@@ -74,6 +79,8 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
 
   readonly svc = inject(MarkerReplayService);
   private readonly windowManagement = inject(WindowManagementService);
+  private readonly linksDataSource = inject(LinksDataSource);
+  private readonly nodesDataSource = inject(NodesDataSource);
 
   /** Taskbar/minimize registry id (see {@link minimize}). */
   private readonly WINDOW_ID = 'replay-main';
@@ -121,14 +128,47 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
     return !!frame && this.svc.pinnedDetails().some((p) => sameReplayFrame(p.frame, frame));
   });
 
-  /** Header count: "N frames" (+"of M" while a filter narrows the list). */
+  /** Header count: "N frames" (+"of M" while a filter/link narrows the list). */
   readonly countLabel = computed(() => {
     const total = this.svc.totalFrames();
-    const base = this.svc.appliedFilter() ? `${total} of ${this.svc.totalUnfiltered()}` : `${total}`;
+    const narrowed = this.svc.appliedFilter() || this.svc.appliedLink();
+    const base = narrowed ? `${total} of ${this.svc.totalUnfiltered()}` : `${total}`;
     const suffix = this.svc.inWindow() ? ` · second ${(this.svc.currentBucketIndex() ?? 0) + 1}/${this.svc.buckets().length}` : '';
     // Pluralization follows the LARGER count — "1 of 2 frames".
-    const many = (this.svc.appliedFilter() ? this.svc.totalUnfiltered() : total) !== 1;
+    const many = (narrowed ? this.svc.totalUnfiltered() : total) !== 1;
     return `${base} frame${many ? 's' : ''}${suffix}`;
+  });
+
+  /**
+   * Link-picker options: the range response's per-source stats grouped by
+   * link (several markers on one link arrive as several entries — counts sum),
+   * labeled through the shared cartography join, sorted by label.
+   */
+  readonly linkOptions = computed(() => {
+    const counts = new Map<string, number>();
+    for (const s of this.svc.sources()) {
+      counts.set(s.link_id, (counts.get(s.link_id) ?? 0) + s.count);
+    }
+    return [...counts.entries()]
+      .map(([link_id, count]) => ({
+        link_id,
+        count,
+        label: formatLinkLabel(link_id, this.linksDataSource, this.nodesDataSource),
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  });
+
+  /** The picker button's caption — the applied link's name, or "All links". */
+  readonly linkPickLabel = computed(() => {
+    const id = this.svc.appliedLink();
+    return id ? formatLinkLabel(id, this.linksDataSource, this.nodesDataSource) : 'All links';
+  });
+
+  /** Empty-result copy: which narrowing(s) produced zero frames. */
+  readonly emptyFiltersLabel = computed(() => {
+    const link = this.svc.appliedLink();
+    if (this.svc.appliedFilter()) return link ? 'No frames match this filter on this link.' : 'No frames match this filter.';
+    return 'No frames captured on this link.';
   });
 
   /** Cross-window diff over every decoded pin (≥2 → non-empty). */

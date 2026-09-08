@@ -87,6 +87,15 @@ describe('ReplayDetailPaneComponent', () => {
     expect(el.textContent).toContain('l1');
   });
 
+  it('clicking the link chip emits applyLinkFilter with the frame’s link id', () => {
+    const emitted: string[] = [];
+    component.applyLinkFilter.subscribe((id) => emitted.push(id));
+    fixture.detectChanges();
+
+    (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.gns3-replay__chip--link')!.click();
+    expect(emitted).toEqual(['l1']);
+  });
+
   it('shows the spinner while decoding and the neutral idle text otherwise', () => {
     fixture.componentRef.setInput('state', { status: 'loading' });
     fixture.detectChanges();

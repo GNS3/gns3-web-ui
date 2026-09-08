@@ -111,6 +111,20 @@ describe('MarkerReplayService (HTTP)', () => {
         `/projects/${PROJECT_ID}/markers/tags/${TAG}/replay/range?filter=ospf.msg%20%3D%3D%201`
       );
     });
+
+    it('appends ?link= alone, and &link= after a filter (AND narrowing)', () => {
+      mockHttpController.get.mockReturnValue(of({}));
+      service.replayRange(mockController, PROJECT_ID, TAG, undefined, 'l1').subscribe();
+      expect(mockHttpController.get).toHaveBeenCalledWith(
+        mockController,
+        `/projects/${PROJECT_ID}/markers/tags/${TAG}/replay/range?link=l1`
+      );
+      service.replayRange(mockController, PROJECT_ID, TAG, 'ospf', 'l1').subscribe();
+      expect(mockHttpController.get).toHaveBeenLastCalledWith(
+        mockController,
+        `/projects/${PROJECT_ID}/markers/tags/${TAG}/replay/range?filter=ospf&link=l1`
+      );
+    });
   });
 
   describe('replayFrames', () => {
@@ -147,6 +161,15 @@ describe('MarkerReplayService (HTTP)', () => {
       expect(mockHttpController.get).toHaveBeenCalledWith(
         mockController,
         `/projects/${PROJECT_ID}/markers/tags/${TAG}/replay/frames?ts=${F0.ts}&window_ms=500&limit=200&filter=ip.ttl%20%3C%204`
+      );
+    });
+
+    it('appends &link= after the window params (composing with a filter)', () => {
+      mockHttpController.get.mockReturnValue(of({ frames: [] }));
+      service.replayFrames(mockController, PROJECT_ID, TAG, F0.ts, 500, 200, 'ospf', 'l2').subscribe();
+      expect(mockHttpController.get).toHaveBeenCalledWith(
+        mockController,
+        `/projects/${PROJECT_ID}/markers/tags/${TAG}/replay/frames?ts=${F0.ts}&window_ms=500&limit=200&filter=ospf&link=l2`
       );
     });
   });
@@ -580,6 +603,116 @@ describe('MarkerReplayService state machine', () => {
       stalled.next({ frames: [F0, F1] }); // the UNFILTERED result arrives late
       expect(service.frames()).toHaveLength(2); // discarded — the filtered rows stay
       expect(service.frames()[0].ts).toBe(G0.ts);
+    });
+  });
+
+  describe('link filter', () => {
+    it('applyLinkFilter reloads narrowed to the link; counts split, sources recorded', () => {
+      const sources = [
+        { node_id: 'n1', link_id: 'l1', marker: 'm1', count: 2 },
+        { node_id: 'n2', link_id: 'l2', marker: 'm2', count: 1 },
+      ];
+      mockRoutes({
+        range: (url) =>
+          of(
+            url.includes('link=l1')
+              ? rangeOf([F0, F2], { frame_count: 2, sources })
+              : rangeOf([F0, F1, F2], { sources })
+          ),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      expect(service.totalUnfiltered()).toBe(3);
+      expect(service.sources()).toHaveLength(2);
+
+      service.applyLinkFilter('l1');
+      expect(service.appliedLink()).toBe('l1');
+      expect(service.frames()).toHaveLength(2);
+      expect(service.totalFrames()).toBe(2);
+      expect(service.totalUnfiltered()).toBe(3); // retained for "of N"
+      // The picker keeps its options: sources stay the FULL inventory.
+      expect(service.sources()).toHaveLength(2);
+      const url = mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).pop()![1];
+      expect(url).toContain('link=l1');
+    });
+
+    it('re-applying the SAME link clears it (chip toggle); null is a no-op when idle', () => {
+      mockRoutes({
+        range: (url) => of(url.includes('link=l1') ? rangeOf([F0, F2], { frame_count: 2 }) : rangeOf([F0, F1, F2])),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      const rangeCalls = () => mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).length;
+
+      const before = rangeCalls();
+      service.applyLinkFilter(null); // already unfiltered — zero requests
+      expect(rangeCalls()).toBe(before);
+
+      service.applyLinkFilter('l1');
+      service.applyLinkFilter('l1'); // toggle off
+      expect(service.appliedLink()).toBeNull();
+      expect(service.frames()).toHaveLength(3);
+      const lastUrl = mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).pop()![1];
+      expect(lastUrl).not.toContain('link=');
+    });
+
+    it('composes with the display filter: applyFilter/clearFilter keep the link, clearAllFilters drops both', () => {
+      mockRoutes({
+        range: (url) => {
+          const narrow = url.includes('link=l1') && url.includes('filter=');
+          const linkOnly = url.includes('link=l1');
+          if (narrow) return of(rangeOf([F2], { frame_count: 1 }));
+          if (linkOnly) return of(rangeOf([F0, F2], { frame_count: 2 }));
+          return of(rangeOf([F0, F1, F2]));
+        },
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.applyLinkFilter('l1');
+
+      service.applyFilter('ip.ttl == 3');
+      let url = mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).pop()![1];
+      expect(url).toContain('link=l1');
+      expect(url).toContain(`filter=${encodeURIComponent('ip.ttl == 3')}`);
+
+      service.clearFilter(); // display-filter ✕ keeps the link pick
+      url = mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).pop()![1];
+      expect(url).toContain('link=l1');
+      expect(url).not.toContain('filter=');
+      expect(service.appliedLink()).toBe('l1');
+
+      service.applyFilter('ip.ttl == 3');
+      service.clearAllFilters(); // empty-result recovery drops BOTH
+      url = mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).pop()![1];
+      expect(url).not.toContain('link=');
+      expect(url).not.toContain('filter=');
+      expect(service.appliedLink()).toBeNull();
+      expect(service.appliedFilter()).toBe('');
+    });
+
+    it('an unknown link answers 200 EMPTY (not an error) — the empty-filtered state follows', () => {
+      mockRoutes({
+        range: (url) =>
+          of(
+            url.includes('link=gone')
+              ? rangeOf([], { frame_count: 0, start: null, end: null })
+              : rangeOf([F0])
+          ),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.applyLinkFilter('gone');
+      expect(service.rangeError()).toBeNull();
+      expect(service.appliedLink()).toBe('gone');
+      expect(service.isEmpty()).toBe(true);
+    });
+
+    it('materializes a second with the SAME link as the range', async () => {
+      mockRoutes({
+        range: () => of(truncatedRange),
+        frames: () => of({ frames: [F0] }),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.applyLinkFilter('l1');
+      await vi.advanceTimersByTimeAsync(200); // bucket settle + materialize
+      const framesUrl = mockHttp.get.mock.calls.find((c: any[]) => c[1].includes('/replay/frames'))![1];
+      expect(framesUrl).toContain('link=l1');
     });
   });
 

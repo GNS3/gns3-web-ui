@@ -11,6 +11,7 @@ import {
   ReplayFrameDetail,
   ReplayFramesResponse,
   ReplayRangeResponse,
+  ReplaySource,
   TimelineMode,
 } from '@models/marker-replay';
 import { HttpController } from './http-controller.service';
@@ -88,18 +89,26 @@ export class MarkerReplayService {
    * branch on `truncated` before touching `frames`. `start`/`end` are null when
    * nothing was captured. `filter` (display-filter expression) narrows the
    * whole response server-side — counts, slices and buckets all recompute over
-   * the matching frames only.
+   * the matching frames only. `link` (capture-source link id) narrows the same
+   * way and combines with `filter` (AND); `sources` in the response always
+   * lists EVERY source of the tag so the link picker keeps its options.
    */
   replayRange(
     controller: Controller,
     projectId: string,
     tag: number,
-    filter?: string
+    filter?: string,
+    link?: string
   ): Observable<ReplayRangeResponse> {
-    const qs = filter ? `?filter=${encodeURIComponent(filter)}` : '';
+    const qs = [
+      filter ? `filter=${encodeURIComponent(filter)}` : null,
+      link ? `link=${encodeURIComponent(link)}` : null,
+    ]
+      .filter((p): p is string => !!p)
+      .join('&');
     return this.httpController.get<ReplayRangeResponse>(
       controller,
-      `/projects/${projectId}/markers/tags/${tag}/replay/range${qs}`
+      `/projects/${projectId}/markers/tags/${tag}/replay/range${qs ? `?${qs}` : ''}`
     );
   }
 
@@ -107,8 +116,8 @@ export class MarkerReplayService {
    * Frames with ts in `[ts, ts + windowMs]`, merged across every source of the
    * tag. An empty window is a NORMAL, successful answer (`{"frames": []}`).
    * `ts` is interpolated verbatim — typically a bucket's "….000000" string.
-   * Pass the SAME filter the range was loaded with, or materialized seconds
-   * diverge from the filtered histogram.
+   * Pass the SAME filter/link the range was loaded with, or materialized
+   * seconds diverge from the narrowed histogram.
    */
   replayFrames(
     controller: Controller,
@@ -117,10 +126,13 @@ export class MarkerReplayService {
     ts: string,
     windowMs: number = 1000,
     limit: number = 1000,
-    filter?: string
+    filter?: string,
+    link?: string
   ): Observable<ReplayFramesResponse> {
     const qs =
-      `?ts=${ts}&window_ms=${windowMs}&limit=${limit}` + (filter ? `&filter=${encodeURIComponent(filter)}` : '');
+      `?ts=${ts}&window_ms=${windowMs}&limit=${limit}` +
+      (filter ? `&filter=${encodeURIComponent(filter)}` : '') +
+      (link ? `&link=${encodeURIComponent(link)}` : '');
     return this.httpController.get<ReplayFramesResponse>(
       controller,
       `/projects/${projectId}/markers/tags/${tag}/replay/frames${qs}`
@@ -161,8 +173,21 @@ export class MarkerReplayService {
    * success, so a rejected filter leaves both it and the rendered data alone.
    */
   readonly appliedFilter = signal('');
+  /**
+   * The capture-source link the current list is narrowed to (link id), null =
+   * every link. Same success-only discipline as {@link appliedFilter}; an
+   * unknown link is NOT an error — the server answers 200 with an empty set,
+   * like a zero-hit display filter.
+   */
+  readonly appliedLink = signal<string | null>(null);
   /** Inline filter-bar error (400 syntax / over-length); null when healthy. */
   readonly filterError = signal<string | null>(null);
+  /**
+   * Per-source stats from the last range response — the link picker's option
+   * list. Multiple markers on one link arrive as several entries; the UI
+   * groups them by link id.
+   */
+  readonly sources = signal<ReplaySource[]>([]);
   readonly mode = signal<TimelineMode>('frames');
   /**
    * Frame count of the CURRENT (possibly filtered) range response — drives
@@ -276,26 +301,28 @@ export class MarkerReplayService {
   }
 
   /**
-   * Fetch the range response for `candidateFilter` and split modes. The OLD
-   * list stays rendered (dimmed by the host) until the response lands — a
-   * rejected filter (400) therefore keeps the last good data on screen.
-   * Branches on `truncated` BEFORE touching `frames` (the key is absent when
-   * truncated — a 100k-frame tag must never reach `frames.map`).
+   * Fetch the range response for `candidateFilter` (+ `candidateLink`) and
+   * split modes. The OLD list stays rendered (dimmed by the host) until the
+   * response lands — a rejected filter (400) therefore keeps the last good
+   * data on screen. Branches on `truncated` BEFORE touching `frames` (the key
+   * is absent when truncated — a 100k-frame tag must never reach `frames.map`).
    */
-  private load(candidateFilter: string): void {
+  private load(candidateFilter: string, candidateLink: string | null = null): void {
     if (!this.controller || this.tag() < 0) return;
     this.loadingRange.set(true);
     this.rangeError.set(null);
     this.rangeErrorKind.set(null);
     this.filterError.set(null);
-    this.replayRange(this.controller, this.projectId, this.tag(), candidateFilter || undefined)
+    this.replayRange(this.controller, this.projectId, this.tag(), candidateFilter || undefined, candidateLink || undefined)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (range) => {
           this.loadingRange.set(false);
           this.appliedFilter.set(candidateFilter);
+          this.appliedLink.set(candidateLink);
+          this.sources.set(range.sources ?? []);
           this.totalFrames.set(range.frame_count);
-          if (!candidateFilter) this.totalUnfiltered.set(range.frame_count);
+          if (!candidateFilter && !candidateLink) this.totalUnfiltered.set(range.frame_count);
           this.rangeEpoch++;
           this.clearWindowState();
           this.materialized.clear();
@@ -401,7 +428,8 @@ export class MarkerReplayService {
    * Apply a display filter (Wireshark-style): the SERVER evaluates it against
    * the decodes and recomputes counts/slices/buckets. The draft is kept on
    * rejection so the user can fix it; over-length is rejected client-side
-   * without a request.
+   * without a request. Keeps the applied LINK pick — the two narrowings
+   * combine (AND).
    */
   applyFilter(raw: string): void {
     const text = raw.trim();
@@ -410,13 +438,30 @@ export class MarkerReplayService {
       this.filterError.set(`Filter is longer than ${FILTER_MAX_CHARS} characters`);
       return;
     }
-    this.load(text);
+    this.load(text, this.appliedLink());
   }
 
-  /** Drop the filter and reload the full list. */
+  /**
+   * Narrow the list to one capture link (server-side, like the display
+   * filter — counts and buckets recompute over that link's frames only).
+   * Re-clicking the link already in effect clears it (chip toggle).
+   */
+  applyLinkFilter(linkId: string | null): void {
+    const next = linkId && linkId === this.appliedLink() ? null : linkId;
+    if (next === this.appliedLink()) return;
+    this.load(this.appliedFilter(), next);
+  }
+
+  /** Drop the display filter (the link pick stays) and reload. */
   clearFilter(): void {
     this.filter.set('');
-    this.load('');
+    this.load('', this.appliedLink());
+  }
+
+  /** Empty-result recovery: drop BOTH the display filter and the link pick. */
+  clearAllFilters(): void {
+    this.filter.set('');
+    this.load('', null);
   }
 
   // ---- Pinned comparison windows ------------------------------------------
@@ -545,9 +590,9 @@ export class MarkerReplayService {
     if (frame) this.detailTrigger$.next(frame);
   }
 
-  /** Re-run the range request with the CURRENT filter (404 recovery, Retry). */
+  /** Re-run the range request with the CURRENT filter/link (404 recovery, Retry). */
   reloadTimeline(): void {
-    this.load(this.appliedFilter());
+    this.load(this.appliedFilter(), this.appliedLink());
   }
 
   // ---- Link highlight ----------------------------------------------------
@@ -622,10 +667,10 @@ export class MarkerReplayService {
 
   /**
    * Materialize bucket `i`'s second: fetch its frames (`ts` VERBATIM from the
-   * bucket, with the SAME filter the range was loaded with), cache for instant
-   * revisit, and enter them as the list's rows. Cached and empty results never
-   * hit the network. Results from a superseded range load (filter change) are
-   * discarded via the epoch guard.
+   * bucket, with the SAME filter/link the range was loaded with), cache for
+   * instant revisit, and enter them as the list's rows. Cached and empty
+   * results never hit the network. Results from a superseded range load
+   * (filter/link change) are discarded via the epoch guard.
    */
   private materializeSecond(i: number): Observable<null> {
     const bucket = this.buckets()[i];
@@ -638,7 +683,17 @@ export class MarkerReplayService {
     this.materializing.set(true);
     const epoch = this.rangeEpoch;
     const filter = this.appliedFilter();
-    return this.replayFrames(this.controller, this.projectId, this.tag(), bucket.ts, 1000, 1000, filter || undefined).pipe(
+    const link = this.appliedLink();
+    return this.replayFrames(
+      this.controller,
+      this.projectId,
+      this.tag(),
+      bucket.ts,
+      1000,
+      1000,
+      filter || undefined,
+      link || undefined
+    ).pipe(
       map((res) => res.frames),
       catchError((err) => {
         // Window fetch failed (gate race / network): stay on the bucket rows.

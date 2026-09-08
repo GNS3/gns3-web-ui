@@ -259,6 +259,92 @@ describe('MarkerReplayOverlayComponent', () => {
     });
   });
 
+  describe('link picker', () => {
+    /** Resolve l1/l2 through the (mocked) cartography join — "iou-r-1 → iou-r-2" style. */
+    function seedTopology(): void {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const links = TestBed.inject(LinksDataSource) as any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const nodes = TestBed.inject(NodesDataSource) as any;
+      links.get.mockImplementation(
+        (id: string) =>
+          (id === 'l1' && { nodes: [{ node_id: 'a' }, { node_id: 'b' }] }) ||
+          (id === 'l2' && { nodes: [{ node_id: 'c' }, { node_id: 'd' }] }) ||
+          null
+      );
+      nodes.get.mockImplementation((id: string) => ({
+        name: { a: 'iou-r-1', b: 'iou-r-2', c: 'iou-r-3', d: 'iou-r-4' }[id],
+      }));
+    }
+
+    const sourcesRange: ReplayRangeResponse = {
+      ...range,
+      sources: [
+        { node_id: 'n1', link_id: 'l1', marker: 'm1', count: 2 },
+        { node_id: 'n1', link_id: 'l1', marker: 'm2', count: 1 },
+        { node_id: 'n2', link_id: 'l2', marker: 'm3', count: 4 },
+      ],
+    };
+
+    it('groups sources per link (counts sum), labels via the topology join, sorted', () => {
+      seedTopology();
+      mockHttp.get.mockReturnValue(of(sourcesRange));
+      fixture.detectChanges();
+
+      expect(component.linkOptions()).toEqual([
+        { link_id: 'l1', count: 3, label: 'iou-r-1 → iou-r-2' },
+        { link_id: 'l2', count: 4, label: 'iou-r-3 → iou-r-4' },
+      ]);
+      expect(component.linkPickLabel()).toBe('All links');
+      // The picker caption is rendered next to the display-filter input.
+      expect((fixture.nativeElement as HTMLElement).textContent).toContain('All links');
+    });
+
+    it('applying a link refetches with link=, the caption names it, the ✕ clears', () => {
+      seedTopology();
+      mockHttp.get.mockImplementation((_c: any, url: string) =>
+        of(url.includes('link=l1') ? { ...range, frame_count: 1, frames: [frames[0]] } : range)
+      );
+      fixture.detectChanges();
+
+      svc.applyLinkFilter('l1');
+      fixture.detectChanges();
+
+      const url = mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).pop()[1];
+      expect(url).toContain('link=l1');
+      expect(component.linkPickLabel()).toBe('iou-r-1 → iou-r-2');
+      expect((fixture.nativeElement as HTMLElement).textContent).toContain('1 of 2 frames');
+
+      // No display-filter draft → the only ✕ in the bar is the link's.
+      (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.gns3-replay__filter-clear')!.click();
+      fixture.detectChanges();
+      expect(svc.appliedLink()).toBeNull();
+      expect(svc.frames()).toHaveLength(2);
+    });
+
+    it('an empty LINK result explains itself; "Clear filters" widens back', () => {
+      seedTopology();
+      mockHttp.get.mockImplementation((_c: any, url: string) =>
+        of(
+          url.includes('link=l1')
+            ? { ...range, start: null, end: null, frame_count: 0, frames: [] }
+            : range
+        )
+      );
+      fixture.detectChanges();
+
+      svc.applyLinkFilter('l1');
+      fixture.detectChanges();
+
+      const el: HTMLElement = fixture.nativeElement;
+      expect(el.textContent).toContain('No frames captured on this link.');
+      (el.querySelector<HTMLButtonElement>('.gns3-replay__state button')!).click();
+      fixture.detectChanges();
+      expect(svc.appliedLink()).toBeNull();
+      expect(svc.frames()).toHaveLength(2);
+    });
+  });
+
   it('the header 📌 freezes the current frame and disables until the cursor moves on', () => {
     // Route detail decodes to a real tree — the pane reads detail.tree.
     mockHttp.get.mockImplementation((_c: any, url: string) =>
