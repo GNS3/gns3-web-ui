@@ -171,15 +171,17 @@
 
 <!-- Pinned comparison windows: fixed-position (viewport space), must live
      OUTSIDE the main window div so no ancestor clipping/stacking context
-     constrains them. Each freezes one frame for side-by-side comparison. -->
-@if (!svc.loadingRange() && svc.rangeError() === null && !svc.isEmpty()) {
-  @for (p of svc.pinnedDetails(); track p.id) {
-    <app-replay-detail-window
-      [zIndex]="zIndex()"
-      [zBoost]="zAssign().get('pin-' + p.id) ?? 0"
-      [pinned]="p"
-      [changedPaths]="pinDiff()"
-      (windowFocused)="focusWindow('pin-' + p.id)"
-    ></app-replay-detail-window>
-  }
+     constrains them. Each freezes one frame for side-by-side comparison.
+     Deliberately NOT gated on loadingRange/rangeError/isEmpty: pins are
+     SESSION state and must survive every list reload (a remount would re-run
+     first-placement and teleport docked pins out of the comparison row);
+     with nothing pinned the @for renders nothing anyway. -->
+@for (p of svc.pinnedDetails(); track p.id) {
+  <app-replay-detail-window
+    [zIndex]="zIndex()"
+    [zBoost]="zAssign().get('pin-' + p.id) ?? 0"
+    [pinned]="p"
+    [changedPaths]="pinDiff()"
+    (windowFocused)="focusWindow('pin-' + p.id)"
+  ></app-replay-detail-window>
 }

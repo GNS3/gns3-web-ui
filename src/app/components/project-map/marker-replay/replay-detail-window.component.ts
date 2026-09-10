@@ -21,7 +21,7 @@ import { MarkerReplayService } from '@services/marker-replay.service';
 import { MapScaleService } from '@services/mapScale.service';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { PinnedDetail } from '@models/marker-replay';
-import { clampRect, clusterAppend, DOCK_TILE_H, DOCK_TILE_W, dockSlot, snapRect } from './replay-geometry';
+import { clampRect, clampWindowSize, clusterAppend, DOCK_TILE_H, DOCK_TILE_W, dockSlot, snapRect } from './replay-geometry';
 import { ReplayDetailPaneComponent } from './replay-detail-pane.component';
 
 /** Leader-line endpoint pair in viewport px (window edge → link anchor). */
@@ -297,8 +297,13 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
     // (its 500px minWidth suits marker-manager, not this window).
     const vw = typeof window !== 'undefined' ? window.innerWidth : this.winWidth();
     const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
-    const width = Math.min(Math.max(event.rectangle.width || this.winWidth(), this.MIN_W), Math.max(vw - 32, this.MIN_W));
-    const height = Math.min(Math.max(event.rectangle.height || this.winHeight(), this.MIN_H), Math.max(vh - 96, this.MIN_H));
+    const { width, height } = clampWindowSize(
+      event.rectangle.width || this.winWidth(),
+      event.rectangle.height || this.winHeight(),
+      { width: vw, height: vh },
+      this.MIN_W,
+      this.MIN_H
+    );
 
     this.winWidth.set(width);
     this.winHeight.set(height);
@@ -322,7 +327,7 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
    */
   onHeaderMouseDown(e: MouseEvent): void {
     if (e.button !== 0) return;
-    if ((e.target as HTMLElement | null)?.closest('button')) return; // buttons click, not drag
+    if ((e.target as HTMLElement | null)?.closest('button, input')) return; // buttons/inputs click, not drag
     e.preventDefault();
 
     const startX = e.clientX;

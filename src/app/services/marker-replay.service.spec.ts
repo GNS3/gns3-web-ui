@@ -358,6 +358,36 @@ describe('MarkerReplayService state machine', () => {
     });
   });
 
+  describe('range load races', () => {
+    it('a slower OLDER range response cannot overwrite a newer load (load epoch)', () => {
+      const slow = new Subject<ReplayRangeResponse>();
+      let n = 0;
+      mockRoutes({ range: () => (n++ === 0 ? slow : of(rangeOf([G0, G1, G2]))) });
+      service.start(ctrl, PROJECT_ID, TAG); // load #1 (unfiltered) stalls on the network
+      service.applyFilter('ospf'); // load #2 (filtered) completes first, renders
+      expect(service.appliedFilter()).toBe('ospf');
+      expect(service.frames()).toHaveLength(3);
+      expect(service.frames()[0].ts).toBe(G0.ts);
+
+      slow.next(rangeOf([F0, F1, F2])); // the stale unfiltered reply finally lands
+      expect(service.appliedFilter()).toBe('ospf'); // NOT reset to the older load's ''
+      expect(service.frames()[0].ts).toBe(G0.ts);
+      expect(service.loadingRange()).toBe(false);
+    });
+
+    it('a stale range ERROR is equally discarded (no error state, no toast)', () => {
+      const slow = new Subject<ReplayRangeResponse>();
+      let n = 0;
+      mockRoutes({ range: () => (n++ === 0 ? slow : of(rangeOf([G0]))) });
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.applyFilter('ospf');
+      slow.error(serverError(0, 'Controller is unreachable'));
+      expect(service.rangeError()).toBeNull();
+      expect(mockToaster.error).not.toHaveBeenCalled();
+      expect(service.loadingRange()).toBe(false);
+    });
+  });
+
   describe('detail pipeline', () => {
     it('rapid scrubbing issues a single detail request (debounce)', async () => {
       mockRoutes({});
@@ -549,6 +579,25 @@ describe('MarkerReplayService state machine', () => {
       expect(service.filter()).toBe('');
       expect(service.appliedFilter()).toBe('');
       expect(service.frames()).toHaveLength(3);
+
+      // Draft-only clear (nothing applied): the draft alone never narrowed the
+      // list — no reload fires.
+      service.filter.set('draft');
+      const before = mockHttp.get.mock.calls.length;
+      service.clearFilter();
+      expect(mockHttp.get.mock.calls.length).toBe(before);
+      expect(service.filter()).toBe('');
+    });
+
+    it('re-applying the SAME filter is a no-op — zero requests (guard mirrors applyLinkFilter)', () => {
+      mockRoutes({});
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.applyFilter('ospf');
+      const rangeCalls = () => mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).length;
+      const calls = rangeCalls();
+      service.applyFilter('ospf');
+      expect(rangeCalls()).toBe(calls);
+      expect(service.appliedFilter()).toBe('ospf');
     });
 
     it('filters over 2000 characters are rejected client-side (zero requests)', () => {
@@ -603,6 +652,72 @@ describe('MarkerReplayService state machine', () => {
       stalled.next({ frames: [F0, F1] }); // the UNFILTERED result arrives late
       expect(service.frames()).toHaveLength(2); // discarded — the filtered rows stay
       expect(service.frames()[0].ts).toBe(G0.ts);
+    });
+  });
+
+  describe('bucket materialization', () => {
+    it('revisiting a cached EMPTY second replays emptySecond (no frames[0] crash)', async () => {
+      mockRoutes({
+        range: () => of(truncatedRange),
+        frames: (url) => of(url.includes('ts=1788196663.000000') ? { frames: [] } : { frames: [F0, F1] }),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      await vi.advanceTimersByTimeAsync(200); // bucket 0 settles empty
+      expect(service.emptySecond()).toBe(true);
+      expect(service.inWindow()).toBe(false);
+
+      service.setCurrentBucket(1); // second bucket has frames
+      await vi.advanceTimersByTimeAsync(200);
+      expect(service.inWindow()).toBe(true);
+
+      service.setCurrentBucket(0); // back to the cached-empty second
+      await vi.advanceTimersByTimeAsync(200);
+      expect(service.emptySecond()).toBe(true);
+      expect(service.inWindow()).toBe(false);
+      expect(service.frames()).toHaveLength(0);
+    });
+
+    it('materializing resets when a CACHED bucket preempts an in-flight fetch', async () => {
+      const stalled = new Subject<{ frames: ReplayFrame[] }>();
+      mockRoutes({
+        range: () => of(truncatedRange),
+        frames: (url) => (url.includes('ts=1788196663.000000') ? of({ frames: [F0, F1] }) : stalled),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      await vi.advanceTimersByTimeAsync(200); // bucket 0 materialized + entered
+      expect(service.inWindow()).toBe(true);
+
+      service.setCurrentBucket(1); // bucket 1's fetch stalls in flight
+      await vi.advanceTimersByTimeAsync(200);
+      expect(service.materializing()).toBe(true);
+
+      service.setCurrentBucket(0); // cached bucket 0 preempts the stalled fetch
+      await vi.advanceTimersByTimeAsync(200);
+      expect(service.materializing()).toBe(false); // reset by the cached pass
+      expect(service.inWindow()).toBe(true);
+      expect(service.frames()).toHaveLength(2); // re-entered from cache
+    });
+
+    it('a frames failure superseded by a filter reload is not toasted', async () => {
+      const stalled = new Subject<{ frames: ReplayFrame[] }>();
+      let calls = 0;
+      mockRoutes({
+        range: () => of(truncatedRange),
+        frames: () => (calls++ === 0 ? stalled : of({ frames: [G0] })),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      await vi.advanceTimersByTimeAsync(200); // bucket 0's fetch in flight (stalled)
+      expect(service.materializing()).toBe(true);
+
+      // The reload succeeds (rangeEpoch bumped) but does NOT cancel the stalled
+      // fetch — when it fails, the failure describes abandoned data.
+      service.applyFilter('ospf');
+      stalled.error(serverError(0, 'Network dropped'));
+      expect(mockToaster.error).not.toHaveBeenCalled();
+      expect(service.materializing()).toBe(false);
+
+      await vi.advanceTimersByTimeAsync(200); // the new list's first bucket settles
+      expect(service.inWindow()).toBe(true);
     });
   });
 
@@ -701,6 +816,25 @@ describe('MarkerReplayService state machine', () => {
       expect(service.rangeError()).toBeNull();
       expect(service.appliedLink()).toBe('gone');
       expect(service.isEmpty()).toBe(true);
+    });
+
+    it('a link-only load refreshes totalUnfiltered from the full-inventory sources', () => {
+      const src = (n: number) => [{ node_id: 'n1', link_id: 'l1', marker: 'm', count: n }];
+      mockRoutes({
+        range: (url) =>
+          of(
+            url.includes('link=l1')
+              ? rangeOf([F0], { frame_count: 1, sources: src(500) })
+              : rangeOf([F0, F1, F2], { frame_count: 100, sources: src(100) })
+          ),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      expect(service.totalUnfiltered()).toBe(100);
+
+      service.applyLinkFilter('l1');
+      // frame_count is the narrowed 1 — sources always carry the FULL totals,
+      // so "of N"/"All links (N)" stay accurate after link-only reloads.
+      expect(service.totalUnfiltered()).toBe(500);
     });
 
     it('materializes a second with the SAME link as the range', async () => {

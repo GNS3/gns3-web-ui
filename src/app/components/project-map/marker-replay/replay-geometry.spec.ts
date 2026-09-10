@@ -1,5 +1,27 @@
 import { describe, it, expect } from 'vitest';
-import { clampRect, dockSlot, snapRect, clusterAppend, VIEWPORT_MARGIN, DOCK_GAP, DOCK_TILE_W, DOCK_TILE_H, SNAP_THRESHOLD } from './replay-geometry';
+import { clampRect, clampWindowSize, dockSlot, snapRect, clusterAppend, VIEWPORT_MARGIN, DOCK_GAP, DOCK_TILE_W, DOCK_TILE_H, SNAP_THRESHOLD } from './replay-geometry';
+
+describe('clampWindowSize (resize-end / viewport-reclamp shared math)', () => {
+  const viewport = { width: 1920, height: 1080 };
+
+  it('passes an in-range size through untouched', () => {
+    expect(clampWindowSize(1100, 640, viewport, 760, 420)).toEqual({ width: 1100, height: 640 });
+  });
+
+  it('lifts an under-minimum size to the minimum', () => {
+    expect(clampWindowSize(100, 100, viewport, 760, 420)).toEqual({ width: 760, height: 420 });
+  });
+
+  it('caps at viewport-minus-gutter (32 sides, 96 bottom)', () => {
+    expect(clampWindowSize(2500, 2000, viewport, 760, 420)).toEqual({ width: 1888, height: 984 });
+  });
+
+  it('keeps the minimum even when the viewport is smaller than it', () => {
+    // A 600px viewport cannot satisfy a 760px floor — the floor wins (the
+    // position is clampRect's job afterwards).
+    expect(clampWindowSize(700, 400, { width: 600, height: 500 }, 760, 420)).toEqual({ width: 760, height: 420 });
+  });
+});
 
 describe('clampRect (window viewport clamping)', () => {
   const viewport = { width: 1920, height: 1080 };

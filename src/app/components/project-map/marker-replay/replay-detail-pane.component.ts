@@ -51,6 +51,13 @@ export class ReplayDetailPaneComponent {
    * toolbar and search state do not flicker either.
    */
   readonly holdDetail = input<ReplayFrameDetail | null>(null);
+  /**
+   * ts of the list's first row — the delta chip's baseline. Pin hosts pass
+   * their FROZEN baseline ({@link PinnedDetail.listStartTs}); a live host may
+   * omit it and the session list's first row is used (the live delta is
+   * SUPPOSED to follow filters/window moves).
+   */
+  readonly baselineTs = input<string | null>(null);
 
   /** Shared find-in-packet query — bound to the session signal at every host. */
   readonly searchQuery = model('');
@@ -67,10 +74,6 @@ export class ReplayDetailPaneComponent {
   private readonly linksDataSource = inject(LinksDataSource);
   private readonly nodesDataSource = inject(NodesDataSource);
 
-  readonly detailOk = computed(() => {
-    const d = this.state();
-    return d.status === 'ok' ? d : null;
-  });
   readonly detailError = computed(() => {
     const d = this.state();
     return d.status === 'error' ? d : null;
@@ -107,8 +110,8 @@ export class ReplayDetailPaneComponent {
   }
 
   deltaLabel(ts: string): string {
-    const frames = this.svc.frames();
-    return frames.length ? formatDelta(ts, frames[0].ts) : '';
+    const base = this.baselineTs() ?? this.svc.frames()[0]?.ts;
+    return base ? formatDelta(ts, base) : '';
   }
 
   /** Link display name ("A → B") — the shared cartography join. */

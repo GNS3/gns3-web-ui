@@ -253,6 +253,14 @@ export class MarkerReplayService {
    * through the bucket pipeline, so switchMap cannot cancel it).
    */
   private rangeEpoch = 0;
+  /**
+   * Bumped on every load() START. A newer load does not unsubscribe an older
+   * in-flight range response, so each response carries its epoch and applies
+   * only while still the newest — otherwise a slow older reply (heavy display
+   * filter) would overwrite the list a quicker newer load (clear/link pick)
+   * had already rendered.
+   */
+  private loadEpoch = 0;
 
   // ---- Session lifecycle -------------------------------------------------
 
@@ -309,6 +317,7 @@ export class MarkerReplayService {
    */
   private load(candidateFilter: string, candidateLink: string | null = null): void {
     if (!this.controller || this.tag() < 0) return;
+    const epoch = ++this.loadEpoch;
     this.loadingRange.set(true);
     this.rangeError.set(null);
     this.rangeErrorKind.set(null);
@@ -317,12 +326,21 @@ export class MarkerReplayService {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (range) => {
+          if (epoch !== this.loadEpoch) return; // superseded by a newer load
           this.loadingRange.set(false);
           this.appliedFilter.set(candidateFilter);
           this.appliedLink.set(candidateLink);
           this.sources.set(range.sources ?? []);
           this.totalFrames.set(range.frame_count);
-          if (!candidateFilter && !candidateLink) this.totalUnfiltered.set(range.frame_count);
+          if (!candidateFilter && !candidateLink) {
+            this.totalUnfiltered.set(range.frame_count);
+          } else if (!candidateFilter && candidateLink) {
+            // Link-only load: `sources` always carries the FULL inventory (the
+            // picker contract), so its summed counts keep "of N"/"All links (N)"
+            // fresh even though frame_count is the narrowed total.
+            const total = (range.sources ?? []).reduce((sum, s) => sum + s.count, 0);
+            if (total > 0) this.totalUnfiltered.set(total);
+          }
           this.rangeEpoch++;
           this.clearWindowState();
           this.materialized.clear();
@@ -343,6 +361,7 @@ export class MarkerReplayService {
           }
         },
         error: (err) => {
+          if (epoch !== this.loadEpoch) return; // superseded — the newer load owns the state
           this.loadingRange.set(false);
           const message = err.error?.message || err.message || 'Failed to load replay timeline';
           const status = this.errStatus(err);
@@ -380,16 +399,21 @@ export class MarkerReplayService {
 
   // ---- Navigation --------------------------------------------------------
 
-  /** Select a frame by index (clamped). Pokes the debounced detail pipeline. */
-  setCurrentIndex(index: number): void {
+  /**
+   * Select a frame by index (clamped). Pokes the debounced detail pipeline.
+   * Returns whether the selection actually moved (same-index/empty-list are
+   * no-ops) — callers that follow the selection (focus, scroll) key off it.
+   */
+  setCurrentIndex(index: number): boolean {
     const frames = this.frames();
-    if (frames.length === 0) return;
+    if (frames.length === 0) return false;
     const clamped = Math.max(0, Math.min(frames.length - 1, index));
-    if (clamped === this.currentFrameIndex()) return;
+    if (clamped === this.currentFrameIndex()) return false;
     this.currentFrameIndex.set(clamped);
     this.emptySecond.set(false);
     this.detailTrigger$.next(frames[clamped]);
     this.applyHighlight(frames[clamped].link_id);
+    return true;
   }
 
   /**
@@ -438,6 +462,10 @@ export class MarkerReplayService {
       this.filterError.set(`Filter is longer than ${FILTER_MAX_CHARS} characters`);
       return;
     }
+    // Unchanged input is a no-op (same guard as applyLinkFilter): a repeat
+    // Enter must not re-run the server evaluation and drop the
+    // materialized-seconds cache for a byte-identical list.
+    if (text === this.appliedFilter()) return;
     this.load(text, this.appliedLink());
   }
 
@@ -455,6 +483,8 @@ export class MarkerReplayService {
   /** Drop the display filter (the link pick stays) and reload. */
   clearFilter(): void {
     this.filter.set('');
+    // Nothing applied — the draft alone never narrowed the list, no reload.
+    if (this.appliedFilter() === '') return;
     this.load('', this.appliedLink());
   }
 
@@ -476,7 +506,12 @@ export class MarkerReplayService {
     if (!frame) return;
     const list = this.pinnedDetails();
     if (list.some((p) => sameReplayFrame(p.frame, frame))) return;
-    const entry: PinnedDetail = { id: ++this.pinSeq, frame, state: { status: 'loading' } };
+    const entry: PinnedDetail = {
+      id: ++this.pinSeq,
+      frame,
+      listStartTs: this.frames()[0]?.ts ?? frame.ts,
+      state: { status: 'loading' },
+    };
     const next = [...list, entry];
     if (next.length > PINNED_CAP) {
       next.shift();
@@ -669,15 +704,26 @@ export class MarkerReplayService {
    * Materialize bucket `i`'s second: fetch its frames (`ts` VERBATIM from the
    * bucket, with the SAME filter/link the range was loaded with), cache for
    * instant revisit, and enter them as the list's rows. Cached and empty
-   * results never hit the network. Results from a superseded range load
-   * (filter/link change) are discarded via the epoch guard.
+   * results never hit the network (a cached EMPTY second replays the
+   * emptySecond path — enterWindow would dereference frames[0]). Results from
+   * a superseded range load (filter/link change) are discarded via the epoch
+   * guard.
    */
   private materializeSecond(i: number): Observable<null> {
     const bucket = this.buckets()[i];
-    if (!bucket || this.mode() !== 'buckets' || !this.controller) return of(null);
+    if (!bucket || this.mode() !== 'buckets' || !this.controller) {
+      // This pass may have just displaced an in-flight fetch (switchMap), whose
+      // tap/catchError will now never run — it owns resetting the flag here.
+      this.materializing.set(false);
+      return of(null);
+    }
     const cached = this.materialized.get(i);
     if (cached) {
-      this.enterWindow(cached);
+      // Same displacement reason as above: an in-flight fetch for another
+      // bucket was cancelled the instant this cached pass started.
+      this.materializing.set(false);
+      if (cached.length === 0) this.emptySecond.set(true);
+      else this.enterWindow(cached);
       return of(null);
     }
     this.materializing.set(true);
@@ -697,9 +743,12 @@ export class MarkerReplayService {
       map((res) => res.frames),
       catchError((err) => {
         // Window fetch failed (gate race / network): stay on the bucket rows.
+        this.materializing.set(false);
+        // Superseded by a filter/link reload — the failure describes data the
+        // user has already abandoned; don't toast over the new list.
+        if (epoch !== this.rangeEpoch) return of(null);
         const message = err.error?.message || err.message || 'Failed to load frames for this second';
         this.toaster.error(message);
-        this.materializing.set(false);
         return of(null);
       }),
       tap((frames) => {

@@ -142,5 +142,11 @@ export type TimelineMode = 'frames' | 'buckets';
 export interface PinnedDetail {
   id: number;
   frame: ReplayFrame;
+  /**
+   * ts of the FIRST row of the list this frame was pinned from — the frozen
+   * delta-chip baseline. The live list keeps moving (filters, window exit);
+   * a snapshot's "+Xs" must not be retroactively rewritten by it.
+   */
+  listStartTs: string;
   state: DetailState;
 }

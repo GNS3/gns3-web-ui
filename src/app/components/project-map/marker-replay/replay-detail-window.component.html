@@ -1,10 +1,10 @@
 <!-- Full-viewport leader-line overlay: a plain "this window describes this
-     link" callout — dot at the link end, NOT a traffic-direction arrow. A
-     PINNED snapshot's line is primary (same family as its --snapshot border),
+     link" callout — dot at the link end, NOT a traffic-direction arrow. The
+     snapshot's line is primary (same family as its --snapshot border),
      keeping the window→hop association visible while the snapshots sit in the
      dock row. -->
 @if (anchored() && leader(); as l) {
-<svg class="gns3-replay__leader gns3-replay__leader--pin" [style.z-index]="zVal()">
+<svg class="gns3-replay__leader" [style.z-index]="zVal()">
   <line class="gns3-replay__leader-line" [attr.x1]="l.x1" [attr.y1]="l.y1" [attr.x2]="l.x2" [attr.y2]="l.y2"></line>
   <circle class="gns3-replay__leader-dot" [attr.cx]="l.x2" [attr.cy]="l.y2" r="4"></circle>
 </svg>
@@ -65,6 +65,7 @@
     [frame]="pinned().frame"
     [state]="pinned().state"
     [changedPaths]="changedPaths()"
+    [baselineTs]="pinned().listStartTs"
     missingAction="close"
     [(searchQuery)]="svc.searchQuery"
     (reload)="unpinCurrent()"

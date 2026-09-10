@@ -30,6 +30,37 @@ export function clampRect(rect: Rect, viewport: { width: number; height: number 
   };
 }
 
+// ---- floating-window sizing -----------------------------------------------
+
+/**
+ * Side gutters a floating window keeps inside the viewport — its edge resize
+ * handles reach outside the border box, so a flush edge would push them
+ * off-screen (and under the browser chrome).
+ */
+export const WINDOW_GUTTER = 32;
+/** Bottom gutter — room below the viewport (taskbar/dock territory). */
+export const WINDOW_GUTTER_BOTTOM = 96;
+
+/**
+ * Clamp a floating window's SIZE into the viewport without moving it: each
+ * axis keeps its minimum (`minW`/`minH`) even past the viewport (position is
+ * clampRect's job afterwards) but otherwise caps at viewport-minus-gutter.
+ * Shared by the main window and the pinned windows — resize-end, width-apply
+ * and viewport-reclamp all agree because there is ONE definition.
+ */
+export function clampWindowSize(
+  w: number,
+  h: number,
+  viewport: { width: number; height: number },
+  minW: number,
+  minH: number
+): { width: number; height: number } {
+  return {
+    width: Math.min(Math.max(w, minW), Math.max(viewport.width - WINDOW_GUTTER, minW)),
+    height: Math.min(Math.max(h, minH), Math.max(viewport.height - WINDOW_GUTTER_BOTTOM, minH)),
+  };
+}
+
 // ---- pinned-window dock ---------------------------------------------------
 
 /** Default dock tile size — the user's last manual resize overrides it. */

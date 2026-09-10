@@ -8,26 +8,16 @@
   pointer-events: none;
 }
 
+// Primary on purpose — matches the snapshot border, so the line reads as
+// part of the frozen comparison layer.
 .gns3-replay__leader-line {
-  stroke: var(--mat-sys-outline);
+  stroke: var(--mat-sys-primary);
   stroke-width: 1.5;
   stroke-dasharray: 4 3;
 }
 
 .gns3-replay__leader-dot {
-  fill: var(--mat-sys-tertiary);
-}
-
-// A PINNED snapshot's leader — primary to match its --snapshot border, so the
-// line itself distinguishes frozen comparison windows from the live one.
-.gns3-replay__leader--pin {
-  .gns3-replay__leader-line {
-    stroke: var(--mat-sys-primary);
-  }
-
-  .gns3-replay__leader-dot {
-    fill: var(--mat-sys-primary);
-  }
+  fill: var(--mat-sys-primary);
 }
 
 // Size comes from the inline width/height bindings (resize-driven); only
@@ -146,8 +136,6 @@
     background: var(--mat-sys-surface-container-high);
   }
 
-  // The live window's 📌 while this exact frame is already pinned.
-  &--disabled,
   &:disabled {
     color: var(--mat-sys-outline);
     cursor: default;

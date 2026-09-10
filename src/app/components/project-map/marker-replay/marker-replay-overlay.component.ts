@@ -26,7 +26,7 @@ import { WindowManagementService } from '@services/window-management.service';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { linkLabel as formatLinkLabel } from '../helpers/link-label';
-import { clampRect } from './replay-geometry';
+import { clampRect, clampWindowSize } from './replay-geometry';
 import { diffTrees } from './replay-tree-diff';
 import { ReplayPacketListComponent } from './replay-packet-list.component';
 import { ReplayDetailPaneComponent } from './replay-detail-pane.component';
@@ -217,10 +217,13 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
     this.winLeft.set(r.left);
     this.winTop.set(r.top);
 
+    if (typeof window !== 'undefined') window.addEventListener('resize', this.onViewportResize);
+
     this.svc.start(this.controller(), this.project().project_id, this.tag());
   }
 
   ngOnDestroy(): void {
+    if (typeof window !== 'undefined') window.removeEventListener('resize', this.onViewportResize);
     this.teardownDrag();
     this.svc.destroy();
   }
@@ -302,13 +305,43 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   private applyWidth(width: number): void {
     const vw = typeof window !== 'undefined' ? window.innerWidth : width;
     const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
-    const w = Math.min(Math.max(width, this.currentMinW()), Math.max(vw - 32, this.currentMinW()));
+    const { width: w } = clampWindowSize(width, this.winHeight(), { width: vw, height: vh }, this.currentMinW(), this.MIN_H);
     this.winWidth.set(w);
     const r = clampRect(
       { left: this.winLeft(), top: this.winTop(), width: w, height: this.winHeight() },
       { width: vw, height: vh },
       64
     );
+    this.winLeft.set(r.left);
+    this.winTop.set(r.top);
+  }
+
+  // ---- viewport tracking ----------------------------------------------------
+
+  private readonly onViewportResize = (): void => this.clampIntoViewport();
+
+  /**
+   * Re-clamp when the viewport SHRINKS under the window (devtools opened,
+   * rotation): the header is the only drag handle, so without this a smaller
+   * viewport could strand the window off-screen with no way back.
+   */
+  private clampIntoViewport(): void {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const { width, height } = clampWindowSize(
+      this.winWidth(),
+      this.winHeight(),
+      { width: vw, height: vh },
+      this.currentMinW(),
+      this.MIN_H
+    );
+    const r = clampRect(
+      { left: this.winLeft(), top: this.winTop(), width, height },
+      { width: vw, height: vh },
+      64
+    );
+    this.winWidth.set(r.width);
+    this.winHeight.set(r.height);
     this.winLeft.set(r.left);
     this.winTop.set(r.top);
   }
@@ -376,9 +409,13 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   onResizeEnd(event: ResizeEvent): void {
     const vw = typeof window !== 'undefined' ? window.innerWidth : this.winWidth();
     const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
-    const minW = this.currentMinW();
-    const width = Math.min(Math.max(event.rectangle.width || this.winWidth(), minW), Math.max(vw - 32, minW));
-    const height = Math.min(Math.max(event.rectangle.height || this.winHeight(), this.MIN_H), Math.max(vh - 96, this.MIN_H));
+    const { width, height } = clampWindowSize(
+      event.rectangle.width || this.winWidth(),
+      event.rectangle.height || this.winHeight(),
+      { width: vw, height: vh },
+      this.currentMinW(),
+      this.MIN_H
+    );
     this.winWidth.set(width);
     this.winHeight.set(height);
     this.resizing.set(false);

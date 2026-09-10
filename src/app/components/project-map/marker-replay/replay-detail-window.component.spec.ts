@@ -130,6 +130,7 @@ describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
   const pinOf = (over: Partial<PinnedDetail> = {}): PinnedDetail => ({
     id: 1,
     frame: frames[0],
+    listStartTs: frames[0].ts,
     state: { status: 'idle' },
     ...over,
   });
@@ -173,6 +174,21 @@ describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
       expect(el.querySelector('.gns3-replay__window--unanchored')).toBeNull();
     });
 
+    it("the delta chip measures against the pin's FROZEN baseline (not the live list)", async () => {
+      await load();
+      // The live list moves on (filter/window change) — a snapshot's delta
+      // must NOT be rewritten by it.
+      svc.frames.set([{ ...frames[0], ts: '1788196664.000000' }]);
+      mountPin(pinOf({ listStartTs: '1788196663.000000', state: { status: 'ok', detail } }));
+      await flushFrames();
+
+      const chips = (fixture.nativeElement as HTMLElement).querySelectorAll('.gns3-replay__chip');
+      const delta = Array.from(chips).find((c) => c.textContent?.endsWith('s'));
+      // 1788196663.100000 − 1788196663.000000 (frozen) — NOT '−0.900s' off
+      // the live list's first row.
+      expect(delta?.textContent).toBe('+0.100s');
+    });
+
     it('draws the primary leader line to the link when anchored', async () => {
       await load();
       mountPin(pinOf({ state: { status: 'ok', detail } }));
@@ -180,7 +196,6 @@ describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
       const el: HTMLElement = fixture.nativeElement;
       const svg = el.querySelector<SVGSVGElement>('.gns3-replay__leader');
       expect(svg).toBeTruthy();
-      expect(svg!.classList.contains('gns3-replay__leader--pin')).toBe(true);
       const line = svg!.querySelector('line');
       expect(line?.getAttribute('x2')).toBe('560'); // rect center x = 500 + 120/2
       expect(line?.getAttribute('y2')).toBe('301');
@@ -418,8 +433,8 @@ describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
     it('docks at the bottom-left comparison slot matching its index among the pins', async () => {
       await load();
       const pins = [
-        { id: 1, frame: frames[0], state: { status: 'ok', detail } as const },
-        { id: 2, frame: frames[1], state: { status: 'ok', detail } as const },
+        { id: 1, frame: frames[0], listStartTs: frames[0].ts, state: { status: 'ok', detail } as const },
+        { id: 2, frame: frames[1], listStartTs: frames[0].ts, state: { status: 'ok', detail } as const },
       ];
       mountPin(pins[1], pins);
       await flushFrames();
@@ -505,7 +520,7 @@ describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
       expect(svc.freedPinRects()).toHaveLength(1);
 
       // Pin #2 arrives (simulate its FRESH window: not yet placed, not dragged).
-      const pin2 = { id: 2, frame: frames[1], state: { status: 'ok', detail } as const };
+      const pin2 = { id: 2, frame: frames[1], listStartTs: frames[0].ts, state: { status: 'ok', detail } as const };
       svc.pinnedDetails.set([svc.pinnedDetails()[0], pin2]);
       (component as any)['placed'] = false;
       component.dragPinned.set(false);
