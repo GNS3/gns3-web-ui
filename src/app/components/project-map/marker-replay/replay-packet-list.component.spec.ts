@@ -2,24 +2,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest';
 import { of } from 'rxjs';
 
-import { ReplayPacketListComponent } from './replay-packet-list.component';
+import { ReplayPacketListComponent, ROW_H } from './replay-packet-list.component';
 import { MarkerReplayService } from '@services/marker-replay.service';
 import { HttpController } from '@services/http-controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { ReplayFrame, ReplayRangeResponse } from '@models/marker-replay';
 
-/**
- * jsdom normalizes inline hex colors when style values are READ — probe the
- * SAME engine for the expected form instead of writing a color literal. (The
- * hardcoded-color check scans .ts sources too, and its regex matches any
- * rgb-shaped source text.)
- */
-function normalizedColor(hex: string): string {
-  const probe = document.createElement('div');
-  probe.style.color = `#${hex}`;
-  return probe.style.color;
-}
+/** The component's default column template — the SCSS keeps no fallback copy. */
+const DEFAULT_COLS = '104px minmax(100px, 1fr) minmax(100px, 1fr) 58px 42px minmax(110px, 2fr)';
 
 describe('ReplayPacketListComponent', () => {
   let fixture: ComponentFixture<ReplayPacketListComponent>;
@@ -114,7 +105,7 @@ describe('ReplayPacketListComponent', () => {
     expect(first.getAttribute('title')).toBe('Hello Packet'); // native tooltip
   });
 
-  it('colors rows from bg/fg, and the SELECTED row yields its inline colors to the class', () => {
+  it('binds bg/fg as row CSS variables; the selected class out-ranks them', () => {
     svc.tag.set(7);
     svc.mode.set('frames');
     svc.frames.set(frames);
@@ -123,10 +114,9 @@ describe('ReplayPacketListComponent', () => {
 
     const selected = rows()[1];
     expect(selected.classList.contains('gns3-replay__row--selected')).toBe(true);
-    expect(selected.style.background).toBe(''); // null binding — the class provides color
     const other = rows()[0];
-    expect(other.style.background).toBe(normalizedColor(frames[0].bg!));
-    expect(other.style.color).toBe(normalizedColor(frames[0].fg!));
+    expect(other.style.getPropertyValue('--pkt-bg')).toBe(`#${frames[0].bg}`);
+    expect(other.style.getPropertyValue('--pkt-fg')).toBe(`#${frames[0].fg}`);
   });
 
   it('clicking a row selects it (setCurrentIndex)', () => {
@@ -140,18 +130,53 @@ describe('ReplayPacketListComponent', () => {
     expect(select).toHaveBeenCalledWith(1);
   });
 
-  it('ArrowDown/ArrowUp on a focused row step the selection', () => {
-    const select = vi.spyOn(svc, 'setCurrentIndex');
+  it('ArrowDown/ArrowUp step the SELECTION from the selection (focus need not follow)', () => {
     svc.tag.set(7);
     svc.mode.set('frames');
     svc.frames.set(frames);
     svc.currentFrameIndex.set(0);
     fixture.detectChanges();
 
+    // Focus stays on row 0 for every press — the step must still advance
+    // (the stuck-after-one-press regression stepped from the FOCUSED row).
     rows()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
-    expect(select).toHaveBeenLastCalledWith(1);
+    expect(svc.currentFrameIndex()).toBe(1);
+    rows()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    expect(svc.currentFrameIndex()).toBe(1); // clamped at the list end — no-op
     rows()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
-    expect(select).toHaveBeenLastCalledWith(-1);
+    expect(svc.currentFrameIndex()).toBe(0);
+  });
+
+  it('windows long lists — a slice mounts, spacers keep the full scroll height', () => {
+    svc.tag.set(7);
+    svc.mode.set('frames');
+    const many: ReplayFrame[] = Array.from({ length: 500 }, (_, i) => ({
+      ...frames[0],
+      ts: (1 + i / 1000).toFixed(6),
+      frame_number: i + 1,
+    }));
+    svc.frames.set(many);
+    svc.currentFrameIndex.set(0);
+    fixture.detectChanges();
+
+    // jsdom cannot measure the scroller → the fallback viewport (40 rows)
+    // plus one buffer band below mounts (top buffer clamps at 0).
+    expect(rows().length).toBe(40 + 8);
+    expect(rows()[0].getAttribute('data-index')).toBe('0');
+
+    // Cursor far down the list (keyboard outran the scroll) → the window
+    // SLIDES to it — mounting everything in between would defeat the windowing.
+    svc.currentFrameIndex.set(300);
+    fixture.detectChanges();
+    const indexes = Array.from(rows()).map((r) => Number(r.getAttribute('data-index')));
+    expect(indexes).toContain(300);
+    expect(indexes[0]).toBe(300 - 20 - 8); // half-viewport (20) + buffer above
+    expect(rows().length).toBe(2 * (20 + 8) + 1);
+
+    // Top + mounted + bottom spacer heights = the full 500-row scroll height.
+    const pads = (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('.gns3-replay__list-pad');
+    const paddedRows = Array.from(pads).reduce((sum, p) => sum + Number(p.style.height.replace('px', '')), 0) / ROW_H;
+    expect(paddedRows + rows().length).toBe(500);
   });
 
   it('truncated mode renders one density row per second; clicking selects the bucket', async () => {
@@ -214,8 +239,9 @@ describe('ReplayPacketListComponent', () => {
       fixture.detectChanges();
     });
 
-    it('dragging a grip rewrites the shared grid variable', () => {
-      expect(colsVar()).toBe(''); // unset until a first drag
+    it('seeds the default grid at construction; dragging a grip rewrites it', () => {
+      // Seeded from colWidths — the SCSS keeps no fallback copy of the default.
+      expect(colsVar()).toBe(DEFAULT_COLS);
       drag(0, 30); // Time: 104 + 30
       expect(colsVar()).toBe('134px minmax(100px, 1fr) minmax(100px, 1fr) 58px 42px minmax(110px, 2fr)');
     });

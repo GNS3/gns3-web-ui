@@ -93,17 +93,16 @@ describe('MarkerReplayOverlayComponent', () => {
     expect(el.querySelector('.gns3-replay__state')).toBeNull(); // loading gone
   });
 
-  it('colors rows with the Wireshark bg/fg data colors (inline, with the # added)', () => {
+  it('binds the Wireshark bg/fg data colors as row CSS variables', () => {
     mockHttp.get.mockReturnValue(of(range));
     fixture.detectChanges();
 
-    // Row 0 is SELECTED (cursor starts there) and yields its inline colors to
-    // the selection class; row 1 carries the raw data colors, normalized.
+    // Row 0 is SELECTED (cursor starts there) — the class out-ranks the
+    // variables; row 1 carries the raw data colors ('#' added at the binding).
     const rows = (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('.gns3-replay__row');
     expect(rows[0].classList.contains('gns3-replay__row--selected')).toBe(true);
-    expect(rows[0].style.background).toBe('');
-    expect(rows[1].style.background).toBe(normalizedColor(frames[1].bg!));
-    expect(rows[1].style.color).toBe(normalizedColor(frames[1].fg!));
+    expect(rows[1].style.getPropertyValue('--pkt-bg')).toBe(`#${frames[1].bg}`);
+    expect(rows[1].style.getPropertyValue('--pkt-fg')).toBe(`#${frames[1].fg}`);
   });
 
   it('clamps the default window size into the (jsdom) viewport', () => {
@@ -380,7 +379,7 @@ describe('MarkerReplayOverlayComponent', () => {
       of(url.includes('frame/detail') ? detailFor(frames[0], 64) : range)
     );
     fixture.detectChanges();
-    svc.pinnedDetails.set([{ id: 1, frame: frames[0], state: { status: 'ok', detail: detailFor(frames[0], 64) } }]);
+    svc.pinnedDetails.set([{ id: 1, frame: frames[0], listStartTs: frames[0].ts, state: { status: 'ok', detail: detailFor(frames[0], 64) } }]);
     fixture.detectChanges();
 
     const el: HTMLElement = fixture.nativeElement;
@@ -429,8 +428,8 @@ describe('MarkerReplayOverlayComponent', () => {
     fixture.detectChanges();
 
     svc.pinnedDetails.set([
-      { id: 1, frame: frames[0], state: { status: 'ok', detail: detailFor(frames[0], 64) } },
-      { id: 2, frame: frames[1], state: { status: 'ok', detail: detailFor(frames[1], 63) } },
+      { id: 1, frame: frames[0], listStartTs: frames[0].ts, state: { status: 'ok', detail: detailFor(frames[0], 64) } },
+      { id: 2, frame: frames[1], listStartTs: frames[0].ts, state: { status: 'ok', detail: detailFor(frames[1], 63) } },
     ]);
     fixture.detectChanges();
 
@@ -445,10 +444,58 @@ describe('MarkerReplayOverlayComponent', () => {
     expect(component.pinDiff().has('ip/ip.ttl')).toBe(true);
   });
 
+  it('pinned windows stay MOUNTED while a filter/link reload is in flight', () => {
+    mockHttp.get.mockImplementation((_c: any, url: string) =>
+      url.includes('frame/detail')
+        ? of(detailFor(frames[0], 64))
+        : url.includes('filter=')
+          ? new Subject() // the filtered reload stalls — loadingRange stays true
+          : of(range)
+    );
+    fixture.detectChanges();
+    svc.pinnedDetails.set([{ id: 1, frame: frames[0], listStartTs: frames[0].ts, state: { status: 'ok', detail: detailFor(frames[0], 64) } }]);
+    fixture.detectChanges();
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('.gns3-replay__window')).toBeTruthy();
+
+    svc.applyFilter('tcp');
+    fixture.detectChanges();
+    expect(svc.loadingRange()).toBe(true);
+    // No unmount: a remount would re-run first-placement and teleport docked
+    // pins out of the comparison row.
+    expect(el.querySelector('.gns3-replay__window')).toBeTruthy();
+  });
+
+  it('re-clamps the window when the viewport shrinks (resize listener)', () => {
+    mockHttp.get.mockReturnValue(of(range));
+    fixture.detectChanges();
+
+    component.detailOpen.set(false); // list-only min (560) keeps the math small
+    component.winLeft.set(400);
+    component.winTop.set(300);
+    component.winWidth.set(560);
+    component.winHeight.set(420);
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    Object.defineProperty(window, 'innerWidth', { value: 600, configurable: true });
+    Object.defineProperty(window, 'innerHeight', { value: 500, configurable: true });
+    try {
+      window.dispatchEvent(new Event('resize'));
+      fixture.detectChanges();
+      expect(component.winWidth()).toBe(560); // max(600−32, 560) = 568 keeps 560
+      expect(component.winHeight()).toBe(420); // max(500−96, 420) = 420 keeps it
+      expect(component.winLeft()).toBe(40); // clamped to 600 − 560
+      expect(component.winTop()).toBe(80); // clamped to 500 − 420
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { value: vw, configurable: true });
+      Object.defineProperty(window, 'innerHeight', { value: vh, configurable: true });
+    }
+  });
+
   it('focusing races: main sits above never-clicked pins, any click raises that window', () => {
     mockHttp.get.mockReturnValue(of(range));
     fixture.detectChanges();
-    svc.pinnedDetails.set([{ id: 1, frame: frames[0], state: { status: 'ok', detail: detailFor(frames[0], 64) } }]);
+    svc.pinnedDetails.set([{ id: 1, frame: frames[0], listStartTs: frames[0].ts, state: { status: 'ok', detail: detailFor(frames[0], 64) } }]);
     fixture.detectChanges();
 
     const el: HTMLElement = fixture.nativeElement;
@@ -474,25 +521,13 @@ describe('MarkerReplayOverlayComponent', () => {
     mockHttp.get.mockReturnValue(of(range));
     fixture.detectChanges();
     svc.pinnedDetails.set([
-      { id: 1, frame: frames[0], state: { status: 'ok', detail: detailFor(frames[0], 64) } },
-      { id: 2, frame: frames[1], state: { status: 'loading' } },
+      { id: 1, frame: frames[0], listStartTs: frames[0].ts, state: { status: 'ok', detail: detailFor(frames[0], 64) } },
+      { id: 2, frame: frames[1], listStartTs: frames[0].ts, state: { status: 'loading' } },
     ]);
     fixture.detectChanges();
     expect(component.pinDiff().size).toBe(0);
   });
 });
-
-/**
- * jsdom normalizes inline hex colors when style values are READ — probe the
- * SAME engine for the expected form instead of writing a color literal. (The
- * hardcoded-color check scans .ts sources too, and its regex matches any
- * rgb-shaped source text.)
- */
-function normalizedColor(hex: string): string {
-  const probe = document.createElement('div');
-  probe.style.color = `#${hex}`;
-  return probe.style.color;
-}
 
 /** Decoded-frame fixture whose ip.ttl leaf label differs with `ttl`. */
 function detailFor(f: ReplayFrame, ttl: number): ReplayFrameDetail {

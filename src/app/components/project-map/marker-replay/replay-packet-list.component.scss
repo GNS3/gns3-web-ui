@@ -48,12 +48,11 @@
 
   // Frame columns come from the host-level variable the resize grips write —
   // one style write per mousemove re-grids header AND every row via
-  // inheritance (no change detection over the up-to-5000 rows).
+  // inheritance (no change detection over the mounted rows). The variable is
+  // SEEDED from the component's colWidths at construction — no SCSS fallback
+  // copy of the default template (the TS builder is the single source).
   &--frames {
-    grid-template-columns: var(
-      --gns3-replay-cols,
-      104px minmax(100px, 1fr) minmax(100px, 1fr) 58px 42px minmax(110px, 2fr)
-    );
+    grid-template-columns: var(--gns3-replay-cols);
   }
 
   &--buckets {
@@ -108,15 +107,22 @@
   overflow: auto; // columns may be dragged wider than the pane
 }
 
+// Uniform pitch: the windowing math (component ROW_H) assumes FIXED-height
+// rows — cells are single-line (ellipsis), so content can never grow one.
 .gns3-replay__row {
   display: grid;
-  grid-template-columns: var(--gns3-replay-cols, 104px minmax(100px, 1fr) minmax(100px, 1fr) 58px 42px minmax(110px, 2fr));
+  grid-template-columns: var(--gns3-replay-cols);
   align-items: center;
-  min-height: 22px;
+  height: 22px;
   padding: 0 10px;
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
   font-size: 11px;
-  color: var(--mat-sys-on-surface);
+  // Wireshark coloring-rule DATA colors arrive as row CSS custom properties
+  // (inline-bound in the template, '#' prepended there) — index-independent
+  // bindings, so moving the selection does not re-evaluate them. The
+  // selected/hover classes below out-rank the base by specificity.
+  color: var(--pkt-fg, var(--mat-sys-on-surface));
+  background: var(--pkt-bg, transparent);
   cursor: default;
   outline: none;
 
@@ -128,8 +134,7 @@
     box-shadow: inset 0 0 0 1px var(--mat-sys-primary);
   }
 
-  // The Wireshark bg/fg inline colors bind null while selected — this class
-  // is the only color source then (see the component's rowBackground note).
+  // Declared AFTER :hover on purpose — selection wins the tie.
   &--selected {
     background: var(--mat-sys-primary-container);
     color: var(--mat-sys-on-primary-container);
@@ -159,12 +164,13 @@
   }
 }
 
+// Same fixed 22px pitch as frame rows (the windowing math assumes it).
 .gns3-replay__bucket-row {
   display: grid;
   grid-template-columns: 104px minmax(0, 1fr);
   gap: 8px;
   align-items: center;
-  min-height: 22px;
+  height: 22px;
   padding: 0 10px;
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
   font-size: 11px;
