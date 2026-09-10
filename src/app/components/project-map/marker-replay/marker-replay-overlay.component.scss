@@ -35,7 +35,12 @@
   border-radius: 6px 6px 0 0; // inner radius (outer 8px − 2px border)
   user-select: none;
   flex-shrink: 0;
-  cursor: move;
+  cursor: grab;
+}
+
+// Hand CLOSED while the gesture is live — the pressed state of the grab.
+.gns3-replay__main--dragging .gns3-replay__header {
+  cursor: grabbing;
 }
 
 .gns3-replay__icon {
