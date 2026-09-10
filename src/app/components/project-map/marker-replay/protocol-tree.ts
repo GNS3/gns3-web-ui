@@ -132,10 +132,28 @@ export function flattenTree(tree: ProtocolTreeNode[], expanded: ReadonlySet<stri
 
 /** Keys of every child-bearing node — the expansion set for "Expand all". */
 export function collectKeys(tree: ProtocolTreeNode[]): string[] {
+  return collectKeysExcept(tree, EMPTY_NAMES);
+}
+
+/**
+ * Capture-metadata protos kept SHUT by an auto-expanding host: `frame`
+ * (arrival time / frame number / length / protocols-in-frame) is header
+ * noise next to the packet's actual layers — see {@link collectKeysExcept}.
+ */
+export const CAPTURE_METADATA_PROTO = 'frame';
+
+const EMPTY_NAMES: ReadonlySet<string> = new Set();
+
+/**
+ * {@link collectKeys} minus the subtrees rooted at nodes named in `excluded`
+ * — the auto-expand set for a freshly opened detail pane: every protocol
+ * layer unfolds, the capture-metadata `frame` proto stays collapsed.
+ */
+export function collectKeysExcept(tree: ProtocolTreeNode[], excluded: ReadonlySet<string>): string[] {
   const keys: string[] = [];
   const walk = (nodes: ProtocolTreeNode[], prefix: string): void => {
     nodes.forEach((node, i) => {
-      if (isHidden(node)) return;
+      if (isHidden(node) || excluded.has(node.name)) return;
       const key = `${prefix}/${i}`;
       const kids = visibleChildren(node);
       if (kids.length > 0) keys.push(key);

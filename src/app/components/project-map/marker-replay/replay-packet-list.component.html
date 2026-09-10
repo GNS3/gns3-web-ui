@@ -27,6 +27,7 @@
           role="row"
           tabindex="0"
           (click)="svc.setCurrentIndex(row.index)"
+          (dblclick)="onRowDblClick($event, row.frame)"
           (keydown)="onRowKey($event)"
           [title]="row.frame.info ?? ''"
         >

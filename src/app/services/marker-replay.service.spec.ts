@@ -638,6 +638,48 @@ describe('MarkerReplayService state machine', () => {
     });
   });
 
+  describe('peek window (transient double-click detail)', () => {
+    it('opens with the decode state, decodes through the shared cache, closes', () => {
+      mockRoutes({});
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.openPeek(F1, { x: 10, y: 20 });
+      expect(service.peek()?.frame.ts).toBe(F1.ts);
+      expect(service.peek()?.at).toEqual({ x: 10, y: 20 });
+      expect(service.peek()?.detail.status).toBe('ok'); // immediate (no debounce)
+
+      service.closePeek();
+      expect(service.peek()).toBeNull();
+    });
+
+    it('a late decode for an abandoned peek is discarded (retarget race)', () => {
+      const stalled = new Subject<ReplayFrameDetail>();
+      let n = 0;
+      mockRoutes({ detail: () => (n++ === 0 ? stalled : of(detailOf(F0))) });
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.openPeek(F0, { x: 0, y: 0 }); // stalls in flight
+      service.openPeek(F1, { x: 9, y: 9 }); // retargets
+      stalled.next(detailOf(F0)); // the abandoned frame's decode lands late
+
+      expect(service.peek()?.frame.ts).toBe(F1.ts); // NOT overwritten
+      expect(service.peek()?.detail.status).toBe('ok');
+    });
+
+    it('retryPeek re-fires a failed decode', () => {
+      let fail = true;
+      mockRoutes({
+        detail: () => (fail ? throwError(() => serverError(501, 'no sharkd')) : of(detailOf(F0))),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.openPeek(F0, { x: 0, y: 0 });
+      expect(service.peek()?.detail.status).toBe('error');
+
+      fail = false;
+      service.retryPeek();
+      expect(service.peek()?.detail.status).toBe('ok');
+      expect(service.peek()?.at).toEqual({ x: 0, y: 0 }); // same birth spot
+    });
+  });
+
   describe('pinned comparison windows', () => {
     it('pins the current frame and resolves its own detail state', async () => {
       mockRoutes({});

@@ -71,8 +71,12 @@ function colTemplate(w: {
  * SCSS; the selected row's class out-ranks them by specificity).
  *
  * Click (or ↑/↓ once a row is focused) selects a frame — the debounced decode
- * and the map-link highlight follow. The server sends the FULL list in one
- * response — the client carries the size burden here, not the protocol.
+ * and the map-link highlight follow. Double-click opens a PEEK window at the
+ * cursor (Wireshark's "show packet in new window"): a transient detail
+ * window near the mouse, NOT a pinned comparison — nothing docks, nothing
+ * joins the cross-window diff, nothing counts against the pin cap.
+ * The server sends the FULL list in one response — the client carries the
+ * size burden here, not the protocol.
  *
  * RENDERING is a manual visible-slice ("windowing"): rows are uniformly
  * pitched ({@link ROW_H}), so only the scroll viewport ± buffers are ever
@@ -218,6 +222,14 @@ export class ReplayPacketListComponent implements AfterViewInit, OnDestroy {
     const target = Math.max(0, top + ROW_H / 2 - (el?.clientHeight ?? 0) / 2);
     this.scrollTop.set(target);
     if (el) el.scrollTop = target;
+  }
+
+  /**
+   * Double-click opens a transient PEEK window at the cursor — the first
+   * click of the pair already selected (and highlighted) the frame.
+   */
+  onRowDblClick(e: MouseEvent, frame: ReplayFrame): void {
+    this.svc.openPeek(frame, { x: e.clientX, y: e.clientY });
   }
 
   // ---- column resize (header grips; Wireshark's draggable separators) ----

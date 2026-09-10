@@ -52,6 +52,12 @@ export class ReplayDetailPaneComponent {
    */
   readonly holdDetail = input<ReplayFrameDetail | null>(null);
   /**
+   * Forwarded to the tree: unfold every protocol layer on a new decode, the
+   * capture-metadata `frame` proto excepted. The peek window opts in — a
+   * browsing pane keeps Wireshark's collapsed default.
+   */
+  readonly autoExpand = input(false);
+  /**
    * ts of the list's first row — the delta chip's baseline. Pin hosts pass
    * their FROZEN baseline ({@link PinnedDetail.listStartTs}); a live host may
    * omit it and the session list's first row is used (the live delta is

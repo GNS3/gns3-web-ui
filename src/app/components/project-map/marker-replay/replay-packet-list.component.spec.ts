@@ -113,6 +113,24 @@ describe('ReplayPacketListComponent', () => {
     expect(select).toHaveBeenCalledWith(1);
   });
 
+  it('double-clicking a row opens a PEEK window at the cursor (not a pin)', () => {
+    svc.tag.set(7);
+    (svc as any).controller = controller;
+    (svc as any).projectId = 'p1';
+    svc.frames.set(frames);
+    fixture.detectChanges();
+
+    rows()[1].dispatchEvent(new MouseEvent('dblclick', { clientX: 300, clientY: 200, bubbles: true }));
+    const pk = svc.peek()!;
+    expect(pk.frame).toBe(frames[1]);
+    expect(pk.at).toEqual({ x: 300, y: 200 });
+    expect(svc.pinnedDetails()).toHaveLength(0); // peek ≠ comparison pin
+
+    // Double-clicking ANOTHER row retargets the same window.
+    rows()[0].dispatchEvent(new MouseEvent('dblclick', { clientX: 50, clientY: 60, bubbles: true }));
+    expect(svc.peek()!.frame).toBe(frames[0]);
+  });
+
   it('ArrowDown/ArrowUp step the SELECTION from the selection (focus need not follow)', () => {
     svc.tag.set(7);
     svc.frames.set(frames);

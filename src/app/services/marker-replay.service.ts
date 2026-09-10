@@ -8,6 +8,7 @@ import {
   PinnedDetail,
   ReplayFrame,
   ReplayFrameDetail,
+  ReplayPeek,
   ReplayRangeResponse,
   ReplaySource,
 } from '@models/marker-replay';
@@ -188,6 +189,13 @@ export class MarkerReplayService {
    */
   readonly pinnedDetails = signal<PinnedDetail[]>([]);
   private pinSeq = 0;
+  /**
+   * The transient double-click detail window — one at a time (see
+   * {@link ReplayPeek}); rendered by the overlay like a pinned window but
+   * entirely outside the comparison set.
+   */
+  readonly peek = signal<ReplayPeek | null>(null);
+  private peekSeq = 0;
 
   readonly currentFrame = computed(() => this.frames()[this.currentFrameIndex()] ?? null);
   readonly isEmpty = computed(
@@ -420,6 +428,38 @@ export class MarkerReplayService {
   unpin(id: number): void {
     this.pinnedDetails.set(this.pinnedDetails().filter((p) => p.id !== id));
     this.pinRects.delete(id);
+  }
+
+  // ---- peek window (transient double-click detail) --------------------------
+
+  /**
+   * Open (or retarget) the peek window at the double-click point — every call
+   * is a BIRTH ({@link ReplayPeek.seq} bumps), so hosts can re-place and
+   * re-raise the window without reacting to mere decode updates. The decode
+   * goes through the SHARED detail cache (no debounce — a peek wants it now);
+   * a late response from a superseded peek session is discarded.
+   */
+  openPeek(frame: ReplayFrame, at: { x: number; y: number }): void {
+    const seq = ++this.peekSeq;
+    this.peek.set({ seq, frame, at, detail: { status: 'loading' } });
+    this.fetchDetail(frame)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((state) => {
+        const cur = this.peek();
+        if (cur && cur.seq === seq) this.peek.set({ ...cur, detail: state });
+      });
+  }
+
+  /** Close the peek window. */
+  closePeek(): void {
+    this.peek.set(null);
+  }
+
+  /** Retry the peek window's failed decode. */
+  retryPeek(): void {
+    const cur = this.peek();
+    if (!cur || cur.detail.status === 'ok') return;
+    this.openPeek(cur.frame, cur.at);
   }
 
   // ---- pinned-window rect registry (snapping + dock/cluster placement) ------

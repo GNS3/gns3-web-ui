@@ -185,3 +185,13 @@
     (windowFocused)="focusWindow('pin-' + p.id)"
   ></app-replay-detail-window>
 }
+
+<!-- The transient double-click detail window — one at a time, born at the
+     mouse, outside the comparison set (never gated on reloads, like pins). -->
+@if (svc.peek()) {
+  <app-replay-peek-window
+    [zIndex]="zIndex()"
+    [zBoost]="zAssign().get('peek') ?? 0"
+    (windowFocused)="focusWindow('peek')"
+  />
+}

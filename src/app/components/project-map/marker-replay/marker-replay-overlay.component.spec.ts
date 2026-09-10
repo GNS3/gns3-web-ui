@@ -442,6 +442,65 @@ describe('MarkerReplayOverlayComponent', () => {
     expect(component.pinDiff().has('ip/ip.ttl')).toBe(true);
   });
 
+  it('the double-click peek window renders outside the main window', () => {
+    mockHttp.get.mockImplementation((_c: any, url: string) =>
+      url.includes('frame/detail') ? of(detailFor(frames[1], 64)) : of(range)
+    );
+    fixture.detectChanges();
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('.gns3-replay__window--peek')).toBeNull(); // none until a dblclick
+
+    svc.openPeek(frames[1], { x: 100, y: 100 });
+    fixture.detectChanges();
+    expect(el.querySelector('.gns3-replay__window--peek')).toBeTruthy();
+  });
+
+  it('every peek BIRTH is raised above the main window (later ones too)', () => {
+    mockHttp.get.mockImplementation((_c: any, url: string) =>
+      url.includes('frame/detail') ? of(detailFor(frames[0], 64)) : of(range)
+    );
+    fixture.detectChanges();
+    const el: HTMLElement = fixture.nativeElement;
+    const z = (sel: string) => Number((el.querySelector(sel) as HTMLElement).style.zIndex);
+    const peekZ = () => z('.gns3-replay__window--peek');
+    const mainZ = () => z('.gns3-replay__main');
+
+    svc.openPeek(frames[0], { x: 100, y: 100 });
+    fixture.detectChanges();
+    expect(peekZ()).toBeGreaterThan(mainZ()); // born above the list it sprang from
+
+    // The user clicks the replay window again — main climbs the fleet…
+    component.focusWindow('main');
+    fixture.detectChanges();
+    expect(mainZ()).toBeGreaterThan(peekZ());
+
+    // …and the NEXT double-click still opens above it (the regression: a fixed
+    // z floor lost to the main window's ever-growing focus-fleet boost).
+    svc.openPeek(frames[1], { x: 200, y: 120 });
+    fixture.detectChanges();
+    expect(peekZ()).toBeGreaterThan(mainZ());
+  });
+
+  it('a decode update does not re-raise the peek above the current focus', () => {
+    mockHttp.get.mockImplementation((_c: any, url: string) =>
+      url.includes('frame/detail') ? of(detailFor(frames[0], 64)) : of(range)
+    );
+    fixture.detectChanges();
+    const el: HTMLElement = fixture.nativeElement;
+    const z = (sel: string) => Number((el.querySelector(sel) as HTMLElement).style.zIndex);
+
+    svc.openPeek(frames[0], { x: 100, y: 100 });
+    fixture.detectChanges();
+    component.focusWindow('main'); // user goes back to the list
+    fixture.detectChanges();
+    const before = z('.gns3-replay__window--peek');
+
+    // Same session: a state-only rewrite (decode landing) must leave the stack.
+    svc.peek.set({ ...svc.peek()!, detail: { status: 'loading' } });
+    fixture.detectChanges();
+    expect(z('.gns3-replay__window--peek')).toBe(before);
+  });
+
   it('pinned windows stay MOUNTED while a filter/link reload is in flight', () => {
     mockHttp.get.mockImplementation((_c: any, url: string) =>
       url.includes('frame/detail')

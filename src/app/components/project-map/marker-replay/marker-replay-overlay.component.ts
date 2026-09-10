@@ -31,6 +31,7 @@ import { diffTrees } from './replay-tree-diff';
 import { ReplayPacketListComponent } from './replay-packet-list.component';
 import { ReplayDetailPaneComponent } from './replay-detail-pane.component';
 import { ReplayDetailWindowComponent } from './replay-detail-window.component';
+import { ReplayPeekWindowComponent } from './replay-peek-window.component';
 
 /**
  * The marker-replay MAIN window (Wireshark-style): a large floating, draggable,
@@ -63,6 +64,7 @@ import { ReplayDetailWindowComponent } from './replay-detail-window.component';
     ReplayPacketListComponent,
     ReplayDetailPaneComponent,
     ReplayDetailWindowComponent,
+    ReplayPeekWindowComponent,
     ResizableDirective,
     ResizeHandleDirective,
   ],
@@ -194,6 +196,16 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
     effect(() => {
       const isMin = this.windowManagement.minimizedWindows().some((w) => w.id === this.WINDOW_ID);
       if (isMin !== this.minimized()) this.minimized.set(isMin);
+    });
+    // A peek is BORN over the window that spawned it — raise it in the focus
+    // fleet on every birth. Keyed on seq: decode updates for the SAME peek
+    // must not re-raise it (the user may have clicked elsewhere since).
+    let lastPeekSeq = 0;
+    effect(() => {
+      const seq = this.svc.peek()?.seq ?? 0;
+      if (seq === lastPeekSeq) return;
+      lastPeekSeq = seq;
+      if (seq > 0) this.focusWindow('peek');
     });
   }
 

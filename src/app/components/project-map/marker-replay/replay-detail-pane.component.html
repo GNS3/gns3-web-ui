@@ -39,6 +39,7 @@
       <app-protocol-tree
         [tree]="d.tree"
         [changedPaths]="changedPaths()"
+        [autoExpand]="autoExpand()"
         [(searchQuery)]="searchQuery"
         (applyFilter)="applyFilter.emit($event)"
       />

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest';
 import { ProtocolTreeComponent } from './protocol-tree.component';
-import { ancestorKeys, collectKeys, flattenTree, rowSearchText, rowText } from './protocol-tree';
+import { ancestorKeys, collectKeys, collectKeysExcept, flattenTree, rowSearchText, rowText } from './protocol-tree';
 import { ProtocolTreeNode } from '@models/marker-replay';
 
 describe('protocol-tree pure helpers', () => {
@@ -55,6 +55,24 @@ describe('protocol-tree pure helpers', () => {
     const rows = flattenTree([geninfo, ip], new Set(['/1']));
     expect(rows.map((r) => r.node.name)).toEqual(['ip', 'ip.ttl', 'ip.flags']);
     expect(collectKeys([geninfo, ip])).toEqual(['/1', '/1/1']);
+  });
+
+  it('collectKeysExcept skips the excluded subtree and its descendants', () => {
+    const frame: ProtocolTreeNode = {
+      element: 'proto',
+      name: 'frame',
+      label: 'Frame 1: 98 bytes',
+      children: [{ ...ttl, name: 'frame.number', label: 'Frame Number: 1' }],
+    };
+    const withFrame = [frame, ip];
+    const keys = (nodes: ProtocolTreeNode[]) => collectKeysExcept(nodes, new Set(['frame']));
+
+    // Child-bearing nodes: frame (/0), ip (/1) and flags (/1/1); ttl (/1/0)
+    // and the leaf fields are no-ops either way. The exclusion drops frame's
+    // whole subtree — collectKeys (no exclusion) keeps it.
+    expect(keys(withFrame)).toEqual(['/1', '/1/1']);
+    expect(collectKeys(withFrame)).toEqual(['/0', '/1', '/1/1']);
+    expect(keys(tree)).toEqual(collectKeys(tree)); // no excluded name present
   });
 
   it('collectKeys returns every child-bearing key (the expand-all set)', () => {
@@ -159,6 +177,32 @@ describe('ProtocolTreeComponent', () => {
     expect(rows().length).toBe(1);
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Internet Protocol Version 4');
     expect((fixture.nativeElement as HTMLElement).textContent).not.toContain('Time to Live');
+  });
+
+  it('autoExpand opens the protocol layers but keeps the frame proto shut', () => {
+    const frameProto: ProtocolTreeNode = {
+      element: 'proto',
+      name: 'frame',
+      label: 'Frame 1: 98 bytes on wire',
+      children: [{ ...ttl, name: 'frame.number', label: 'Frame Number: 1', filter_expr: undefined }],
+    };
+    fixture.componentRef.setInput('tree', [frameProto, ipProto]);
+    fixture.componentRef.setInput('autoExpand', true);
+    fixture.detectChanges();
+
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.textContent).toContain('Time to Live'); // ip's fields unfolded
+    expect(el.textContent).toContain('Frame 1: 98 bytes on wire'); // the proto row itself shows
+    expect(el.textContent).not.toContain('Frame Number'); // …its metadata subtree stays shut
+
+    // A manual collapse is respected until the NEXT tree arrives.
+    (component as any).collapseAll();
+    fixture.detectChanges();
+    expect(el.textContent).not.toContain('Time to Live');
+
+    fixture.componentRef.setInput('tree', [{ ...frameProto }, { ...ipProto }]);
+    fixture.detectChanges();
+    expect(el.textContent).toContain('Time to Live'); // re-seeded on the new tree
   });
 
   it('clicking a protocol row selects it and expands its children', () => {

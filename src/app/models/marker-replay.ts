@@ -133,3 +133,18 @@ export interface PinnedDetail {
   listStartTs: string;
   state: DetailState;
 }
+
+/**
+ * A transient double-click detail window ("peek"): pinned-window LOOK, but
+ * positioned at the mouse and owned by no comparison set — nothing docks,
+ * joins the cross-window diff, or counts against the pin cap. One at a
+ * time; double-clicking another row retargets it.
+ */
+export interface ReplayPeek {
+  /** Bumped per openPeek call — a BIRTH (open/retarget), not a state update. */
+  seq: number;
+  frame: ReplayFrame;
+  detail: DetailState;
+  /** Viewport point of the opening double-click — the window's birth spot. */
+  at: { x: number; y: number };
+}
