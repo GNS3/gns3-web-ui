@@ -19,24 +19,6 @@
   flex-shrink: 0;
 }
 
-// Back affordance while inside a materialized second.
-.gns3-replay__list-back {
-  display: block;
-  width: 100%;
-  padding: 3px 10px;
-  border: none;
-  background: var(--mat-sys-surface-container);
-  color: var(--mat-sys-primary);
-  font-size: 10px;
-  text-align: left;
-  cursor: pointer;
-  white-space: nowrap;
-
-  &:hover {
-    background: var(--mat-sys-surface-container-high);
-  }
-}
-
 .gns3-replay__list-cols {
   display: grid;
   padding: 4px 10px 3px;
@@ -53,11 +35,6 @@
   // copy of the default template (the TS builder is the single source).
   &--frames {
     grid-template-columns: var(--gns3-replay-cols);
-  }
-
-  &--buckets {
-    grid-template-columns: 104px minmax(0, 1fr);
-    gap: 8px;
   }
 }
 
@@ -162,68 +139,4 @@
   &--proto {
     font-weight: 600;
   }
-}
-
-// Same fixed 22px pitch as frame rows (the windowing math assumes it).
-.gns3-replay__bucket-row {
-  display: grid;
-  grid-template-columns: 104px minmax(0, 1fr);
-  gap: 8px;
-  align-items: center;
-  height: 22px;
-  padding: 0 10px;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 11px;
-  color: var(--mat-sys-on-surface);
-  cursor: pointer;
-  outline: none;
-
-  &:hover {
-    background: var(--mat-sys-surface-container);
-  }
-
-  &:focus-visible {
-    box-shadow: inset 0 0 0 1px var(--mat-sys-primary);
-  }
-
-  &--current {
-    color: var(--mat-sys-primary);
-  }
-}
-
-.gns3-replay__bucket-barzone {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-}
-
-.gns3-replay__bucket-bar {
-  height: 6px;
-  border-radius: 2px;
-  background: var(--mat-sys-outline-variant);
-  flex-shrink: 0;
-}
-
-.gns3-replay__bucket-row--current .gns3-replay__bucket-bar {
-  background: var(--mat-sys-primary);
-}
-
-.gns3-replay__bucket-count {
-  font-size: 10px;
-  color: var(--mat-sys-on-surface-variant);
-  white-space: nowrap;
-}
-
-.gns3-replay__list-hint {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  font-size: 11px;
-  color: var(--mat-sys-on-surface-variant);
-}
-
-.gns3-replay__list-spinner {
-  flex-shrink: 0;
 }

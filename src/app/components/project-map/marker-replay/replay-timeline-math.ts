@@ -1,9 +1,7 @@
-import { ReplayBucket } from '@models/marker-replay';
-
 /**
- * Pure formatting/bucketing helpers for the replay packet list (the timeline
- * tape's math retired with it — only the display formats and the bucket
- * density bars survive). No Angular, no DOM — directly unit-testable.
+ * Pure display-format helpers for the replay packet list (the timeline tape's
+ * math and the per-second density bars retired with bucket mode). No Angular,
+ * no DOM — directly unit-testable.
  *
  * ts handling: `Number(ts)` appears ONLY in this file, and only for DISPLAY.
  * The strings themselves are never re-serialized and never sent back to the
@@ -38,15 +36,4 @@ export function formatDelta(ts: string, firstTs: string): string {
   const delta = Number(ts) - Number(firstTs);
   const sign = delta < 0 ? '−' : '+';
   return `${sign}${Math.abs(delta).toFixed(3)}s`;
-}
-
-/** Bucket density bar width ∝ count / maxCount (min 3px so a hit stays visible). */
-export function bucketBarWidth(count: number, maxCount: number, fullPx: number): number {
-  if (count <= 0 || maxCount <= 0) return 0;
-  return Math.max(3, Math.round((count / maxCount) * fullPx));
-}
-
-/** Convenience: the max count across buckets (the full-bar reference). */
-export function maxBucketCount(buckets: ReplayBucket[]): number {
-  return buckets.reduce((m, b) => Math.max(m, b.count), 0);
 }

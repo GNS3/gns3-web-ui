@@ -7,7 +7,7 @@ import { MarkerReplayService } from '@services/marker-replay.service';
 import { HttpController } from '@services/http-controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
-import { ReplayFrame, ReplayRangeResponse } from '@models/marker-replay';
+import { ReplayFrame } from '@models/marker-replay';
 
 /** The component's default column template — the SCSS keeps no fallback copy. */
 const DEFAULT_COLS = '104px minmax(100px, 1fr) minmax(100px, 1fr) 58px 42px minmax(110px, 2fr)';
@@ -32,19 +32,6 @@ describe('ReplayPacketListComponent', () => {
       src: '10.0.12.2', dst: '224.0.0.5', proto: 'OSPF', info: 'DBD',
     },
   ];
-
-  const truncatedRange: ReplayRangeResponse = {
-    tag: 7,
-    start: '1.000000',
-    end: '2.000000',
-    frame_count: 9000,
-    truncated: true,
-    sources: [],
-    buckets: [
-      { ts: '1.000000', count: 2 },
-      { ts: '2.000000', count: 9 },
-    ],
-  };
 
   beforeAll(() => {
     vi.useFakeTimers();
@@ -81,12 +68,10 @@ describe('ReplayPacketListComponent', () => {
   }
 
   it('renders one grid row per frame with the Wireshark columns', () => {
-    svc.start(controller, 'p1', 7); // frames mode via the default range mock? no — inject directly:
     svc.tag.set(7);
     // Direct state injection keeps this spec about RENDERING, not fetching.
     (svc as any).controller = controller;
     (svc as any).projectId = 'p1';
-    svc.mode.set('frames');
     svc.frames.set(frames);
     svc.currentFrameIndex.set(0);
     fixture.detectChanges();
@@ -107,7 +92,6 @@ describe('ReplayPacketListComponent', () => {
 
   it('binds bg/fg as row CSS variables; the selected class out-ranks them', () => {
     svc.tag.set(7);
-    svc.mode.set('frames');
     svc.frames.set(frames);
     svc.currentFrameIndex.set(1); // second row selected
     fixture.detectChanges();
@@ -122,7 +106,6 @@ describe('ReplayPacketListComponent', () => {
   it('clicking a row selects it (setCurrentIndex)', () => {
     const select = vi.spyOn(svc, 'setCurrentIndex');
     svc.tag.set(7);
-    svc.mode.set('frames');
     svc.frames.set(frames);
     fixture.detectChanges();
 
@@ -132,7 +115,6 @@ describe('ReplayPacketListComponent', () => {
 
   it('ArrowDown/ArrowUp step the SELECTION from the selection (focus need not follow)', () => {
     svc.tag.set(7);
-    svc.mode.set('frames');
     svc.frames.set(frames);
     svc.currentFrameIndex.set(0);
     fixture.detectChanges();
@@ -149,7 +131,6 @@ describe('ReplayPacketListComponent', () => {
 
   it('windows long lists — a slice mounts, spacers keep the full scroll height', () => {
     svc.tag.set(7);
-    svc.mode.set('frames');
     const many: ReplayFrame[] = Array.from({ length: 500 }, (_, i) => ({
       ...frames[0],
       ts: (1 + i / 1000).toFixed(6),
@@ -160,18 +141,29 @@ describe('ReplayPacketListComponent', () => {
     fixture.detectChanges();
 
     // jsdom cannot measure the scroller → the fallback viewport (40 rows)
-    // plus one buffer band below mounts (top buffer clamps at 0).
-    expect(rows().length).toBe(40 + 8);
+    // plus the render-ahead band below mounts (top buffer clamps at 0).
+    expect(rows().length).toBe(40 + 24);
     expect(rows()[0].getAttribute('data-index')).toBe('0');
 
-    // Cursor far down the list (keyboard outran the scroll) → the window
-    // SLIDES to it — mounting everything in between would defeat the windowing.
-    svc.currentFrameIndex.set(300);
+    // Scroll deep: the window follows the SCROLL position — scrolling away
+    // from the selection must never strand the viewport on a blank spacer
+    // (the all-white regression came from sliding the window back to the
+    // stale cursor instead).
+    component.onScroll({ target: { scrollTop: 300 * ROW_H, clientHeight: 400 } } as unknown as Event);
     fixture.detectChanges();
-    const indexes = Array.from(rows()).map((r) => Number(r.getAttribute('data-index')));
-    expect(indexes).toContain(300);
-    expect(indexes[0]).toBe(300 - 20 - 8); // half-viewport (20) + buffer above
-    expect(rows().length).toBe(2 * (20 + 8) + 1);
+    let indexes = Array.from(rows()).map((r) => Number(r.getAttribute('data-index')));
+    expect(indexes[0]).toBe(300 - 8); // buffer above
+    expect(indexes).not.toContain(0); // the window really moved
+    expect(rows().length).toBe((300 + Math.ceil(400 / ROW_H)) - (300 - 8) + 24);
+
+    // Keyboard stepping past the edge: the scroll signal syncs WITH the
+    // selection, so the cursor row mounts on the SAME flush — no white gap
+    // while the scroll event is still in flight.
+    svc.currentFrameIndex.set(300);
+    rows()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    fixture.detectChanges();
+    indexes = Array.from(rows()).map((r) => Number(r.getAttribute('data-index')));
+    expect(indexes).toContain(301);
 
     // Top + mounted + bottom spacer heights = the full 500-row scroll height.
     const pads = (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('.gns3-replay__list-pad');
@@ -179,46 +171,24 @@ describe('ReplayPacketListComponent', () => {
     expect(paddedRows + rows().length).toBe(500);
   });
 
-  it('truncated mode renders one density row per second; clicking selects the bucket', async () => {
-    const bucket = vi.spyOn(svc, 'setCurrentBucket');
-    mockHttp.get.mockImplementation((_c: any, url: string) =>
-      url.includes('/replay/frames') ? of({ frames: [] }) : of(truncatedRange)
-    );
-    svc.start(controller, 'p1', 7);
-    await vi.advanceTimersByTimeAsync(200); // first-second settle (legitimately empty)
+  it('the render window FOLLOWS scrolling — the slice always covers the viewport', () => {
+    svc.tag.set(7);
+    const many: ReplayFrame[] = Array.from({ length: 500 }, (_, i) => ({
+      ...frames[0],
+      ts: (1 + i / 1000).toFixed(6),
+      frame_number: i + 1,
+    }));
+    svc.frames.set(many);
     fixture.detectChanges();
 
-    const el: HTMLElement = fixture.nativeElement;
-    const bucketRows = el.querySelectorAll<HTMLElement>('.gns3-replay__bucket-row');
-    expect(bucketRows.length).toBe(2);
-    expect(el.querySelector('.gns3-replay__list-cols--buckets')).toBeTruthy();
-    // Bar width ∝ count: 2 vs 9 → the second is wider.
-    const widths = Array.from(el.querySelectorAll<HTMLElement>('.gns3-replay__bucket-bar')).map(
-      (b) => b.getBoundingClientRect().width || Number(b.style.width.replace('px', ''))
-    );
-    expect(widths[1]).toBeGreaterThan(widths[0]);
-
-    bucketRows[1].click();
-    expect(bucket).toHaveBeenCalledWith(1);
-  });
-
-  it('inside a materialized second the header grows a back affordance to exitWindow', async () => {
-    const exit = vi.spyOn(svc, 'exitWindow');
-    mockHttp.get.mockImplementation((_c: any, url: string) =>
-      url.includes('/replay/frames') ? of({ frames }) : of(truncatedRange)
-    );
-    svc.start(controller, 'p1', 7);
-    await vi.advanceTimersByTimeAsync(200); // materialize bucket 0
+    // jsdom cannot lay out — drive the scroll handler with a real-ish
+    // scroller state (scrolled 2000px down, 400px viewport).
+    component.onScroll({ target: { scrollTop: 2000, clientHeight: 400 } } as unknown as Event);
     fixture.detectChanges();
 
-    expect(svc.inWindow()).toBe(true);
-    const back = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.gns3-replay__list-back');
-    expect(back).toBeTruthy();
-    expect(rows().length).toBe(2); // materialized frames as rows
-
-    back!.click();
-    expect(exit).toHaveBeenCalled();
-    expect(svc.inWindow()).toBe(false);
+    const indexes = Array.from(rows()).map((r) => Number(r.getAttribute('data-index')));
+    expect(indexes[0]).toBeLessThanOrEqual(Math.floor(2000 / ROW_H)); // viewport top covered…
+    expect(indexes[indexes.length - 1]).toBeGreaterThanOrEqual(Math.ceil(2400 / ROW_H)); // …and the bottom
   });
 
   describe('column resize (header grips)', () => {
@@ -234,7 +204,6 @@ describe('ReplayPacketListComponent', () => {
 
     beforeEach(() => {
       svc.tag.set(7);
-      svc.mode.set('frames');
       svc.frames.set(frames);
       fixture.detectChanges();
     });

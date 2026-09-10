@@ -133,10 +133,9 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
     const total = this.svc.totalFrames();
     const narrowed = this.svc.appliedFilter() || this.svc.appliedLink();
     const base = narrowed ? `${total} of ${this.svc.totalUnfiltered()}` : `${total}`;
-    const suffix = this.svc.inWindow() ? ` · second ${(this.svc.currentBucketIndex() ?? 0) + 1}/${this.svc.buckets().length}` : '';
     // Pluralization follows the LARGER count — "1 of 2 frames".
     const many = (narrowed ? this.svc.totalUnfiltered() : total) !== 1;
-    return `${base} frame${many ? 's' : ''}${suffix}`;
+    return `${base} frame${many ? 's' : ''}`;
   });
 
   /**
@@ -181,9 +180,7 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   });
 
   /** Whether ANY list content is on screen (drives full-spinner vs dimming). */
-  readonly hasList = computed(
-    () => this.svc.browsingFrames() ? this.svc.frames().length > 0 : this.svc.buckets().length > 0
-  );
+  readonly hasList = computed(() => this.svc.frames().length > 0);
 
   constructor() {
     // gate (409) / missing (404) kill the session — the service already

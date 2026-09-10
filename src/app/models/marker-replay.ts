@@ -50,33 +50,19 @@ export interface ReplaySource {
   count: number;
 }
 
-/** One per-second histogram bucket (present only when `truncated` — over 5000 frames). */
-export interface ReplayBucket {
-  /** Second-boundary ts string ("….000000") — feeds the frames endpoint verbatim. */
-  ts: string;
-  count: number;
-}
-
 /**
- * The `range` response. Check `truncated` FIRST: over the frame cap the
- * `frames` key is ABSENT from the payload and `buckets` is returned instead —
- * never assume `frames` exists. `start`/`end` are null when nothing was
- * captured under the tag (all markers paused, zero matches).
+ * The `range` response: list metadata + the FULL merged frame list — no cap,
+ * no truncation (`frame_count` == `frames.length`, always). `start`/`end` are
+ * null when nothing was captured under the tag.
  */
 export interface ReplayRangeResponse {
   tag: number;
   start: string | null;
   end: string | null;
+  /** == frames.length — the full merged total under the current filter/link. */
   frame_count: number;
-  truncated: boolean;
   sources: ReplaySource[];
   frames?: ReplayFrame[];
-  buckets?: ReplayBucket[];
-}
-
-/** Frames-in-window response. An empty array is a normal, successful answer. */
-export interface ReplayFramesResponse {
-  frames: ReplayFrame[];
 }
 
 /**
@@ -129,9 +115,6 @@ export type DetailState =
       message: string;
       frame: ReplayFrame;
     };
-
-/** Which list the timeline tape is currently navigating. */
-export type TimelineMode = 'frames' | 'buckets';
 
 /**
  * A frame frozen into its own comparison window (Wireshark's "open packet in

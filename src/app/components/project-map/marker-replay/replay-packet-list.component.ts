@@ -11,24 +11,21 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { ReplayBucket, ReplayFrame } from '@models/marker-replay';
+import { ReplayFrame } from '@models/marker-replay';
 import { MarkerReplayService } from '@services/marker-replay.service';
-import {
-  bucketBarWidth as bucketBarWidthFor,
-  formatFrameTime,
-  formatSeconds,
-  maxBucketCount,
-} from './replay-timeline-math';
+import { formatFrameTime } from './replay-timeline-math';
 
-/** Full-bar reference width (px) for the per-second density bars. */
-const BUCKET_FULL_PX = 150;
-
-/** Uniform row pitch (px) — MUST match the fixed row heights in the SCSS. */
+/** Uniform row pitch (px) — MUST match the fixed row height in the SCSS. */
 export const ROW_H = 22;
-/** Rows rendered above/below the measured viewport (scroll lookahead). */
-const SLICE_BUFFER = 8;
+/** Rows rendered above the viewport (scroll lookback). */
+const SLICE_BUFFER_ABOVE = 8;
+/**
+ * Rows rendered BELOW the viewport (render-ahead). Generous on purpose: the
+ * slice re-renders one CD flush behind the scroll event (zoneless), and a
+ * thin band here shows the blank spacer under fast wheel/fling scrolling.
+ */
+const SLICE_BUFFER_BELOW = 24;
 /**
  * Viewport assumed while the scroller is not measurable (jsdom reports 0px
  * clientHeight) — large enough that short fixture lists render whole.
@@ -41,14 +38,6 @@ interface FrameRow {
   index: number;
   frame: ReplayFrame;
   time: string;
-}
-
-/** A bucket row in the render window — time/bar width precomputed. */
-interface BucketRow {
-  index: number;
-  bucket: ReplayBucket;
-  time: string;
-  width: number;
 }
 
 /** Frame columns whose width a header grip can drag (Info flexes last). */
@@ -82,24 +71,20 @@ function colTemplate(w: {
  * SCSS; the selected row's class out-ranks them by specificity).
  *
  * Click (or ↑/↓ once a row is focused) selects a frame — the debounced decode
- * and the map-link highlight follow. Truncated tags (>5000 frames, server cap)
- * show one density bar per second instead; clicking one materializes that
- * second into frame rows, and the sticky header grows a back affordance.
+ * and the map-link highlight follow. The server sends the FULL list in one
+ * response — the client carries the size burden here, not the protocol.
  *
  * RENDERING is a manual visible-slice ("windowing"): rows are uniformly
- * pitched ({@link ROW_H}), so only the scroll viewport ±
- * {@link SLICE_BUFFER} rows (plus the cursor's neighborhood, so keyboard
- * stepping can never outrun the window) are ever mounted — top/bottom spacer
- * divs preserve the full scroll height. The DOM stays at ~viewport/ROW_H rows
- * regardless of list length (≤5000 frames full mode; bucket rows otherwise,
- * uncapped). Frame objects come straight from the service, server order
- * authoritative.
+ * pitched ({@link ROW_H}), so only the scroll viewport ± buffers are ever
+ * mounted — top/bottom spacer divs preserve the full scroll height. The DOM
+ * stays at ~viewport/ROW_H rows regardless of list length. Frame objects come
+ * straight from the service, server order authoritative.
  */
 @Component({
   selector: 'app-replay-packet-list',
   templateUrl: './replay-packet-list.component.html',
   styleUrl: './replay-packet-list.component.scss',
-  imports: [CommonModule, MatProgressSpinnerModule],
+  imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReplayPacketListComponent implements AfterViewInit, OnDestroy {
@@ -132,16 +117,18 @@ export class ReplayPacketListComponent implements AfterViewInit, OnDestroy {
 
   @ViewChild('scroller') private readonly scroller?: ElementRef<HTMLElement>;
 
+  /** Refreshes {@link viewH} when the scroller itself resizes (window drag). */
+  private viewObserver: ResizeObserver | null = null;
+
   private readonly scrollTop = signal(0);
   private readonly viewH = signal(0);
 
   constructor() {
     this.host.nativeElement.style.setProperty(COLS_VAR, colTemplate(this.colWidths));
-    // A NEW list (filter/link/window change) restarts at the top — browsers
-    // would otherwise keep the old scroll offset against the replacement.
+    // A NEW list (filter/link change) restarts at the top — browsers would
+    // otherwise keep the old scroll offset against the replacement.
     effect(() => {
       this.svc.frames();
-      this.svc.buckets();
       this.scrollTop.set(0);
       const el = this.scroller?.nativeElement;
       if (el) el.scrollTop = 0;
@@ -152,55 +139,49 @@ export class ReplayPacketListComponent implements AfterViewInit, OnDestroy {
     // Real browsers: capture the actual viewport height before any scroll
     // happens. jsdom stays 0 → the fallback window applies.
     const el = this.scroller?.nativeElement;
-    if (el) this.viewH.set(el.clientHeight);
+    if (!el) return;
+    this.viewH.set(el.clientHeight);
+    // The replay window (and the detail-pane toggle) resizes the scroller
+    // well after init — a stale viewH under-covers the slice and leaves a
+    // blank band at the bottom until the next scroll.
+    if (typeof ResizeObserver !== 'undefined') {
+      this.viewObserver = new ResizeObserver(() => this.viewH.set(el.clientHeight));
+      this.viewObserver.observe(el);
+    }
   }
 
   ngOnDestroy(): void {
+    this.viewObserver?.disconnect();
+    this.viewObserver = null;
     this.teardownColDrag();
   }
 
-  /** The [from, to) render window: viewport ± buffer, cursor kept inside. */
-  private renderWindow(len: number, cursor: number): [number, number] {
+  /**
+   * The [from, to) render window — PURELY scroll-driven: the viewport ±
+   * buffers, nothing else. Deliberately NO "slide to the cursor" branch:
+   * scrolling away from the selection is an explicit look-elsewhere intent —
+   * yanking the window back to a stale cursor leaves the scroll position
+   * stranded on the blank spacer (the all-white-list bug). Keyboard stepping
+   * keeps the cursor covered by syncing {@link scrollTop} itself (see
+   * {@link scrollSelectionIntoView}).
+   */
+  private renderWindow(len: number): [number, number] {
     const view = this.viewH() > 0 ? this.viewH() : FALLBACK_VIEW_ROWS * ROW_H;
-    const first = Math.max(0, Math.floor(this.scrollTop() / ROW_H) - SLICE_BUFFER);
-    const last = Math.min(len, Math.ceil((this.scrollTop() + view) / ROW_H) + SLICE_BUFFER);
-    if (cursor >= first && cursor < last) return [first, last];
-    // Selection outside the scroll window (keyboard stepped past the edge
-    // before the scroll-follow landed): SLIDE to the cursor — stretching the
-    // window to span the gap would mount every row in between.
-    const half = Math.ceil(view / ROW_H / 2);
-    return [Math.max(0, cursor - half - SLICE_BUFFER), Math.min(len, cursor + half + SLICE_BUFFER + 1)];
+    return [
+      Math.max(0, Math.floor(this.scrollTop() / ROW_H) - SLICE_BUFFER_ABOVE),
+      Math.min(len, Math.ceil((this.scrollTop() + view) / ROW_H) + SLICE_BUFFER_BELOW),
+    ];
   }
 
-  /** The mounted frame rows + spacer heights (null while in bucket mode). */
+  /** The mounted frame rows + spacer heights (empty while no list is loaded). */
   readonly frameSlice = computed<{ rows: FrameRow[]; top: number; bottom: number } | null>(() => {
     const frames = this.svc.frames();
-    if (!this.svc.browsingFrames()) return null;
-    const [from, to] = this.renderWindow(frames.length, this.svc.currentFrameIndex());
+    const [from, to] = this.renderWindow(frames.length);
     const rows: FrameRow[] = [];
     for (let i = from; i < to; i++) {
       rows.push({ index: i, frame: frames[i], time: formatFrameTime(frames[i].ts) });
     }
     return { rows, top: from * ROW_H, bottom: (frames.length - to) * ROW_H };
-  });
-
-  /** The mounted bucket rows + spacer heights (null while frame rows show). */
-  readonly bucketSlice = computed<{ rows: BucketRow[]; top: number; bottom: number } | null>(() => {
-    if (this.svc.browsingFrames()) return null;
-    const buckets = this.svc.buckets();
-    const [from, to] = this.renderWindow(buckets.length, this.svc.currentBucketIndex() ?? 0);
-    const max = maxBucketCount(buckets);
-    const rows: BucketRow[] = [];
-    for (let i = from; i < to; i++) {
-      rows.push({
-        index: i,
-        bucket: buckets[i],
-        // Bucket rows are whole seconds — no µs fraction noise.
-        time: formatSeconds(Math.floor(Number(buckets[i].ts))),
-        width: bucketBarWidthFor(buckets[i].count, max, BUCKET_FULL_PX),
-      });
-    }
-    return { rows, top: from * ROW_H, bottom: (buckets.length - to) * ROW_H };
   });
 
   onScroll(e: Event): void {
@@ -224,14 +205,19 @@ export class ReplayPacketListComponent implements AfterViewInit, OnDestroy {
     if (this.svc.setCurrentIndex(target)) this.scrollSelectionIntoView(target);
   }
 
-  /** Keep the freshly selected row on screen (centered landing, tape-style). */
+  /**
+   * Keep the freshly selected row on screen (centered landing, tape-style).
+   * The signal is synced TOGETHER with the scroller offset — the render
+   * window covers the cursor on the SAME flush, so keyboard stepping can
+   * never outrun the slice.
+   */
   private scrollSelectionIntoView(index: number): void {
-    const el = this.scroller?.nativeElement;
-    if (!el) return;
     const top = index * ROW_H;
-    if (top < el.scrollTop || top + ROW_H > el.scrollTop + el.clientHeight) {
-      el.scrollTop = Math.max(0, top + ROW_H / 2 - el.clientHeight / 2);
-    }
+    const el = this.scroller?.nativeElement;
+    if (el && top >= el.scrollTop && top + ROW_H <= el.scrollTop + el.clientHeight) return; // already visible
+    const target = Math.max(0, top + ROW_H / 2 - (el?.clientHeight ?? 0) / 2);
+    this.scrollTop.set(target);
+    if (el) el.scrollTop = target;
   }
 
   // ---- column resize (header grips; Wireshark's draggable separators) ----

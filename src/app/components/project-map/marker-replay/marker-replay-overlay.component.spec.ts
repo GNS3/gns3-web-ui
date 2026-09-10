@@ -42,7 +42,6 @@ describe('MarkerReplayOverlayComponent', () => {
     start: '1.100000',
     end: '1.200000',
     frame_count: 2,
-    truncated: false,
     sources: [],
     frames,
   };
@@ -81,7 +80,6 @@ describe('MarkerReplayOverlayComponent', () => {
     mockHttp.get.mockReturnValue(of(range));
     fixture.detectChanges();
 
-    expect(svc.mode()).toBe('frames');
     expect(svc.frames()).toHaveLength(2);
     const el: HTMLElement = fixture.nativeElement;
     expect(el.querySelector('.gns3-replay__main')).toBeTruthy();

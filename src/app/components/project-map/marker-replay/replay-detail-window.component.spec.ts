@@ -35,7 +35,6 @@ describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
     start: frames[0].ts,
     end: frames[1].ts,
     frame_count: 2,
-    truncated: false,
     sources: [],
     frames,
   };
