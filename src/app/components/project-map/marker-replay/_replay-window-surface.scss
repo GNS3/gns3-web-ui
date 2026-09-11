@@ -1,0 +1,134 @@
+// Shared floating-window surface — the chrome every replay window wears
+// (pinned comparison windows, the double-click peek window). Only the BODY
+// differs per window; position/size come from inline bindings.
+//
+// NO overflow:hidden: the resize handles live entirely OUTSIDE the border
+// box (see replay-window-handles) and would be clipped. The header/body
+// carry the corner radii instead so the rounded chrome survives.
+
+.gns3-replay__window {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  background: var(--mat-sys-surface);
+  border: 2px solid var(--mat-sys-tertiary);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent),
+    0 4px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+
+  &--unanchored {
+    border-color: var(--mat-sys-outline-variant);
+    opacity: 0.92;
+  }
+
+  // A frozen snapshot (pinned or peeked) — deliberately distinct from the
+  // live window: primary border + denser header, so frozen frames read as
+  // their own layer of the UI.
+  &--snapshot {
+    border-color: var(--mat-sys-primary);
+
+    .gns3-replay__window-header {
+      background: var(--mat-sys-surface-container-high);
+    }
+
+    .gns3-replay__window-icon {
+      color: var(--mat-sys-primary);
+    }
+  }
+
+  &--resizing,
+  &--dragging {
+    user-select: none;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--mat-sys-tertiary) 45%, transparent),
+      0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
+  }
+}
+
+.gns3-replay__window-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--mat-sys-surface-container);
+  // Inner radius (outer 8px − 2px border) — the header paints the top
+  // corners now that the window itself no longer clips (no overflow:hidden).
+  border-radius: 6px 6px 0 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  flex-shrink: 0;
+  cursor: grab;
+  user-select: none;
+}
+
+// Hand CLOSED while the gesture is live — the pressed state of the grab.
+.gns3-replay__window--dragging .gns3-replay__window-header {
+  cursor: grabbing;
+}
+
+.gns3-replay__window-icon {
+  font-size: 15px;
+  width: 15px;
+  height: 15px;
+  color: var(--mat-sys-tertiary);
+}
+
+.gns3-replay__window-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gns3-replay__window-frame {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--mat-sys-on-surface-variant);
+  background: var(--mat-sys-surface-container-high);
+  border-radius: 8px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+.gns3-replay__window-hint {
+  font-size: 10px;
+  color: var(--mat-sys-on-error-container);
+  background: var(--mat-sys-error-container);
+  border-radius: 8px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+// Compact header action (close / re-anchor) — 20px hit area.
+.gns3-replay__window-reanchor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--mat-sys-tertiary);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  &:disabled {
+    color: var(--mat-sys-outline);
+    cursor: default;
+    background: transparent;
+  }
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}

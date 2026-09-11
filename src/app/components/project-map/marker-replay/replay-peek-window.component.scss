@@ -1,0 +1,6 @@
+@use './replay-window-handles';
+@use './replay-window-surface';
+
+// The whole surface (border, header, chrome, handles) is shared — see the
+// two partials. The peek adds nothing beyond its birth behavior, which
+// lives in the component.

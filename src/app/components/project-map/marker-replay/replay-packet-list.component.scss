@@ -1,0 +1,142 @@
+// Wireshark-style packet list: a monospace div-grid with a sticky column
+// header (the topology-summary table pattern — no mat-table, rows must stay
+// cheap enough for 5000-frame full mode).
+
+.gns3-replay__list {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+}
+
+.gns3-replay__list-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--mat-sys-surface);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  flex-shrink: 0;
+}
+
+.gns3-replay__list-cols {
+  display: grid;
+  padding: 4px 10px 3px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+
+  // Frame columns come from the host-level variable the resize grips write —
+  // one style write per mousemove re-grids header AND every row via
+  // inheritance (no change detection over the mounted rows). The variable is
+  // SEEDED from the component's colWidths at construction — no SCSS fallback
+  // copy of the default template (the TS builder is the single source).
+  &--frames {
+    grid-template-columns: var(--gns3-replay-cols);
+  }
+}
+
+// Wireshark-style column separators — HEADER ONLY: data rows stay clean.
+// The separator is the header cell's right border plus inter-column padding
+// (NO grid gap on the frames grid — a gap would leave the line floating 8px
+// away from the next column). The last column (Info) has no border.
+.gns3-replay__col-head {
+  border-right: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 70%, transparent);
+}
+
+.gns3-replay__list-cols--frames > :last-child {
+  border-right: none;
+}
+
+// Resizable header cell: the grip sits on its right edge; padding keeps the
+// label clear of the separator line.
+.gns3-replay__col-head {
+  position: relative;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 8px;
+}
+
+.gns3-replay__col-grip {
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  right: -5px;
+  width: 9px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: col-resize;
+
+  &:hover,
+  &:active {
+    background: color-mix(in srgb, var(--mat-sys-primary) 35%, transparent);
+  }
+}
+
+.gns3-replay__list-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto; // columns may be dragged wider than the pane
+}
+
+// Uniform pitch: the windowing math (component ROW_H) assumes FIXED-height
+// rows — cells are single-line (ellipsis), so content can never grow one.
+.gns3-replay__row {
+  display: grid;
+  grid-template-columns: var(--gns3-replay-cols);
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 11px;
+  // Wireshark coloring-rule DATA colors arrive as row CSS custom properties
+  // (inline-bound in the template, '#' prepended there) — index-independent
+  // bindings, so moving the selection does not re-evaluate them. The
+  // selected/hover classes below out-rank the base by specificity.
+  color: var(--pkt-fg, var(--mat-sys-on-surface));
+  background: var(--pkt-bg, transparent);
+  cursor: default;
+  outline: none;
+
+  &:hover {
+    background: var(--mat-sys-surface-container);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1px var(--mat-sys-primary);
+  }
+
+  // Declared AFTER :hover on purpose — selection wins the tie.
+  &--selected {
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+}
+
+.gns3-replay__cell {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  // Inter-column breathing room (the frames grid has no gap — see the
+  // separator comment above).
+  padding-right: 8px;
+
+  &--len {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &--time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  &--proto {
+    font-weight: 600;
+  }
+}

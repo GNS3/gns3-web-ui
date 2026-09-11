@@ -1,0 +1,128 @@
+// The shared packet-detail body. The HOST owns chrome (window header, leader,
+// drag/resize); this sheet owns content: crumbs, metadata chips and the
+// scrolling detail area. Crumbs and chips stay PINNED above the scrollport —
+// the frame's identity stays visible however deep the tree is scrolled.
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  // Bottom counterpart of the header's radius (window chrome paints the top
+  // corners; the window itself does not clip — see replay-detail-window.scss).
+  border-radius: 0 0 6px 6px;
+}
+
+// One-line protocol chain (ETH › IPV4 › TCP …) — the frame at a glance.
+.gns3-replay__crumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px 6px;
+  padding: 4px 10px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  flex-shrink: 0;
+}
+
+.gns3-replay__crumb {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+}
+
+.gns3-replay__crumb-sep {
+  font-size: 10px;
+  color: var(--mat-sys-outline);
+}
+
+// Compact metadata line — time, delta, length, source link.
+.gns3-replay__meta-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  flex-shrink: 0;
+}
+
+.gns3-replay__chip {
+  font-size: 10px;
+  color: var(--mat-sys-on-surface);
+  background: var(--mat-sys-surface-container);
+  border-radius: 8px;
+  padding: 2px 7px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+
+// The link chip is the one ACTION in the row — same look, plus affordance.
+.gns3-replay__chip--link {
+  border: none;
+  // Kill ONLY the UA button font — the `font:` shorthand would reset
+  // font-size to the inherited size and out-rank the chip's 10px above.
+  font-family: inherit;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-primary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 1px var(--mat-sys-primary);
+  }
+}
+
+// The scrollport: states + protocol tree. The tree's own toolbar is sticky
+// inside this scrollport (see protocol-tree.component.scss).
+.gns3-replay__pane-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+// Mid-decode hold: the previous tree stays mounted, untouched — see the
+// template comment for why NOTHING may render in between.
+.gns3-replay__tree-hold {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.gns3-replay__detail-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 12px;
+  font-size: 11px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.gns3-replay__detail-spinner {
+  flex-shrink: 0;
+}
+
+.gns3-replay__detail-error {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  font-size: 11px;
+  color: var(--mat-sys-error);
+}
+
+.gns3-replay__detail-error-actions {
+  display: flex;
+  justify-content: flex-end;
+}

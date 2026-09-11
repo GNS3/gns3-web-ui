@@ -1,0 +1,71 @@
+<!-- The host guarantees a frame exists (@if guards instantiation). -->
+@if (breadcrumb().length) {
+  <div class="gns3-replay__crumbs">
+    @for (c of breadcrumb(); track $index) {
+      @if (!$first) {
+        <span class="gns3-replay__crumb-sep">›</span>
+      }
+      <span class="gns3-replay__crumb">{{ c }}</span>
+    }
+  </div>
+}
+
+<div class="gns3-replay__meta-chips">
+  <span class="gns3-replay__chip">{{ frameTime(frame().ts) }}</span>
+  @if (deltaLabel(frame().ts); as delta) {
+    <span class="gns3-replay__chip">{{ delta }}</span>
+  }
+  <span class="gns3-replay__chip">{{ frame().len }} B</span>
+  <!-- The capture-source link — clickable: narrows the packet list to this
+       link (click again to widen back). Same list in live pane and pins. -->
+  <button
+    type="button"
+    class="gns3-replay__chip gns3-replay__chip--link"
+    (click)="applyLinkFilter.emit(frame().link_id)"
+    matTooltip="Show only frames captured on this link"
+  >
+    {{ linkLabel(frame().link_id) }}
+  </button>
+</div>
+
+<div class="gns3-replay__pane-body">
+  @if (shownDetail(); as d) {
+    <!-- Decoding with the previous tree held: NOTHING is rendered in between —
+         no spinner swap, no dimming (an opacity toggle reads as a blink), no
+         hint row or progress line (appearing for a few dozen ms, it IS the
+         flicker). The old tree simply swaps in place when the decode lands;
+         local decodes are fast enough to need no feedback. -->
+    <div class="gns3-replay__tree-hold">
+      <app-protocol-tree
+        [tree]="d.tree"
+        [changedPaths]="changedPaths()"
+        [autoExpand]="autoExpand()"
+        [(searchQuery)]="searchQuery"
+        (applyFilter)="applyFilter.emit($event)"
+      />
+    </div>
+  } @else if (state().status === 'loading') {
+    <!-- First decode — nothing to hold yet. -->
+    <div class="gns3-replay__detail-state">
+      <mat-spinner class="gns3-replay__detail-spinner" [diameter]="20"></mat-spinner>
+      <span>Decoding frame…</span>
+    </div>
+  } @else if (detailError(); as err) {
+    <div class="gns3-replay__detail-error">
+      <span>{{ errorMessage() }}</span>
+      <div class="gns3-replay__detail-error-actions">
+        <!-- Stale ts (404): the capture was rebuilt. A live pane re-syncs via a
+             timeline reload; a pinned snapshot cannot recover and closes. -->
+        @if (err.kind === 'missing') {
+          <button mat-stroked-button (click)="reload.emit()">{{ missingLabel() }}</button>
+        } @else {
+          <button mat-stroked-button (click)="retry.emit()">Retry</button>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="gns3-replay__detail-state">
+      <span>No frame decoded yet.</span>
+    </div>
+  }
+</div>

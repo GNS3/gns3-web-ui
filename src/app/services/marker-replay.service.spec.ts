@@ -30,35 +30,20 @@ function rangeOf(frames: ReplayFrame[], over: Partial<ReplayRangeResponse> = {})
     start: frames[0]?.ts ?? null,
     end: frames[frames.length - 1]?.ts ?? null,
     frame_count: frames.length,
-    truncated: false,
     sources: [],
     frames,
     ...over,
   };
 }
 
-const truncatedRange: ReplayRangeResponse = {
-  tag: TAG,
-  start: '1788196663.000000',
-  end: '1788196664.000000',
-  frame_count: 9000,
-  truncated: true,
-  sources: [],
-  buckets: [
-    { ts: '1788196663.000000', count: 2 },
-    { ts: '1788196664.000000', count: 3 },
-  ],
-};
-
 function detailOf(f: ReplayFrame): ReplayFrameDetail {
   return {
     ts: f.ts,
     source: { node_id: f.node_id, link_id: f.link_id, marker: f.marker, frame_number: f.frame_number },
-    tshark_version: 'TShark (Wireshark) 4.6.7',
     field_count: 1,
     hex: 'ab',
     tree: [
-      { element: 'field', name: 'ip.ttl', showname: `Time to Live: ${f.frame_number}`, show: '64', value: '40', size: '1', pos: '22', children: [] },
+      { element: 'field', name: 'ip.ttl', label: `Time to Live: ${f.frame_number}`, filter_expr: 'ip.ttl == 64', size: '1', pos: '22', children: [] },
     ],
   };
 }
@@ -103,34 +88,28 @@ describe('MarkerReplayService (HTTP)', () => {
         error: (e) => expect(e).toBe(err),
       });
     });
-  });
 
-  describe('replayFrames', () => {
-    it('→ GET /replay/frames with the ts string VERBATIM and default window/limit', () => {
-      mockHttpController.get.mockReturnValue(of({ frames: [] }));
-      service.replayFrames(mockController, PROJECT_ID, TAG, truncatedRange.buckets![0].ts).subscribe();
-      // Regression: a Number()→String round-trip would yield "1788196663"
-      // (dropping ".000000") and the server would 404 the window query.
+    it('appends an encoded ?filter= query when one is given (never URLSearchParams "+")', () => {
+      mockHttpController.get.mockReturnValue(of({}));
+      service.replayRange(mockController, PROJECT_ID, TAG, 'ospf.msg == 1').subscribe();
       expect(mockHttpController.get).toHaveBeenCalledWith(
         mockController,
-        `/projects/${PROJECT_ID}/markers/tags/${TAG}/replay/frames?ts=1788196663.000000&window_ms=1000&limit=1000`
+        `/projects/${PROJECT_ID}/markers/tags/${TAG}/replay/range?filter=ospf.msg%20%3D%3D%201`
       );
     });
 
-    it('passes explicit window/limit through', () => {
-      mockHttpController.get.mockReturnValue(of({ frames: [] }));
-      service.replayFrames(mockController, PROJECT_ID, TAG, F0.ts, 500, 200).subscribe();
+    it('appends ?link= alone, and &link= after a filter (AND narrowing)', () => {
+      mockHttpController.get.mockReturnValue(of({}));
+      service.replayRange(mockController, PROJECT_ID, TAG, undefined, 'l1').subscribe();
       expect(mockHttpController.get).toHaveBeenCalledWith(
         mockController,
-        `/projects/${PROJECT_ID}/markers/tags/${TAG}/replay/frames?ts=${F0.ts}&window_ms=500&limit=200`
+        `/projects/${PROJECT_ID}/markers/tags/${TAG}/replay/range?link=l1`
       );
-    });
-
-    it('treats an empty frames array as success (no error path)', () => {
-      mockHttpController.get.mockReturnValue(of({ frames: [] }));
-      const emitted: any[] = [];
-      service.replayFrames(mockController, PROJECT_ID, TAG, '1.000000').subscribe((r) => emitted.push(r));
-      expect(emitted).toEqual([{ frames: [] }]);
+      service.replayRange(mockController, PROJECT_ID, TAG, 'ospf', 'l1').subscribe();
+      expect(mockHttpController.get).toHaveBeenLastCalledWith(
+        mockController,
+        `/projects/${PROJECT_ID}/markers/tags/${TAG}/replay/range?filter=ospf&link=l1`
+      );
     });
   });
 
@@ -157,7 +136,7 @@ describe('MarkerReplayService (HTTP)', () => {
     });
 
     it('forwards errors untouched', () => {
-      const err = serverError(501, 'tshark is not installed…');
+      const err = serverError(501, 'sharkd is not installed…');
       mockHttpController.get.mockReturnValue(throwError(() => err));
       service.replayFrameDetail(mockController, PROJECT_ID, TAG, F0).subscribe({
         error: (e) => expect(e).toBe(err),
@@ -177,9 +156,8 @@ describe('MarkerReplayService state machine', () => {
   let svgFixture: SVGSVGElement;
 
   /** Route mockHttp.get by URL fragment; each handler receives the URL. */
-  function mockRoutes(handlers: { range?: (url: string) => any; frames?: (url: string) => any; detail?: (url: string) => any }) {
+  function mockRoutes(handlers: { range?: (url: string) => any; detail?: (url: string) => any }) {
     mockHttp.get.mockImplementation((_c: any, url: string) => {
-      if (url.includes('/replay/frames')) return handlers.frames ? handlers.frames(url) : of({ frames: [] });
       if (url.includes('/replay/frame/detail')) return handlers.detail ? handlers.detail(url) : of(detailOf(F0));
       return handlers.range ? handlers.range(url) : of(rangeOf([F0, F1, F2]));
     });
@@ -233,12 +211,11 @@ describe('MarkerReplayService state machine', () => {
   });
 
   describe('range load', () => {
-    it('loads a full timeline (frames mode) and debounces the first frame detail', async () => {
+    it('loads a full timeline (flat frames mode) and debounces the first frame detail', async () => {
       mockRoutes({});
       service.start(ctrl, PROJECT_ID, TAG);
 
       expect(service.loadingRange()).toBe(false);
-      expect(service.mode()).toBe('frames');
       expect(service.frames()).toHaveLength(3);
       expect(service.currentFrameIndex()).toBe(0);
       expect(service.isEmpty()).toBe(false);
@@ -247,23 +224,6 @@ describe('MarkerReplayService state machine', () => {
       await vi.advanceTimersByTimeAsync(200);
       expect(service.detail().status).toBe('ok');
       expect(detailUrls()).toEqual([expect.stringContaining('ts=1788196663.100000')]);
-    });
-
-    it('truncated range switches to buckets, settles the first second, then shows its frames', async () => {
-      mockRoutes({ range: () => of(truncatedRange), frames: () => of({ frames: [F0, F1] }) });
-      service.start(ctrl, PROJECT_ID, TAG);
-
-      expect(service.mode()).toBe('buckets');
-      expect(service.inWindow()).toBe(false);
-
-      await vi.advanceTimersByTimeAsync(200); // bucket settle
-      expect(service.inWindow()).toBe(true);
-      expect(service.frames()).toHaveLength(2);
-      const framesUrl = mockHttp.get.mock.calls.find((c: any[]) => c[1].includes('/replay/frames'))![1];
-      expect(framesUrl).toContain('ts=1788196663.000000'); // bucket ts verbatim
-
-      await vi.advanceTimersByTimeAsync(200); // detail debounce
-      expect(service.detail().status).toBe('ok');
     });
 
     it('highlights the current frame link and moves the highlight with the frame', async () => {
@@ -318,6 +278,36 @@ describe('MarkerReplayService state machine', () => {
     });
   });
 
+  describe('range load races', () => {
+    it('a slower OLDER range response cannot overwrite a newer load (load epoch)', () => {
+      const slow = new Subject<ReplayRangeResponse>();
+      let n = 0;
+      mockRoutes({ range: () => (n++ === 0 ? slow : of(rangeOf([G0, G1, G2]))) });
+      service.start(ctrl, PROJECT_ID, TAG); // load #1 (unfiltered) stalls on the network
+      service.applyFilter('ospf'); // load #2 (filtered) completes first, renders
+      expect(service.appliedFilter()).toBe('ospf');
+      expect(service.frames()).toHaveLength(3);
+      expect(service.frames()[0].ts).toBe(G0.ts);
+
+      slow.next(rangeOf([F0, F1, F2])); // the stale unfiltered reply finally lands
+      expect(service.appliedFilter()).toBe('ospf'); // NOT reset to the older load's ''
+      expect(service.frames()[0].ts).toBe(G0.ts);
+      expect(service.loadingRange()).toBe(false);
+    });
+
+    it('a stale range ERROR is equally discarded (no error state, no toast)', () => {
+      const slow = new Subject<ReplayRangeResponse>();
+      let n = 0;
+      mockRoutes({ range: () => (n++ === 0 ? slow : of(rangeOf([G0]))) });
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.applyFilter('ospf');
+      slow.error(serverError(0, 'Controller is unreachable'));
+      expect(service.rangeError()).toBeNull();
+      expect(mockToaster.error).not.toHaveBeenCalled();
+      expect(service.loadingRange()).toBe(false);
+    });
+  });
+
   describe('detail pipeline', () => {
     it('rapid scrubbing issues a single detail request (debounce)', async () => {
       mockRoutes({});
@@ -354,7 +344,7 @@ describe('MarkerReplayService state machine', () => {
       // The stalled response arriving late must NOT overwrite the newer frame.
       stalled.next(detailOf(F1));
       expect(service.detail().status).toBe('ok');
-      expect((service.detail() as any).detail.tree[0].showname).toContain('Time to Live: 3');
+      expect((service.detail() as any).detail.tree[0].label).toContain('Time to Live: 3');
     });
 
     it('caches by identity tuple — same ts, different link are separate entries', async () => {
@@ -394,7 +384,7 @@ describe('MarkerReplayService state machine', () => {
       mockRoutes({
         detail: () =>
           fail
-            ? throwError(() => serverError(501, 'tshark is not installed on this server — frame detail is unavailable'))
+            ? throwError(() => serverError(501, 'sharkd is not installed on this server — frame detail is unavailable'))
             : of(detailOf(F0)),
       });
       service.start(ctrl, PROJECT_ID, TAG);
@@ -440,102 +430,253 @@ describe('MarkerReplayService state machine', () => {
       expect(detailUrls()).toHaveLength(2); // cache hit — no refetch
     });
 
-    it('stepBy clamps at timeline ends in frames mode', () => {
-      mockRoutes({});
-      service.start(ctrl, PROJECT_ID, TAG);
-      service.stepBy(-10);
-      expect(service.currentFrameIndex()).toBe(0);
-      service.stepBy(99);
-      expect(service.currentFrameIndex()).toBe(2);
-    });
+  });
 
-    it('crossing a materialized window edge exits to the adjacent bucket, landing on the nearest end', async () => {
+  describe('display filter', () => {
+    it('applyFilter reloads with the encoded filter; matched/total counts split', () => {
       mockRoutes({
-        range: () => of(truncatedRange),
-        frames: (url) =>
-          url.includes('ts=1788196663.000000')
-            ? of({ frames: [F0, F1] })
-            : of({ frames: [G0, G1, G2] }),
+        range: (url) => of(url.includes('filter=') ? rangeOf([F2], { frame_count: 1 }) : rangeOf([F0, F1, F2])),
       });
       service.start(ctrl, PROJECT_ID, TAG);
-      await vi.advanceTimersByTimeAsync(200);
-      expect(service.currentFrame()?.ts).toBe(F0.ts); // window of bucket 0
+      expect(service.totalUnfiltered()).toBe(3);
 
-      // Forward past the window's last frame → bucket 1, landing on its FIRST frame.
-      service.stepBy(5);
-      await vi.advanceTimersByTimeAsync(200);
-      expect(service.currentBucketIndex()).toBe(1);
-      expect(service.currentFrame()?.ts).toBe(G0.ts);
+      service.applyFilter('ip.ttl == 1');
+      expect(service.appliedFilter()).toBe('ip.ttl == 1');
+      expect(service.filterError()).toBeNull();
+      expect(service.totalFrames()).toBe(1);
+      expect(service.frames()).toHaveLength(1);
+      const url = mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).pop()![1];
+      expect(url).toContain(`filter=${encodeURIComponent('ip.ttl == 1')}`);
+      expect(service.totalUnfiltered()).toBe(3); // unfiltered total retained for "of N"
+    });
 
-      // Backward past the new window's first frame → bucket 0 (cached), landing
-      // on its LAST frame (closest in time to where we were).
-      service.stepBy(-1);
-      await vi.advanceTimersByTimeAsync(200);
-      expect(service.currentBucketIndex()).toBe(0);
-      expect(service.currentFrame()?.ts).toBe(F1.ts);
+    it('a rejected filter (400) stays INLINE: no toast, old list kept, appliedFilter unchanged', () => {
+      let filtered = false;
+      mockRoutes({
+        range: (url) =>
+          url.includes('filter=') && !filtered
+            ? throwError(() => serverError(400, 'Invalid display filter: Filter expression invalid'))
+            : of(rangeOf([F0, F1, F2])),
+      });
+      filtered = false;
+      service.start(ctrl, PROJECT_ID, TAG);
 
-      // Backward at the very start of the timeline stays put.
-      service.setCurrentIndex(0);
-      service.stepBy(-1);
-      await vi.advanceTimersByTimeAsync(200);
-      expect(service.currentBucketIndex()).toBe(0);
-      expect(service.currentFrame()?.ts).toBe(F0.ts);
+      service.applyFilter('this is (not valid');
+      expect(service.filterError()).toBe('Invalid display filter: Filter expression invalid');
+      expect(service.rangeError()).toBeNull();
+      expect(mockToaster.error).not.toHaveBeenCalled();
+      expect(service.frames()).toHaveLength(3); // last good data kept
+      expect(service.appliedFilter()).toBe('');
+      expect(service.filter()).toBe('this is (not valid'); // draft kept editable
+    });
+
+    it('clearFilter reloads the full list and resets the draft', () => {
+      mockRoutes({
+        range: (url) => of(url.includes('filter=') ? rangeOf([F2], { frame_count: 1 }) : rangeOf([F0, F1, F2])),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.applyFilter('ip.ttl == 1');
+      expect(service.appliedFilter()).toBe('ip.ttl == 1');
+
+      service.clearFilter();
+      expect(service.filter()).toBe('');
+      expect(service.appliedFilter()).toBe('');
+      expect(service.frames()).toHaveLength(3);
+
+      // Draft-only clear (nothing applied): the draft alone never narrowed the
+      // list — no reload fires.
+      service.filter.set('draft');
+      const before = mockHttp.get.mock.calls.length;
+      service.clearFilter();
+      expect(mockHttp.get.mock.calls.length).toBe(before);
+      expect(service.filter()).toBe('');
+    });
+
+    it('re-applying the SAME filter is a no-op — zero requests (guard mirrors applyLinkFilter)', () => {
+      mockRoutes({});
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.applyFilter('ospf');
+      const rangeCalls = () => mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).length;
+      const calls = rangeCalls();
+      service.applyFilter('ospf');
+      expect(rangeCalls()).toBe(calls);
+      expect(service.appliedFilter()).toBe('ospf');
+    });
+
+    it('filters over 2000 characters are rejected client-side (zero requests)', () => {
+      mockRoutes({});
+      service.start(ctrl, PROJECT_ID, TAG);
+      const callsBefore = mockHttp.get.mock.calls.length;
+
+      service.applyFilter('a'.repeat(2001));
+      expect(service.filterError()).toContain('2000');
+      expect(mockHttp.get.mock.calls.length).toBe(callsBefore);
+    });
+
+    it('501 on range maps to unavailable (sharkd missing)', () => {
+      mockRoutes({ range: () => throwError(() => serverError(501, 'sharkd not installed')) });
+      service.start(ctrl, PROJECT_ID, TAG);
+      expect(service.rangeErrorKind()).toBe('unavailable');
+      expect(mockToaster.error).toHaveBeenCalled();
     });
   });
 
-  describe('bookmarks', () => {
-    it('toggles the current frame by tuple identity', () => {
-      mockRoutes({});
-      service.start(ctrl, PROJECT_ID, TAG);
-
-      expect(service.isBookmarked(service.currentFrame())).toBe(false);
-      service.toggleBookmark();
-      expect(service.isBookmarked(service.currentFrame())).toBe(true);
-      expect(service.bookmarks()).toHaveLength(1);
-      service.toggleBookmark();
-      expect(service.bookmarks()).toHaveLength(0);
-    });
-
-    it('caps bookmarks at 100 (oldest dropped)', () => {
-      const many = Array.from({ length: 105 }, (_, i) => frame(`${1000 + i}.000000`, 'l1', i + 1));
-      mockRoutes({ range: () => of(rangeOf(many)) });
-      service.start(ctrl, PROJECT_ID, TAG);
-      for (let i = 0; i < many.length; i++) {
-        service.setCurrentIndex(i);
-        service.toggleBookmark();
-      }
-      expect(service.bookmarks()).toHaveLength(100);
-      expect(service.bookmarks()[0].ts).toBe(many[5].ts); // frames 0–4 dropped
-    });
-
-    it('jumpToBookmark locates the exact frame in frames mode', () => {
-      const many = Array.from({ length: 10 }, (_, i) => frame(`${1000 + i}.000000`, 'l1', i + 1));
-      mockRoutes({ range: () => of(rangeOf(many)) });
-      service.start(ctrl, PROJECT_ID, TAG);
-      const target = many[7];
-      service.setCurrentIndex(7);
-      service.toggleBookmark();
-      service.setCurrentIndex(0);
-
-      service.jumpToBookmark(target);
-      expect(service.currentFrameIndex()).toBe(7);
-    });
-
-    it('jumpToBookmark materializes the containing second first in bucket mode', async () => {
+  describe('link filter', () => {
+    it('applyLinkFilter reloads narrowed to the link; counts split, sources recorded', () => {
+      const sources = [
+        { node_id: 'n1', link_id: 'l1', marker: 'm1', count: 2 },
+        { node_id: 'n2', link_id: 'l2', marker: 'm2', count: 1 },
+      ];
       mockRoutes({
-        range: () => of(truncatedRange),
-        frames: (url) =>
-          url.includes('ts=1788196663.000000')
-            ? of({ frames: [F0, F1] })
-            : of({ frames: [G0, G1, G2] }),
+        range: (url) =>
+          of(
+            url.includes('link=l1')
+              ? rangeOf([F0, F2], { frame_count: 2, sources })
+              : rangeOf([F0, F1, F2], { sources })
+          ),
       });
       service.start(ctrl, PROJECT_ID, TAG);
-      await vi.advanceTimersByTimeAsync(200); // in bucket 0's window
+      expect(service.totalUnfiltered()).toBe(3);
+      expect(service.sources()).toHaveLength(2);
 
-      service.jumpToBookmark(G1);
-      await vi.advanceTimersByTimeAsync(200);
-      expect(service.currentBucketIndex()).toBe(1);
-      expect(service.currentFrame()?.ts).toBe(G1.ts);
+      service.applyLinkFilter('l1');
+      expect(service.appliedLink()).toBe('l1');
+      expect(service.frames()).toHaveLength(2);
+      expect(service.totalFrames()).toBe(2);
+      expect(service.totalUnfiltered()).toBe(3); // retained for "of N"
+      // The picker keeps its options: sources stay the FULL inventory.
+      expect(service.sources()).toHaveLength(2);
+      const url = mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).pop()![1];
+      expect(url).toContain('link=l1');
+    });
+
+    it('re-applying the SAME link clears it (chip toggle); null is a no-op when idle', () => {
+      mockRoutes({
+        range: (url) => of(url.includes('link=l1') ? rangeOf([F0, F2], { frame_count: 2 }) : rangeOf([F0, F1, F2])),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      const rangeCalls = () => mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).length;
+
+      const before = rangeCalls();
+      service.applyLinkFilter(null); // already unfiltered — zero requests
+      expect(rangeCalls()).toBe(before);
+
+      service.applyLinkFilter('l1');
+      service.applyLinkFilter('l1'); // toggle off
+      expect(service.appliedLink()).toBeNull();
+      expect(service.frames()).toHaveLength(3);
+      const lastUrl = mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).pop()![1];
+      expect(lastUrl).not.toContain('link=');
+    });
+
+    it('composes with the display filter: applyFilter/clearFilter keep the link, clearAllFilters drops both', () => {
+      mockRoutes({
+        range: (url) => {
+          const narrow = url.includes('link=l1') && url.includes('filter=');
+          const linkOnly = url.includes('link=l1');
+          if (narrow) return of(rangeOf([F2], { frame_count: 1 }));
+          if (linkOnly) return of(rangeOf([F0, F2], { frame_count: 2 }));
+          return of(rangeOf([F0, F1, F2]));
+        },
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.applyLinkFilter('l1');
+
+      service.applyFilter('ip.ttl == 3');
+      let url = mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).pop()![1];
+      expect(url).toContain('link=l1');
+      expect(url).toContain(`filter=${encodeURIComponent('ip.ttl == 3')}`);
+
+      service.clearFilter(); // display-filter ✕ keeps the link pick
+      url = mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).pop()![1];
+      expect(url).toContain('link=l1');
+      expect(url).not.toContain('filter=');
+      expect(service.appliedLink()).toBe('l1');
+
+      service.applyFilter('ip.ttl == 3');
+      service.clearAllFilters(); // empty-result recovery drops BOTH
+      url = mockHttp.get.mock.calls.filter((c: any[]) => c[1].includes('/replay/range')).pop()![1];
+      expect(url).not.toContain('link=');
+      expect(url).not.toContain('filter=');
+      expect(service.appliedLink()).toBeNull();
+      expect(service.appliedFilter()).toBe('');
+    });
+
+    it('an unknown link answers 200 EMPTY (not an error) — the empty-filtered state follows', () => {
+      mockRoutes({
+        range: (url) =>
+          of(
+            url.includes('link=gone')
+              ? rangeOf([], { frame_count: 0, start: null, end: null })
+              : rangeOf([F0])
+          ),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.applyLinkFilter('gone');
+      expect(service.rangeError()).toBeNull();
+      expect(service.appliedLink()).toBe('gone');
+      expect(service.isEmpty()).toBe(true);
+    });
+
+    it('a link-only load refreshes totalUnfiltered from the full-inventory sources', () => {
+      const src = (n: number) => [{ node_id: 'n1', link_id: 'l1', marker: 'm', count: n }];
+      mockRoutes({
+        range: (url) =>
+          of(
+            url.includes('link=l1')
+              ? rangeOf([F0], { frame_count: 1, sources: src(500) })
+              : rangeOf([F0, F1, F2], { frame_count: 100, sources: src(100) })
+          ),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      expect(service.totalUnfiltered()).toBe(100);
+
+      service.applyLinkFilter('l1');
+      // frame_count is the narrowed 1 — sources always carry the FULL totals,
+      // so "of N"/"All links (N)" stay accurate after link-only reloads.
+      expect(service.totalUnfiltered()).toBe(500);
+    });
+  });
+
+  describe('peek window (transient double-click detail)', () => {
+    it('opens with the decode state, decodes through the shared cache, closes', () => {
+      mockRoutes({});
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.openPeek(F1, { x: 10, y: 20 });
+      expect(service.peek()?.frame.ts).toBe(F1.ts);
+      expect(service.peek()?.at).toEqual({ x: 10, y: 20 });
+      expect(service.peek()?.detail.status).toBe('ok'); // immediate (no debounce)
+
+      service.closePeek();
+      expect(service.peek()).toBeNull();
+    });
+
+    it('a late decode for an abandoned peek is discarded (retarget race)', () => {
+      const stalled = new Subject<ReplayFrameDetail>();
+      let n = 0;
+      mockRoutes({ detail: () => (n++ === 0 ? stalled : of(detailOf(F0))) });
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.openPeek(F0, { x: 0, y: 0 }); // stalls in flight
+      service.openPeek(F1, { x: 9, y: 9 }); // retargets
+      stalled.next(detailOf(F0)); // the abandoned frame's decode lands late
+
+      expect(service.peek()?.frame.ts).toBe(F1.ts); // NOT overwritten
+      expect(service.peek()?.detail.status).toBe('ok');
+    });
+
+    it('retryPeek re-fires a failed decode', () => {
+      let fail = true;
+      mockRoutes({
+        detail: () => (fail ? throwError(() => serverError(501, 'no sharkd')) : of(detailOf(F0))),
+      });
+      service.start(ctrl, PROJECT_ID, TAG);
+      service.openPeek(F0, { x: 0, y: 0 });
+      expect(service.peek()?.detail.status).toBe('error');
+
+      fail = false;
+      service.retryPeek();
+      expect(service.peek()?.detail.status).toBe('ok');
+      expect(service.peek()?.at).toEqual({ x: 0, y: 0 }); // same birth spot
     });
   });
 
@@ -653,7 +794,7 @@ describe('MarkerReplayService state machine', () => {
           calls++;
           // Fetch #1 = the debounced timeline decode, #2 = the pin itself;
           // both fail → the pin lands in error, then the retry succeeds.
-          return calls <= 2 ? throwError(() => serverError(501, 'no tshark')) : of(detailOf(F0));
+          return calls <= 2 ? throwError(() => serverError(501, 'no sharkd')) : of(detailOf(F0));
         },
       });
       service.start(ctrl, PROJECT_ID, TAG);

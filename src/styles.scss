@@ -254,7 +254,7 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.template-menu 
     flex: 0 0 auto;
     padding-inline: var(--gns3-density-space-3);
     border-bottom: 1px solid var(--mat-sys-outline-variant);
-    cursor: move;
+    cursor: grab;
     user-select: none;
   }
 

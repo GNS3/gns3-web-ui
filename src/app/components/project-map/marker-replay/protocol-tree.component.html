@@ -65,6 +65,7 @@
       [class.gns3-replay__tree-row--changed-subtree]="diffAncestors().has(row.path)"
       [class.gns3-replay__tree-row--match]="matchPaths().has(row.path)"
       [class.gns3-replay__tree-row--match-current]="currentMatchKey() === row.key"
+      [class.gns3-replay__tree-row--generated]="row.node.generated ?? false"
       (click)="toggle(row)"
       [attr.data-key]="row.key"
       [title]="rowTooltip(row.node)"
@@ -78,6 +79,15 @@
         <span class="gns3-replay__tree-leaf"></span>
       }
       <span class="gns3-replay__tree-text">{{ rowText(row.node) }}</span>
+      @if (row.node.filter_expr) {
+        <button
+          class="gns3-replay__tree-filter-btn"
+          [matTooltip]="'Apply as filter: ' + row.node.filter_expr"
+          (click)="applyRowFilter($event, row)"
+        >
+          <mat-icon>filter_alt</mat-icon>
+        </button>
+      }
     </div>
   }
 </div>

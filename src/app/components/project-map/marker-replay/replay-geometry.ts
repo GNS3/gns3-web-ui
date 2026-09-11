@@ -1,13 +1,8 @@
 /**
- * Pure geometry for the replay detail window: canvas→screen conversion and
- * viewport-aware window placement. No Angular, no DOM — directly testable in
- * jsdom (the live component wraps these with d3 path queries).
+ * Pure geometry for the replay windows: viewport clamping and the pinned
+ * comparison windows' dock/snap/cluster placement. No Angular, no DOM —
+ * directly testable in jsdom (the components wrap these with their own state).
  */
-
-export interface Point {
-  x: number;
-  y: number;
-}
 
 export interface Rect {
   left: number;
@@ -16,66 +11,54 @@ export interface Rect {
   height: number;
 }
 
-/** Gap between the anchor point and the window's near edge. */
-export const ANCHOR_GAP = 28;
 /** Viewport margin kept clear on every side. */
 export const VIEWPORT_MARGIN = 16;
 
 /**
- * Canvas coordinates → viewport (screen) coordinates, using the exact map
- * formula (cf. text-editor.component.ts): the canvas group is transformed by
- * `translate(zeroZero + pan) scale(k)`, so a canvas point lands at
- * `canvas * k + zeroZero + pan`.
+ * Clamp a window rect into the viewport: never left of 0, never above
+ * `minTop` (the project toolbar), never past the right/bottom edges. Windows
+ * larger than the viewport pin to the top-left corner of their allowed area.
  */
-export function canvasToScreen(
-  p: Point,
-  k: number,
-  panX: number,
-  panY: number,
-  zeroZero: Point
-): Point {
+export function clampRect(rect: Rect, viewport: { width: number; height: number }, minTop: number): Rect {
+  const maxLeft = Math.max(0, viewport.width - rect.width);
+  const maxTop = Math.max(minTop, viewport.height - rect.height);
   return {
-    x: p.x * k + zeroZero.x + panX,
-    y: p.y * k + zeroZero.y + panY,
+    left: Math.min(Math.max(rect.left, 0), maxLeft),
+    top: Math.min(Math.max(rect.top, minTop), maxTop),
+    width: rect.width,
+    height: rect.height,
   };
 }
 
-export interface WindowPlacement {
-  rect: Rect;
-  /** Which window edge faces the anchor (leader-line attachment side). */
-  side: 'left' | 'right';
-}
+// ---- floating-window sizing -----------------------------------------------
 
 /**
- * Place the detail window beside its anchor (the link midpoint, screen space).
- *
- * Preference is upper-right of the anchor; when the window would overflow the
- * right viewport edge it flips to the left side. Top/bottom are clamped below
- * the project toolbar (`topOffset`) and above the viewport bottom. On very
- * small viewports the clamps may let the window cover the anchor — positioning
- * correctness wins over overlap avoidance there.
+ * Side gutters a floating window keeps inside the viewport — its edge resize
+ * handles reach outside the border box, so a flush edge would push them
+ * off-screen (and under the browser chrome).
  */
-export function placeWindow(
-  anchor: Point,
-  win: { width: number; height: number },
-  viewport: { width: number; height: number; topOffset: number }
-): WindowPlacement {
-  let left = anchor.x + ANCHOR_GAP;
-  let side: 'left' | 'right' = 'right';
-  if (left + win.width > viewport.width - VIEWPORT_MARGIN) {
-    side = 'left';
-    left = anchor.x - ANCHOR_GAP - win.width;
-  }
-  // Horizontal clamp (after the flip, a wide window may overflow the left too).
-  const minLeft = VIEWPORT_MARGIN;
-  const maxLeft = Math.max(minLeft, viewport.width - win.width - VIEWPORT_MARGIN);
-  left = Math.max(minLeft, Math.min(maxLeft, left));
+export const WINDOW_GUTTER = 32;
+/** Bottom gutter — room below the viewport (taskbar/dock territory). */
+export const WINDOW_GUTTER_BOTTOM = 96;
 
-  const minTop = viewport.topOffset + VIEWPORT_MARGIN;
-  const maxTop = Math.max(minTop, viewport.height - win.height - VIEWPORT_MARGIN);
-  const top = Math.max(minTop, Math.min(maxTop, anchor.y - ANCHOR_GAP));
-
-  return { rect: { left, top, width: win.width, height: win.height }, side };
+/**
+ * Clamp a floating window's SIZE into the viewport without moving it: each
+ * axis keeps its minimum (`minW`/`minH`) even past the viewport (position is
+ * clampRect's job afterwards) but otherwise caps at viewport-minus-gutter.
+ * Shared by the main window and the pinned windows — resize-end, width-apply
+ * and viewport-reclamp all agree because there is ONE definition.
+ */
+export function clampWindowSize(
+  w: number,
+  h: number,
+  viewport: { width: number; height: number },
+  minW: number,
+  minH: number
+): { width: number; height: number } {
+  return {
+    width: Math.min(Math.max(w, minW), Math.max(viewport.width - WINDOW_GUTTER, minW)),
+    height: Math.min(Math.max(h, minH), Math.max(viewport.height - WINDOW_GUTTER_BOTTOM, minH)),
+  };
 }
 
 // ---- pinned-window dock ---------------------------------------------------
@@ -86,13 +69,11 @@ export const DOCK_TILE_H = 360;
 /**
  * Gap between windows — dock tiles/rows, magnetically-snapped seams and
  * cluster appends alike. NOT zero on purpose: every window's edge resize
- * handles reach 8px inward (and 4px outward), so a zero-gap seam stacks both
+ * handles reach outside its border box, so a zero-gap seam stacks both
  * windows' handle strips directly on the left one's scrollbar and makes it
  * unclickable. One constant keeps every window-to-window contact the same.
  */
 export const DOCK_GAP = 12;
-/** Right reserve so tiles don't slide under the docked replay panel. */
-export const DOCK_RIGHT_RESERVE = 296;
 /** Bottom dock never rises above the project toolbar (+ margin). */
 const DOCK_TOP_LIMIT = 80;
 
@@ -106,9 +87,8 @@ export interface DockSlot {
 /**
  * Uniform slot for pinned comparison window `index` of `count`: a
  * bottom-anchored flow that fills left→right and wraps UPWARD, in pin order —
- * the deterministic "comparison row" (vs. the live window, which anchors
- * beside its link). While docked the slot owns BOTH position and size;
- * dragging or resizing a window frees it (`reanchor()` re-docks it).
+ * the deterministic "comparison row". While docked the slot owns BOTH position
+ * and size; dragging or resizing a window frees it (`reanchor()` re-docks it).
  *
  * `target` is the desired tile size — the session's remembered user size when
  * one exists (the last manual resize), else the {@link DOCK_TILE_W}/
@@ -121,12 +101,7 @@ export function dockSlot(
   target: { width: number; height: number } = { width: DOCK_TILE_W, height: DOCK_TILE_H }
 ): DockSlot {
   const left0 = VIEWPORT_MARGIN;
-  // The replay panel (right-docked, ~280px) is only reserved once the viewport
-  // is wide enough for it to matter — narrow screens use the full width.
-  const right =
-    viewport.width > DOCK_RIGHT_RESERVE + DOCK_TILE_W + VIEWPORT_MARGIN
-      ? viewport.width - DOCK_RIGHT_RESERVE
-      : viewport.width - VIEWPORT_MARGIN;
+  const right = viewport.width - VIEWPORT_MARGIN;
   const usableW = Math.max(DOCK_GAP, right - left0);
   const cols = Math.max(1, Math.floor((usableW + DOCK_GAP) / (target.width + DOCK_GAP)));
   const width = Math.max(200, Math.min(target.width, Math.floor((usableW - (cols - 1) * DOCK_GAP) / cols)));

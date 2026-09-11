@@ -1451,6 +1451,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public openMarkerReplay(tag: number) {
     this.isMarkerReplayVisible = true;
     this.markerReplayTag = tag;
+    // A fresh session opens un-minimized (it may inherit the registry entry of
+    // a previous, minimized one).
+    this.windowManagement.restoreWindow('replay-main');
     this.zIndexCounter++;
     this.markerReplayZIndex = this.baseZIndex + this.zIndexCounter;
     this.cd.markForCheck();
@@ -1460,7 +1463,32 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public closeMarkerReplay() {
     this.isMarkerReplayVisible = false;
     this.markerReplayTag = null;
+    this.windowManagement.restoreWindow('replay-main');
     this.cd.markForCheck();
+  }
+
+  /**
+   * Minimize / restore the replay MAIN window via the taskbar icon. Minimize
+   * only HIDES the window — its pinned comparison windows keep floating.
+   */
+  public toggleReplayMinimize() {
+    const id = 'replay-main';
+    if (this.windowManagement.minimizedWindows().some((w) => w.id === id)) {
+      this.windowManagement.restoreWindow(id);
+    } else {
+      this.windowManagement.minimizeWindow(id, 'replay');
+    }
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Taskbar left position for the replay icon (after every other window type).
+   */
+  public getReplayTaskbarLeft(): number {
+    const offset = this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP;
+    let base = this.getMarkerManagerTaskbarLeft();
+    if (this.isMarkerManagerVisible) base += offset;
+    return base;
   }
 
   /** Bring the replay overlay to front. */

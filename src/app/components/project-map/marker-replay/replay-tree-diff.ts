@@ -23,8 +23,8 @@ function leafEntries(tree: ProtocolTreeNode[]): Map<string, string> {
     for (const { node, path } of visibleChildEntries(nodes, parentPath)) {
       const kids = node.children ?? [];
       if (visibleChildEntries(kids, path).length === 0) {
-        // Hex `value` is the most precise; show/showname degrade gracefully.
-        out.set(path, node.value ?? node.show ?? node.showname ?? '');
+        // The sharkd `label` is both display text and comparison value.
+        out.set(path, node.label ?? '');
       } else {
         walk(kids, path);
       }

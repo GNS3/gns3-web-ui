@@ -21,7 +21,7 @@
     box-shadow: 0 16px 48px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
       0 8px 16px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
     opacity: 0.9;
-    cursor: move;
+    cursor: grabbing;
     will-change: left, top;
   }
 
@@ -46,7 +46,12 @@
   padding: 4px 8px;
   background: var(--mat-sys-surface-container);
   border-bottom: none;
-  cursor: move;
+  cursor: grab;
+
+  // Closed hand while the drag gesture is live.
+  &:active {
+    cursor: grabbing;
+  }
   user-select: none;
   flex-shrink: 0;
 

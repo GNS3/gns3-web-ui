@@ -7,6 +7,7 @@ import {
   inject,
   input,
   model,
+  output,
   signal,
   untracked,
   viewChild,
@@ -17,9 +18,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { ProtocolTreeNode } from '@models/marker-replay';
 import {
+  CAPTURE_METADATA_PROTO,
   FlatRow,
   ancestorKeys,
   collectKeys,
+  collectKeysExcept,
   flattenTree,
   rowSearchText,
   rowText,
@@ -34,7 +37,7 @@ function cssEscape(s: string): string {
 
 /**
  * Wireshark-style packet-detail tree, rendered FLAT (one component, one
- * `@for`): the PDML tree is flattened by {@link flattenTree} against an
+ * `@for`): the sharkd tree is flattened by {@link flattenTree} against an
  * expansion-key set, so these all stay simple signal writes:
  *
  *  - COLLAPSED BY DEFAULT — the initial view is just the protocol list
@@ -50,9 +53,9 @@ function cssEscape(s: string): string {
  *    across every window ({@link searchQuery}), matches auto-expand their
  *    ancestors, Enter/Shift+Enter walk them.
  *
- * `hide="true"` fields never render (Wireshark hides them too); monospace is
- * deliberate — bit-mask rows (`0100 .... = Version: 4`) only align in a
- * fixed-width font.
+ * `hide`-style plumbing never renders (the sharkd tree is already the GUI
+ * tree; only `geninfo` is guarded); monospace is deliberate — bit-mask rows
+ * (`0100 .... = Version: 4`) only align in a fixed-width font.
  */
 @Component({
   selector: 'app-protocol-tree',
@@ -76,8 +79,21 @@ export class ProtocolTreeComponent {
    * (live + pinned) at once; each tree keeps its own match position/count.
    */
   readonly searchQuery = model('');
+  /**
+   * Unfold every protocol layer when a NEW tree arrives — hosts that show a
+   * packet for immediate inspection (the double-click peek window) want the
+   * fields without a click, unlike the browsing panes. The capture-metadata
+   * `frame` proto stays collapsed either way. A manual collapse afterwards is
+   * respected: only a new tree re-seeds the expansion.
+   */
+  readonly autoExpand = input(false);
   /** Whether the search bar is open in THIS tree (✕/Esc closes it). */
   readonly searchOpen = signal(false);
+  /**
+   * A row's ready-made display filter (`filter_expr`, Wireshark's "Apply as
+   * Filter") — the host forwards it to the filter bar and re-runs the search.
+   */
+  readonly applyFilter = output<string>();
 
   readonly expanded = signal<ReadonlySet<string>>(new Set());
   readonly selectedKey = signal<string | null>(null);
@@ -127,6 +143,14 @@ export class ProtocolTreeComponent {
   });
 
   constructor() {
+    // Auto-expanding host: a NEW tree opens unfolded (minus the capture-
+    // metadata proto). The expansion set is read UNTRACKED so a manual
+    // collapse is never re-fought — only the next tree re-seeds it.
+    effect(() => {
+      if (!this.autoExpand()) return;
+      const tree = this.tree();
+      this.expanded.set(new Set(collectKeysExcept(tree, new Set([CAPTURE_METADATA_PROTO]))));
+    });
     // New query or tree → restart at the first match and REVEAL every match by
     // unioning ancestor keys into the expansion set. Grow-only: clearing the
     // query leaves the opened branches for browsing (Collapse-all still
@@ -221,6 +245,15 @@ export class ProtocolTreeComponent {
     if (next.has(row.key)) next.delete(row.key);
     else next.add(row.key);
     this.expanded.set(next);
+  }
+
+  /**
+   * The per-row filter button — apply this field's ready-made expression.
+   * StopPropagation: the row underneath selects/toggles on click.
+   */
+  applyRowFilter(e: Event, row: FlatRow): void {
+    e.stopPropagation();
+    if (row.node.filter_expr) this.applyFilter.emit(row.node.filter_expr);
   }
 
   expandAll(): void {

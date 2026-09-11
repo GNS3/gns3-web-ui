@@ -1,56 +1,197 @@
-<div class="gns3-replay" [style.z-index]="zIndex()" (mousedown)="onWindowFocus()">
-  <div class="gns3-replay__header">
+<!-- The MAIN Wireshark-style window. Pins render AFTER it (outside the window
+     div, fixed positioning) — see the component docblock for the z-order
+     contract that keeps 'main' above never-clicked pins. MINIMIZED: the window
+     div unmounts but the component (session service, pins) stays alive. -->
+@if (!minimized()) {
+<div
+  class="gns3-replay__main"
+  [class.gns3-replay__main--dragging]="dragging()"
+  [class.gns3-replay__main--resizing]="resizing()"
+  [style.left.px]="winLeft()"
+  [style.top.px]="winTop()"
+  [style.width.px]="winWidth()"
+  [style.height.px]="winHeight()"
+  [style.z-index]="mainZ()"
+  (mousedown)="focusWindow('main')"
+  mwlResizable
+  [validateResize]="validate"
+  [enableGhostResize]="false"
+  (resizeStart)="onResizeStart()"
+  (resizeEnd)="onResizeEnd($event)"
+>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+
+  <div class="gns3-replay__header" (mousedown)="onHeaderMouseDown($event)">
     <mat-icon class="gns3-replay__icon">history</mat-icon>
-    <div class="gns3-replay__title">
-      <span class="gns3-replay__title-text">Tag replay</span>
-      <span class="gns3-replay__tag">tag {{ tag() }}</span>
-    </div>
-    <span class="gns3-replay__position">{{ positionLabel() }}</span>
-    <button mat-icon-button class="gns3-replay__close" (click)="close()" matTooltip="Close replay">
+    <span class="gns3-replay__title-text">Tag replay</span>
+    <span class="gns3-replay__tag">tag {{ tag() }}</span>
+    <span class="gns3-replay__count">{{ countLabel() }}</span>
+    <button
+      mat-icon-button
+      class="gns3-replay__pin"
+      [disabled]="!svc.currentFrame() || alreadyPinned()"
+      (click)="svc.pinCurrent()"
+      [matTooltip]="alreadyPinned() ? 'Already pinned' : 'Pin frame'"
+    >
+      <mat-icon>push_pin</mat-icon>
+    </button>
+    <button mat-icon-button class="gns3-replay__minimize" (click)="minimize()" matTooltip="Minimize">
+      <mat-icon>remove</mat-icon>
+    </button>
+    <button mat-icon-button class="gns3-replay__close" (click)="close()" matTooltip="Close">
       <mat-icon>close</mat-icon>
     </button>
   </div>
 
-  <div class="gns3-replay__body">
-    @if (svc.loadingRange()) {
+  <!-- Two independent narrowings, combined AND-style server-side: the display
+       filter (tshark -Y semantics over the decodes; Enter applies, a 400 lands
+       inline below) and the capture-link pick (the merged list otherwise gives
+       no hint which link a row came from). -->
+  <div class="gns3-replay__filterbar">
+    <mat-icon class="gns3-replay__filterbar-icon">filter_alt</mat-icon>
+    <input
+      class="gns3-replay__filter-input"
+      type="text"
+      placeholder="Display filter — e.g. ospf.msg == 1 (Enter to apply)"
+      spellcheck="false"
+      [value]="svc.filter()"
+      (input)="onFilterInput($event)"
+      (keydown)="onFilterKey($event)"
+    />
+    @if (svc.filter()) {
+      <button class="gns3-replay__filter-clear" matTooltip="Clear display filter" (click)="svc.clearFilter()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+    <span class="gns3-replay__filterbar-sep"></span>
+    <button
+      type="button"
+      class="gns3-replay__link-pick"
+      [class.gns3-replay__link-pick--active]="svc.appliedLink()"
+      matTooltip="Narrow the list to one captured link"
+      [matMenuTriggerFor]="linkMenu"
+    >
+      <mat-icon>cable</mat-icon>
+      <span class="gns3-replay__link-pick-label">{{ linkPickLabel() }}</span>
+      <mat-icon class="gns3-replay__link-caret">arrow_drop_down</mat-icon>
+    </button>
+    @if (svc.appliedLink()) {
+      <button class="gns3-replay__filter-clear" matTooltip="Show all links" (click)="svc.applyLinkFilter(null)">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </div>
+  <mat-menu #linkMenu="matMenu">
+    <button mat-menu-item (click)="svc.applyLinkFilter(null)">
+      All links ({{ svc.totalUnfiltered() }})
+    </button>
+    @for (o of linkOptions(); track o.link_id) {
+      <button mat-menu-item (click)="svc.applyLinkFilter(o.link_id)">
+        {{ o.label }} ({{ o.count }})
+      </button>
+    }
+  </mat-menu>
+  @if (svc.filterError(); as fe) {
+    <div class="gns3-replay__filter-error">{{ fe }}</div>
+  }
+
+  <div class="gns3-replay__body" [class.gns3-replay__body--busy]="svc.loadingRange() && hasList()">
+    @if (svc.loadingRange() && !hasList()) {
       <div class="gns3-replay__state">
         <mat-spinner class="gns3-replay__state-spinner" [diameter]="22"></mat-spinner>
-        <span>Loading timeline…</span>
+        <span>Loading frames…</span>
       </div>
     } @else if (svc.rangeError(); as msg) {
-      <div class="gns3-replay__state gns3-replay__state--error">
-        <span>{{ msg }}</span>
-        @if (svc.rangeErrorKind() === 'network') {
-          <button mat-stroked-button class="gns3-replay__retry" (click)="svc.reloadTimeline()">Retry</button>
-        }
-      </div>
+      @if (svc.rangeErrorKind() === 'unavailable') {
+        <div class="gns3-replay__state gns3-replay__state--error">
+          <span>Packet replay requires the sharkd engine on this server (501).</span>
+          <button mat-stroked-button (click)="close()">Close</button>
+        </div>
+      } @else {
+        <div class="gns3-replay__state gns3-replay__state--error">
+          <span>{{ msg }}</span>
+          @if (svc.rangeErrorKind() === 'network') {
+            <button mat-stroked-button class="gns3-replay__retry" (click)="svc.reloadTimeline()">Retry</button>
+          }
+        </div>
+      }
     } @else if (svc.isEmpty()) {
       <div class="gns3-replay__state">
-        <span>No frames captured under this tag. Pause markers after traffic, then replay.</span>
+        @if (svc.appliedFilter() || svc.appliedLink()) {
+          <span>{{ emptyFiltersLabel() }}</span>
+          <button mat-stroked-button (click)="svc.clearAllFilters()">Clear filters</button>
+        } @else {
+          <span>No frames captured under this tag. Pause markers after traffic, then replay.</span>
+        }
       </div>
     } @else {
-      <app-replay-timeline></app-replay-timeline>
+      <div class="gns3-replay__panes">
+        <app-replay-packet-list class="gns3-replay__left" />
+        @if (detailOpen()) {
+          <button class="gns3-replay__pane-toggle" (click)="toggleDetail()" matTooltip="Hide packet details">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+          <div class="gns3-replay__right">
+            @if (svc.currentFrame(); as frame) {
+              <app-replay-detail-pane
+                [frame]="frame"
+                [state]="svc.detail()"
+                [holdDetail]="svc.lastOkDetail()"
+                [(searchQuery)]="svc.searchQuery"
+                (retry)="svc.retryDetail()"
+                (reload)="svc.reloadTimeline()"
+                (applyFilter)="onPaneApplyFilter($event)"
+                (applyLinkFilter)="svc.applyLinkFilter($event)"
+              />
+            } @else {
+              <div class="gns3-replay__state"><span>Select a frame to decode it.</span></div>
+            }
+          </div>
+        } @else {
+          <button
+            class="gns3-replay__pane-toggle"
+            (click)="toggleDetail()"
+            matTooltip="Show packet details"
+          >
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+        }
+      </div>
     }
   </div>
 </div>
+}
 
-<!-- Detail windows: fixed-position (viewport space), must live OUTSIDE the
-     panel div so no ancestor clipping/stacking context constrains them. The
-     LIVE window follows the timeline cursor; each PINNED window freezes one
-     frame for side-by-side comparison (anchored beside its own source link). -->
-@if (!svc.loadingRange() && svc.rangeError() === null && !svc.isEmpty()) {
+<!-- Pinned comparison windows: fixed-position (viewport space), must live
+     OUTSIDE the main window div so no ancestor clipping/stacking context
+     constrains them. Each freezes one frame for side-by-side comparison.
+     Deliberately NOT gated on loadingRange/rangeError/isEmpty: pins are
+     SESSION state and must survive every list reload (a remount would re-run
+     first-placement and teleport docked pins out of the comparison row);
+     with nothing pinned the @for renders nothing anyway. -->
+@for (p of svc.pinnedDetails(); track p.id) {
   <app-replay-detail-window
     [zIndex]="zIndex()"
-    [zBoost]="zAssign().get('live') ?? 0"
-    (windowFocused)="focusWindow('live')"
+    [zBoost]="zAssign().get('pin-' + p.id) ?? 0"
+    [pinned]="p"
+    [changedPaths]="pinDiff()"
+    (windowFocused)="focusWindow('pin-' + p.id)"
   ></app-replay-detail-window>
-  @for (p of svc.pinnedDetails(); track p.id) {
-    <app-replay-detail-window
-      [zIndex]="zIndex()"
-      [zBoost]="zAssign().get('pin-' + p.id) ?? 0"
-      [pinned]="p"
-      [changedPaths]="pinDiff()"
-      (windowFocused)="focusWindow('pin-' + p.id)"
-    ></app-replay-detail-window>
-  }
+}
+
+<!-- The transient double-click detail window — one at a time, born at the
+     mouse, outside the comparison set (never gated on reloads, like pins). -->
+@if (svc.peek()) {
+  <app-replay-peek-window
+    [zIndex]="zIndex()"
+    [zBoost]="zAssign().get('peek') ?? 0"
+    (windowFocused)="focusWindow('peek')"
+  />
 }

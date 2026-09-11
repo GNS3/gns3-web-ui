@@ -1,0 +1,59 @@
+<!-- The transient double-click detail window: pinned-window look, born at the
+     mouse, owned by no comparison set (see the component docblock). -->
+<div
+  class="gns3-replay__window gns3-replay__window--snapshot gns3-replay__window--peek"
+  [class.gns3-replay__window--dragging]="dragging()"
+  [class.gns3-replay__window--resizing]="resizing()"
+  [style.left.px]="winLeft()"
+  [style.top.px]="winTop()"
+  [style.width.px]="winWidth()"
+  [style.height.px]="winHeight()"
+  [style.z-index]="zVal()"
+  (mousedown)="windowFocused.emit()"
+  (keydown.escape)="svc.closePeek()"
+  mwlResizable
+  [validateResize]="validate"
+  [enableGhostResize]="false"
+  (resizeStart)="onResizeStart()"
+  (resizeEnd)="onResizeEnd($event)"
+>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
+  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+
+  <div
+    class="gns3-replay__window-header"
+    (mousedown)="onHeaderMouseDown($event)"
+    (contextmenu)="onHeaderContextMenu($event)"
+  >
+    <mat-icon class="gns3-replay__window-icon">search</mat-icon>
+    <span class="gns3-replay__window-title">{{ svc.peek()?.frame.marker }}</span>
+    <span class="gns3-replay__window-frame">#{{ svc.peek()?.frame.frame_number }}</span>
+    <button
+      class="gns3-replay__window-reanchor gns3-replay__window-close"
+      matTooltip="Close"
+      (click)="svc.closePeek()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  @if (svc.peek(); as p) {
+    <app-replay-detail-pane
+      [frame]="p.frame"
+      [state]="p.detail"
+      [autoExpand]="true"
+      missingAction="close"
+      [(searchQuery)]="svc.searchQuery"
+      (retry)="svc.retryPeek()"
+      (reload)="svc.closePeek()"
+      (applyFilter)="svc.applyFilter($event)"
+      (applyLinkFilter)="svc.applyLinkFilter($event)"
+    />
+  }
+</div>
