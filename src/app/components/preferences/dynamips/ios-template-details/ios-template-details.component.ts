@@ -1,5 +1,15 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, model, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  OnInit,
+  inject,
+  model,
+  signal,
+  computed,
+} from '@angular/core';
+import { goBackOrNavigate } from '@utils/back-navigation.util';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
@@ -65,6 +75,7 @@ export class IosTemplateDetailsComponent implements OnInit {
   private iosConfigurationService = inject(IosConfigurationService);
   private progressService = inject(ProgressService);
   private router = inject(Router);
+  private location = inject(Location);
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
   private dialogConfig = inject(DialogConfigService);
@@ -312,7 +323,10 @@ export class IosTemplateDetailsComponent implements OnInit {
       return;
     }
     const netmikoValidation = this.validationService.validateNetmikoDeviceType(this.netmikoDeviceType());
-    if (!netmikoValidation.isValid) { this.toasterService.error(netmikoValidation.errorMessage); return; }
+    if (!netmikoValidation.isValid) {
+      this.toasterService.error(netmikoValidation.errorMessage);
+      return;
+    }
 
     this.saveSlotsData();
 
@@ -352,7 +366,7 @@ export class IosTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences']);
+    goBackOrNavigate(this.location, this.router, ['/controller', this.controller.id, 'preferences']);
   }
 
   chooseSymbol() {
@@ -399,13 +413,25 @@ export class IosTemplateDetailsComponent implements OnInit {
 
   toggleSection(section: string): void {
     switch (section) {
-      case 'general': this.generalSettingsExpanded = !this.generalSettingsExpanded; break;
-      case 'memory': this.memoryExpanded = !this.memoryExpanded; break;
-      case 'slots': this.slotsExpanded = !this.slotsExpanded; break;
-      case 'advanced': this.advancedExpanded = !this.advancedExpanded; break;
-      case 'usage': this.usageExpanded = !this.usageExpanded; break;
+      case 'general':
+        this.generalSettingsExpanded = !this.generalSettingsExpanded;
+        break;
+      case 'memory':
+        this.memoryExpanded = !this.memoryExpanded;
+        break;
+      case 'slots':
+        this.slotsExpanded = !this.slotsExpanded;
+        break;
+      case 'advanced':
+        this.advancedExpanded = !this.advancedExpanded;
+        break;
+      case 'usage':
+        this.usageExpanded = !this.usageExpanded;
+        break;
     }
   }
 
-  selectSection(section: string): void { this.activeSection = section; }
+  selectSection(section: string): void {
+    this.activeSection = section;
+  }
 }

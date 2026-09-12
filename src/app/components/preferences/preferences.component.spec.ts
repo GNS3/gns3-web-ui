@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
@@ -15,7 +16,14 @@ describe('PreferencesComponent', () => {
   let component: PreferencesComponent;
   let fixture: ComponentFixture<PreferencesComponent>;
   let router: Router;
-  let mockTemplateService: { list: ReturnType<typeof vi.fn>; deleteTemplate: ReturnType<typeof vi.fn>; duplicate: ReturnType<typeof vi.fn> };
+  let navigateSpy: ReturnType<typeof vi.spyOn>;
+  /** Query params served to the component — mutated in place so the stub closure sees updates. */
+  let routeQueryParams: Record<string, string> = {};
+  let mockTemplateService: {
+    list: ReturnType<typeof vi.fn>;
+    deleteTemplate: ReturnType<typeof vi.fn>;
+    duplicate: ReturnType<typeof vi.fn>;
+  };
   let mockToasterService: { error: ReturnType<typeof vi.fn>; success: ReturnType<typeof vi.fn> };
 
   const controller = {
@@ -65,6 +73,9 @@ describe('PreferencesComponent', () => {
   ];
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+    Object.keys(routeQueryParams).forEach((key) => delete routeQueryParams[key]);
+
     mockTemplateService = {
       list: vi.fn().mockReturnValue(of(templates)),
       deleteTemplate: vi.fn().mockReturnValue(of({})),
@@ -87,6 +98,9 @@ describe('PreferencesComponent', () => {
               paramMap: {
                 get: vi.fn().mockReturnValue('1'),
               },
+              queryParamMap: {
+                get: (key: string) => routeQueryParams[key] ?? null,
+              },
             },
           },
         },
@@ -101,6 +115,9 @@ describe('PreferencesComponent', () => {
     }).compileComponents();
 
     router = TestBed.inject(Router);
+    // Filter setters sync to the URL via router.navigate — the stubbed
+    // ActivatedRoute has no route tree, so keep navigation a no-op spy.
+    navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
     fixture = TestBed.createComponent(PreferencesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -157,6 +174,108 @@ describe('PreferencesComponent', () => {
     component.setType('all');
     component.setScope('builtin');
     expect(component.filteredTemplates().map((template) => template.name)).toEqual(['Ethernet Switch']);
+  });
+
+  it('restores the filter state from URL query params', async () => {
+    vi.useFakeTimers();
+    try {
+      Object.assign(routeQueryParams, {
+        search: 'edge',
+        type: 'qemu',
+        scope: 'custom',
+        sort: 'category',
+        dir: 'desc',
+        page: '1',
+        size: '5',
+        view: 'grid',
+      });
+
+      component.ngOnInit();
+      await vi.runAllTimersAsync();
+      fixture.detectChanges();
+
+      expect(component.searchText()).toBe('edge');
+      expect(component.selectedType()).toBe('qemu');
+      expect(component.selectedScope()).toBe('custom');
+      expect(component.sortActive()).toBe('category');
+      expect(component.sortDirection()).toBe('desc');
+      expect(component.pageSize()).toBe(5);
+      expect(component.viewMode()).toBe('grid');
+      // Only 1 template survives the filters, so page 1 is clamped back to page 0
+      // by ensureValidPage — restoring must never land on an empty page.
+      expect(component.pageIndex()).toBe(0);
+      // Restoring is passive — it never rewrites the URL or history.
+      expect(navigateSpy).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('falls back to defaults for invalid query param values', async () => {
+    vi.useFakeTimers();
+    try {
+      Object.assign(routeQueryParams, {
+        search: 'x',
+        type: 'does-not-exist',
+        scope: 'nope',
+        sort: 'bogus',
+        dir: 'sideways',
+        page: 'abc',
+        size: '7',
+        view: 'diagram',
+      });
+
+      component.ngOnInit();
+      await vi.runAllTimersAsync();
+      fixture.detectChanges();
+
+      expect(component.searchText()).toBe('x'); // free text — always kept
+      expect(component.selectedType()).toBe('all'); // stale type dropped after templates load
+      expect(component.selectedScope()).toBe('all');
+      expect(component.sortActive()).toBe('name');
+      expect(component.sortDirection()).toBe('asc');
+      expect(component.pageIndex()).toBe(0);
+      expect(component.pageSize()).toBe(25);
+      expect(component.viewMode()).toBe('list');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('syncs filter changes to the URL with replaceUrl, omitting defaults', () => {
+    component.setType('qemu');
+    component.setScope('builtin');
+    component.onPageChange({ pageIndex: 2, pageSize: 50 } as PageEvent);
+
+    expect(navigateSpy).toHaveBeenCalled();
+    const [commands, extras] = navigateSpy.mock.calls[navigateSpy.mock.calls.length - 1] as unknown[];
+    expect(commands).toEqual([]);
+    expect(extras).toMatchObject({ replaceUrl: true });
+    expect((extras as { queryParams: object }).queryParams).toEqual({
+      type: 'qemu',
+      scope: 'builtin',
+      page: 2,
+      size: 50,
+    });
+  });
+
+  it('debounces search-driven URL syncs into one update per typing burst', async () => {
+    vi.useFakeTimers();
+    try {
+      component.setSearch('router');
+      component.setSearch('router ');
+      component.setSearch('router s');
+
+      expect(navigateSpy).not.toHaveBeenCalled();
+
+      await vi.advanceTimersByTimeAsync(300);
+
+      expect(navigateSpy).toHaveBeenCalledTimes(1);
+      const [, extras] = navigateSpy.mock.calls[0] as unknown[];
+      expect((extras as { queryParams: { search: string } }).queryParams.search).toBe('router s');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('opens and closes details for a selected template', () => {
