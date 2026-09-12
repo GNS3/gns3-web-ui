@@ -1,4 +1,6 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, signal, inject } from '@angular/core';
+import { Location } from '@angular/common';
+import { goBackOrNavigate } from '@utils/back-navigation.util';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -47,6 +49,7 @@ export class AddDockerTemplateComponent implements OnInit {
   private dockerService = inject(DockerService);
   private toasterService = inject(ToasterService);
   private router = inject(Router);
+  private location = inject(Location);
   private templateMocksService = inject(TemplateMocksService);
   private configurationService = inject(DockerConfigurationService);
   private validationService = inject(ValidationService);
@@ -189,19 +192,14 @@ export class AddDockerTemplateComponent implements OnInit {
 
   goBack() {
     const controllerId = this.controller?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
-    this.router.navigate(['/controller', controllerId, 'preferences']);
+    goBackOrNavigate(this.location, this.router, ['/controller', controllerId, 'preferences']);
   }
 
   addTemplate() {
     const controller = this.controller;
     const template = this.dockerTemplate;
     const selectedImage = this.selectedImage;
-    if (
-      !this.canCreateTemplate() ||
-      !controller ||
-      !template ||
-      (!this.newImageSelected && !selectedImage)
-    ) {
+    if (!this.canCreateTemplate() || !controller || !template || (!this.newImageSelected && !selectedImage)) {
       this.toasterService.error(`Fill all required fields`);
       return;
     }
