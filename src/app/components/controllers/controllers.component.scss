@@ -420,24 +420,37 @@ button.controllers-page__action--delete {
     gap: var(--gns3-density-space-3);
   }
 
-  a {
-    display: grid;
-    width: 30px;
-    height: 30px;
-    place-items: center;
+  .controllers-page__footer-social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     color: var(--mat-sys-on-surface-variant);
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
 
     &:hover {
+      background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
       color: var(--mat-sys-primary);
-      background: var(--mat-sys-surface-container-high);
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
     }
   }
 
-  mat-icon {
-    width: 19px;
-    height: 19px;
-    font-size: 19px;
+  .controllers-page__footer-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    overflow: visible;
   }
 }
 
