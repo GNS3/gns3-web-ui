@@ -59,6 +59,13 @@ type TemplateViewMode = 'grid' | 'list';
 
 const VIEW_MODE_STORAGE_KEY = 'addNodesViewMode';
 
+/**
+ * Sentinel value of the Advanced options Compute dropdown: defer the choice to
+ * the drop itself. Dragging then pops the map-side compute selector (with live
+ * CPU/memory/disk usage) whenever more than one compute is reachable.
+ */
+export const COMPUTE_ASK_ON_DROP = '__ask__';
+
 @Component({
   standalone: true,
   selector: 'app-template-list-dialog',
@@ -116,7 +123,10 @@ export class TemplateListDialogComponent implements OnInit {
   searchText = model('');
   selectedType = model('all');
   selectedTemplate = model<Template | null>(null);
-  selectedComputeId = model('local');
+  selectedComputeId = model(COMPUTE_ASK_ON_DROP);
+
+  /** Exposed for the template so the sentinel option binds to the same value. */
+  readonly askOnDrop = COMPUTE_ASK_ON_DROP;
 
   /** Template gallery layout, persisted across dialog openings. */
   readonly viewMode = signal<TemplateViewMode>(localStorage.getItem(VIEW_MODE_STORAGE_KEY) === 'list' ? 'list' : 'grid');
@@ -201,10 +211,10 @@ export class TemplateListDialogComponent implements OnInit {
   }
 
   selectTemplate(template: Template): void {
+    // No compute preselect from the template's bound compute: the dropdown
+    // stays on "Ask when dropping" so a drag onto a multi-compute map pops the
+    // compute selector instead of silently using the bound compute.
     this.selectedTemplate.set(template);
-    if (template.compute_id && this.nodeComputes.some((compute) => compute.value === template.compute_id)) {
-      this.selectedComputeId.set(template.compute_id);
-    }
   }
 
   onTemplatePointerDown(_event: MouseEvent, template: Template): void {
@@ -234,8 +244,32 @@ export class TemplateListDialogComponent implements OnInit {
       event,
       template,
       numberOfNodes: this.configurationForm.get('numberOfNodes').value,
-      computeId: this.selectedComputeId(),
+      computeId: this.resolveDragComputeId(),
     });
+  }
+
+  /**
+   * Compute id to attach to a drag. With "Ask when dropping" selected (the
+   * default) no id is attached, so the map-side compute selector pops up when
+   * several computes are reachable; an explicit choice is passed through.
+   */
+  private resolveDragComputeId(): string | undefined {
+    const selected = this.selectedComputeId();
+    return selected === COMPUTE_ASK_ON_DROP ? undefined : selected;
+  }
+
+  /**
+   * Compute id for the form-based Add button, which has no drop point to show
+   * a selector at. "Ask when dropping" resolves to the template's bound
+   * compute when it is reachable, otherwise to the local server.
+   */
+  private resolveAddComputeId(template: Template | null): string {
+    const selected = this.selectedComputeId();
+    if (selected !== COMPUTE_ASK_ON_DROP) {
+      return selected;
+    }
+    const bound = template?.compute_id;
+    return bound && this.nodeComputes.some((compute) => compute.value === bound) ? bound : 'local';
   }
 
   refreshSymbolImages(): void {
@@ -283,7 +317,7 @@ export class TemplateListDialogComponent implements OnInit {
       } else {
         const nodeAddedEvent: NodeAddedEvent = {
           template: this.selectedTemplate(),
-          computeId: this.selectedComputeId(),
+          computeId: this.resolveAddComputeId(this.selectedTemplate()),
           numberOfNodes: this.configurationForm.get('numberOfNodes').value,
           x: x,
           y: y,
