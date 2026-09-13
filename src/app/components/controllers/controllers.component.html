@@ -203,12 +203,28 @@
 
   <footer class="controllers-page__footer">
     <span>GNS3 Web-UI &copy;2018-{{ currentYear }} v{{ version }}</span>
-    <div>
-      <a href="https://github.com/GNS3" target="_blank" rel="noopener noreferrer" matTooltip="GNS3 on GitHub">
-        <mat-icon svgIcon="github"></mat-icon>
+    <div class="controllers-page__footer-social">
+      <a
+        class="controllers-page__footer-social-link"
+        href="https://github.com/GNS3"
+        target="_blank"
+        rel="noopener noreferrer"
+        matTooltip="GNS3 on GitHub"
+      >
+        <mat-icon class="controllers-page__footer-icon" svgIcon="github"></mat-icon>
       </a>
-      <a href="https://www.gns3.com/" target="_blank" rel="noopener noreferrer" matTooltip="GNS3 website">
-        <mat-icon>language</mat-icon>
+      <a
+        class="controllers-page__footer-social-link"
+        href="https://www.gns3.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        matTooltip="GNS3 website"
+      >
+        @if (!isLightThemeEnabled()) {
+        <mat-icon class="controllers-page__footer-icon" svgIcon="gns3"></mat-icon>
+        } @if (isLightThemeEnabled()) {
+        <mat-icon class="controllers-page__footer-icon" svgIcon="gns3black"></mat-icon>
+        }
       </a>
     </div>
   </footer>
