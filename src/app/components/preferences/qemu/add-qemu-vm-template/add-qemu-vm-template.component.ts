@@ -10,6 +10,8 @@ import {
   computed,
 } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Location } from '@angular/common';
+import { goBackOrNavigate } from '@utils/back-navigation.util';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -60,6 +62,7 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   private toasterService = inject(ToasterService);
   private validationService = inject(ValidationService);
   private router = inject(Router);
+  private location = inject(Location);
   private templateMocksService = inject(TemplateMocksService);
   private configurationService = inject(QemuConfigurationService);
   private snackBar = inject(MatSnackBar);
@@ -98,9 +101,7 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   consoleStepCompleted = computed(() => !!this.consoleType());
   auxConsoleStepCompleted = computed(() => !!this.auxConsoleType());
   diskStepCompleted = computed(() =>
-    this.newImageSelected()
-      ? !!this.chosenImage() && !!this.fileName().trim()
-      : !!this.selectedImage()
+    this.newImageSelected() ? !!this.chosenImage() && !!this.fileName().trim() : !!this.selectedImage()
   );
   canCreateTemplate = computed(
     () =>
@@ -277,7 +278,7 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
 
   goBack() {
     const controllerId = this.controller()?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
-    this.router.navigate(['/controller', controllerId, 'preferences']);
+    goBackOrNavigate(this.location, this.router, ['/controller', controllerId, 'preferences']);
   }
 
   addTemplate() {

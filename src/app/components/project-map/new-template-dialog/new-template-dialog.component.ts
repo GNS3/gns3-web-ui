@@ -13,7 +13,8 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
+import { goBackOrNavigate } from '@utils/back-navigation.util';
 import { ReactiveFormsModule, UntypedFormControl, Validators } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -225,6 +226,8 @@ export class NewTemplateDialogComponent implements OnInit {
   readonly applianceFileInput = viewChild<ElementRef<HTMLInputElement>>('applianceFile');
 
   private router = inject(Router);
+
+  private location = inject(Location);
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private applianceService = inject(ApplianceService);
@@ -322,9 +325,10 @@ export class NewTemplateDialogComponent implements OnInit {
       [Validators.required, this.projectNameValidator.get],
       [
         (control: UntypedFormControl) =>
-          templateNameAsyncValidator(this.controller, this.templateService)(control).pipe(
-            tap((result) => nameCheckCompleted.next(result === null))
-          ),
+          templateNameAsyncValidator(
+            this.controller,
+            this.templateService
+          )(control).pipe(tap((result) => nameCheckCompleted.next(result === null))),
       ]
     );
     this.templateNameControl.statusChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
@@ -446,7 +450,7 @@ export class NewTemplateDialogComponent implements OnInit {
    */
   goBack(): void {
     const controllerId = this.controller?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id') ?? '', 10);
-    this.router.navigate(['/controller', controllerId, 'preferences']);
+    goBackOrNavigate(this.location, this.router, ['/controller', controllerId, 'preferences']);
   }
 
   // ------------------------------------------------------------------

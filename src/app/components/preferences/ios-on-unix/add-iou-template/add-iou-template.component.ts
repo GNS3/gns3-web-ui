@@ -10,6 +10,8 @@ import {
   computed,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { goBackOrNavigate } from '@utils/back-navigation.util';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
@@ -59,6 +61,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   private toasterService = inject(ToasterService);
   private validationService = inject(ValidationService);
   private router = inject(Router);
+  private location = inject(Location);
   private templateMocksService = inject(TemplateMocksService);
   private uploadServiceService = inject(UploadServiceService);
   private snackBar = inject(MatSnackBar);
@@ -197,7 +200,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
 
   goBack() {
     const controllerId = this.controller()?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
-    this.router.navigate(['/controller', controllerId, 'preferences']);
+    goBackOrNavigate(this.location, this.router, ['/controller', controllerId, 'preferences']);
   }
 
   addTemplate() {

@@ -1,4 +1,6 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject } from '@angular/core';
+import { Location } from '@angular/common';
+import { goBackOrNavigate } from '@utils/back-navigation.util';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -48,6 +50,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
   private router = inject(Router);
+  private location = inject(Location);
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
   private dialogConfig = inject(DialogConfigService);
@@ -117,7 +120,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences']);
+    goBackOrNavigate(this.location, this.router, ['/controller', this.controller.id, 'preferences']);
   }
 
   onSave() {

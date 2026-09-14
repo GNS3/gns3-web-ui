@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,7 +30,10 @@ import { SymbolService } from '@services/symbol.service';
 import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
 import { MarkdownViewerComponent } from '../../common/markdown-viewer/markdown-viewer.component';
-import { CopyTemplateDialogComponent, CopyTemplateDialogData } from './common/copy-template-dialog/copy-template-dialog.component';
+import {
+  CopyTemplateDialogComponent,
+  CopyTemplateDialogData,
+} from './common/copy-template-dialog/copy-template-dialog.component';
 import { DeleteTemplateComponent } from './common/delete-template-component/delete-template.component';
 
 type TemplateViewMode = 'list' | 'grid';
@@ -68,7 +80,11 @@ type TemplateListItem = Template &
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PreferencesComponent implements OnInit {
+export class PreferencesComponent implements OnInit, OnDestroy {
+  private static readonly SORT_COLUMNS = ['name', 'template_type', 'category', 'compute_id'];
+  private static readonly DEFAULT_PAGE_SIZE = 25;
+  private static readonly SEARCH_SYNC_DELAY_MS = 300;
+
   controllerId = '';
   controller: Controller;
 
@@ -82,7 +98,7 @@ export class PreferencesComponent implements OnInit {
   readonly sortActive = signal('name');
   readonly sortDirection = signal<TemplateSortDirection>('asc');
   readonly pageIndex = signal(0);
-  readonly pageSize = signal(25);
+  readonly pageSize = signal(PreferencesComponent.DEFAULT_PAGE_SIZE);
   readonly pageSizeOptions = [5, 10, 25, 50, 100];
   readonly displayedColumns = ['name', 'template_type', 'category', 'compute_id', 'builtin', 'actions'];
   readonly symbolBlobUrls = signal<Map<string, string>>(new Map());
@@ -157,9 +173,12 @@ export class PreferencesComponent implements OnInit {
   private symbolService = inject(SymbolService);
   private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
+  /** Pending debounced search → URL sync (cleared on destroy / superseded sync). */
+  private searchSyncTimer: ReturnType<typeof setTimeout> | null = null;
 
   ngOnInit(): void {
     this.controllerId = this.route.snapshot.paramMap.get('controller_id') ?? '';
+    this.restoreFiltersFromUrl();
     const numericControllerId = Number.parseInt(this.controllerId, 10);
 
     this.controllerService.get(numericControllerId).then(
@@ -175,6 +194,13 @@ export class PreferencesComponent implements OnInit {
     );
   }
 
+  ngOnDestroy(): void {
+    if (this.searchSyncTimer !== null) {
+      clearTimeout(this.searchSyncTimer);
+      this.searchSyncTimer = null;
+    }
+  }
+
   loadTemplates(): void {
     if (!this.controller) {
       return;
@@ -185,6 +211,7 @@ export class PreferencesComponent implements OnInit {
       next: (templates: TemplateListItem[]) => {
         this.templates.set(templates || []);
         this.loading.set(false);
+        this.dropStaleTypeFilter();
         this.refreshSelectedTemplate();
         this.ensureValidPage();
         this.loadTemplateSymbols(templates || []);
@@ -201,20 +228,31 @@ export class PreferencesComponent implements OnInit {
   setScope(scope: TemplateScope): void {
     this.selectedScope.set(scope);
     this.resetPage();
+    this.syncFiltersToUrl();
   }
 
   setSearch(value: string): void {
     this.searchText.set(value);
     this.resetPage();
+    // Debounced: one URL update per typing burst instead of one per keystroke.
+    if (this.searchSyncTimer !== null) {
+      clearTimeout(this.searchSyncTimer);
+    }
+    this.searchSyncTimer = setTimeout(() => {
+      this.searchSyncTimer = null;
+      this.syncFiltersToUrl();
+    }, PreferencesComponent.SEARCH_SYNC_DELAY_MS);
   }
 
   setType(value: string): void {
     this.selectedType.set(value);
     this.resetPage();
+    this.syncFiltersToUrl();
   }
 
   setViewMode(mode: TemplateViewMode): void {
     this.viewMode.set(mode);
+    this.syncFiltersToUrl();
   }
 
   onSortByChange(active: string): void {
@@ -223,17 +261,20 @@ export class PreferencesComponent implements OnInit {
       this.sortDirection.set('asc');
     }
     this.resetPage();
+    this.syncFiltersToUrl();
   }
 
   onSortChange(sort: Sort): void {
     this.sortActive.set(sort.active || 'name');
     this.sortDirection.set(sort.direction);
     this.resetPage();
+    this.syncFiltersToUrl();
   }
 
   onPageChange(event: PageEvent): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
+    this.syncFiltersToUrl();
   }
 
   selectTemplate(template: TemplateListItem): void {
@@ -435,6 +476,75 @@ export class PreferencesComponent implements OnInit {
 
   private resetPage(): void {
     this.pageIndex.set(0);
+  }
+
+  /**
+   * Restores the filter state from URL query params
+   * (`?search=&type=&scope=&sort=&dir=&page=&size=&view=`) so coming back
+   * from a template's edit page — or refreshing / sharing the URL — brings
+   * the list up exactly as it was left. Invalid values fall back to defaults.
+   */
+  private restoreFiltersFromUrl(): void {
+    const params = this.route.snapshot.queryParamMap;
+
+    this.searchText.set(params.get('search') ?? '');
+
+    this.selectedType.set(params.get('type') ?? 'all');
+
+    const scope = params.get('scope');
+    this.selectedScope.set(scope === 'custom' || scope === 'builtin' ? scope : 'all');
+
+    const view = params.get('view');
+    this.viewMode.set(view === 'grid' ? 'grid' : 'list');
+
+    const sort = params.get('sort');
+    this.sortActive.set(sort && PreferencesComponent.SORT_COLUMNS.includes(sort) ? sort : 'name');
+
+    const dir = params.get('dir');
+    this.sortDirection.set(dir === 'asc' || dir === 'desc' ? dir : 'asc');
+
+    this.pageIndex.set(Math.max(0, Number.parseInt(params.get('page') ?? '0', 10) || 0));
+
+    const size = Number.parseInt(params.get('size') ?? '', 10);
+    this.pageSize.set(this.pageSizeOptions.includes(size) ? size : PreferencesComponent.DEFAULT_PAGE_SIZE);
+  }
+
+  /**
+   * Mirrors the filter state into the URL (default values omitted) with
+   * `replaceUrl` so filter changes never pollute the browser history — the
+   * URL stays shareable, and Back from an edit page returns to this exact view.
+   */
+  private syncFiltersToUrl(): void {
+    if (this.searchSyncTimer !== null) {
+      clearTimeout(this.searchSyncTimer);
+      this.searchSyncTimer = null;
+    }
+
+    const queryParams: Record<string, string | number> = {};
+    const search = this.searchText().trim();
+    if (search) queryParams['search'] = search;
+    if (this.selectedType() !== 'all') queryParams['type'] = this.selectedType();
+    if (this.selectedScope() !== 'all') queryParams['scope'] = this.selectedScope();
+    if (this.viewMode() !== 'list') queryParams['view'] = this.viewMode();
+    if (this.sortActive() !== 'name') queryParams['sort'] = this.sortActive();
+    const dir = this.sortDirection();
+    if (dir && dir !== 'asc') queryParams['dir'] = dir;
+    if (this.pageIndex() > 0) queryParams['page'] = this.pageIndex();
+    if (this.pageSize() !== PreferencesComponent.DEFAULT_PAGE_SIZE) queryParams['size'] = this.pageSize();
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      replaceUrl: true,
+    });
+  }
+
+  /** A restored `?type=` whose type no longer exists would hide every row — reset it. */
+  private dropStaleTypeFilter(): void {
+    const type = this.selectedType();
+    if (type !== 'all' && !this.templateTypes().includes(type)) {
+      this.selectedType.set('all');
+    }
   }
 
   private ensureValidPage(): void {

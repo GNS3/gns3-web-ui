@@ -1,13 +1,6 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  OnInit,
-  model,
-  inject,
-  signal,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject, signal } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
+import { goBackOrNavigate } from '@utils/back-navigation.util';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -66,6 +59,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
   private validationService = inject(CloudValidationService);
   private router = inject(Router);
+  private location = inject(Location);
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
   private dialogConfig = inject(DialogConfigService);
@@ -174,20 +168,32 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences']);
+    goBackOrNavigate(this.location, this.router, ['/controller', this.controller.id, 'preferences']);
   }
 
   toggleSection(section: string) {
     switch (section) {
-      case 'general': this.generalExpanded = !this.generalExpanded; break;
-      case 'ethernet': this.ethernetExpanded = !this.ethernetExpanded; break;
-      case 'tap': this.tapExpanded = !this.tapExpanded; break;
-      case 'udp': this.udpExpanded = !this.udpExpanded; break;
-      case 'usage': this.usageExpanded = !this.usageExpanded; break;
+      case 'general':
+        this.generalExpanded = !this.generalExpanded;
+        break;
+      case 'ethernet':
+        this.ethernetExpanded = !this.ethernetExpanded;
+        break;
+      case 'tap':
+        this.tapExpanded = !this.tapExpanded;
+        break;
+      case 'udp':
+        this.udpExpanded = !this.udpExpanded;
+        break;
+      case 'usage':
+        this.usageExpanded = !this.usageExpanded;
+        break;
     }
   }
 
-  selectSection(section: string): void { this.activeSection = section; }
+  selectSection(section: string): void {
+    this.activeSection = section;
+  }
 
   getConfiguration() {
     this.categories = this.builtInTemplatesConfigurationService.getCategoriesForCloudNodes();

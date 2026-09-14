@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { goBackOrNavigate } from '@utils/back-navigation.util';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -50,6 +51,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
   private validationService = inject(ValidationService);
   private router = inject(Router);
+  private location = inject(Location);
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
   private dialogConfig = inject(DialogConfigService);
@@ -120,7 +122,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences']);
+    goBackOrNavigate(this.location, this.router, ['/controller', this.controller.id, 'preferences']);
   }
 
   onSave() {
@@ -204,10 +206,16 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
 
   toggleSection(section: string): void {
     switch (section) {
-      case 'general': this.generalSettingsExpanded.set(!this.generalSettingsExpanded()); break;
-      case 'usage': this.usageExpanded.set(!this.usageExpanded()); break;
+      case 'general':
+        this.generalSettingsExpanded.set(!this.generalSettingsExpanded());
+        break;
+      case 'usage':
+        this.usageExpanded.set(!this.usageExpanded());
+        break;
     }
   }
 
-  selectSection(section: string): void { this.activeSection = section; }
+  selectSection(section: string): void {
+    this.activeSection = section;
+  }
 }

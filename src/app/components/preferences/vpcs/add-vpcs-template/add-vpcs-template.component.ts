@@ -1,4 +1,6 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, model } from '@angular/core';
+import { Location } from '@angular/common';
+import { goBackOrNavigate } from '@utils/back-navigation.util';
 import {
   ReactiveFormsModule,
   UntypedFormBuilder,
@@ -45,6 +47,7 @@ export class AddVpcsTemplateComponent implements OnInit {
   private controllerService = inject(ControllerService);
   private vpcsService = inject(VpcsService);
   private router = inject(Router);
+  private location = inject(Location);
   private toasterService = inject(ToasterService);
   private validationService = inject(ValidationService);
   private templateMocksService = inject(TemplateMocksService);
@@ -88,7 +91,7 @@ export class AddVpcsTemplateComponent implements OnInit {
 
   goBack() {
     const controllerId = this.controller?.id ?? parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
-    this.router.navigate(['/controller', controllerId, 'preferences']);
+    goBackOrNavigate(this.location, this.router, ['/controller', controllerId, 'preferences']);
   }
 
   addTemplate() {

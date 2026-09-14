@@ -8,7 +8,8 @@ import {
   inject,
   computed,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
+import { goBackOrNavigate } from '@utils/back-navigation.util';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -81,6 +82,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private configurationService = inject(QemuConfigurationService);
   private router = inject(Router);
+  private location = inject(Location);
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
   private dialogConfig = inject(DialogConfigService);
@@ -465,7 +467,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences']);
+    goBackOrNavigate(this.location, this.router, ['/controller', this.controller.id, 'preferences']);
   }
 
   onCredentialInput(field: ApplianceCredentialField, event: Event) {
