@@ -140,7 +140,7 @@ describe('CustomAdaptersComponent', () => {
       expect(component.adapters()[1].port_name).toBe('eth1');
     });
 
-    it('should handle portSegmentSize for port name generation', () => {
+    it('should wrap interface numbers at portSegmentSize (server semantics)', () => {
       createComponent(createMockData({ portNameFormat: 'eth{0}', portSegmentSize: 2 }));
       component.onAdd();
       component.onAdd();
@@ -149,8 +149,31 @@ describe('CustomAdaptersComponent', () => {
 
       expect(component.adapters()[0].port_name).toBe('eth0');
       expect(component.adapters()[1].port_name).toBe('eth1');
-      expect(component.adapters()[2].port_name).toBe('eth2');
-      expect(component.adapters()[3].port_name).toBe('eth3');
+      expect(component.adapters()[2].port_name).toBe('eth0');
+      expect(component.adapters()[3].port_name).toBe('eth1');
+    });
+
+    it('should evaluate extended placeholders supported by the server', () => {
+      createComponent(createMockData({ portNameFormat: 'Ethernet{segment0}/{port0}', portSegmentSize: 4 }));
+      component.onAdd();
+      component.onAdd();
+      component.onAdd();
+      component.onAdd();
+      component.onAdd();
+
+      expect(component.adapters()[0].port_name).toBe('Ethernet0/0');
+      expect(component.adapters()[4].port_name).toBe('Ethernet1/0');
+    });
+
+    it('should use firstPortName for adapter 0 without consuming a number', () => {
+      createComponent(createMockData({ portNameFormat: 'Ethernet{0}', firstPortName: 'mgmt' }));
+      component.onAdd();
+      component.onAdd();
+      component.onAdd();
+
+      expect(component.adapters()[0].port_name).toBe('mgmt');
+      expect(component.adapters()[1].port_name).toBe('Ethernet0');
+      expect(component.adapters()[2].port_name).toBe('Ethernet1');
     });
 
     it('should continue numbering after highest existing adapter_number', () => {
@@ -371,6 +394,21 @@ describe('CustomAdaptersComponent', () => {
       const result = mockDialogRef.close.mock.calls[0][0] as CustomAdaptersDialogResult;
       expect(result.adapters.length).toBe(1);
       expect(result.adapters[0].port_name).toBe('CustomName');
+    });
+
+    it('should save evaluated default name, not raw format, for non-default adapters', () => {
+      createComponent(createMockData({ portNameFormat: 'Ethernet{segment0}/{port0}', portSegmentSize: 4 }));
+      component.onAdd();
+      component.onAdd();
+      const adapters = [...component.adapters()];
+      adapters[1].mac_address = 'aa:bb:cc:dd:ee:ff';
+      component.adapters.set(adapters);
+      component.configureCustomAdapters();
+
+      const result = mockDialogRef.close.mock.calls[0][0] as CustomAdaptersDialogResult;
+      expect(result.adapters.length).toBe(1);
+      expect(result.adapters[0].adapter_number).toBe(1);
+      expect(result.adapters[0].port_name).toBe('Ethernet0/1');
     });
 
     it('should include adapter when adapter_type differs from default', () => {
