@@ -8,6 +8,7 @@ import {
   TemplateDatabase,
   TemplateDataSource,
   NodeAddedEvent,
+  COMPUTE_ASK_ON_DROP,
 } from './template-list-dialog.component';
 import { TemplateService } from '@services/template.service';
 import { ComputeService } from '@services/compute.service';
@@ -148,7 +149,7 @@ describe('TemplateListDialogComponent', () => {
         label.textContent?.trim()
       );
       expect(labels).toContain('Compute');
-      expect(component.selectedComputeId()).toBe('local');
+      expect(component.selectedComputeId()).toBe(COMPUTE_ASK_ON_DROP);
     });
   });
 
@@ -274,14 +275,14 @@ describe('TemplateListDialogComponent', () => {
       expect(component.selectedTemplate()).toBe(template);
     });
 
-    it('should select a template and default its controller before dragging', () => {
+    it('should select a template without preselecting its compute', () => {
       const templateWithoutCompute = { ...template, compute_id: undefined } as Template;
       const pointerEvent = { clientX: 100, clientY: 80 } as MouseEvent;
 
       component.onTemplatePointerDown(pointerEvent, templateWithoutCompute);
 
       expect(component.selectedTemplate()).toBe(templateWithoutCompute);
-      expect(component.selectedComputeId()).toBe('local');
+      expect(component.selectedComputeId()).toBe(COMPUTE_ASK_ON_DROP);
       expect(templateWithoutCompute.compute_id).toBeUndefined();
     });
 
@@ -297,8 +298,35 @@ describe('TemplateListDialogComponent', () => {
       component.onTemplateDragStart(event, template);
 
       expect(component.selectedTemplate()).toBe(template);
-      expect(emitSpy).toHaveBeenCalledWith({ event, template, numberOfNodes: 4, computeId: 'local' });
+      expect(emitSpy).toHaveBeenCalledWith({ event, template, numberOfNodes: 4, computeId: undefined });
       expect(event.dataTransfer.effectAllowed).toBe('copy');
+    });
+
+    it('should defer the compute choice when dragging with "ask when dropping"', () => {
+      const emitSpy = vi.spyOn(component.templateDragStarted, 'emit');
+      const event = {
+        preventDefault: vi.fn(),
+        currentTarget: document.createElement('button'),
+        dataTransfer: { setData: vi.fn(), setDragImage: vi.fn(), effectAllowed: '' },
+      } as any;
+
+      component.onTemplateDragStart(event, template);
+
+      expect(emitSpy).toHaveBeenCalledWith({ event, template, numberOfNodes: 1, computeId: undefined });
+    });
+
+    it('should attach the selected compute when dragging with an explicit choice', () => {
+      const emitSpy = vi.spyOn(component.templateDragStarted, 'emit');
+      const event = {
+        preventDefault: vi.fn(),
+        currentTarget: document.createElement('button'),
+        dataTransfer: { setData: vi.fn(), setDragImage: vi.fn(), effectAllowed: '' },
+      } as any;
+      component.selectedComputeId.set('remote-compute');
+
+      component.onTemplateDragStart(event, template);
+
+      expect(emitSpy).toHaveBeenCalledWith({ event, template, numberOfNodes: 1, computeId: 'remote-compute' });
     });
 
     it('should cancel template dragging when topology drops are unavailable', () => {
@@ -330,6 +358,34 @@ describe('TemplateListDialogComponent', () => {
         expect.objectContaining({ template, computeId: 'local', numberOfNodes: 1, x: 0, y: 0 })
       );
       expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should fall back to local when the template compute is unavailable and asking on drop', () => {
+      const emitSpy = vi.spyOn(component.nodeAddRequested, 'emit');
+      const remoteTemplate = { ...template, compute_id: 'retired-compute' } as Template;
+      component.templates = [remoteTemplate];
+      component.filteredTemplates = [remoteTemplate];
+      component.selectTemplate(remoteTemplate);
+
+      component.onAddClick();
+
+      expect(emitSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ template: remoteTemplate, computeId: 'local', numberOfNodes: 1, x: 0, y: 0 })
+      );
+    });
+
+    it('should use the explicitly selected compute for the Add button', () => {
+      const emitSpy = vi.spyOn(component.nodeAddRequested, 'emit');
+      component.templates = [template];
+      component.filteredTemplates = [template];
+      component.selectTemplate(template);
+      component.selectedComputeId.set('remote-compute');
+
+      component.onAddClick();
+
+      expect(emitSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ template, computeId: 'remote-compute', numberOfNodes: 1, x: 0, y: 0 })
+      );
     });
   });
 

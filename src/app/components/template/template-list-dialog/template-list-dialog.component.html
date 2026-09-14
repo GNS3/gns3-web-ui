@@ -124,6 +124,7 @@
             (selectionChange)="selectedComputeId.set($event.value)"
             [compareWith]="compareComputes"
           >
+            <mat-option [value]="askOnDrop">Ask when dropping</mat-option>
             @for (compute of nodeComputes; track compute.value) {
             <mat-option [value]="compute.value">
               {{ compute.display }}
