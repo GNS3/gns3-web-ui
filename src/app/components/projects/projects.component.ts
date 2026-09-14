@@ -164,8 +164,7 @@ export class ProjectsComponent implements OnInit {
       if (paginator) {
         paginator.firstPage();
       }
-    },
-    { allowSignalWrites: true }
+    }
   );
 
   /** Avoid destructive bulk actions retaining projects hidden by a filter. */

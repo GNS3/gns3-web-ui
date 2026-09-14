@@ -27,6 +27,7 @@ import { LinksDataSource } from '../../../../cartography/datasources/links-datas
 import { LinksEventSource } from '../../../../cartography/events/links-event-source';
 import { LinkToMapLinkConverter } from '../../../../cartography/converters/map/link-to-map-link-converter';
 import { StyleTranslator } from '../../../../cartography/widgets/links/style-translator';
+import { SafeColorValueAccessor } from '../../../../directives/safe-color-value-accessor.directive';
 
 @Component({
   selector: 'app-link-style-editor',
@@ -43,6 +44,7 @@ import { StyleTranslator } from '../../../../cartography/widgets/links/style-tra
     MatOptionModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    SafeColorValueAccessor,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

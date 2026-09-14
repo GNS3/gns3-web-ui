@@ -30,6 +30,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { SafeColorValueAccessor } from '../../../directives/safe-color-value-accessor.directive';
 import { Subject, animationFrameScheduler, forkJoin, fromEvent } from 'rxjs';
 import { auditTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
@@ -130,6 +131,7 @@ function notGlobalName(control: AbstractControl): { notGlobalName: true } | null
     ResizableDirective,
     ResizeHandleDirective,
     MarkerFormComponent,
+    SafeColorValueAccessor,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

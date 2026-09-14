@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { SafeColorValueAccessor } from '../../../directives/safe-color-value-accessor.directive';
 
 /** A capture-node dropdown option — one of the link's endpoints. */
 export interface MarkerCaptureOption {
@@ -50,6 +51,7 @@ export const MARKER_CAPTURE_AUTO = 'auto';
     MatTooltipModule,
     MatProgressSpinnerModule,
     CdkTextareaAutosize,
+    SafeColorValueAccessor,
   ],
   template: `
     <form class="marker-form" [formGroup]="form()" (ngSubmit)="save.emit()">
