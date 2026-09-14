@@ -31,6 +31,7 @@ import { ControllerManagementService } from '@services/controller-management.ser
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { ThemeService } from '@services/theme.service';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
 import { EditControllerDialogComponent } from './edit-controller-dialog/edit-controller-dialog.component';
@@ -65,6 +66,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   private changeDetector = inject(ChangeDetectorRef);
   private router = inject(Router);
   private toasterService = inject(ToasterService);
+  private themeService = inject(ThemeService);
 
   dataSource: ControllerDataSource | null = null;
   displayedColumns = ['id', 'name', 'status', 'location', 'ip', 'port', 'actions'];
@@ -379,6 +381,10 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   trackController(_index: number, controller: Controller) {
     return controller.id;
+  }
+
+  isLightThemeEnabled() {
+    return this.themeService.getActualTheme() === 'light';
   }
 
   private resetPage() {
