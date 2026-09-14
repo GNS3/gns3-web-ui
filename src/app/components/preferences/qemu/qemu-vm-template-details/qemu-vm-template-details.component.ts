@@ -45,6 +45,7 @@ import {
   CustomAdaptersDialogData,
   CustomAdaptersDialogResult,
 } from '../../common/custom-adapters/custom-adapters.component';
+import { computeDefaultPortName } from '../../common/custom-adapters/port-name-format';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 import { TemplateMetadataSectionComponent } from '../../template-metadata-section/template-metadata-section.component';
 import { DialogConfigService } from '@services/dialog-config.service';
@@ -373,6 +374,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     // Use server custom_adapters if available, otherwise use defaults
     const portNameFormat = this.portNameFormat() || 'Ethernet{0}';
     const segmentSize = this.portSegmentSize() || 0;
+    const firstPortName = this.firstPortName();
     const defaultAdapterType = this.networkType() || 'e1000';
     const adapterCount = this.adapters();
 
@@ -395,15 +397,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
           mac_address: customAdapter.mac_address || '',
         });
       } else {
-        // Use default configuration
-        let portName: string;
-        if (segmentSize > 0) {
-          const segment = Math.floor(i / segmentSize);
-          const portInSegment = i % segmentSize;
-          portName = portNameFormat.replace('{0}', String(segment * segmentSize + portInSegment));
-        } else {
-          portName = portNameFormat.replace('{0}', String(i));
-        }
+        // Use the name the server would generate for this adapter
+        const portName = computeDefaultPortName(i, { portNameFormat, portSegmentSize: segmentSize, firstPortName });
 
         adaptersForDialog.push({
           adapter_number: i,
@@ -421,6 +416,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         networkTypes: this.networkTypes,
         portNameFormat: portNameFormat,
         portSegmentSize: segmentSize,
+        firstPortName: firstPortName,
         defaultAdapterType: defaultAdapterType,
         currentAdapters: adapterCount,
       } as CustomAdaptersDialogData,

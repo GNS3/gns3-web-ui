@@ -31,6 +31,7 @@ import {
   CustomAdaptersDialogData,
   CustomAdaptersDialogResult,
 } from '@components/preferences/common/custom-adapters/custom-adapters.component';
+import { computeDefaultPortName } from '@components/preferences/common/custom-adapters/port-name-format';
 import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creator.component';
 import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
 
@@ -483,6 +484,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     // Generate complete adapter list for display
     const portNameFormat = this.node.port_name_format || 'Ethernet{0}';
     const segmentSize = this.node.port_segment_size || 0;
+    const firstPortName = this.node.first_port_name || '';
     const defaultAdapterType = this.node.properties.adapter_type || 'e1000';
     const adapterCount = this.node.properties.adapters || 0;
 
@@ -503,15 +505,8 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
           mac_address: customAdapter.mac_address || '',
         });
       } else {
-        // Generate default port name
-        let portName: string;
-        if (segmentSize > 0) {
-          const segment = Math.floor(i / segmentSize);
-          const portInSegment = i % segmentSize;
-          portName = portNameFormat.replace('{0}', String(segment * segmentSize + portInSegment));
-        } else {
-          portName = portNameFormat.replace('{0}', String(i));
-        }
+        // Use the name the server would generate for this adapter
+        const portName = computeDefaultPortName(i, { portNameFormat, portSegmentSize: segmentSize, firstPortName });
 
         adaptersForDialog.push({
           adapter_number: i,
@@ -529,6 +524,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         networkTypes: this.networkTypes,
         portNameFormat: portNameFormat,
         portSegmentSize: segmentSize,
+        firstPortName: firstPortName,
         defaultAdapterType: defaultAdapterType,
         currentAdapters: adapterCount,
       } as CustomAdaptersDialogData,

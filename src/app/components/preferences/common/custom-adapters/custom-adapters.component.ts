@@ -8,6 +8,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ToasterService } from '@services/toaster.service';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
+import { computeDefaultPortName } from './port-name-format';
 
 export interface NetworkType {
   value: string;
@@ -19,6 +20,7 @@ export interface CustomAdaptersDialogData {
   networkTypes: NetworkType[];
   portNameFormat?: string;
   portSegmentSize?: number;
+  firstPortName?: string;
   defaultAdapterType?: string; // Default adapter type (for incremental save)
   currentAdapters?: number; // Current adapters count
 }
@@ -65,18 +67,8 @@ export class CustomAdaptersComponent {
     const maxAdapterNumber = currentAdapters.length > 0 ? Math.max(...currentAdapters.map((a) => a.adapter_number)) : -1;
     const adapterNumber = maxAdapterNumber + 1;
 
-    const portNameFormat = this.data.portNameFormat || 'Ethernet{0}';
-    const segmentSize = this.data.portSegmentSize || 0;
-
-    // Generate port name based on format
-    let portName: string;
-    if (segmentSize > 0) {
-      const segment = Math.floor(adapterNumber / segmentSize);
-      const portInSegment = adapterNumber % segmentSize;
-      portName = portNameFormat.replace('{0}', String(segment * segmentSize + portInSegment));
-    } else {
-      portName = portNameFormat.replace('{0}', String(adapterNumber));
-    }
+    // Predict the name the server would generate for this adapter
+    const portName = computeDefaultPortName(adapterNumber, this.data);
 
     const adapter: CustomAdapter = {
       adapter_number: adapterNumber,
@@ -173,23 +165,14 @@ export class CustomAdaptersComponent {
       return;
     }
 
-    const portNameFormat = this.data.portNameFormat || 'Ethernet{0}';
-    const segmentSize = this.data.portSegmentSize || 0;
     const defaultAdapterType = this.data.defaultAdapterType || 'e1000';
 
     // Incremental save: only keep adapters with non-default values (like Desktop GUI)
     const customAdapters: CustomAdapter[] = [];
 
     for (const adapter of this.adapters()) {
-      // Calculate default port name for this adapter_number
-      let defaultPortName: string;
-      if (segmentSize > 0) {
-        const segment = Math.floor(adapter.adapter_number / segmentSize);
-        const portInSegment = adapter.adapter_number % segmentSize;
-        defaultPortName = portNameFormat.replace('{0}', String(segment * segmentSize + portInSegment));
-      } else {
-        defaultPortName = portNameFormat.replace('{0}', String(adapter.adapter_number));
-      }
+      // Predict the default name the server would generate for this adapter_number
+      const defaultPortName = computeDefaultPortName(adapter.adapter_number, this.data);
 
       // Check if this adapter has any custom (non-default) values
       const hasCustomPortName = adapter.port_name !== defaultPortName;

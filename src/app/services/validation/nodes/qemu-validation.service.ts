@@ -1,6 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { ValidationService, ValidationResult } from '../base/validation.service';
 
+// Placeholders accepted by gns3-server's StandardPortFactory
+// (controller/ports/port_factory.py): {0} interface number, {1} segment
+// number, {adapter} adapter number, {port0}-{port8} / {segment0}-{segment8}
+// offsets from the current interface/segment number.
+const PORT_NAME_PLACEHOLDER = /\{(?:[01]|adapter|port[0-8]|segment[0-8])\}/g;
+
 @Injectable({ providedIn: 'root' })
 export class QemuValidationService {
   private base = inject(ValidationService);
@@ -67,18 +73,19 @@ export class QemuValidationService {
 
   validatePortNameFormat(value: string): ValidationResult {
     if (!value || value.trim() === '') return { isValid: true };
-    if (!value.includes('{0}')) {
+    const clean = value.replace(PORT_NAME_PLACEHOLDER, '');
+    // Backend Python str.format() raises on any unsupported brace content
+    if (clean.includes('{') || clean.includes('}')) {
+      const invalid = clean.match(/\{[^{}]*\}/)?.[0] ?? clean.match(/[{}]/)?.[0] ?? '';
       return {
         isValid: false,
-        errorMessage: 'Port name format must include {0} as a placeholder (e.g., Ethernet{0})',
+        errorMessage: `Unsupported placeholder "${invalid}" in port name format. Supported: {0}, {1}, {adapter}, {port0}-{port8}, {segment0}-{segment8}`,
       };
     }
-    // Backend Python str.format() cannot handle extra braces
-    const clean = value.replace('{0}', '');
-    if (clean.includes('{') || clean.includes('}')) {
+    if (clean === value) {
       return {
         isValid: false,
-        errorMessage: 'Only {0} is allowed as placeholder, no extra braces (e.g., Ethernet{0})',
+        errorMessage: 'Port name format must include at least one placeholder (e.g., Ethernet{0})',
       };
     }
     return { isValid: true };
