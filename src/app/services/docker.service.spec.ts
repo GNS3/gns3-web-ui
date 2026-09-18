@@ -102,6 +102,19 @@ describe('DockerService', () => {
     });
   });
 
+  describe('getImagesForCompute', () => {
+    it('should get Docker images from the requested compute', () => {
+      mockHttpController.get.mockReturnValue(of([]));
+
+      service.getImagesForCompute(mockController, 'remote-compute');
+
+      expect(mockHttpController.get).toHaveBeenCalledWith(
+        mockController,
+        '/computes/remote-compute/docker/images'
+      );
+    });
+  });
+
   describe('pullImage', () => {
     it('should pull the image on the selected compute', () => {
       mockHttpController.post.mockReturnValue(of(undefined));

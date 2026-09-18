@@ -37,6 +37,10 @@
   --gns3-lock-badge-locked-color: #ff1744;
   --gns3-lock-badge-unlocked-color: #00c853;
   --gns3-lock-badge-outline-color: #ffffff;
+
+  // Missing image badge colors (nodes that cannot start until an image is provided)
+  --gns3-missing-image-badge-color: var(--mat-sys-error);
+  --gns3-missing-image-badge-outline-color: var(--mat-sys-surface);
 }
 
 /* Light theme backgrounds (auto resolves to these) */
@@ -95,6 +99,12 @@ svg#map {
 svg#map g.node_body.selected > image {
   filter: grayscale(100%);
   -webkit-filter: grayscale(100%);
+}
+
+/* Degraded nodes: a required image is missing, the node cannot be started
+   until a compatible image is provided. */
+svg#map g.node_body.missing-image > image {
+  opacity: 0.6;
 }
 
 /* Drag selection rectangle */

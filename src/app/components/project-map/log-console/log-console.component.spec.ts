@@ -352,6 +352,20 @@ describe('LogConsoleComponent', () => {
       expect(mockNodeService.start).toHaveBeenCalledWith(mockController, mockNode);
     });
 
+    it('should not start a node whose image is missing', () => {
+      mockNodesDataSource.getItems.mockReturnValue([
+        {
+          ...mockNode,
+          name: 'TestNode',
+          missing_image: true,
+          missing_images: [{ property: 'hda_disk_image', image: 'missing.qcow2', image_type: 'qemu' }],
+        },
+      ]);
+      component.command.set('start TestNode');
+      component.handleCommand();
+      expect(mockNodeService.start).not.toHaveBeenCalled();
+    });
+
     it('should clear command after handling', () => {
       component.command.set('help');
       component.handleCommand();

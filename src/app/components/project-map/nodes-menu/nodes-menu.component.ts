@@ -45,8 +45,17 @@ export class NodesMenuComponent {
   }
 
   startNodes() {
+    const missingImages = this.nodesDataSource.getItems().filter((node) => node.missing_image).length;
+    if (missingImages > 0) {
+      this.toasterService.warning(
+        `${missingImages} node(s) with a missing image cannot be started and will be skipped.`
+      );
+    }
     this.nodeService.startAll(this.controller(), this.project()).subscribe({
-      next: () => this.toasterService.success('All nodes successfully started'),
+      next: () =>
+        this.toasterService.success(
+          missingImages > 0 ? 'All available nodes successfully started' : 'All nodes successfully started'
+        ),
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to start nodes';
         this.toasterService.error(message);

@@ -66,6 +66,15 @@ function portInformation(port: MapPort, node: MapNode, link: MapLink, nodesById:
 export function buildNodeSummary(node: MapNode, controller?: Controller): string {
   const lines = [`${NODE_TYPE_LABELS[node.nodeType] || 'Node'} ${node.name} is ${node.status}`];
 
+  if (node.missingImage) {
+    const images = (node.missingImages || []).map((missing) => missing.image).filter(Boolean);
+    lines.push(
+      images.length
+        ? `Missing image(s): ${images.join(', ')} - a compatible image is required to start this node`
+        : 'Missing image - a compatible image is required to start this node'
+    );
+  }
+
   if (controller && (!node.computeId || node.computeId === 'local')) {
     lines.push(`Running on server ${controller.name} (controller) with port ${controller.port}`);
   } else if (node.computeId) {

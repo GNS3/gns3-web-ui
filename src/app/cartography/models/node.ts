@@ -57,15 +57,19 @@ export class Properties {
   cpu_throttling: number;
   cpus: number;
   hda_disk_image: string;
+  hda_disk_image_backing_file?: string;
   hda_disk_image_md5sum: string;
   hda_disk_interface: string;
   hdb_disk_image: string;
+  hdb_disk_image_backing_file?: string;
   hdb_disk_image_md5sum?: any;
   hdb_disk_interface: string;
   hdc_disk_image: string;
+  hdc_disk_image_backing_file?: string;
   hdc_disk_image_md5sum?: any;
   hdc_disk_interface: string;
   hdd_disk_image: string;
+  hdd_disk_image_backing_file?: string;
   hdd_disk_image_md5sum?: any;
   hdd_disk_interface: string;
   initrd: string;
@@ -122,6 +126,12 @@ export class Properties {
   extra_configs?: ExtraConfig[];
 }
 
+export class MissingImage {
+  property?: string;
+  image: string;
+  image_type?: string;
+}
+
 export class Node {
   aux?: number;
   command_line: string;
@@ -162,4 +172,9 @@ export class Node {
   // on creation, editable per node, not sent to the compute)
   default_username?: string | null;
   default_password?: string | null;
+  // Set when the node could not be created on its compute because a required
+  // image is missing. The node is shown in a degraded state and cannot start
+  // until a compatible image is provided.
+  missing_image?: boolean;
+  missing_images?: MissingImage[];
 }
