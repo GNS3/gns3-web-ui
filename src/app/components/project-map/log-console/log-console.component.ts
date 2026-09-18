@@ -234,8 +234,19 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
       let node = this.nodesDataSource.getItems().find((n) => n.name.valueOf() === splittedCommand[1].valueOf());
       if (node) {
         if (this.regexStart.test(this.command())) {
-          this.showCommand(`Starting node ${splittedCommand[1]}...`);
-          this.nodeService.start(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} started.`));
+          if (node.missing_image) {
+            const images = (node.missing_images || []).map((missing) => missing.image).filter(Boolean);
+            this.showCommand(
+              `Cannot start node ${splittedCommand[1]}: missing image(s) ${
+                images.length ? images.join(', ') : 'unknown'
+              } - a compatible image is required.`
+            );
+          } else {
+            this.showCommand(`Starting node ${splittedCommand[1]}...`);
+            this.nodeService
+              .start(this.controller, node)
+              .subscribe(() => this.showCommand(`Node ${node.name} started.`));
+          }
         } else if (this.regexStop.test(this.command())) {
           this.showCommand(`Stopping node ${splittedCommand[1]}...`);
           this.nodeService.stop(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} stopped.`));

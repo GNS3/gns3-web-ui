@@ -74,4 +74,37 @@ describe('NodeWidget tooltip', () => {
     expect(getLinks).toHaveBeenCalledOnce();
     expect(getNodes).toHaveBeenCalledOnce();
   });
+
+  it('draws a degraded badge for a node with a missing image', () => {
+    const node = {
+      id: 'router-id',
+      name: 'router',
+      nodeType: 'qemu',
+      status: 'stopped',
+      properties: {},
+      ports: [],
+      width: 60,
+      height: 60,
+      x: 0,
+      y: 0,
+      missingImage: true,
+      missingImages: [{ property: 'hda_disk_image', image: 'missing.qcow2', image_type: 'qemu' }],
+    } as MapNode;
+    const widget = new NodeWidget(
+      { isSelected: vi.fn().mockReturnValue(false) } as any,
+      { draw: vi.fn() } as any,
+      { clicked: { emit: vi.fn() } } as any,
+      { isLayerNumberVisible: false, isItemLockStatusVisible: false } as any,
+      { getItems: vi.fn(() => []) } as any,
+      { getItems: vi.fn(() => [node]) } as any
+    );
+    const svg = select(document.body).append('svg');
+    const view = svg.append('g').datum(node) as any;
+
+    widget.draw(view);
+
+    expect(view.select('g.node_body').classed('missing-image')).toBe(true);
+    expect(view.select('.node_missing_image_badge').empty()).toBe(false);
+    expect(view.select('title.node_tooltip').text()).toContain('Missing image(s): missing.qcow2');
+  });
 });

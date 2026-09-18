@@ -66,12 +66,32 @@ export function affectedIsEmpty(a: AffectedIds): boolean {
 
 // ── Node ────────────────────────────────────────────────────────
 
-export function nodeSignatures(
-  n: { node_id: string; x: number; y: number; z: number; symbol: string; symbol_url: string; width: number; height: number; status: string; locked: boolean; name: string; node_type: string; first_port_name: string; port_name_format: string; port_segment_size: number; label: unknown; ports: unknown }
-): ItemSignatures<NodeSigGroup> {
+export function nodeSignatures(n: {
+  node_id: string;
+  x: number;
+  y: number;
+  z: number;
+  symbol: string;
+  symbol_url: string;
+  width: number;
+  height: number;
+  status: string;
+  locked: boolean;
+  name: string;
+  node_type: string;
+  first_port_name: string;
+  port_name_format: string;
+  port_segment_size: number;
+  label: unknown;
+  ports: unknown;
+  missing_image?: boolean;
+  missing_images?: unknown;
+}): ItemSignatures<NodeSigGroup> {
   const xY = `${n.x}|${n.y}`;
   const z = `${n.z}`;
-  const visual = `${n.symbol}|${n.symbol_url}|${n.width}|${n.height}|${n.status}|${n.locked}|${n.name}`;
+  const visual = `${n.symbol}|${n.symbol_url}|${n.width}|${n.height}|${n.status}|${n.locked}|${n.name}|${
+    n.missing_image === true
+  }|${JSON.stringify(n.missing_images)}`;
   const label = JSON.stringify(n.label);
   const ports = JSON.stringify(n.ports);
   const type = `${n.node_type}|${n.first_port_name}|${n.port_name_format}|${n.port_segment_size}`;

@@ -35,8 +35,8 @@ describe('StartNodeActionComponent', () => {
     tokenExpired: false,
   };
 
-  const createMockNode = (status: string): Node => ({
-    node_id: `node-${status}`,
+  const createMockNode = (status: string, missingImage = false): Node => ({
+    node_id: `node-${status}${missingImage ? '-missing' : ''}`,
     name: `Node ${status}`,
     status,
     console_host: '0.0.0.0',
@@ -62,6 +62,7 @@ describe('StartNodeActionComponent', () => {
     console_auto_start: false,
     console_type: '',
     node_directory: '',
+    missing_image: missingImage,
   });
 
   beforeEach(async () => {
@@ -134,6 +135,38 @@ describe('StartNodeActionComponent', () => {
       fixture.detectChanges();
 
       expect(component.isNodeWithStoppedStatus).toBe(false);
+    });
+  });
+
+  describe('missing image nodes', () => {
+    it('should not offer Start for a node with a missing image but show the degraded hint', () => {
+      const nodes = [createMockNode('stopped', true)];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      expect(component.isNodeWithStoppedStatus).toBe(false);
+      expect(component.hasMissingImageNodes).toBe(true);
+
+      const button = fixture.nativeElement.querySelector('button');
+      expect(button).toBeTruthy();
+      expect(button.textContent).toContain('Start');
+      expect(button.disabled).toBe(true);
+    });
+
+    it('should still start the nodes that have their image', () => {
+      const nodes = [createMockNode('stopped', true), createMockNode('stopped', false)];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      expect(component.hasMissingImageNodes).toBe(true);
+      expect(component.isNodeWithStoppedStatus).toBe(true);
+
+      component.startNodes();
+
+      expect(mockNodeService.start).toHaveBeenCalledTimes(1);
+      expect(mockNodeService.start).toHaveBeenCalledWith(mockController, nodes[1]);
     });
   });
 

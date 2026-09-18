@@ -1,0 +1,99 @@
+<div class="missing-images-dialog">
+  <div mat-dialog-title class="missing-images-dialog__header">
+    <span class="missing-images-dialog__icon" aria-hidden="true">
+      <mat-icon>warning</mat-icon>
+    </span>
+    <h2>{{ title }}</h2>
+  </div>
+
+  <mat-dialog-content class="missing-images-dialog__content">
+    @if (loading()) {
+    <div class="missing-images-dialog__loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    } @else {
+    <p class="missing-images-dialog__intro">{{ introText }}</p>
+
+    @for (group of groups(); track group.node.node_id) {
+    <section class="missing-images-dialog__node">
+      <header class="missing-images-dialog__node-header">
+        <mat-icon class="missing-images-dialog__node-icon">dns</mat-icon>
+        <h3 class="missing-images-dialog__node-name">{{ group.node.name }}</h3>
+        <span class="missing-images-dialog__node-type">{{ group.node.node_type }}</span>
+      </header>
+
+      @for (row of group.rows; track row.key) {
+      <div class="missing-images-dialog__row">
+        <div class="missing-images-dialog__row-info">
+          <span class="missing-images-dialog__property">{{ row.propertyLabel }}</span>
+          <span class="missing-images-dialog__missing-file" [matTooltip]="row.image">{{ row.image }}</span>
+        </div>
+
+        @if (row.isDocker) {
+        <mat-form-field class="missing-images-dialog__select" appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Replacement image</mat-label>
+          <input
+            matInput
+            type="text"
+            placeholder="Choose replacement image"
+            [value]="selections()[row.key]"
+            [matAutocomplete]="dockerAutocomplete"
+            (input)="onDockerInput(row.key, $any($event.target).value)"
+          />
+          <mat-autocomplete
+            #dockerAutocomplete="matAutocomplete"
+            (optionSelected)="onSelectionChange(row.key, $event.option.value)"
+          >
+            @for (option of dockerFiltered()[row.key] || []; track option) {
+            <mat-option [value]="option">{{ option }}</mat-option>
+            }
+          </mat-autocomplete>
+          <mat-hint>Pick a local image or type one to pull from a registry.</mat-hint>
+        </mat-form-field>
+        } @else if (row.options.length) {
+        <mat-form-field class="missing-images-dialog__select" appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Replacement image</mat-label>
+          <mat-select
+            panelClass="missing-images-select-panel"
+            placeholder="Choose replacement image"
+            [value]="selections()[row.key]"
+            (selectionChange)="onSelectionChange(row.key, $event.value)"
+          >
+            <mat-select-trigger>{{ imageDisplayName(selections()[row.key]) }}</mat-select-trigger>
+            <mat-option>Choose replacement image</mat-option>
+            @for (option of row.options; track option) {
+            <mat-option [value]="option">{{ imageDisplayName(option) }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        } @else {
+        <div class="missing-images-dialog__no-option">
+          <mat-icon>error_outline</mat-icon>
+          <span>No compatible image available</span>
+        </div>
+        }
+      </div>
+      }
+    </section>
+    } }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button type="button" (click)="close()" [disabled]="applying()">
+      {{ dismissButtonText }}
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      (click)="applyChanges()"
+      [disabled]="applying() || !hasChanges()"
+    >
+      @if (applying()) {
+      <mat-spinner class="missing-images-dialog__spinner" diameter="18"></mat-spinner>
+      } @else {
+      <span>Apply</span>
+      }
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -522,6 +522,230 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
 // Project Management Dialogs
 // ============================================= */
 
+// Missing Images Dialog - standard large width, fixed-height scrollable body
+.missing-images-dialog-panel {
+  &.missing-images-dialog-panel--project {
+    --gns3-missing-images-dialog-height: min(680px, calc(100vh - 32px));
+
+    mat-dialog-container,
+    .mat-mdc-dialog-container {
+      height: var(--gns3-missing-images-dialog-height);
+    }
+  }
+
+  &.missing-images-dialog-panel--content-sized {
+    app-missing-images-dialog,
+    .missing-images-dialog,
+    .missing-images-dialog__content {
+      flex: 0 1 auto;
+    }
+
+    .missing-images-dialog__content {
+      max-height: min(480px, calc(100vh - 180px));
+    }
+  }
+
+  app-missing-images-dialog {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .missing-images-dialog {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+
+    &__header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 24px 8px;
+
+      h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 500;
+        color: var(--mat-sys-on-surface);
+      }
+    }
+
+    &__icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--mat-sys-error-container);
+      color: var(--mat-sys-on-error-container);
+
+      mat-icon {
+        font-size: 22px;
+        height: 22px;
+        width: 22px;
+      }
+    }
+
+    &__content {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding-top: 8px;
+      overflow-y: auto;
+    }
+
+    &__loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 160px;
+    }
+
+    &__intro {
+      margin: 0 0 16px 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    &__node {
+      border: 1px solid var(--mat-sys-outline-variant);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      background: var(--mat-sys-surface-container-low);
+    }
+
+    &__node-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    &__node-icon {
+      color: var(--mat-sys-primary);
+      font-size: 20px;
+      height: 20px;
+      width: 20px;
+    }
+
+    &__node-name {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--mat-sys-on-surface);
+    }
+
+    &__node-type {
+      margin-left: auto;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--mat-sys-surface-container-highest);
+      color: var(--mat-sys-on-surface-variant);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    &__row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 6px 0;
+    }
+
+    &__row-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    &__property {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--mat-sys-on-surface);
+    }
+
+    &__missing-file {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12px;
+      color: var(--mat-sys-error);
+    }
+
+    &__select {
+      flex: 0 1 420px;
+      width: 420px;
+      min-width: 300px;
+      max-width: 420px;
+    }
+
+    &__no-option {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 1 420px;
+      width: 420px;
+      min-width: 300px;
+      max-width: 420px;
+      font-size: 13px;
+      color: var(--mat-sys-error);
+
+      mat-icon {
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+      }
+    }
+
+    &__spinner {
+      display: inline-block;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .missing-images-dialog__row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .missing-images-dialog__select,
+    .missing-images-dialog__no-option {
+      width: 100%;
+      min-width: 0;
+      flex-basis: auto;
+      max-width: none;
+    }
+  }
+}
+
+// Replacement image select panel. It is rendered in the overlay container (not
+// inside the dialog), so it needs a top-level rule. Options never wrap, so long
+// image names stay on a single line (ellipsized only in extreme cases).
+.missing-images-select-panel {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  .mat-mdc-option {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .mat-mdc-option .mdc-list-item__primary-text,
+  .mdc-list-item__primary-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 /* =============================================
 // Image Manager Dialogs
 // ============================================= */
@@ -1782,6 +2006,14 @@ html[data-density='compact'] .node-configurator-dialog-panel {
   // (560px fallback) and the pane constrains the whole flex chain, so the SDS
   // must feed its width into that token or every dialog collapses to 560px.
   --mat-dialog-container-max-width: min(var(--gns3-dialog-width, 440px), var(--gns3-dialog-viewport-cap));
+
+  // Only the missing-images body scrolls, so the header and standard action
+  // footer remain stationary in both project and node-level variants.
+  &.missing-images-dialog-panel {
+    .missing-images-dialog__content {
+      overflow-y: auto;
+    }
+  }
 
   mat-dialog-container,
   .mat-mdc-dialog-container {

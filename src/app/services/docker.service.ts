@@ -28,6 +28,12 @@ export class DockerService {
     ) as Observable<DockerImage[]>;
   }
 
+  getImagesForCompute(controller: Controller, computeId: string): Observable<DockerImage[]> {
+    return this.httpController.get<DockerImage[]>(controller, `/computes/${computeId}/docker/images`) as Observable<
+      DockerImage[]
+    >;
+  }
+
   pullImage(controller: Controller, image: string, computeId: string): Observable<void> {
     return this.httpController.post<void>(controller, `/computes/${computeId}/docker/images/pull`, {
       image,

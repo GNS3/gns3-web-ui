@@ -110,6 +110,16 @@ describe('ReloadNodeActionComponent', () => {
       expect(component.filteredNodes[0].node_type).toBe('qemu');
     });
 
+    it('should exclude nodes with missing images', () => {
+      const node = createMockNode('qemu');
+      node.missing_image = true;
+      fixture.componentRef.setInput('nodes', [node]);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      expect(component.filteredNodes).toEqual([]);
+    });
+
     it('should contain virtualbox nodes', () => {
       const nodes = [createMockNode('virtualbox'), createMockNode('dynamips')];
       fixture.componentRef.setInput('nodes', nodes);

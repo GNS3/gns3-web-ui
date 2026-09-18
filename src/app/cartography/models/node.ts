@@ -122,6 +122,12 @@ export class Properties {
   extra_configs?: ExtraConfig[];
 }
 
+export class MissingImage {
+  property?: string;
+  image: string;
+  image_type?: string;
+}
+
 export class Node {
   aux?: number;
   command_line: string;
@@ -162,4 +168,9 @@ export class Node {
   // on creation, editable per node, not sent to the compute)
   default_username?: string | null;
   default_password?: string | null;
+  // Set when the node could not be created on its compute because a required
+  // image is missing. The node is shown in a degraded state and cannot start
+  // until a compatible image is provided.
+  missing_image?: boolean;
+  missing_images?: MissingImage[];
 }

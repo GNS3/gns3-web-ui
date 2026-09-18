@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnChanges, injec
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
@@ -12,7 +13,7 @@ import { createActionCompletion } from '@utils/action-completion.util';
 @Component({
   selector: 'app-start-node-action',
   templateUrl: './start-node-action.component.html',
-  imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StartNodeActionComponent implements OnChanges {
@@ -24,11 +25,19 @@ export class StartNodeActionComponent implements OnChanges {
   readonly controller = input<Controller>(undefined);
   readonly nodes = input<Node[]>(undefined);
   isNodeWithStoppedStatus: boolean;
+  hasMissingImageNodes: boolean;
 
   ngOnChanges(changes) {
     if (changes.nodes) {
       this.isNodeWithStoppedStatus = false;
+      this.hasMissingImageNodes = false;
       this.nodes().forEach((node) => {
+        if (node.missing_image) {
+          // A node whose image is missing cannot be created/started until a
+          // compatible image is provided.
+          this.hasMissingImageNodes = true;
+          return;
+        }
         if (node.status === 'stopped' || node.status === 'suspended') {
           this.isNodeWithStoppedStatus = true;
         }
@@ -37,7 +46,7 @@ export class StartNodeActionComponent implements OnChanges {
   }
 
   startNodes() {
-    const nodes = this.nodes() || [];
+    const nodes = (this.nodes() || []).filter((node) => !node.missing_image);
     if (nodes.length === 0) return;
 
     this.progressService.activate();
