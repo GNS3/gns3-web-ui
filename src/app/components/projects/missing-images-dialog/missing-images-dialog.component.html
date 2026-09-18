@@ -59,10 +59,9 @@
             [value]="selections()[row.key]"
             (selectionChange)="onSelectionChange(row.key, $event.value)"
           >
-            <mat-select-trigger>{{ imageDisplayName(selections()[row.key]) }}</mat-select-trigger>
             <mat-option>Choose replacement image</mat-option>
             @for (option of row.options; track option) {
-            <mat-option [value]="option">{{ imageDisplayName(option) }}</mat-option>
+            <mat-option [value]="option">{{ option }}</mat-option>
             }
           </mat-select>
         </mat-form-field>

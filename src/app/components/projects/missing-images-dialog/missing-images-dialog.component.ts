@@ -14,6 +14,7 @@ import { Controller } from '@models/controller';
 import { Image } from '@models/images';
 import { DockerImage } from '@models/docker/docker-image';
 import { MissingImage, Node } from '../../../cartography/models/node';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { DockerService } from '@services/docker.service';
 import { ImageManagerService } from '@services/image-manager.service';
 import { NodeService } from '@services/node.service';
@@ -113,6 +114,7 @@ export class MissingImagesDialogComponent implements OnInit {
   private imageManagerService = inject(ImageManagerService);
   private dockerService = inject(DockerService);
   private nodeService = inject(NodeService);
+  private nodesDataSource = inject(NodesDataSource);
   private toasterService = inject(ToasterService);
 
   readonly loading = signal(true);
@@ -241,7 +243,9 @@ export class MissingImagesDialogComponent implements OnInit {
       ...new Set(
         this.images
           .filter((image) => image.image_type === imageType)
-          .map((image) => image.path || image.filename)
+          // Node properties contain portable image references. The database
+          // path is controller-local and can be invalid on a remote compute.
+          .map((image) => image.filename)
           .filter(Boolean)
       ),
     ].sort();
@@ -249,13 +253,6 @@ export class MissingImagesDialogComponent implements OnInit {
 
   onSelectionChange(key: string, value: string | undefined): void {
     this.selections.update((current) => ({ ...current, [key]: value }));
-  }
-
-  imageDisplayName(image: string | undefined): string {
-    if (!image) {
-      return '';
-    }
-    return image.split(/[\\/]/).pop() || image;
   }
 
   /**
@@ -295,7 +292,7 @@ export class MissingImagesDialogComponent implements OnInit {
    */
   applyChanges(): void {
     const selections = this.selections();
-    const updates: Observable<{ success: boolean; remaining: number }>[] = [];
+    const updates: Observable<{ node?: Node; success: boolean; remaining: number }>[] = [];
     let remaining = 0;
 
     for (const group of this.groups()) {
@@ -317,6 +314,7 @@ export class MissingImagesDialogComponent implements OnInit {
         updates.push(
           this.nodeService.updateNode(this.data.controller, nodeToUpdate).pipe(
             map((node) => ({
+              node,
               success: true,
               remaining: node?.missing_image ? node.missing_images?.length || 1 : 0,
             })),
@@ -325,7 +323,7 @@ export class MissingImagesDialogComponent implements OnInit {
               this.toasterService.error(message);
               // The request failed, so every image originally missing from
               // this node remains unresolved.
-              return of({ success: false, remaining: group.rows.length });
+              return of({ node: undefined, success: false, remaining: group.rows.length });
             })
           )
         );
@@ -341,6 +339,14 @@ export class MissingImagesDialogComponent implements OnInit {
 
     this.applying.set(true);
     forkJoin(updates).subscribe((results) => {
+      for (const result of results) {
+        if (result.node) {
+          // Update immediately from the PUT response. The WebSocket sends the
+          // same update, but relying on it leaves stale degraded badges when
+          // notification delivery is delayed or temporarily disconnected.
+          this.nodesDataSource.update(result.node);
+        }
+      }
       const updated = results.filter((result) => result.success).length;
       const stillMissing = results.reduce((count, result) => count + result.remaining, 0);
       this.dialogRef.close({

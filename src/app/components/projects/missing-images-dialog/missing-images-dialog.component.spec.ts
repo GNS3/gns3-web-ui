@@ -8,6 +8,7 @@ import { ImageManagerService } from '@services/image-manager.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { Node } from '../../../cartography/models/node';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Controller } from '@models/controller';
 
 describe('MissingImagesDialogComponent', () => {
@@ -18,6 +19,7 @@ describe('MissingImagesDialogComponent', () => {
   let mockDockerService: any;
   let mockNodeService: any;
   let mockToasterService: any;
+  let mockNodesDataSource: any;
 
   const controller = { id: 1, name: 'c', protocol: 'http:', host: 'localhost', port: 3080 } as Controller;
 
@@ -40,7 +42,7 @@ describe('MissingImagesDialogComponent', () => {
     mockImageManagerService = {
       getImages: vi.fn().mockReturnValue(
         of([
-          { filename: 'good.qcow2', image_type: 'qemu' },
+          { filename: 'good.qcow2', path: '/home/user/GNS3/images/QEMU/Cisco/good.qcow2', image_type: 'qemu' },
           { filename: 'router.image', image_type: 'ios' },
           { filename: 'iou.bin', image_type: 'iou' },
         ])
@@ -54,6 +56,7 @@ describe('MissingImagesDialogComponent', () => {
       updateNode: vi.fn().mockImplementation((_controller, node) => of({ ...node, missing_image: false })),
     };
     mockToasterService = { success: vi.fn(), error: vi.fn(), warning: vi.fn() };
+    mockNodesDataSource = { update: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [MissingImagesDialogComponent],
@@ -70,6 +73,7 @@ describe('MissingImagesDialogComponent', () => {
         { provide: DockerService, useValue: mockDockerService },
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NodesDataSource, useValue: mockNodesDataSource },
       ],
     }).compileComponents();
 
@@ -84,7 +88,7 @@ describe('MissingImagesDialogComponent', () => {
     }
   });
 
-  it('builds one group per node with the compatible images for the missing type', () => {
+  it('uses portable filenames instead of controller-local image paths', () => {
     const groups = component.groups();
     expect(groups.length).toBe(1);
     expect(groups[0].node.name).toBe('R1');
@@ -98,22 +102,6 @@ describe('MissingImagesDialogComponent', () => {
     expect(formField.textContent).toContain('Replacement image');
     expect(formField.textContent).toContain('Choose replacement image');
     expect(fixture.nativeElement.textContent).not.toContain('Keep missing');
-  });
-
-  it('displays only the filename while preserving the full replacement path', () => {
-    const fullPath = '/images/QEMU/Cisco/good.qcow2';
-    expect(component.imageDisplayName(fullPath)).toBe('good.qcow2');
-    expect(component.imageDisplayName('QEMU\\Cisco\\good.qcow2')).toBe('good.qcow2');
-
-    const row = component.groups()[0].rows[0];
-    row.options = [fullPath];
-    fixture.detectChanges();
-    component.onSelectionChange(row.key, fullPath);
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement.textContent).toContain('good.qcow2');
-    expect(fixture.nativeElement.textContent).not.toContain(fullPath);
-    expect(component.selections()[row.key]).toBe(fullPath);
   });
 
   it('uses the default dismiss button label', () => {
@@ -162,6 +150,7 @@ describe('MissingImagesDialogComponent', () => {
     expect(mockNodeService.updateNode).toHaveBeenCalledTimes(1);
     const updatedNode = mockNodeService.updateNode.mock.calls[0][1] as Node;
     expect(updatedNode.properties['hda_disk_image']).toBe('good.qcow2');
+    expect(mockNodesDataSource.update).toHaveBeenCalledWith(expect.objectContaining({ missing_image: false }));
     expect(mockDialogRef.close).toHaveBeenCalledWith({ updated: 1, remaining: 0 });
   });
 
@@ -238,6 +227,7 @@ describe('MissingImagesDialogComponent', () => {
         { provide: DockerService, useValue: mockDockerService },
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NodesDataSource, useValue: mockNodesDataSource },
       ],
     }).compileComponents();
 
@@ -280,6 +270,7 @@ describe('MissingImagesDialogComponent', () => {
         { provide: DockerService, useValue: mockDockerService },
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NodesDataSource, useValue: mockNodesDataSource },
       ],
     }).compileComponents();
 
