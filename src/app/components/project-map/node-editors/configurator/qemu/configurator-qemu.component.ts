@@ -171,13 +171,13 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         this.consoleType.set(node.console_type || '');
         this.auxType.set(node.aux_type || '');
         this.consoleAutoStart.set(node.console_auto_start || false);
-        this.hdaDiskImage.set(node.properties.hda_disk_image || '');
+        this.hdaDiskImage.set(node.properties.hda_disk_image_backing_file || node.properties.hda_disk_image || '');
         this.hdaDiskInterface.set(node.properties.hda_disk_interface || '');
-        this.hdbDiskImage.set(node.properties.hdb_disk_image || '');
+        this.hdbDiskImage.set(node.properties.hdb_disk_image_backing_file || node.properties.hdb_disk_image || '');
         this.hdbDiskInterface.set(node.properties.hdb_disk_interface || '');
-        this.hdcDiskImage.set(node.properties.hdc_disk_image || '');
+        this.hdcDiskImage.set(node.properties.hdc_disk_image_backing_file || node.properties.hdc_disk_image || '');
         this.hdcDiskInterface.set(node.properties.hdc_disk_interface || '');
-        this.hddDiskImage.set(node.properties.hdd_disk_image || '');
+        this.hddDiskImage.set(node.properties.hdd_disk_image_backing_file || node.properties.hdd_disk_image || '');
         this.hddDiskInterface.set(node.properties.hdd_disk_interface || '');
         this.cdromImage.set(node.properties.cdrom_image || '');
         this.initrd.set(node.properties.initrd || '');

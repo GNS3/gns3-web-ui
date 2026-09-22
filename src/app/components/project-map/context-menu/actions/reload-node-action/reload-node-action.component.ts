@@ -28,10 +28,11 @@ export class ReloadNodeActionComponent implements OnInit {
     const nodes = this.nodes() || [];
     nodes.forEach((node) => {
       if (
-        node.node_type === 'vpcs' ||
-        node.node_type === 'qemu' ||
-        node.node_type === 'virtualbox' ||
-        node.node_type === 'vmware'
+        !node.missing_image &&
+        (node.node_type === 'vpcs' ||
+          node.node_type === 'qemu' ||
+          node.node_type === 'virtualbox' ||
+          node.node_type === 'vmware')
       ) {
         this.filteredNodes.push(node);
       }

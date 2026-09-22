@@ -1,7 +1,7 @@
 import { Indexed } from '../../datasources/map-datasource';
 import { MapLabel } from './map-label';
 import { MapPort } from './map-port';
-import { Properties } from '../node';
+import { MissingImage, Properties } from '../node';
 
 export class MapNode implements Indexed {
   id: string;
@@ -32,4 +32,6 @@ export class MapNode implements Indexed {
   x: number;
   y: number;
   z: number;
+  missingImage?: boolean;
+  missingImages?: MissingImage[];
 }

@@ -286,6 +286,17 @@ describe('ConfiguratorDialogQemuComponent', () => {
       expect(component.hdaDiskInterface()).toBe('ide');
     });
 
+    it('should show the backing image instead of the linked-clone overlay', () => {
+      const linkedCloneNode = createMockNode();
+      linkedCloneNode.properties.hda_disk_image = 'hda_disk.qcow2';
+      linkedCloneNode.properties.hda_disk_image_backing_file = 'c9000v-17.12.01.qcow2';
+      mockNodeService.getNode.mockReturnValue(of(linkedCloneNode));
+
+      component.ngOnInit();
+
+      expect(component.hdaDiskImage()).toBe('c9000v-17.12.01.qcow2');
+    });
+
     it('should populate network signals from node properties', () => {
       expect(component.adapters()).toBe('4');
       expect(component.macAddress()).toBe('00:00:00:00:00:00');

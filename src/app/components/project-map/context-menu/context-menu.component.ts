@@ -51,6 +51,7 @@ import { DeleteActionComponent } from './actions/delete-action/delete-action.com
 import { AlignHorizontallyActionComponent } from './actions/align-horizontally/align-horizontally.component';
 import { AlignVerticallyActionComponent } from './actions/align_vertically/align-vertically.component';
 import { ShowInFileManagerActionComponent } from './actions/show-in-file-manager-action/show-in-file-manager-action.component';
+import { FixMissingImageActionComponent } from './actions/fix-missing-image-action/fix-missing-image-action.component';
 
 @Component({
   selector: 'app-context-menu',
@@ -99,6 +100,7 @@ import { ShowInFileManagerActionComponent } from './actions/show-in-file-manager
     AlignHorizontallyActionComponent,
     AlignVerticallyActionComponent,
     ShowInFileManagerActionComponent,
+    FixMissingImageActionComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

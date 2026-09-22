@@ -7,6 +7,8 @@
     <app-show-in-file-manager-action [controller]="controller" [node]="nodes[0]" (openFileManagerInline)="onOpenFileManagerInline($event)"></app-show-in-file-manager-action>
     } @if (nodes.length === 1) {
     <app-config-node-action [controller]="controller" [node]="nodes[0]"></app-config-node-action>
+    } @if (!projectService.isReadOnly(project) && nodes.length === 1 && nodes[0].missing_image) {
+    <app-fix-missing-image-action [controller]="controller" [node]="nodes[0]"></app-fix-missing-image-action>
     } @if (nodes.length) {
     <app-start-node-action [controller]="controller" [nodes]="nodes"></app-start-node-action>
     } @if (nodes.length) {

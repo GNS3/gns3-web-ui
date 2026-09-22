@@ -93,6 +93,7 @@ import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-di
 import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
 import { ImportProjectDialogComponent } from '../projects/import-project-dialog/import-project-dialog.component';
 import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
+import { MissingImagesDialogService } from '../projects/missing-images-dialog/missing-images-dialog.service';
 import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
 import type { TopologySummaryComponent } from '../topology-summary/topology-summary.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
@@ -291,6 +292,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   private projectMapSubscription: Subscription = new Subscription();
   private startedNodeIds = new Set<string>();
+  // Nodes for which the missing-image dialog has already been offered, so the
+  // dialog is not reopened on every node update notification.
+  private missingImagesHandled = new Set<string>();
+  private missingImagesDialogOpen = false;
+  private missingImagesChangesSubscription?: Subscription;
 
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
@@ -323,6 +329,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private mapScaleService = inject(MapScaleService);
   private nodeCreatedLabelStylesFixer = inject(NodeCreatedLabelStylesFixer);
   private toasterService = inject(ToasterService);
+  private missingImagesDialogService = inject(MissingImagesDialogService);
   private dialog = inject(MatDialog);
   private router = inject(Router);
   private mapNodesDataSource = inject(MapNodesDataSource);
@@ -737,6 +744,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.connectProjectWS(project);
         this.connectMarkerWS(project);
         this.progressService.deactivate();
+        // Offer to replace missing images. The node list can also be updated
+        // later over the notification WebSocket (e.g. when the project was
+        // already open and nodes are still being loaded), so react to changes
+        // rather than only checking once.
+        this.missingImagesHandled.clear();
+        this.missingImagesDialogOpen = false;
+        this.missingImagesChangesSubscription?.unsubscribe();
+        this.missingImagesChangesSubscription = this.nodesDataSource.changes.subscribe((nodes) =>
+          this.maybeOpenMissingImagesDialog(nodes as Node[])
+        );
+        this.projectMapSubscription.add(this.missingImagesChangesSubscription);
+        this.maybeOpenMissingImagesDialog(this.nodesDataSource.getItems() as Node[]);
       },
       error: (err) => {
         this.toasterService.error(
@@ -747,6 +766,52 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       },
     });
     this.projectMapSubscription.add(subscription);
+  }
+
+  /**
+   * When the project references images that are not available, invite the user
+   * to replace them with compatible images from the image manager. The project
+   * is already open; nodes that cannot be fixed stay in a degraded state.
+   *
+   * A dialog is only opened once per missing node (tracked in
+   * `missingImagesHandled`) and never while another instance is already open.
+   */
+  private maybeOpenMissingImagesDialog(nodes: Node[]): void {
+    if (this.readonly || this.missingImagesDialogOpen) {
+      return;
+    }
+    const currentMissingIds = new Set((nodes || []).filter((node) => node.missing_image).map((node) => node.node_id));
+    for (const nodeId of this.missingImagesHandled) {
+      if (!currentMissingIds.has(nodeId)) {
+        this.missingImagesHandled.delete(nodeId);
+      }
+    }
+    const missingNodes = (nodes || []).filter(
+      (node) => node.missing_image && !this.missingImagesHandled.has(node.node_id)
+    );
+    if (missingNodes.length === 0) {
+      return;
+    }
+    missingNodes.forEach((node) => this.missingImagesHandled.add(node.node_id));
+
+    this.missingImagesDialogOpen = true;
+    this.projectMapSubscription.add(
+      this.missingImagesDialogService.open(this.controller, missingNodes).subscribe((result) => {
+        this.missingImagesDialogOpen = false;
+        if (result && result.updated > 0) {
+          this.toasterService.success(
+            `Updated images for ${result.updated} ${result.updated === 1 ? 'node' : 'nodes'}.`
+          );
+        }
+        if (result && result.remaining > 0) {
+          this.toasterService.warning('Some images are still missing - the affected nodes cannot be started.');
+        }
+        // A node may have been flagged missing while the dialog was open; offer
+        // it too (already-handled nodes are skipped).
+        this.maybeOpenMissingImagesDialog(this.nodesDataSource.getItems() as Node[]);
+        this.cd.markForCheck();
+      })
+    );
   }
 
   /**

@@ -57,6 +57,17 @@ describe('buildNodeTooltip', () => {
     expect(buildNodeTooltip(node, [], [node])).toContain('Running on compute local');
   });
 
+  it('reports missing images and that the node cannot be started', () => {
+    const node = makeNode('node-1', 'router', []);
+    node.missingImage = true;
+    node.missingImages = [{ property: 'hda_disk_image', image: 'missing.qcow2', image_type: 'qemu' }];
+
+    const summary = buildNodeSummary(node);
+
+    expect(summary).toContain('Missing image(s): missing.qcow2');
+    expect(summary).toContain('a compatible image is required to start this node');
+  });
+
   it('does not describe a remote compute as the controller', () => {
     const node = makeNode('node-1', 'router', []);
     node.computeId = 'remote-compute';

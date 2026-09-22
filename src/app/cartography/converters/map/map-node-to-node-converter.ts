@@ -39,6 +39,8 @@ export class MapNodeToNodeConverter implements Converter<MapNode, Node> {
     node.x = mapNode.x;
     node.y = mapNode.y;
     node.z = mapNode.z;
+    node.missing_image = mapNode.missingImage;
+    node.missing_images = mapNode.missingImages;
     return node;
   }
 }

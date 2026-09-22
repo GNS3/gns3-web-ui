@@ -22,6 +22,11 @@ const UNLOCKED_OUTER_PATH =
 const LOCKED_ICON_COLOR = 'var(--gns3-lock-badge-locked-color)';
 const UNLOCKED_ICON_COLOR = 'var(--gns3-lock-badge-unlocked-color)';
 const BADGE_OUTLINE_COLOR = 'var(--gns3-lock-badge-outline-color)';
+// Material "warning" icon (24x24 viewbox), used to flag nodes whose image is
+// missing and that therefore cannot be started.
+const MISSING_IMAGE_ICON_PATH = 'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z';
+const MISSING_IMAGE_ICON_COLOR = 'var(--gns3-missing-image-badge-color)';
+const MISSING_IMAGE_BADGE_OUTLINE_COLOR = 'var(--gns3-missing-image-badge-outline-color)';
 
 @Injectable()
 export class NodeWidget implements Widget {
@@ -56,6 +61,7 @@ export class NodeWidget implements Widget {
       .merge(node_body_enter)
       .classed('selected', (n: MapNode) => this.selectionManager.isSelected(n))
       .classed('locked', (n: MapNode) => n.locked)
+      .classed('missing-image', (n: MapNode) => n.missingImage === true)
       .on('click', (event: any, node: MapNode) => {
         this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.pageX, event.pageY));
       });
@@ -180,6 +186,35 @@ export class NodeWidget implements Widget {
         .attr('r', 2)
         .attr('fill', BADGE_OUTLINE_COLOR);
     }
+
+    // Missing image badge (top-left corner so it never collides with the
+    // top-right lock badge). Shown for nodes kept in a degraded state because a
+    // required image is not available.
+    node_body_merge.select('.node_missing_image_badge').remove();
+    const missingImageNodes = node_body_merge.filter((n: MapNode) => n.missingImage === true);
+    const missingImageBadge = missingImageNodes
+      .append<SVGGElement>('g')
+      .attr('class', 'node_missing_image_badge')
+      .attr('pointer-events', 'none')
+      .attr('transform', (n: MapNode) => {
+        const w = n.width > 0 ? n.width : 60;
+        const h = n.height > 0 ? n.height : 60;
+        return `translate(${w * 0.2}, ${h * 0.2})`;
+      });
+
+    missingImageBadge
+      .append<SVGCircleElement>('circle')
+      .attr('r', 9)
+      .attr('fill', 'var(--mat-sys-surface)')
+      .attr('stroke', MISSING_IMAGE_BADGE_OUTLINE_COLOR)
+      .attr('stroke-width', 1.2);
+
+    missingImageBadge
+      .append<SVGPathElement>('path')
+      .attr('d', MISSING_IMAGE_ICON_PATH)
+      .attr('transform', 'translate(-8, -8) scale(0.66)')
+      .attr('fill', MISSING_IMAGE_ICON_COLOR)
+      .attr('stroke', 'none');
 
     // update image of node
     node_body_merge

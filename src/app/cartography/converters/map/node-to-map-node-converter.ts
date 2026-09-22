@@ -50,6 +50,8 @@ export class NodeToMapNodeConverter implements Converter<Node, MapNode> {
     mapNode.x = node.x;
     mapNode.y = node.y;
     mapNode.z = node.z;
+    mapNode.missingImage = node.missing_image;
+    mapNode.missingImages = node.missing_images;
 
     if (mapNode.label !== undefined) {
       const fixedCss = this.cssFixer.fix(mapNode.label.style);

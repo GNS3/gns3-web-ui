@@ -585,7 +585,6 @@ describe('NodeService', () => {
         mockController,
         '/projects/project-123/nodes/node-1',
         expect.objectContaining({
-          console_type: mockNode.console_type,
           console_auto_start: mockNode.console_auto_start,
           locked: mockNode.locked,
           name: mockNode.name,
@@ -632,6 +631,17 @@ describe('NodeService', () => {
       expect(payload.netmiko_device_type).toBeNull();
       expect(payload.default_username).toBeNull();
       expect(payload.default_password).toBeNull();
+    });
+
+    it('should omit empty console types rejected by the server schema', async () => {
+      const nodeWithoutConsoleTypes = { ...mockNode, console_type: '', aux_type: '' } as Node;
+      mockHttpController.put.mockReturnValue(of(nodeWithoutConsoleTypes));
+
+      await firstValueFrom(service.updateNode(mockController, nodeWithoutConsoleTypes));
+
+      const payload = mockHttpController.put.mock.calls[0][2];
+      expect(payload).not.toHaveProperty('console_type');
+      expect(payload).not.toHaveProperty('aux_type');
     });
 
     it('should emit error when updateNode fails', async () => {
@@ -681,6 +691,22 @@ describe('NodeService', () => {
       const payload = putCall[2];
 
       expect(payload.custom_adapters).toEqual([]);
+    });
+
+    it('should omit empty console types rejected by the server schema', async () => {
+      const nodeWithoutConsoleTypes = {
+        ...mockNode,
+        console_type: '',
+        aux_type: '',
+        custom_adapters: [],
+      } as Node;
+      mockHttpController.put.mockReturnValue(of(nodeWithoutConsoleTypes));
+
+      await firstValueFrom(service.updateNodeWithCustomAdapters(mockController, nodeWithoutConsoleTypes));
+
+      const payload = mockHttpController.put.mock.calls[0][2];
+      expect(payload).not.toHaveProperty('console_type');
+      expect(payload).not.toHaveProperty('aux_type');
     });
 
     it('should include automation and credential fields in the payload', async () => {
