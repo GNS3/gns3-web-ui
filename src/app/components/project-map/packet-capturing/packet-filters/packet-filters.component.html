@@ -1,50 +1,75 @@
 <h1 mat-dialog-title>Packet filters</h1>
 
-@if (this.filters) {
+@if (this.filterGroups) {
 <div mat-dialog-content>
-  <div class="form-grid">
-    <div class="form-grid-column">
-      <mat-form-field appearance="fill" class="full-width-field">
-        <mat-label>Frequency drop</mat-label>
-        <input matInput type="number" [value]="filters.frequency_drop[0]" (input)="onFrequencyDropChange(+$event.target.value)" />
-        <span matSuffix>packets</span>
-      </mat-form-field>
+  @if (this.capabilityHint) {
+    <p class="packet-filters__hint">{{ this.capabilityHint }}</p>
+  }
 
-      <mat-form-field appearance="fill" class="full-width-field">
-        <mat-label>Packet loss</mat-label>
-        <input matInput type="number" [value]="filters.packet_loss[0]" (input)="onPacketLossChange(+$event.target.value)" />
-        <span matSuffix>%</span>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill" class="full-width-field">
-        <mat-label>Corrupt</mat-label>
-        <input matInput type="number" [value]="filters.corrupt[0]" (input)="onCorruptChange(+$event.target.value)" />
-        <span matSuffix>%</span>
-      </mat-form-field>
+  @if (this.filterGroups.length === 0) {
+    <p class="packet-filters__empty">No traffic filters are available for this link.</p>
+  } @else {
+    <div class="packet-filters__grid">
+      @for (group of this.filterGroups; track group.key) {
+        <section class="packet-filters__group" [class.packet-filters__group--wide]="group.isWide">
+          <header class="packet-filters__group-header">
+            <h2 class="packet-filters__group-name">{{ group.name }}</h2>
+            @if (group.description) {
+              <p class="packet-filters__group-description">{{ group.description }}</p>
+            }
+          </header>
+          <div class="packet-filters__fields">
+            @for (param of group.params; track param.name) {
+              <mat-form-field appearance="fill" class="packet-filters__field">
+                <mat-label>{{ param.name }}</mat-label>
+                @switch (param.kind) {
+                  @case ('select') {
+                    <mat-select [value]="param.value" (selectionChange)="onParamChange(param, $event.value)">
+                      <mat-option value="">None</mat-option>
+                      @for (option of param.options; track option) {
+                        <mat-option [value]="option">{{ option }}</mat-option>
+                      }
+                    </mat-select>
+                  }
+                  @case ('textarea') {
+                    <textarea
+                      matInput
+                      rows="4"
+                      placeholder="tcp port 80&#10;host 192.168.1.1"
+                      [value]="param.value"
+                      (input)="onParamChange(param, $event.target.value)"
+                    ></textarea>
+                  }
+                  @case ('number') {
+                    <input
+                      matInput
+                      type="number"
+                      [value]="param.value"
+                      [min]="param.minimum"
+                      [max]="param.maximum"
+                      [errorStateMatcher]="param.errorMatcher"
+                      (input)="onParamChange(param, $event.target.value)"
+                    />
+                  }
+                  @default {
+                    <input matInput type="text" [value]="param.value" (input)="onParamChange(param, $event.target.value)" />
+                  }
+                }
+                @if (param.unit && param.kind !== 'select') {
+                  <span matSuffix>{{ param.unit }}</span>
+                }
+                <mat-error>{{ paramError(group, param) }}</mat-error>
+              </mat-form-field>
+            }
+          </div>
+        </section>
+      }
     </div>
-
-    <div class="form-grid-column">
-      <mat-form-field appearance="fill" class="full-width-field">
-        <mat-label>Delay latency</mat-label>
-        <input matInput type="number" [value]="filters.delay[0]" (input)="onDelayLatencyChange(+$event.target.value)" />
-        <span matSuffix>ms</span>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill" class="full-width-field">
-        <mat-label>Delay jitter</mat-label>
-        <input matInput type="number" [value]="filters.delay[1]" (input)="onDelayJitterChange(+$event.target.value)" />
-        <span matSuffix>ms</span>
-      </mat-form-field>
-    </div>
-  </div>
-
-  <mat-form-field appearance="fill" class="full-width-field">
-    <mat-label>Berkeley Packet Filter (BPF)</mat-label>
-    <textarea matInput rows="4" placeholder="Examples:
-tcp port 80
-host 192.168.1.1
-tcp dst port 443 and src portrange 1024-65535" [value]="filters.bpf[0]" (input)="onBpfChange($event.target.value)"></textarea>
-  </mat-form-field>
+  }
+</div>
+} @else {
+<div mat-dialog-content class="packet-filters__loading">
+  <mat-spinner diameter="24"></mat-spinner>
 </div>
 }
 <div mat-dialog-actions align="end">
