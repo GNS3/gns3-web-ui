@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { Filter } from '@models/filter';
 import { FilterDescription, Parameter } from '@models/filter-description';
@@ -37,7 +38,6 @@ export interface FilterParamView {
 export interface FilterGroupView {
   key: string; // FilterDescription.type — the key used in the filters dict
   name: string;
-  description: string;
   isWide: boolean;
   params: FilterParamView[];
 }
@@ -63,7 +63,16 @@ const KERNEL_ONLY_FILTER_TYPES = ['rate', 'reorder', 'gemodel', 'duplicate', 'se
   selector: 'app-packet-filters',
   templateUrl: './packet-filters.component.html',
   styleUrl: './packet-filters.component.scss',
-  imports: [CommonModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressSpinnerModule, MatSelectModule],
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    MatIconModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PacketFiltersDialogComponent implements OnInit {
@@ -75,12 +84,16 @@ export class PacketFiltersDialogComponent implements OnInit {
   private toasterService = inject(ToasterService);
 
   readonly isApplying = signal(false);
+  /** Advanced (kernel-only) filters are collapsed by default. */
+  readonly showAdvanced = signal(false);
 
   controller: Controller;
   project: Project;
   link: Link;
   availableFilters: FilterDescription[];
   filterGroups?: FilterGroupView[];
+  basicGroups: FilterGroupView[] = [];
+  advancedGroups: FilterGroupView[] = [];
   capabilityHint?: string | null;
 
   private activeFilters?: Filter;
@@ -132,6 +145,11 @@ export class PacketFiltersDialogComponent implements OnInit {
     return (this.filterGroups ?? []).some((group) => this.computeGroupResult(group).errors.size > 0);
   }
 
+  toggleAdvanced() {
+    this.showAdvanced.set(!this.showAdvanced());
+    this.cdr.markForCheck();
+  }
+
   onNoClick() {
     this.dialogRef.close();
   }
@@ -156,7 +174,8 @@ export class PacketFiltersDialogComponent implements OnInit {
   onYesClick() {
     if (this.isApplying() || !this.filterGroups) return;
     if (this.hasValidationErrors()) {
-      // Render the mat-errors; the server would reject the payload anyway.
+      // A blocked apply must never leave the offending fields hidden.
+      this.revealErroredAdvancedGroups();
       this.cdr.markForCheck();
       return;
     }
@@ -187,20 +206,74 @@ export class PacketFiltersDialogComponent implements OnInit {
     const dialogRef = this.dialog.open(HelpDialogComponent, dialogConfig);
     let instance = dialogRef.componentInstance;
     instance.title = 'Help for filters';
-    let messages: Message[] = [];
+    instance.messages = this.buildHelpMessages();
+  }
+
+  /**
+   * The Help dialog carries the full filter reference (per-filter
+   * descriptions and parameter ranges) so the form itself stays compact.
+   */
+  private buildHelpMessages(): Message[] {
+    const messages: Message[] = [
+      {
+        name: 'How packet filters work',
+        description: [
+          'A value of 0 (or an empty field) disables a filter; only the filters you set are applied.',
+          'Percentages apply to each direction of the link independently — a 30% packet loss drops roughly 51% of round-trip traffic.',
+          'Time-based schedules restart from the moment a filter is applied: changing any filter or restarting a node resets them.',
+        ].join('\n'),
+      },
+    ];
     this.availableFilters.forEach((filter: FilterDescription) => {
       messages.push({
         name: filter.name,
-        description: filter.description,
+        description: this.describeFilter(filter),
       });
     });
-    instance.messages = messages;
+    return messages;
+  }
+
+  private describeFilter(filter: FilterDescription): string {
+    const lines = [filter.description ?? '', '', 'Parameters:'];
+    for (const parameter of filter.parameters ?? []) {
+      lines.push(`- ${this.describeParameter(parameter)}`);
+    }
+    return lines.join('\n');
+  }
+
+  private describeParameter(parameter: Parameter): string {
+    const unit = parameter.unit ? ` (${parameter.unit})` : '';
+    if (parameter.type === 'int' && parameter.minimum !== undefined && parameter.maximum !== undefined) {
+      return `${parameter.name}${unit}: ${parameter.minimum} to ${parameter.maximum}`;
+    }
+    if (parameter.type === 'text') {
+      return `${parameter.name}: one expression per line`;
+    }
+    return `${parameter.name}${unit}`;
   }
 
   private tryBuildFilterGroups() {
     if (!this.activeFilters || !this.availableFilters) return;
     this.filterGroups = this.buildFilterGroups(this.availableFilters, this.activeFilters);
+    this.basicGroups = this.filterGroups.filter((group) => !this.isAdvancedGroup(group));
+    this.advancedGroups = this.filterGroups.filter((group) => this.isAdvancedGroup(group));
+    // Advanced filters already active on the link stay visible (and editable).
+    if (this.advancedGroups.some((group) => this.activeFilters?.[group.key])) {
+      this.showAdvanced.set(true);
+    }
     this.capabilityHint = this.buildCapabilityHint(this.link?.kernel_datapath, this.availableFilters);
+  }
+
+  private isAdvancedGroup(group: FilterGroupView): boolean {
+    return KERNEL_ONLY_FILTER_TYPES.includes(group.key);
+  }
+
+  /** Expand the advanced section when it holds a validation error. */
+  private revealErroredAdvancedGroups() {
+    if (this.showAdvanced()) return;
+    if (this.advancedGroups.some((group) => this.computeGroupResult(group).errors.size > 0)) {
+      this.showAdvanced.set(true);
+    }
   }
 
   private buildFilterGroups(descriptions: FilterDescription[], active: Filter): FilterGroupView[] {
@@ -231,8 +304,10 @@ export class PacketFiltersDialogComponent implements OnInit {
       const group: FilterGroupView = {
         key: description.type,
         name: description.name,
-        description: description.description ?? '',
-        isWide: params.some((param) => param.kind === 'textarea'),
+        // Full-width block: text filters (bpf) and groups with too many
+        // parameters to fit a grid column (window_drop) — their parameters
+        // still lay out in a single comfortable row.
+        isWide: params.length >= 3 || params.some((param) => param.kind === 'textarea'),
         params,
       };
       params.forEach((param) => {
@@ -301,8 +376,9 @@ export class PacketFiltersDialogComponent implements OnInit {
     for (const group of this.filterGroups ?? []) {
       const { values } = this.computeGroupResult(group);
       if (!values.length) continue;
-      // bpf and any future text filter: one element holding the multi-line string.
-      if (group.isWide) payload[group.key] = [String(values[0]).trim()];
+      // bpf and any future text filter: one element holding the multi-line
+      // string. Layout width (isWide) is unrelated to the value encoding.
+      if (group.params.some((param) => param.kind === 'textarea')) payload[group.key] = [String(values[0]).trim()];
       else payload[group.key] = values;
     }
     return payload;

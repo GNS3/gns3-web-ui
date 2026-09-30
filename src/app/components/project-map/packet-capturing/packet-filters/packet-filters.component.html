@@ -1,5 +1,57 @@
 <h1 mat-dialog-title>Packet filters</h1>
 
+<ng-template #filterGroup let-group>
+  <section class="packet-filters__group" [class.packet-filters__group--wide]="group.isWide">
+    <header class="packet-filters__group-header">
+      <h2 class="packet-filters__group-name">{{ group.name }}</h2>
+    </header>
+    <div class="packet-filters__fields">
+      @for (param of group.params; track param.name) {
+        <mat-form-field appearance="fill" class="packet-filters__field">
+          <mat-label>{{ param.name }}</mat-label>
+          @switch (param.kind) {
+            @case ('select') {
+              <mat-select [value]="param.value" (selectionChange)="onParamChange(param, $event.value)">
+                <mat-option value="">None</mat-option>
+                @for (option of param.options; track option) {
+                  <mat-option [value]="option">{{ option }}</mat-option>
+                }
+              </mat-select>
+            }
+            @case ('textarea') {
+              <textarea
+                matInput
+                rows="4"
+                placeholder="tcp port 80&#10;host 192.168.1.1"
+                [value]="param.value"
+                (input)="onParamChange(param, $event.target.value)"
+              ></textarea>
+            }
+            @case ('number') {
+              <input
+                matInput
+                type="number"
+                [value]="param.value"
+                [min]="param.minimum"
+                [max]="param.maximum"
+                [errorStateMatcher]="param.errorMatcher"
+                (input)="onParamChange(param, $event.target.value)"
+              />
+            }
+            @default {
+              <input matInput type="text" [value]="param.value" (input)="onParamChange(param, $event.target.value)" />
+            }
+          }
+          @if (param.unit && param.kind !== 'select') {
+            <span matSuffix>{{ param.unit }}</span>
+          }
+          <mat-error>{{ paramError(group, param) }}</mat-error>
+        </mat-form-field>
+      }
+    </div>
+  </section>
+</ng-template>
+
 @if (this.filterGroups) {
 <div mat-dialog-content>
   @if (this.capabilityHint) {
@@ -10,59 +62,21 @@
     <p class="packet-filters__empty">No traffic filters are available for this link.</p>
   } @else {
     <div class="packet-filters__grid">
-      @for (group of this.filterGroups; track group.key) {
-        <section class="packet-filters__group" [class.packet-filters__group--wide]="group.isWide">
-          <header class="packet-filters__group-header">
-            <h2 class="packet-filters__group-name">{{ group.name }}</h2>
-            @if (group.description) {
-              <p class="packet-filters__group-description">{{ group.description }}</p>
-            }
-          </header>
-          <div class="packet-filters__fields">
-            @for (param of group.params; track param.name) {
-              <mat-form-field appearance="fill" class="packet-filters__field">
-                <mat-label>{{ param.name }}</mat-label>
-                @switch (param.kind) {
-                  @case ('select') {
-                    <mat-select [value]="param.value" (selectionChange)="onParamChange(param, $event.value)">
-                      <mat-option value="">None</mat-option>
-                      @for (option of param.options; track option) {
-                        <mat-option [value]="option">{{ option }}</mat-option>
-                      }
-                    </mat-select>
-                  }
-                  @case ('textarea') {
-                    <textarea
-                      matInput
-                      rows="4"
-                      placeholder="tcp port 80&#10;host 192.168.1.1"
-                      [value]="param.value"
-                      (input)="onParamChange(param, $event.target.value)"
-                    ></textarea>
-                  }
-                  @case ('number') {
-                    <input
-                      matInput
-                      type="number"
-                      [value]="param.value"
-                      [min]="param.minimum"
-                      [max]="param.maximum"
-                      [errorStateMatcher]="param.errorMatcher"
-                      (input)="onParamChange(param, $event.target.value)"
-                    />
-                  }
-                  @default {
-                    <input matInput type="text" [value]="param.value" (input)="onParamChange(param, $event.target.value)" />
-                  }
-                }
-                @if (param.unit && param.kind !== 'select') {
-                  <span matSuffix>{{ param.unit }}</span>
-                }
-                <mat-error>{{ paramError(group, param) }}</mat-error>
-              </mat-form-field>
-            }
-          </div>
-        </section>
+      @for (group of this.basicGroups; track group.key) {
+        <ng-container *ngTemplateOutlet="filterGroup; context: { $implicit: group }" />
+      }
+      @if (this.advancedGroups.length > 0) {
+        <div class="packet-filters__advanced-toggle">
+          <button type="button" mat-button class="packet-filters__advanced-button" (click)="toggleAdvanced()">
+            <mat-icon>{{ this.showAdvanced() ? 'expand_less' : 'expand_more' }}</mat-icon>
+            {{ this.showAdvanced() ? 'Hide advanced filters' : 'Show advanced filters' }} ({{ this.advancedGroups.length }})
+          </button>
+        </div>
+        @if (this.showAdvanced()) {
+          @for (group of this.advancedGroups; track group.key) {
+            <ng-container *ngTemplateOutlet="filterGroup; context: { $implicit: group }" />
+          }
+        }
       }
     </div>
   }

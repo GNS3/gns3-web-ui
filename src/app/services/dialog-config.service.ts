@@ -124,10 +124,10 @@ export class DialogConfigService {
       panelClass: ['base-dialog-panel', 'dialog-small-panel', 'simple-dialog-panel'],
     });
 
-    // Packet Filters Dialog - medium two-column editor.
+    // Packet Filters Dialog - large two-column editor (13 filter groups).
     this.configs.set('packetFilters', {
-      ...mediumConfig,
-      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'simple-dialog-panel'],
+      ...largeConfig,
+      panelClass: ['base-dialog-panel', 'dialog-large-panel', 'simple-dialog-panel'],
     });
 
     // Help Dialog - simple dialog (medium, 720px)

@@ -284,6 +284,10 @@ describe('PacketFiltersDialogComponent', () => {
       expect(group('bpf').isWide).toBe(true);
       expect(param('rate', 'Rate').kind).toBe('text');
       expect(group('rate').isWide).toBe(false);
+      // 3+ parameter groups get a full-width block so their params sit in one row
+      expect(group('delay').isWide).toBe(true);
+      expect(group('window_drop').isWide).toBe(true);
+      expect(group('frequency_drop').isWide).toBe(false);
     });
 
     it('should populate availableFilters from API', () => {
@@ -533,38 +537,147 @@ describe('PacketFiltersDialogComponent', () => {
     });
   });
 
-  // Note: onHelpClick tests are skipped due to MatDialog.open() mock complexity
-  // Angular Material's MatDialog.open() tries to instantiate HelpDialogComponent
-  // internally, which requires a full dialog infrastructure mock that's not trivial
-  // to set up in the test environment.
-  describe('onHelpClick', () => {
-    it.skip('should call dialogConfig.openConfig with helpDialog (skipped - mock complexity)', () => {
+  describe('Advanced filters collapse', () => {
+    it('should split groups into basic and kernel-only advanced sets', () => {
       component.ngOnInit();
+
+      expect(component.basicGroups.map((g) => g.key)).toEqual(['frequency_drop', 'delay', 'bpf']);
+      expect(component.advancedGroups.map((g) => g.key)).toEqual(['rate', 'window_drop']);
+      expect(component.showAdvanced()).toBe(false);
+    });
+
+    it('should not render the advanced toggle when no advanced filters are offered', () => {
+      mockLinkService.getAvailableFilters.mockReturnValue(of(mockFilterDescriptions.slice(0, 3)));
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const compiled = fixture.nativeElement;
+      expect(compiled.querySelector('.packet-filters__advanced-toggle')).toBeNull();
+      expect(compiled.querySelectorAll('.packet-filters__group-name').length).toBe(3);
+    });
+
+    it('should expand advanced groups on toggle and render them all', () => {
+      component.ngOnInit();
+      fixture.detectChanges();
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      component.toggleAdvanced();
+      fixture.detectChanges();
+
+      expect(component.showAdvanced()).toBe(true);
+      expect(cdrSpy).toHaveBeenCalled();
+      const names = fixture.nativeElement.querySelectorAll('.packet-filters__group-name');
+      expect(names.length).toBe(mockFilterDescriptions.length);
+    });
+
+    it('should expand via the toggle button click', () => {
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('.packet-filters__advanced-button');
+      expect(button.textContent).toContain('Show advanced filters (2)');
+      button.click();
+      fixture.detectChanges();
+
+      expect(component.showAdvanced()).toBe(true);
+      expect(fixture.nativeElement.querySelectorAll('.packet-filters__group-name').length).toBe(5);
+      expect(fixture.nativeElement.querySelector('.packet-filters__advanced-button').textContent).toContain('Hide advanced filters');
+    });
+
+    it('should auto-expand when the link already has an advanced filter active', () => {
+      mockLinkService.getLink.mockReturnValue(of(createMockLink({ rate: ['512kbit'] })));
+
+      component.ngOnInit();
+
+      expect(component.showAdvanced()).toBe(true);
+      expect(component.basicGroups.map((g) => g.key)).toEqual(['frequency_drop', 'delay', 'bpf']);
+    });
+
+    it('should keep collapsed advanced values in the apply payload', () => {
+      component.ngOnInit();
+
+      setParam('rate', 'Rate', '10mbit');
+      expect(component.showAdvanced()).toBe(false); // value set while collapsed
+
+      component.onYesClick();
+
+      expect(component.link.filters!.rate).toEqual(['10mbit']);
+    });
+
+    it('should reveal a collapsed advanced group that blocks the apply', () => {
+      component.ngOnInit();
+
+      setParam('window_drop', 'Chance', 101);
+      expect(component.showAdvanced()).toBe(false);
+
+      component.onYesClick();
+
+      expect(mockLinkService.updateLink).not.toHaveBeenCalled();
+      expect(component.showAdvanced()).toBe(true);
+    });
+  });
+
+  describe('onHelpClick', () => {
+    // The MatDialog provider mock does not take effect in this harness (the
+    // real service runs and fails on the missing overlay infrastructure), so
+    // spy on the component's injected instances instead.
+    const stubHelpDialog = () => {
+      vi.spyOn(component['dialogConfig'], 'openConfig').mockReturnValue({ autoFocus: false, disableClose: true } as any);
+      vi.spyOn(component['dialog'], 'open').mockReturnValue({ componentInstance: mockDialogInstance } as any);
+    };
+
+    it('should open the help dialog with the general conventions and every filter', () => {
+      component.ngOnInit();
+      stubHelpDialog();
+
       component.onHelpClick();
 
-      expect(mockDialogConfig.openConfig).toHaveBeenCalledWith('helpDialog', {
+      expect(component['dialogConfig'].openConfig).toHaveBeenCalledWith('helpDialog', {
         autoFocus: false,
         disableClose: true,
       });
+      expect(component['dialog'].open).toHaveBeenCalled();
+      expect(mockDialogInstance.title).toBe('Help for filters');
+      // general conventions entry + one entry per advertised filter
+      expect(mockDialogInstance.messages.length).toBe(mockFilterDescriptions.length + 1);
+      expect(mockDialogInstance.messages[0].name).toBe('How packet filters work');
+      expect(mockDialogInstance.messages[0].description).toContain('disables a filter');
+      expect(mockDialogInstance.messages[0].description).toContain('each direction of the link independently');
     });
 
-    it.skip('should call dialog.open with HelpDialogComponent (skipped - mock complexity)', () => {
+    it('should include parameter ranges in the per-filter help text', () => {
       component.ngOnInit();
+      stubHelpDialog();
+
       component.onHelpClick();
 
-      expect(mockDialog.open).toHaveBeenCalled();
+      const delay = mockDialogInstance.messages.find((m: any) => m.name === 'Delay');
+      expect(delay.description).toContain('Delay packets in milliseconds.');
+      expect(delay.description).toContain('- Latency (ms): 1 to 32767');
+      expect(delay.description).toContain('- Distribution (uniform|normal|pareto|paretonormal)');
+
+      const bpf = mockDialogInstance.messages.find((m: any) => m.name === 'Berkeley Packet Filter (BPF)');
+      expect(bpf.description).toContain('- Filters: one expression per line');
     });
   });
 
   describe('Filter form interaction', () => {
-    it('should render one group per filter description', () => {
+    it('should render only basic groups until advanced filters are expanded', () => {
       component.ngOnInit();
       fixture.detectChanges();
 
       const compiled = fixture.nativeElement;
       expect(compiled.querySelector('h1[mat-dialog-title]')).toBeTruthy();
       const names = compiled.querySelectorAll('.packet-filters__group-name');
-      expect(names.length).toBe(mockFilterDescriptions.length);
+      expect(names.length).toBe(3); // frequency_drop, delay, bpf — rate/window_drop stay collapsed
+    });
+
+    it('should keep filter descriptions out of the form (they live in Help)', () => {
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const compiled = fixture.nativeElement;
+      expect(compiled.querySelector('.packet-filters__group-description')).toBeNull();
     });
 
     it('should show the empty state when no filters are available', () => {
