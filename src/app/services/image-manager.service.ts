@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
 import { Observable } from 'rxjs';
-import { Image } from '@models/images';
+import { Image, ImageSyncJob } from '@models/images';
 import { environment } from 'environments/environment';
 
 @Injectable({
@@ -13,6 +13,17 @@ export class ImageManagerService {
 
   getImages(controller: Controller) {
     return this.httpController.get<Image[]>(controller, '/images') as Observable<Image[]>;
+  }
+
+  syncImages(controller: Controller, forceChecksum = false, dryRun = false): Observable<ImageSyncJob> {
+    return this.httpController.post<ImageSyncJob>(controller, '/images/sync', {
+      force_checksum: forceChecksum,
+      dry_run: dryRun,
+    });
+  }
+
+  getSyncJob(controller: Controller, jobId: string): Observable<ImageSyncJob> {
+    return this.httpController.get<ImageSyncJob>(controller, `/images/sync/jobs/${encodeURIComponent(jobId)}`);
   }
 
   getImagePath(controller: Controller, install_appliance, image_path) {

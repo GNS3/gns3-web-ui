@@ -26,12 +26,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { Controller } from '@models/controller';
-import { Image } from '@models/images';
+import { Image, ImageSyncJob } from '@models/images';
 import { ControllerService } from '@services/controller.service';
 import { ImageManagerService } from '@services/image-manager.service';
 import { ImageUploadEvent, ImageUploadSessionService } from '@services/image-upload-session.service';
 import { ToasterService } from '@services/toaster.service';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, timer, switchMap, exhaustMap, takeWhile, finalize } from 'rxjs';
 import { AddImageDialogComponent } from './add-image-dialog/add-image-dialog.component';
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog/deleteallfiles-dialog.component';
 import { ImageTableRow } from './image-database-file';
@@ -73,8 +73,9 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   readonly pageIndex = signal(0);
   readonly pageSize = signal(25);
   readonly rows = signal<ImageTableRow[]>([]);
+  readonly syncing = signal(false);
   readonly pageSizeOptions = [5, 10, 25, 50, 100];
-  readonly displayedColumns = ['select', 'filename', 'image_type', 'image_size', 'created_at', 'actions'];
+  readonly displayedColumns = ['select', 'filename', 'status', 'image_type', 'image_size', 'created_at', 'actions'];
 
   readonly imageTypes = computed(() =>
     Array.from(
@@ -93,7 +94,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
     if (search) {
       rows = rows.filter((row) =>
-        [row.filename, row.image_type, row.path, row.checksum, row.uploadStatus]
+        [row.filename, row.image_type, row.path, row.checksum, row.uploadStatus, row.availability]
           .filter(Boolean)
           .some((value) => String(value).toLowerCase().includes(search))
       );
@@ -135,6 +136,8 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   private refreshAfterUploadTimer: ReturnType<typeof setTimeout>;
   private highlightTimer: ReturnType<typeof setTimeout>;
   private lastSelectedPath: string | null = null;
+  private syncSubscription?: Subscription;
+  private destroyed = false;
 
   private imageService = inject(ImageManagerService);
   private route = inject(ActivatedRoute);
@@ -161,12 +164,16 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
     this.controllerService.get(this.controllerId).then(
       (controller: Controller) => {
+        if (this.destroyed) return;
         this.controller = controller;
         if (controller.authToken) {
           this.getImages();
+          const pendingJob = this.pendingSyncJob();
+          if (pendingJob) this.followSync(this.pollSyncJob(pendingJob));
         }
       },
       (err) => {
+        if (this.destroyed) return;
         const message = err.error?.message || err.message || 'Failed to load controller';
         this.toasterService.error(message);
         this.cd.markForCheck();
@@ -175,6 +182,8 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
+    this.syncSubscription?.unsubscribe();
     this.uploadEventsSubscription?.unsubscribe();
     this.queryParamsSubscription?.unsubscribe();
     if (this.refreshAfterUploadTimer) {
@@ -199,6 +208,93 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
         this.cd.markForCheck();
       },
     });
+  }
+
+  syncImages(): void {
+    if (this.destroyed || !this.controller || this.syncing()) return;
+    const pendingJob = this.pendingSyncJob();
+    if (pendingJob) {
+      this.followSync(this.pollSyncJob(pendingJob));
+      return;
+    }
+    this.followSync(
+      this.imageService.syncImages(this.controller).pipe(
+        switchMap((job) => {
+          try {
+            sessionStorage.setItem(this.syncStorageKey(), job.job_id);
+          } catch {
+            /* Polling still works without browser storage. */
+          }
+          return this.pollSyncJob(job.job_id);
+        })
+      )
+    );
+  }
+
+  private pendingSyncJob(): string | null {
+    try {
+      return sessionStorage.getItem(this.syncStorageKey());
+    } catch {
+      return null; // Storage can be unavailable in restricted browser contexts.
+    }
+  }
+
+  private syncStorageKey(): string {
+    return `gns3-image-sync-${this.controller.id}`;
+  }
+
+  private pollSyncJob(jobId: string): Observable<ImageSyncJob> {
+    return timer(0, 1000).pipe(
+      exhaustMap(() => this.imageService.getSyncJob(this.controller, jobId)),
+      takeWhile((result) => result.status === 'queued' || result.status === 'running', true)
+    );
+  }
+
+  private followSync(source: Observable<ImageSyncJob>): void {
+    this.syncing.set(true);
+    this.syncSubscription = source.pipe(finalize(() => this.syncing.set(false))).subscribe({
+      next: (job) => {
+        if (job.status === 'queued' || job.status === 'running') return;
+        try {
+          sessionStorage.removeItem(this.syncStorageKey());
+        } catch {
+          /* Storage is optional. */
+        }
+        this.getImages();
+        const message = this.syncResultMessage(job);
+        if (job.status === 'completed') {
+          this.toasterService.success(message);
+        } else if (job.status === 'partial') {
+          this.toasterService.warning(message);
+        } else {
+          this.toasterService.error(`${message}. You can retry synchronization.`);
+        }
+      },
+      error: (err) => {
+        if (err.status === 404) {
+          try {
+            sessionStorage.removeItem(this.syncStorageKey());
+          } catch {
+            /* Storage is optional. */
+          }
+        }
+        this.toasterService.error(
+          err.error?.message || err.error?.detail || err.message || 'Failed to synchronize images'
+        );
+      },
+    });
+  }
+
+  private syncResultMessage(job: ImageSyncJob): string {
+    const status = job.status.charAt(0).toUpperCase() + job.status.slice(1);
+    const counts = ['scanned', 'added', 'updated', 'missing', 'deferred', 'errors']
+      .map((name) => `${job.counts[name] || 0} ${name}`)
+      .join(' · ');
+    const details = job.errors.slice(0, 5).map((error) => `${error.path}: ${error.reason}`);
+    if (job.counts['errors'] > details.length) {
+      details.push(`Showing the first ${details.length} issues. Synchronize again after resolving them.`);
+    }
+    return [`Synchronization: ${status} · ${counts}`, ...details].join('\n');
   }
 
   onPageEvent(event: PageEvent): void {
@@ -273,7 +369,13 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   }
 
   imageStatusLabel(row: ImageTableRow): string {
-    return this.hasUploadState(row) ? row.uploadStatus || 'queued' : 'Available';
+    return this.hasUploadState(row) ? row.uploadStatus || 'queued' : row.availability || 'Available';
+  }
+
+  imageStatusIsError(row: ImageTableRow): boolean {
+    return this.hasUploadState(row)
+      ? row.uploadStatus === 'error'
+      : ['missing', 'invalid', 'unavailable'].includes(row.availability || '');
   }
 
   deleteFile(path: string): void {

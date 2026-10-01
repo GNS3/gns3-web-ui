@@ -205,6 +205,19 @@ mat-header-cell {
   justify-content: flex-start;
 }
 
+.mat-column-status {
+  flex: 0 0 120px;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.mat-column-status,
+.image-manager__detail-value {
+  .image-manager__status-badge {
+    margin-top: 0;
+  }
+}
+
 .mat-column-image_type {
   flex: 1.25;
   min-width: 140px;

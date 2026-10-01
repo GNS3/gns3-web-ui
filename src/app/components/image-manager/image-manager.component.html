@@ -6,6 +6,16 @@
       </div>
 
       <div class="image-manager__buttons-bar">
+        <button
+          mat-raised-button
+          class="image-manager__button"
+          color="primary"
+          (click)="syncImages()"
+          [disabled]="syncing() || !controller"
+        >
+          <mat-icon>sync</mat-icon>
+          {{ syncing() ? 'Synchronizing…' : 'Sync Images' }}
+        </button>
         <button mat-raised-button class="image-manager__button" color="primary" (click)="addImageDialog()">
           <mat-icon>add</mat-icon>
           Add Image
@@ -129,6 +139,19 @@
                 </div>
                 }
               </div>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span
+                class="image-manager__status-badge"
+                [class.image-manager__status-badge--uploading]="hasUploadState(row)"
+                [class.image-manager__status-badge--error]="imageStatusIsError(row)"
+              >
+                {{ imageStatusLabel(row) | titlecase }}
+              </span>
             </mat-cell>
           </ng-container>
 
@@ -261,7 +284,7 @@
             <span
               class="image-manager__status-badge"
               [class.image-manager__status-badge--uploading]="hasUploadState(row)"
-              [class.image-manager__status-badge--error]="row.uploadStatus === 'error'"
+              [class.image-manager__status-badge--error]="imageStatusIsError(row)"
             >
               <span class="image-manager__status-dot"></span>
               {{ imageStatusLabel(row) | titlecase }}
@@ -367,7 +390,15 @@
           <div class="image-manager__detail-item">
             <span class="image-manager__detail-icon"><mat-icon>check_circle</mat-icon></span>
             <span class="image-manager__detail-label">Status</span>
-            <span class="image-manager__detail-value">{{ imageStatusLabel(image) | titlecase }}</span>
+            <span class="image-manager__detail-value">
+              <span
+                class="image-manager__status-badge"
+                [class.image-manager__status-badge--uploading]="hasUploadState(image)"
+                [class.image-manager__status-badge--error]="imageStatusIsError(image)"
+              >
+                {{ imageStatusLabel(image) | titlecase }}
+              </span>
+            </span>
           </div>
           @if (hasUploadState(image)) {
           <div class="image-manager__detail-upload">
@@ -375,6 +406,14 @@
             <span [class.image-manager__upload-error]="image.uploadStatus === 'error'">
               {{ image.uploadProgress || 0 }}% @if (image.errorMessage) { · {{ image.errorMessage }} }
             </span>
+          </div>
+          } @if (image.last_error && image.availability !== 'missing') {
+          <p class="image-manager__upload-error">{{ image.last_error }}</p>
+          } @if (image.last_verified_at) {
+          <div class="image-manager__detail-item">
+            <span class="image-manager__detail-icon"><mat-icon>verified</mat-icon></span>
+            <span class="image-manager__detail-label">Last verified</span>
+            <span class="image-manager__detail-value">{{ image.last_verified_at | date : 'medium' }}</span>
           </div>
           }
           <div class="image-manager__detail-item">

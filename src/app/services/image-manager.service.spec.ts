@@ -64,6 +64,21 @@ describe('ImageManagerService', () => {
     });
   });
 
+  it('starts synchronization with verification and preview options', () => {
+    mockHttpController.post.mockReturnValue(of({ job_id: 'test', status: 'queued' }));
+    service.syncImages(mockController, true, true).subscribe();
+    expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/images/sync', {
+      force_checksum: true,
+      dry_run: true,
+    });
+  });
+
+  it('retrieves synchronization progress using an encoded job ID', () => {
+    mockHttpController.get.mockReturnValue(of({ job_id: 'test', status: 'completed' }));
+    service.getSyncJob(mockController, 'test/id').subscribe();
+    expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/images/sync/jobs/test%2Fid');
+  });
+
   describe('getImagePath', () => {
     it('should return correct URL for image', () => {
       const result = service.getImagePath(mockController, false, 'image.img');
