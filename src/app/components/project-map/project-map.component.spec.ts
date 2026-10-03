@@ -1089,13 +1089,13 @@ describe('ProjectMapComponent', () => {
       expect(localStorage.getItem('notificationsVisibility')).toBe('true');
     });
 
-    it('should disable notifications and remove from localStorage', () => {
+    it('should disable notifications and persist the preference', () => {
       component.notificationsVisibility = true;
 
       component.toggleNotifications(false);
 
       expect(component.notificationsVisibility).toBe(false);
-      expect(localStorage.getItem('notificationsVisibility')).toBeNull();
+      expect(localStorage.getItem('notificationsVisibility')).toBe('false');
     });
   });
 

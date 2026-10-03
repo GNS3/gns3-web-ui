@@ -72,7 +72,7 @@ export class ToasterService {
     options: NotificationOptions
   ): void {
     const notification = this.notificationCenter.add(kind, message);
-    if (options.showToast === false || this.notificationCenter.panelOpen()) {
+    if (!this.notificationCenter.toastsEnabled || options.showToast === false || this.notificationCenter.panelOpen()) {
       return;
     }
 
