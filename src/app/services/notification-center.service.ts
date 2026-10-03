@@ -11,12 +11,14 @@ export interface AppNotification {
 }
 
 const NOTIFICATION_STORAGE_KEY = 'gns3-notification-history';
+const TOAST_PREFERENCE_STORAGE_KEY = 'notificationsVisibility';
 const NOTIFICATION_LIMIT = 100;
 const MAX_DATE_TIMESTAMP = 8_640_000_000_000_000;
 
 @Injectable({ providedIn: 'root' })
 export class NotificationCenterService {
   private sequence = 0;
+  private toastPreferenceFallback: boolean | undefined;
   private readonly notificationState = signal<AppNotification[]>(this.restore());
   private readonly panelOpenState = signal(false);
 
@@ -28,6 +30,25 @@ export class NotificationCenterService {
   readonly activityCount = computed(
     () => this.notificationState().filter((item) => item.kind === 'success' || item.kind === 'info').length
   );
+
+  get toastsEnabled(): boolean {
+    if (this.toastPreferenceFallback !== undefined) return this.toastPreferenceFallback;
+    try {
+      return localStorage.getItem(TOAST_PREFERENCE_STORAGE_KEY) !== 'false';
+    } catch {
+      return true;
+    }
+  }
+
+  setToastsEnabled(enabled: boolean): void {
+    try {
+      localStorage.setItem(TOAST_PREFERENCE_STORAGE_KEY, String(enabled));
+      this.toastPreferenceFallback = undefined;
+    } catch {
+      // Match notification history: keep working when browser storage is unavailable.
+      this.toastPreferenceFallback = enabled;
+    }
+  }
 
   add(kind: NotificationKind, message: unknown): AppNotification {
     const notification: AppNotification = {

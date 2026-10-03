@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NotificationCenterService } from './notification-center.service';
 
 describe('NotificationCenterService', () => {
@@ -7,6 +7,39 @@ describe('NotificationCenterService', () => {
   beforeEach(() => {
     localStorage.clear();
     service = new NotificationCenterService();
+  });
+
+  it('defaults to visible toasts and restores both saved preferences', () => {
+    expect(service.toastsEnabled).toBe(true);
+    service.setToastsEnabled(false);
+    expect(new NotificationCenterService().toastsEnabled).toBe(false);
+    service.setToastsEnabled(true);
+    expect(new NotificationCenterService().toastsEnabled).toBe(true);
+  });
+
+  it('keeps the toast preference in memory when storage writes fail', () => {
+    const write = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('Storage unavailable');
+    });
+    try {
+      expect(() => service.setToastsEnabled(false)).not.toThrow();
+      expect(service.toastsEnabled).toBe(false);
+      service.setToastsEnabled(true);
+      expect(service.toastsEnabled).toBe(true);
+    } finally {
+      write.mockRestore();
+    }
+  });
+
+  it('defaults to visible toasts when storage reads fail', () => {
+    const read = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('Storage unavailable');
+    });
+    try {
+      expect(service.toastsEnabled).toBe(true);
+    } finally {
+      read.mockRestore();
+    }
   });
 
   it('stores activity, warning, and error notifications with unread counts', () => {

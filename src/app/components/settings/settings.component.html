@@ -547,11 +547,11 @@
             mat-stroked-button
             (click)="checkForAiSkillsUpdates()"
             [disabled]="isLoadingAiSkills()"
-            [matTooltip]="isLoadingAiSkills() ? 'Updating AI skills\u2026' : ''"
+            [matTooltip]="isLoadingAiSkills() ? 'Updating AI skills…' : ''"
           >
             @if (isLoadingAiSkills()) {
             <mat-spinner diameter="18"></mat-spinner>
-            <span>Reloading\u2026</span>
+            <span>Reloading…</span>
             } @else {
             <span>Reload skills</span>
             }

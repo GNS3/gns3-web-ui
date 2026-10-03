@@ -51,6 +51,9 @@
 }
 
 .sidebar__brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
   width: 32px;
   height: 32px;
@@ -192,6 +195,10 @@
 }
 
 .toolbar__brand-icon {
+  // Render the logo as a fixed-size image without an inline SVG line box.
+  display: block;
+  object-fit: contain;
+  flex-shrink: 0;
   width: 24px;
   height: 24px;
 }

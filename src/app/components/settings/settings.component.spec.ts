@@ -177,6 +177,16 @@ describe('SettingsComponent', () => {
     windowOpenSpy?.mockRestore();
   });
 
+  it('renders a proper ellipsis while AI skills are reloading', () => {
+    component.activeCategory.set('ai');
+    component.isLoadingAiSkills.set(true);
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('button[mat-stroked-button]');
+    expect(button.textContent).toContain('Reloading…');
+    expect(button.textContent).not.toContain('\\u2026');
+    expect(button.disabled).toBe(true);
+  });
+
   describe('ngOnInit', () => {
     it('should initialize settings from SettingsService', () => {
       expect(mockSettingsService.getAll).toHaveBeenCalled();

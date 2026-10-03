@@ -377,7 +377,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.cd.markForCheck();
     this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
     this.mapSettingsService.logConsoleSubject.subscribe((value) => (this.isConsoleVisible = value));
-    this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
+    this.notificationsVisibility = this.notificationCenter.toastsEnabled;
     this.layersVisibility = localStorage.getItem('layersVisibility') === 'true' ? true : false;
     this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? true : false;
   }
@@ -1713,11 +1713,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleNotifications(visible: boolean) {
     this.notificationsVisibility = visible;
-    if (this.notificationsVisibility) {
-      localStorage.setItem('notificationsVisibility', 'true');
-    } else {
-      localStorage.removeItem('notificationsVisibility');
-    }
+    this.notificationCenter.setToastsEnabled(visible);
   }
 
   public toggleLayers(visible: boolean) {
@@ -1811,9 +1807,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   private showMessage(msg) {
-    const options = { showToast: this.notificationsVisibility };
-    if (msg.type === 'error') this.toasterService.error(msg.message, options);
-    if (msg.type === 'warning') this.toasterService.warning(msg.message, options);
+    if (msg.type === 'error') this.toasterService.error(msg.message);
+    if (msg.type === 'warning') this.toasterService.warning(msg.message);
   }
 
   public hideMenu() {
