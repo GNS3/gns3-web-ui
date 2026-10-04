@@ -6,11 +6,12 @@ import { ToasterService } from './toaster.service';
 describe('ToasterService', () => {
   let service: ToasterService;
   let snackbar: { openFromComponent: ReturnType<typeof vi.fn> };
-  let notificationCenter: { add: ReturnType<typeof vi.fn>; panelOpen: ReturnType<typeof vi.fn> };
+  let notificationCenter: { add: ReturnType<typeof vi.fn>; panelOpen: ReturnType<typeof vi.fn>; toastsEnabled: boolean };
 
   beforeEach(() => {
     snackbar = { openFromComponent: vi.fn() };
     notificationCenter = {
+      toastsEnabled: true,
       panelOpen: vi.fn().mockReturnValue(false),
       add: vi.fn((kind: NotificationKind, message: string) => ({
         id: 'notification-1',
@@ -47,6 +48,37 @@ describe('ToasterService', () => {
         },
       })
     );
+  });
+
+  it.each(['success', 'info', 'warning', 'error'] as const)('honors the toast preference for %s and keeps history', (kind) => {
+    notificationCenter.toastsEnabled = false;
+    service[kind]('Hidden', { showToast: true });
+    expect(notificationCenter.add).toHaveBeenCalledWith(kind, 'Hidden');
+    expect(snackbar.openFromComponent).not.toHaveBeenCalled();
+
+    notificationCenter.toastsEnabled = true;
+    service[kind]('Visible');
+    expect(snackbar.openFromComponent).toHaveBeenCalledOnce();
+  });
+
+  it('applies the persisted preference through the real notification center', () => {
+    localStorage.removeItem('notificationsVisibility');
+    const center = new NotificationCenterService();
+    const toaster = new ToasterService(snackbar as any, center);
+    try {
+      center.setToastsEnabled(false);
+      toaster.success('Hidden');
+      expect(snackbar.openFromComponent).not.toHaveBeenCalled();
+      expect(center.notifications()[0].message).toBe('Hidden');
+
+      center.setToastsEnabled(true);
+      toaster.success('Visible');
+      expect(snackbar.openFromComponent).toHaveBeenCalledOnce();
+      expect(center.notifications()[0].message).toBe('Visible');
+    } finally {
+      center.clear();
+      localStorage.removeItem('notificationsVisibility');
+    }
   });
 
   it('records a notification without showing a toast when requested', () => {
