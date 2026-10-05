@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
 import { Observable } from 'rxjs';
-import { Image, ImageSyncJob } from '@models/images';
+import { Image, ImageSyncJob, ImageCompatibility, ImageCompatibilityCatalog } from '@models/images';
 import { environment } from 'environments/environment';
 
 @Injectable({
@@ -26,8 +26,18 @@ export class ImageManagerService {
     return this.httpController.get<ImageSyncJob>(controller, `/images/sync/jobs/${encodeURIComponent(jobId)}`);
   }
 
-  getImagePath(controller: Controller, install_appliance, image_path) {
-    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${image_path}?install_appliances=${install_appliance}`;
+  getCompatibilityCatalog(controller: Controller): Observable<ImageCompatibilityCatalog> {
+    return this.httpController.get<ImageCompatibilityCatalog>(controller, '/images/compatibility/catalog');
+  }
+
+  checkCompatibility(controller: Controller, checksums: string[]): Observable<ImageCompatibility[]> {
+    return this.httpController.post<ImageCompatibility[]>(controller, '/images/compatibility', { checksums });
+  }
+
+  getImagePath(controller: Controller, install_appliance: boolean, image_path: string, subdirectory = ''): string {
+    const encodedPath = image_path.split('/').map(encodeURIComponent).join('/');
+    const folder = subdirectory ? `&subdirectory=${encodeURIComponent(subdirectory)}` : '';
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${encodedPath}?install_appliances=${install_appliance}${folder}`;
   }
 
   uploadedImage(controller: Controller, install_appliance, image_path, file) {

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { HttpClient, HttpEventType } from '@angular/common/http';
+import { EMPTY, of } from 'rxjs';
+import { HttpClient, HttpEventType, HttpResponse } from '@angular/common/http';
 import { BackgroundUploadService } from './background-upload.service';
 import { ImageManagerService } from './image-manager.service';
 import { ImageUploadSessionService } from './image-upload-session.service';
@@ -60,6 +61,75 @@ describe('BackgroundUploadService', () => {
     });
 
     service = TestBed.inject(BackgroundUploadService);
+  });
+
+  it('retains the selected subfolder in the background upload request', () => {
+    vi.mocked(mockHttp.request).mockReturnValue(EMPTY);
+    const file = new File(['image'], 'router.qcow2');
+    const id = service.queueFile(mockController, file, false, 'Cisco/IOSv');
+    expect(mockImageService.getImagePath).toHaveBeenCalledWith(mockController, false, 'router.qcow2', 'Cisco/IOSv');
+    expect(mockHttp.request).toHaveBeenCalledTimes(1);
+    service.cancelUploadByTempId(id);
+  });
+
+  it('reports the server destination path when a nested upload completes', () => {
+    const path = '/images/QEMU/Vendor/router.qcow2';
+    vi.mocked(mockHttp.request).mockReturnValue(of(new HttpResponse({ body: { filename: 'router.qcow2', path } })));
+    service.queueFile(mockController, new File(['image'], 'router.qcow2'), false, 'Vendor');
+    expect(mockImageUploadSessionService.emit).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: 'uploaded', path })
+    );
+  });
+
+  it.each([
+    [[], 'did not report'],
+    [[{ status: 'skipped', reason: 'No matching appliance definition.' }], 'No matching appliance definition.'],
+    [[{ status: 'skipped', name: 'Router', reason: 'Already exists.' }], 'Router: Already exists.'],
+    [
+      [
+        { status: 'created', name: 'Router' },
+        { status: 'skipped', reason: 'Missing disk.' },
+      ],
+      'Created templates: Router.',
+    ],
+  ])('reports template creation limitations without failing the upload', (results, message) => {
+    vi.mocked(mockHttp.request).mockReturnValue(
+      of(new HttpResponse({ body: { filename: 'router.qcow2', template_results: results } }))
+    );
+    service.queueFile(mockController, new File(['image'], 'router.qcow2'), true);
+    expect(mockToasterService.warning).toHaveBeenCalledWith(expect.stringContaining(message));
+    expect(mockToasterService.error).not.toHaveBeenCalled();
+    expect(mockImageUploadSessionService.emit).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: 'uploaded' })
+    );
+  });
+
+  it.each(['invalid', [null], [{ status: 'unknown' }]])(
+    'releases the upload slot when template feedback is malformed',
+    (results) => {
+      vi.mocked(mockHttp.request).mockReturnValue(
+        of(new HttpResponse({ body: { filename: 'router.qcow2', template_results: results } }))
+      );
+      const active: number[] = [];
+      const subscription = service.activeCount$.subscribe((count) => active.push(count));
+      service.queueFile(mockController, new File(['image'], 'router.qcow2'), true);
+      expect(mockToasterService.warning).toHaveBeenCalledWith(expect.stringContaining('did not report whether'));
+      expect(active[active.length - 1]).toBe(0);
+      subscription.unsubscribe();
+    }
+  );
+
+  it('reports the templates created for an uploaded image', () => {
+    vi.mocked(mockHttp.request).mockReturnValue(
+      of(
+        new HttpResponse({
+          body: { filename: 'router.qcow2', template_results: [{ status: 'created', name: 'Router' }] },
+        })
+      )
+    );
+    service.queueFile(mockController, new File(['image'], 'router.qcow2'), true);
+    expect(mockToasterService.success).toHaveBeenCalledWith('Image router.qcow2 uploaded. Created templates: Router.');
+    expect(mockToasterService.warning).not.toHaveBeenCalled();
   });
 
   describe('Service Creation', () => {

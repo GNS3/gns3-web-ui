@@ -778,6 +778,24 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
     margin-bottom: 8px;
   }
 
+  .add-image-dialog-install-option {
+    .mat-internal-form-field {
+      align-items: flex-start;
+    }
+
+    .mdc-label {
+      padding-top: max(0px, calc((var(--mat-radio-state-layer-size, 40px) - 1lh) / 2));
+    }
+  }
+
+  .add-image-dialog-compatibility-results {
+    padding-top: 16px;
+  }
+
+  .add-image-dialog-compatibility-warning {
+    color: var(--mat-sys-error);
+  }
+
   /* Responsive Design */
   @media (max-width: 480px) {
     mat-dialog-container,
@@ -2250,6 +2268,15 @@ html[data-density='compact'] .dialog-small-panel {
 
   .mat-mdc-dialog-title + :not(.mat-mdc-dialog-content):not(.mat-mdc-dialog-actions) {
     padding-block: 16px;
+  }
+}
+
+// Keep disabled Add Image actions distinct from the shared primary treatment.
+.base-dialog-panel.add-image-dialog-panel {
+  :is(.mat-mdc-dialog-actions, .mat-dialog-actions) button[color='primary']:disabled {
+    color: color-mix(in srgb, var(--mat-sys-on-surface) 38%, var(--mat-sys-surface-container));
+    background: color-mix(in srgb, var(--mat-sys-on-surface) 12%, var(--mat-sys-surface-container));
+    box-shadow: none;
   }
 }
 

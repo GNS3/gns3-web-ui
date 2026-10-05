@@ -653,6 +653,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
       rowType: 'upload',
       tempId: event.tempId,
       filename: event.filename,
+      path: event.path,
       image_type: event.image_type,
       image_size: event.image_size,
       uploadProgress: event.progress,
@@ -717,8 +718,12 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   private syncUploadedRowsWithPersistedData(): void {
     const persistedNames = new Set(this.images.map((image) => image.filename));
+    const persistedPaths = new Set(this.images.map((image) => image.path));
     this.uploadRows.forEach((row, key) => {
-      if (row.uploadStatus === 'uploaded' && persistedNames.has(row.filename)) {
+      if (
+        row.uploadStatus === 'uploaded' &&
+        (row.path ? persistedPaths.has(row.path) : persistedNames.has(row.filename))
+      ) {
         this.uploadRows.delete(key);
       }
     });

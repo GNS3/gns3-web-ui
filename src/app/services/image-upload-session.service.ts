@@ -11,6 +11,7 @@ export interface ImageUploadEvent {
   status: ImageUploadStatus;
   errorMessage?: string;
   controller_id?: number;
+  path?: string;
 }
 
 @Injectable({
