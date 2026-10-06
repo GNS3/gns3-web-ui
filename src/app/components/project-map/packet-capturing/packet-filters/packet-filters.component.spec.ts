@@ -361,10 +361,41 @@ describe('PacketFiltersDialogComponent', () => {
     it('should reject a delay whose latency is below the minimum while jitter is set', () => {
       component.ngOnInit();
 
+      setParam('delay', 'Latency', -5);
+      setParam('delay', 'Jitter (-/+)', 5);
+
+      expect(component.paramError(group('delay'), param('delay', 'Latency'))).toBe('Latency must be between 1 and 32767');
+      expect(component.hasValidationErrors()).toBe(true);
+    });
+
+    it('should accept a jitter-only delay — latency 0 means "not set" even mid-array', () => {
+      component.ngOnInit();
+
       setParam('delay', 'Latency', 0);
       setParam('delay', 'Jitter (-/+)', 5);
 
-      expect(component.paramError(group('delay'), param('delay', 'Latency'))).toBe('Value must be between 1 and 32767');
+      expect(component.paramError(group('delay'), param('delay', 'Latency'))).toBeNull();
+      expect(component.hasValidationErrors()).toBe(false);
+    });
+
+    it('should not freeze a link that already stores delay [0, 5]', () => {
+      mockLinkService.getLink.mockReturnValue(of(createMockLink({ delay: [0, 5] })));
+
+      component.ngOnInit();
+      component.onYesClick();
+
+      expect(component.hasValidationErrors()).toBe(false);
+      expect(mockLinkService.updateLink).toHaveBeenCalled();
+      expect(component.link.filters!.delay).toEqual([0, 5]);
+    });
+
+    it('should reject a distribution chosen without jitter (server answers 409 otherwise)', () => {
+      component.ngOnInit();
+
+      setParam('delay', 'Latency', 100);
+      setParam('delay', 'Distribution', 'normal');
+
+      expect(component.paramError(group('delay'), param('delay', 'Jitter (-/+)'))).toBe('Set a jitter value to use a distribution');
       expect(component.hasValidationErrors()).toBe(true);
     });
 
@@ -373,7 +404,7 @@ describe('PacketFiltersDialogComponent', () => {
 
       setParam('window_drop', 'Chance', 101);
 
-      expect(component.paramError(group('window_drop'), param('window_drop', 'Chance'))).toBe('Value must be at most 100');
+      expect(component.paramError(group('window_drop'), param('window_drop', 'Chance'))).toBe('Chance must be between 0 and 100');
     });
 
     it('should reject a non-integer value', () => {
@@ -467,6 +498,40 @@ describe('PacketFiltersDialogComponent', () => {
       expect(component.link.filters!.rate).toEqual(['512kbit']);
       expect(component.link.filters!.delay).toEqual([50, 5, 'normal']);
     });
+
+    it('should trim padded string values (a pasted tc rate)', () => {
+      component.ngOnInit();
+
+      setParam('rate', 'Rate', ' 512kbit ');
+
+      component.onYesClick();
+
+      expect(component.link.filters!.rate).toEqual(['512kbit']);
+    });
+  });
+
+  describe('payload preservation (the PUT replaces the whole filters dict)', () => {
+    it('should re-send the link filters unchanged when the catalog fails to load', () => {
+      mockLinkService.getLink.mockReturnValue(of(createMockLink({ delay: [100, 10], bpf: ['tcp port 80'] })));
+      mockLinkService.getAvailableFilters.mockReturnValue(throwError(() => new Error('Failed to load available filters')));
+
+      component.ngOnInit();
+      component.onYesClick();
+
+      expect(component.link.filters).toEqual({ delay: [100, 10], bpf: ['tcp port 80'] });
+      expect(mockLinkService.updateLink).toHaveBeenCalled();
+    });
+
+    it('should keep active filters the catalog does not advertise', () => {
+      mockLinkService.getLink.mockReturnValue(of(createMockLink({ corrupt: [50], bpf: ['host 10.0.0.1'] })));
+
+      component.ngOnInit();
+      setParam('bpf', 'Filters', '   '); // cleared by the user
+
+      component.onYesClick();
+
+      expect(component.link.filters).toEqual({ corrupt: [50] });
+    });
   });
 
   describe('onNoClick', () => {
@@ -479,7 +544,8 @@ describe('PacketFiltersDialogComponent', () => {
 
   describe('onResetClick', () => {
     it('should reset filters to an empty object', () => {
-      component.link = createMockLink({ bpf: ['custom'], corrupt: [50] });
+      mockLinkService.getLink.mockReturnValue(of(createMockLink({ bpf: ['custom'], corrupt: [50] })));
+      component.ngOnInit();
 
       component.onResetClick();
 
@@ -487,14 +553,19 @@ describe('PacketFiltersDialogComponent', () => {
     });
 
     it('should call updateLink and close dialog', () => {
-      const mockLink = createMockLink();
-      component.link = mockLink;
+      component.ngOnInit();
 
       component.onResetClick();
 
       expect(mockLinkService.updateLink).toHaveBeenCalledWith(component.controller, component.link);
       expect(mockToasterService.success).toHaveBeenCalledWith('Packet filters reset.');
       expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should do nothing before the dialog data has loaded', () => {
+      component.onResetClick();
+
+      expect(mockLinkService.updateLink).not.toHaveBeenCalled();
     });
   });
 
@@ -512,14 +583,31 @@ describe('PacketFiltersDialogComponent', () => {
 
     it('should not send anything while validation errors are present', () => {
       component.ngOnInit();
-      setParam('delay', 'Latency', 0);
-      setParam('delay', 'Jitter (-/+)', 5);
+      setParam('window_drop', 'Chance', 101);
 
       component.onYesClick();
 
       expect(mockLinkService.updateLink).not.toHaveBeenCalled();
       expect(mockDialogRef.close).not.toHaveBeenCalled();
       expect(component.isApplying()).toBe(false);
+    });
+
+    it('should refuse Cancel and Reset while the apply PUT is in flight', () => {
+      component.ngOnInit();
+      const pending = new Subject<Link>();
+      mockLinkService.updateLink.mockReturnValue(pending.asObservable());
+
+      component.onYesClick();
+      expect(component.isApplying()).toBe(true);
+
+      component.onNoClick();
+      component.onResetClick();
+
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+      expect(mockLinkService.updateLink).toHaveBeenCalledTimes(1); // the apply only
+
+      pending.next(createMockLink());
+      expect(mockDialogRef.close).toHaveBeenCalled();
     });
 
     it('should show an error toast and re-enable the dialog when apply fails', () => {
@@ -659,6 +747,14 @@ describe('PacketFiltersDialogComponent', () => {
       const bpf = mockDialogInstance.messages.find((m: any) => m.name === 'Berkeley Packet Filter (BPF)');
       expect(bpf.description).toContain('- Filters: one expression per line');
     });
+
+    it('should not open help before the filter catalog has settled', () => {
+      const openSpy = vi.spyOn(component['dialog'], 'open');
+
+      component.onHelpClick(); // availableFilters still undefined
+
+      expect(openSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('Filter form interaction', () => {
@@ -697,6 +793,31 @@ describe('PacketFiltersDialogComponent', () => {
       const cancelButton = compiled.querySelector('button');
       expect(cancelButton).toBeTruthy();
     });
+
+    it('should render the validation message under the field (mat-error)', () => {
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      setParam('window_drop', 'Chance', 101);
+      component.toggleAdvanced();
+      fixture.detectChanges();
+
+      const errors = fixture.nativeElement.querySelectorAll('mat-error');
+      expect(errors.length).toBe(1);
+      expect(errors[0].textContent?.trim()).toBe('Chance must be between 0 and 100');
+    });
+
+    it('should derive select options from the advertised unit vocabulary', () => {
+      const custom: FilterDescription[] = [
+        { type: 'netem', name: 'Netem', description: '', parameters: [{ name: 'Profile', type: 'str', unit: 'a|b|c' }] },
+      ];
+      mockLinkService.getAvailableFilters.mockReturnValue(of(custom));
+
+      component.ngOnInit();
+
+      expect(param('netem', 'Profile').kind).toBe('select');
+      expect(param('netem', 'Profile').options).toEqual(['a', 'b', 'c']);
+    });
   });
 
   describe('Error handling', () => {
@@ -713,13 +834,27 @@ describe('PacketFiltersDialogComponent', () => {
     it('should show error toast when updateLink fails on onResetClick', () => {
       mockLinkService.updateLink.mockReturnValue(throwError(() => new Error('Failed to reset filters')));
       const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
-      component.link = createMockLink();
+      component.ngOnInit();
 
       component.onResetClick();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to reset filters');
       expect(cdrSpy).toHaveBeenCalled();
       expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should resolve to an error state instead of spinning forever when getLink fails', () => {
+      mockLinkService.getLink.mockReturnValue(throwError(() => new Error('Failed to load link filters')));
+
+      component.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load link filters');
+      expect(component.linkLoadFailed).toBe(true);
+      expect(component.filterGroups).toBeUndefined();
+
+      component.onYesClick();
+      component.onResetClick();
+      expect(mockLinkService.updateLink).not.toHaveBeenCalled();
     });
   });
 });

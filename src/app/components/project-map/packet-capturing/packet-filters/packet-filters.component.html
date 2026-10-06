@@ -31,7 +31,7 @@
               <input
                 matInput
                 type="number"
-                [value]="param.value"
+                [formControl]="param.control"
                 [min]="param.minimum"
                 [max]="param.maximum"
                 [errorStateMatcher]="param.errorMatcher"
@@ -81,20 +81,31 @@
     </div>
   }
 </div>
+} @else if (this.linkLoadFailed) {
+<div mat-dialog-content>
+  <p class="packet-filters__empty">Could not load the link. Close the dialog and try again.</p>
+</div>
 } @else {
 <div mat-dialog-content class="packet-filters__loading">
   <mat-spinner diameter="24"></mat-spinner>
 </div>
 }
 <div mat-dialog-actions align="end">
-  <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onResetClick()" color="accent">Reset</button>
-  <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying()">
+  <button mat-button (click)="onNoClick()" color="accent" [disabled]="isApplying()">Cancel</button>
+  <button mat-button (click)="onResetClick()" color="accent" [disabled]="!this.filterGroups || isApplying()">Reset</button>
+  <button
+    mat-button
+    (click)="onYesClick()"
+    tabindex="2"
+    mat-raised-button
+    color="primary"
+    [disabled]="!this.filterGroups || isApplying()"
+  >
     @if (isApplying()) {
       <mat-spinner diameter="20"></mat-spinner>
     } @else {
       Apply
     }
   </button>
-  <button mat-button (click)="onHelpClick()" color="accent">Help</button>
+  <button mat-button (click)="onHelpClick()" color="accent" [disabled]="!this.filterGroups">Help</button>
 </div>

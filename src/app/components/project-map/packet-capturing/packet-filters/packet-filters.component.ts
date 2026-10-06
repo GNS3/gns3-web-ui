@@ -8,6 +8,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { ErrorStateMatcher } from '@angular/material/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ValidationService } from '@services/validation/base/validation.service';
 import { Filter } from '@models/filter';
 import { FilterDescription, Parameter } from '@models/filter-description';
 import { Link } from '@models/link';
@@ -31,6 +33,12 @@ export interface FilterParamView {
   maximum?: number;
   value: number | string;
   options: string[];
+  // FormControl presence gives MatInput an NgControl: without one,
+  // MatInput.ngDoCheck never calls updateErrorState(), so the custom
+  // errorStateMatcher below is never consulted and <mat-error> stays hidden.
+  // The control carries no validation of its own — it is the error-state
+  // vehicle for the hand-computed errors.
+  control: FormControl;
   errorMatcher: ErrorStateMatcher;
 }
 
@@ -51,9 +59,6 @@ class FilterParamErrorMatcher implements ErrorStateMatcher {
   }
 }
 
-// Jitter distributions of the netem delay filter (server vocabulary).
-const NETEM_DISTRIBUTIONS = ['uniform', 'normal', 'pareto', 'paretonormal'];
-
 // Mirror of the server's kernel-only filter set, used ONLY to explain why a
 // kernel-datapath link offers fewer filters (the available_filters list
 // itself always stays authoritative).
@@ -65,6 +70,7 @@ const KERNEL_ONLY_FILTER_TYPES = ['rate', 'reorder', 'gemodel', 'duplicate', 'se
   styleUrl: './packet-filters.component.scss',
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
@@ -82,6 +88,7 @@ export class PacketFiltersDialogComponent implements OnInit {
   private dialogConfig = inject(DialogConfigService);
   private cdr = inject(ChangeDetectorRef);
   private toasterService = inject(ToasterService);
+  private validationService = inject(ValidationService);
 
   readonly isApplying = signal(false);
   /** Advanced (kernel-only) filters are collapsed by default. */
@@ -95,6 +102,8 @@ export class PacketFiltersDialogComponent implements OnInit {
   basicGroups: FilterGroupView[] = [];
   advancedGroups: FilterGroupView[] = [];
   capabilityHint?: string | null;
+  /** The link itself failed to load — show an error state, not a spinner. */
+  linkLoadFailed = false;
 
   private activeFilters?: Filter;
 
@@ -111,6 +120,9 @@ export class PacketFiltersDialogComponent implements OnInit {
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to load link filters';
         this.toasterService.error(message);
+        // Resolve the state (mirrors the available_filters error path below):
+        // never leave the dialog spinning forever.
+        this.linkLoadFailed = true;
         this.cdr.markForCheck();
       },
     });
@@ -151,10 +163,15 @@ export class PacketFiltersDialogComponent implements OnInit {
   }
 
   onNoClick() {
+    // A close during an in-flight apply would claim the changes were
+    // discarded while the PUT still lands. disableClose only guards
+    // ESC/backdrop, so guard the programmatic path too.
+    if (this.isApplying()) return;
     this.dialogRef.close();
   }
 
   onResetClick() {
+    if (this.isApplying() || !this.filterGroups) return;
     this.link.filters = {};
 
     this.linkService.updateLink(this.controller, this.link).subscribe({
@@ -199,6 +216,8 @@ export class PacketFiltersDialogComponent implements OnInit {
   }
 
   onHelpClick() {
+    // availableFilters is undefined until the catalog request settles.
+    if (!this.availableFilters) return;
     const dialogConfig = this.dialogConfig.openConfig('helpDialog', {
       autoFocus: false,
       disableClose: true,
@@ -281,23 +300,28 @@ export class PacketFiltersDialogComponent implements OnInit {
       const activeValues = active[description.type] ?? [];
       const params: FilterParamView[] = (description.parameters ?? []).map((parameter: Parameter, index: number) => {
         const kind = this.paramKind(parameter);
+        const initial: number | string =
+          kind === 'textarea'
+            ? activeValues.length
+              ? activeValues.map(String).join('\n')
+              : ''
+            : index < activeValues.length
+              ? activeValues[index]
+              : kind === 'number'
+                ? 0
+                : '';
         return {
           name: parameter.name,
           kind,
           unit: parameter.unit ?? '',
           minimum: parameter.minimum,
           maximum: parameter.maximum,
-          value:
-            kind === 'textarea'
-              ? activeValues.length
-                ? activeValues.map(String).join('\n')
-                : ''
-              : index < activeValues.length
-                ? activeValues[index]
-                : kind === 'number'
-                  ? 0
-                  : '',
-          options: kind === 'select' ? [...NETEM_DISTRIBUTIONS] : [],
+          value: initial,
+          // The server lists the allowed values in the unit
+          // ('uniform|normal|pareto|paretonormal') — derive the options from
+          // the advertised data instead of a parallel client-side vocabulary.
+          options: kind === 'select' ? (parameter.unit ?? '').split('|').map((option) => option.trim()) : [],
+          control: new FormControl(initial),
           errorMatcher: undefined as unknown as ErrorStateMatcher,
         };
       });
@@ -320,15 +344,16 @@ export class PacketFiltersDialogComponent implements OnInit {
   private paramKind(parameter: Parameter): ParamControlKind {
     if (parameter.type === 'int') return 'number';
     if (parameter.type === 'text') return 'textarea';
-    if (parameter.name.trim().toLowerCase() === 'distribution') return 'select';
+    if (parameter.type === 'str' && (parameter.unit ?? '').includes('|')) return 'select';
     return 'text';
   }
 
   /**
    * Truncate trailing blank values (0 / empty — the server treats them as
    * "parameter not set"), then validate the surviving values against the
-   * advertised minimum/maximum. Zero values that survive truncation (e.g.
-   * window_drop Start) are validated honestly.
+   * advertised minimum/maximum. A blank value also means "not set" in
+   * mid-array (a jitter-only delay keeps latency at 0), so blanks skip
+   * range validation everywhere; the server accepts and stores the zeros.
    */
   private computeGroupResult(group: FilterGroupView): { values: (number | string)[]; errors: Map<FilterParamView, string> } {
     const errors = new Map<FilterParamView, string>();
@@ -340,26 +365,48 @@ export class PacketFiltersDialogComponent implements OnInit {
     for (let i = 0; i < length; i++) {
       const param = group.params[i];
       const value = raw[i];
-      if (param.kind === 'number') {
-        const n = typeof value === 'number' ? value : Number(value);
-        if (!Number.isFinite(n) || !Number.isInteger(n)) {
-          errors.set(param, 'Enter a whole number');
-          values.push(value);
-        } else if (param.minimum !== undefined && n < param.minimum) {
-          errors.set(
-            param,
-            param.maximum !== undefined ? `Value must be between ${param.minimum} and ${param.maximum}` : `Value must be at least ${param.minimum}`
-          );
-          values.push(n);
-        } else if (param.maximum !== undefined && n > param.maximum) {
-          errors.set(param, `Value must be at most ${param.maximum}`);
-          values.push(n);
-        } else {
-          values.push(n);
-        }
-      } else {
-        values.push(String(value));
+      if (param.kind !== 'number') {
+        // Trim: a pasted ' 512kbit ' must reach the server clean or tc
+        // rejects the whole apply.
+        values.push(String(value).trim());
+        continue;
       }
+      const n = typeof value === 'number' ? value : Number(value);
+      if (this.isBlankFor(param, value)) {
+        values.push(n);
+        continue;
+      }
+      if (!Number.isFinite(n) || !Number.isInteger(n)) {
+        errors.set(param, 'Enter a whole number');
+        values.push(value);
+        continue;
+      }
+      if (param.minimum !== undefined && param.maximum !== undefined) {
+        const result = this.validationService.validateNumberRange(String(n), param.minimum, param.maximum, param.name);
+        if (!result.isValid && result.errorMessage) errors.set(param, result.errorMessage);
+        values.push(n);
+      } else if (param.minimum !== undefined && n < param.minimum) {
+        errors.set(param, `Value must be at least ${param.minimum}`);
+        values.push(n);
+      } else if (param.maximum !== undefined && n > param.maximum) {
+        errors.set(param, `Value must be at most ${param.maximum}`);
+        values.push(n);
+      } else {
+        values.push(n);
+      }
+    }
+
+    // Server contract: a netem distribution requires jitter > 0 (the apply
+    // is rejected with 409 otherwise) — surface it on the jitter field
+    // instead of letting the user meet the raw server error.
+    const selectIndex = group.params.findIndex((param) => param.kind === 'select');
+    const jitterParam = selectIndex > 0 ? group.params[selectIndex - 1] : undefined;
+    if (
+      jitterParam?.kind === 'number' &&
+      !this.isBlankFor(group.params[selectIndex], raw[selectIndex]) &&
+      this.isBlankFor(jitterParam, raw[selectIndex - 1])
+    ) {
+      errors.set(jitterParam, 'Set a jitter value to use a distribution');
     }
     return { values, errors };
   }
@@ -372,10 +419,20 @@ export class PacketFiltersDialogComponent implements OnInit {
   }
 
   private buildFiltersPayload(): Filter {
+    // Start from the filters fetched with the link: the PUT replaces the
+    // whole dict server-side, so anything the advertised catalog does not
+    // describe (catalog load failure, capability gap) must be re-sent
+    // unchanged instead of being silently dropped.
     const payload: Filter = {};
+    for (const [key, activeValues] of Object.entries(this.activeFilters ?? {})) {
+      payload[key] = [...activeValues];
+    }
     for (const group of this.filterGroups ?? []) {
       const { values } = this.computeGroupResult(group);
-      if (!values.length) continue;
+      if (!values.length) {
+        delete payload[group.key]; // the user cleared every field of the group
+        continue;
+      }
       // bpf and any future text filter: one element holding the multi-line
       // string. Layout width (isWide) is unrelated to the value encoding.
       if (group.params.some((param) => param.kind === 'textarea')) payload[group.key] = [String(values[0]).trim()];
