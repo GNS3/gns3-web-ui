@@ -2,6 +2,7 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpRequest } from '@angular/co
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ImageTemplateResult } from '@models/images';
 import { Controller } from '@models/controller';
 import { ImageManagerService } from '@services/image-manager.service';
 import { ImageUploadSessionService } from '@services/image-upload-session.service';
@@ -12,6 +13,8 @@ interface UploadTask {
   file: File;
   controller: Controller;
   installAppliance: boolean;
+  subdirectory: string;
+  path?: string;
   cancel$: Subject<void>;
   status: 'queued' | 'uploading' | 'uploaded' | 'error' | 'canceled';
   progress: number;
@@ -39,13 +42,14 @@ export class BackgroundUploadService {
     });
   }
 
-  queueFile(controller: Controller, file: File, installAppliance: boolean): string {
+  queueFile(controller: Controller, file: File, installAppliance: boolean, subdirectory = ''): string {
     const tempId = `img-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
     const task: UploadTask = {
       tempId,
       file,
       controller,
       installAppliance,
+      subdirectory,
       cancel$: new Subject<void>(),
       status: 'queued',
       progress: 0,
@@ -90,7 +94,12 @@ export class BackgroundUploadService {
     task.status = 'uploading';
     this.emitEvent(task);
 
-    const url = this.imageService.getImagePath(task.controller, task.installAppliance, task.file.name);
+    const url = this.imageService.getImagePath(
+      task.controller,
+      task.installAppliance,
+      task.file.name,
+      task.subdirectory
+    );
     const headers: { [key: string]: string } = {};
     if (task.controller.authToken && !task.controller.tokenExpired) {
       headers['Authorization'] = `Bearer ${task.controller.authToken}`;
@@ -113,10 +122,15 @@ export class BackgroundUploadService {
           } else if (event.type === HttpEventType.Response) {
             const body: any = event.body;
             const filename = body?.filename || body?.message?.filename || task.file.name;
+            task.path = body?.path || body?.message?.path;
             task.status = 'uploaded';
             task.progress = 100;
             this.emitEvent(task);
-            this.toasterService.success(`Image ${filename} imported successfully`);
+            this.reportUploadResult(
+              filename,
+              task.installAppliance,
+              body?.template_results || body?.message?.template_results
+            );
             this.releaseSlot(task);
             this.removeFromQueue(task);
             this.processQueue();
@@ -134,6 +148,37 @@ export class BackgroundUploadService {
           this.updateActiveCount();
         },
       });
+  }
+
+  private reportUploadResult(filename: string, requested: boolean, results?: ImageTemplateResult[]) {
+    if (!requested) {
+      this.toasterService.success(`Image ${filename} imported successfully`);
+      return;
+    }
+    if (
+      !Array.isArray(results) ||
+      !results.length ||
+      results.some((result) => !result || (result.status !== 'created' && result.status !== 'skipped'))
+    ) {
+      this.toasterService.warning(
+        `Image ${filename} uploaded. The server did not report whether a template was created.`
+      );
+      return;
+    }
+    const created = results.filter((result) => result.status === 'created');
+    const skipped = results.filter((result) => result.status === 'skipped');
+    const outcome = created.length
+      ? `Created templates: ${created.map((result) => result.name || result.template_id).join(', ')}.`
+      : '';
+    const message = `Image ${filename} uploaded.${outcome ? ` ${outcome}` : ''}`;
+    if (skipped.length) {
+      const reasons = skipped.map(
+        (result) => `${result.name ? result.name + ': ' : ''}${result.reason || 'Template creation was skipped.'}`
+      );
+      this.toasterService.warning(`${message} ${reasons.join(' ')}`);
+    } else {
+      this.toasterService.success(message);
+    }
   }
 
   private pickNextTask(): UploadTask | null {
@@ -266,6 +311,7 @@ export class BackgroundUploadService {
       status: task.status,
       errorMessage,
       controller_id: task.controller.id,
+      path: task.path,
     });
 
     if (task.status === 'uploaded' || task.status === 'error' || task.status === 'canceled') {

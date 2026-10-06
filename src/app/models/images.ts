@@ -23,3 +23,27 @@ export interface ImageSyncJob {
 }
 
 export class ImageData {}
+
+export interface ImageTemplateResult {
+  status: 'created' | 'skipped';
+  name?: string;
+  reason?: string;
+  template_id?: string;
+}
+
+export interface ImageApplianceMatch {
+  name: string;
+  version: string;
+  missing_images: string[];
+  downloadable_images: string[];
+}
+
+export interface ImageCompatibility {
+  checksum: string;
+  matches: ImageApplianceMatch[];
+}
+
+export interface ImageCompatibilityCatalog {
+  image_sizes: number[];
+  has_unknown_sizes: boolean;
+}

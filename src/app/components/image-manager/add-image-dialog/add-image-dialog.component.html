@@ -1,34 +1,34 @@
-@if (!isInstallAppliance) {
-<h1 mat-dialog-title>
-  Would you like to automatically install appliances for this image?
-</h1>
-
-<mat-dialog-content>
-  <mat-radio-group
-    name="install_appliances"
-    [value]="install_appliance"
-    (change)="selectInstallApplianceOption($event)"
-  >
-    <mat-radio-button [value]="true" [checked]="install_appliance"> Yes </mat-radio-button>
-    <mat-radio-button [value]="false" [checked]="!install_appliance"> No </mat-radio-button>
-  </mat-radio-group>
-</mat-dialog-content>
-
-<mat-dialog-actions align="end">
-  <button mat-button (click)="closeDialog()">Cancel</button>
-  <button mat-raised-button color="primary" (click)="isInstallAppliance = !isInstallAppliance">Next</button>
-</mat-dialog-actions>
-} @if (isInstallAppliance) {
+@if (step === 'files') {
 <h1 mat-dialog-title>Select image file(s) to upload</h1>
 
 <mat-dialog-content>
   <p class="add-image-dialog-hint">
     <mat-icon class="add-image-dialog-hint-icon">info_outline</mat-icon>
-    Uploads run in the background — you can navigate away freely.
+    Image uploads are done in the background.
   </p>
+  <mat-form-field appearance="outline" style="width: 100%">
+    <mat-label>Subfolder (optional)</mat-label>
+    <input
+      matInput
+      [(ngModel)]="subdirectory"
+      maxlength="512"
+      placeholder="Cisco/IOSv"
+      [errorStateMatcher]="subdirectoryErrorStateMatcher"
+    />
+    @if (subdirectoryError) { <mat-error>{{ subdirectoryError }}</mat-error> }
+  </mat-form-field>
+  <p>Leave empty to use the default type folder. New subfolders are created when you upload.</p>
+  @if (selectedFiles.length) {
+  <p>{{ selectedFiles.length }} file(s) selected:</p>
+  <ul>
+    @for (file of selectedFiles; track $index) {
+    <li>{{ file.name }}</li>
+    }
+  </ul>
+  }
   <input
     type="file"
-    accept=".bin,.image,.iol,.qcow2,.vmdk"
+    accept=".bin,.image,.iol,.qcow2,.vmdk,.raw,.img,.iso,.fd,.vhd,.vdi"
     multiple
     #fileInput
     class="add-image-dialog-file-input"
@@ -37,7 +37,69 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="isInstallAppliance = false">Back</button>
-  <button mat-raised-button color="primary" (click)="fileInput.click()">Browse</button>
+  <button mat-button (click)="closeDialog()">Cancel</button>
+  <button mat-button (click)="fileInput.click()">Browse</button>
+  <button mat-raised-button color="primary" (click)="nextStep()" [disabled]="!canProceed">Next</button>
+</mat-dialog-actions>
+} @else {
+<h1 mat-dialog-title>Create template using uploaded image?</h1>
+
+<mat-dialog-content>
+  <p>{{ selectedFiles.length }} file(s) selected. Uploads will run in the background.</p>
+  @for (file of selectedFiles; track $index) {
+  <p>
+    <strong>{{ file.name }}</strong>
+  </p>
+  } @if (subdirectory) {
+  <p>Subfolder: {{ subdirectory }}</p>
+  }
+  <mat-radio-group
+    name="install_appliances"
+    aria-label="Install appliance from uploaded image?"
+    [value]="install_appliance"
+    (change)="selectInstallApplianceOption($event)"
+  >
+    <mat-radio-button class="add-image-dialog-install-option" [value]="true"
+      >Yes - uploads the image and creates a template based on appliance definition present in the server's
+      catalog.</mat-radio-button
+    >
+    <mat-radio-button [value]="false">No - uploads the images without creating a template.</mat-radio-button>
+  </mat-radio-group>
+  @if (install_appliance) {
+  <div class="add-image-dialog-compatibility-results" aria-live="polite">
+    @if (compatibilityState === 'checking') {
+    <p>Checking appliance compatibility… {{ compatibilityProgress }}</p>
+    } @if (compatibilityState === 'error') {
+    <p>{{ compatibilityError }}</p>
+    <button mat-button (click)="checkCompatibility()">Retry check</button>
+    } @for (result of compatibilityResults; track $index) { @if (selectedFiles.length > 1) {
+    <p>
+      <strong>{{ result.filename }}</strong>
+    </p>
+    } @if (result.reason) {
+    <p class="add-image-dialog-compatibility-warning">{{ result.reason }}</p>
+    } @else if (!result.matches.length) {
+    <p class="add-image-dialog-compatibility-warning">
+      No matching appliance definition was found. You can upload this image, but you will need to create a template
+      manually.
+    </p>
+    } @for (match of result.matches; track $index) {
+    <p>Match found: {{ match.name }} ({{ match.version }}).</p>
+    @if (match.missing_images.length) {
+    <p>
+      Required images still missing: {{ match.missing_images.join(', ') }}. This template cannot be created until they
+      are available.
+    </p>
+    } @if (match.downloadable_images.length) {
+    <p>The server will attempt to download additional required images: {{ match.downloadable_images.join(', ') }}.</p>
+    } } }
+  </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="back()">Back</button>
+  <button mat-button (click)="closeDialog()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="uploadFiles()" [disabled]="!canUpload">Upload</button>
 </mat-dialog-actions>
 }

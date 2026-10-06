@@ -2,6 +2,20 @@ import { describe, it, expect } from 'vitest';
 import { ImageManagerComponent } from './image-manager.component';
 
 describe('ImageManagerComponent', () => {
+  it('keeps completed uploads until their exact nested path is in the catalog', () => {
+    const row = { filename: 'router.qcow2', path: '/images/QEMU/VendorB/router.qcow2', uploadStatus: 'uploaded' };
+    const context = {
+      images: [{ filename: row.filename, path: '/images/QEMU/VendorA/router.qcow2' }],
+      uploadRows: new Map([['upload', row]]),
+    };
+    const sync = (ImageManagerComponent.prototype as any).syncUploadedRowsWithPersistedData;
+    sync.call(context);
+    expect(context.uploadRows.size).toBe(1);
+    context.images.push({ filename: row.filename, path: row.path });
+    sync.call(context);
+    expect(context.uploadRows.size).toBe(0);
+  });
+
   describe('prototype methods', () => {
     it('should have ngOnInit method', () => {
       expect(typeof (ImageManagerComponent.prototype as any).ngOnInit).toBe('function');

@@ -46,6 +46,26 @@ describe('ImageManagerService', () => {
     });
   });
 
+  it('encodes filenames and nested subfolders without allowing query injection', () => {
+    const result = service.getImagePath(mockController, false, 'router #1.qcow2', 'Cisco/IOSv 15.9');
+    expect(result).toContain('/upload/router%20%231.qcow2?');
+    expect(result).toContain('&subdirectory=Cisco%2FIOSv%2015.9');
+  });
+
+  it('fetches the catalog size filter before reading image contents', () => {
+    mockHttpController.get.mockReturnValue(of({ image_sizes: [123], has_unknown_sizes: false }));
+    service.getCompatibilityCatalog(mockController);
+    expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/images/compatibility/catalog');
+  });
+
+  it('sends only checksums for the pre-upload compatibility check', () => {
+    mockHttpController.post.mockReturnValue(of([]));
+    service.checkCompatibility(mockController, ['900150983cd24fb0d6963f7d28e17f72']);
+    expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/images/compatibility', {
+      checksums: ['900150983cd24fb0d6963f7d28e17f72'],
+    });
+  });
+
   describe('getImages', () => {
     it('should call httpController.get with /images endpoint', () => {
       mockHttpController.get.mockReturnValue(of([]));
