@@ -941,7 +941,7 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
   .modal-form-container {
     flex: 1 1 auto;
     min-height: 0;
-    margin: 16px 16px 0;
+    margin: 16px;
     padding: 0;
     overflow: hidden;
     border: 1px solid var(--mat-sys-outline-variant);
@@ -1381,7 +1381,7 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
     }
 
     .modal-form-container {
-      margin: 10px 10px 0;
+      margin: 10px;
       overflow: auto;
     }
 
@@ -1468,7 +1468,7 @@ html[data-density='compact'] .node-configurator-dialog-panel {
   }
 
   .modal-form-container {
-    margin: 10px 10px 0;
+    margin: 10px;
   }
 
   mat-tab-group {
