@@ -50,6 +50,7 @@ export interface NodeInfoController {
 export interface NodeInfoPort {
   name: string;
   linkType: string;
+  macAddress?: string;
 }
 
 export interface NodeInfo {
@@ -88,7 +89,11 @@ export class InfoService {
           ? { port: node.console, type: node.console_type }
           : null,
       controller: { id: controller.id, name: controller.name, port: controller.port },
-      ports: node.ports.map((port) => ({ name: port.name, linkType: port.link_type ?? '' })),
+      ports: node.ports.map((port) => ({
+        name: port.name,
+        linkType: port.link_type ?? '',
+        macAddress: port.mac_address,
+      })),
     };
   }
 

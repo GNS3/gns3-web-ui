@@ -67,8 +67,15 @@
 
 .info-dialog__ports-table {
   width: 100%;
+  table-layout: fixed;
   margin-top: 8px;
   border-collapse: collapse;
+
+  th,
+  td {
+    width: calc(100% / 3);
+    overflow-wrap: anywhere;
+  }
 
   th {
     padding: 6px 16px 6px 0;
@@ -115,4 +122,16 @@
   margin: 16px 0 8px;
   font-size: 14px;
   color: var(--mat-sys-on-surface-variant);
+}
+
+.info-dialog__mac-address {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  code {
+    font-family: monospace;
+    user-select: all;
+    white-space: nowrap;
+  }
 }

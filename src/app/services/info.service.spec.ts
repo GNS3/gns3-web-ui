@@ -32,7 +32,7 @@ describe('InfoService', () => {
 
     // Mock Ports
     mockPorts = [
-      { name: 'eth0', link_type: 'ethernet', port_number: 0 } as Port,
+      { name: 'eth0', link_type: 'ethernet', port_number: 0, mac_address: 'aa:bb:cc:dd:ee:ff' } as Port,
       { name: 'eth1', link_type: 'ethernet', port_number: 1 } as Port,
       { name: 'serial0', link_type: 'serial', port_number: 0 } as Port,
     ];
@@ -192,7 +192,7 @@ describe('InfoService', () => {
         const result = service.getInfoAboutNode(mockNode, mockController);
 
         expect(result.ports).toEqual([
-          { name: 'eth0', linkType: 'ethernet' },
+          { name: 'eth0', linkType: 'ethernet', macAddress: 'aa:bb:cc:dd:ee:ff' },
           { name: 'eth1', linkType: 'ethernet' },
           { name: 'serial0', linkType: 'serial' },
         ]);
