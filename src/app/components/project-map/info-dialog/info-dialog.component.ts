@@ -64,6 +64,14 @@ export class InfoDialogComponent {
     }
   }
 
+  copyMacAddress(macAddress: string): void {
+    if (this.clipboard.copy(macAddress)) {
+      this.toasterService.success('MAC address copied to clipboard');
+    } else {
+      this.toasterService.error('Failed to copy to clipboard');
+    }
+  }
+
   onClose(): void {
     this.dialogRef.close();
   }

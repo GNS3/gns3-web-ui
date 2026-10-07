@@ -141,7 +141,7 @@ describe('InfoDialogComponent', () => {
     console: { port: 5000, type: 'telnet' },
     controller: { id: 1, name: 'Main Controller', port: 3080 },
     ports: [
-      { name: 'eth0', linkType: 'ethernet' },
+      { name: 'eth0', linkType: 'ethernet', macAddress: 'aa:bb:cc:dd:ee:ff' },
       { name: 'eth1', linkType: 'ethernet' },
     ],
     ...overrides,
@@ -252,10 +252,39 @@ describe('InfoDialogComponent', () => {
     it('should render the ports table with name and link type', () => {
       fixture = createFixture(createMockNode(), createMockController());
 
-      const rows = Array.from(fixture.nativeElement.querySelectorAll('.info-dialog__ports-table tbody tr')) as HTMLElement[];
+      const rows = Array.from(
+        fixture.nativeElement.querySelectorAll('.info-dialog__ports-table tbody tr')
+      ) as HTMLElement[];
       expect(rows.length).toBe(2);
       expect(rows[0].textContent).toContain('eth0');
       expect(rows[0].textContent).toContain('ethernet');
+    });
+
+    it('should display and copy a MAC address, with a placeholder for missing addresses', () => {
+      fixture = createFixture(createMockNode(), createMockController());
+
+      const table = fixture.nativeElement.querySelector('.info-dialog__ports-table');
+      const headers = Array.from(table.querySelectorAll('th')).map((el: HTMLElement) => el.textContent.trim());
+      expect(headers).toEqual(['Name', 'Link type', 'MAC address']);
+      const rows = table.querySelectorAll('tbody tr');
+      expect(rows[0].querySelector('code').textContent).toBe('aa:bb:cc:dd:ee:ff');
+      const copyButton = rows[0].querySelector('button');
+      expect(copyButton.getAttribute('aria-label')).toBe('Copy MAC address for eth0');
+      copyButton.click();
+      expect(mockClipboard.copy).toHaveBeenCalledWith('aa:bb:cc:dd:ee:ff');
+      expect(mockToasterService.success).toHaveBeenCalledWith('MAC address copied to clipboard');
+      expect(rows[1].querySelectorAll('td')[2].textContent.trim()).toBe('—');
+      expect(rows[1].querySelector('button')).toBeNull();
+    });
+
+    it('should report a failure to copy a MAC address', () => {
+      mockClipboard.copy.mockReturnValue(false);
+      fixture = createFixture(createMockNode(), createMockController());
+
+      fixture.nativeElement.querySelector('.info-dialog__mac-address button').click();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to copy to clipboard');
+      expect(mockToasterService.success).not.toHaveBeenCalled();
     });
 
     it('should omit the ports table when the node has no ports', () => {
