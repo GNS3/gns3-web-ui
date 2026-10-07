@@ -11,7 +11,7 @@ export class EllipseConverter implements SvgConverter {
     }
 
     const fill_opacity = element.attributes.getNamedItem('fill-opacity');
-    if (fill) {
+    if (fill_opacity) {
       drawing.fill_opacity = parseFloat(fill_opacity.value);
     }
 
@@ -21,7 +21,7 @@ export class EllipseConverter implements SvgConverter {
     }
 
     const stroke_width = element.attributes.getNamedItem('stroke-width');
-    if (stroke) {
+    if (stroke_width) {
       drawing.stroke_width = parseInt(stroke_width.value, 10);
     }
 
