@@ -51,7 +51,6 @@ describe('ServerSettingsComponent settings workspace', () => {
     element.value = value;
     element.dispatchEvent(new Event('input', { bubbles: true }));
     await fixture.whenStable();
-    fixture.detectChanges();
     return element;
   };
 
@@ -83,11 +82,10 @@ describe('ServerSettingsComponent settings workspace', () => {
         { provide: ToasterService, useValue: { success: vi.fn(), warning: vi.fn(), error: vi.fn() } },
       ],
     }).compileComponents();
+    // Let zoneless change detection render signal updates before checking the DOM.
     fixture = TestBed.createComponent(ServerSettingsComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
     await fixture.whenStable();
-    fixture.detectChanges();
   });
 
   it('initially opens General and Network/Security and collapses the advanced Server groups', () => {
@@ -176,7 +174,7 @@ describe('ServerSettingsComponent settings workspace', () => {
   it('renders a clear zero-results state while keeping actions and pending edits available', async () => {
     await type('port', '3081');
     component.setSearchQuery('no-such-setting-12345');
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('.server-settings__empty').textContent).toContain('No settings match');
     expect(component.activeSectionMeta()).toBeUndefined();
     expect(fixture.nativeElement.querySelector('.server-settings__unsaved-status').textContent).toContain(
@@ -193,13 +191,13 @@ describe('ServerSettingsComponent settings workspace', () => {
     const original = await type('name', 'Edited controller');
     component.toggleGroup(section(), group('general'));
     component.setSearchQuery('jwt');
-    fixture.detectChanges();
+    await fixture.whenStable();
     component.setSearchQuery('');
     component.selectSection('Controller');
-    fixture.detectChanges();
+    await fixture.whenStable();
     component.selectSection('Server');
     component.toggleGroup(section(), group('general'));
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(input('name')).toBe(original);
     expect(input('name').value).toBe('Edited controller');
     expect(component.dirtyKeys().has('Server.name')).toBe(true);
@@ -210,9 +208,9 @@ describe('ServerSettingsComponent settings workspace', () => {
     component.setSearchQuery('private-test-value');
     expect(component.matchingFields().size).toBe(0);
     component.setSearchQuery('jwt');
-    fixture.detectChanges();
+    await fixture.whenStable();
     component.setSearchQuery('');
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(input('compute_password')).toBe(original);
     expect(original.value).toBe('private-test-value');
     expect(component.secretInputValue(section(), field('compute_password'))).toBe('private-test-value');
@@ -224,7 +222,7 @@ describe('ServerSettingsComponent settings workspace', () => {
     await type('compute_password', 'replacement');
     component.revertField(section(), field('host'));
     component.setSearchQuery('jwt');
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(component.dirtyKeys().size).toBe(4);
     expect(component.restartChangeCount()).toBe(2);
     expect(component.groupChangeCount(section(), group('network'))).toBe(2);
@@ -242,12 +240,10 @@ describe('ServerSettingsComponent settings workspace', () => {
     expect(header.querySelector('.server-settings__group-reset')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('[data-setting="Server.port"] button')).toBeNull();
     header.querySelector('.server-settings__group-reset').click();
-    fixture.detectChanges();
     await fixture.whenStable();
     const reset = document.querySelector('[aria-label="Reset Listen port to default"]') as HTMLButtonElement;
     expect(reset).not.toBeNull();
     reset.click();
-    fixture.detectChanges();
     await fixture.whenStable();
     expect(input('port').value).toBe('3080');
     expect(input('host').value).toBe('127.0.0.1');
@@ -261,18 +257,15 @@ describe('ServerSettingsComponent settings workspace', () => {
       .parentElement;
     const openMenu = async () => {
       header.querySelector('.server-settings__group-reset').click();
-      fixture.detectChanges();
       await fixture.whenStable();
     };
     await openMenu();
     (document.querySelector('[aria-label="Reset Compute password to default"]') as HTMLButtonElement).click();
-    fixture.detectChanges();
     await fixture.whenStable();
     expect(component.secretState(section(), field('compute_password')).state).toBe('clear');
     expect(component.isGroupExpanded(section(), group('compute-auth'))).toBe(false);
     await openMenu();
     (document.querySelector('[aria-label="Undo reset for Compute password"]') as HTMLButtonElement).click();
-    fixture.detectChanges();
     await fixture.whenStable();
     expect(component.secretState(section(), field('compute_password')).state).toBe('unchanged');
     expect(component.isGroupExpanded(section(), group('compute-auth'))).toBe(false);
@@ -282,11 +275,11 @@ describe('ServerSettingsComponent settings workspace', () => {
     component.setValue('Server', 'host', '127.0.0.1');
     component.setValue('Server', 'port', 3081);
     component.setSearchQuery('Listen port');
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(component.resettableFields(section(), group('network')).map((item) => item.key)).toEqual(['port']);
     component.setSearchQuery('');
     component.discardChanges();
-    fixture.detectChanges();
+    await fixture.whenStable();
     const reset = fixture.nativeElement
       .querySelector('#server-settings-heading-Server-images')
       .parentElement.parentElement.querySelector('.server-settings__group-reset') as HTMLButtonElement;
@@ -298,7 +291,7 @@ describe('ServerSettingsComponent settings workspace', () => {
     await type('compute_password', 'replacement');
     component.setSearchQuery('jwt');
     component.discardChanges();
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(component.dirtyKeys().size).toBe(0);
     expect(component.restartChangeCount()).toBe(0);
     expect(input('port').value).toBe('3080');
@@ -316,7 +309,7 @@ describe('ServerSettingsComponent settings workspace', () => {
       Server: { host: null, port: 3081, compute_password: 'replacement' },
     });
     expect(component.isDirty()).toBe(false);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(input('compute_password').value).toBe('');
   });
 });
