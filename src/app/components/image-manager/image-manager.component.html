@@ -24,7 +24,7 @@
           <mat-icon>done_all</mat-icon>
           Install Images
         </button>
-        <button mat-stroked-button class="image-manager__button image-manager__button--danger" (click)="pruneImages()">
+        <button mat-flat-button class="image-manager__button image-manager__button--danger" (click)="pruneImages()">
           <mat-icon>delete_sweep</mat-icon>
           Prune Images
         </button>
@@ -33,7 +33,7 @@
 
     <div class="image-manager__toolbar">
       <form class="image-manager__search-form">
-        <mat-form-field class="image-manager__search" subscriptSizing="dynamic">
+        <mat-form-field appearance="fill" class="image-manager__search" subscriptSizing="dynamic">
           <mat-icon matPrefix>search</mat-icon>
           <input
             matInput
@@ -45,7 +45,7 @@
       </form>
 
       <div class="image-manager__toolbar-actions">
-        <mat-form-field class="image-manager__filter" subscriptSizing="dynamic">
+        <mat-form-field appearance="fill" class="image-manager__filter" subscriptSizing="dynamic">
           <mat-label>Image type</mat-label>
           <mat-select [value]="filterType()" (valueChange)="onTypeFilterChange($event)">
             <mat-option value="all">All types</mat-option>
@@ -55,7 +55,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field class="image-manager__sort-by" subscriptSizing="dynamic">
+        <mat-form-field appearance="fill" class="image-manager__sort-by" subscriptSizing="dynamic">
           <mat-label>Sort by</mat-label>
           <mat-select [value]="sortActive()" (valueChange)="onSortByChange($event)">
             <mat-option value="filename">Filename</mat-option>

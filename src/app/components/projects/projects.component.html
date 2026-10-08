@@ -4,17 +4,22 @@
     <div class="projects__header">
       <h1 class="projects__title">Projects</h1>
       <div class="projects__buttons-bar">
-        <button mat-raised-button class="projects__button" color="primary" (click)="addBlankProject()">
+        <button
+          mat-raised-button
+          class="projects__button projects__button--primary"
+          color="primary"
+          (click)="addBlankProject()"
+        >
           <mat-icon>add</mat-icon>
-          New Project
+          New project
         </button>
         <button mat-raised-button class="projects__button" color="primary" (click)="importProject()">
           <mat-icon>cloud_upload</mat-icon>
-          Import Project
+          Import project
         </button>
         <button mat-raised-button class="projects__button" color="primary" (click)="refresh()">
           <mat-icon>refresh</mat-icon>
-          Refresh Projects
+          Refresh projects
         </button>
       </div>
     </div>
@@ -22,10 +27,11 @@
     <!-- Toolbar: Search, Filter, Sort, View Toggle -->
     <div class="projects__toolbar">
       <form class="projects__search-form">
-        <mat-form-field class="projects__search" subscriptSizing="dynamic">
+        <mat-form-field appearance="fill" class="projects__search" subscriptSizing="dynamic">
           <mat-icon matPrefix>search</mat-icon>
           <input
             matInput
+            aria-label="Search projects by name or creator"
             placeholder="Search by name or created by"
             [value]="searchText()"
             (input)="searchText.set($event.target.value)"
@@ -35,7 +41,7 @@
 
       <div class="projects__toolbar-actions">
         <!-- Status Filter -->
-        <mat-form-field class="projects__filter" subscriptSizing="dynamic">
+        <mat-form-field appearance="fill" class="projects__filter" subscriptSizing="dynamic">
           <mat-label>Filter</mat-label>
           <mat-select [value]="filterStatus()" (valueChange)="filterStatus.set($event)">
             <mat-option value="all">All</mat-option>
@@ -45,12 +51,9 @@
         </mat-form-field>
 
         <!-- Sort By -->
-        <mat-form-field class="projects__sort-by" subscriptSizing="dynamic">
+        <mat-form-field appearance="fill" class="projects__sort-by" subscriptSizing="dynamic">
           <mat-label>Sort by</mat-label>
-          <mat-select
-            [value]="sortActive()"
-            (valueChange)="onSortByChange($event)"
-          >
+          <mat-select [value]="sortActive()" (valueChange)="onSortByChange($event)">
             <mat-option value="name">Name</mat-option>
             <mat-option value="created_by">Created By</mat-option>
             <mat-option value="status">Status</mat-option>
@@ -83,11 +86,10 @@
 
     <!-- Main Area: List/Grid + Details Panel -->
     <div class="projects__main">
-
       <!-- ===== Projects Table (List View) ===== -->
       @if (viewMode() === 'list') {
       <div class="projects__table-container" [class.projects__table-container--with-details]="selectedProject()">
-          <mat-table [dataSource]="tableDataSource" matSort (matSortChange)="onSortChange($event)">
+        <mat-table [dataSource]="tableDataSource" matSort (matSortChange)="onSortChange($event)">
           <ng-container matColumnDef="select">
             <mat-header-cell *matHeaderCellDef>
               <mat-checkbox
@@ -264,10 +266,7 @@
           [class.projects__card--selected]="selectedProject()?.project_id === project.project_id"
         >
           <!-- Card Body (click navigates to topology) -->
-          <a
-            class="projects__card-body"
-            [routerLink]="['/controller', controller.id, 'project', project.project_id]"
-          >
+          <a class="projects__card-body" [routerLink]="['/controller', controller.id, 'project', project.project_id]">
             <h3 class="projects__card-name">{{ project.name }}</h3>
             <span
               class="projects__card-status"
@@ -355,8 +354,7 @@
           <mat-icon class="projects__empty-icon">folder_off</mat-icon>
           <p>No projects found</p>
         </div>
-        }
-        @if (displayProjects().length > 0) {
+        } @if (displayProjects().length > 0) {
         <mat-paginator
           class="projects__grid-paginator"
           [length]="displayProjects().length"
@@ -388,112 +386,99 @@
 
         <div class="projects__details-body">
           <!-- Static topology preview from the raw .gns3 file (works for closed projects) -->
-          @switch (previewState()) {
-            @case ('loading') {
-              <div class="projects__preview">
-                <mat-spinner class="projects__preview-spinner" [diameter]="24"></mat-spinner>
-              </div>
-            }
-            @case ('error') {
-              <div class="projects__preview">
-                <span class="projects__preview-note">Topology preview unavailable</span>
-              </div>
-            }
-            @case ('empty') {
-              <div class="projects__preview">
-                <span class="projects__preview-note">Empty topology</span>
-              </div>
-            }
-            @default {
-              @if (!previewEnlarged()) {
-                <button
-                  type="button"
-                  class="projects__preview-thumb"
-                  (click)="openTopologyPreview()"
-                  matTooltip="Enlarge topology preview"
-                  matTooltipClass="custom-tooltip"
-                  matTooltipPosition="below"
-                  aria-label="Enlarge topology preview"
-                >
-                  <app-topology-preview
-                    variant="panel"
-                    [controller]="controller"
-                    [project]="project"
-                    [nodes]="previewTopology()!.nodes"
-                    [links]="previewTopology()!.links"
-                    [drawings]="previewTopology()!.drawings"
-                  />
-                </button>
-              }
-            }
+          @switch (previewState()) { @case ('loading') {
+          <div class="projects__preview">
+            <mat-spinner class="projects__preview-spinner" [diameter]="24"></mat-spinner>
+          </div>
+          } @case ('error') {
+          <div class="projects__preview">
+            <span class="projects__preview-note">Topology preview unavailable</span>
+          </div>
+          } @case ('empty') {
+          <div class="projects__preview">
+            <span class="projects__preview-note">Empty topology</span>
+          </div>
+          } @default { @if (!previewEnlarged()) {
+          <button
+            type="button"
+            class="projects__preview-thumb"
+            (click)="openTopologyPreview()"
+            matTooltip="Enlarge topology preview"
+            matTooltipClass="custom-tooltip"
+            matTooltipPosition="below"
+            aria-label="Enlarge topology preview"
+          >
+            <app-topology-preview
+              variant="panel"
+              [controller]="controller"
+              [project]="project"
+              [nodes]="previewTopology()!.nodes"
+              [links]="previewTopology()!.links"
+              [drawings]="previewTopology()!.drawings"
+            />
+          </button>
+          } } }
+
+          <!-- Project metadata: one item per row -->
+          <!-- Status -->
+          <div class="projects__detail-item">
+            <span class="projects__detail-icon">
+              <span
+                class="projects__detail-status-dot"
+                [class.projects__detail-status-dot--opened]="project.status === 'opened'"
+                [class.projects__detail-status-dot--closed]="project.status === 'closed'"
+              ></span>
+            </span>
+            <span class="projects__detail-label">Status</span>
+            <span class="projects__detail-value">{{ project.status === 'opened' ? 'Running' : 'Stopped' }}</span>
+          </div>
+
+          <!-- Owner -->
+          @if (project.created_by) {
+          <div class="projects__detail-item">
+            <span class="projects__detail-icon"><mat-icon>person</mat-icon></span>
+            <span class="projects__detail-label">Owner</span>
+            <span class="projects__detail-value">{{ project.created_by }}</span>
+          </div>
           }
 
-          <!-- Status / Owner / Access share one line -->
-          <div class="projects__detail-row">
-            <!-- Status -->
-            <div class="projects__detail-item">
-              <span class="projects__detail-icon">
-                <span
-                  class="projects__detail-status-dot"
-                  [class.projects__detail-status-dot--opened]="project.status === 'opened'"
-                  [class.projects__detail-status-dot--closed]="project.status === 'closed'"
-                ></span>
-              </span>
-              <span class="projects__detail-label">Status</span>
-              <span class="projects__detail-value">{{ project.status === 'opened' ? 'Running' : 'Stopped' }}</span>
-            </div>
-
-            <!-- Owner -->
-            @if (project.created_by) {
-            <div class="projects__detail-item">
-              <span class="projects__detail-icon"><mat-icon>person</mat-icon></span>
-              <span class="projects__detail-label">Owner</span>
-              <span class="projects__detail-value">{{ project.created_by }}</span>
-            </div>
-            }
-
-            <!-- Access -->
-            <div class="projects__detail-item">
-              <span class="projects__detail-icon"><mat-icon>lock</mat-icon></span>
-              <span class="projects__detail-label">Access</span>
-              <span class="projects__detail-value">{{ project.readonly ? 'Read-only' : 'Read/Write' }}</span>
-            </div>
+          <!-- Access -->
+          <div class="projects__detail-item">
+            <span class="projects__detail-icon"><mat-icon>lock</mat-icon></span>
+            <span class="projects__detail-label">Access</span>
+            <span class="projects__detail-value">{{ project.readonly ? 'Read-only' : 'Read/Write' }}</span>
           </div>
 
-          <!-- Node / link / drawing counts share one line — counts come from the
-               .gns3 file when the preview is loaded (closed projects have zero
+          <!-- Node / link / drawing counts come from the
+               .gns3 file when topology data is loaded (closed projects have zero
                server stats) -->
           @if (displayStats(); as stats) {
-          <div class="projects__detail-row projects__detail-row--stats">
-            <div class="projects__detail-item">
-              <span class="projects__detail-icon"><mat-icon>device_hub</mat-icon></span>
-              <span class="projects__detail-label">Nodes</span>
-              <span class="projects__detail-value">{{ stats.nodes }}</span>
-            </div>
 
-            <div class="projects__detail-item">
-              <span class="projects__detail-icon"><mat-icon>link</mat-icon></span>
-              <span class="projects__detail-label">Links</span>
-              <span class="projects__detail-value">{{ stats.links }}</span>
-            </div>
-
-            @if (stats.drawings > 0) {
-            <div class="projects__detail-item">
-              <span class="projects__detail-icon"><mat-icon>draw</mat-icon></span>
-              <span class="projects__detail-label">Drawings</span>
-              <span class="projects__detail-value">{{ stats.drawings }}</span>
-            </div>
-            }
+          <div class="projects__detail-item">
+            <span class="projects__detail-icon"><mat-icon>device_hub</mat-icon></span>
+            <span class="projects__detail-label">Nodes</span>
+            <span class="projects__detail-value">{{ stats.nodes }}</span>
           </div>
 
-          @if (stats.snapshots > 0) {
+          <div class="projects__detail-item">
+            <span class="projects__detail-icon"><mat-icon>link</mat-icon></span>
+            <span class="projects__detail-label">Links</span>
+            <span class="projects__detail-value">{{ stats.links }}</span>
+          </div>
+
+          @if (stats.drawings > 0) {
+          <div class="projects__detail-item">
+            <span class="projects__detail-icon"><mat-icon>draw</mat-icon></span>
+            <span class="projects__detail-label">Drawings</span>
+            <span class="projects__detail-value">{{ stats.drawings }}</span>
+          </div>
+          } @if (stats.snapshots > 0) {
           <div class="projects__detail-item">
             <span class="projects__detail-icon"><mat-icon>camera_alt</mat-icon></span>
             <span class="projects__detail-label">Snapshots</span>
             <span class="projects__detail-value">{{ stats.snapshots }}</span>
           </div>
-          }
-          }
+          } }
 
           <!-- Project ID (secondary) -->
           <div class="projects__detail-item projects__detail-item--secondary">
@@ -516,7 +501,10 @@
           <div class="projects__detail-item projects__detail-item--description">
             <span class="projects__detail-icon"><mat-icon>description</mat-icon></span>
             <span class="projects__detail-label">Description</span>
-            <app-markdown-viewer class="projects__detail-description" [data]="projectDescription()"></app-markdown-viewer>
+            <app-markdown-viewer
+              class="projects__detail-description"
+              [data]="projectDescription()"
+            ></app-markdown-viewer>
           </div>
           }
         </div>
@@ -588,7 +576,6 @@
         </div>
       </div>
       }
-
     </div>
 
     <!-- Footer -->

@@ -1,15 +1,29 @@
 @if (isReady()) {
 <header class="acl-management__header">
   <h1 class="acl-management__title">Access Control List (ACL)</h1>
+</header>
+
+<div class="acl-management__toolbar">
+  <form class="acl-management__search-form">
+    <mat-form-field appearance="fill" class="acl-management__search" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        aria-label="Search by path, user/group or role"
+        placeholder="Search by path, user/group or role"
+        [value]="searchText()"
+        (input)="searchText.set($event.target.value)"
+      />
+    </mat-form-field>
+  </form>
   <div class="acl-management__actions">
     <button
-      mat-raised-button
-      color="primary"
-      class="acl-management__button"
+      mat-flat-button
+      class="acl-management__button acl-management__button--destructive"
       [disabled]="selection.selected.length === 0"
       (click)="deleteMultiple()"
     >
-      Delete Selected
+      Delete selected
     </button>
     <button
       mat-raised-button
@@ -21,18 +35,7 @@
       Add ACE
     </button>
   </div>
-</header>
-
-<form class="acl-management__search-form">
-  <mat-form-field class="acl-management__search">
-    <input
-      matInput
-      placeholder="Search by path, user/group or role"
-      [value]="searchText()"
-      (input)="searchText.set($event.target.value)"
-    />
-  </mat-form-field>
-</form>
+</div>
 
 <div class="acl-management__table-container">
   <table mat-table [dataSource]="dataSource | aceFilter : searchText() : endpoints()" matSort #acesSort="matSort">

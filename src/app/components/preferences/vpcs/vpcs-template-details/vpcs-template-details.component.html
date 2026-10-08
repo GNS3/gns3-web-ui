@@ -10,7 +10,7 @@
         <h1 class="vpcs-template-details__title">Edit template</h1>
       </div>
       <div class="vpcs-template-details__header-actions">
-        <button type="button" mat-stroked-button (click)="goBack()">Back to templates</button>
+        <button type="button" mat-raised-button color="primary" (click)="goBack()">Back to templates</button>
       </div>
     </div>
   </header>
@@ -31,7 +31,7 @@
     <section class="vpcs-template-details__form-card" [class.template-edit-panel-active]="activeSection === 'general'">
       <h3 class="vpcs-template-details__section-title">General settings</h3>
       <form class="vpcs-template-details__form">
-        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="vpcs-template-details__field">
           <mat-label>Template name</mat-label>
           <input
             matInput
@@ -42,7 +42,7 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="vpcs-template-details__field">
           <mat-label>Default name format</mat-label>
           <input
             matInput
@@ -53,7 +53,7 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="vpcs-template-details__field">
           <mat-label>Base script file</mat-label>
           <input
             matInput
@@ -65,7 +65,11 @@
         </mat-form-field>
 
         <div class="vpcs-template-details__symbol-row">
-          <mat-form-field appearance="fill" class="vpcs-template-details__field vpcs-template-details__field--flex">
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="vpcs-template-details__field vpcs-template-details__field--flex"
+          >
             <mat-label>Symbol</mat-label>
             <input
               matInput
@@ -75,32 +79,47 @@
               placeholder="Symbol"
             />
           </mat-form-field>
-          <button mat-stroked-button color="primary" class="vpcs-template-details__symbol-btn" (click)="chooseSymbol()">
+          <button mat-raised-button color="primary" class="vpcs-template-details__symbol-btn" (click)="chooseSymbol()">
             <mat-icon>add</mat-icon>
             Choose symbol
           </button>
         </div>
 
-        <mat-form-field appearance="fill" class="vpcs-template-details__field">
-          <mat-label>Tags</mat-label>
-          <mat-chip-grid #chipList>
+        <div class="gns3-chip-field">
+          <mat-form-field
+            floatLabel="always"
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="vpcs-template-details__field"
+          >
+            <mat-label>Tags</mat-label>
+
+            <input
+              matInput
+              placeholder="Add tags"
+              [matChipInputFor]="chipList"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              (matChipInputTokenEnd)="addTag($event)"
+            />
+          </mat-form-field>
+          <mat-chip-grid
+            #chipList
+            class="gns3-chip-field__values"
+            [class.gns3-chip-field__values--empty]="tags().length === 0"
+            aria-label="Tags"
+          >
             @for (tag of tags(); track tag) {
-            <mat-chip (removed)="removeTag(tag)">
+            <mat-chip-row [editable]="false" [attr.title]="tag" (removed)="removeTag(tag)">
               {{ tag }}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
+              <button matChipRemove type="button" [attr.aria-label]="'Remove tag ' + tag">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
             }
           </mat-chip-grid>
-          <input
-            matInput
-            placeholder="Add tags"
-            [matChipInputFor]="chipList"
-            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-            (matChipInputTokenEnd)="addTag($event)"
-          />
-        </mat-form-field>
+        </div>
 
-        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="vpcs-template-details__field">
           <mat-label>Category</mat-label>
           <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
             @for (cat of categories; track $index) {
@@ -111,7 +130,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="vpcs-template-details__field">
           <mat-label>Console type</mat-label>
           <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
             @for (type of consoleTypes; track type) {
@@ -124,12 +143,13 @@
 
         <div class="three-column-grid">
           <app-netmiko-device-type-select
+            subscriptSizing="fixed"
             [(value)]="netmikoDeviceType"
             [controller]="controller"
-            appearance="fill"
+            appearance="outline"
             class="vpcs-template-details__field"
           />
-          <mat-form-field appearance="fill" class="vpcs-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="vpcs-template-details__field">
             <mat-label>Default username</mat-label>
             <input
               matInput
@@ -139,7 +159,7 @@
               placeholder="Username to log into this node"
             />
           </mat-form-field>
-          <mat-form-field appearance="fill" class="vpcs-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="vpcs-template-details__field">
             <mat-label>Default password</mat-label>
             <input
               matInput
@@ -160,7 +180,7 @@
     <section class="vpcs-template-details__form-card" [class.template-edit-panel-active]="activeSection === 'usage'">
       <h3 class="vpcs-template-details__section-title">Usage</h3>
       <div class="preferences__usage-form">
-        <mat-form-field appearance="fill" class="preferences__usage-field--full">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="preferences__usage-field--full">
           <mat-label>Usage notes</mat-label>
           <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
         </mat-form-field>

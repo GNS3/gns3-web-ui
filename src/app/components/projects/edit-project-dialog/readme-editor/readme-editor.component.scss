@@ -79,7 +79,7 @@
   min-height: 400px;
   max-height: calc(70vh - 80px);
   padding: 12px;
-  font-family: 'Roboto Mono', monospace;
+  font-family: var(--gns3-font-code);
   font-size: 14px;
   line-height: 1.6;
   border: 1px solid var(--mat-sys-outline);
@@ -117,7 +117,7 @@
   font-size: 13px;
   padding: 4px 12px;
   border-radius: 16px;
-  transition: all 0.3s ease;
+  transition: all var(--gns3-motion-duration-standard) ease;
 
   .save-status-icon {
     font-size: 16px;

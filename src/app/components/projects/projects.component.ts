@@ -151,21 +151,19 @@ export class ProjectsComponent implements OnInit {
   }
 
   /** Reset paginator to first page when filters, sort, or search change */
-  private _resetPageOnFilter = effect(
-    () => {
-      this.searchText();
-      this.filterStatus();
-      this.sortActive();
-      this._sortDirection();
-      // Keep the grid-view pagination signal in sync and reset the
-      // MatTableDataSource paginator back to the first page for list view.
-      this._pageIndex.set(0);
-      const paginator = this.paginator();
-      if (paginator) {
-        paginator.firstPage();
-      }
+  private _resetPageOnFilter = effect(() => {
+    this.searchText();
+    this.filterStatus();
+    this.sortActive();
+    this._sortDirection();
+    // Keep the grid-view pagination signal in sync and reset the
+    // MatTableDataSource paginator back to the first page for list view.
+    this._pageIndex.set(0);
+    const paginator = this.paginator();
+    if (paginator) {
+      paginator.firstPage();
     }
-  );
+  });
 
   /** Avoid destructive bulk actions retaining projects hidden by a filter. */
   private _clearSelectionOnFilter = effect(() => {
@@ -349,8 +347,7 @@ export class ProjectsComponent implements OnInit {
       next: (topology: TopologyPreviewData) => {
         if (this.selectedProject()?.project_id !== project.project_id) return;
         this.previewTopology.set(topology);
-        const empty =
-          topology.nodes.length === 0 && topology.links.length === 0 && topology.drawings.length === 0;
+        const empty = topology.nodes.length === 0 && topology.links.length === 0 && topology.drawings.length === 0;
         this.previewState.set(empty ? 'empty' : 'ready');
       },
       error: () => {
@@ -558,7 +555,12 @@ export class ProjectsComponent implements OnInit {
     const dialogRef = this.dialog.open(EditProjectDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'edit-project-dialog-panel', 'dialog-extra-large-panel'],
+      panelClass: [
+        'base-dialog-panel',
+        'configurator-dialog-panel',
+        'edit-project-dialog-panel',
+        'dialog-extra-large-panel',
+      ],
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;

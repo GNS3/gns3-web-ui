@@ -12,7 +12,7 @@
         </h1>
       </div>
       <div class="qemu-template-details__header-actions">
-        <button type="button" mat-stroked-button (click)="goBack()">Back to templates</button>
+        <button type="button" mat-raised-button color="primary" (click)="goBack()">Back to templates</button>
       </div>
     </div>
   </header>
@@ -24,11 +24,21 @@
         General settings
       </button>
       <button type="button" [class.is-active]="activeSection === 'hdd'" (click)="selectSection('hdd')">HDD</button>
-      <button type="button" [class.is-active]="activeSection === 'cddvd'" (click)="selectSection('cddvd')">CD/DVD</button>
-      <button type="button" [class.is-active]="activeSection === 'network'" (click)="selectSection('network')">Network</button>
-      <button type="button" [class.is-active]="activeSection === 'advanced'" (click)="selectSection('advanced')">Advanced</button>
-      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
-      <button type="button" [class.is-active]="activeSection === 'metadata'" (click)="selectSection('metadata')">Metadata</button>
+      <button type="button" [class.is-active]="activeSection === 'cddvd'" (click)="selectSection('cddvd')">
+        CD/DVD
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'network'" (click)="selectSection('network')">
+        Network
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'advanced'" (click)="selectSection('advanced')">
+        Advanced
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">
+        Usage
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'metadata'" (click)="selectSection('metadata')">
+        Metadata
+      </button>
     </nav>
     <section class="qemu-template-details__form-card">
       <div class="qemu-template-details__section-header" (click)="toggleSection('general')">
@@ -39,8 +49,8 @@
       </div>
       @if (activeSection === 'general') {
       <form class="qemu-template-details__form">
-        <div class="two-column-grid">
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+        <div class="two-column-grid gns3-form-layout-fixed">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="qemu-template-details__field">
             <mat-label>Template name</mat-label>
             <input
               matInput
@@ -50,7 +60,7 @@
               placeholder="Template name"
             />
           </mat-form-field>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="qemu-template-details__field">
             <mat-label>Default name format</mat-label>
             <input
               matInput
@@ -63,7 +73,11 @@
         </div>
 
         <div class="qemu-template-details__symbol-row">
-          <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--category">
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="qemu-template-details__field qemu-template-details__field--category"
+          >
             <mat-label>Category</mat-label>
             <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
               @for (cat of categories; track $index) {
@@ -71,7 +85,11 @@
               }
             </mat-select>
           </mat-form-field>
-          <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="qemu-template-details__field qemu-template-details__field--flex"
+          >
             <mat-label>Symbol</mat-label>
             <input
               matInput
@@ -81,33 +99,48 @@
               placeholder="Symbol"
             />
           </mat-form-field>
-          <button mat-stroked-button color="primary" class="qemu-template-details__symbol-btn" (click)="chooseSymbol()">
+          <button mat-raised-button color="primary" class="qemu-template-details__symbol-btn" (click)="chooseSymbol()">
             <mat-icon>add</mat-icon>
             Choose symbol
           </button>
         </div>
 
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
-          <mat-label>Tags</mat-label>
-          <mat-chip-grid #chipList>
+        <div class="gns3-chip-field">
+          <mat-form-field
+            floatLabel="always"
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="qemu-template-details__field"
+          >
+            <mat-label>Tags</mat-label>
+
+            <input
+              matInput
+              placeholder="Add tags"
+              [matChipInputFor]="chipList"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              (matChipInputTokenEnd)="addTag($event)"
+            />
+          </mat-form-field>
+          <mat-chip-grid
+            #chipList
+            class="gns3-chip-field__values"
+            [class.gns3-chip-field__values--empty]="tags().length === 0"
+            aria-label="Tags"
+          >
             @for (tag of tags(); track tag) {
-            <mat-chip (removed)="removeTag(tag)">
+            <mat-chip-row [editable]="false" [attr.title]="tag" (removed)="removeTag(tag)">
               {{ tag }}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
+              <button matChipRemove type="button" [attr.aria-label]="'Remove tag ' + tag">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
             }
           </mat-chip-grid>
-          <input
-            matInput
-            placeholder="Add tags"
-            [matChipInputFor]="chipList"
-            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-            (matChipInputTokenEnd)="addTag($event)"
-          />
-        </mat-form-field>
+        </div>
 
-        <div class="four-column-grid">
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+        <div class="four-column-grid gns3-form-layout-fixed">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="qemu-template-details__field">
             <mat-label>Platform</mat-label>
             <mat-select [value]="platform()" (selectionChange)="platform.set($event.value)">
               @for (p of selectPlatform; track p) {
@@ -115,16 +148,16 @@
               }
             </mat-select>
           </mat-form-field>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="qemu-template-details__field">
             <mat-label>RAM</mat-label>
             <input matInput [value]="ram()" (input)="ram.set(+$event.target.value)" type="text" placeholder="RAM" />
             <span matSuffix>MB</span>
           </mat-form-field>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="qemu-template-details__field">
             <mat-label>vCPUs</mat-label>
             <input matInput [value]="cpus()" (input)="cpus.set(+$event.target.value)" type="text" placeholder="vCPUs" />
           </mat-form-field>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="qemu-template-details__field">
             <mat-label>Boot priority</mat-label>
             <mat-select [value]="bootPriority()" (selectionChange)="bootPriority.set($event.value)">
               @for (priority of bootPriorities; track priority[1]) {
@@ -134,7 +167,7 @@
           </mat-form-field>
         </div>
 
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
           <mat-label>On close</mat-label>
           <mat-select [value]="onClose()" (selectionChange)="onClose.set($event.value)">
             @for (option of onCloseOptions; track option[1]) {
@@ -145,8 +178,8 @@
           </mat-select>
         </mat-form-field>
 
-        <div class="two-column-grid">
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+        <div class="two-column-grid gns3-form-layout-fixed">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="qemu-template-details__field">
             <mat-label>Console type</mat-label>
             <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
               @for (type of consoleTypes; track type) {
@@ -154,7 +187,7 @@
               }
             </mat-select>
           </mat-form-field>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="qemu-template-details__field">
             <mat-label>Auxiliary console type</mat-label>
             <mat-select [value]="auxConsoleType()" (selectionChange)="auxConsoleType.set($event.value)">
               @for (type of auxConsoleTypes; track type) {
@@ -166,12 +199,13 @@
 
         <div class="three-column-grid">
           <app-netmiko-device-type-select
+            subscriptSizing="fixed"
             [(value)]="netmikoDeviceType"
             [controller]="controller"
-            appearance="fill"
+            appearance="outline"
             class="qemu-template-details__field"
           />
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="qemu-template-details__field">
             <mat-label>Default username</mat-label>
             <input
               matInput
@@ -181,7 +215,7 @@
               placeholder="Username to log into this node"
             />
           </mat-form-field>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="qemu-template-details__field">
             <mat-label>Default password</mat-label>
             <input
               matInput
@@ -211,7 +245,7 @@
       <div class="qemu-template-details__disk-grid">
         <div class="qemu-template-details__disk-item">
           <h4 class="qemu-template-details__disk-title">HDA (Primary Master)</h4>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
             <mat-label>Disk image</mat-label>
             <input
               matInput
@@ -231,7 +265,7 @@
               }
             </mat-autocomplete>
           </mat-form-field>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
             <mat-label>Disk interface</mat-label>
             <mat-select [value]="hdaDiskInterface()" (selectionChange)="hdaDiskInterface.set($event.value)">
               @for (iface of diskInterfaces; track iface) {
@@ -245,7 +279,7 @@
 
         <div class="qemu-template-details__disk-item">
           <h4 class="qemu-template-details__disk-title">HDB (Primary Slave)</h4>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
             <mat-label>Disk image</mat-label>
             <input
               matInput
@@ -265,7 +299,7 @@
               }
             </mat-autocomplete>
           </mat-form-field>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
             <mat-label>Disk interface</mat-label>
             <mat-select [value]="hdbDiskInterface()" (selectionChange)="hdbDiskInterface.set($event.value)">
               @for (iface of diskInterfaces; track iface) {
@@ -279,7 +313,7 @@
 
         <div class="qemu-template-details__disk-item">
           <h4 class="qemu-template-details__disk-title">HDC (Secondary Master)</h4>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
             <mat-label>Disk image</mat-label>
             <input
               matInput
@@ -299,7 +333,7 @@
               }
             </mat-autocomplete>
           </mat-form-field>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
             <mat-label>Disk interface</mat-label>
             <mat-select [value]="hdcDiskInterface()" (selectionChange)="hdcDiskInterface.set($event.value)">
               @for (iface of diskInterfaces; track iface) {
@@ -313,7 +347,7 @@
 
         <div class="qemu-template-details__disk-item">
           <h4 class="qemu-template-details__disk-title">HDD (Secondary Slave)</h4>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
             <mat-label>Disk image</mat-label>
             <input
               matInput
@@ -333,7 +367,7 @@
               }
             </mat-autocomplete>
           </mat-form-field>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
             <mat-label>Disk interface</mat-label>
             <mat-select [value]="hddDiskInterface()" (selectionChange)="hddDiskInterface.set($event.value)">
               @for (iface of diskInterfaces; track iface) {
@@ -365,10 +399,19 @@
             (change)="uploadCdromImageFile($event)"
             accept=".iso"
           />
-          <button mat-raised-button color="primary" (click)="filecdrom.click()" class="qemu-template-details__browse-btn">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="filecdrom.click()"
+            class="qemu-template-details__browse-btn"
+          >
             Upload
           </button>
-          <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="qemu-template-details__field qemu-template-details__field--flex"
+          >
             <mat-label>Image</mat-label>
             <input
               matInput
@@ -403,7 +446,7 @@
       </div>
       @if (activeSection === 'network') {
       <form class="qemu-template-details__form">
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
           <mat-label>Adapters</mat-label>
           <input
             matInput
@@ -415,7 +458,7 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
           <mat-label>First port name</mat-label>
           <input
             matInput
@@ -426,7 +469,7 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
           <mat-label>Name format</mat-label>
           <input
             matInput
@@ -437,7 +480,7 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
           <mat-label>Segment size</mat-label>
           <input
             matInput
@@ -449,7 +492,7 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
           <mat-label>Base MAC</mat-label>
           <input
             matInput
@@ -460,7 +503,7 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="qemu-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
           <mat-label>Type</mat-label>
           <mat-select [value]="networkType()" (selectionChange)="networkType.set($event.value)">
             @for (type of networkTypes; track type.value) {
@@ -469,7 +512,13 @@
           </mat-select>
         </mat-form-field>
 
-        <button mat-button type="button" class="qemu-template-details__config-btn" (click)="openCustomAdaptersDialog()">
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          class="qemu-template-details__config-btn"
+          (click)="openCustomAdaptersDialog()"
+        >
           Configure custom adapters
         </button>
 
@@ -508,7 +557,11 @@
             >
               Upload
             </button>
-            <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="qemu-template-details__field qemu-template-details__field--flex"
+            >
               <mat-label>Initial RAM disk (initrd)</mat-label>
               <input
                 matInput
@@ -546,7 +599,11 @@
             >
               Upload
             </button>
-            <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="qemu-template-details__field qemu-template-details__field--flex"
+            >
               <mat-label>Kernel image</mat-label>
               <input
                 matInput
@@ -569,7 +626,7 @@
             </mat-form-field>
           </div>
 
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
             <mat-label>Kernel command line</mat-label>
             <input
               matInput
@@ -593,7 +650,11 @@
             >
               Upload
             </button>
-            <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="qemu-template-details__field qemu-template-details__field--flex"
+            >
               <mat-label>Bios image</mat-label>
               <input
                 matInput
@@ -623,7 +684,7 @@
             >Activate CPU throttling</mat-checkbox
           >
           @if (activateCpuThrottling()) {
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
             <mat-label>Perecentage of CPU allowed</mat-label>
             <input
               matInput
@@ -634,7 +695,7 @@
             />
           </mat-form-field>
           }
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
             <mat-label>Process priority</mat-label>
             <mat-select [value]="processPriority()" (selectionChange)="processPriority.set($event.value)">
               @for (priority of priorities; track priority) {
@@ -648,7 +709,7 @@
 
         <div class="qemu-template-details__subsection">
           <h4 class="qemu-template-details__subsection-title">Additional settings</h4>
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
             <mat-label>Custom Qemu binary path</mat-label>
             <input
               matInput
@@ -659,7 +720,7 @@
             />
           </mat-form-field>
 
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="qemu-template-details__field">
             <mat-label>Options</mat-label>
             <input
               matInput
@@ -677,10 +738,12 @@
             <mat-checkbox [checked]="tpm()" (change)="tpm.set($event.checked)"
               >Enable the Trusted Platform Module (TPM)</mat-checkbox
             >
-            <mat-checkbox [checked]="uefi()" (change)="uefi.set($event.checked)">Enable the UEFI boot mode</mat-checkbox>
+            <mat-checkbox [checked]="uefi()" (change)="uefi.set($event.checked)"
+              >Enable the UEFI boot mode</mat-checkbox
+            >
           </div>
           <div class="two-column-grid" style="margin-top: 12px">
-            <mat-form-field appearance="fill" class="qemu-template-details__field">
+            <mat-form-field appearance="outline" subscriptSizing="fixed" class="qemu-template-details__field">
               <mat-label>Max CPUs (hot-plug)</mat-label>
               <input
                 matInput
@@ -708,7 +771,7 @@
       </div>
       @if (activeSection === 'usage') {
       <div class="preferences__usage-form">
-        <mat-form-field appearance="fill" class="preferences__usage-field--full">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="preferences__usage-field--full">
           <mat-label>Usage notes</mat-label>
           <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
         </mat-form-field>

@@ -23,31 +23,46 @@
             </ng-template>
             <h2 class="node-config__section-heading">General settings</h2>
             <form class="form-container" [formGroup]="generalSettingsForm">
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Name</mat-label>
                 <input matInput formControlName="name" type="text" />
               </mat-form-field>
 
-              <mat-form-field class="form-field tags-field">
-                <mat-label>Tags</mat-label>
-                <mat-chip-grid #chipList>
+              <div class="gns3-chip-field">
+                <mat-form-field
+                  floatLabel="always"
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                  class="form-field tags-field"
+                >
+                  <mat-label>Tags</mat-label>
+
+                  <input
+                    matInput
+                    placeholder="Add tags"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="addTag($event)"
+                  />
+                </mat-form-field>
+                <mat-chip-grid
+                  #chipList
+                  class="gns3-chip-field__values"
+                  [class.gns3-chip-field__values--empty]="(node?.tags?.length ?? 0) === 0"
+                  aria-label="Tags"
+                >
                   @for (tag of node?.tags; track tag) {
-                  <mat-chip (removed)="removeTag(tag)">
+                  <mat-chip-row [editable]="false" [attr.title]="tag" (removed)="removeTag(tag)">
                     {{ tag }}
-                    <mat-icon matChipRemove>cancel</mat-icon>
-                  </mat-chip>
+                    <button matChipRemove type="button" [attr.aria-label]="'Remove tag ' + tag">
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  </mat-chip-row>
                   }
                 </mat-chip-grid>
-                <input
-                  matInput
-                  placeholder="Add tags"
-                  [matChipInputFor]="chipList"
-                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                  (matChipInputTokenEnd)="addTag($event)"
-                />
-              </mat-form-field>
+              </div>
 
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Console type</mat-label>
                 <mat-select formControlName="console_type">
                   @for (type of consoleTypes; track type) {
@@ -60,13 +75,13 @@
 
               <mat-checkbox formControlName="console_auto_start"> Auto start console </mat-checkbox>
 
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>RAM</mat-label>
                 <input matInput formControlName="ram" type="number" />
                 <span matSuffix>MB</span>
               </mat-form-field>
 
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>On close</mat-label>
                 <mat-select formControlName="on_close">
                   @for (option of onCloseOptions; track option[1]) {
@@ -98,7 +113,7 @@
             </ng-template>
             <h2 class="node-config__section-heading">Usage notes</h2>
             <form class="form-container" [formGroup]="generalSettingsForm">
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Usage</mat-label>
                 <textarea matInput class="node-config__usage-textarea" formControlName="usage"></textarea>
               </mat-form-field>
@@ -115,9 +130,7 @@
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
   <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying()">
     @if (isApplying()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      Apply
-    }
+    <mat-spinner diameter="20"></mat-spinner>
+    } @else { Apply }
   </button>
 </div>

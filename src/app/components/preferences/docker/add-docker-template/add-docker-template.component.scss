@@ -4,6 +4,8 @@
  * Design language unified with management pages
  */
 
+@use '../../../../../styles/buttons' as buttons;
+
 :host {
   display: block;
   width: 100%;
@@ -21,7 +23,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  animation: fadeInSlideIn 0.4s ease-out;
+  animation: none;
 }
 
 .docker-add__title {
@@ -39,7 +41,7 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 0 20px 20px;
-  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+  animation: none;
 }
 
 /* =============================================
@@ -90,7 +92,7 @@
 /* "Image name" + inline "Pull image" action, mirroring the template editor. */
 .docker-add__image-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--gns3-density-card-gap);
 }
 
@@ -98,13 +100,11 @@
   flex: 1;
 }
 
-.docker-add__image-row .mat-mdc-form-field-subscript-wrapper {
-  display: none;
-}
-
-/* Match the "Pull image" button height to the Image name field so it sits flush. */
+/* Use standard action geometry, centered against the input surface. */
 .docker-add__image-row .docker-add__pull-btn {
-  align-self: stretch;
+  @include buttons.geometry(var(--gns3-density-control-height-sm));
+  align-self: flex-start;
+  margin-top: calc((var(--gns3-density-form-field-height) - var(--gns3-density-control-height-sm)) / 2);
   white-space: nowrap;
 }
 
@@ -138,16 +138,6 @@
 /* =============================================
 // Animations
 // ============================================= */
-@keyframes fadeInSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 /* =============================================
 // Responsive Design
@@ -174,8 +164,9 @@
     flex-direction: column;
   }
 
-  .docker-add__pull-btn {
+  .docker-add__image-row .docker-add__pull-btn {
     width: 100%;
+    margin-top: 0;
   }
 
   .docker-add__actions {

@@ -1,3 +1,9 @@
+@use '../../../../styles/forms' as forms;
+
+:host {
+  @include forms.outlined;
+}
+
 /**
  * GNS3 Edit Project Dialog Component Styles
  *
@@ -8,21 +14,8 @@
 /* =============================================
 // Two-column form grid layout
 // ============================================= */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px 24px;
+.gns3-form-grid {
   margin-bottom: 16px;
-
-  /* Full-width field in the grid */
-  &__full {
-    grid-column: 1 / -1;
-  }
-
-  /* Make form fields full width within their grid cells */
-  mat-form-field {
-    width: 100%;
-  }
 }
 
 /* =============================================
@@ -35,4 +28,8 @@ button[disabled] {
     vertical-align: middle;
     --mat-mdc-progress-spinner-circle-color: var(--mat-sys-on-primary);
   }
+}
+
+.edit-project__add-variable {
+  margin-block: var(--gns3-form-row-gap);
 }

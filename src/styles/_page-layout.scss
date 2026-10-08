@@ -5,6 +5,8 @@
  * keeping common dimensions, spacing, surfaces, and page motion consistent.
  */
 
+@use 'buttons' as buttons;
+
 @mixin page-host {
   display: block;
   width: 100%;
@@ -24,12 +26,13 @@
   color: var(--mat-sys-on-surface);
   font-size: var(--gns3-density-page-title-size);
   font-weight: 500;
+  font-family: var(--mat-sys-title-large-font, Roboto), sans-serif;
+  line-height: 1.2;
+  letter-spacing: normal;
 }
 
 @mixin back-button {
-  width: var(--gns3-density-icon-button);
-  height: var(--gns3-density-icon-button);
-  border-radius: var(--gns3-density-radius-lg);
+  @include buttons.action-icon;
   color: var(--mat-sys-on-surface);
   transition: background-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
 
@@ -38,6 +41,8 @@
   }
 }
 
+// Utility surfaces stay flat; Material buttons and overlays retain their
+// built-in elevation to distinguish actions and temporary content.
 @mixin surface {
   overflow: hidden;
   border-radius: var(--gns3-density-radius-lg);

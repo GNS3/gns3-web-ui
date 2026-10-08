@@ -82,25 +82,10 @@
   font-weight: 600;
 }
 
-.confirmation-dialog__actions {
-  min-height: var(--gns3-density-section-header-height);
-  padding: var(--gns3-density-space-2) var(--gns3-density-space-4);
-  gap: var(--gns3-density-space-2);
-  border-top: 1px solid var(--mat-sys-outline-variant);
-
-  button {
-    min-width: 96px;
-    height: var(--gns3-density-button-height);
-    padding-inline: var(--gns3-density-space-4);
-    border-radius: var(--gns3-density-radius-sm);
-    font: var(--mat-sys-label-large);
-    font-size: var(--gns3-density-dialog-action-size);
-  }
-
-  .confirm-button:not(.destructive-button) {
-    color: var(--mat-sys-on-primary);
-    background: var(--mat-sys-primary);
-  }
+// Footer geometry comes from the standard dialog shell in _dialogs.scss.
+.confirmation-dialog__actions .confirm-button:not(.destructive-button) {
+  color: var(--mat-sys-on-primary);
+  background: var(--mat-sys-primary);
 }
 
 :host-context(html[data-density='compact']) {
@@ -110,15 +95,5 @@
 
   .confirmation-dialog__content {
     padding: var(--gns3-density-space-3) var(--gns3-density-space-4);
-  }
-
-  .confirmation-dialog__actions {
-    min-height: var(--gns3-density-section-header-height);
-    padding: var(--gns3-density-space-1) var(--gns3-density-space-4);
-
-    button {
-      min-width: 80px;
-      padding-inline: var(--gns3-density-space-3);
-    }
   }
 }

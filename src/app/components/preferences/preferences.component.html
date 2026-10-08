@@ -125,7 +125,7 @@
     </nav>
 
     <section class="templates-page__toolbar">
-      <mat-form-field class="templates-page__search" subscriptSizing="dynamic">
+      <mat-form-field appearance="fill" class="templates-page__search" subscriptSizing="dynamic">
         <mat-icon matPrefix>search</mat-icon>
         <input
           matInput
@@ -136,7 +136,7 @@
       </mat-form-field>
 
       <div class="templates-page__toolbar-actions">
-        <mat-form-field class="templates-page__filter" subscriptSizing="dynamic">
+        <mat-form-field appearance="fill" class="templates-page__filter" subscriptSizing="dynamic">
           <mat-label>Template type</mat-label>
           <mat-select [value]="selectedType()" (valueChange)="setType($event)">
             <mat-option value="all">All types</mat-option>
@@ -146,7 +146,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field class="templates-page__sort" subscriptSizing="dynamic">
+        <mat-form-field appearance="fill" class="templates-page__sort" subscriptSizing="dynamic">
           <mat-label>Sort by</mat-label>
           <mat-select [value]="sortActive()" (valueChange)="onSortByChange($event)">
             <mat-option value="name">Name</mat-option>
@@ -218,7 +218,9 @@
           <ng-container matColumnDef="template_type">
             <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
             <mat-cell *matCellDef="let template">
-              <span class="templates-page__type-badge" [ngClass]="typeBadgeClass(template.template_type)">{{ templateTypeLabel(template.template_type) }}</span>
+              <span class="templates-page__type-badge" [ngClass]="typeBadgeClass(template.template_type)">{{
+                templateTypeLabel(template.template_type)
+              }}</span>
             </mat-cell>
           </ng-container>
 
@@ -338,7 +340,9 @@
 
           <div class="templates-page__card-body">
             <h3 [matTooltip]="template.name">{{ template.name }}</h3>
-            <span class="templates-page__type-badge" [ngClass]="typeBadgeClass(template.template_type)">{{ templateTypeLabel(template.template_type) }}</span>
+            <span class="templates-page__type-badge" [ngClass]="typeBadgeClass(template.template_type)">{{
+              templateTypeLabel(template.template_type)
+            }}</span>
             <dl>
               @if (template.tags?.length) {
               <div class="templates-page__card-tags-row">
@@ -435,7 +439,9 @@
             </span>
             <div class="templates-page__details-title-line">
               <h2 [matTooltip]="template.name">{{ template.name }}</h2>
-              <span class="templates-page__type-badge" [ngClass]="typeBadgeClass(template.template_type)">{{ templateTypeLabel(template.template_type) }}</span>
+              <span class="templates-page__type-badge" [ngClass]="typeBadgeClass(template.template_type)">{{
+                templateTypeLabel(template.template_type)
+              }}</span>
             </div>
           </div>
           <button mat-icon-button (click)="closeDetails()" matTooltip="Close details" aria-label="Close details">
@@ -524,7 +530,8 @@
         <div class="templates-page__details-actions">
           @if (canConfigure(template)) {
           <button
-            mat-stroked-button
+            mat-raised-button
+            color="primary"
             class="templates-page__details-action templates-page__details-action--edit"
             (click)="configureTemplate(template)"
           >
@@ -533,7 +540,8 @@
           </button>
           } @if (canDuplicate(template)) {
           <button
-            mat-stroked-button
+            mat-raised-button
+            color="primary"
             class="templates-page__details-action templates-page__details-action--duplicate"
             (click)="duplicateTemplate(template)"
           >

@@ -97,7 +97,7 @@
     color: var(--mat-sys-on-surface);
 
     &--mono {
-      font-family: monospace;
+      font-family: var(--gns3-font-code);
       font-size: 12px;
     }
   }

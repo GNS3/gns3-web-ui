@@ -17,7 +17,8 @@
   z-index: 1000;
   color: var(--mat-sys-on-surface);
   border: 1px solid var(--mat-sys-outline-variant);
-  transition: box-shadow 200ms ease, border-color 200ms ease;
+  transition: box-shadow var(--gns3-motion-duration-standard) ease,
+    border-color var(--gns3-motion-duration-standard) ease;
 
   // GNS3 cyan gradient border effect
   &::before {
@@ -35,13 +36,14 @@
       color-mix(in srgb, var(--mat-sys-primary) 20%, transparent),
       color-mix(in srgb, var(--mat-sys-primary) 40%, transparent)
     );
-    -webkit-mask: linear-gradient(var(--mat-sys-white) 0 0) content-box, linear-gradient(var(--mat-sys-white) 0 0);
-    mask: linear-gradient(var(--mat-sys-white) 0 0) content-box, linear-gradient(var(--mat-sys-white) 0 0);
+    -webkit-mask: linear-gradient(var(--mat-sys-on-surface) 0 0) content-box,
+      linear-gradient(var(--mat-sys-on-surface) 0 0);
+    mask: linear-gradient(var(--mat-sys-on-surface) 0 0) content-box, linear-gradient(var(--mat-sys-on-surface) 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
     opacity: 0.8;
-    transition: opacity 200ms ease;
+    transition: opacity var(--gns3-motion-duration-standard) ease;
   }
 
   &:hover::before {
@@ -100,7 +102,7 @@
   background-color: color-mix(in srgb, var(--mat-sys-surface-container) 70%, transparent);
   display: flex;
   flex-direction: column;
-  transition: width 200ms ease;
+  transition: width var(--gns3-motion-duration-standard) ease;
   flex-shrink: 0;
 
   &--collapsed {
@@ -134,7 +136,7 @@
   height: 56px;
   background: transparent;
   border-radius: 0;
-  transition: all 200ms ease;
+  transition: all var(--gns3-motion-duration-standard) ease;
   margin: var(--gns3-density-space-2) 0;
 
   mat-icon {
@@ -142,7 +144,7 @@
     width: 24px;
     height: 24px;
     color: var(--mat-sys-primary);
-    transition: all 200ms ease;
+    transition: all var(--gns3-motion-duration-standard) ease;
   }
 
   &:hover {
@@ -185,7 +187,7 @@
 
   &--clickable {
     cursor: pointer;
-    transition: all 100ms ease;
+    transition: all var(--gns3-motion-duration-standard) ease;
 
     &:hover {
       opacity: 0.9;
@@ -206,13 +208,13 @@
   justify-content: center;
   font-size: 12px;
   font-weight: 700;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--mat-sys-body-medium-font, Roboto), sans-serif;
   letter-spacing: -0.5px;
   background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-primary));
   color: var(--mat-sys-on-primary);
   padding: 6px 10px;
   border-radius: 4px;
-  transition: all 200ms ease;
+  transition: all var(--gns3-motion-duration-standard) ease;
   flex-shrink: 0;
   box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
   position: relative;
@@ -232,7 +234,7 @@
       transparent 70%
     );
     transform: translateX(-100%);
-    transition: transform 200ms ease;
+    transition: transform var(--gns3-motion-duration-standard) ease;
   }
 
   .gns3-ai-chat__sidebar-title--clickable:hover & {
@@ -273,7 +275,7 @@
   flex-shrink: 0;
   cursor: grab;
   user-select: none;
-  transition: background 200ms ease;
+  transition: background var(--gns3-motion-duration-standard) ease;
   position: relative;
   height: 56px;
   box-sizing: border-box;
@@ -302,7 +304,8 @@
   border-top: 1px solid transparent;
   flex-shrink: 0;
   position: relative;
-  transition: border-color 200ms ease, box-shadow 200ms ease;
+  transition: border-color var(--gns3-motion-duration-standard) ease,
+    box-shadow var(--gns3-motion-duration-standard) ease;
 
   &:focus-within {
     border-top-color: var(--mat-sys-primary);
@@ -320,7 +323,7 @@
 
   .mat-icon-button {
     color: var(--mat-sys-on-surface);
-    transition: all 200ms ease;
+    transition: all var(--gns3-motion-duration-standard) ease;
     width: 40px;
     height: 40px;
     min-width: 40px;
@@ -342,7 +345,7 @@
       border-radius: 50%;
       background: var(--mat-sys-primary);
       transform: translate(-50%, -50%);
-      transition: width 200ms ease, height 200ms ease;
+      transition: width var(--gns3-motion-duration-standard) ease, height var(--gns3-motion-duration-standard) ease;
     }
 
     &:hover {
@@ -364,7 +367,7 @@
 
   .gns3-ai-chat__header-icon {
     fill: var(--mat-sys-on-surface);
-    transition: all 200ms ease;
+    transition: all var(--gns3-motion-duration-standard) ease;
     width: 24px;
     height: 24px;
     position: relative;
@@ -400,7 +403,7 @@
   border-radius: 50%;
   background: linear-gradient(135deg, var(--mat-sys-surface), var(--mat-sys-surface));
   box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent), 0 0 10px var(--mat-sys-primary);
-  transition: all 200ms ease;
+  transition: all var(--gns3-motion-duration-standard) ease;
   position: relative;
   overflow: hidden;
 
@@ -429,7 +432,7 @@
     background: radial-gradient(circle, var(--mat-sys-primary) 0%, transparent 70%);
     opacity: 0;
     transform: translate(-50%, -50%);
-    transition: opacity 200ms ease;
+    transition: opacity var(--gns3-motion-duration-standard) ease;
   }
 }
 
@@ -464,7 +467,7 @@
   position: absolute;
   z-index: 100;
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--gns3-motion-duration-standard) ease;
 
   .gns3-ai-chat:hover & {
     opacity: 1;

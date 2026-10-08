@@ -46,12 +46,20 @@
             </mat-radio-group>
 
             <form [formGroup]="formGroup" class="ethernet-switch-add__form">
-              <mat-form-field appearance="outline" class="ethernet-switch-add__field template-wizard__field">
+              <mat-form-field
+                appearance="outline"
+                subscriptSizing="dynamic"
+                class="ethernet-switch-add__field template-wizard__field"
+              >
                 <mat-label>Template name</mat-label>
                 <input formControlName="templateName" matInput required type="text" placeholder="Template name" />
               </mat-form-field>
 
-              <mat-form-field appearance="outline" class="ethernet-switch-add__field template-wizard__field">
+              <mat-form-field
+                appearance="outline"
+                subscriptSizing="dynamic"
+                class="ethernet-switch-add__field template-wizard__field"
+              >
                 <mat-label>Number of ports</mat-label>
                 <input
                   formControlName="numberOfPorts"

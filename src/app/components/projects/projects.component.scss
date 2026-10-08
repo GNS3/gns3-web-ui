@@ -1,3 +1,7 @@
+@use '../../../styles/buttons' as buttons;
+@use '../../../styles/page-layout' as page;
+@use '../../../styles/toolbar' as toolbar;
+
 /**
  * GNS3 Projects Component Styles
  * BEM naming applied, Material Design 3, unified with controllers and login pages
@@ -20,14 +24,11 @@
   max-width: 1600px;
   margin: 0 auto;
   padding: 24px 20px 16px;
-  animation: fadeInSlideIn 0.4s ease-out;
+  @include page.page-motion;
 }
 
 .projects__title {
-  font-size: 32px;
-  font-weight: 500;
-  color: var(--mat-sys-on-surface);
-  margin: 0;
+  @include page.page-title;
 }
 
 /* =============================================
@@ -35,7 +36,7 @@
 // ============================================= */
 
 .projects__content {
-  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+  @include page.page-motion;
 }
 
 /* =============================================
@@ -47,58 +48,28 @@
 }
 
 .projects__button {
+  @include buttons.geometry;
   margin: 12px 0;
-  height: var(--gns3-density-control-height);
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 500;
-  text-transform: none;
-  letter-spacing: 0.5px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover:not([disabled]) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
-  }
-
-  &:active:not([disabled]) {
-    transform: translateY(0);
-  }
 }
 
 /* =============================================
 // Toolbar
 // ============================================= */
 .projects__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--gns3-density-card-gap);
+  @include toolbar.layout(
+    '.projects__search-form',
+    '.projects__toolbar-actions',
+    '.projects__filter, .projects__sort-by',
+    '.projects__view-toggle'
+  );
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 20px 8px;
-  animation: fadeInSlideIn 0.4s ease-out 0.05s both;
-}
-
-.projects__search-form {
-  flex: 1;
-  min-width: 200px;
-  margin: 0;
+  @include page.page-motion;
 }
 
 .projects__search {
   width: 100%;
-}
-
-.projects__toolbar-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--gns3-density-space-3);
-  flex-shrink: 0;
-}
-
-.projects__filter,
-.projects__sort-by {
-  width: 140px;
 }
 
 /* View Toggle */
@@ -112,13 +83,10 @@
 }
 
 button.projects__view-toggle-btn {
-  width: var(--gns3-density-icon-button);
-  height: var(--gns3-density-icon-button);
-  border-radius: 8px;
+  @include buttons.icon;
   color: var(--mat-sys-on-surface-variant);
   /* Keep the state layer in sync with the button size (48px normal /
      40px compact) so the icon stays perfectly centered in both modes. */
-  --mat-icon-button-state-layer-size: var(--gns3-density-icon-button);
   --mat-icon-button-icon-size: 22px;
 
   &:hover {
@@ -126,9 +94,13 @@ button.projects__view-toggle-btn {
   }
 }
 
-.projects__view-toggle-btn--active {
+button.projects__view-toggle-btn--active {
   color: var(--mat-sys-on-primary-container);
   background: var(--mat-sys-primary-container);
+
+  &:hover {
+    color: var(--mat-sys-on-primary-container);
+  }
 }
 
 /* =============================================
@@ -145,7 +117,7 @@ button.projects__view-toggle-btn {
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 20px;
-  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+  @include page.page-motion;
 }
 
 /* =============================================
@@ -153,13 +125,11 @@ button.projects__view-toggle-btn {
 // ============================================= */
 .projects__table-container {
   border-radius: 16px;
-  overflow: hidden;
   flex: 1;
   min-width: 0;
   background: var(--mat-sys-surface);
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
-    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
-  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  @include page.surface;
+  overflow-x: auto;
 }
 
 .projects__table-container--with-details {
@@ -168,9 +138,12 @@ button.projects__view-toggle-btn {
 }
 
 // Ensure table fills its container
-.mat-table {
+.mat-table,
+mat-table {
   width: 100%;
-  min-width: 100%;
+  min-width: calc(
+    340px + 7 * var(--gns3-density-icon-button) + 4 * var(--gns3-action-gap) + 6 * var(--gns3-density-space-4)
+  );
 }
 
 // Follow the active Material density (52px normal, 44px compact).
@@ -186,13 +159,14 @@ button.projects__view-toggle-btn {
 
 // Material table internal DOM styling
 mat-row {
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard),
+    color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard),
+    border-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
   cursor: default;
   position: relative;
 
   &:hover {
     background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
-    transform: scale(1.002);
   }
 }
 
@@ -240,8 +214,7 @@ mat-cell {
 
 // Select column - fixed width like Image Manager
 .mat-column-select {
-  flex: 0 0 60px;
-  min-width: 60px;
+  @include buttons.action-column(1);
   justify-content: center;
   padding-left: 8px;
 }
@@ -261,26 +234,24 @@ mat-cell {
 
 // Actions column - centered
 .mat-column-actions {
-  flex: 2;
+  @include buttons.action-column(5);
   justify-content: center;
-  padding-right: 8px;
 }
 
 // Delete column - fixed width like Image Manager
 .mat-column-delete {
-  flex: 0 0 60px;
-  min-width: 60px;
+  @include buttons.action-column(1);
   justify-content: center;
-  padding-right: 8px;
 }
 
 /* =============================================
 // Project Link
 // ============================================= */
 .projects__link {
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard),
+    color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard),
+    border-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
   display: inline-block;
-  transform-origin: left center;
   color: var(--mat-sys-primary);
   text-decoration: none;
   font-weight: 500;
@@ -294,12 +265,11 @@ mat-cell {
     width: 0;
     height: 2px;
     background-color: currentColor;
-    transition: width 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
   }
 
   &:hover {
     color: color-mix(in srgb, var(--mat-sys-primary) 80%, black);
-    transform: translateY(-2px);
 
     &::after {
       width: 100%;
@@ -355,53 +325,14 @@ mat-cell {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: var(--gns3-action-gap);
 }
 
 // Icon buttons - Material Design 3 style
 .projects__actions-cell button[mat-icon-button],
 .projects__card-actions button[mat-icon-button] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 50%;
-  --mat-icon-button-state-layer-size: 32px;
-  --mat-icon-button-icon-size: 20px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background-color: var(--mat-icon-button-state-layer);
-    opacity: 0;
-    transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  &:hover::before {
-    opacity: var(--mat-icon-button-hover-state-layer-opacity);
-  }
-
-  &:active::before {
-    opacity: var(--mat-icon-button-pressed-state-layer-opacity);
-  }
-
-  mat-icon {
-    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    z-index: 1;
-  }
-
-  &:hover mat-icon {
-    transform: scale(1.15);
-  }
-
-  &:active mat-icon {
-    transform: scale(0.95);
-  }
+  @include buttons.action-icon;
+  --mat-icon-button-state-layer-color: var(--projects-action-color);
 }
 
 // Semantic action colors are theme-token based and shared by list/grid view.
@@ -410,16 +341,13 @@ mat-cell {
   color: var(--projects-action-color);
   --mdc-circular-progress-active-indicator-color: var(--projects-action-color);
 
-  mat-icon {
+  &:not(:disabled) mat-icon {
     color: var(--projects-action-color);
   }
 
-  &::before {
-    background-color: var(--projects-action-color);
-  }
-
-  &:hover::before {
-    opacity: 0.12;
+  &:disabled {
+    color: var(--gns3-button-disabled-label-color);
+    --projects-action-color: var(--gns3-button-disabled-label-color);
   }
 }
 
@@ -454,8 +382,7 @@ mat-cell {
   }
 
   &:disabled {
-    cursor: wait;
-    opacity: 0.7;
+    cursor: default;
   }
 }
 
@@ -468,11 +395,7 @@ mat-cell {
   align-items: center;
   padding: 0 12px;
   border-top: 1px solid var(--mat-sys-outline-variant);
-  background: color-mix(
-    in srgb,
-    var(--mat-sys-primary-container) 20%,
-    var(--mat-sys-surface-container)
-  );
+  background: color-mix(in srgb, var(--mat-sys-primary-container) 20%, var(--mat-sys-surface-container));
 }
 
 .projects__table-paginator,
@@ -485,11 +408,7 @@ mat-cell {
 .projects__grid-paginator {
   grid-column: 1 / -1;
   border-radius: 12px;
-  background: color-mix(
-    in srgb,
-    var(--mat-sys-primary-container) 20%,
-    var(--mat-sys-surface-container)
-  );
+  background: color-mix(in srgb, var(--mat-sys-primary-container) 20%, var(--mat-sys-surface-container));
 }
 
 /* =============================================
@@ -510,31 +429,25 @@ mat-cell {
 
 /* Project Card */
 .projects__card {
-  background: var(--mat-sys-surface);
-  border-radius: 16px;
-  border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 60%, transparent);
+  @include page.surface;
   padding: var(--gns3-density-card-padding);
   cursor: pointer;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard),
+    color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard),
+    border-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
   display: flex;
   flex-direction: column;
   gap: var(--gns3-density-space-3);
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
+    background: color-mix(in srgb, var(--mat-sys-primary) 4%, var(--mat-sys-surface));
     border-color: var(--mat-sys-outline-variant);
-  }
-
-  &:active {
-    transform: translateY(0);
   }
 }
 
 .projects__card--selected {
   border-color: var(--mat-sys-primary);
-  box-shadow: 0 0 0 1px var(--mat-sys-primary),
-    0 8px 24px color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  box-shadow: 0 0 0 1px var(--mat-sys-primary);
 
   &:hover {
     border-color: var(--mat-sys-primary);
@@ -620,9 +533,10 @@ mat-cell {
 }
 
 .projects__card-actions {
+  flex-wrap: wrap;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--gns3-action-gap);
   padding-top: 8px;
   border-top: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 40%, transparent);
 }
@@ -655,8 +569,7 @@ mat-cell {
 // Details Panel
 // ============================================= */
 .projects__details {
-  width: clamp(520px, 44vw, 720px);
-  flex-shrink: 0;
+  flex: 0 0 clamp(380px, 30vw, 460px);
   background: var(--mat-sys-surface);
   border-radius: 16px;
   border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 60%, transparent);
@@ -673,6 +586,10 @@ mat-cell {
   position: sticky;
   top: 16px;
   overflow: hidden;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 }
 
 .projects__details-header {
@@ -735,41 +652,7 @@ mat-cell {
 }
 
 .projects__detail-item--secondary {
-  opacity: 0.72;
-}
-
-/* ── Inline rows: several short items share one line ───────── */
-.projects__detail-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--gns3-density-space-3);
-}
-
-.projects__detail-row .projects__detail-item {
-  flex: 1 1 150px;
-  min-width: 0;
-}
-
-/* Narrower label so three items fit side by side in the panel */
-.projects__detail-row .projects__detail-label {
-  width: 60px;
-}
-
-/* Left-align the value next to its label — cells are narrow, so the global
-   right-alignment reads as two-end justification inside a shared row */
-.projects__detail-row .projects__detail-value {
-  text-align: left;
-}
-
-/* Count triplet (Nodes/Links/Drawings): equal thirds so the row never wraps,
-   with content-sized labels — "Drawings" overflows the shared 60px column */
-.projects__detail-row--stats .projects__detail-item {
-  flex: 1 1 0;
-}
-
-.projects__detail-row--stats .projects__detail-label {
-  width: auto;
-  margin-right: 6px;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 /* Icon column — fixed width */
@@ -792,8 +675,7 @@ mat-cell {
 
 /* Label — fixed width, uppercase, left-aligned */
 .projects__detail-label {
-  width: 88px;
-  flex-shrink: 0;
+  flex: 0 0 84px;
   font-size: 12px;
   font-weight: 650;
   color: var(--mat-sys-on-surface-variant);
@@ -814,7 +696,7 @@ mat-cell {
 }
 
 .projects__detail-value--mono {
-  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-family: var(--gns3-font-code);
   font-size: 12px;
   color: var(--mat-sys-on-surface-variant);
 }
@@ -855,7 +737,7 @@ mat-cell {
 .projects__preview-thumb {
   box-sizing: border-box;
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: var(--gns3-density-space-3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -925,11 +807,17 @@ mat-cell {
   gap: var(--gns3-density-space-2);
 }
 
-button.projects__details-action-btn {
+.projects__details-action-btn {
+  @include buttons.action-icon;
   --projects-details-action-color: var(--mat-sys-on-surface-variant);
+  --mat-icon-button-state-layer-color: var(--projects-details-action-color);
 
-  mat-icon {
+  &:not(:disabled) mat-icon {
     color: var(--projects-details-action-color);
+  }
+
+  &:disabled mat-icon {
+    color: var(--gns3-button-disabled-label-color);
   }
 }
 
@@ -984,8 +872,16 @@ button.projects__details-action-btn {
 }
 
 @media (max-width: 1200px) {
+  .projects__main {
+    flex-direction: column;
+  }
+
   .projects__details {
-    width: 380px;
+    position: static;
+    flex-basis: auto;
+    width: 100%;
+    height: auto;
+    max-height: none;
   }
 }
 
@@ -1030,17 +926,14 @@ button.projects__details-action-btn {
   height: 32px;
   border-radius: 50%;
   color: var(--mat-sys-on-surface-variant);
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard),
+    color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard),
+    border-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
   text-decoration: none;
 
   &:hover {
     background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
     color: var(--mat-sys-primary);
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
   }
 }
 
@@ -1058,16 +951,6 @@ button.projects__details-action-btn {
 /* =============================================
 // Animations
 // ============================================= */
-@keyframes fadeInSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 @keyframes slideInRight {
   from {
@@ -1077,15 +960,6 @@ button.projects__details-action-btn {
   to {
     opacity: 1;
     transform: translateX(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 
@@ -1111,15 +985,9 @@ button.projects__details-action-btn {
     padding: 16px 16px 12px;
   }
 
-  .projects__title {
-    font-size: 28px;
-  }
-
   .projects__button {
     margin: 8px 0;
     width: 100%;
-    height: 44px;
-    font-size: 15px;
   }
 
   .projects__buttons-bar {
@@ -1129,7 +997,7 @@ button.projects__details-action-btn {
 
   .projects__actions-cell {
     flex-wrap: wrap;
-    gap: 4px;
+    gap: var(--gns3-action-gap);
   }
 
   mat-cell {
@@ -1146,4 +1014,8 @@ button.projects__details-action-btn {
     gap: 8px;
     text-align: left;
   }
+}
+
+button.projects__button--primary {
+  @include buttons.primary;
 }

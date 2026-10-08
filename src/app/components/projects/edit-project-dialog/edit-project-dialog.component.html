@@ -3,37 +3,67 @@
 <div class="modal-form-container">
   <mat-tab-group (selectedTabChange)="onTabChange($event)">
     <mat-tab label="General">
-      <form class="edit-project-form">
+      <form class="edit-project-form gns3-form-grid-container">
         <!-- Two-column grid layout for form fields -->
-        <div class="form-grid">
+        <div class="gns3-form-grid gns3-form-layout-fixed">
           <!-- Project name - full width -->
-          <mat-form-field appearance="fill" class="form-grid__full">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="gns3-form-grid__full">
             <mat-label>Project name</mat-label>
-            <input matInput [value]="projectName()" (input)="projectName.set($event.target.value)" placeholder="My Project" type="text" />
+            <input
+              matInput
+              [value]="projectName()"
+              (input)="projectName.set($event.target.value)"
+              placeholder="My Project"
+              type="text"
+            />
           </mat-form-field>
 
           <!-- Scene dimensions - paired -->
-          <mat-form-field appearance="fill">
+          <mat-form-field appearance="outline" subscriptSizing="fixed">
             <mat-label>Scene width</mat-label>
-            <input matInput [value]="width()" (input)="width.set(+$event.target.value)" placeholder="1000" type="number" />
+            <input
+              matInput
+              [value]="width()"
+              (input)="width.set(+$event.target.value)"
+              placeholder="1000"
+              type="number"
+            />
             <span matTextSuffix>px</span>
           </mat-form-field>
 
-          <mat-form-field appearance="fill">
+          <mat-form-field appearance="outline" subscriptSizing="fixed">
             <mat-label>Scene height</mat-label>
-            <input matInput [value]="height()" (input)="height.set(+$event.target.value)" placeholder="800" type="number" />
+            <input
+              matInput
+              [value]="height()"
+              (input)="height.set(+$event.target.value)"
+              placeholder="800"
+              type="number"
+            />
             <span matTextSuffix>px</span>
           </mat-form-field>
 
           <!-- Grid sizes - paired -->
-          <mat-form-field appearance="fill">
+          <mat-form-field appearance="outline" subscriptSizing="fixed">
             <mat-label>Node grid size</mat-label>
-            <input matInput [value]="nodeGridSize()" (input)="nodeGridSize.set(+$event.target.value)" placeholder="25" type="number" />
+            <input
+              matInput
+              [value]="nodeGridSize()"
+              (input)="nodeGridSize.set(+$event.target.value)"
+              placeholder="25"
+              type="number"
+            />
           </mat-form-field>
 
-          <mat-form-field appearance="fill">
+          <mat-form-field appearance="outline" subscriptSizing="fixed">
             <mat-label>Drawing grid size</mat-label>
-            <input matInput [value]="drawingGridSize()" (input)="drawingGridSize.set(+$event.target.value)" placeholder="25" type="number" />
+            <input
+              matInput
+              [value]="drawingGridSize()"
+              (input)="drawingGridSize.set(+$event.target.value)"
+              placeholder="25"
+              type="number"
+            />
           </mat-form-field>
         </div>
       </form>
@@ -57,23 +87,46 @@
 
     @if (controller && project) {
     <mat-tab label="Readme">
-      <app-readme-editor #editor [controller]="controller" [project]="project" (isEditingChange)="onReadmeEditingChange($event)"></app-readme-editor>
+      <app-readme-editor
+        #editor
+        [controller]="controller"
+        [project]="project"
+        (isEditingChange)="onReadmeEditingChange($event)"
+      ></app-readme-editor>
     </mat-tab>
     }
 
     <mat-tab label="Global variables">
-      <form class="edit-project-form">
-        <mat-form-field appearance="fill" class="form-field">
+      <form class="edit-project-form gns3-form-stack">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
           <mat-label>Name</mat-label>
-          <input matInput [value]="variableName()" (input)="variableName.set($event.target.value)" placeholder="VARIABLE_NAME" type="text" />
+          <input
+            matInput
+            [value]="variableName()"
+            (input)="variableName.set($event.target.value)"
+            placeholder="VARIABLE_NAME"
+            type="text"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="form-field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
           <mat-label>Value</mat-label>
-          <input matInput [value]="variableValue()" (input)="variableValue.set($event.target.value)" placeholder="variable_value" type="text" />
+          <input
+            matInput
+            [value]="variableValue()"
+            (input)="variableValue.set($event.target.value)"
+            placeholder="variable_value"
+            type="text"
+          />
         </mat-form-field>
       </form>
-      <button class="form-field" mat-button (click)="addVariable()" mat-raised-button color="primary">
+      <button
+        class="form-field edit-project__add-variable"
+        mat-button
+        (click)="addVariable()"
+        mat-raised-button
+        color="primary"
+      >
         Add variable
       </button>
       <table mat-table [dataSource]="variables()">
@@ -115,11 +168,8 @@
   <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
   <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying()">
     @if (isApplying()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    }
-    @if (!isApplying()) {
-      Apply
-    }
+    <mat-spinner diameter="20"></mat-spinner>
+    } @if (!isApplying()) { Apply }
   </button>
   }
 
@@ -134,12 +184,8 @@
   <button mat-button (click)="editor()?.enterEditMode()">Edit</button>
   <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying()">
     @if (isApplying()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    }
-    @if (!isApplying()) {
-      Apply
-    }
+    <mat-spinner diameter="20"></mat-spinner>
+    } @if (!isApplying()) { Apply }
   </button>
-  }
-  }
+  } }
 </div>

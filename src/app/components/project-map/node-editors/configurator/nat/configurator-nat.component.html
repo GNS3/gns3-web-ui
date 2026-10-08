@@ -13,9 +13,9 @@
 
 <div class="modal-form-container">
   @if (isLoading()) {
-    <div class="configurator-dialog-loading">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
+  <div class="configurator-dialog-loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
   } @else {
   <div class="node-config__single-tab" role="tablist" aria-label="Node configuration sections">
     <div role="tab" aria-selected="true">
@@ -28,28 +28,43 @@
         @if (name) {
         <h2 class="node-config__section-heading">General settings</h2>
         <div class="form-container">
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Name</mat-label>
             <input matInput type="text" [value]="nodeName()" (input)="nodeName.set($event.target.value)" />
           </mat-form-field>
-          <mat-form-field class="form-field tags-field">
-            <mat-label>Tags</mat-label>
-            <mat-chip-grid #chipList>
+          <div class="gns3-chip-field">
+            <mat-form-field
+              floatLabel="always"
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="form-field tags-field"
+            >
+              <mat-label>Tags</mat-label>
+
+              <input
+                matInput
+                placeholder="Add tags"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="addTag($event)"
+              />
+            </mat-form-field>
+            <mat-chip-grid
+              #chipList
+              class="gns3-chip-field__values"
+              [class.gns3-chip-field__values--empty]="(node?.tags?.length ?? 0) === 0"
+              aria-label="Tags"
+            >
               @for (tag of node?.tags; track tag) {
-              <mat-chip (removed)="removeTag(tag)">
+              <mat-chip-row [editable]="false" [attr.title]="tag" (removed)="removeTag(tag)">
                 {{ tag }}
-                <mat-icon matChipRemove>cancel</mat-icon>
-              </mat-chip>
+                <button matChipRemove type="button" [attr.aria-label]="'Remove tag ' + tag">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip-row>
               }
             </mat-chip-grid>
-            <input
-              matInput
-              placeholder="Add tags"
-              [matChipInputFor]="chipList"
-              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-              (matChipInputTokenEnd)="addTag($event)"
-            />
-          </mat-form-field>
+          </div>
 
           <!-- Ethernet interface read-only display -->
           @if (portsMappingEthernet().length) {
@@ -102,11 +117,16 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying() || isLoading()">
+  <button
+    mat-button
+    (click)="onSaveClick()"
+    tabindex="2"
+    mat-raised-button
+    color="primary"
+    [disabled]="isApplying() || isLoading()"
+  >
     @if (isApplying()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      Apply
-    }
+    <mat-spinner diameter="20"></mat-spinner>
+    } @else { Apply }
   </button>
 </div>

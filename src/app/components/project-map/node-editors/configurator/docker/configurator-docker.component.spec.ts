@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { MatDialogRef, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
@@ -21,7 +21,6 @@ import { Node, Properties } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { EditNetworkConfigurationDialogComponent } from './edit-network-configuration/edit-network-configuration.component';
 
 describe('ConfiguratorDialogDockerComponent', () => {
   let fixture: ComponentFixture<ConfiguratorDialogDockerComponent>;
@@ -138,6 +137,8 @@ describe('ConfiguratorDialogDockerComponent', () => {
     mockNodeService = {
       getNode: vi.fn().mockReturnValue(of(mockNode)),
       updateNode: vi.fn().mockReturnValue(of(undefined)),
+      getNetworkConfiguration: vi.fn().mockReturnValue(of('auto eth0\niface eth0 inet dhcp\n')),
+      saveNetworkConfiguration: vi.fn().mockReturnValue(of(undefined)),
     };
 
     mockToasterService = {
@@ -171,7 +172,10 @@ describe('ConfiguratorDialogDockerComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: TemplateService, useValue: { list: () => of([]) } },
         { provide: ToasterService, useValue: mockToasterService },
-        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
+        {
+          provide: NetmikoDeviceTypesService,
+          useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) },
+        },
         { provide: DockerConfigurationService, useValue: mockDockerConfigurationService },
         { provide: DockerValidationService, useValue: mockDockerValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
@@ -318,22 +322,100 @@ describe('ConfiguratorDialogDockerComponent', () => {
     });
   });
 
-  describe('editNetworkConfiguration', () => {
-    it('should open the structured network editor at its responsive dialog size', () => {
-      component.editNetworkConfiguration();
+  describe('Network configuration tab', () => {
+    async function selectTab(index: number) {
+      component.selectedTab.set(index);
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(500);
+      await fixture.whenStable();
+      fixture.detectChanges();
+    }
 
-      expect(mockDialog.open).toHaveBeenCalledWith(
-        EditNetworkConfigurationDialogComponent,
-        expect.objectContaining({
-          panelClass: ['base-dialog-panel', 'node-configurator-dialog-panel', 'docker-network-config-dialog-panel'],
-          width: '1040px',
-          maxWidth: 'calc(100vw - 48px)',
-          height: 'min(760px, calc(100vh - 48px))',
-          disableClose: true,
-        })
+    it('loads the embedded editor lazily and preserves drafts across tab switches', async () => {
+      expect(mockNodeService.getNetworkConfiguration).not.toHaveBeenCalled();
+      expect(fixture.nativeElement.querySelectorAll('[role=tab]')[1].textContent).toContain('Network');
+      expect(fixture.nativeElement.textContent).not.toContain('Edit network configuration');
+      await selectTab(1);
+      const editor = component.networkEditor();
+      expect(editor).toBeDefined();
+      expect(editor.embedded()).toBe(true);
+      expect(editor.node).toBe(component.node);
+      expect(editor.controller).toBe(mockController);
+      editor.updateInterface(0, { hostname: 'draft-host' });
+      await selectTab(0);
+      await selectTab(1);
+      expect(component.networkEditor()).toBe(editor);
+      expect(editor.interfaces()[0].hostname).toBe('draft-host');
+      expect(mockNodeService.getNetworkConfiguration).toHaveBeenCalledTimes(1);
+      expect(mockDialog.open).not.toHaveBeenCalled();
+    });
+
+    it('applies network configuration without saving unrelated node fields or closing the parent', async () => {
+      await selectTab(1);
+      component.networkEditor().updateInterface(0, { hostname: 'docker-host' });
+      component.nodeName.set('Unsaved node name');
+      fixture.nativeElement.querySelector('.network-editor__actions button').click();
+      expect(mockNodeService.saveNetworkConfiguration).toHaveBeenCalledWith(
+        mockController,
+        component.node,
+        expect.stringContaining('hostname docker-host')
       );
-      expect(mockDialog.open.mock.results[0].value.componentInstance.controller).toBe(mockController);
-      expect(mockDialog.open.mock.results[0].value.componentInstance.node).toBe(component.node);
+      expect(mockNodeService.updateNode).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+      expect(component.nodeName()).toBe('Unsaved node name');
+    });
+
+    it('prevents closing or duplicate saves while the network request is pending', async () => {
+      const response = new Subject<void>();
+      mockNodeService.saveNetworkConfiguration.mockReturnValue(response);
+      await selectTab(1);
+      component.networkEditor().onSaveClick();
+      component.networkEditor().onSaveClick();
+      component.onSaveClick();
+      component.onCancelClick();
+      expect(mockNodeService.updateNode).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+      expect(mockNodeService.saveNetworkConfiguration).toHaveBeenCalledTimes(1);
+      expect(component.networkEditor().saving()).toBe(true);
+      response.next();
+      response.complete();
+      expect(component.networkEditor().saving()).toBe(false);
+      component.onCancelClick();
+      expect(mockDialogRef.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the footer Apply action saving node settings on the Network tab', async () => {
+      await selectTab(1);
+      component.consoleHttpPort.set('80');
+      component.consoleHttpPath.set('/');
+      const footer = fixture.nativeElement.querySelector('[mat-dialog-actions]');
+      expect([...footer.querySelectorAll('button')].map((b: HTMLButtonElement) => b.textContent.trim())).toEqual([
+        'Cancel',
+        'Apply',
+      ]);
+      component.onSaveClick();
+      expect(mockNodeService.updateNode).toHaveBeenCalled();
+      expect(mockNodeService.saveNetworkConfiguration).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+
+    it('prevents the tab save action while node settings are being applied', async () => {
+      await selectTab(1);
+      component.isApplying.set(true);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.network-editor__actions button').disabled).toBe(true);
+      component.networkEditor().onSaveClick();
+      expect(mockNodeService.saveNetworkConfiguration).not.toHaveBeenCalled();
+    });
+
+    it('disables applying network configuration after a load failure', async () => {
+      mockNodeService.getNetworkConfiguration.mockReturnValue(throwError(() => new Error('Load failed')));
+      await selectTab(1);
+      const apply = fixture.nativeElement.querySelector('.network-editor__actions button');
+      expect(apply.disabled).toBe(true);
+      expect(fixture.nativeElement.querySelector('[mat-dialog-actions] button:last-child').disabled).toBe(false);
+      component.networkEditor().onSaveClick();
+      expect(mockNodeService.saveNetworkConfiguration).not.toHaveBeenCalled();
     });
   });
 

@@ -1,3 +1,8 @@
+@use 'forms' as forms;
+@use 'buttons' as buttons;
+
+@include forms.responsive-grid;
+
 /**
  * GNS3 Web UI - Dialog Styles
  *
@@ -217,7 +222,7 @@
     border-radius: 12px;
     padding: 16px;
     background: var(--mat-sys-surface-container-low);
-    transition: background-color 0.2s ease;
+    transition: background-color var(--gns3-motion-duration-standard) ease;
 
     &:hover {
       background: var(--mat-sys-surface-container);
@@ -373,19 +378,23 @@
   /* Add adapter row with note */
   .add-adapter-row {
     display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 16px;
-    align-items: start;
-    margin-top: 16px;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--gns3-density-space-4);
+    align-items: center;
+    margin-top: var(--gns3-density-space-4);
+
+    .add-btn {
+      margin-top: 0;
+    }
   }
 
   /* Info note text for compact inline display */
   .info-note-text {
-    flex: 1;
-    font-size: 12px;
-    color: var(--mat-sys-on-surface-variant);
-    line-height: 1.4;
-    padding-top: 6px;
+    @include forms.helper-text;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    overflow-wrap: anywhere;
   }
 }
 
@@ -493,12 +502,6 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
 .confirmation-danger-panel {
   .mat-mdc-dialog-surface {
     border: 1px solid var(--mat-sys-error-container);
-  }
-
-  .confirm-button,
-  button.mat-mdc-raised-button {
-    background-color: var(--mat-sys-error);
-    color: var(--mat-sys-on-error);
   }
 }
 
@@ -1137,7 +1140,16 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
   .form-container {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: var(--gns3-density-space-4);
+  }
+
+  // Standalone fields in older configurator tabs do not have a stack wrapper.
+  // Dynamic subscripts reserve no empty row, so provide the same separation
+  // as .form-container without adding margins to fields inside a grid.
+  :is(.mat-mdc-tab-body-content, mat-card.mat-mdc-card)
+    > :is(mat-form-field[subscriptSizing='dynamic'], .gns3-chip-field)
+    + * {
+    margin-block-start: var(--gns3-density-space-4);
   }
 
   .form-grid,
@@ -1172,7 +1184,7 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
   .node-config__file-row {
     display: grid;
     grid-template-columns: max-content max-content minmax(220px, 1fr);
-    align-items: center;
+    align-items: start;
     gap: 8px;
 
     button {
@@ -1182,14 +1194,14 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
 
   .node-config__file-field {
     min-width: 0;
-
-    .mat-mdc-form-field-subscript-wrapper {
-      display: none;
-    }
   }
 
   .form-field {
     margin: 0;
+  }
+
+  .disk-card__content {
+    gap: var(--gns3-density-space-4);
   }
 
   mat-checkbox,
@@ -1203,30 +1215,7 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
     gap: 8px 16px;
   }
 
-  .mat-mdc-form-field {
-    --mdc-filled-text-field-container-color: transparent;
-    --mdc-filled-text-field-focus-active-indicator-color: transparent;
-    --mdc-filled-text-field-hover-active-indicator-color: transparent;
-    --mdc-filled-text-field-active-indicator-color: transparent;
-  }
-
-  .mat-mdc-text-field-wrapper.mdc-text-field--filled {
-    border: 1px solid var(--mat-sys-outline);
-    border-radius: 8px;
-
-    &:hover {
-      border-color: var(--mat-sys-on-surface);
-    }
-  }
-
-  .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper.mdc-text-field--filled {
-    border-color: var(--mat-sys-primary);
-    box-shadow: inset 0 0 0 1px var(--mat-sys-primary);
-  }
-
-  .mdc-line-ripple {
-    display: none;
-  }
+  @include forms.outlined;
 
   .mat-mdc-chip {
     border: 1px solid var(--mat-sys-outline-variant);
@@ -1274,6 +1263,15 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
     margin-top: 2px;
   }
 
+  .node-config__secondary-actions--single {
+    display: flex;
+    justify-content: center;
+
+    .node-config__secondary-action {
+      width: auto;
+    }
+  }
+
   .node-config__secondary-action {
     width: 100%;
   }
@@ -1299,7 +1297,7 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
       background: transparent;
     }
 
-    button[color='primary'] {
+    button[color='primary']:not(:disabled) {
       color: var(--mat-sys-on-primary);
       background: var(--mat-sys-primary);
       box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 24%, transparent);
@@ -1523,7 +1521,7 @@ html[data-density='compact'] .node-configurator-dialog-panel {
   }
 
   .form-container {
-    gap: 6px;
+    gap: var(--gns3-density-space-4);
   }
 
   .interfaces-list,
@@ -1532,18 +1530,12 @@ html[data-density='compact'] .node-configurator-dialog-panel {
   }
 
   .disk-card__content {
-    gap: 8px;
+    gap: var(--gns3-density-space-4);
   }
 
   .add-interface-row {
     gap: 8px;
     padding: 8px;
-
-    // The field and action share one centered row. Unlike normal form stacks,
-    // this row must not reserve helper-text space below only the field.
-    .mat-mdc-form-field-subscript-wrapper {
-      display: none;
-    }
   }
 
   .form-grid,
@@ -1574,47 +1566,6 @@ html[data-density='compact'] .node-configurator-dialog-panel {
 
   mat-radio-group {
     gap: 4px 10px;
-  }
-
-  // Keep Material's form-field separation, but use half of its normal 16px
-  // reserve in compact mode. Real hints and errors can still grow naturally.
-  .mat-mdc-form-field-bottom-align::before {
-    height: 8px;
-  }
-
-  .tags-field {
-    --mat-form-field-filled-with-label-container-padding-top: 18px;
-    --mat-form-field-filled-with-label-container-padding-bottom: 2px;
-
-    .mat-mdc-form-field-infix {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      column-gap: 4px;
-    }
-
-    .mat-mdc-chip-grid {
-      min-width: 0;
-      flex: 0 1 auto;
-
-      &:not(:has(.mat-mdc-chip)) {
-        display: none;
-      }
-
-      .mdc-evolution-chip-set__chips {
-        min-width: 0;
-        margin-left: -4px;
-      }
-    }
-
-    .mat-mdc-chip {
-      margin: 2px 0 2px 4px;
-    }
-
-    input.mat-mdc-chip-input {
-      min-width: 120px;
-      flex: 1 1 120px;
-    }
   }
 
   .fr-switch__input-grid,
@@ -1879,13 +1830,17 @@ html[data-density='compact'] .node-configurator-dialog-panel {
   .add-interface-row {
     display: flex;
     gap: 12px;
-    align-items: center;
+    align-items: flex-start;
     padding: 12px;
     background: var(--mat-sys-surface-container-low);
     border-radius: 8px;
 
     mat-form-field {
       flex: 1;
+    }
+
+    button {
+      height: var(--gns3-density-form-field-height);
     }
   }
 }
@@ -1989,7 +1944,7 @@ html[data-density='compact'] .node-configurator-dialog-panel {
 .fault-injection-backdrop {
   backdrop-filter: blur(6px);
   background: color-mix(in srgb, var(--mat-sys-scrim) 40%, transparent);
-  transition: all 0.3s ease;
+  transition: all var(--gns3-motion-duration-standard) ease;
 }
 
 /* =============================================
@@ -2089,7 +2044,7 @@ html[data-density='compact'] .node-configurator-dialog-panel {
       background: transparent;
     }
 
-    button[color='primary'] {
+    button[color='primary']:not(:disabled) {
       color: var(--mat-sys-on-primary);
       background: var(--mat-sys-primary);
       box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 24%, transparent);
@@ -2173,12 +2128,7 @@ html[data-density='compact'] .node-configurator-dialog-panel {
 
 // Shared destructive actions use semantic error tokens in every dialog size.
 button.destructive-button {
-  color: var(--mat-sys-on-error);
-  background-color: var(--mat-sys-error);
-
-  &:hover:not([disabled]) {
-    background-color: color-mix(in srgb, var(--mat-sys-error) 88%, var(--mat-sys-on-error));
-  }
+  @include buttons.destructive;
 }
 
 button.destructive-icon-button {
@@ -2192,13 +2142,16 @@ button.destructive-icon-button {
 
 // Short dialogs still need a clear content area between their title and
 // action row. This also covers legacy forms without mat-dialog-content.
+// Wrappers with Material content already get padding on that content and
+// their action row; padding the wrapper adds an extra strip below the footer.
 .dialog-small-panel {
   .mat-mdc-dialog-content,
   .modal-form-container {
     padding-block: 24px;
   }
 
-  .mat-mdc-dialog-title + :not(.mat-mdc-dialog-content):not(.mat-mdc-dialog-actions) {
+  .mat-mdc-dialog-title
+    + :not(.mat-mdc-dialog-content):not(.mat-mdc-dialog-actions):not(:has(> .mat-mdc-dialog-content)) {
     padding-block: 20px;
   }
 }
@@ -2253,7 +2206,7 @@ html[data-density='compact'] .mat-mdc-dialog-actions {
     background: transparent;
   }
 
-  button[color='primary'] {
+  button[color='primary']:not(:disabled) {
     color: var(--mat-sys-on-primary);
     background: var(--mat-sys-primary);
     box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 24%, transparent);
@@ -2266,29 +2219,18 @@ html[data-density='compact'] .dialog-small-panel {
     padding-block: 16px;
   }
 
-  .mat-mdc-dialog-title + :not(.mat-mdc-dialog-content):not(.mat-mdc-dialog-actions) {
+  .mat-mdc-dialog-title
+    + :not(.mat-mdc-dialog-content):not(.mat-mdc-dialog-actions):not(:has(> .mat-mdc-dialog-content)) {
     padding-block: 16px;
   }
 }
 
-// Keep disabled Add Image actions distinct from the shared primary treatment.
-.base-dialog-panel.add-image-dialog-panel {
-  :is(.mat-mdc-dialog-actions, .mat-dialog-actions) button[color='primary']:disabled {
-    color: color-mix(in srgb, var(--mat-sys-on-surface) 38%, var(--mat-sys-surface-container));
-    background: color-mix(in srgb, var(--mat-sys-on-surface) 12%, var(--mat-sys-surface-container));
-    box-shadow: none;
-  }
+// One disabled treatment for primary actions in standard and legacy dialogs.
+html body :is(.mat-mdc-dialog-actions, .mat-dialog-actions) button[color='primary'] {
+  @include buttons.disabled;
 }
 
 // Semantic confirmation variants sit on top of the shared shell.
-.confirmation-danger-panel {
-  :is(.mat-mdc-dialog-actions, .mat-dialog-actions) button[color='primary'],
-  :is(.mat-mdc-dialog-actions, .mat-dialog-actions) .confirm-button {
-    color: var(--mat-sys-on-error);
-    background: var(--mat-sys-error);
-  }
-}
-
 @media (max-width: 600px) {
   html[data-density='compact'] .mat-mdc-dialog-actions button {
     min-width: 64px;
@@ -2297,4 +2239,9 @@ html[data-density='compact'] .dialog-small-panel {
   :is(.dialog-medium-panel, .dialog-large-panel, .dialog-extra-large-panel) {
     --gns3-dialog-width: calc(100vw - 24px);
   }
+}
+
+// Standard footer actions share the page action size in both densities.
+html body .cdk-overlay-container .mat-mdc-dialog-actions button:not(.mat-mdc-icon-button) {
+  @include buttons.geometry;
 }

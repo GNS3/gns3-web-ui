@@ -4,6 +4,7 @@
  */
 
 @use '../../../styles/page-layout' as page;
+@use '../../../styles/settings-workspace' as workspace;
 
 :host {
   @include page.page-host;
@@ -19,9 +20,6 @@
 
 .settings__title {
   @include page.page-title;
-  font-size: var(--gns3-density-page-title-size);
-  font-weight: 650;
-  line-height: 1.2;
 }
 
 .settings__layout {
@@ -73,9 +71,7 @@
   border-radius: var(--gns3-density-radius-sm);
   background: transparent;
   color: var(--mat-sys-on-surface-variant);
-  font: inherit;
-  font-size: 16px;
-  font-weight: 600;
+  @include workspace.category-type;
   cursor: pointer;
   text-align: left;
 
@@ -127,17 +123,7 @@
 }
 
 .settings__panel-header {
-  padding: var(--gns3-density-space-4) var(--gns3-density-page-padding);
-  color: var(--mat-sys-on-primary-container);
-  background: var(--mat-sys-primary-container);
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
-
-  h2 {
-    margin: 0;
-    font-size: calc(var(--gns3-density-section-title-size) + 2px);
-    font-weight: 650;
-    line-height: 1.2;
-  }
+  @include workspace.panel-header;
 }
 
 .settings__setting-list {
@@ -174,8 +160,7 @@
 .settings__action-card {
   h3 {
     margin: 0 0 4px;
-    font-size: 16px;
-    font-weight: 600;
+    @include workspace.setting-title;
   }
 
   p {
@@ -285,7 +270,8 @@
   font: inherit;
   cursor: pointer;
   text-align: left;
-  transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
+  transition: border-color var(--gns3-motion-duration-standard) ease,
+    background-color var(--gns3-motion-duration-standard) ease, box-shadow var(--gns3-motion-duration-standard) ease;
 
   &:hover {
     border-color: var(--mat-sys-outline);
@@ -451,7 +437,7 @@
   code {
     padding: 1px 4px;
     background: var(--mat-sys-surface-container-high);
-    border-radius: var(--gns3-radius-small);
+    border-radius: var(--gns3-density-radius-sm);
     color: var(--mat-sys-primary);
   }
 }

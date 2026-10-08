@@ -1,45 +1,44 @@
+@use '../../../../styles/buttons' as buttons;
+@use '../../../../styles/toolbar' as toolbar;
 .snapshot-dialog {
   &__toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 16px;
+    @include toolbar.layout('.snapshot-dialog__search', '.snapshot-dialog__toolbar-actions');
+    margin-bottom: var(--gns3-density-card-gap);
   }
 
   &__search {
-    flex: 1;
-    max-width: 300px;
-
     .mat-mdc-form-icon {
       color: var(--mat-sys-on-surface-variant);
     }
   }
 
   &__create-button {
-    min-height: var(--gns3-density-control-height);
-    border-radius: 999px;
-    padding-inline: var(--gns3-density-space-4);
-    font-weight: 550;
-    text-transform: none;
+    @include buttons.geometry;
     white-space: nowrap;
   }
 
   &__table-container {
     max-height: 400px;
-    overflow-y: auto;
+    overflow: auto;
     border-radius: 12px;
     background: var(--mat-sys-surface-container-low);
   }
 
   &__table {
     width: 100%;
+    min-width: calc(
+      340px + 2 * var(--gns3-density-icon-button) + var(--gns3-action-gap) + 2 * var(--gns3-density-space-4)
+    );
   }
 
   &__actions {
     display: flex;
     justify-content: flex-end;
-    gap: 4px;
+    gap: var(--gns3-action-gap);
+
+    button[mat-icon-button] {
+      @include buttons.action-icon;
+    }
   }
 
   &__empty {
@@ -64,7 +63,6 @@ mat-cell.snapshot-dialog__column-date {
 
 mat-header-cell.snapshot-dialog__column-actions,
 mat-cell.snapshot-dialog__column-actions {
-  flex: 0 0 100px;
-  min-width: 100px;
+  @include buttons.action-column(2);
   justify-content: flex-end;
 }

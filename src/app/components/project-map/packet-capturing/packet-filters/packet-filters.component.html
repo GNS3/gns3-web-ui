@@ -3,34 +3,44 @@
 @if (this.filters) {
 <div mat-dialog-content>
   <div class="form-grid">
-    <div class="form-grid-column">
-      <mat-form-field appearance="fill" class="full-width-field">
+    <div class="form-grid-column gns3-form-layout-fixed">
+      <mat-form-field appearance="outline" class="full-width-field">
         <mat-label>Frequency drop</mat-label>
-        <input matInput type="number" [value]="filters.frequency_drop[0]" (input)="onFrequencyDropChange(+$event.target.value)" />
+        <input
+          matInput
+          type="number"
+          [value]="filters.frequency_drop[0]"
+          (input)="onFrequencyDropChange(+$event.target.value)"
+        />
         <span matSuffix>packets</span>
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="full-width-field">
+      <mat-form-field appearance="outline" class="full-width-field">
         <mat-label>Packet loss</mat-label>
-        <input matInput type="number" [value]="filters.packet_loss[0]" (input)="onPacketLossChange(+$event.target.value)" />
+        <input
+          matInput
+          type="number"
+          [value]="filters.packet_loss[0]"
+          (input)="onPacketLossChange(+$event.target.value)"
+        />
         <span matSuffix>%</span>
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="full-width-field">
+      <mat-form-field appearance="outline" class="full-width-field">
         <mat-label>Corrupt</mat-label>
         <input matInput type="number" [value]="filters.corrupt[0]" (input)="onCorruptChange(+$event.target.value)" />
         <span matSuffix>%</span>
       </mat-form-field>
     </div>
 
-    <div class="form-grid-column">
-      <mat-form-field appearance="fill" class="full-width-field">
+    <div class="form-grid-column gns3-form-layout-fixed">
+      <mat-form-field appearance="outline" class="full-width-field">
         <mat-label>Delay latency</mat-label>
         <input matInput type="number" [value]="filters.delay[0]" (input)="onDelayLatencyChange(+$event.target.value)" />
         <span matSuffix>ms</span>
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="full-width-field">
+      <mat-form-field appearance="outline" class="full-width-field">
         <mat-label>Delay jitter</mat-label>
         <input matInput type="number" [value]="filters.delay[1]" (input)="onDelayJitterChange(+$event.target.value)" />
         <span matSuffix>ms</span>
@@ -38,12 +48,18 @@
     </div>
   </div>
 
-  <mat-form-field appearance="fill" class="full-width-field">
+  <mat-form-field appearance="outline" class="full-width-field">
     <mat-label>Berkeley Packet Filter (BPF)</mat-label>
-    <textarea matInput rows="4" placeholder="Examples:
+    <textarea
+      matInput
+      rows="4"
+      placeholder="Examples:
 tcp port 80
 host 192.168.1.1
-tcp dst port 443 and src portrange 1024-65535" [value]="filters.bpf[0]" (input)="onBpfChange($event.target.value)"></textarea>
+tcp dst port 443 and src portrange 1024-65535"
+      [value]="filters.bpf[0]"
+      (input)="onBpfChange($event.target.value)"
+    ></textarea>
   </mat-form-field>
 </div>
 }
@@ -52,10 +68,8 @@ tcp dst port 443 and src portrange 1024-65535" [value]="filters.bpf[0]" (input)=
   <button mat-button (click)="onResetClick()" color="accent">Reset</button>
   <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying()">
     @if (isApplying()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      Apply
-    }
+    <mat-spinner diameter="20"></mat-spinner>
+    } @else { Apply }
   </button>
   <button mat-button (click)="onHelpClick()" color="accent">Help</button>
 </div>

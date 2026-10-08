@@ -9,7 +9,7 @@
         <h1 class="docker-details__title">Edit template</h1>
       </div>
       <div class="docker-details__header-actions">
-        <button type="button" mat-stroked-button (click)="goBack()">Back to templates</button>
+        <button type="button" mat-raised-button color="primary" (click)="goBack()">Back to templates</button>
       </div>
     </div>
   </header>
@@ -20,12 +20,18 @@
       <button type="button" [class.is-active]="activeSection === 'general'" (click)="selectSection('general')">
         General settings
       </button>
-      <button type="button" [class.is-active]="activeSection === 'advanced'" (click)="selectSection('advanced')">Advanced</button>
+      <button type="button" [class.is-active]="activeSection === 'advanced'" (click)="selectSection('advanced')">
+        Advanced
+      </button>
       <button type="button" [class.is-active]="activeSection === 'extraFiles'" (click)="selectSection('extraFiles')">
         Extra files
       </button>
-      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
-      <button type="button" [class.is-active]="activeSection === 'metadata'" (click)="selectSection('metadata')">Metadata</button>
+      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">
+        Usage
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'metadata'" (click)="selectSection('metadata')">
+        Metadata
+      </button>
     </nav>
     <section class="docker-details__form-card">
       <div class="docker-details__section-header" (click)="toggleSection('general')">
@@ -36,8 +42,8 @@
       </div>
       @if (activeSection === 'general') {
       <form class="form-container">
-        <div class="two-column-grid">
-          <mat-form-field class="form-field">
+        <div class="two-column-grid gns3-form-layout-fixed">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Template name</mat-label>
             <input
               matInput
@@ -47,7 +53,7 @@
               placeholder="Template name"
             />
           </mat-form-field>
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Default name format</mat-label>
             <input
               matInput
@@ -59,7 +65,7 @@
           </mat-form-field>
         </div>
         <div class="docker-details__image-row">
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Image</mat-label>
             <input
               matInput
@@ -70,7 +76,7 @@
             />
           </mat-form-field>
           <button
-            mat-stroked-button
+            mat-raised-button
             color="primary"
             class="docker-details__pull-btn"
             type="button"
@@ -82,7 +88,7 @@
           </button>
         </div>
         <div class="docker-details__symbol-row">
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Category</mat-label>
             <mat-select [value]="category()" (selectionChange)="category.set($event.value)" placeholder="Category">
               @for (cat of categories; track $index) {
@@ -90,7 +96,7 @@
               }
             </mat-select>
           </mat-form-field>
-          <mat-form-field class="form-field form-field--flex">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field form-field--flex">
             <mat-label>Symbol</mat-label>
             <input
               matInput
@@ -100,31 +106,41 @@
               placeholder="Symbol"
             />
           </mat-form-field>
-          <button mat-stroked-button color="primary" class="docker-details__symbol-btn" (click)="chooseSymbol()">
+          <button mat-raised-button color="primary" class="docker-details__symbol-btn" (click)="chooseSymbol()">
             <mat-icon>add</mat-icon>
             Choose symbol
           </button>
         </div>
-        <mat-form-field class="form-field">
-          <mat-label>Tags</mat-label>
-          <mat-chip-grid #chipList>
+        <div class="gns3-chip-field">
+          <mat-form-field floatLabel="always" appearance="outline" subscriptSizing="dynamic" class="form-field">
+            <mat-label>Tags</mat-label>
+
+            <input
+              matInput
+              placeholder="Add tags"
+              [matChipInputFor]="chipList"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              (matChipInputTokenEnd)="addTag($event)"
+            />
+          </mat-form-field>
+          <mat-chip-grid
+            #chipList
+            class="gns3-chip-field__values"
+            [class.gns3-chip-field__values--empty]="tags().length === 0"
+            aria-label="Tags"
+          >
             @for (tag of tags(); track tag) {
-            <mat-chip (removed)="removeTag(tag)">
+            <mat-chip-row [editable]="false" [attr.title]="tag" (removed)="removeTag(tag)">
               {{ tag }}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
+              <button matChipRemove type="button" [attr.aria-label]="'Remove tag ' + tag">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
             }
           </mat-chip-grid>
-          <input
-            matInput
-            placeholder="Add tags"
-            [matChipInputFor]="chipList"
-            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-            (matChipInputTokenEnd)="addTag($event)"
-          />
-        </mat-form-field>
+        </div>
         <div class="two-column-grid">
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Adapters</mat-label>
             <input
               matInput
@@ -134,7 +150,7 @@
               placeholder="Adapters"
             />
           </mat-form-field>
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Base MAC</mat-label>
             <input
               matInput
@@ -144,7 +160,7 @@
               placeholder="Base MAC"
             />
           </mat-form-field>
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Maximum memory</mat-label>
             <input
               matInput
@@ -156,7 +172,7 @@
             />
             <span matSuffix>MB</span>
           </mat-form-field>
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Maximum CPUs</mat-label>
             <input
               matInput
@@ -167,7 +183,7 @@
               placeholder="CPUs"
             />
           </mat-form-field>
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Console type</mat-label>
             <mat-select
               [value]="consoleType()"
@@ -179,7 +195,7 @@
               }
             </mat-select>
           </mat-form-field>
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Auxiliary console type</mat-label>
             <mat-select
               [value]="auxConsoleType()"
@@ -191,7 +207,7 @@
               }
             </mat-select>
           </mat-form-field>
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>VNC console resolution</mat-label>
             <mat-select
               [value]="consoleResolution()"
@@ -203,7 +219,7 @@
               }
             </mat-select>
           </mat-form-field>
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>HTTP port in the container</mat-label>
             <input
               matInput
@@ -213,7 +229,7 @@
               placeholder="HTTP port in the container"
             />
           </mat-form-field>
-          <mat-form-field class="form-field grid-span-2">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field grid-span-2">
             <mat-label>HTTP path</mat-label>
             <input
               matInput
@@ -225,12 +241,13 @@
           </mat-form-field>
           <div class="three-column-grid grid-span-2">
             <app-netmiko-device-type-select
+              subscriptSizing="fixed"
               [(value)]="netmikoDeviceType"
               [controller]="controller"
-              appearance="fill"
+              appearance="outline"
               class="form-field"
             />
-            <mat-form-field class="form-field">
+            <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
               <mat-label>Default username</mat-label>
               <input
                 matInput
@@ -240,7 +257,7 @@
                 placeholder="Username to log into this node"
               />
             </mat-form-field>
-            <mat-form-field class="form-field">
+            <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
               <mat-label>Default password</mat-label>
               <input
                 matInput
@@ -252,9 +269,20 @@
             </mat-form-field>
           </div>
 
-          <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)" class="grid-span-2"> Auto start console </mat-checkbox>
+          <mat-checkbox
+            [checked]="consoleAutoStart()"
+            (change)="consoleAutoStart.set($event.checked)"
+            class="grid-span-2"
+          >
+            Auto start console
+          </mat-checkbox>
         </div>
-        <button mat-button class="form-field docker-details__config-btn" (click)="editCustomAdapters()">
+        <button
+          mat-raised-button
+          color="primary"
+          class="form-field docker-details__config-btn"
+          (click)="editCustomAdapters()"
+        >
           Configure custom adapters
         </button>
       </form>
@@ -269,7 +297,7 @@
       @if (activeSection === 'advanced') {
       <div class="form-container">
         <h6 class="docker-details__section-subtitle">Start command</h6>
-        <mat-form-field class="form-field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
           <textarea
             matInput
             rows="1"
@@ -283,7 +311,7 @@
           ></textarea>
         </mat-form-field>
         <h6 class="docker-details__section-subtitle">Environment</h6>
-        <mat-form-field class="form-field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
           <textarea
             matInput
             rows="1"
@@ -297,7 +325,7 @@
           ></textarea>
         </mat-form-field>
         <h6 class="docker-details__section-subtitle">Extra volumes</h6>
-        <mat-form-field class="form-field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
           <textarea
             matInput
             rows="1"
@@ -311,7 +339,7 @@
           ></textarea>
         </mat-form-field>
         <h6 class="docker-details__section-subtitle">Extra hosts</h6>
-        <mat-form-field class="form-field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
           <textarea
             matInput
             rows="1"
@@ -331,25 +359,48 @@
     <section class="docker-details__form-card">
       <div class="docker-details__section-header" (click)="selectSection('extraFiles')">
         <h3 class="docker-details__section-title">Extra files</h3>
-        <mat-icon class="docker-details__expand-icon">{{ activeSection === 'extraFiles' ? 'expand_less' : 'expand_more' }}</mat-icon>
+        <mat-icon class="docker-details__expand-icon">{{
+          activeSection === 'extraFiles' ? 'expand_less' : 'expand_more'
+        }}</mat-icon>
       </div>
       @if (activeSection === 'extraFiles') {
       <div class="form-container">
         <h6 class="docker-details__section-subtitle">Configuration files</h6>
         @for (config of extraConfigs(); track $index) {
-          <mat-form-field class="form-field">
-            <mat-label>Container target path</mat-label>
-            <input matInput type="text" [value]="config.target" (input)="updateExtraConfigTarget($index, $event.target.value)" placeholder="/first_boot.cfg" />
-            <button matSuffix mat-icon-button type="button" (click)="removeExtraConfig($index)" aria-label="Remove configuration file">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <mat-label>File content</mat-label>
-            <textarea matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12" [value]="config.content || ''" (input)="updateExtraConfigContent($index, $event.target.value)" placeholder="File contents injected (read-only) into the container at the target path"></textarea>
-          </mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
+          <mat-label>Container target path</mat-label>
+          <input
+            matInput
+            type="text"
+            [value]="config.target"
+            (input)="updateExtraConfigTarget($index, $event.target.value)"
+            placeholder="/first_boot.cfg"
+          />
+          <button
+            matSuffix
+            mat-icon-button
+            type="button"
+            (click)="removeExtraConfig($index)"
+            aria-label="Remove configuration file"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
+          <mat-label>File content</mat-label>
+          <textarea
+            matInput
+            rows="1"
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="12"
+            [value]="config.content || ''"
+            (input)="updateExtraConfigContent($index, $event.target.value)"
+            placeholder="File contents injected (read-only) into the container at the target path"
+          ></textarea>
+        </mat-form-field>
         }
-        <button mat-stroked-button class="form-field" type="button" (click)="addExtraConfig()">
+        <button mat-raised-button color="primary" class="form-field" type="button" (click)="addExtraConfig()">
           <mat-icon>add</mat-icon> Add configuration file
         </button>
       </div>
@@ -363,9 +414,18 @@
       </div>
       @if (activeSection === 'usage') {
       <div class="preferences__usage-form">
-        <mat-form-field class="preferences__usage-field--full">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="preferences__usage-field--full">
           <mat-label>Usage</mat-label>
-          <textarea matInput rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="12" [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
+          <textarea
+            matInput
+            rows="1"
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="12"
+            [value]="usage()"
+            (input)="usage.set($event.target.value)"
+            type="text"
+          ></textarea>
         </mat-form-field>
       </div>
       }

@@ -6,15 +6,15 @@
   </div>
   <div class="default-content">
     <mat-card class="matCard">
-      <form [formGroup]="controllerForm">
-        <mat-form-field>
+      <form class="gns3-form-stack gns3-form-layout-fixed" [formGroup]="controllerForm">
+        <mat-form-field appearance="outline">
           <input matInput tabindex="1" formControlName="name" placeholder="Name" />
           @if (controllerForm.get('name').hasError('required')) {
           <mat-error>You must enter a value</mat-error>
           }
         </mat-form-field>
 
-        <mat-form-field>
+        <mat-form-field appearance="outline">
           <mat-select placeholder="Location" formControlName="location">
             @for (location of locations; track location.key) {
             <mat-option [value]="location.key"> {{ location.name }} </mat-option>
@@ -22,7 +22,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field>
+        <mat-form-field appearance="outline">
           <mat-select placeholder="Protocol" formControlName="protocol">
             @for (protocol of protocols; track protocol.key) {
             <mat-option [value]="protocol.key"> {{ protocol.name }} </mat-option>

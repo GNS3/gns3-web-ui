@@ -13,37 +13,52 @@
     @for (adapter of adapters(); track adapter.adapter_number; let i = $index) {
     <div class="adapter-item">
       <span class="adapter-label">Adapter {{ adapter.adapter_number }}</span>
-      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
-        <input
-          matInput
-          [value]="adapter.port_name"
-          (input)="onPortNameChange(adapter.adapter_number, $event.target.value)"
-          name="port_name_{{ i }}"
-        />
-      </mat-form-field>
-      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
-        <mat-select
-          [value]="adapter.adapter_type"
-          (selectionChange)="onAdapterTypeChange(adapter.adapter_number, $event.value)"
-          name="adapter_type_{{ i }}"
-        >
-          @for (type of networkTypes; track type.value) {
-          <mat-option [value]="type.value">{{ type.name }}</mat-option>
+      <div class="adapter-field-group">
+        <span class="adapter-field-label">Port name</span>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="adapter-field">
+          <input
+            matInput
+            [attr.aria-label]="'Port name for adapter ' + adapter.adapter_number"
+            [value]="adapter.port_name"
+            (input)="onPortNameChange(adapter.adapter_number, $event.target.value)"
+            name="port_name_{{ i }}"
+          />
+        </mat-form-field>
+      </div>
+      <div class="adapter-field-group">
+        <span class="adapter-field-label">Type</span>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="adapter-field">
+          <mat-select
+            [attr.aria-label]="'Type for adapter ' + adapter.adapter_number"
+            [value]="adapter.adapter_type"
+            (selectionChange)="onAdapterTypeChange(adapter.adapter_number, $event.value)"
+            name="adapter_type_{{ i }}"
+          >
+            @for (type of networkTypes; track type.value) {
+            <mat-option [value]="type.value">{{ type.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="adapter-field-group">
+        <span class="adapter-field-label">MAC address</span>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="adapter-field">
+          <input
+            matInput
+            [attr.aria-label]="'MAC address for adapter ' + adapter.adapter_number"
+            [value]="adapter.mac_address"
+            (input)="onMacAddressChange(adapter.adapter_number, $event.target.value)"
+            name="mac_address_{{ i }}"
+            placeholder="Paste any MAC format"
+          />
+          @if (adapter.mac_address && !isValidMacAddress(adapter.mac_address)) {
+          <mat-error class="gns3-validation-message">
+            <mat-icon aria-hidden="true">error_outline</mat-icon>
+            <span>{{ getMacErrorMessage(adapter.mac_address) }}</span>
+          </mat-error>
           }
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
-        <input
-          matInput
-          [value]="adapter.mac_address"
-          (input)="onMacAddressChange(adapter.adapter_number, $event.target.value)"
-          name="mac_address_{{ i }}"
-          placeholder="Paste any MAC format"
-        />
-        @if (adapter.mac_address && !isValidMacAddress(adapter.mac_address)) {
-        <mat-error>{{ getMacErrorMessage(adapter.mac_address) }}</mat-error>
-        }
-      </mat-form-field>
+        </mat-form-field>
+      </div>
       <button mat-icon-button matTooltip="Delete" (click)="delete(adapter)" class="adapter-actions">
         <mat-icon>delete</mat-icon>
       </button>
@@ -55,7 +70,7 @@
       <mat-icon>add</mat-icon>
       Add adapter
     </button>
-    <div class="info-note-text">
+    <div class="info-note-text gns3-helper-text">
       Deleting an adapter reduces the total number of adapters. Adapter numbers will be renumbered when reopened.
       Adapters without custom configuration will use default settings.
     </div>

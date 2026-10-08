@@ -37,13 +37,13 @@
               </div>
             </div>
             } @else {
-            <form [formGroup]="editRoleForm" class="role-detail__form">
-              <mat-form-field appearance="fill" class="role-detail__field">
+            <form [formGroup]="editRoleForm" class="role-detail__form gns3-form-layout-fixed">
+              <mat-form-field appearance="outline" class="role-detail__field">
                 <mat-label>Role name</mat-label>
                 <input matInput type="text" formControlName="rolename" />
               </mat-form-field>
 
-              <mat-form-field appearance="fill" class="role-detail__field">
+              <mat-form-field appearance="outline" class="role-detail__field">
                 <mat-label>Description</mat-label>
                 <input matInput type="text" formControlName="description" />
               </mat-form-field>

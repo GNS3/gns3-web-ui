@@ -69,7 +69,11 @@
               <h2 class="template-wizard__section-title">Template information</h2>
               <p class="template-wizard__section-copy">Choose a name and an optional usage note for your template.</p>
 
-              <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+              <mat-form-field
+                appearance="outline"
+                subscriptSizing="dynamic"
+                class="qemu-add__field template-wizard__field"
+              >
                 <mat-label>Template name</mat-label>
                 <input
                   matInput
@@ -79,10 +83,14 @@
                   (input)="templateName.set($event.target.value)"
                   placeholder="e.g. My Linux VM"
                 />
+                <mat-hint>Use a unique, descriptive name.</mat-hint>
               </mat-form-field>
-              <span class="template-wizard__field-hint">Use a unique, descriptive name.</span>
 
-              <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+              <mat-form-field
+                appearance="outline"
+                subscriptSizing="dynamic"
+                class="qemu-add__field template-wizard__field"
+              >
                 <mat-label>Usage notes</mat-label>
                 <textarea
                   matInput
@@ -132,8 +140,12 @@
               <p class="template-wizard__section-copy">
                 These values can still be adjusted after the template is created.
               </p>
-              <div class="template-wizard__field-grid">
-                <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+              <div class="template-wizard__field-grid gns3-form-layout-fixed">
+                <mat-form-field
+                  appearance="outline"
+                  subscriptSizing="fixed"
+                  class="qemu-add__field template-wizard__field"
+                >
                   <mat-label>Platform</mat-label>
                   <mat-select
                     required
@@ -146,7 +158,11 @@
                   </mat-select>
                 </mat-form-field>
 
-                <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+                <mat-form-field
+                  appearance="outline"
+                  subscriptSizing="fixed"
+                  class="qemu-add__field template-wizard__field"
+                >
                   <mat-label>RAM</mat-label>
                   <input
                     matInput
@@ -177,7 +193,11 @@
             <section class="template-wizard__section">
               <h2 class="template-wizard__section-title">Console</h2>
               <p class="template-wizard__section-copy">Choose a console type supported by the QEMU configuration.</p>
-              <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+              <mat-form-field
+                appearance="outline"
+                subscriptSizing="dynamic"
+                class="qemu-add__field template-wizard__field"
+              >
                 <mat-label>Console type</mat-label>
                 <mat-select required [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
                   @for (type of consoleTypes(); track type) {
@@ -203,7 +223,11 @@
             <section class="template-wizard__section">
               <h2 class="template-wizard__section-title">Auxiliary console</h2>
               <p class="template-wizard__section-copy">Select “none” when a second console is not required.</p>
-              <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+              <mat-form-field
+                appearance="outline"
+                subscriptSizing="dynamic"
+                class="qemu-add__field template-wizard__field"
+              >
                 <mat-label>Auxiliary console type</mat-label>
                 <mat-select required [value]="auxConsoleType()" (selectionChange)="auxConsoleType.set($event.value)">
                   @for (type of auxConsoleTypes(); track type) {
@@ -245,7 +269,11 @@
               </mat-radio-group>
 
               @if (!newImageSelected()) {
-              <mat-form-field appearance="outline" class="qemu-add__field template-wizard__field">
+              <mat-form-field
+                appearance="outline"
+                subscriptSizing="dynamic"
+                class="qemu-add__field template-wizard__field"
+              >
                 <mat-label>Disk image (HDA)</mat-label>
                 <input
                   matInput
@@ -276,11 +304,21 @@
                   ng2FileSelect
                   [uploader]="uploader()"
                 />
-                <button mat-stroked-button type="button" (click)="file.click()" class="qemu-add__browse-btn">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  type="button"
+                  (click)="file.click()"
+                  class="qemu-add__browse-btn"
+                >
                   <mat-icon>upload_file</mat-icon>
                   Browse
                 </button>
-                <mat-form-field appearance="outline" class="qemu-add__field qemu-add__field--flex">
+                <mat-form-field
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                  class="qemu-add__field qemu-add__field--flex"
+                >
                   <mat-label>Image name</mat-label>
                   <input
                     matInput
@@ -310,11 +348,14 @@
           <div class="template-wizard__panel">
             <section class="template-wizard__section">
               <h2 class="template-wizard__section-title">Netmiko device type</h2>
-              <p class="template-wizard__section-copy">Default device type used for netmiko-driven configuration pushes.</p>
+              <p class="template-wizard__section-copy">
+                Default device type used for netmiko-driven configuration pushes.
+              </p>
               <app-netmiko-device-type-select
+                subscriptSizing="dynamic"
                 [(value)]="netmikoDeviceType"
                 [controller]="controller()"
-                appearance="fill"
+                appearance="outline"
                 class="qemu-add__field"
               />
             </section>

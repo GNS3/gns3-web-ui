@@ -168,7 +168,7 @@ describe('HelpComponent', () => {
 
       component.goToDocumentation();
 
-      expect(window.location.href).toBe('https://docs.gns3.com/docs/');
+      expect(window.location.href).toBe('https://docs.gns3.com/docs-3.1-en');
 
       locationSpy.mockRestore();
     });

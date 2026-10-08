@@ -9,7 +9,7 @@
         Refresh
       </button>
       <button
-        mat-stroked-button
+        mat-flat-button
         class="users-page__bulk-delete"
         [disabled]="selection.isEmpty()"
         (click)="deleteMultiple()"
@@ -52,10 +52,11 @@
   </nav>
 
   <section class="users-page__toolbar">
-    <mat-form-field class="users-page__search" subscriptSizing="dynamic">
+    <mat-form-field appearance="fill" class="users-page__search" subscriptSizing="dynamic">
       <mat-icon matPrefix>search</mat-icon>
       <input
         matInput
+        aria-label="Search users by name, username, email, or role"
         placeholder="Search users by name, username, email, or role"
         [value]="searchText()"
         (input)="setSearch($event.target.value)"
@@ -63,7 +64,7 @@
     </mat-form-field>
 
     <div class="users-page__toolbar-actions">
-      <mat-form-field class="users-page__filter" subscriptSizing="dynamic">
+      <mat-form-field appearance="fill" class="users-page__filter" subscriptSizing="dynamic">
         <mat-label>Status</mat-label>
         <mat-select [value]="statusFilter()" (valueChange)="setStatusFilter($event)">
           <mat-option value="all">All statuses</mat-option>
@@ -72,7 +73,7 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field class="users-page__sort" subscriptSizing="dynamic">
+      <mat-form-field appearance="fill" class="users-page__sort" subscriptSizing="dynamic">
         <mat-label>Sort by</mat-label>
         <mat-select [value]="sortActive()" (valueChange)="onSortByChange($event)">
           <mat-option value="username">Username</mat-option>
@@ -384,14 +385,16 @@
       </div>
       <div class="users-page__details-actions">
         <button
-          mat-stroked-button
+          mat-raised-button
+          color="primary"
           class="users-page__details-action users-page__details-action--edit"
           (click)="openUserDetailDialog(user)"
         >
           <mat-icon>edit</mat-icon>Edit
         </button>
         <button
-          mat-stroked-button
+          mat-raised-button
+          color="primary"
           class="users-page__details-action users-page__details-action--ai"
           (click)="openAiProfileDialog(user)"
         >

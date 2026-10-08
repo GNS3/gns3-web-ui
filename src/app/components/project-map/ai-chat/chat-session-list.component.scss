@@ -30,7 +30,7 @@
   justify-content: center;
   flex-shrink: 0;
   fill: var(--mat-sys-on-surface);
-  transition: fill 0.2s ease;
+  transition: fill var(--gns3-motion-duration-standard) ease;
 }
 
 .gns3-chat-session-list__new-button:hover .gns3-chat-session-list__icon {
@@ -50,7 +50,7 @@
   padding: var(--gns3-density-space-2) var(--gns3-density-space-3);
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color var(--gns3-motion-duration-standard);
   position: relative;
 
   &:hover {
@@ -102,7 +102,7 @@
 }
 
 .gns3-chat-session-list__pin-animation {
-  animation: pinBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  animation: pinBounce var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
 }
 
 @keyframes pinBounce {
@@ -171,7 +171,7 @@
   height: 32px;
   padding: 0;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity var(--gns3-motion-duration-standard);
 }
 
 .gns3-chat-session-list__session:hover .gns3-chat-session-list__menu-button {
@@ -180,7 +180,7 @@
 
 .gns3-chat-session-list__menu-icon {
   fill: var(--mat-sys-on-surface-variant);
-  transition: fill 0.2s ease;
+  transition: fill var(--gns3-motion-duration-standard) ease;
 }
 
 .gns3-chat-session-list__menu-button:hover .gns3-chat-session-list__menu-icon {

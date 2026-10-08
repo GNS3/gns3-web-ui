@@ -1,3 +1,5 @@
+@use '../../../../styles/page-layout' as page;
+
 /**
  * Role Detail Component Styles
  * Uses Material theme variables and BEM naming convention
@@ -12,7 +14,7 @@
 
 .role-detail {
   padding: 20px 24px;
-  animation: fadeInSlideIn 0.4s ease-out;
+  animation: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -37,10 +39,7 @@
   }
 
   &__title {
-    font-size: 24px;
-    font-weight: 500;
-    color: var(--mat-sys-on-surface);
-    margin: 0;
+    @include page.page-title;
   }
 
   /* =============================================
@@ -178,7 +177,7 @@
     color: var(--mat-sys-on-surface);
 
     &--mono {
-      font-family: monospace;
+      font-family: var(--gns3-font-code);
       font-size: 12px;
     }
   }
@@ -187,13 +186,3 @@
 /* =============================================
 // Animations
 // ============================================= */
-@keyframes fadeInSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}

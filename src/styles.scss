@@ -11,6 +11,7 @@
 @use 'styles/markdown' as *;
 @use 'styles/template-wizard' as *;
 @use 'styles/density-tokens' as *;
+@use 'styles/forms' as forms;
 
 /* =============================================
 // Global Scrollbar Styles
@@ -167,6 +168,13 @@ body {
   padding: 0;
 }
 
+// Match inherited application text to Material controls. Roboto is bundled
+// locally through angular.json so this baseline also works offline.
+body {
+  font-family: var(--mat-sys-body-medium-font, 'Roboto'), sans-serif;
+  @include forms.outlined;
+}
+
 /* =============================================
 // Menu Styles
 // ============================================= */
@@ -200,10 +208,10 @@ body
   .cdk-overlay-container
   .cdk-overlay-pane
   :is(
-      .mat-mdc-menu-panel.context-menu-items,
-      .mat-mdc-menu-panel.interface-menu-panel,
-      .mat-mdc-menu-panel.map-settings-menu
-    ) {
+    .mat-mdc-menu-panel.context-menu-items,
+    .mat-mdc-menu-panel.interface-menu-panel,
+    .mat-mdc-menu-panel.map-settings-menu
+  ) {
   width: max-content;
   max-width: calc(100vw - 16px);
   scrollbar-width: none;
@@ -366,7 +374,8 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.template-menu 
 // ============================================= */
 .ethernet_link,
 .serial_link {
-  transition: stroke-width 150ms cubic-bezier(0.4, 0, 0.2, 1), stroke 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: stroke-width var(--gns3-motion-duration-standard) cubic-bezier(0.4, 0, 0.2, 1),
+    stroke var(--gns3-motion-duration-standard) cubic-bezier(0.4, 0, 0.2, 1);
   stroke-opacity: 1;
 }
 
@@ -428,7 +437,7 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.template-menu 
 // Curviness Anchor (Link Drag Handle)
 // ============================================= */
 .curviness-anchor {
-  transition: r 150ms ease, fill 150ms ease;
+  transition: r var(--gns3-motion-duration-standard) ease, fill var(--gns3-motion-duration-standard) ease;
 }
 
 .curviness-anchor:hover {
@@ -599,7 +608,7 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.template-menu 
 .link-hidden {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease-in-out;
+  transition: opacity var(--gns3-motion-duration-standard) ease-in-out;
 }
 
 g.link:hover .link-hidden {
@@ -610,7 +619,7 @@ g.link:hover .link-hidden {
 /* =============================================
 // Chips in Form Fields - Fix label overlap
 // ============================================= */
-mat-form-field {
+mat-form-field:has(mat-chip-grid) {
   mat-chip-grid {
     display: flex;
     flex-wrap: wrap;
@@ -628,9 +637,8 @@ mat-form-field {
   }
 }
 
-/* In compact density, form fields reserve no extra helper-text space below
-   the input, which tightens the vertical rhythm of dense forms. */
-html[data-density='compact'] mat-form-field .mat-mdc-form-field-subscript-wrapper {
+/* Chip fields need no extra helper-text margin in compact density. */
+html[data-density='compact'] mat-form-field:has(mat-chip-grid) .mat-mdc-form-field-subscript-wrapper {
   margin-top: 0;
 }
 
@@ -664,6 +672,11 @@ html[data-density='compact'] mat-form-field .mat-mdc-form-field-subscript-wrappe
 
 html[data-density='compact'] .mat-mdc-menu-panel {
   --gns3-menu-item-min-height: 40px;
+}
+
+// Keep single-action topology menus proportional to their density-sized rows.
+.mat-mdc-menu-panel.topology-node-actions-menu .mat-mdc-menu-content {
+  padding-block: var(--gns3-density-space-1);
 }
 
 .mat-mdc-menu-panel:is(.context-menu-items, .interface-menu-panel, .map-settings-menu) {
@@ -767,3 +780,7 @@ html[data-density='compact'] app-settings {
     gap: var(--gns3-density-space-3);
   }
 }
+
+@include forms.spacing;
+@include forms.helper-typography;
+@include forms.chip-fields;

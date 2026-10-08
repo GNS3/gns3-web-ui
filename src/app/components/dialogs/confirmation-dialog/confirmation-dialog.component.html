@@ -27,16 +27,14 @@
     <button mat-stroked-button type="button" cdkFocusInitial class="cancel-button" (click)="onNoClick()">
       {{ cancelButtonText }}
     </button>
-    @if (!data.hideConfirm) {
-    <button
-      mat-flat-button
-      type="button"
-      class="confirm-button"
-      [class.destructive-button]="tone === 'danger'"
-      (click)="onYesClick()"
-    >
+    @if (!data.hideConfirm) { @if (tone === 'danger') {
+    <button mat-flat-button type="button" class="confirm-button destructive-button" (click)="onYesClick()">
       {{ confirmButtonText }}
     </button>
-    }
+    } @else {
+    <button mat-flat-button type="button" class="confirm-button" (click)="onYesClick()">
+      {{ confirmButtonText }}
+    </button>
+    } }
   </mat-dialog-actions>
 </div>

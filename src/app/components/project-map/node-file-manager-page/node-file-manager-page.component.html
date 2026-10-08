@@ -3,17 +3,30 @@
   <span class="node-file-manager__title">{{ nodeName() }} - Files</span>
   <div class="node-file-manager__actions">
     @if (downloading()) {
-      <div class="node-file-manager__progress-btn">
-        <div class="node-file-manager__progress-fill" style="background: var(--mat-sys-tertiary-container);" [style.width.%]="downloadProgress()"></div>
-        <span class="node-file-manager__progress-label">
-          <mat-icon class="node-file-manager__icon-lg">download</mat-icon>
-          {{ downloadProgress() }}%
-        </span>
-      </div>
+    <div class="node-file-manager__progress-btn">
+      <div
+        class="node-file-manager__progress-fill"
+        style="background: var(--mat-sys-tertiary-container)"
+        [style.width.%]="downloadProgress()"
+      ></div>
+      <span class="node-file-manager__progress-label">
+        <mat-icon class="node-file-manager__icon-lg">download</mat-icon>
+        {{ downloadProgress() }}%
+      </span>
+    </div>
     }
     <div class="node-file-manager__progress-btn">
-      <div class="node-file-manager__progress-fill" style="background: var(--mat-sys-primary-container);" [style.width.%]="uploadProgress()"></div>
-      <button mat-stroked-button (click)="onUploadClick()" [disabled]="uploading()" style="font-size: 14px; border: none; position: relative; z-index: 1; background: transparent;">
+      <div
+        class="node-file-manager__progress-fill"
+        style="background: var(--mat-sys-primary-container)"
+        [style.width.%]="uploadProgress()"
+      ></div>
+      <button
+        mat-stroked-button
+        (click)="onUploadClick()"
+        [disabled]="uploading()"
+        style="font-size: 14px; border: none; position: relative; z-index: 1; background: transparent"
+      >
         <mat-icon class="node-file-manager__icon-lg">{{ uploading() ? 'cloud_upload' : 'upload' }}</mat-icon>
         {{ uploading() ? uploadProgress() + '%' : 'Upload file' }}
       </button>
@@ -24,103 +37,159 @@
 <!-- Content -->
 <div class="node-file-manager__content">
   @if (loading()) {
+  <div class="node-file-manager__spinner">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+  </div>
+  } @else if (error()) {
+  <div class="node-file-manager__error">
+    <mat-icon class="node-file-manager__error-icon">error_outline</mat-icon>
+    <p>{{ error() }}</p>
+  </div>
+  } @else if (editingFile(); as file) {
+  <div class="node-file-manager__edit-area">
+    <div class="node-file-manager__edit-toolbar">
+      <span class="node-file-manager__title">Editing: {{ file.path }}</span>
+      <div class="node-file-manager__edit-actions">
+        <button mat-button (click)="cancelEdit()" [disabled]="saving()">Cancel</button>
+        <button mat-raised-button color="primary" (click)="saveEdit()" [disabled]="saving() || loadingContent()">
+          Save
+        </button>
+      </div>
+    </div>
+    @if (loadingContent()) {
     <div class="node-file-manager__spinner">
       <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
     </div>
-  } @else if (error()) {
-    <div class="node-file-manager__error">
-      <mat-icon class="node-file-manager__error-icon">error_outline</mat-icon>
-      <p>{{ error() }}</p>
-    </div>
-  } @else if (editingFile(); as file) {
-    <div class="node-file-manager__edit-area">
-      <div class="node-file-manager__edit-toolbar">
-        <span class="node-file-manager__title">Editing: {{ file.path }}</span>
-        <div class="node-file-manager__edit-actions">
-          <button mat-button (click)="cancelEdit()" [disabled]="saving()">Cancel</button>
-          <button mat-raised-button color="primary" (click)="saveEdit()" [disabled]="saving() || loadingContent()">Save</button>
+    } @else {
+    <div class="editor-container" style="flex: 1">
+      <div
+        #editorGutter
+        class="editor-gutter"
+        style="
+          padding: 12px 0;
+          background: var(--mat-sys-surface-container);
+          border-radius: 8px 0 0 8px;
+          border: 1px solid var(--mat-sys-outline-variant);
+          border-right: none;
+          font-family: var(--gns3-font-code);
+          font-size: 13px;
+          line-height: 1.5;
+          user-select: none;
+          overflow: hidden;
+          min-width: 52px;
+        "
+      >
+        @for (num of lineNumbers(); track num) {
+        <div style="display: flex; align-items: center">
+          <span
+            class="editor-line-marker"
+            [class.editor-line-marker--modified]="getLineState(num) === 'modified'"
+            [class.editor-line-marker--added]="getLineState(num) === 'added'"
+            style="width: 4px; height: 1.5em; flex-shrink: 0"
+          ></span>
+          <span
+            class="node-file-manager__text-sm"
+            style="padding: 0 8px; color: var(--mat-sys-on-surface-variant); text-align: right; flex: 1"
+            >{{ num }}</span
+          >
         </div>
-      </div>
-      @if (loadingContent()) {
-        <div class="node-file-manager__spinner">
-          <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-        </div>
-      } @else {
-        <div class="editor-container" style="flex: 1;">
-          <div #editorGutter class="editor-gutter" style="padding: 12px 0; background: var(--mat-sys-surface-container); border-radius: 8px 0 0 8px; border: 1px solid var(--mat-sys-outline-variant); border-right: none; font-family: monospace; font-size: 13px; line-height: 1.5; user-select: none; overflow: hidden; min-width: 52px;">
-            @for (num of lineNumbers(); track num) {
-              <div style="display: flex; align-items: center;">
-                <span class="editor-line-marker" [class.editor-line-marker--modified]="getLineState(num) === 'modified'" [class.editor-line-marker--added]="getLineState(num) === 'added'" style="width: 4px; height: 1.5em; flex-shrink: 0;"></span>
-                <span class="node-file-manager__text-sm" style="padding: 0 8px; color: var(--mat-sys-on-surface-variant); text-align: right; flex: 1;">{{ num }}</span>
-              </div>
-            }
-          </div>
-          <textarea class="editor-textarea" [value]="editContent()" (input)="onContentChange($event.target.value)" (scroll)="onEditorScroll($event)" spellcheck="false"></textarea>
-        </div>
-      }
-    </div>
-  } @else {
-    <!-- Sidebar + Main -->
-    <div class="node-file-manager__sidebar">
-      @for (node of treeNodes(); track node.path) {
-        @if (isNodeVisible(node)) {
-        @let depth = treeDepth(node.path);
-        <div class="node-file-manager__tree-row" [class.node-file-manager__tree-row--active]="currentPath() === node.path" (click)="navigateToDir(node.path)">
-          <span [style.width.px]="depth * 16"></span>
-          <span (click)="expandDir(node); $event.stopPropagation()" class="node-file-manager__tree-toggle">
-            <mat-icon class="node-file-manager__tree-icon">{{ isExpanded(node.path) ? 'expand_more' : 'chevron_right' }}</mat-icon>
-          </span>
-          <mat-icon class="node-file-manager__tree-icon" style="color: var(--mat-sys-primary); margin: 0 4px;">folder</mat-icon>
-          <span class="node-file-manager__tree-name">{{ node.name }}</span>
-        </div>
-      }
-      }
-    </div>
-
-    <!-- Main -->
-    <div class="node-file-manager__main">
-      <div class="node-file-manager__breadcrumbs">
-        @for (crumb of breadcrumbs(); track crumb.path) {
-          @if (!$first) { <span style="color: var(--mat-sys-on-surface-variant);">/</span> }
-          <button mat-button style="min-width: 0; padding: 0 4px; font-size: 13px; line-height: 24px;" (click)="currentPath.set(crumb.path)">{{ crumb.label }}</button>
         }
       </div>
-
-      <div class="node-file-browser__table-container" style="flex: 1; overflow-y: auto;">
-        <mat-table [dataSource]="viewItems()" class="node-file-browser__table">
-          <ng-container matColumnDef="icon">
-            <mat-header-cell *matHeaderCellDef style="max-width: 36px; min-width: 36px;"></mat-header-cell>
-            <mat-cell *matCellDef="let row" style="max-width: 36px; min-width: 36px;">
-              <mat-icon style="font-size: 20px;" [style.color]="row.isDir ? 'var(--mat-sys-primary)' : ''">{{ row.isDir ? 'folder' : 'description' }}</mat-icon>
-            </mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="path">
-            <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
-            <mat-cell *matCellDef="let row" [style.cursor]="row.isDir ? 'pointer' : (isEditableFile(row) ? 'pointer' : 'default')" class="node-file-manager__mono" (dblclick)="row.isDir ? navigateToDir(row.path) : (isEditableFile(row) && editFile(row))">
-              <span>{{ row.isDir ? row.name : fileName(row) }}</span>
-            </mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="file_type">
-            <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
-            <mat-cell *matCellDef="let row" class="node-file-manager__text-sm">{{ row.isDir ? 'Dir' : shortFileType(row.file_type) }}</mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="size">
-            <mat-header-cell *matHeaderCellDef>Size</mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.isDir ? '-' : formatFileSize(row.size) }}</mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="modified_at">
-            <mat-header-cell *matHeaderCellDef>Modified</mat-header-cell>
-            <mat-cell *matCellDef="let row" class="node-file-manager__text-sm">{{ row.isDir ? '-' : formatDate(row.modified_at) }}</mat-cell>
-          </ng-container>
-          <mat-header-row *matHeaderRowDef="displayedColumns" [sticky]="true"></mat-header-row>
-          <mat-row *matRowDef="let row; columns: displayedColumns"
-            (contextmenu)="onRowContextMenu($event, row)"
-            [style.cursor]="'context-menu'"
-          ></mat-row>
-        </mat-table>
-      </div>
-      <p class="node-file-manager__hint">Double-click a text file to edit</p>
+      <textarea
+        class="editor-textarea"
+        [value]="editContent()"
+        (input)="onContentChange($event.target.value)"
+        (scroll)="onEditorScroll($event)"
+        spellcheck="false"
+      ></textarea>
     </div>
+    }
+  </div>
+  } @else {
+  <!-- Sidebar + Main -->
+  <div class="node-file-manager__sidebar">
+    @for (node of treeNodes(); track node.path) { @if (isNodeVisible(node)) { @let depth = treeDepth(node.path);
+    <div
+      class="node-file-manager__tree-row"
+      [class.node-file-manager__tree-row--active]="currentPath() === node.path"
+      (click)="navigateToDir(node.path)"
+    >
+      <span [style.width.px]="depth * 16"></span>
+      <span (click)="expandDir(node); $event.stopPropagation()" class="node-file-manager__tree-toggle">
+        <mat-icon class="node-file-manager__tree-icon">{{
+          isExpanded(node.path) ? 'expand_more' : 'chevron_right'
+        }}</mat-icon>
+      </span>
+      <mat-icon class="node-file-manager__tree-icon" style="color: var(--mat-sys-primary); margin: 0 4px"
+        >folder</mat-icon
+      >
+      <span class="node-file-manager__tree-name">{{ node.name }}</span>
+    </div>
+    } }
+  </div>
+
+  <!-- Main -->
+  <div class="node-file-manager__main">
+    <div class="node-file-manager__breadcrumbs">
+      @for (crumb of breadcrumbs(); track crumb.path) { @if (!$first) {
+      <span style="color: var(--mat-sys-on-surface-variant)">/</span> }
+      <button
+        mat-button
+        style="min-width: 0; padding: 0 4px; font-size: 13px; line-height: 24px"
+        (click)="currentPath.set(crumb.path)"
+      >
+        {{ crumb.label }}
+      </button>
+      }
+    </div>
+
+    <div class="node-file-browser__table-container" style="flex: 1; overflow-y: auto">
+      <mat-table [dataSource]="viewItems()" class="node-file-browser__table">
+        <ng-container matColumnDef="icon">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <mat-icon style="font-size: 20px" [style.color]="row.isDir ? 'var(--mat-sys-primary)' : ''">{{
+              row.isDir ? 'folder' : 'description'
+            }}</mat-icon>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="path">
+          <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+          <mat-cell
+            *matCellDef="let row"
+            [style.cursor]="row.isDir ? 'pointer' : isEditableFile(row) ? 'pointer' : 'default'"
+            class="node-file-manager__mono"
+            (dblclick)="row.isDir ? navigateToDir(row.path) : isEditableFile(row) && editFile(row)"
+          >
+            <span>{{ row.isDir ? row.name : fileName(row) }}</span>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="file_type">
+          <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
+          <mat-cell *matCellDef="let row" class="node-file-manager__text-sm">{{
+            row.isDir ? 'Dir' : shortFileType(row.file_type)
+          }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="size">
+          <mat-header-cell *matHeaderCellDef>Size</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{ row.isDir ? '-' : formatFileSize(row.size) }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="modified_at">
+          <mat-header-cell *matHeaderCellDef>Modified</mat-header-cell>
+          <mat-cell *matCellDef="let row" class="node-file-manager__text-sm">{{
+            row.isDir ? '-' : formatDate(row.modified_at)
+          }}</mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns" [sticky]="true"></mat-header-row>
+        <mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          (contextmenu)="onRowContextMenu($event, row)"
+          [style.cursor]="'context-menu'"
+        ></mat-row>
+      </mat-table>
+    </div>
+    <p class="node-file-manager__hint">Double-click a text file to edit</p>
+  </div>
   }
 </div>
 
@@ -140,4 +209,10 @@
     </button>
   </ng-template>
 </mat-menu>
-<span #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="rowMenu" style="position: fixed; width: 1px; height: 1px; opacity: 0; pointer-events: none;" [style.left.px]="menuPosition().left" [style.top.px]="menuPosition().top"></span>
+<span
+  #menuTrigger="matMenuTrigger"
+  [matMenuTriggerFor]="rowMenu"
+  style="position: fixed; width: 1px; height: 1px; opacity: 0; pointer-events: none"
+  [style.left.px]="menuPosition().left"
+  [style.top.px]="menuPosition().top"
+></span>

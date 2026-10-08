@@ -85,7 +85,7 @@
                 <span class="ios-add__or-text">or create from existing one</span>
               </div>
               <div class="ios-add__form ios-add__image-select">
-                <mat-form-field appearance="fill" class="ios-add__field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ios-add__field">
                   <mat-label>Image</mat-label>
                   <mat-select
                     required
@@ -120,7 +120,7 @@
               <h2 class="template-wizard__section-title">Template information</h2>
               <p class="template-wizard__section-copy">Choose a name and an optional usage note for your template.</p>
               <div class="ios-add__form">
-                <mat-form-field appearance="fill" class="ios-add__field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ios-add__field">
                   <mat-label>Name</mat-label>
                   <input
                     matInput
@@ -131,7 +131,7 @@
                     placeholder="Name"
                   />
                 </mat-form-field>
-                <mat-form-field appearance="fill" class="ios-add__field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ios-add__field">
                   <mat-label>Platform</mat-label>
                   <mat-select
                     required
@@ -147,7 +147,7 @@
                   </mat-select>
                 </mat-form-field>
                 @if (chassisOptions()[platform()]) {
-                <mat-form-field appearance="fill" class="ios-add__field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ios-add__field">
                   <mat-label>Chassis</mat-label>
                   <mat-select
                     required
@@ -193,7 +193,7 @@
               <h2 class="template-wizard__section-title">Memory</h2>
               <p class="template-wizard__section-copy">Set the default RAM allocated to the router.</p>
               <div class="ios-add__form">
-                <mat-form-field appearance="fill" class="ios-add__field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ios-add__field">
                   <mat-label>Default RAM</mat-label>
                   <input
                     matInput
@@ -232,7 +232,7 @@
               <div class="ios-add__adapters">
                 @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) { @if (adapterMatrix()[platform()][chassis() ||
                 ''][index]) {
-                <mat-form-field appearance="fill" class="ios-add__field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ios-add__field">
                   <mat-label>Slot {{ index }}</mat-label>
                   <mat-select
                     placeholder="Slot {{ index }}"
@@ -274,7 +274,7 @@
               <div class="ios-add__adapters">
                 @for (index of [0, 1, 2]; track index) { @if (wicMatrix()[platform()] && wicMatrix()[platform()][index])
                 {
-                <mat-form-field appearance="fill" class="ios-add__field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ios-add__field">
                   <mat-label>WIC {{ index }}</mat-label>
                   <mat-select
                     placeholder="WIC {{ index }}"
@@ -313,7 +313,7 @@
               <h2 class="template-wizard__section-title">Idle-PC</h2>
               <p class="template-wizard__section-copy">Set or calculate an optional CPU optimization value.</p>
               <div class="ios-add__form">
-                <mat-form-field appearance="fill" class="ios-add__field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ios-add__field">
                   <mat-label>Idle-PC</mat-label>
                   <input
                     matInput
@@ -341,12 +341,15 @@
           <div class="ios-add__step-content template-wizard__panel">
             <section class="template-wizard__section">
               <h2 class="template-wizard__section-title">Netmiko device type</h2>
-              <p class="template-wizard__section-copy">Default device type used for netmiko-driven configuration pushes.</p>
+              <p class="template-wizard__section-copy">
+                Default device type used for netmiko-driven configuration pushes.
+              </p>
               <div class="ios-add__form">
                 <app-netmiko-device-type-select
+                  subscriptSizing="dynamic"
                   [(value)]="netmikoDeviceType"
                   [controller]="controller()"
-                  appearance="fill"
+                  appearance="outline"
                   class="ios-add__field"
                 />
               </div>

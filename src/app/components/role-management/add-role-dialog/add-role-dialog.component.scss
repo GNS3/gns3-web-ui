@@ -1,3 +1,15 @@
+@use '../../../../styles/forms' as forms;
+
+:host {
+  @include forms.outlined;
+}
+
+.add-role-dialog__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gns3-density-space-4);
+}
+
 .full-width-field {
   width: 100%;
 }

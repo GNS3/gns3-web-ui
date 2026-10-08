@@ -48,6 +48,7 @@ import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-typ
     MatProgressSpinnerModule,
     CdkTextareaAutosize,
     NetmikoDeviceTypeSelectComponent,
+    EditNetworkConfigurationDialogComponent,
   ],
 })
 export class ConfiguratorDialogDockerComponent implements OnInit {
@@ -83,17 +84,10 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     panelClass: ['base-dialog-panel', 'docker-configurator-dialog-panel', 'dialog-extra-large-panel'],
     disableClose: true,
   };
-  private networkConfigurationDialog = {
-    autoFocus: false,
-    panelClass: ['base-dialog-panel', 'node-configurator-dialog-panel', 'docker-network-config-dialog-panel'],
-    disableClose: true,
-    width: '1040px',
-    maxWidth: 'calc(100vw - 48px)',
-    height: 'min(760px, calc(100vh - 48px))',
-    maxHeight: 'calc(100vh - 48px)',
-  };
   dialogRef;
 
+  readonly selectedTab = signal(0);
+  readonly networkEditor = signal<EditNetworkConfigurationDialogComponent | undefined>(undefined);
   readonly isApplying = signal(false);
   readonly isLoading = signal(true);
 
@@ -222,13 +216,6 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     };
   }
 
-  editNetworkConfiguration() {
-    this.dialogRef = this.dialog.open(EditNetworkConfigurationDialogComponent, this.networkConfigurationDialog);
-    let instance = this.dialogRef.componentInstance;
-    instance.controller = this.controller;
-    instance.node = this.node;
-  }
-
   addExtraConfig() {
     this.extraConfigs.update((configs) => [...configs, { target: '', content: '' }]);
   }
@@ -246,7 +233,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   }
 
   onSaveClick() {
-    if (this.isApplying()) return;
+    if (this.isApplying() || this.networkEditor()?.saving()) return;
 
     // Validate name (required)
     const nameValidation = this.validationService.validateName(this.nodeName());
@@ -353,7 +340,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     this.nodeService.updateNode(this.controller, this.node).subscribe({
       next: () => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
-        this.onCancelClick();
+        this.dialogReference.close();
       },
       error: (error: unknown) => {
         const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
@@ -366,6 +353,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   }
 
   onCancelClick() {
+    if (this.isApplying() || this.networkEditor()?.saving()) return;
     this.dialogReference.close();
   }
 

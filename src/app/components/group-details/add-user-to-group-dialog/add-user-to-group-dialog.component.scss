@@ -68,7 +68,7 @@
   margin-bottom: 4px;
   border-radius: 12px;
   background: var(--mat-sys-surface-container-low);
-  transition: all 0.2s ease;
+  transition: all var(--gns3-motion-duration-standard) ease;
 
   &:hover {
     background: var(--mat-sys-surface-container);

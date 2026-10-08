@@ -33,7 +33,7 @@
   line-height: 1.5;
   resize: none;
   outline: none;
-  transition: all 0.2s ease;
+  transition: all var(--gns3-motion-duration-standard) ease;
   box-sizing: border-box;
   overflow-y: auto;
   scrollbar-width: none; /* Firefox */
@@ -82,7 +82,7 @@
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--gns3-motion-duration-standard) cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
   position: relative;
   overflow: hidden;
@@ -99,7 +99,7 @@
     bottom: 0;
     background: linear-gradient(135deg, color-mix(in srgb, var(--mat-sys-on-primary) 20%, transparent), transparent);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity var(--gns3-motion-duration-standard) ease;
     border-radius: 18px;
   }
 
@@ -169,7 +169,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--gns3-motion-duration-standard) cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-tertiary) 30%, transparent);
   position: relative;
   overflow: hidden;
@@ -183,7 +183,7 @@
     bottom: 0;
     background: linear-gradient(135deg, color-mix(in srgb, var(--mat-sys-on-surface) 20%, transparent), transparent);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity var(--gns3-motion-duration-standard) ease;
     border-radius: 50%;
   }
 
@@ -263,7 +263,7 @@
   font-size: 11px;
   font-weight: 500;
   color: var(--mat-sys-on-surface-variant);
-  transition: color 0.2s ease;
+  transition: color var(--gns3-motion-duration-standard) ease;
 
   &--warning {
     color: var(--mat-sys-error);

@@ -21,7 +21,7 @@
   display: flex;
   align-items: center;
   gap: var(--gns3-density-card-gap);
-  animation: fadeInSlideIn 0.4s ease-out;
+  animation: none;
 }
 
 .qemu-template-details__back-btn {
@@ -29,7 +29,7 @@
   height: var(--gns3-density-icon-button);
   border-radius: 12px;
   color: var(--mat-sys-on-surface);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--gns3-motion-duration-standard) cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
@@ -51,7 +51,7 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 0 20px 20px;
-  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+  animation: none;
 }
 
 .qemu-template-details--hidden {
@@ -127,7 +127,7 @@
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--gns3-motion-duration-standard) ease;
   border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
 
   &:hover {
@@ -137,7 +137,7 @@
 
 .qemu-template-details__expand-icon {
   color: var(--mat-sys-on-surface-variant);
-  transition: transform 0.2s ease;
+  transition: transform var(--gns3-motion-duration-standard) ease;
 }
 
 .qemu-template-details__symbol-row {
@@ -249,16 +249,6 @@
 /* =============================================
 // Animations
 // ============================================= */
-@keyframes fadeInSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 /* =============================================
 // Responsive Design

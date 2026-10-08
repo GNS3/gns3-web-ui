@@ -1,3 +1,4 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { MatSort } from '@angular/material/sort';
@@ -7,6 +8,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, of, throwError, Subject } from 'rxjs';
 import { MarkdownModule } from 'ngx-markdown';
 import { ProjectsComponent } from './projects.component';
+import { TopologyPreviewComponent } from './topology-preview/topology-preview.component';
+import { TopologyPreviewDialogComponent } from './topology-preview/topology-preview-dialog.component';
 import { ProjectService } from '@services/project.service';
 import { SettingsService, Settings } from '@services/settings.service';
 import { ProgressService } from '../../common/progress/progress.service';
@@ -18,6 +21,23 @@ import { NotificationService, ProjectNotification } from '@services/notification
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+// Keep the map renderer separate while exercising the Projects preview UI.
+@Component({
+  selector: 'app-topology-preview',
+  standalone: true,
+  template: '',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  inputs: ['controller', 'project', 'nodes', 'links', 'drawings', 'variant'],
+})
+class TopologyPreviewStubComponent {
+  controller: unknown;
+  project: unknown;
+  nodes: unknown;
+  links: unknown;
+  drawings: unknown;
+  variant: unknown;
+}
 
 describe('ProjectsComponent', () => {
   let component: ProjectsComponent;
@@ -140,7 +160,13 @@ describe('ProjectsComponent', () => {
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],
-    }).compileComponents();
+    })
+      .overrideProvider(MatDialog, { useValue: mockDialog })
+      .overrideComponent(ProjectsComponent, {
+        remove: { imports: [TopologyPreviewComponent] },
+        add: { imports: [TopologyPreviewStubComponent] },
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(ProjectsComponent);
     component = fixture.componentInstance;
@@ -170,7 +196,7 @@ describe('ProjectsComponent', () => {
       fixture.detectChanges();
 
       const paginator = fixture.nativeElement.querySelector(
-        '.projects__table-container > .projects__table-footer mat-paginator',
+        '.projects__table-container > .projects__table-footer mat-paginator'
       );
 
       expect(paginator).not.toBeNull();
@@ -191,7 +217,7 @@ describe('ProjectsComponent', () => {
     it('should call recentlyOpenedProjectService with controller id', () => {
       fixture.detectChanges();
       expect(mockRecentlyOpenedProjectService.setcontrollerIdProjectList).toHaveBeenCalledWith(
-        mockController.id.toString(),
+        mockController.id.toString()
       );
     });
 
@@ -285,6 +311,67 @@ describe('ProjectsComponent', () => {
       fixture.detectChanges();
 
       expect(component.selection.isEmpty()).toBe(true);
+    });
+  });
+
+  describe('Topology preview', () => {
+    it('renders loading, empty and error states without dropping project details', () => {
+      fixture.detectChanges();
+      const response = new Subject<any>();
+      mockTopologyPreviewService.load.mockReturnValue(response);
+      component.selectProject(mockProjects[0]);
+      fixture.detectChanges();
+      expect(component.previewState()).toBe('loading');
+      expect(fixture.nativeElement.querySelector('.projects__preview-spinner')).not.toBeNull();
+      response.next({ nodes: [], links: [], drawings: [] });
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.projects__preview-note').textContent).toContain('Empty topology');
+      mockTopologyPreviewService.load.mockReturnValue(throwError(() => new Error('Unavailable')));
+      component.selectProject(mockProjects[1]);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.projects__preview-note').textContent).toContain(
+        'Topology preview unavailable'
+      );
+      expect(component.displayStats().nodes).toBe(2);
+    });
+
+    it('enlarges the preview and restores the thumbnail after the dialog closes', () => {
+      fixture.detectChanges();
+      const topology = { nodes: [{ node_id: 'node1' }], links: [], drawings: [] };
+      const closed = new Subject<void>();
+      mockTopologyPreviewService.load.mockReturnValue(of(topology));
+      mockDialog.open.mockReturnValue({ afterClosed: () => closed });
+      component.selectProject(mockProjects[0]);
+      fixture.detectChanges();
+      expect(component.displayStats().nodes).toBe(1);
+      fixture.nativeElement.querySelector('.projects__preview-thumb').click();
+      fixture.detectChanges();
+      expect(mockDialog.open).toHaveBeenCalledWith(
+        TopologyPreviewDialogComponent,
+        expect.objectContaining({
+          data: { controller: mockController, project: mockProjects[0], topology },
+        })
+      );
+      expect(fixture.nativeElement.querySelector('app-topology-preview')).toBeNull();
+      closed.next();
+      closed.complete();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.projects__preview-thumb')).not.toBeNull();
+    });
+
+    it('ignores late preview responses for a previously selected project', () => {
+      fixture.detectChanges();
+      const first = new Subject<any>();
+      const second = new Subject<any>();
+      mockTopologyPreviewService.load.mockReturnValueOnce(first).mockReturnValueOnce(second);
+      component.selectProject(mockProjects[0]);
+      component.selectProject(mockProjects[1]);
+      first.next({ nodes: [{ node_id: 'old-node' }], links: [], drawings: [] });
+      expect(component.previewState()).toBe('loading');
+      expect(component.previewTopology()).toBeNull();
+      second.next({ nodes: [], links: [], drawings: [] });
+      expect(component.previewState()).toBe('empty');
+      expect(component.selectedProject()).toBe(mockProjects[1]);
     });
   });
 
@@ -395,7 +482,7 @@ describe('ProjectsComponent', () => {
       });
 
       expect(component['_projects']().length).toBe(3);
-      expect(component['_projects']().find(p => p.project_id === 'proj3')).toBeTruthy();
+      expect(component['_projects']().find((p) => p.project_id === 'proj3')).toBeTruthy();
     });
 
     it('should update an existing project when project.updated notification arrives', () => {
@@ -408,7 +495,7 @@ describe('ProjectsComponent', () => {
         event: updated,
       });
 
-      const project = component['_projects']().find(p => p.project_id === 'proj1');
+      const project = component['_projects']().find((p) => p.project_id === 'proj1');
       expect(project?.name).toBe('Updated A');
     });
 
@@ -422,7 +509,7 @@ describe('ProjectsComponent', () => {
         event: opened,
       });
 
-      const project = component['_projects']().find(p => p.project_id === 'proj1');
+      const project = component['_projects']().find((p) => p.project_id === 'proj1');
       expect(project?.status).toBe('opened');
     });
 
@@ -437,7 +524,7 @@ describe('ProjectsComponent', () => {
         event: closed,
       });
 
-      const project = component['_projects']().find(p => p.project_id === 'proj1');
+      const project = component['_projects']().find((p) => p.project_id === 'proj1');
       expect(project?.status).toBe('closed');
     });
 
@@ -451,7 +538,7 @@ describe('ProjectsComponent', () => {
       });
 
       expect(component['_projects']().length).toBe(1);
-      expect(component['_projects']().find(p => p.project_id === 'proj1')).toBeFalsy();
+      expect(component['_projects']().find((p) => p.project_id === 'proj1')).toBeFalsy();
     });
   });
 
@@ -463,7 +550,7 @@ describe('ProjectsComponent', () => {
 
     it('should return true for a project that is loading', () => {
       fixture.detectChanges();
-      component['_loadingProjects'].update(set => {
+      component['_loadingProjects'].update((set) => {
         const next = new Set(set);
         next.add('proj1');
         return next;

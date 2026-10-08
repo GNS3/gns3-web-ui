@@ -46,21 +46,10 @@
 .gns3-chat-message-list__message {
   display: flex;
   gap: 8px;
-  animation: fadeIn 200ms ease-out;
+  animation: none;
 
   &--user {
     flex-direction: row-reverse;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -102,7 +91,7 @@
   .avatar-text {
     font-size: 12px;
     font-weight: 700;
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family: var(--mat-sys-body-medium-font, Roboto), sans-serif;
     letter-spacing: -0.5px;
   }
 }
@@ -166,15 +155,11 @@
         transparent
       );
       opacity: 0;
-      transition: opacity 200ms ease;
+      transition: opacity var(--gns3-motion-duration-standard) ease;
     }
 
     &:hover::after {
       opacity: 1;
-    }
-
-    &.gns3-chat-message-list__bubble--streaming {
-      // Streaming state handled by spinner in template
     }
   }
 
@@ -201,17 +186,6 @@
     gap: 8px;
     padding: 10px 14px;
     border-radius: 8px;
-  }
-}
-
-@keyframes blink {
-  0%,
-  50% {
-    opacity: 1;
-  }
-  51%,
-  100% {
-    opacity: 0;
   }
 }
 
@@ -291,7 +265,7 @@ app-markdown-viewer.gns3-chat-message-list__text {
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 8px;
   cursor: pointer;
-  transition: all 100ms ease;
+  transition: all var(--gns3-motion-duration-standard) ease;
   user-select: none;
   font-size: 12px;
 }
@@ -333,7 +307,7 @@ app-markdown-viewer.gns3-chat-message-list__text {
 }
 
 .gns3-chat-message-list__tool-name-text {
-  font-family: monospace;
+  font-family: var(--gns3-font-code);
   font-size: 12px;
   font-weight: 500;
   color: var(--mat-sys-on-surface);
@@ -426,7 +400,7 @@ app-markdown-viewer.gns3-chat-message-list__text {
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 16px;
   cursor: pointer;
-  transition: all 100ms ease;
+  transition: all var(--gns3-motion-duration-standard) ease;
   max-width: 280px;
   width: 100%;
   justify-content: center;
@@ -453,4 +427,10 @@ app-markdown-viewer.gns3-chat-message-list__text {
 
 .gns3-chat-message-list--auto-scroll {
   scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gns3-chat-message-list__empty-icon-wrapper {
+    animation: none;
+  }
 }

@@ -42,8 +42,8 @@
             <section class="template-wizard__section new-template-wizard__method-section">
               <h2 class="template-wizard__section-title">How do you want to create the template?</h2>
               <p class="template-wizard__section-copy">
-                Install a pre-configured appliance from the registry on the GNS controller, or import an appliance
-                file from your computer.
+                Install a pre-configured appliance from the registry on the GNS3 controller, or import an appliance file
+                from your computer.
               </p>
               <div class="new-template-wizard__method-options" role="radiogroup" aria-label="Creation method">
                 <button
@@ -56,7 +56,9 @@
                 >
                   <mat-icon class="new-template-wizard__method-icon">cloud_download</mat-icon>
                   <span class="new-template-wizard__method-text">
-                    <span class="new-template-wizard__method-title">Install new appliance from the GNS controller</span>
+                    <span class="new-template-wizard__method-title"
+                      >Install new appliance from the GNS3 controller</span
+                    >
                     <span class="new-template-wizard__method-description">
                       Browse pre-configured appliances available in the registry
                     </span>
@@ -111,7 +113,7 @@
                   </p>
                 </div>
                 <button
-                  mat-stroked-button
+                  mat-raised-button
                   color="primary"
                   type="button"
                   class="new-template-wizard__registry-update"
@@ -369,16 +371,12 @@
                       <div class="new-template-wizard__image-info">
                         <span class="new-template-wizard__image-name">{{ image.filename }}</span>
                         @if (checkImageFromVersion(image.filename)) {
-                        <span
-                          class="new-template-wizard__status-badge new-template-wizard__status-badge--ready"
-                        >
+                        <span class="new-template-wizard__status-badge new-template-wizard__status-badge--ready">
                           <mat-icon>check_circle</mat-icon>
                           <span>Ready</span>
                         </span>
                         } @else {
-                        <span
-                          class="new-template-wizard__status-badge new-template-wizard__status-badge--missing"
-                        >
+                        <span class="new-template-wizard__status-badge new-template-wizard__status-badge--missing">
                           <mat-icon>cancel</mat-icon>
                           <span>Missing</span>
                         </span>
@@ -394,7 +392,8 @@
                           [uploader]="uploaderImage"
                         />
                         <button
-                          mat-stroked-button
+                          mat-raised-button
+                          color="primary"
                           type="button"
                           [disabled]="isUploading()"
                           (click)="fileImage.click()"
@@ -403,7 +402,8 @@
                           <span>Import</span>
                         </button>
                         <button
-                          mat-stroked-button
+                          mat-raised-button
+                          color="primary"
                           type="button"
                           (click)="downloadImageFromVersion(image.filename)"
                         >
@@ -422,7 +422,12 @@
                           <span class="new-template-wizard__progress-percentage">{{ uploadProgress }}%</span>
                         </div>
                         <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
-                        <button mat-button type="button" class="new-template-wizard__cancel-button" (click)="cancelUploading()">
+                        <button
+                          mat-button
+                          type="button"
+                          class="new-template-wizard__cancel-button"
+                          (click)="cancelUploading()"
+                        >
                           Cancel
                         </button>
                       </div>
@@ -474,7 +479,8 @@
                       [uploader]="uploaderImage"
                     />
                     <button
-                      mat-stroked-button
+                      mat-raised-button
+                      color="primary"
                       type="button"
                       [disabled]="isUploading()"
                       (click)="$event.stopPropagation(); fileImage.click()"
@@ -494,7 +500,12 @@
                       <span class="new-template-wizard__progress-percentage">{{ uploadProgress }}%</span>
                     </div>
                     <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
-                    <button mat-button type="button" class="new-template-wizard__cancel-button" (click)="cancelUploading()">
+                    <button
+                      mat-button
+                      type="button"
+                      class="new-template-wizard__cancel-button"
+                      (click)="cancelUploading()"
+                    >
                       Cancel
                     </button>
                   </div>

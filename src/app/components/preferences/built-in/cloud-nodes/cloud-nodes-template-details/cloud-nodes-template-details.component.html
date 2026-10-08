@@ -9,7 +9,7 @@
         <h1 class="cloud-nodes-details__title">Edit template</h1>
       </div>
       <div class="cloud-nodes-details__header-actions">
-        <button type="button" mat-stroked-button (click)="goBack()">Back to templates</button>
+        <button type="button" mat-raised-button color="primary" (click)="goBack()">Back to templates</button>
       </div>
     </div>
   </header>
@@ -42,7 +42,7 @@
       </div>
       @if (activeSection === 'general') {
       <form class="cloud-nodes-details__form">
-        <mat-form-field appearance="fill" class="cloud-nodes-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="cloud-nodes-details__field">
           <mat-label>Template name</mat-label>
           <input
             matInput
@@ -52,7 +52,7 @@
             placeholder="Template name"
           />
         </mat-form-field>
-        <mat-form-field appearance="fill" class="cloud-nodes-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="cloud-nodes-details__field">
           <mat-label>Default name format</mat-label>
           <input
             matInput
@@ -63,7 +63,11 @@
           />
         </mat-form-field>
         <div class="cloud-nodes-details__symbol-row">
-          <mat-form-field appearance="fill" class="cloud-nodes-details__field cloud-nodes-details__field--flex">
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="cloud-nodes-details__field cloud-nodes-details__field--flex"
+          >
             <mat-label>Symbol</mat-label>
             <input
               matInput
@@ -73,30 +77,45 @@
               placeholder="Symbol"
             />
           </mat-form-field>
-          <button mat-stroked-button color="primary" class="cloud-nodes-details__symbol-btn" (click)="chooseSymbol()">
+          <button mat-raised-button color="primary" class="cloud-nodes-details__symbol-btn" (click)="chooseSymbol()">
             <mat-icon>add</mat-icon>
             Choose symbol
           </button>
         </div>
-        <mat-form-field appearance="fill" class="cloud-nodes-details__field">
-          <mat-label>Tags</mat-label>
-          <mat-chip-grid #chipList>
+        <div class="gns3-chip-field">
+          <mat-form-field
+            floatLabel="always"
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="cloud-nodes-details__field"
+          >
+            <mat-label>Tags</mat-label>
+
+            <input
+              matInput
+              placeholder="Add tags"
+              [matChipInputFor]="chipList"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              (matChipInputTokenEnd)="addTag($event)"
+            />
+          </mat-form-field>
+          <mat-chip-grid
+            #chipList
+            class="gns3-chip-field__values"
+            [class.gns3-chip-field__values--empty]="tags().length === 0"
+            aria-label="Tags"
+          >
             @for (tag of tags(); track tag) {
-            <mat-chip (removed)="removeTag(tag)">
+            <mat-chip-row [editable]="false" [attr.title]="tag" (removed)="removeTag(tag)">
               {{ tag }}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
+              <button matChipRemove type="button" [attr.aria-label]="'Remove tag ' + tag">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
             }
           </mat-chip-grid>
-          <input
-            matInput
-            placeholder="Add tags"
-            [matChipInputFor]="chipList"
-            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-            (matChipInputTokenEnd)="addTag($event)"
-          />
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="cloud-nodes-details__field">
+        </div>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="cloud-nodes-details__field">
           <mat-label>Category</mat-label>
           <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
             @for (cat of categories; track $index) {
@@ -104,7 +123,7 @@
             }
           </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="fill" class="cloud-nodes-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="cloud-nodes-details__field">
           <mat-label>Console type</mat-label>
           <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
             @for (type of consoleTypes; track type) {
@@ -112,7 +131,7 @@
             }
           </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="fill" class="cloud-nodes-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="cloud-nodes-details__field">
           <mat-label>Console host</mat-label>
           <input
             matInput
@@ -122,7 +141,7 @@
             placeholder="Console host"
           />
         </mat-form-field>
-        <mat-form-field appearance="fill" class="cloud-nodes-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="cloud-nodes-details__field">
           <mat-label>Console port</mat-label>
           <input
             matInput
@@ -132,7 +151,7 @@
             placeholder="Console port"
           />
         </mat-form-field>
-        <mat-form-field appearance="fill" class="cloud-nodes-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="cloud-nodes-details__field">
           <mat-label>Console HTTP path</mat-label>
           <input
             matInput
@@ -157,9 +176,9 @@
       <div class="cloud-nodes-details__form">
         <div class="cloud-nodes-details__add-row">
           <mat-form-field
-            appearance="fill"
-            class="cloud-nodes-details__field cloud-nodes-details__field--flex"
+            appearance="outline"
             subscriptSizing="dynamic"
+            class="cloud-nodes-details__field cloud-nodes-details__field--flex"
           >
             <mat-label>Ethernet interface</mat-label>
             <mat-select [value]="ethernetInterface()" (selectionChange)="ethernetInterface.set($event.value)">
@@ -213,9 +232,9 @@
       <div class="cloud-nodes-details__form">
         <div class="cloud-nodes-details__add-row">
           <mat-form-field
-            appearance="fill"
-            class="cloud-nodes-details__field cloud-nodes-details__field--flex"
+            appearance="outline"
             subscriptSizing="dynamic"
+            class="cloud-nodes-details__field cloud-nodes-details__field--flex"
           >
             <mat-label>TAP interface</mat-label>
             <mat-select [value]="tapInterface()" (selectionChange)="tapInterface.set($event.value)">
@@ -267,8 +286,8 @@
       </div>
       @if (activeSection === 'udp') {
       <div class="cloud-nodes-details__form">
-        <div class="udp-tunnels__input-grid">
-          <mat-form-field appearance="fill">
+        <div class="udp-tunnels__input-grid gns3-form-layout-fixed">
+          <mat-form-field appearance="outline" subscriptSizing="fixed">
             <mat-label>Name</mat-label>
             <input
               matInput
@@ -278,7 +297,7 @@
               placeholder="Name"
             />
           </mat-form-field>
-          <mat-form-field appearance="fill">
+          <mat-form-field appearance="outline" subscriptSizing="fixed">
             <mat-label>Remote host</mat-label>
             <input
               matInput
@@ -288,7 +307,7 @@
               placeholder="Remote host"
             />
           </mat-form-field>
-          <mat-form-field appearance="fill">
+          <mat-form-field appearance="outline" subscriptSizing="fixed">
             <mat-label>Local port</mat-label>
             <input
               matInput
@@ -300,7 +319,7 @@
               placeholder="Local port"
             />
           </mat-form-field>
-          <mat-form-field appearance="fill">
+          <mat-form-field appearance="outline" subscriptSizing="fixed">
             <mat-label>Remote port</mat-label>
             <input
               matInput
@@ -357,7 +376,7 @@
       </div>
       @if (activeSection === 'usage') {
       <div class="preferences__usage-form">
-        <mat-form-field appearance="fill" class="preferences__usage-field--full">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="preferences__usage-field--full">
           <mat-label>Usage</mat-label>
           <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
         </mat-form-field>

@@ -1,3 +1,8 @@
+@use '../../../../../styles/adapter-grid' as adapter-grid;
+@use '../../../../../styles/buttons' as buttons;
+
+@include adapter-grid.layout(100px minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1.5fr) var(--gns3-density-icon-button));
+
 /**
  * GNS3 Custom Adapters Dialog Component Styles
  */
@@ -12,17 +17,13 @@
 .adapter-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   max-height: 500px;
   overflow-y: auto;
 }
 
 .adapter-item {
-  display: grid;
-  grid-template-columns: 100px 1fr 2fr 1.5fr auto;
-  gap: 12px;
-  align-items: center;
-  padding: 12px 16px;
+  padding-block: var(--gns3-density-space-3);
   background: var(--mat-sys-surface-container-lowest);
   border-radius: 12px;
   border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 15%, transparent);
@@ -43,11 +44,8 @@
 // Table Header
 // ============================================= */
 .adapter-header {
-  display: grid;
-  grid-template-columns: 100px 1fr 2fr 1.5fr auto;
-  gap: 12px;
   align-items: center;
-  padding: 8px 16px;
+  padding-block: var(--gns3-density-space-2);
   margin-bottom: 8px;
   border-bottom: 2px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
   position: sticky;
@@ -76,7 +74,6 @@
 }
 
 .adapter-header-actions {
-  width: 40px;
   text-align: center;
 }
 
@@ -91,14 +88,10 @@
 }
 
 .add-btn {
+  @include buttons.geometry;
   flex-shrink: 0;
   width: auto;
   margin-top: 12px;
-  height: 48px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  text-transform: none;
   border: 2px dashed color-mix(in srgb, var(--mat-sys-outline) 40%, transparent);
   color: var(--mat-sys-on-surface-variant);
 

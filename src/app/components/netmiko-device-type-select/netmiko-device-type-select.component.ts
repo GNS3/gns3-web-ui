@@ -30,8 +30,10 @@ export class NetmikoDeviceTypeSelectComponent {
   readonly value = model('');
   /** The server to query; the editors all hold the current controller. */
   readonly controller = input<Controller>(undefined);
-  /** 'fill' on the preferences pages, default (outline) in the node configurator dialogs. */
+  /** Native outline is shared by template editors and node configurators. */
   readonly appearance = input<'fill' | 'outline'>('outline');
+  /** Reserve helper space in grids; vertical stacks opt into dynamic sizing. */
+  readonly subscriptSizing = input<'fixed' | 'dynamic'>('fixed');
 
   private readonly netmikoDeviceTypesService = inject(NetmikoDeviceTypesService);
 
@@ -56,7 +58,9 @@ export class NetmikoDeviceTypeSelectComponent {
         byVendor.set(vendor, [type]);
       }
     }
-    return [...byVendor.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([vendor, list]) => ({ vendor, types: list }));
+    return [...byVendor.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([vendor, list]) => ({ vendor, types: list }));
   });
 
   /** Current value is set but not among the server's types (historic/manual data). */

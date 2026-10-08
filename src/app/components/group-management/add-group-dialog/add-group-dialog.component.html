@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Create new group</h1>
 <form [formGroup]="groupNameForm">
-  <div mat-dialog-content>
-    <mat-form-field appearance="fill" class="full-width-field" subscriptSizing="dynamic">
+  <div mat-dialog-content class="gns3-form-stack">
+    <mat-form-field appearance="outline" class="full-width-field" subscriptSizing="dynamic">
       <mat-label>Group name</mat-label>
       <input
         matInput
@@ -21,7 +21,7 @@
 
     <h5>Add users to group:</h5>
 
-    <mat-form-field appearance="fill" class="full-width-field" subscriptSizing="dynamic">
+    <mat-form-field appearance="outline" class="full-width-field" subscriptSizing="dynamic">
       <mat-label>Users</mat-label>
       <input type="text" matInput [matAutocomplete]="auto" [formControl]="autocompleteControl" />
       <mat-autocomplete

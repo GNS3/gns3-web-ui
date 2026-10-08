@@ -54,7 +54,7 @@
   white-space: pre;
 
   code {
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family: var(--gns3-font-code);
     font-size: 14px;
   }
 }

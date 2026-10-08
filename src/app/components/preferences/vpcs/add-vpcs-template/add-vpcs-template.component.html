@@ -41,12 +41,17 @@
             </mat-radio-group>
 
             <form [formGroup]="templateNameForm" class="vpcs-add__form">
-              <mat-form-field appearance="outline" class="vpcs-add__field template-wizard__field">
+              <mat-form-field
+                appearance="outline"
+                subscriptSizing="dynamic"
+                class="vpcs-add__field template-wizard__field"
+              >
                 <mat-label>Template name</mat-label>
                 <input matInput required formControlName="templateName" type="text" placeholder="Template name" />
               </mat-form-field>
             </form>
             <app-netmiko-device-type-select
+              subscriptSizing="dynamic"
               [(value)]="netmikoDeviceType"
               [controller]="controller"
               appearance="outline"

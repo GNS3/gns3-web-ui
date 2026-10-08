@@ -31,7 +31,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(calc(60px * var(--zoom-level)), 1fr));
   gap: calc(4px * var(--zoom-level));
-  transition: gap 0.2s ease;
+  transition: gap var(--gns3-motion-duration-standard) ease;
 }
 
 .buttonWrapper {
@@ -83,7 +83,7 @@
   align-items: center;
   justify-content: center;
   background-color: transparent;
-  transition: transform 0.2s ease;
+  transition: transform var(--gns3-motion-duration-standard) ease;
   z-index: 1;
 
   mat-icon {
@@ -159,4 +159,10 @@
     outline-offset: -2px;
     box-shadow: 0 0 0 2px var(--mat-sys-error);
   }
+}
+
+.button:focus-visible,
+.delete-button:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
 }

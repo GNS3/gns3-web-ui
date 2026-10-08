@@ -1,4 +1,5 @@
 :host {
+  container: node-files / inline-size;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -14,8 +15,9 @@
 }
 
 .editor-textarea {
+  min-width: 0;
   flex: 1;
-  font-family: monospace;
+  font-family: var(--gns3-font-code);
   font-size: 13px;
   padding: 12px;
   border-radius: 0 8px 8px 0;
@@ -27,18 +29,34 @@
   box-sizing: border-box;
   line-height: 1.5;
   outline: none;
-  &:focus { border-color: var(--mat-sys-primary); }
+  &:focus {
+    border-color: var(--mat-sys-primary);
+  }
 }
 
-.editor-line-marker--modified { background: var(--mat-sys-error); }
-.editor-line-marker--added { background: var(--mat-sys-tertiary); }
+.editor-line-marker--modified {
+  background: var(--mat-sys-error);
+}
+.editor-line-marker--added {
+  background: var(--mat-sys-tertiary);
+}
 
-.node-file-browser__table-container { width: 100%; overflow-x: hidden; }
-.node-file-browser__table { width: 100%; }
+.node-file-browser__table-container {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--mat-sys-outline) var(--mat-sys-surface);
+}
+.node-file-browser__table {
+  width: 100%;
+  min-width: 620px;
+}
 
 /* ── Layout utilities ── */
 .node-file-manager__bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
@@ -49,6 +67,7 @@
 .node-file-manager__actions {
   margin-left: auto;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 }
@@ -66,7 +85,7 @@
   top: 0;
   left: 0;
   height: 100%;
-  transition: width 0.2s ease;
+  transition: width var(--gns3-motion-duration-standard) ease;
 }
 
 .node-file-manager__progress-label {
@@ -81,12 +100,15 @@
 
 .node-file-manager__content {
   flex: 1;
+  min-height: 0;
   overflow: hidden;
   display: flex;
 }
 
 .node-file-manager__main {
   flex: 1;
+  min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -177,6 +199,7 @@
 
 .node-file-manager__edit-area {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   padding: 16px;
@@ -185,6 +208,7 @@
 
 .node-file-manager__edit-toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
@@ -197,6 +221,8 @@
 }
 
 .node-file-manager__title {
+  min-width: 0;
+  overflow-wrap: anywhere;
   font-weight: 500;
   font-size: 16px;
 }
@@ -219,17 +245,59 @@
 }
 
 .node-file-manager__mono {
-  font-family: monospace;
+  font-family: var(--gns3-font-code);
   word-break: break-all;
 }
 
-.mat-column-icon { flex: 0 0 36px; min-width: 36px; justify-content: center; }
-.mat-column-path { flex: 3; min-width: 200px; }
-.mat-column-file_type { flex: 0 0 140px; min-width: 140px; }
-.mat-column-size { flex: 0 0 120px; min-width: 120px; }
-.mat-column-modified_at { flex: 1; min-width: 150px; }
+@container node-files (max-width: 640px) {
+  .node-file-manager__content {
+    flex-direction: column;
+  }
 
-.node-file-browser__table mat-row:nth-child(even) { background: var(--mat-sys-surface-container-low); }
+  .node-file-manager__sidebar {
+    box-sizing: border-box;
+    width: 100%;
+    max-height: 160px;
+    border-right: 0;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+}
+
+.node-file-browser__table mat-cell,
+.node-file-browser__table mat-header-cell {
+  padding-inline: var(--gns3-density-space-2);
+}
+
+.node-file-browser__table .mat-column-icon {
+  flex: 0 0 28px;
+  min-width: 28px;
+  padding-inline: 0;
+  justify-content: center;
+
+  mat-icon {
+    flex-shrink: 0;
+  }
+}
+.mat-column-path {
+  flex: 1;
+  min-width: 180px;
+}
+.mat-column-file_type {
+  flex: 0 0 112px;
+  min-width: 112px;
+}
+.mat-column-size {
+  flex: 0 0 96px;
+  min-width: 96px;
+}
+.mat-column-modified_at {
+  flex: 0 0 184px;
+  min-width: 184px;
+}
+
+.node-file-browser__table mat-row:nth-child(even) {
+  background: var(--mat-sys-surface-container-low);
+}
 
 .node-file-browser__table mat-header-row {
   position: sticky;

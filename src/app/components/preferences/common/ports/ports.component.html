@@ -1,7 +1,7 @@
 <div class="ports">
   <div class="ports__bulk-toolbar" role="group" aria-label="Bulk port update">
     <span class="ports__selection-count">{{ selectedPorts.size }} selected</span>
-    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ports__field">
       <mat-label>VLAN</mat-label>
       <input
         matInput
@@ -12,7 +12,7 @@
         (input)="bulkVlan.set($event.target.value === '' ? null : +$event.target.value)"
       />
     </mat-form-field>
-    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ports__field">
       <mat-label>Type</mat-label>
       <mat-select [value]="bulkType()" (selectionChange)="updateBulkType($event.value)">
         <mat-option value="">No change</mat-option>
@@ -21,7 +21,7 @@
         }
       </mat-select>
     </mat-form-field>
-    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ports__field">
       <mat-label>EtherType</mat-label>
       <mat-select [value]="bulkEthertype()" (selectionChange)="updateBulkEthertype($event.value)">
         <mat-option value="">No change</mat-option>
@@ -129,7 +129,7 @@
   </div>
 
   <div class="ports__add-row" role="group" aria-label="Add ports">
-    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ports__field">
       <mat-label>Starting port</mat-label>
       <input
         matInput
@@ -140,7 +140,7 @@
         placeholder="Port"
       />
     </mat-form-field>
-    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ports__field">
       <mat-label>Number of ports</mat-label>
       <input
         matInput
@@ -150,7 +150,7 @@
         (input)="newPortCount.set($event.target.valueAsNumber)"
       />
     </mat-form-field>
-    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ports__field">
       <mat-label>VLAN</mat-label>
       <input
         matInput
@@ -162,7 +162,7 @@
         placeholder="VLAN"
       />
     </mat-form-field>
-    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ports__field">
       <mat-select placeholder="Type" [value]="newPortType()" (selectionChange)="updateNewPortType($event.value)">
         @for (type of portTypes(); track type) {
         <mat-option [value]="type">
@@ -171,7 +171,7 @@
         }
       </mat-select>
     </mat-form-field>
-    <mat-form-field class="ports__field" subscriptSizing="dynamic">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ports__field">
       <mat-select
         placeholder="EtherType"
         [value]="newPortEthertype()"

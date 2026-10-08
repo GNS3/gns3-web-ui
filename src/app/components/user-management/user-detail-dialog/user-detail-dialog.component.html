@@ -10,8 +10,8 @@
       <mat-card class="user-detail-dialog__card">
         <mat-card-content>
           <form [formGroup]="editUserForm" class="user-detail-dialog__form">
-            <div class="user-detail-dialog__form-row">
-              <mat-form-field appearance="fill" class="user-detail-dialog__field">
+            <div class="user-detail-dialog__form-row gns3-form-layout-fixed">
+              <mat-form-field appearance="outline" class="user-detail-dialog__field">
                 <mat-label>Username</mat-label>
                 <input matInput type="text" formControlName="username" />
                 @if (form.username?.touched && form.username?.errors && form.username?.errors.required) {
@@ -23,14 +23,14 @@
                 }
               </mat-form-field>
 
-              <mat-form-field appearance="fill" class="user-detail-dialog__field">
+              <mat-form-field appearance="outline" class="user-detail-dialog__field">
                 <mat-label>Full name</mat-label>
                 <input matInput type="text" formControlName="full_name" />
               </mat-form-field>
             </div>
 
             <div class="user-detail-dialog__form-row">
-              <mat-form-field appearance="fill" class="user-detail-dialog__field">
+              <mat-form-field appearance="outline" class="user-detail-dialog__field">
                 <mat-label>Email</mat-label>
                 <input matInput type="text" formControlName="email" />
                 @if (form.email?.touched && form.email?.errors && form.email?.errors.required) {

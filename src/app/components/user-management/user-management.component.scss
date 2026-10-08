@@ -1,10 +1,14 @@
+@use '../../../styles/buttons' as buttons;
+@use '../../../styles/page-layout' as page;
+@use '../../../styles/toolbar' as toolbar;
+
 :host {
   display: block;
   width: 100%;
 }
 
 .users-page {
-  animation: users-fade-in 0.35s ease-out;
+  animation: none;
 }
 
 .users-page__header,
@@ -21,11 +25,7 @@
 }
 
 .users-page__title {
-  margin: 0;
-  color: var(--mat-sys-on-surface);
-  font-size: 26px;
-  font-weight: 600;
-  line-height: 1.2;
+  @include page.page-title;
 }
 
 .users-page__header-actions,
@@ -41,33 +41,17 @@
 }
 
 button.users-page__bulk-delete,
-button.users-page__add {
-  height: var(--gns3-density-control-height);
-  border-radius: 12px;
-  padding-inline: 16px;
-  font-size: 14px;
-  text-transform: none;
+button.users-page__add,
+button.users-page__refresh {
+  @include buttons.geometry;
 }
 
-button.users-page__refresh {
-  height: var(--gns3-density-control-height);
-  padding-inline: 18px;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  text-transform: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover:not([disabled]) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
-  }
+button.users-page__add {
+  @include buttons.primary;
 }
 
 button.users-page__bulk-delete {
-  color: var(--mat-sys-error);
-  border-color: color-mix(in srgb, var(--mat-sys-error) 45%, transparent);
+  @include buttons.destructive;
 }
 
 .users-page__scopes {
@@ -133,23 +117,13 @@ button.users-page__bulk-delete {
 }
 
 .users-page__toolbar {
-  align-items: center;
+  @include toolbar.layout(
+    '.users-page__search',
+    '.users-page__toolbar-actions',
+    '.users-page__filter, .users-page__sort',
+    '.users-page__view-toggle'
+  );
   padding-bottom: 8px;
-}
-
-.users-page__search {
-  flex: 1;
-  min-width: 260px;
-}
-
-.users-page__toolbar-actions {
-  flex: 0 0 auto;
-  gap: var(--gns3-density-space-3);
-}
-
-.users-page__filter,
-.users-page__sort {
-  width: 155px;
 }
 
 .users-page__view-toggle {
@@ -162,13 +136,10 @@ button.users-page__bulk-delete {
 }
 
 button.users-page__view-button {
-  width: var(--gns3-density-icon-button);
-  height: var(--gns3-density-icon-button);
-  border-radius: 8px;
+  @include buttons.icon;
   color: var(--mat-sys-on-surface-variant);
   /* Keep the state layer in sync with the button size (48px normal /
      40px compact) so the icon stays perfectly centered in both modes. */
-  --mat-icon-button-state-layer-size: var(--gns3-density-icon-button);
   --mat-icon-button-icon-size: 22px;
 }
 
@@ -196,11 +167,11 @@ button.users-page__view-button--active {
 .users-page__table-container {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
   border-radius: 16px;
   background: var(--mat-sys-surface);
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 18%, transparent),
-    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 9%, transparent);
+  border: var(--gns3-surface-border);
+  box-shadow: none;
+  overflow-x: auto;
 }
 
 mat-table {
@@ -234,7 +205,7 @@ mat-table {
 
 mat-row {
   cursor: pointer;
-  transition: background-color 180ms ease;
+  transition: background-color var(--gns3-motion-duration-standard) ease;
 
   &:nth-child(even) {
     background: color-mix(in srgb, var(--mat-sys-on-surface) 1%, transparent);
@@ -392,19 +363,16 @@ mat-header-cell {
 
 button.users-page__action {
   --user-action-color: var(--mat-sys-on-surface-variant);
-  width: 32px;
-  height: 32px;
+  @include buttons.action-icon(var(--gns3-density-control-height-sm));
   color: var(--user-action-color);
-  --mat-icon-button-state-layer-size: 32px;
-  --mat-icon-button-icon-size: 20px;
+  --mat-icon-button-state-layer-color: var(--user-action-color);
 
-  mat-icon {
+  &:not(:disabled) mat-icon {
     color: var(--user-action-color);
-    transition: transform 150ms ease;
   }
 
-  &:hover mat-icon {
-    transform: scale(1.15);
+  &:disabled mat-icon {
+    color: var(--gns3-button-disabled-label-color);
   }
 }
 
@@ -446,18 +414,18 @@ button.users-page__action--delete {
   border-radius: 16px;
   background: var(--mat-sys-surface);
   cursor: pointer;
-  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  transition: transform var(--gns3-motion-duration-standard) ease, box-shadow var(--gns3-motion-duration-standard) ease,
+    border-color var(--gns3-motion-duration-standard) ease;
 
   &:hover {
-    transform: translateY(-2px);
     border-color: var(--mat-sys-outline-variant);
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
+    background: var(--mat-sys-surface-container-low);
   }
 }
 
 .users-page__card--selected {
   border-color: var(--mat-sys-primary);
-  box-shadow: 0 0 0 1px var(--mat-sys-primary), 0 8px 24px color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  box-shadow: 0 0 0 1px var(--mat-sys-primary);
 }
 
 .users-page__card-header,
@@ -584,7 +552,7 @@ button.users-page__action--delete {
   border-radius: 16px;
   background: var(--mat-sys-surface);
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
-  animation: users-slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: users-slide-in var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
 }
 
 .users-page__details-header {
@@ -676,7 +644,7 @@ button.users-page__action--delete {
 
 .users-page__detail-row--id strong {
   color: var(--mat-sys-on-surface-variant);
-  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-family: var(--gns3-font-code);
   font-size: 12px;
 }
 
@@ -707,7 +675,7 @@ button.users-page__details-action--edit {
 }
 
 button.users-page__details-action--ai {
-  --details-action-color: var(--mat-sys-tertiary);
+  --details-action-color: var(--mat-sys-primary);
 }
 
 button.users-page__details-action--delete {
@@ -715,18 +683,9 @@ button.users-page__details-action--delete {
 }
 
 :host-context([data-density='compact']) {
-  button.users-page__refresh,
-  button.users-page__bulk-delete,
-  button.users-page__add,
   .users-page__scope {
     min-height: 40px;
     height: 40px;
-  }
-
-  button.users-page__view-button {
-    width: 40px;
-    height: 40px;
-    --mat-icon-button-state-layer-size: 40px;
   }
 
   .users-page__details-header {
@@ -745,17 +704,6 @@ button.users-page__details-action--delete {
 
   .users-page__card {
     padding: 12px;
-  }
-}
-
-@keyframes users-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -793,40 +741,24 @@ button.users-page__details-action--delete {
 }
 
 @media (max-width: 900px) {
-  .users-page__header,
-  .users-page__toolbar {
+  .users-page__header {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .users-page__header-actions,
-  .users-page__toolbar-actions {
+  .users-page__header-actions {
     width: 100%;
-  }
-
-  .users-page__search,
-  .users-page__filter,
-  .users-page__sort {
-    flex: 1;
-    width: auto;
   }
 }
 
 @media (max-width: 640px) {
-  .users-page__header-actions,
-  .users-page__toolbar-actions {
+  .users-page__header-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .users-page__header-actions button:last-child,
-  .users-page__search,
-  .users-page__view-toggle {
+  .users-page__header-actions button:last-child {
     grid-column: 1 / -1;
-  }
-
-  .users-page__view-toggle {
-    justify-content: center;
   }
 
   .users-page__scopes {

@@ -144,12 +144,12 @@
 
   &.success {
     border-left-color: var(--mat-sys-primary);
-    background: var(--mat-sys-primary-container-low);
+    background: color-mix(in srgb, var(--mat-sys-primary-container) 35%, var(--mat-sys-surface));
   }
 
   &.error {
     border-left-color: var(--mat-sys-error);
-    background: var(--mat-sys-error-container-low);
+    background: color-mix(in srgb, var(--mat-sys-error-container) 35%, var(--mat-sys-surface));
   }
 
   &.aborted {
@@ -222,12 +222,12 @@
 
   &.success {
     border-left-color: var(--mat-sys-primary);
-    background: var(--mat-sys-primary-container-low);
+    background: color-mix(in srgb, var(--mat-sys-primary-container) 35%, var(--mat-sys-surface));
   }
 
   &.error {
     border-left-color: var(--mat-sys-error);
-    background: var(--mat-sys-error-container-low);
+    background: color-mix(in srgb, var(--mat-sys-error-container) 35%, var(--mat-sys-surface));
   }
 
   mat-icon {

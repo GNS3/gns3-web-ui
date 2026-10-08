@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -51,6 +61,11 @@ export class EditNetworkConfigurationDialogComponent implements OnInit {
   private validationService = inject(ValidationService);
   private cdr = inject(ChangeDetectorRef);
 
+  readonly embeddedContext = input<{ controller: Controller; node: Node }>();
+  readonly blocked = input(false);
+  readonly ready = output<EditNetworkConfigurationDialogComponent>();
+  readonly embedded = computed(() => !!this.embeddedContext());
+
   controller: Controller;
   node: Node;
 
@@ -74,6 +89,12 @@ export class EditNetworkConfigurationDialogComponent implements OnInit {
   );
 
   ngOnInit() {
+    const context = this.embeddedContext();
+    if (context) {
+      this.controller = context.controller;
+      this.node = context.node;
+    }
+    this.ready.emit(this);
     this.nodeService.getNetworkConfiguration(this.controller, this.node).subscribe({
       next: (response: string) => {
         const parsed = parseDockerNetworkConfiguration(response, this.adapterCount());
@@ -187,7 +208,7 @@ export class EditNetworkConfigurationDialogComponent implements OnInit {
   }
 
   onSaveClick() {
-    if (this.loading() || this.loadFailed() || this.saving()) return;
+    if (this.blocked() || this.loading() || this.loadFailed() || this.saving()) return;
     if (!this.validateConfiguration()) return;
 
     const serializedConfiguration = this.configurationPreview();
@@ -197,7 +218,7 @@ export class EditNetworkConfigurationDialogComponent implements OnInit {
       next: () => {
         this.saving.set(false);
         this.dialogRef.disableClose = false;
-        this.dialogRef.close();
+        if (!this.embedded()) this.dialogRef.close();
         this.toasterService.success(`Configuration for node ${this.node.name} saved.`);
         this.cdr.markForCheck();
       },

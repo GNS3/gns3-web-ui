@@ -9,9 +9,9 @@
   position: fixed;
   z-index: 900;
   display: flex;
-  min-width: 400px;
+  min-width: min(400px, calc(100vw - 32px));
   max-width: calc(100vw - 32px);
-  min-height: 420px;
+  min-height: min(420px, calc(100dvh - 84px));
   max-height: calc(100vh - 84px);
   box-sizing: border-box;
   flex-direction: column;

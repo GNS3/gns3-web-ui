@@ -3,10 +3,10 @@
   width: fit-content;
   position: absolute;
   z-index: 99;
-  font-family: 'Noto Sans';
+  font-family: 'Noto Sans', sans-serif;
   font-size: 11pt;
   font-weight: bold;
-  color: var(--mat-app-on-surface-color);
+  color: var(--mat-sys-on-surface);
   // Align with SVG dominant-baseline: text-before-edge
   vertical-align: top;
   line-height: 1.2;

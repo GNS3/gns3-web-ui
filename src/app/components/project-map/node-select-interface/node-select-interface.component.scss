@@ -19,6 +19,16 @@
 
 .status-icon {
   flex-shrink: 0;
+  width: var(--gns3-status-indicator-size);
+  height: var(--gns3-status-indicator-size);
+  border-radius: 50%;
+
+  &--available {
+    background-color: var(--gns3-status-available-color);
+  }
+  &--unavailable {
+    background-color: var(--gns3-status-unavailable-color);
+  }
 }
 
 .port {

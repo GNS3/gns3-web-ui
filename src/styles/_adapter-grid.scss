@@ -1,0 +1,121 @@
+@use 'forms' as forms;
+@use 'buttons' as buttons;
+
+// Shared geometry for adapter headers and editable rows.
+@mixin layout($columns) {
+  :host {
+    @include forms.outlined;
+    --gns3-adapter-columns: #{$columns};
+    display: block;
+    min-width: 0;
+  }
+
+  .content {
+    min-width: 0;
+    container: adapter-dialog / inline-size;
+  }
+
+  .adapter-form {
+    min-width: 0;
+  }
+
+  .adapter-header,
+  .adapter-item {
+    display: grid;
+    grid-template-columns: var(--gns3-adapter-columns);
+    gap: var(--gns3-density-space-3);
+    box-sizing: border-box;
+    padding-inline: var(--gns3-density-space-4);
+  }
+
+  // Match the row border's horizontal footprint without showing a border.
+  .adapter-header {
+    border-inline: 1px solid transparent;
+  }
+
+  .adapter-item {
+    align-items: start;
+  }
+
+  .adapter-field-group,
+  .adapter-field {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .adapter-field-label {
+    display: none;
+    margin-bottom: var(--gns3-density-space-1);
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .adapter-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--gns3-density-form-field-height);
+  }
+
+  .adapter-header-actions {
+    width: var(--gns3-density-icon-button);
+  }
+
+  button.adapter-actions {
+    @include buttons.action-icon;
+    margin-top: calc((var(--gns3-density-form-field-height) - var(--gns3-density-icon-button)) / 2);
+  }
+
+  // Use available dialog space so the layout also adapts to browser zoom.
+  @container adapter-dialog (max-width: 640px) {
+    .adapter-header {
+      display: none;
+    }
+
+    .adapter-item {
+      grid-template-columns: minmax(0, 1fr) var(--gns3-density-icon-button);
+    }
+
+    .adapter-label {
+      grid-column: 1;
+      grid-row: 1;
+      justify-content: flex-start;
+      min-height: var(--gns3-density-icon-button);
+    }
+
+    button.adapter-actions {
+      grid-column: 2;
+      grid-row: 1;
+      margin-top: 0;
+    }
+
+    .adapter-field-group {
+      grid-column: 1 / -1;
+    }
+
+    .adapter-field {
+      text-align: left;
+    }
+
+    .adapter-field-label {
+      display: block;
+    }
+
+    .add-adapter-row {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--gns3-density-space-2);
+    }
+
+    .add-adapter-row .add-btn {
+      margin-top: 0;
+    }
+
+    .info-note-text {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+  }
+}

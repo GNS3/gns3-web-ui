@@ -3,7 +3,8 @@
     <div class="template-metadata__two-column-grid">
       @for (entry of fields; track entry.field) {
       <mat-form-field
-        appearance="fill"
+        appearance="outline"
+        subscriptSizing="fixed"
         class="template-metadata__field"
         [class.template-metadata__field--full]="entry.multiline"
       >
@@ -24,13 +25,17 @@
           (input)="onInput(entry.field, $event)"
           [placeholder]="entry.placeholder || ''"
         />
-        }
-        @if (entry.copy && text(entry.field)) {
-        <button mat-icon-button matSuffix type="button" matTooltip="Copy {{ entry.label }}" (click)="copy(entry.field, entry.label)">
+        } @if (entry.copy && text(entry.field)) {
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          matTooltip="Copy {{ entry.label }}"
+          (click)="copy(entry.field, entry.label)"
+        >
           <mat-icon>content_copy</mat-icon>
         </button>
-        }
-        @if (entry.link && text(entry.field)) {
+        } @if (entry.link && text(entry.field)) {
         <button mat-icon-button matSuffix type="button" matTooltip="Open link" (click)="openLink(entry.field)">
           <mat-icon>open_in_new</mat-icon>
         </button>

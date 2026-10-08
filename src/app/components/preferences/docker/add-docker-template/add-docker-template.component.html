@@ -76,7 +76,7 @@
                   </mat-radio-button>
                 </mat-radio-group>
                 @if (!newImageSelected) {
-                <mat-form-field appearance="fill" class="docker-add__field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="docker-add__field">
                   <mat-label>Image list</mat-label>
                   <mat-select
                     required
@@ -91,7 +91,7 @@
                 </mat-form-field>
                 } @if (newImageSelected) {
                 <div class="docker-add__image-row">
-                  <mat-form-field appearance="fill" class="docker-add__field">
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="docker-add__field">
                     <mat-label>Image name</mat-label>
                     <input
                       matInput
@@ -104,7 +104,7 @@
                     />
                   </mat-form-field>
                   <button
-                    mat-stroked-button
+                    mat-raised-button
                     color="primary"
                     class="docker-add__pull-btn"
                     type="button"
@@ -136,7 +136,7 @@
               <h2 class="template-wizard__section-title">Template information</h2>
               <p class="template-wizard__section-copy">Choose a name and an optional usage note for your template.</p>
               <div class="docker-add__form">
-                <mat-form-field appearance="fill" class="docker-add__field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="docker-add__field">
                   <mat-label>Container name</mat-label>
                   <input
                     matInput
@@ -169,7 +169,7 @@
               <h2 class="template-wizard__section-title">Network adapters</h2>
               <p class="template-wizard__section-copy">Set the default number of network adapters.</p>
               <div class="docker-add__form">
-                <mat-form-field appearance="fill" class="docker-add__field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="docker-add__field">
                   <mat-label>Adapters</mat-label>
                   <input
                     matInput
@@ -201,7 +201,7 @@
             <section class="template-wizard__section">
               <h2 class="template-wizard__section-title">Start command</h2>
               <p class="template-wizard__section-copy">Enter a command to run when the container starts.</p>
-              <mat-form-field appearance="fill" class="docker-add__field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="docker-add__field">
                 <mat-label>Start command</mat-label>
                 <input
                   matInput
@@ -229,7 +229,7 @@
             <section class="template-wizard__section">
               <h2 class="template-wizard__section-title">Console</h2>
               <p class="template-wizard__section-copy">Choose the primary console type for this container.</p>
-              <mat-form-field appearance="fill" class="docker-add__field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="docker-add__field">
                 <mat-label>Console type</mat-label>
                 <mat-select
                   placeholder="Console type"
@@ -259,7 +259,7 @@
             <section class="template-wizard__section">
               <h2 class="template-wizard__section-title">Auxiliary console</h2>
               <p class="template-wizard__section-copy">Choose an optional second console type.</p>
-              <mat-form-field appearance="fill" class="docker-add__field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="docker-add__field">
                 <mat-label>Auxiliary console type</mat-label>
                 <mat-select
                   placeholder="Auxiliary console type"
@@ -289,7 +289,7 @@
             <section class="template-wizard__section">
               <h2 class="template-wizard__section-title">Environment</h2>
               <p class="template-wizard__section-copy">Define optional environment variables for the container.</p>
-              <mat-form-field appearance="fill" class="docker-add__field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="docker-add__field">
                 <mat-label>Environment</mat-label>
                 <textarea
                   matInput
@@ -319,11 +319,14 @@
           <div class="docker-add__step-content template-wizard__panel">
             <section class="template-wizard__section">
               <h2 class="template-wizard__section-title">Netmiko device type</h2>
-              <p class="template-wizard__section-copy">Default device type used for netmiko-driven configuration pushes.</p>
+              <p class="template-wizard__section-copy">
+                Default device type used for netmiko-driven configuration pushes.
+              </p>
               <app-netmiko-device-type-select
+                subscriptSizing="dynamic"
                 [(value)]="netmikoDeviceType"
                 [controller]="controller"
-                appearance="fill"
+                appearance="outline"
                 class="docker-add__field"
               />
             </section>
