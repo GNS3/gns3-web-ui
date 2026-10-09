@@ -15,6 +15,7 @@ export class Link {
   project_id: string;
   suspend: boolean;
   link_style?: LinkStyle;
+  kernel_datapath?: boolean; // Link wired on the kernel datapath (veth bridge) — extended impairment filters; undefined on old servers
   show_filters_icon: boolean; // Control visibility of filter icons on the link (from server)
   wireshark: boolean; // true for Web Wireshark, false for traditional Wireshark
   markers?: MarkerMap; // Traffic-insight markers (non-empty ⇒ show the markers icon)
