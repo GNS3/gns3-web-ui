@@ -174,6 +174,8 @@ describe('ServerSettingsComponent settings workspace', () => {
   it('renders a clear zero-results state while keeping actions and pending edits available', async () => {
     await type('port', '3081');
     component.setSearchQuery('no-such-setting-12345');
+    // Direct method calls need an explicit render before checking the DOM.
+    fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('.server-settings__empty').textContent).toContain('No settings match');
     expect(component.activeSectionMeta()).toBeUndefined();
@@ -222,6 +224,7 @@ describe('ServerSettingsComponent settings workspace', () => {
     await type('compute_password', 'replacement');
     component.revertField(section(), field('host'));
     component.setSearchQuery('jwt');
+    fixture.detectChanges();
     await fixture.whenStable();
     expect(component.dirtyKeys().size).toBe(4);
     expect(component.restartChangeCount()).toBe(2);
@@ -291,6 +294,7 @@ describe('ServerSettingsComponent settings workspace', () => {
     await type('compute_password', 'replacement');
     component.setSearchQuery('jwt');
     component.discardChanges();
+    fixture.detectChanges();
     await fixture.whenStable();
     expect(component.dirtyKeys().size).toBe(0);
     expect(component.restartChangeCount()).toBe(0);
