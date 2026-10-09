@@ -53,6 +53,12 @@ describe('ServerSettingsComponent settings workspace', () => {
     await fixture.whenStable();
     return element;
   };
+  const search = async (query: string) => {
+    const element = fixture.nativeElement.querySelector('.server-settings__search input') as HTMLInputElement;
+    element.value = query;
+    element.dispatchEvent(new Event('input', { bubbles: true }));
+    await fixture.whenStable();
+  };
 
   beforeEach(async () => {
     // The shared test setup fakes timers; real timers let zoneless DOM events settle.
@@ -173,10 +179,7 @@ describe('ServerSettingsComponent settings workspace', () => {
 
   it('renders a clear zero-results state while keeping actions and pending edits available', async () => {
     await type('port', '3081');
-    component.setSearchQuery('no-such-setting-12345');
-    // Direct method calls need an explicit render before checking the DOM.
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await search('no-such-setting-12345');
     expect(fixture.nativeElement.querySelector('.server-settings__empty').textContent).toContain('No settings match');
     expect(component.activeSectionMeta()).toBeUndefined();
     expect(fixture.nativeElement.querySelector('.server-settings__unsaved-status').textContent).toContain(
@@ -223,9 +226,7 @@ describe('ServerSettingsComponent settings workspace', () => {
     await type('name', 'Edited controller');
     await type('compute_password', 'replacement');
     component.revertField(section(), field('host'));
-    component.setSearchQuery('jwt');
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await search('jwt');
     expect(component.dirtyKeys().size).toBe(4);
     expect(component.restartChangeCount()).toBe(2);
     expect(component.groupChangeCount(section(), group('network'))).toBe(2);
@@ -292,9 +293,12 @@ describe('ServerSettingsComponent settings workspace', () => {
   it('discards both visible and hidden edits and clears displayed secret replacement text', async () => {
     await type('port', '3081');
     await type('compute_password', 'replacement');
-    component.setSearchQuery('jwt');
-    component.discardChanges();
-    fixture.detectChanges();
+    await search('jwt');
+    const discard = fixture.nativeElement.querySelector(
+      '.server-settings__footer-actions button[mat-stroked-button]'
+    ) as HTMLButtonElement;
+    expect(discard.disabled).toBe(false);
+    discard.click();
     await fixture.whenStable();
     expect(component.dirtyKeys().size).toBe(0);
     expect(component.restartChangeCount()).toBe(0);
