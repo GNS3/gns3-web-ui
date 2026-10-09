@@ -167,7 +167,7 @@ describe('DialogConfigService', () => {
 
     it('should have packetFilters config', () => {
       const config = service.getConfig('packetFilters');
-      expect(config.panelClass).toContain('dialog-medium-panel');
+      expect(config.panelClass).toContain('dialog-large-panel');
       expect(config.panelClass).toContain('simple-dialog-panel');
     });
 

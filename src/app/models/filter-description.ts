@@ -5,7 +5,7 @@ export class FilterDescription {
   type: string;
 }
 
-interface Parameter {
+export interface Parameter {
   maximum?: number;
   minimum?: number;
   name: string;

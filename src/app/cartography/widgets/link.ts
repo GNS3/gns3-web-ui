@@ -7,6 +7,7 @@ import { LinkContextMenu } from '../events/event-source';
 import { LinksEventSource } from '../events/links-event-source';
 import { MultiLinkCalculatorHelper } from '../helpers/multi-link-calculator-helper';
 import { MarkerFlashService } from '@services/marker-flash.service';
+import { hasActiveFilters } from '@models/filter';
 import { SelectionManager } from '../managers/selection-manager';
 import { MapLink } from '../models/map/map-link';
 import { MapLinksDataSource } from '../datasources/map-datasource';
@@ -77,7 +78,7 @@ export class LinkWidget implements Widget, OnDestroy {
         return (
           l.capturing &&
           !l.suspend &&
-          (l.show_filters_icon === false || !(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss))
+          (l.show_filters_icon === false || !hasActiveFilters(l.filters))
         );
       })
       .append<SVGGElement>('g')
@@ -109,7 +110,7 @@ export class LinkWidget implements Widget, OnDestroy {
           l.show_filters_icon !== false &&
           l.capturing &&
           !l.suspend &&
-          (l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)
+          hasActiveFilters(l.filters)
         );
       })
       .append<SVGGElement>('g')
@@ -141,7 +142,7 @@ export class LinkWidget implements Widget, OnDestroy {
           l.show_filters_icon !== false &&
           !l.capturing &&
           !l.suspend &&
-          (l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)
+          hasActiveFilters(l.filters)
         );
       })
       .append<SVGGElement>('g')

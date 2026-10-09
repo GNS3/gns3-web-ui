@@ -5,6 +5,17 @@ export interface Capabilities {
   cpus?: number;
   memory?: number;
   disk_size?: number;
+  // uBridge traffic-control probe result; null/absent on computes running an
+  // older uBridge or when the probe failed — the link available_filters list
+  // stays authoritative, this is typed passthrough only (no UI gating).
+  ubridge_tc?: UbridgeTcCapabilities | null;
+}
+
+export interface UbridgeTcCapabilities {
+  netem: string[];
+  ebpf: boolean;
+  ebpf_modes: string[];
+  cbpf: boolean;
 }
 
 export interface Compute {
