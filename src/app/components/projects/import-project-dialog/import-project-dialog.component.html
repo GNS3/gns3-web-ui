@@ -11,7 +11,7 @@
     [uploader]="uploader"
   />
   <div class="input-row">
-    <mat-form-field class="file-name-form-field" subscriptSizing="dynamic">
+    <mat-form-field appearance="outline" class="file-name-form-field" subscriptSizing="dynamic">
       <input
         matInput
         type="text"
@@ -27,7 +27,7 @@
       }
     </mat-form-field>
     <button
-      mat-stroked-button
+      mat-raised-button
       color="primary"
       (click)="file.click()"
       matTooltip="Import your .gns3p or .gns3project file"

@@ -7,7 +7,7 @@
   box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent),
     0 4px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
   overflow: visible;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow var(--gns3-motion-duration-standard) ease;
   contain: layout style;
 
   &:hover {
@@ -151,15 +151,19 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .resize-handle {
   position: absolute;
   z-index: 100;
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--gns3-motion-duration-standard) ease;
 
   .web-console-inline:hover & {
     opacity: 1;

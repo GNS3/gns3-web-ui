@@ -1,0 +1,173 @@
+/* Data-entry forms use Material's native outlined appearance. Templates set
+   subscriptSizing="fixed" for aligned grids and "dynamic" for vertical stacks
+   and responsive adapter rows. Both modes retain hints and validation errors;
+   fixed fields reserve the standard row gap; visible messages can grow beyond it. */
+@mixin outlined {
+  --mat-form-field-outlined-container-shape: var(--gns3-density-radius-sm);
+
+  mat-form-field {
+    --mat-form-field-outlined-container-shape: var(--gns3-density-radius-sm);
+  }
+}
+
+@mixin helper-text {
+  font-size: var(--gns3-helper-text-size);
+  font-weight: var(--gns3-helper-text-weight);
+  line-height: var(--gns3-helper-text-line-height);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+@mixin helper-typography {
+  html body :is(.gns3-helper-text, .mat-mdc-form-field-subscript-wrapper) {
+    @include helper-text;
+  }
+
+  html body mat-form-field {
+    --mat-form-field-subscript-text-size: var(--gns3-helper-text-size);
+    --mat-form-field-subscript-text-weight: var(--gns3-helper-text-weight);
+    --mat-form-field-subscript-text-line-height: var(--gns3-helper-text-line-height);
+    --mat-form-field-error-text-color: var(--mat-sys-error);
+  }
+
+  html body .gns3-validation-message {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--gns3-density-space-1);
+    color: var(--mat-sys-error);
+
+    mat-icon {
+      flex: 0 0 var(--gns3-helper-text-line-height);
+      width: var(--gns3-helper-text-line-height);
+      height: var(--gns3-helper-text-line-height);
+      font-size: var(--gns3-helper-text-line-height);
+      line-height: var(--gns3-helper-text-line-height);
+    }
+
+    span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+  }
+}
+
+@mixin responsive-grid {
+  .gns3-form-grid-container {
+    min-width: 0;
+    container-type: inline-size;
+  }
+
+  .gns3-form-grid {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--gns3-density-space-4) var(--gns3-density-space-5);
+
+    > * {
+      min-width: 0;
+    }
+
+    > mat-form-field {
+      width: 100%;
+    }
+  }
+
+  .gns3-form-grid__full {
+    grid-column: 1 / -1;
+  }
+
+  @container (max-width: 480px) {
+    .gns3-form-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
+
+// Fixed helper rows count toward the standard surface-to-surface spacing.
+// Dynamic rows reserve nothing and use the layout gap instead.
+@mixin spacing {
+  $layouts: '.gns3-form-grid, .form-grid, .two-column-grid, .three-column-grid, .four-column-grid, .node-config__quad-grid, .node-config__two-grid, .template-wizard__field-grid, .text-editor-grid, .form-container, .form-grid-column, .dialog-fields, .export-portable-project__settings, .missing-images-dialog__row, .basic-mode, .custom-mode, .custom-field-row, .form-row, .settings__inline-fields, .settings__style-fields, .atm-switch__input-grid, .fr-switch__input-grid, .udp-tunnels__input-grid, .disk-card__content, .template-info-fields, .gns3-form-stack, .add-role-dialog__fields, .role-detail__form, .login-card__form, .ace-form__selection-panel, .user-detail-dialog__form-row, .qemu-template-details__disk-item, .qemu-template-details__subsection, .qemu-template-details__form, .vmware-template-details__form, .virtualbox-details__form, .iou-template-details__form, .vpcs-template-details__form, .ethernet-switch-details__form, .ethernet-switch-add__form, .ethernet-hub-details__form, .ethernet-hub-add__form, .cloud-nodes-details__form, .ios-details__form, .ios-add__form';
+
+  html body :is(#{$layouts}) {
+    row-gap: var(--gns3-form-row-gap);
+
+    > :is(mat-form-field.mat-mdc-form-field, app-netmiko-device-type-select.form-field) {
+      margin-block: 0;
+    }
+
+    :is(mat-form-field, app-netmiko-device-type-select) {
+      --mat-form-field-subscript-text-line-height: 16px;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper:not(.mat-mdc-form-field-subscript-dynamic-size)::before {
+      // An inline spacer adds a font-dependent descender below its height.
+      // A block reserves exactly the shared gap in either density.
+      display: block;
+      height: var(--gns3-form-row-gap);
+    }
+
+    // Actual messages contribute their full height, including wrapped text.
+    .mat-mdc-form-field-subscript-wrapper:not(.mat-mdc-form-field-subscript-dynamic-size):has(mat-hint, mat-error) {
+      box-sizing: border-box;
+      min-height: var(--gns3-form-row-gap);
+      padding-block: 4px 8px;
+
+      &::before {
+        display: none;
+      }
+
+      :is(.mat-mdc-form-field-hint-wrapper, .mat-mdc-form-field-error-wrapper) {
+        position: static;
+      }
+    }
+  }
+
+  // Templates declare fixed homogeneous rows explicitly. Mixed rows and bound
+  // subscript sizing never infer their spacing from DOM attributes.
+  html body .gns3-form-layout-fixed {
+    row-gap: 0;
+  }
+
+  .gns3-form-stack {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+  }
+}
+
+// Multi-value editors share the same input height as ordinary fields. Values
+// wrap below the input so labels, input text and chip remove controls stay clear.
+@mixin chip-fields {
+  html body .gns3-chip-field {
+    min-width: 0;
+    width: 100%;
+
+    > mat-form-field {
+      width: 100%;
+      margin: 0;
+    }
+
+    input.mat-mdc-input-element {
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+    }
+  }
+
+  html body .gns3-chip-field__values {
+    display: block;
+    min-width: 0;
+    margin-top: var(--gns3-density-space-2);
+    // Match Material input insets and leave room for chip remove touch targets.
+    padding-inline: 16px;
+
+    &--empty {
+      display: none;
+    }
+
+    mat-chip-row {
+      max-width: 100%;
+    }
+  }
+}

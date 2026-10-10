@@ -73,6 +73,32 @@ $theme-configs: (
 // Core mixin: define theme and inject into :root
 // ============================================
 
+// Material density does not resize switch tracks. Keep all compact switches
+// aligned, including controls rendered inside overlay containers.
+@mixin compact-switches() {
+  @include mat.slide-toggle-overrides(
+    (
+      track-width: 40px,
+      track-height: 24px,
+      selected-handle-size: 18px,
+      unselected-handle-size: 12px,
+      with-icon-handle-size: 18px,
+      pressed-handle-size: 20px,
+      selected-icon-size: 12px,
+      unselected-icon-size: 12px,
+      selected-handle-horizontal-margin: 0 18px,
+      selected-with-icon-handle-horizontal-margin: 0 18px,
+      selected-pressed-handle-horizontal-margin: 0 16px,
+      unselected-handle-horizontal-margin: 0 6px,
+      unselected-with-icon-handle-horizontal-margin: 0 3px,
+      unselected-pressed-handle-horizontal-margin: 0 2px,
+      state-layer-size: 32px,
+      touch-target-size: 40px,
+      touch-target-display: block,
+    )
+  );
+}
+
 /// Generate complete CSS variables for a specified theme
 @mixin generate-theme($config, $class-name) {
   $theme: mat.define-theme(
@@ -117,6 +143,7 @@ $theme-configs: (
     @include mat.system-level-colors($theme);
     @include mat.system-level-typography($theme);
     --custom-mat-sys-success: #{mat.get-theme-color($success-theme, primary)};
+    --custom-mat-sys-on-success: #{mat.get-theme-color($success-theme, on-primary)};
   }
 
   .cdk-overlay-container.#{$class-name},
@@ -126,6 +153,7 @@ $theme-configs: (
 
   :root.#{$class-name}[data-density='compact'] {
     @include mat.all-component-densities($compact-theme);
+    @include compact-switches();
 
     // Material hides filled-field labels at density -2. GNS3 forms use
     // those labels as essential field names, so retain them and fit the
@@ -140,6 +168,7 @@ $theme-configs: (
   html[data-density='compact'] .cdk-overlay-container.#{$class-name},
   html.#{$class-name}[data-density='compact'] .cdk-overlay-container {
     @include mat.all-component-densities($compact-theme);
+    @include compact-switches();
     --mat-form-field-filled-label-display: block;
     --mat-form-field-filled-with-label-container-padding-top: 20px;
     --mat-form-field-filled-with-label-container-padding-bottom: 4px;

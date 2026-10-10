@@ -1,3 +1,7 @@
+@use '../../../styles/buttons' as buttons;
+@use '../../../styles/page-layout' as page;
+@use '../../../styles/toolbar' as toolbar;
+
 /**
  * GNS3 Group Management Component Styles
  * BEM naming applied, Material theme variables used
@@ -17,58 +21,35 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 0;
-  animation: fadeInSlideIn 0.4s ease-out;
+  @include page.page-motion;
 }
 
 .group-management__title {
-  font-size: 24px;
-  font-weight: 500;
-  color: var(--mat-sys-on-surface);
-  margin: 0;
-}
-
-.group-management__actions {
-  display: flex;
-  gap: 12px;
+  @include page.page-title;
 }
 
 /* =============================================
 // Buttons
 // ============================================= */
 .group-management__button {
-  margin: 12px 0;
-  height: 48px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 500;
-  text-transform: none;
-  letter-spacing: 0.5px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  @include buttons.geometry;
+}
 
-  &:hover:not([disabled]) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
-  }
-
-  &:active:not([disabled]) {
-    transform: translateY(0);
-  }
+.group-management__button--destructive {
+  @include buttons.destructive;
 }
 
 /* =============================================
 // Search
 // ============================================= */
-.group-management__search-form {
-  display: flex;
-  justify-content: center;
-  margin: 16px auto;
-  width: 100%;
-  animation: fadeInSlideIn 0.4s ease-out 0.05s both;
+.group-management__toolbar {
+  @include toolbar.layout('.group-management__search-form', '.group-management__actions');
+  margin-bottom: var(--gns3-density-card-gap);
+  @include page.page-motion;
 }
 
 .group-management__search {
   width: 100%;
-  max-width: 1000px;
 }
 
 /* =============================================
@@ -76,13 +57,11 @@
 // ============================================= */
 .group-management__table-container {
   border-radius: 16px;
-  overflow: hidden;
   width: 100%;
   background: var(--mat-sys-surface);
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
-    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
-  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: fadeInSlideIn 0.4s ease-out 0.15s both;
+  @include page.surface;
+  @include page.page-motion;
+  overflow-x: auto;
 }
 
 .group-management__table-container--hidden {
@@ -92,19 +71,27 @@
 /* =============================================
 // Material Table Internal DOM Styling
 // ============================================= */
-mat-row {
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+.mat-mdc-table {
+  width: 100%;
+}
+
+.mat-mdc-header-row {
+  height: var(--mat-table-header-container-height);
+}
+
+.mat-mdc-row {
+  height: var(--mat-table-row-item-container-height);
+  transition: background-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
   cursor: default;
   position: relative;
 
   &:hover {
     background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
-    transform: scale(1.002);
   }
 }
 
 // Zebra striping - even rows
-mat-row:nth-child(even) {
+.mat-mdc-row:nth-child(even) {
   background-color: color-mix(in srgb, var(--mat-sys-on-surface) 1%, transparent);
 
   &:hover {
@@ -122,7 +109,6 @@ mat-row:nth-child(even) {
   box-shadow: inset 0 -2px var(--mat-sys-primary);
   --mat-sort-arrow-color: var(--mat-sys-primary);
 
-  mat-header-cell,
   .mat-mdc-header-cell {
     color: var(--mat-sys-on-surface);
     font-size: 13px;
@@ -133,27 +119,29 @@ mat-row:nth-child(even) {
 }
 
 // Cell spacing and alignment
-mat-header-cell,
-mat-cell {
-  justify-content: center;
-  padding: 0 16px;
+.mat-mdc-header-cell,
+.mat-mdc-cell {
+  text-align: left;
+  vertical-align: middle;
+  padding: 0 var(--gns3-density-space-4);
 }
 
-mat-cell {
+.mat-mdc-cell {
   font-size: 14px;
   color: var(--mat-sys-on-surface);
 }
 
 // Name column - left align with link
-mat-cell[mat-column='name'] {
-  justify-content: flex-start;
+.mat-mdc-cell.mat-column-name {
+  text-align: left;
   font-weight: 500;
 }
 
 .group-management__link {
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard),
+    color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard),
+    border-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
   display: inline-block;
-  transform-origin: left center;
   color: var(--mat-sys-primary);
   text-decoration: none;
   font-weight: 500;
@@ -168,12 +156,11 @@ mat-cell[mat-column='name'] {
     width: 0;
     height: 2px;
     background-color: currentColor;
-    transition: width 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
   }
 
   &:hover {
     color: color-mix(in srgb, var(--mat-sys-primary) 80%, black);
-    transform: translateY(-2px);
 
     &::after {
       width: 100%;
@@ -189,21 +176,18 @@ mat-cell[mat-column='name'] {
   padding-right: 5px;
 }
 
-// Actions column - right align
-mat-cell[mat-column='actions'],
-mat-header-cell[mat-column='actions'] {
-  justify-content: flex-end;
-  padding: 0 16px;
-}
-
-mat-cell[mat-column='actions'] {
-  overflow: visible;
+// Actions column - right align without changing native table-cell layout
+.mat-mdc-cell.mat-column-actions,
+.mat-mdc-header-cell.mat-column-actions {
+  text-align: right;
+  white-space: nowrap;
 }
 
 // Small column for checkbox
 .group-management__small-col {
   width: 60px;
   min-width: 60px;
+  text-align: center;
 }
 
 /* =============================================
@@ -232,16 +216,6 @@ mat-paginator {
 /* =============================================
 // Animations
 // ============================================= */
-@keyframes fadeInSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 /* =============================================
 // Responsive Design
@@ -254,24 +228,17 @@ mat-paginator {
     padding: 16px 0;
   }
 
-  .group-management__actions {
-    width: 100%;
-    flex-direction: column;
-  }
-
   .group-management__button {
-    width: 100%;
-    height: 44px;
-    font-size: 15px;
+    flex: 1 1 auto;
   }
 
-  .group-management__actions-cell {
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-
-  mat-cell {
-    padding: 0 12px;
+  .mat-mdc-header-cell,
+  .mat-mdc-cell {
+    padding: 0 var(--gns3-density-space-3);
     font-size: 13px;
   }
+}
+
+button.group-management__button.mat-mdc-raised-button {
+  @include buttons.primary;
 }

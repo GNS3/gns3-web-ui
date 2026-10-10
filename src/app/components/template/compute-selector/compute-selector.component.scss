@@ -1,12 +1,12 @@
 .compute-selector {
   position: fixed;
   width: fit-content;
-  min-width: 200px;
-  max-width: 400px;
+  min-width: min(200px, calc(100vw - 32px));
+  max-width: min(400px, calc(100vw - 32px));
   background: var(--mat-sys-surface);
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 8px;
-  box-shadow: var(--mat-sys-shadow);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
   z-index: 1100;
   overflow: hidden;
   padding: 4px;
@@ -33,7 +33,7 @@
   padding: 8px 12px;
   border-radius: 6px;
   text-align: left;
-  transition: background-color 150ms ease;
+  transition: background-color var(--gns3-motion-duration-standard) ease;
 }
 
 .compute-selector__item-main {
@@ -112,4 +112,9 @@
   &--disconnected {
     color: var(--mat-sys-error);
   }
+}
+
+.compute-selector:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
 }

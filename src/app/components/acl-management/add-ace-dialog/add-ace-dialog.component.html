@@ -29,7 +29,9 @@
           <button mat-icon-button disabled></button>
           {{ node.name }}
           <button mat-icon-button (click)="endpointSelection(node)">
-            <mat-icon>{{ selectedEndpoint && node.endpoint === selectedEndpoint.endpoint ? 'check_circle' : 'panorama_fish_eye' }}</mat-icon>
+            <mat-icon>{{
+              selectedEndpoint && node.endpoint === selectedEndpoint.endpoint ? 'check_circle' : 'panorama_fish_eye'
+            }}</mat-icon>
           </button>
         </div>
       </cdk-nested-tree-node>
@@ -43,7 +45,9 @@
           </button>
           {{ node.name }}
           <button mat-icon-button (click)="endpointSelection(node)">
-            <mat-icon>{{ selectedEndpoint && node.endpoint === selectedEndpoint.endpoint ? 'check_circle' : 'panorama_fish_eye' }}</mat-icon>
+            <mat-icon>{{
+              selectedEndpoint && node.endpoint === selectedEndpoint.endpoint ? 'check_circle' : 'panorama_fish_eye'
+            }}</mat-icon>
           </button>
         </div>
 
@@ -76,7 +80,7 @@
   <mat-divider [vertical]="true" class="ace-form__divider"></mat-divider>
 
   <div class="ace-form__selection-panel">
-    <mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Type</mat-label>
       <mat-select formControlName="type">
         @for (t of types; track t) {
@@ -86,22 +90,42 @@
     </mat-form-field>
 
     @if (form.type.value === 'user') {
-    <mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>User</mat-label>
-      <input type="text" matInput [matAutocomplete]="userAuto" [formControl]="userAutocompleteControl" #userTrigger="matAutocompleteTrigger" (click)="openUserPanel()" />
-      <mat-autocomplete #userAuto="matAutocomplete" [displayWith]="displayFnUser" (optionSelected)="userSelection($event.option.value)">
+      <input
+        type="text"
+        matInput
+        [matAutocomplete]="userAuto"
+        [formControl]="userAutocompleteControl"
+        #userTrigger="matAutocompleteTrigger"
+        (click)="openUserPanel()"
+      />
+      <mat-autocomplete
+        #userAuto="matAutocomplete"
+        [displayWith]="displayFnUser"
+        (optionSelected)="userSelection($event.option.value)"
+      >
         @for (user of filteredUsers | async; track user.user_id) {
-        <mat-option [value]="user">
-          {{ user.username }}{{ user.full_name ? ' - ' + user.full_name : '' }}
-        </mat-option>
+        <mat-option [value]="user"> {{ user.username }}{{ user.full_name ? ' - ' + user.full_name : '' }} </mat-option>
         }
       </mat-autocomplete>
     </mat-form-field>
     } @if (form.type.value === 'group') {
-    <mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Group</mat-label>
-      <input type="text" matInput [matAutocomplete]="groupAuto" [formControl]="groupAutocompleteControl" #groupTrigger="matAutocompleteTrigger" (click)="openGroupPanel()" />
-      <mat-autocomplete #groupAuto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="groupSelection($event.option.value)">
+      <input
+        type="text"
+        matInput
+        [matAutocomplete]="groupAuto"
+        [formControl]="groupAutocompleteControl"
+        #groupTrigger="matAutocompleteTrigger"
+        (click)="openGroupPanel()"
+      />
+      <mat-autocomplete
+        #groupAuto="matAutocomplete"
+        [displayWith]="displayFn"
+        (optionSelected)="groupSelection($event.option.value)"
+      >
         @for (group of filteredGroups | async; track group.name) {
         <mat-option [value]="group">{{ group.name }}</mat-option>
         }
@@ -109,10 +133,21 @@
     </mat-form-field>
     }
 
-    <mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Role</mat-label>
-      <input type="text" matInput [matAutocomplete]="roleAuto" [formControl]="roleAutocompleteControl" #roleTrigger="matAutocompleteTrigger" (click)="openRolePanel()" />
-      <mat-autocomplete #roleAuto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="roleSelection($event.option.value)">
+      <input
+        type="text"
+        matInput
+        [matAutocomplete]="roleAuto"
+        [formControl]="roleAutocompleteControl"
+        #roleTrigger="matAutocompleteTrigger"
+        (click)="openRolePanel()"
+      />
+      <mat-autocomplete
+        #roleAuto="matAutocomplete"
+        [displayWith]="displayFn"
+        (optionSelected)="roleSelection($event.option.value)"
+      >
         @for (role of filteredRoles | async; track role.role_id) {
         <mat-option [value]="role">{{ role.name }}</mat-option>
         }

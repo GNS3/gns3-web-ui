@@ -1,7 +1,16 @@
+@use '../../../../styles/forms' as forms;
+@use '../../../../styles/buttons' as buttons;
+
+:host {
+  @include forms.outlined;
+  container: ace-dialog / inline-size;
+}
+
 .ace-form {
   display: flex;
   width: 100%;
-  padding: 0 16px;
+  box-sizing: border-box;
+  padding: var(--gns3-density-space-4);
 }
 
 .ace-form__tree-panel {
@@ -25,7 +34,7 @@
     font-size: 13px;
     font-weight: 500;
     opacity: 0.6;
-    transition: opacity 200ms;
+    transition: opacity var(--gns3-motion-duration-standard);
 
     &.active {
       opacity: 1;
@@ -52,10 +61,10 @@
   padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 200ms;
+  transition: background-color var(--gns3-motion-duration-standard);
 
   &:hover {
-    background-color: var(--mat-sys-hover-state-layer-color);
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
   }
 
   &.selected {
@@ -100,8 +109,8 @@
   flex: 0 0 280px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  overflow-x: hidden;
+  gap: var(--gns3-density-space-4);
+  min-width: 0;
 }
 
 .example-tree-invisible {
@@ -125,8 +134,7 @@
 }
 
 .ace-form__tree-node button.mat-mdc-icon-button {
-  height: 32px;
-  width: 32px;
+  @include buttons.action-icon(var(--gns3-density-control-height-sm));
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -168,13 +176,13 @@
   min-width: 80px;
 
   &--allow {
-    background-color: green;
-    color: white;
+    background-color: var(--custom-mat-sys-success);
+    color: var(--custom-mat-sys-on-success);
   }
 
   &--deny {
-    background-color: darkred;
-    color: white;
+    background-color: var(--mat-sys-error);
+    color: var(--mat-sys-on-error);
   }
 }
 
@@ -184,4 +192,19 @@
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+}
+
+@container ace-dialog (max-width: 620px) {
+  .ace-form {
+    flex-direction: column;
+    gap: var(--gns3-density-space-4);
+  }
+
+  .ace-form__selection-panel {
+    flex-basis: auto;
+  }
+
+  .ace-form__divider {
+    display: none;
+  }
 }

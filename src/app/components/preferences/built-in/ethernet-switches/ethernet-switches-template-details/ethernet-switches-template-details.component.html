@@ -9,7 +9,7 @@
         <h1 class="ethernet-switch-details__title">Edit template</h1>
       </div>
       <div class="ethernet-switch-details__header-actions">
-        <button type="button" mat-stroked-button (click)="goBack()">Back to templates</button>
+        <button type="button" mat-raised-button color="primary" (click)="goBack()">Back to templates</button>
       </div>
     </div>
   </header>
@@ -20,8 +20,12 @@
       <button type="button" [class.is-active]="activeSection === 'general'" (click)="selectSection('general')">
         General settings
       </button>
-      <button type="button" [class.is-active]="activeSection === 'ports'" (click)="selectSection('ports')">Port settings</button>
-      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
+      <button type="button" [class.is-active]="activeSection === 'ports'" (click)="selectSection('ports')">
+        Port settings
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">
+        Usage
+      </button>
     </nav>
     <section class="ethernet-switch-details__form-card">
       <div class="ethernet-switch-details__section-header" (click)="selectSection('general')">
@@ -32,7 +36,7 @@
       </div>
       @if (activeSection === 'general') {
       <form class="ethernet-switch-details__form">
-        <mat-form-field appearance="fill" class="ethernet-switch-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ethernet-switch-details__field">
           <mat-label>Template name</mat-label>
           <input
             matInput
@@ -43,7 +47,7 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="ethernet-switch-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ethernet-switch-details__field">
           <mat-label>Default name format</mat-label>
           <input
             matInput
@@ -55,7 +59,11 @@
         </mat-form-field>
 
         <div class="ethernet-switch-details__symbol-row">
-          <mat-form-field appearance="fill" class="ethernet-switch-details__field ethernet-switch-details__field--flex">
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="ethernet-switch-details__field ethernet-switch-details__field--flex"
+          >
             <mat-label>Symbol</mat-label>
             <input
               matInput
@@ -66,7 +74,7 @@
             />
           </mat-form-field>
           <button
-            mat-stroked-button
+            mat-raised-button
             color="primary"
             type="button"
             class="ethernet-switch-details__symbol-btn"
@@ -77,26 +85,41 @@
           </button>
         </div>
 
-        <mat-form-field appearance="fill" class="ethernet-switch-details__field">
-          <mat-label>Tags</mat-label>
-          <mat-chip-grid #chipList>
+        <div class="gns3-chip-field">
+          <mat-form-field
+            floatLabel="always"
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="ethernet-switch-details__field"
+          >
+            <mat-label>Tags</mat-label>
+
+            <input
+              matInput
+              placeholder="Add tags"
+              [matChipInputFor]="chipList"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              (matChipInputTokenEnd)="addTag($event)"
+            />
+          </mat-form-field>
+          <mat-chip-grid
+            #chipList
+            class="gns3-chip-field__values"
+            [class.gns3-chip-field__values--empty]="tags().length === 0"
+            aria-label="Tags"
+          >
             @for (tag of tags(); track tag) {
-            <mat-chip (removed)="removeTag(tag)">
+            <mat-chip-row [editable]="false" [attr.title]="tag" (removed)="removeTag(tag)">
               {{ tag }}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
+              <button matChipRemove type="button" [attr.aria-label]="'Remove tag ' + tag">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
             }
           </mat-chip-grid>
-          <input
-            matInput
-            placeholder="Add tags"
-            [matChipInputFor]="chipList"
-            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-            (matChipInputTokenEnd)="addTag($event)"
-          />
-        </mat-form-field>
+        </div>
 
-        <mat-form-field appearance="fill" class="ethernet-switch-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ethernet-switch-details__field">
           <mat-label>Category</mat-label>
           <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
             @for (cat of categories; track $index) {
@@ -107,7 +130,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="ethernet-switch-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ethernet-switch-details__field">
           <mat-label>Console type</mat-label>
           <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
             @for (type of consoleTypes; track type) {
@@ -145,7 +168,7 @@
       </div>
       @if (activeSection === 'usage') {
       <div class="preferences__usage-form">
-        <mat-form-field appearance="fill" class="preferences__usage-field--full">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="preferences__usage-field--full">
           <mat-label>Usage notes</mat-label>
           <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
         </mat-form-field>

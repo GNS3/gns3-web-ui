@@ -2,26 +2,29 @@
 
 <div mat-dialog-content>
   <div class="snapshot-dialog__toolbar">
-    <mat-form-field appearance="fill" class="snapshot-dialog__search">
+    <mat-form-field appearance="fill" class="snapshot-dialog__search" subscriptSizing="dynamic">
       <mat-icon matPrefix>search</mat-icon>
       <input
         matInput
+        aria-label="Filter snapshots"
         [value]="searchText()"
         (input)="searchText.set($event.target.value)"
         placeholder="Filter snapshots"
       />
     </mat-form-field>
-    <button
-      mat-stroked-button
-      color="primary"
-      class="snapshot-dialog__create-button"
-      matTooltip="Create snapshot"
-      matTooltipClass="custom-tooltip"
-      (click)="openCreateDialog()"
-    >
-      <mat-icon>add</mat-icon>
-      Create snapshot
-    </button>
+    <div class="snapshot-dialog__toolbar-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        class="snapshot-dialog__create-button"
+        matTooltip="Create snapshot"
+        matTooltipClass="custom-tooltip"
+        (click)="openCreateDialog()"
+      >
+        <mat-icon>add</mat-icon>
+        Create snapshot
+      </button>
+    </div>
   </div>
 
   <div class="snapshot-dialog__table-container">

@@ -1,30 +1,33 @@
 @if (isReady()) {
 <header class="role-management__header">
   <h1 class="role-management__title">Roles</h1>
+</header>
+
+<div class="role-management__toolbar">
+  <form class="role-management__search-form">
+    <mat-form-field appearance="fill" class="role-management__search" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        aria-label="Search roles by name"
+        placeholder="Search roles by name"
+        [value]="searchText()"
+        (input)="searchText.set($event.target.value)"
+      />
+    </mat-form-field>
+  </form>
   <div class="role-management__actions">
     <button
-      mat-raised-button
-      color="primary"
-      class="role-management__button"
+      mat-flat-button
+      class="role-management__button role-management__button--destructive"
       [disabled]="selection.selected.length === 0"
       (click)="onDelete(selection.selected)"
     >
       Delete roles
     </button>
-    <button mat-raised-button color="primary" class="role-management__button" (click)="addRole()">Add Role</button>
+    <button mat-raised-button color="primary" class="role-management__button" (click)="addRole()">Add role</button>
   </div>
-</header>
-
-<form class="role-management__search-form">
-  <mat-form-field class="role-management__search">
-    <input
-      matInput
-      placeholder="Search role by name"
-      [value]="searchText()"
-      (input)="searchText.set($event.target.value)"
-    />
-  </mat-form-field>
-</form>
+</div>
 
 <div class="role-management__table-container">
   <mat-table [dataSource]="dataSource | roleFilter : searchText()" matSort #rolesSort="matSort">

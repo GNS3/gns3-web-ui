@@ -75,7 +75,7 @@ export interface ToolDetailsDialogData {
       }
 
       .info-value {
-        font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+        font-family: var(--gns3-font-code);
         font-size: 13px;
         color: var(--mat-sys-on-surface);
         background: var(--mat-sys-surface-container-low);
@@ -93,7 +93,7 @@ export interface ToolDetailsDialogData {
         border: 1px solid var(--mat-sys-outline-variant);
         white-space: pre-wrap;
         font-size: 13px;
-        font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+        font-family: var(--gns3-font-code);
       }
     `,
   ],

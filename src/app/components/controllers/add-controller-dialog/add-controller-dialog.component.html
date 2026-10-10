@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>Add controller</h2>
 <form [formGroup]="controllerForm">
-  <div mat-dialog-content>
-    <mat-form-field appearance="fill" class="full-width-field">
+  <div mat-dialog-content class="gns3-form-stack gns3-form-layout-fixed">
+    <mat-form-field appearance="outline" class="full-width-field">
       <mat-label>Name</mat-label>
       <input matInput tabindex="1" formControlName="name" placeholder="Controller name" />
       @if (controllerForm.get('name').hasError('required')) {
@@ -9,17 +9,17 @@
       }
     </mat-form-field>
 
-    <mat-form-field appearance="fill" class="full-width-field">
+    <mat-form-field appearance="outline" class="full-width-field">
       <mat-label>Host</mat-label>
       <input matInput tabindex="1" formControlName="host" placeholder="127.0.0.1" />
     </mat-form-field>
 
-    <mat-form-field appearance="fill" class="full-width-field">
+    <mat-form-field appearance="outline" class="full-width-field">
       <mat-label>Port</mat-label>
       <input matInput type="number" tabindex="1" formControlName="port" placeholder="3080" />
     </mat-form-field>
 
-    <mat-form-field appearance="fill" class="full-width-field">
+    <mat-form-field appearance="outline" class="full-width-field">
       <mat-label>Protocol</mat-label>
       <mat-select formControlName="protocol">
         @for (protocol of protocols; track protocol.key) {
@@ -50,10 +50,8 @@
       [disabled]="isCheckingConnection"
     >
       @if (isCheckingConnection) {
-        <mat-spinner diameter="16"></mat-spinner>
-      } @else {
-        Add
-      }
+      <mat-spinner diameter="16"></mat-spinner>
+      } @else { Add }
     </button>
     @if (canAddAnyway) {
     <button mat-button (click)="onAddAnywayClick()" mat-raised-button color="warn">Add anyway</button>

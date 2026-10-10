@@ -68,7 +68,11 @@
             <section class="template-wizard__section">
               <h2 class="template-wizard__section-title">Template information</h2>
               <p class="template-wizard__section-copy">Choose a name and an optional usage note for your template.</p>
-              <mat-form-field appearance="outline" class="iou-add__field template-wizard__field">
+              <mat-form-field
+                appearance="outline"
+                subscriptSizing="dynamic"
+                class="iou-add__field template-wizard__field"
+              >
                 <mat-label>Template name</mat-label>
                 <input
                   matInput
@@ -117,7 +121,7 @@
                 </mat-radio-button>
               </mat-radio-group>
 
-              <mat-form-field appearance="fill" class="iou-add__field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="iou-add__field">
                 <mat-label>Type</mat-label>
                 <mat-select
                   placeholder="Type"
@@ -133,7 +137,7 @@
               </mat-form-field>
 
               @if (!newImageSelected()) {
-              <mat-form-field appearance="fill" class="iou-add__field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="iou-add__field">
                 <mat-label>IOU image</mat-label>
                 <mat-select
                   required
@@ -162,7 +166,11 @@
                 <button mat-raised-button color="primary" (click)="file.click()" class="iou-add__browse-btn">
                   Browse
                 </button>
-                <mat-form-field appearance="fill" class="iou-add__field iou-add__field--flex">
+                <mat-form-field
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                  class="iou-add__field iou-add__field--flex"
+                >
                   <mat-label>IOU image</mat-label>
                   <input
                     matInput
@@ -192,12 +200,15 @@
           <div class="iou-add__step-content template-wizard__panel">
             <section class="template-wizard__section">
               <h2 class="template-wizard__section-title">Netmiko device type</h2>
-              <p class="template-wizard__section-copy">Default device type used for netmiko-driven configuration pushes.</p>
+              <p class="template-wizard__section-copy">
+                Default device type used for netmiko-driven configuration pushes.
+              </p>
               <div class="iou-add__form">
                 <app-netmiko-device-type-select
+                  subscriptSizing="dynamic"
                   [(value)]="netmikoDeviceType"
                   [controller]="controller()"
-                  appearance="fill"
+                  appearance="outline"
                   class="iou-add__field"
                 />
               </div>

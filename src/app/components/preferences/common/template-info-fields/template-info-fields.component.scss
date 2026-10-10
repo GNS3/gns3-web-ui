@@ -1,4 +1,8 @@
+@use '../../../../../styles/buttons' as buttons;
+@use '../../../../../styles/forms' as forms;
+
 :host {
+  @include forms.outlined;
   display: block;
   margin-top: 6px;
 }
@@ -29,8 +33,7 @@
 
 button.template-info-fields__option {
   min-width: 120px;
-  min-height: 48px;
-  border-radius: 11px;
+  @include buttons.geometry;
   color: var(--mat-sys-on-surface-variant);
   text-transform: none;
 

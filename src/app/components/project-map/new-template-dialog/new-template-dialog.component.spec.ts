@@ -372,7 +372,13 @@ describe('NewTemplateDialogComponent', () => {
           emulator: 'Dynamips',
           vendor_name: 'Cisco',
         },
-        { ...createMockAppliance(), name: 'Firewall1', category: 'firewall', emulator: 'Docker', vendor_name: 'Ubuntu' },
+        {
+          ...createMockAppliance(),
+          name: 'Firewall1',
+          category: 'firewall',
+          emulator: 'Docker',
+          vendor_name: 'Ubuntu',
+        },
       ]);
     });
 
@@ -817,9 +823,7 @@ describe('NewTemplateDialogComponent', () => {
 
       component.addAppliance({ target: { files: [file] } });
 
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        'Controller is not loaded yet. Please try again.'
-      );
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller is not loaded yet. Please try again.');
     });
   });
 
@@ -1041,12 +1045,8 @@ describe('NewTemplateDialogComponent', () => {
       expect(template.environment).toBe('TERM=xterm');
       expect(template.extra_hosts).toBe('router:192.0.2.1');
       expect(template.extra_volumes).toEqual(['/etc/network']);
-      expect(template.extra_configs).toEqual([
-        { target: '/etc/gns3/startup.cfg', content: 'hostname docker-node' },
-      ]);
-      expect(template.custom_adapters).toEqual([
-        { adapter_number: 0, adapter_type: 'e1000', port_name: 'mgmt0' },
-      ]);
+      expect(template.extra_configs).toEqual([{ target: '/etc/gns3/startup.cfg', content: 'hostname docker-node' }]);
+      expect(template.custom_adapters).toEqual([{ adapter_number: 0, adapter_type: 'e1000', port_name: 'mgmt0' }]);
       expect(template.mac_address).toBe('02:42:ac:11:00:02');
       expect(template.cpus).toBe(2);
       expect(template.memory).toBe(1024);
@@ -1109,7 +1109,7 @@ describe('NewTemplateDialogComponent', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const options = compiled.querySelectorAll('.new-template-wizard__method-option');
       expect(options.length).toBe(2);
-      expect(options[0].textContent).toContain('Install new appliance from the GNS controller');
+      expect(options[0].textContent).toContain('Install new appliance from the GNS3 controller');
       expect(options[1].textContent).toContain('Import an appliance file');
     });
 

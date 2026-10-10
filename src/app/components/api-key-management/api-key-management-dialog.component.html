@@ -1,87 +1,81 @@
-<h2 mat-dialog-title>
-  API Keys
-  <span class="dialog-header-actions">
-    <button mat-flat-button color="primary" (click)="onCreate()">
-      <mat-icon>add</mat-icon>
-      Create
-    </button>
-  </span>
-</h2>
+<h2 mat-dialog-title>API Keys</h2>
 
 <mat-dialog-content>
   @if (isLoading()) {
-    <div class="loading-container">
-      <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
-    </div>
+  <div class="loading-container">
+    <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+  </div>
   } @else if (sortedKeys().length === 0) {
-    <div class="empty-state">
-      <mat-icon>vpn_key</mat-icon>
-      <p>No API keys yet</p>
-      <button mat-stroked-button color="primary" (click)="onCreate()">Create your first API key</button>
-    </div>
+  <div class="empty-state">
+    <mat-icon>vpn_key</mat-icon>
+    <p>No API keys yet</p>
+    <button mat-raised-button color="primary" (click)="onCreate()">Create your first API key</button>
+  </div>
   } @else {
-    <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSortChange($event)" class="keys-table">
+  <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSortChange($event)" class="keys-table">
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
+    </ng-container>
 
-      <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
-      </ng-container>
+    <ng-container matColumnDef="key_prefix">
+      <mat-header-cell *matHeaderCellDef class="col-key-prefix">Key Prefix</mat-header-cell>
+      <mat-cell *matCellDef="let row" class="col-key-prefix"
+        ><code>{{ row.key_prefix }}</code></mat-cell
+      >
+    </ng-container>
 
-      <ng-container matColumnDef="key_prefix">
-        <mat-header-cell *matHeaderCellDef class="col-key-prefix">Key Prefix</mat-header-cell>
-        <mat-cell *matCellDef="let row" class="col-key-prefix"><code>{{ row.key_prefix }}</code></mat-cell>
-      </ng-container>
+    <ng-container matColumnDef="created_at">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Created</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.created_at }}</mat-cell>
+    </ng-container>
 
-      <ng-container matColumnDef="created_at">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Created</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.created_at }}</mat-cell>
-      </ng-container>
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef class="col-status">Status</mat-header-cell>
+      <mat-cell *matCellDef="let row" class="col-status">
+        @if (row.revoked) {
+        <span class="status-badge status-badge--revoked">Revoked</span>
+        } @else {
+        <span class="status-badge status-badge--active">Active</span>
+        }
+      </mat-cell>
+    </ng-container>
 
-      <ng-container matColumnDef="status">
-        <mat-header-cell *matHeaderCellDef class="col-status">Status</mat-header-cell>
-        <mat-cell *matCellDef="let row" class="col-status">
-          @if (row.revoked) {
-            <span class="status-badge status-badge--revoked">Revoked</span>
-          } @else {
-            <span class="status-badge status-badge--active">Active</span>
-          }
-        </mat-cell>
-      </ng-container>
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef class="col-actions">Actions</mat-header-cell>
+      <mat-cell *matCellDef="let row" class="col-actions">
+        @if (!row.revoked) {
+        <button mat-icon-button class="destructive-icon-button" (click)="onRevoke(row)" matTooltip="Revoke API key">
+          <mat-icon>block</mat-icon>
+        </button>
+        } @else {
+        <button mat-icon-button (click)="onRestore(row)" matTooltip="Restore API key">
+          <mat-icon>restart_alt</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          class="destructive-icon-button"
+          (click)="onPermanentDelete(row)"
+          matTooltip="Permanently delete"
+        >
+          <mat-icon>delete_forever</mat-icon>
+        </button>
+        }
+      </mat-cell>
+    </ng-container>
 
-      <ng-container matColumnDef="actions">
-        <mat-header-cell *matHeaderCellDef class="col-actions">Actions</mat-header-cell>
-        <mat-cell *matCellDef="let row" class="col-actions">
-          @if (!row.revoked) {
-            <button
-              mat-icon-button
-              class="destructive-icon-button"
-              (click)="onRevoke(row)"
-              matTooltip="Revoke API key"
-            >
-              <mat-icon>block</mat-icon>
-            </button>
-          } @else {
-            <button mat-icon-button (click)="onRestore(row)" matTooltip="Restore API key">
-              <mat-icon>restart_alt</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              class="destructive-icon-button"
-              (click)="onPermanentDelete(row)"
-              matTooltip="Permanently delete"
-            >
-              <mat-icon>delete_forever</mat-icon>
-            </button>
-          }
-        </mat-cell>
-      </ng-container>
-
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns" [class.mat-row--revoked]="row.revoked"></mat-row>
-    </table>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns" [class.mat-row--revoked]="row.revoked"></mat-row>
+  </table>
   }
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
+  @if (!isLoading() && sortedKeys().length > 0) {
+  <button mat-flat-button color="primary" (click)="onCreate()">
+    <mat-icon>add</mat-icon>
+    Create
+  </button>
+  }
   <button mat-button (click)="onClose()">Close</button>
 </mat-dialog-actions>

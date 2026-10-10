@@ -21,7 +21,7 @@
   display: flex;
   align-items: center;
   gap: var(--gns3-density-card-gap);
-  animation: fadeInSlideIn 0.4s ease-out;
+  animation: none;
 }
 
 .ethernet-switch-details__title {
@@ -39,7 +39,7 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 0 20px 20px;
-  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+  animation: none;
 }
 
 /* =============================================
@@ -62,7 +62,7 @@
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--gns3-motion-duration-standard) ease;
   border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
 
   &:hover {
@@ -79,7 +79,7 @@
 
 .ethernet-switch-details__expand-icon {
   color: var(--mat-sys-on-surface-variant);
-  transition: transform 0.2s ease;
+  transition: transform var(--gns3-motion-duration-standard) ease;
 }
 
 .ethernet-switch-details__form {
@@ -137,16 +137,6 @@
 /* =============================================
 // Animations
 // ============================================= */
-@keyframes fadeInSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 /* =============================================
 // Responsive Design

@@ -1,0 +1,53 @@
+// Search controls use dynamic subscripts so the flex row centers actions
+// against the control surface, without an empty helper row below the input.
+@mixin layout($search, $actions, $filters: null, $view: null) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gns3-density-card-gap);
+  container: search-toolbar / inline-size;
+
+  #{$search} {
+    flex: 1 1 260px;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+  }
+
+  #{$actions} {
+    display: flex;
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gns3-density-space-3);
+    min-width: 0;
+  }
+
+  @if $filters {
+    #{$filters} {
+      flex: 1 1 155px;
+      width: 155px;
+      min-width: 0;
+    }
+  }
+
+  @container search-toolbar (max-width: 640px) {
+    #{$search} {
+      flex-basis: 100%;
+      width: 100%;
+    }
+
+    #{$actions} {
+      width: 100%;
+    }
+  }
+
+  @if $view {
+    @container search-toolbar (max-width: 480px) {
+      #{$view} {
+        flex-basis: 100%;
+        justify-content: center;
+      }
+    }
+  }
+}

@@ -10,7 +10,7 @@
   height: 100%;
   background-color: var(--mat-sys-surface);
   border-right: 1px solid var(--mat-sys-outline-variant);
-  transition: width 100ms ease;
+  transition: width var(--gns3-motion-duration-standard) ease;
 
   &.collapsed {
     width: 48px;
@@ -29,7 +29,7 @@
 
   &.clickable {
     cursor: pointer;
-    transition: all 100ms ease;
+    transition: all var(--gns3-motion-duration-standard) ease;
   }
 
   &:hover.clickable {
@@ -79,7 +79,7 @@
   margin-bottom: 4px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 100ms ease;
+  transition: background-color var(--gns3-motion-duration-standard) ease;
   background: var(--mat-sys-surface-container-low);
 
   &:hover {

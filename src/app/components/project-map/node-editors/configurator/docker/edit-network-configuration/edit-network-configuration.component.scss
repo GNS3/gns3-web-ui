@@ -1,3 +1,5 @@
+@use '../../../../../../../styles/buttons' as buttons;
+
 :host {
   display: grid;
   width: 100%;
@@ -352,5 +354,49 @@
 
   .network-editor__content {
     padding: 16px;
+  }
+}
+
+// The node configurator already supplies the sidebar, scrolling and footer.
+.network-editor__shell.network-editor__shell--embedded {
+  display: flex;
+  flex-direction: column;
+
+  .network-editor__sidebar {
+    padding: 0 0 var(--gns3-density-space-3);
+    margin-bottom: var(--gns3-density-space-4);
+    border-right: 0;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    background: transparent;
+
+    nav {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+
+  .network-editor__nav-button {
+    width: auto;
+  }
+
+  .network-editor__content {
+    padding: 0;
+    overflow: visible;
+  }
+
+  .network-editor__section-header h2 {
+    font-size: var(--gns3-density-section-title-size);
+  }
+}
+
+.network-editor__actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--gns3-density-space-4);
+  margin-top: var(--gns3-density-space-4);
+  border-top: 1px solid var(--mat-sys-outline-variant);
+
+  button {
+    @include buttons.geometry;
   }
 }

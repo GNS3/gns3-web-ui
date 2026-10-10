@@ -9,7 +9,7 @@
         <h1 class="iou-template-details__title">Edit template</h1>
       </div>
       <div class="iou-template-details__header-actions">
-        <button type="button" mat-stroked-button (click)="goBack()">Back to templates</button>
+        <button type="button" mat-raised-button color="primary" (click)="goBack()">Back to templates</button>
       </div>
     </div>
   </header>
@@ -20,9 +20,15 @@
       <button type="button" [class.is-active]="activeSection === 'general'" (click)="selectSection('general')">
         General settings
       </button>
-      <button type="button" [class.is-active]="activeSection === 'network'" (click)="selectSection('network')">Network</button>
-      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">Usage</button>
-      <button type="button" [class.is-active]="activeSection === 'metadata'" (click)="selectSection('metadata')">Metadata</button>
+      <button type="button" [class.is-active]="activeSection === 'network'" (click)="selectSection('network')">
+        Network
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'usage'" (click)="selectSection('usage')">
+        Usage
+      </button>
+      <button type="button" [class.is-active]="activeSection === 'metadata'" (click)="selectSection('metadata')">
+        Metadata
+      </button>
     </nav>
     <section class="iou-template-details__form-card">
       <div class="iou-template-details__section-header" (click)="toggleSection('general')">
@@ -33,8 +39,8 @@
       </div>
       @if (activeSection === 'general') {
       <form class="iou-template-details__form">
-        <div class="two-column-grid">
-          <mat-form-field appearance="fill" class="iou-template-details__field">
+        <div class="two-column-grid gns3-form-layout-fixed">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="iou-template-details__field">
             <mat-label>Template name</mat-label>
             <input
               matInput
@@ -44,7 +50,7 @@
               placeholder="Template name"
             />
           </mat-form-field>
-          <mat-form-field appearance="fill" class="iou-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="iou-template-details__field">
             <mat-label>Default name format</mat-label>
             <input
               matInput
@@ -57,7 +63,11 @@
         </div>
 
         <div class="iou-template-details__symbol-row">
-          <mat-form-field appearance="fill" class="iou-template-details__field iou-template-details__field--category">
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="iou-template-details__field iou-template-details__field--category"
+          >
             <mat-label>Category</mat-label>
             <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
               @for (cat of categories; track $index) {
@@ -65,7 +75,11 @@
               }
             </mat-select>
           </mat-form-field>
-          <mat-form-field appearance="fill" class="iou-template-details__field iou-template-details__field--flex">
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="iou-template-details__field iou-template-details__field--flex"
+          >
             <mat-label>Symbol</mat-label>
             <input
               matInput
@@ -75,30 +89,45 @@
               placeholder="Symbol"
             />
           </mat-form-field>
-          <button mat-stroked-button color="primary" class="iou-template-details__symbol-btn" (click)="chooseSymbol()">
+          <button mat-raised-button color="primary" class="iou-template-details__symbol-btn" (click)="chooseSymbol()">
             <mat-icon>add</mat-icon>
             Choose symbol
           </button>
         </div>
 
-        <mat-form-field appearance="fill" class="iou-template-details__field">
-          <mat-label>Tags</mat-label>
-          <mat-chip-grid #chipList>
+        <div class="gns3-chip-field">
+          <mat-form-field
+            floatLabel="always"
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="iou-template-details__field"
+          >
+            <mat-label>Tags</mat-label>
+
+            <input
+              matInput
+              placeholder="Add tags"
+              [matChipInputFor]="chipList"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              (matChipInputTokenEnd)="addTag($event)"
+            />
+          </mat-form-field>
+          <mat-chip-grid
+            #chipList
+            class="gns3-chip-field__values"
+            [class.gns3-chip-field__values--empty]="tags().length === 0"
+            aria-label="Tags"
+          >
             @for (tag of tags(); track tag) {
-            <mat-chip (removed)="removeTag(tag)">
+            <mat-chip-row [editable]="false" [attr.title]="tag" (removed)="removeTag(tag)">
               {{ tag }}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
+              <button matChipRemove type="button" [attr.aria-label]="'Remove tag ' + tag">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
             }
           </mat-chip-grid>
-          <input
-            matInput
-            placeholder="Add tags"
-            [matChipInputFor]="chipList"
-            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-            (matChipInputTokenEnd)="addTag($event)"
-          />
-        </mat-form-field>
+        </div>
 
         <div class="iou-template-details__file-row">
           <input
@@ -111,7 +140,11 @@
           <button mat-raised-button color="primary" (click)="file.click()" class="iou-template-details__browse-btn">
             Browse
           </button>
-          <mat-form-field appearance="fill" class="iou-template-details__field iou-template-details__field--flex">
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="iou-template-details__field iou-template-details__field--flex"
+          >
             <mat-label>IOU image path</mat-label>
             <input
               matInput
@@ -123,7 +156,7 @@
           </mat-form-field>
         </div>
 
-        <mat-form-field appearance="fill" class="iou-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="iou-template-details__field">
           <mat-label>Startup config</mat-label>
           <input
             matInput
@@ -134,7 +167,7 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="iou-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="iou-template-details__field">
           <mat-label>Private config</mat-label>
           <input
             matInput
@@ -145,7 +178,7 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="iou-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="iou-template-details__field">
           <mat-label>Console type</mat-label>
           <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
             @for (type of consoleTypes; track type) {
@@ -158,12 +191,13 @@
 
         <div class="three-column-grid">
           <app-netmiko-device-type-select
+            subscriptSizing="fixed"
             [(value)]="netmikoDeviceType"
             [controller]="controller"
-            appearance="fill"
+            appearance="outline"
             class="iou-template-details__field"
           />
-          <mat-form-field appearance="fill" class="iou-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="iou-template-details__field">
             <mat-label>Default username</mat-label>
             <input
               matInput
@@ -173,7 +207,7 @@
               placeholder="Username to log into this node"
             />
           </mat-form-field>
-          <mat-form-field appearance="fill" class="iou-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="iou-template-details__field">
             <mat-label>Default password</mat-label>
             <input
               matInput
@@ -196,8 +230,8 @@
         </mat-checkbox>
 
         @if (!useDefaultIouValues()) {
-        <div class="two-column-grid">
-          <mat-form-field appearance="fill" class="iou-template-details__field">
+        <div class="two-column-grid gns3-form-layout-fixed">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="iou-template-details__field">
             <mat-label>RAM size</mat-label>
             <input
               matInput
@@ -209,7 +243,7 @@
             />
             <span matSuffix>MB</span>
           </mat-form-field>
-          <mat-form-field appearance="fill" class="iou-template-details__field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="iou-template-details__field">
             <mat-label>NVRAM size</mat-label>
             <input
               matInput
@@ -236,7 +270,7 @@
       </div>
       @if (activeSection === 'network') {
       <form class="iou-template-details__form">
-        <mat-form-field appearance="fill" class="iou-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="iou-template-details__field">
           <mat-label>Ethernet adapters</mat-label>
           <input
             matInput
@@ -247,7 +281,7 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="iou-template-details__field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="iou-template-details__field">
           <mat-label>Serial adapters</mat-label>
           <input
             matInput
@@ -270,7 +304,7 @@
       </div>
       @if (activeSection === 'usage') {
       <div class="preferences__usage-form">
-        <mat-form-field appearance="fill" class="preferences__usage-field--full">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="preferences__usage-field--full">
           <mat-label>Usage notes</mat-label>
           <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
         </mat-form-field>

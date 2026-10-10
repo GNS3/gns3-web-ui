@@ -16,6 +16,7 @@ import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -33,20 +34,12 @@ import {
 import {
   SETTINGS_METADATA,
   SettingsFieldMeta,
+  SettingsGroupMeta,
   SettingsSectionMeta,
   SettingsFieldValue,
 } from '@models/server-settings/settings-metadata';
-import {
-  SettingsSectionSchemas,
-  enrichSettingsMetadata,
-} from '@models/server-settings/settings-schema';
-import {
-  SecretState,
-  buildSettingsUpdate,
-  collectDirtyKeys,
-  fieldId,
-  valuesEqual,
-} from './settings-diff';
+import { SettingsSectionSchemas, enrichSettingsMetadata } from '@models/server-settings/settings-schema';
+import { SecretState, buildSettingsUpdate, collectDirtyKeys, fieldId, valuesEqual } from './settings-diff';
 import { ControllerService } from '@services/controller.service';
 import { NotificationService } from '@services/notification.service';
 import { ServerSettingsService } from '@services/server-settings.service';
@@ -64,6 +57,7 @@ import { ToasterService } from '@services/toaster.service';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatMenuModule,
     MatProgressSpinnerModule,
     MatSelectModule,
     MatSlideToggleModule,
@@ -79,7 +73,6 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
     return schemas ? enrichSettingsMetadata(SETTINGS_METADATA, schemas) : SETTINGS_METADATA;
   });
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
-  readonly secretMask = SECRET_MASK;
 
   private route = inject(ActivatedRoute);
   private cd = inject(ChangeDetectorRef);
@@ -103,10 +96,43 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
   readonly serverError = signal<{ status: number; message: string } | null>(null);
   readonly restartBanner = signal<string[] | null>(null);
   readonly externalChange = signal(false);
+  readonly searchQuery = signal('');
+  readonly hasSearch = computed(() => this.searchQuery().trim().length > 0);
+  private readonly groupExpansion = signal<ReadonlyMap<string, boolean>>(new Map());
+  private readonly collapsedSearchGroups = signal<ReadonlySet<string>>(new Set());
 
-  readonly activeSectionMeta = computed<SettingsSectionMeta | undefined>(() =>
-    this.sections().find((section) => section.name === this.activeSection())
-  );
+  readonly matchingFields = computed<ReadonlySet<string>>(() => {
+    const terms = this.searchQuery().trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const matches = new Set<string>();
+    for (const section of this.sections()) {
+      for (const group of section.groups) {
+        for (const field of group.fields) {
+          const text = [
+            section.label,
+            group.label,
+            group.summary,
+            field.label,
+            field.key,
+            field.key.replace(/_/g, ' '),
+            field.hint,
+          ]
+            .join(' ')
+            .toLowerCase();
+          if (terms.every((term) => text.includes(term))) {
+            matches.add(fieldId(section.name, field.key));
+          }
+        }
+      }
+    }
+    return matches;
+  });
+
+  readonly matchingSections = computed(() => this.sections().filter((section) => this.sectionMatchCount(section) > 0));
+
+  readonly activeSectionMeta = computed<SettingsSectionMeta | undefined>(() => {
+    const sections = this.hasSearch() ? this.matchingSections() : this.sections();
+    return sections.find((section) => section.name === this.activeSection()) ?? sections[0];
+  });
 
   readonly dirtyKeys = computed<ReadonlySet<string>>(() => {
     const form = this.formValues();
@@ -117,6 +143,89 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
   });
 
   readonly isDirty = computed(() => this.dirtyKeys().size > 0);
+  readonly restartChangeCount = computed(() =>
+    this.sections().reduce(
+      (count, section) =>
+        count +
+        section.groups.reduce(
+          (total, group) =>
+            total + group.fields.filter((field) => field.restartRequired && this.isFieldDirty(section, field)).length,
+          0
+        ),
+      0
+    )
+  );
+  readonly allGroupsExpanded = computed(() => {
+    const section = this.activeSectionMeta();
+    const groups = section?.groups.filter((group) => this.groupMatches(group, section)) ?? [];
+    return groups.length > 0 && groups.every((group) => this.isGroupExpanded(section, group));
+  });
+
+  setSearchQuery(query: string) {
+    this.searchQuery.set(query);
+    this.collapsedSearchGroups.set(new Set());
+  }
+
+  fieldMatches(section: SettingsSectionMeta, field: SettingsFieldMeta): boolean {
+    return this.matchingFields().has(fieldId(section.name, field.key));
+  }
+
+  groupMatches(group: SettingsGroupMeta, section: SettingsSectionMeta): boolean {
+    return group.fields.some((field) => this.fieldMatches(section, field));
+  }
+
+  sectionMatchCount(section: SettingsSectionMeta): number {
+    return section.groups.reduce(
+      (count, group) => count + group.fields.filter((field) => this.fieldMatches(section, field)).length,
+      0
+    );
+  }
+
+  groupChangeCount(section: SettingsSectionMeta, group: SettingsGroupMeta): number {
+    return group.fields.filter((field) => this.isFieldDirty(section, field)).length;
+  }
+
+  sectionChangeCount(section: SettingsSectionMeta): number {
+    return section.groups.reduce((count, group) => count + this.groupChangeCount(section, group), 0);
+  }
+
+  isGroupExpanded(section: SettingsSectionMeta, group: SettingsGroupMeta): boolean {
+    const id = fieldId(section.name, group.id);
+    if (this.hasSearch()) {
+      return !this.collapsedSearchGroups().has(id);
+    }
+    return (
+      this.groupExpansion().get(id) ??
+      (section.name === 'Server'
+        ? group.id === 'general' || group.id === 'network'
+        : group.id === section.groups[0]?.id)
+    );
+  }
+
+  toggleGroup(section: SettingsSectionMeta, group: SettingsGroupMeta) {
+    this.setGroupExpanded(section, group, !this.isGroupExpanded(section, group));
+  }
+
+  toggleAllGroups() {
+    const section = this.activeSectionMeta();
+    if (!section) return;
+    const expanded = !this.allGroupsExpanded();
+    for (const group of section.groups) {
+      if (this.groupMatches(group, section)) this.setGroupExpanded(section, group, expanded);
+    }
+  }
+
+  private setGroupExpanded(section: SettingsSectionMeta, group: SettingsGroupMeta, expanded: boolean) {
+    const id = fieldId(section.name, group.id);
+    if (this.hasSearch()) {
+      const next = new Set(this.collapsedSearchGroups());
+      if (expanded) next.delete(id);
+      else next.add(id);
+      this.collapsedSearchGroups.set(next);
+    } else {
+      this.groupExpansion.set(new Map(this.groupExpansion()).set(id, expanded));
+    }
+  }
 
   ngOnInit() {
     const controllerId = this.route.snapshot.paramMap.get('controller_id');
@@ -196,6 +305,12 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
     return !!form && !valuesEqual(form[section.name][field.key], field.defaultValue);
   }
 
+  resettableFields(section: SettingsSectionMeta, group: SettingsGroupMeta): SettingsFieldMeta[] {
+    return group.fields.filter(
+      (field) => this.fieldMatches(section, field) && (this.canRevert(section, field) || field.type === 'secret')
+    );
+  }
+
   revertField(section: SettingsSectionMeta, field: SettingsFieldMeta) {
     const id = fieldId(section.name, field.key);
     if (field.type === 'secret') {
@@ -245,6 +360,11 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
     return this.secrets()[fieldId(section.name, field.key)] ?? { state: 'unchanged' };
   }
 
+  secretInputValue(section: SettingsSectionMeta, field: SettingsFieldMeta): string {
+    const state = this.secretState(section, field);
+    return state.state === 'set' ? state.value : '';
+  }
+
   secretIsSet(section: SettingsSectionMeta, field: SettingsFieldMeta): boolean {
     const form = this.formValues();
     return !!form && form[section.name][field.key] === SECRET_MASK;
@@ -277,7 +397,11 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
       return;
     }
     const current = form[section.name][field.key] as string[];
-    this.setValue(section.name, field.key, current.filter((entry) => entry !== item));
+    this.setValue(
+      section.name,
+      field.key,
+      current.filter((entry) => entry !== item)
+    );
   }
 
   save() {
@@ -388,7 +512,9 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
   private onSettingsUpdated(event: SettingsUpdatedEvent) {
     if (this.isDirty()) {
       this.externalChange.set(true);
-      this.toaster.warning('Server settings were changed by another session. Review your unsaved changes before saving.');
+      this.toaster.warning(
+        'Server settings were changed by another session. Review your unsaved changes before saving.'
+      );
     } else {
       if (event.restart_required.length && !this.restartBanner()) {
         this.restartBanner.set(event.restart_required);
@@ -403,8 +529,7 @@ export class ServerSettingsComponent implements OnInit, OnDestroy {
     const status = err?.originalError?.status ?? err?.status;
     const message = err.error?.message || err.message || 'Failed to save server settings';
     if (status === 400 || status === 409) {
-      const text =
-        status === 409 ? `Some options are managed by another configuration file: ${message}` : message;
+      const text = status === 409 ? `Some options are managed by another configuration file: ${message}` : message;
       this.serverError.set({ status, message: text });
       this.toaster.error(text);
     } else if (status === 403) {

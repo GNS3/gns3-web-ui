@@ -13,9 +13,9 @@
 
 <div class="modal-form-container">
   @if (isLoading()) {
-    <div class="configurator-dialog-loading">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
+  <div class="configurator-dialog-loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
   } @else {
   <div class="content">
     <div class="default-content">
@@ -34,35 +34,50 @@
               }
             </p>
             <div class="form-container">
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Name</mat-label>
                 <input matInput type="text" [value]="nodeName()" (input)="nodeName.set($event.target.value)" />
               </mat-form-field>
-              <mat-form-field class="form-field tags-field">
-                <mat-label>Tags</mat-label>
-                <mat-chip-grid #chipList>
+              <div class="gns3-chip-field">
+                <mat-form-field
+                  floatLabel="always"
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                  class="form-field tags-field"
+                >
+                  <mat-label>Tags</mat-label>
+
+                  <input
+                    matInput
+                    placeholder="Add tags"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="addTag($event)"
+                  />
+                </mat-form-field>
+                <mat-chip-grid
+                  #chipList
+                  class="gns3-chip-field__values"
+                  [class.gns3-chip-field__values--empty]="(node?.tags?.length ?? 0) === 0"
+                  aria-label="Tags"
+                >
                   @for (tag of node?.tags; track tag) {
-                  <mat-chip (removed)="removeTag(tag)">
+                  <mat-chip-row [editable]="false" [attr.title]="tag" (removed)="removeTag(tag)">
                     {{ tag }}
-                    <mat-icon matChipRemove>cancel</mat-icon>
-                  </mat-chip>
+                    <button matChipRemove type="button" [attr.aria-label]="'Remove tag ' + tag">
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  </mat-chip-row>
                   }
                 </mat-chip-grid>
-                <input
-                  matInput
-                  placeholder="Add tags"
-                  [matChipInputFor]="chipList"
-                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                  (matChipInputTokenEnd)="addTag($event)"
-                />
-              </mat-form-field>
-              <mat-form-field class="form-field">
+              </div>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>IOS image path</mat-label>
                 <input matInput type="text" [value]="imagePath()" (input)="imagePath.set($event.target.value)" />
               </mat-form-field>
               <div class="form-grid">
                 @if (node.properties.midplane) {
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Midplane</mat-label>
                   <mat-select [value]="midplane()" (valueChange)="midplane.set($event)">
                     @for (type of MidplaneTypes; track type) {
@@ -71,7 +86,7 @@
                   </mat-select>
                 </mat-form-field>
                 } @if (node.properties.npe) {
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>NPE</mat-label>
                   <mat-select [value]="npe()" (valueChange)="npe.set($event)">
                     @for (type of NPETypes; track type) {
@@ -80,7 +95,7 @@
                   </mat-select>
                 </mat-form-field>
                 }
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Console type</mat-label>
                   <mat-select [value]="consoleType()" (valueChange)="consoleType.set($event)">
                     @for (type of consoleTypes; track type) {
@@ -88,7 +103,7 @@
                     }
                   </mat-select>
                 </mat-form-field>
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Auxiliary console type</mat-label>
                   <mat-select [value]="auxType()" (valueChange)="auxType.set($event)">
                     @for (type of consoleTypes; track type) {
@@ -98,11 +113,12 @@
                 </mat-form-field>
                 <div class="three-column-grid form-grid__full">
                   <app-netmiko-device-type-select
+                    subscriptSizing="fixed"
                     [(value)]="netmikoDeviceType"
                     [controller]="controller"
                     class="form-field"
                   />
-                  <mat-form-field class="form-field">
+                  <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                     <mat-label>Default username</mat-label>
                     <input
                       matInput
@@ -112,7 +128,7 @@
                       [placeholder]="defaultUsernamePlaceholder() || 'Username to log into this node'"
                     />
                   </mat-form-field>
-                  <mat-form-field class="form-field">
+                  <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                     <mat-label>Default password</mat-label>
                     <input
                       matInput
@@ -123,7 +139,11 @@
                     />
                   </mat-form-field>
                 </div>
-                <mat-checkbox class="form-grid__full" [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)">
+                <mat-checkbox
+                  class="form-grid__full"
+                  [checked]="consoleAutoStart()"
+                  (change)="consoleAutoStart.set($event.checked)"
+                >
                   Auto start console
                 </mat-checkbox>
               </div>
@@ -143,18 +163,18 @@
                 </div>
                 <div class="disk-card__content">
                   <div class="form-container">
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>RAM</mat-label>
                       <input matInput type="text" [value]="ram()" (input)="ram.set($event.target.value)" />
                       <span matSuffix>MiB</span>
                     </mat-form-field>
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>NVRAM</mat-label>
                       <input matInput type="text" [value]="nvram()" (input)="nvram.set($event.target.value)" />
                       <span matSuffix>MiB</span>
                     </mat-form-field>
                     @if (['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'].includes(node.properties.platform)) {
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>I/O memory</mat-label>
                       <input matInput type="text" [value]="iomem()" (input)="iomem.set($event.target.value)" />
                       <span matSuffix>%</span>
@@ -171,12 +191,12 @@
                 </div>
                 <div class="disk-card__content">
                   <div class="form-container">
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>PCMCIA disk0</mat-label>
                       <input matInput type="text" [value]="disk0()" (input)="disk0.set($event.target.value)" />
                       <span matSuffix>MiB</span>
                     </mat-form-field>
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>PCMCIA disk1</mat-label>
                       <input matInput type="text" [value]="disk1()" (input)="disk1.set($event.target.value)" />
                       <span matSuffix>MiB</span>
@@ -202,7 +222,7 @@
                   <div class="ios-configurator__slots-grid">
                     @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) { @if
                     (adapterMatrix[node.properties.platform][node.properties.chassis || ''][index]) {
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                       <mat-label>Slot {{ index }}</mat-label>
                       <mat-select [value]="getSlotValue(index)" (valueChange)="setSlotValue(index, $event)">
                         @if (adapterMatrix[node.properties.platform][node.properties.chassis || ''][index].length > 1 &&
@@ -224,7 +244,7 @@
                   <h6 class="ios-configurator__slots-title">WICs</h6>
                   <div class="ios-configurator__slots-grid">
                     @for (index of [0, 1, 2]; track index) { @if (wicMatrix[node.properties.platform][index]) {
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                       <mat-label>WIC {{ index }}</mat-label>
                       <mat-select [value]="getWicValue(index)" (valueChange)="setWicValue(index, $event)">
                         <mat-option [value]=""> {{ '' }} </mat-option>
@@ -253,11 +273,11 @@
                     <h3 class="disk-card__title">System</h3>
                   </div>
                   <div class="disk-card__content">
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>System ID</mat-label>
                       <input matInput type="text" [value]="systemId()" (input)="systemId.set($event.target.value)" />
                     </mat-form-field>
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Base MAC</mat-label>
                       <input matInput [value]="baseMac()" (input)="baseMac.set($event.target.value)" type="text" />
                     </mat-form-field>
@@ -269,20 +289,20 @@
                     <h3 class="disk-card__title">Optimizations</h3>
                   </div>
                   <div class="disk-card__content">
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Idle-PC</mat-label>
                       <input matInput [value]="idlepc()" (input)="idlepc.set($event.target.value)" />
                     </mat-form-field>
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Idlemax</mat-label>
                       <input matInput type="text" [value]="idlemax()" (input)="idlemax.set($event.target.value)" />
                     </mat-form-field>
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Idlesleep</mat-label>
                       <input matInput type="text" [value]="idlesleep()" (input)="idlesleep.set($event.target.value)" />
                       <span matSuffix>ms</span>
                     </mat-form-field>
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Exec area</mat-label>
                       <input matInput type="text" [value]="execArea()" (input)="execArea.set($event.target.value)" />
                       <span matSuffix>MiB</span>
@@ -305,7 +325,7 @@
             </ng-template>
             <h2 class="node-config__section-heading">Usage notes</h2>
             <div class="form-container">
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Usage</mat-label>
                 <textarea
                   matInput
@@ -326,11 +346,16 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying() || isLoading()">
+  <button
+    mat-button
+    (click)="onSaveClick()"
+    tabindex="2"
+    mat-raised-button
+    color="primary"
+    [disabled]="isApplying() || isLoading()"
+  >
     @if (isApplying()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      Apply
-    }
+    <mat-spinner diameter="20"></mat-spinner>
+    } @else { Apply }
   </button>
 </div>

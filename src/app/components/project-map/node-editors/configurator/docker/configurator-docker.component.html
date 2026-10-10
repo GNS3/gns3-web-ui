@@ -5,6 +5,7 @@
     type="button"
     class="node-config__close"
     aria-label="Close node configuration"
+    [disabled]="isApplying() || networkEditor()?.saving()"
     (click)="onCancelClick()"
   >
     <mat-icon>close</mat-icon>
@@ -13,73 +14,92 @@
 
 <div class="modal-form-container">
   @if (isLoading()) {
-    <div class="configurator-dialog-loading">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
+  <div class="configurator-dialog-loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
   } @else {
   <div class="content">
     <div class="default-content">
       <mat-card class="matCard">
         @if (name) {
-        <mat-tab-group>
+        <mat-tab-group
+          [selectedIndex]="selectedTab()"
+          (selectedIndexChange)="selectedTab.set($event)"
+          [preserveContent]="true"
+        >
           <mat-tab>
             <ng-template mat-tab-label>
               <span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span>
             </ng-template>
             <h2 class="node-config__section-heading">General settings</h2>
             <div class="form-container">
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Name</mat-label>
                 <input matInput [value]="nodeName()" (input)="nodeName.set($event.target.value)" type="text" />
               </mat-form-field>
 
-              <mat-form-field class="form-field tags-field">
-                <mat-label>Tags</mat-label>
-                <mat-chip-grid #chipList>
+              <div class="gns3-chip-field">
+                <mat-form-field
+                  floatLabel="always"
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                  class="form-field tags-field"
+                >
+                  <mat-label>Tags</mat-label>
+
+                  <input
+                    matInput
+                    placeholder="Add tags"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="addTag($event)"
+                  />
+                </mat-form-field>
+                <mat-chip-grid
+                  #chipList
+                  class="gns3-chip-field__values"
+                  [class.gns3-chip-field__values--empty]="(node?.tags?.length ?? 0) === 0"
+                  aria-label="Tags"
+                >
                   @for (tag of node?.tags; track tag) {
-                  <mat-chip (removed)="removeTag(tag)">
+                  <mat-chip-row [editable]="false" [attr.title]="tag" (removed)="removeTag(tag)">
                     {{ tag }}
-                    <mat-icon matChipRemove>cancel</mat-icon>
-                  </mat-chip>
+                    <button matChipRemove type="button" [attr.aria-label]="'Remove tag ' + tag">
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  </mat-chip-row>
                   }
                 </mat-chip-grid>
-                <input
-                  matInput
-                  placeholder="Add tags"
-                  [matChipInputFor]="chipList"
-                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                  (matChipInputTokenEnd)="addTag($event)"
-                />
-              </mat-form-field>
+              </div>
 
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Image</mat-label>
                 <input matInput [value]="dockerImage()" (input)="dockerImage.set($event.target.value)" type="text" />
               </mat-form-field>
 
               <div class="two-column-grid">
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Adapters</mat-label>
                   <input [value]="adapter()" (input)="adapter.set($event.target.value)" matInput type="text" />
                 </mat-form-field>
 
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Base MAC</mat-label>
                   <input matInput [value]="macAddress()" (input)="macAddress.set($event.target.value)" type="text" />
                 </mat-form-field>
 
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Maximum memory</mat-label>
                   <input [value]="memory()" (input)="memory.set($event.target.value)" matInput type="text" min="0" />
                   <span matSuffix>MB</span>
                 </mat-form-field>
 
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Maximum CPUs</mat-label>
                   <input [value]="cpus()" (input)="cpus.set($event.target.value)" matInput type="text" min="0" />
                 </mat-form-field>
 
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Console type</mat-label>
                   <mat-select [value]="consoleType()" (valueChange)="consoleType.set($event)">
                     @for (type of consoleTypes; track type) {
@@ -90,7 +110,7 @@
                   </mat-select>
                 </mat-form-field>
 
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Auxiliary console type</mat-label>
                   <mat-select [value]="auxType()" (valueChange)="auxType.set($event)">
                     @for (type of auxConsoleTypes; track type) {
@@ -101,7 +121,7 @@
                   </mat-select>
                 </mat-form-field>
 
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>VNC console resolution</mat-label>
                   <mat-select [value]="consoleResolution()" (valueChange)="consoleResolution.set($event)">
                     @for (resolution of consoleResolutions; track resolution) {
@@ -112,7 +132,7 @@
                   </mat-select>
                 </mat-form-field>
 
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>HTTP port in the container</mat-label>
                   <input
                     [value]="consoleHttpPort()"
@@ -122,7 +142,7 @@
                   />
                 </mat-form-field>
 
-                <mat-form-field class="form-field grid-span-2">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field grid-span-2">
                   <mat-label>HTTP path</mat-label>
                   <input
                     matInput
@@ -134,11 +154,12 @@
 
                 <div class="three-column-grid grid-span-2">
                   <app-netmiko-device-type-select
+                    subscriptSizing="fixed"
                     [(value)]="netmikoDeviceType"
                     [controller]="controller"
                     class="form-field"
                   />
-                  <mat-form-field class="form-field">
+                  <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                     <mat-label>Default username</mat-label>
                     <input
                       matInput
@@ -148,7 +169,7 @@
                       [placeholder]="defaultUsernamePlaceholder() || 'Username to log into this node'"
                     />
                   </mat-form-field>
-                  <mat-form-field class="form-field">
+                  <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                     <mat-label>Default password</mat-label>
                     <input
                       matInput
@@ -160,10 +181,16 @@
                   </mat-form-field>
                 </div>
 
-                <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)" class="grid-span-2"> Auto start console </mat-checkbox>
+                <mat-checkbox
+                  [checked]="consoleAutoStart()"
+                  (change)="consoleAutoStart.set($event.checked)"
+                  class="grid-span-2"
+                >
+                  Auto start console
+                </mat-checkbox>
               </div>
 
-              <div class="node-config__secondary-actions">
+              <div class="node-config__secondary-actions node-config__secondary-actions--single">
                 <button
                   mat-raised-button
                   color="primary"
@@ -172,16 +199,22 @@
                 >
                   Configure custom adapters
                 </button>
-                <button
-                  mat-raised-button
-                  color="primary"
-                  class="node-config__secondary-action"
-                  (click)="editNetworkConfiguration()"
-                >
-                  Edit network configuration
-                </button>
               </div>
             </div>
+          </mat-tab>
+
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>lan</mat-icon>Network</span>
+            </ng-template>
+            <ng-template matTabContent>
+              <h2 class="node-config__section-heading">Network configuration</h2>
+              <app-edit-network-configuration
+                [embeddedContext]="{ controller: controller, node: node }"
+                [blocked]="isApplying()"
+                (ready)="networkEditor.set($event)"
+              />
+            </ng-template>
           </mat-tab>
 
           <mat-tab>
@@ -190,8 +223,7 @@
             </ng-template>
             <h2 class="node-config__section-heading">Advanced settings</h2>
             <div class="form-container">
-              <h6>Start command</h6>
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Start command</mat-label>
                 <textarea
                   matInput
@@ -201,11 +233,13 @@
                   cdkAutosizeMaxRows="12"
                   [value]="startCommand()"
                   (input)="startCommand.set($event.target.value)"
-                  placeholder='Command to run when the container starts (overrides image default CMD). E.g., python app.py, nginx -g "daemon off;"'
                 ></textarea>
+                <mat-hint
+                  >Command to run when the container starts (overrides image default CMD). E.g., python app.py, nginx -g
+                  "daemon off;"</mat-hint
+                >
               </mat-form-field>
-              <h6>Environment</h6>
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Environment variables</mat-label>
                 <textarea
                   matInput
@@ -215,12 +249,14 @@
                   cdkAutosizeMaxRows="12"
                   [value]="environment()"
                   (input)="environment.set($event.target.value)"
-                  placeholder="Environment variables (one per line, KEY=VALUE format). Supports: %vm-name%, %vm-id%, %project-id%, %project-path%"
                 ></textarea>
+                <mat-hint
+                  >Environment variables (one per line, KEY=VALUE format). Supports: %vm-name%, %vm-id%, %project-id%,
+                  %project-path%</mat-hint
+                >
               </mat-form-field>
 
-              <h6>Extra hosts</h6>
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Extra hosts</mat-label>
                 <textarea
                   matInput
@@ -230,12 +266,11 @@
                   cdkAutosizeMaxRows="12"
                   [value]="extraHosts()"
                   (input)="extraHosts.set($event.target.value)"
-                  placeholder="Hostname to IP mappings, one per line (e.g., gns3.com:192.168.100.10)"
                 ></textarea>
+                <mat-hint>Hostname to IP mappings, one per line (e.g., gns3.com:192.168.100.10)</mat-hint>
               </mat-form-field>
 
-              <h6>Additional volumes</h6>
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Additional volumes</mat-label>
                 <textarea
                   matInput
@@ -245,8 +280,8 @@
                   cdkAutosizeMaxRows="12"
                   [value]="extraVolumes()"
                   (input)="extraVolumes.set($event.target.value)"
-                  placeholder="Container directories to persist, one per line (e.g., /data&#10;/config)"
                 ></textarea>
+                <mat-hint>Container directories to persist, one per line (e.g., /data; /config)</mat-hint>
               </mat-form-field>
             </div>
           </mat-tab>
@@ -259,7 +294,7 @@
             <div class="form-container">
               <h6>Configuration files</h6>
               @for (config of extraConfigs(); track $index) {
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Container target path</mat-label>
                 <input
                   matInput
@@ -278,7 +313,7 @@
                   <mat-icon>delete</mat-icon>
                 </button>
               </mat-form-field>
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>File content</mat-label>
                 <textarea
                   matInput
@@ -288,11 +323,11 @@
                   cdkAutosizeMaxRows="12"
                   [value]="config.content || ''"
                   (input)="updateExtraConfigContent($index, $event.target.value)"
-                  placeholder="File contents injected (read-only) into the container at the target path"
                 ></textarea>
+                <mat-hint>File contents injected (read-only) into the container at the target path</mat-hint>
               </mat-form-field>
               }
-              <button mat-stroked-button class="form-field" type="button" (click)="addExtraConfig()">
+              <button mat-raised-button color="primary" class="form-field" type="button" (click)="addExtraConfig()">
                 <mat-icon>add</mat-icon> Add configuration file
               </button>
             </div>
@@ -304,7 +339,7 @@
             </ng-template>
             <h2 class="node-config__section-heading">Usage notes</h2>
             <div class="form-container">
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Usage</mat-label>
                 <textarea
                   matInput
@@ -324,12 +359,19 @@
 </div>
 
 <div mat-dialog-actions>
-  <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying() || isLoading()">
-    @if (isApplying()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      Apply
-    }
+  <button mat-button (click)="onCancelClick()" color="accent" [disabled]="isApplying() || networkEditor()?.saving()">
+    Cancel
+  </button>
+  <button
+    mat-button
+    (click)="onSaveClick()"
+    tabindex="2"
+    mat-raised-button
+    color="primary"
+    [disabled]="isApplying() || isLoading() || networkEditor()?.saving()"
+  >
+    @if (isApplying() || networkEditor()?.saving()) {
+    <mat-spinner diameter="20"></mat-spinner>
+    } @else { Apply }
   </button>
 </div>

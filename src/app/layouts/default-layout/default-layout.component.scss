@@ -93,7 +93,8 @@
   background: transparent;
   font: inherit;
   text-align: left;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color var(--gns3-motion-duration-standard) ease,
+    color var(--gns3-motion-duration-standard) ease;
 
   &:hover {
     background: var(--mat-sys-surface-container-high);
@@ -154,7 +155,7 @@
      Denser heights are enabled under `[data-density='compact']` via the
      `:host-context` block at the bottom of this file. */
   background-color: var(--mat-sys-primary);
-  color: var(--mat-sys-white);
+  color: var(--mat-sys-on-primary);
   height: var(--layout-header-height);
   min-height: var(--layout-header-height);
 
@@ -170,7 +171,7 @@
     width: 40px;
     border-radius: 20px;
     margin: 2px 0;
-    transition: transform 100ms ease;
+    transition: transform var(--gns3-motion-duration-standard) ease;
 
     mat-icon {
       color: var(--mat-sys-on-primary);

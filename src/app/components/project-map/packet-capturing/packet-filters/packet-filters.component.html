@@ -7,7 +7,7 @@
     </header>
     <div class="packet-filters__fields">
       @for (param of group.params; track param.name) {
-        <mat-form-field appearance="fill" class="packet-filters__field">
+        <mat-form-field appearance="outline" class="packet-filters__field">
           <mat-label>{{ param.name }}</mat-label>
           @switch (param.kind) {
             @case ('select') {

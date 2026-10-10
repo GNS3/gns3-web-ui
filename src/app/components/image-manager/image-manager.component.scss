@@ -1,3 +1,7 @@
+@use '../../../styles/page-layout' as page;
+@use '../../../styles/buttons' as buttons;
+@use '../../../styles/toolbar' as toolbar;
+
 :host {
   display: block;
   width: 100%;
@@ -5,7 +9,7 @@
 }
 
 .image-manager__content {
-  animation: fadeInSlideIn 0.4s ease-out;
+  animation: none;
 }
 
 /* Header */
@@ -31,10 +35,7 @@
 }
 
 .image-manager__title {
-  margin: 0;
-  color: var(--mat-sys-on-surface);
-  font-size: 32px;
-  font-weight: 500;
+  @include page.page-title;
   white-space: nowrap;
 }
 
@@ -43,56 +44,37 @@
 }
 
 button.image-manager__button {
-  height: var(--gns3-density-control-height);
-  border-radius: 12px;
-  padding-inline: 18px;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  text-transform: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover:not([disabled]) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
-  }
+  @include buttons.geometry;
 }
 
 button.image-manager__button--danger {
-  color: var(--mat-sys-error);
-  border-color: color-mix(in srgb, var(--mat-sys-error) 55%, transparent);
+  @include buttons.destructive;
+
+  &:hover:not(:disabled) {
+    transform: none;
+    box-shadow: none;
+  }
 }
 
 /* Toolbar */
 .image-manager__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--gns3-density-card-gap);
+  @include toolbar.layout(
+    '.image-manager__search-form',
+    '.image-manager__toolbar-actions',
+    '.image-manager__filter, .image-manager__sort-by',
+    '.image-manager__view-toggle'
+  );
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 20px 8px;
 }
 
 .image-manager__search-form {
-  flex: 1;
-  min-width: 240px;
   margin: 0;
 }
 
 .image-manager__search {
   width: 100%;
-}
-
-.image-manager__toolbar-actions {
-  display: flex;
-  align-items: center;
-  flex: 0 0 auto;
-  gap: var(--gns3-density-space-3);
-}
-
-.image-manager__filter,
-.image-manager__sort-by {
-  width: 150px;
 }
 
 .image-manager__view-toggle {
@@ -105,11 +87,8 @@ button.image-manager__button--danger {
 }
 
 button.image-manager__view-toggle-btn {
-  width: var(--gns3-density-icon-button);
-  height: var(--gns3-density-icon-button);
-  border-radius: 8px;
+  @include buttons.icon;
   color: var(--mat-sys-on-surface-variant);
-  --mat-icon-button-state-layer-size: 48px;
   --mat-icon-button-icon-size: 22px;
 }
 
@@ -132,11 +111,10 @@ button.image-manager__view-toggle-btn--active {
 .image-manager__table-container {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
   border-radius: 16px;
   background: var(--mat-sys-surface);
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
-    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  @include page.surface;
+  overflow-x: auto;
 }
 
 mat-table {
@@ -169,7 +147,7 @@ mat-table {
 
 mat-row {
   cursor: pointer;
-  transition: background-color 180ms ease;
+  transition: background-color var(--gns3-motion-duration-standard) ease;
 
   &:nth-child(even) {
     background: color-mix(in srgb, var(--mat-sys-on-surface) 1%, transparent);
@@ -324,19 +302,16 @@ mat-header-cell {
 
 button.image-manager__action-button {
   --image-action-color: var(--mat-sys-on-surface-variant);
-  width: 32px;
-  height: 32px;
+  @include buttons.action-icon(var(--gns3-density-control-height-sm));
   color: var(--image-action-color);
-  --mat-icon-button-state-layer-size: 32px;
-  --mat-icon-button-icon-size: 20px;
+  --mat-icon-button-state-layer-color: var(--image-action-color);
 
-  mat-icon {
+  &:not(:disabled) mat-icon {
     color: var(--image-action-color);
-    transition: transform 150ms ease;
   }
 
-  &:hover mat-icon {
-    transform: scale(1.15);
+  &:disabled mat-icon {
+    color: var(--gns3-button-disabled-label-color);
   }
 }
 
@@ -372,12 +347,11 @@ button.image-manager__action-button--cancel {
   border-radius: 16px;
   background: var(--mat-sys-surface);
   cursor: pointer;
-  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  transition: background-color var(--gns3-motion-duration-standard), border-color var(--gns3-motion-duration-standard);
 
   &:hover {
-    transform: translateY(-2px);
     border-color: var(--mat-sys-outline-variant);
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
+    background: var(--mat-sys-surface-container-low);
   }
 }
 
@@ -549,7 +523,7 @@ button.image-manager__action-button--cancel {
   border-radius: 16px;
   background: var(--mat-sys-surface);
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
-  animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideInRight var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
 }
 
 .image-manager__details-header {
@@ -620,7 +594,8 @@ button.image-manager__action-button--cancel {
 }
 
 .image-manager__detail-label {
-  flex: 0 0 84px;
+  flex: 0 0 104px;
+  white-space: nowrap;
   color: var(--mat-sys-on-surface-variant);
   font-size: 12px;
   font-weight: 650;
@@ -642,7 +617,7 @@ button.image-manager__action-button--cancel {
 .image-manager__detail-value--mono,
 .image-manager__detail-value--path {
   color: var(--mat-sys-on-surface-variant);
-  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-family: var(--gns3-font-code);
   font-size: 12px;
   word-break: break-all;
 }
@@ -662,9 +637,8 @@ button.image-manager__action-button--cancel {
 }
 
 button.image-manager__details-action {
+  @include buttons.geometry;
   width: 100%;
-  height: 40px;
-  border-radius: 12px;
   color: var(--mat-sys-error);
   border-color: color-mix(in srgb, var(--mat-sys-error) 50%, transparent);
   font-weight: 500;
@@ -676,16 +650,6 @@ button.image-manager__details-action {
 
 /* Compact density */
 :host-context([data-density='compact']) {
-  button.image-manager__button {
-    height: 40px;
-  }
-
-  button.image-manager__view-toggle-btn {
-    width: 40px;
-    height: 40px;
-    --mat-icon-button-state-layer-size: 40px;
-  }
-
   .image-manager__details-header {
     min-height: 48px;
     padding-block: 4px;
@@ -707,17 +671,6 @@ button.image-manager__details-action {
 
   .image-manager__card {
     padding: 12px;
-  }
-}
-
-@keyframes fadeInSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -777,30 +730,11 @@ button.image-manager__details-action {
     width: 100%;
     flex-wrap: wrap;
   }
-
-  .image-manager__toolbar {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .image-manager__toolbar-actions {
-    width: 100%;
-  }
-
-  .image-manager__filter,
-  .image-manager__sort-by {
-    flex: 1;
-    width: auto;
-  }
 }
 
 @media (max-width: 640px) {
   .image-manager__header {
     padding: 20px 16px 12px;
-  }
-
-  .image-manager__title {
-    font-size: 25px;
   }
 
   .image-manager__buttons-bar {
@@ -817,21 +751,17 @@ button.image-manager__details-action {
     padding-inline: 16px;
   }
 
-  .image-manager__toolbar-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .image-manager__view-toggle {
-    grid-column: 1 / -1;
-    justify-self: end;
-  }
-
   .image-manager__grid {
     grid-template-columns: 1fr;
   }
 
   .image-manager__details {
     min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image-manager__row-highlight {
+    animation: none;
   }
 }

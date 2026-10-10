@@ -527,7 +527,7 @@
               <p>Compare your installed version with the latest available release.</p>
             </div>
           </div>
-          <button mat-stroked-button (click)="checkForUpdates()">Check for updates</button>
+          <button mat-raised-button color="primary" (click)="checkForUpdates()">Check for updates</button>
         </div>
       </section>
       } @case ('ai') {
@@ -544,7 +544,8 @@
             </div>
           </div>
           <button
-            mat-stroked-button
+            mat-raised-button
+            color="primary"
             (click)="checkForAiSkillsUpdates()"
             [disabled]="isLoadingAiSkills()"
             [matTooltip]="isLoadingAiSkills() ? 'Updating AI skills…' : ''"

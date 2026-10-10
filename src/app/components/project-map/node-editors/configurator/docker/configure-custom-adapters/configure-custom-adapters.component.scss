@@ -1,21 +1,18 @@
-.content {
-  min-width: 600px;
-}
+@use '../../../../../../../styles/adapter-grid' as adapter-grid;
+@use '../../../../../../../styles/buttons' as buttons;
+
+@include adapter-grid.layout(100px 120px minmax(0, 1fr) var(--gns3-density-icon-button));
 
 .adapter-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--gns3-density-space-3);
   max-height: 500px;
   overflow-y: auto;
 }
 
 .adapter-item {
-  display: grid;
-  grid-template-columns: 100px 120px 1fr auto;
-  gap: 12px;
-  align-items: center;
-  padding: 12px 16px;
+  padding-block: var(--gns3-density-space-3);
   background: var(--mat-sys-surface-container-lowest);
   border-radius: 12px;
   border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 15%, transparent);
@@ -26,11 +23,8 @@
 }
 
 .adapter-header {
-  display: grid;
-  grid-template-columns: 100px 120px 1fr auto;
-  gap: 12px;
   align-items: center;
-  padding: 8px 16px;
+  padding-block: var(--gns3-density-space-2);
   margin-bottom: 8px;
   border-bottom: 2px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
   position: sticky;
@@ -47,10 +41,6 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   text-align: center;
-}
-
-.adapter-header-actions {
-  width: 40px;
 }
 
 .adapter-field {
@@ -72,33 +62,29 @@
   margin: 0;
 }
 
-.add-btn {
-  flex-shrink: 0;
-  width: auto;
-  margin-top: 12px;
-  height: 48px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  text-transform: none;
-  border: 2px dashed color-mix(in srgb, var(--mat-sys-outline) 40%, transparent);
-  color: var(--mat-sys-on-surface-variant);
-
-  &:hover {
-    border-color: var(--mat-sys-primary);
-    color: var(--mat-sys-primary);
-    background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
-  }
-}
-
 .add-adapter-row {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--gns3-density-space-4);
+  margin-top: var(--gns3-density-space-4);
 }
 
 .info-note-text {
-  font-size: 12px;
-  color: var(--mat-sys-on-surface-variant);
-  opacity: 0.7;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.add-btn {
+  @include buttons.geometry;
+  flex-shrink: 0;
+  width: auto;
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .add-adapter-row {
+    grid-template-columns: 1fr;
+  }
 }

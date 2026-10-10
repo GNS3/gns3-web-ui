@@ -92,7 +92,7 @@
   align-items: center;
   height: 22px;
   padding: 0 10px;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-family: var(--gns3-font-code);
   font-size: 11px;
   // Wireshark coloring-rule DATA colors arrive as row CSS custom properties
   // (inline-bound in the template, '#' prepended there) — index-independent

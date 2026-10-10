@@ -10,7 +10,7 @@
   // inside this component relative to this window instead of the viewport,
   // breaking the context menu position (onRowContextMenu uses position:fixed).
   overflow: visible;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow var(--gns3-motion-duration-standard) ease;
 
   &:hover {
     box-shadow: 0 12px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
@@ -151,7 +151,7 @@
   position: absolute;
   z-index: 100;
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--gns3-motion-duration-standard) ease;
 
   .node-file-manager-inline:hover & {
     opacity: 1;

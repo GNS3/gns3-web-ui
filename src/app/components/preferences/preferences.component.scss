@@ -1,3 +1,6 @@
+@use '../../../styles/buttons' as buttons;
+@use '../../../styles/page-layout' as page;
+
 :host {
   display: block;
   width: 100%;
@@ -5,7 +8,7 @@
 }
 
 .templates-page__content {
-  animation: templates-fade-in 0.4s ease-out;
+  animation: none;
 }
 
 /* Header */
@@ -31,11 +34,7 @@
 }
 
 .templates-page__title {
-  margin: 0;
-  color: var(--mat-sys-on-surface);
-  font-size: 32px;
-  font-weight: 500;
-  line-height: 1.2;
+  @include page.page-title;
 }
 
 .templates-page__header-actions {
@@ -59,9 +58,7 @@ button.templates-page__manual {
 [class*='-templates__header'] {
   box-sizing: border-box;
   width: 100%;
-  height: calc(
-    var(--gns3-density-space-4) * 2 + (var(--gns3-density-section-title-size) + 2px) * 1.2 + 1px
-  );
+  height: calc(var(--gns3-density-space-4) * 2 + (var(--gns3-density-section-title-size) + 2px) * 1.2 + 1px);
   max-width: none;
   margin: 0;
   padding: 0 var(--gns3-density-page-padding);
@@ -241,11 +238,11 @@ button.templates-page__view-button--active {
 .templates-page__table-container {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
   border-radius: 16px;
   background: var(--mat-sys-surface);
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
-    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  border: var(--gns3-surface-border);
+  box-shadow: none;
+  overflow-x: auto;
 }
 
 mat-table {
@@ -279,7 +276,7 @@ mat-table {
 
 mat-row {
   cursor: pointer;
-  transition: background-color 180ms ease;
+  transition: background-color var(--gns3-motion-duration-standard) ease;
 
   &:nth-child(even) {
     background: color-mix(in srgb, var(--mat-sys-on-surface) 1%, transparent);
@@ -499,19 +496,16 @@ mat-header-cell {
 
 button.templates-page__action {
   --template-action-color: var(--mat-sys-on-surface-variant);
-  width: 32px;
-  height: 32px;
+  @include buttons.action-icon(var(--gns3-density-control-height-sm));
   color: var(--template-action-color);
-  --mat-icon-button-state-layer-size: 32px;
-  --mat-icon-button-icon-size: 20px;
+  --mat-icon-button-state-layer-color: var(--template-action-color);
 
-  mat-icon {
+  &:not(:disabled) mat-icon {
     color: var(--template-action-color);
-    transition: transform 150ms ease;
   }
 
-  &:hover mat-icon {
-    transform: scale(1.15);
+  &:disabled mat-icon {
+    color: var(--gns3-button-disabled-label-color);
   }
 }
 
@@ -554,18 +548,18 @@ button.templates-page__action--delete {
   border-radius: 16px;
   background: var(--mat-sys-surface);
   cursor: pointer;
-  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  transition: transform var(--gns3-motion-duration-standard) ease, box-shadow var(--gns3-motion-duration-standard) ease,
+    border-color var(--gns3-motion-duration-standard) ease;
 
   &:hover {
-    transform: translateY(-2px);
     border-color: var(--mat-sys-outline-variant);
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
+    background: var(--mat-sys-surface-container-low);
   }
 }
 
 .templates-page__card--selected {
   border-color: var(--mat-sys-primary);
-  box-shadow: 0 0 0 1px var(--mat-sys-primary), 0 8px 24px color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  box-shadow: 0 0 0 1px var(--mat-sys-primary);
 }
 
 .templates-page__card-header {
@@ -701,7 +695,7 @@ button.templates-page__action--delete {
   border-radius: 16px;
   background: var(--mat-sys-surface);
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
-  animation: templates-slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: templates-slide-in var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
 }
 
 .templates-page__details-header {
@@ -832,7 +826,7 @@ button.templates-page__action--delete {
 .templates-page__detail-row strong.templates-page__mono,
 .templates-page__detail-row strong.templates-page__path {
   color: var(--mat-sys-on-surface-variant);
-  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-family: var(--gns3-font-code);
   font-size: 12px;
   word-break: break-all;
 }
@@ -885,7 +879,7 @@ button.templates-page__details-action--edit {
 }
 
 button.templates-page__details-action--duplicate {
-  --details-action-color: var(--mat-sys-secondary);
+  --details-action-color: var(--mat-sys-primary);
 }
 
 button.templates-page__details-action--delete {
@@ -928,17 +922,6 @@ button.templates-page__details-action--delete {
 
   .templates-page__card {
     padding: 12px;
-  }
-}
-
-@keyframes templates-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -1004,10 +987,6 @@ button.templates-page__details-action--delete {
 @media (max-width: 640px) {
   .templates-page__header {
     padding: 20px 16px 12px;
-  }
-
-  .templates-page__title {
-    font-size: 25px;
   }
 
   .templates-page__header-actions {

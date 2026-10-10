@@ -42,16 +42,6 @@
       --mat-button-filled-state-layer-color: var(--mat-sys-on-error);
       --mat-button-filled-ripple-color: color-mix(in srgb, var(--mat-sys-on-error) 12%, transparent);
     }
-
-    button.manage-action--select {
-      --mat-button-outlined-outline-color: color-mix(in srgb, var(--mat-sys-primary) 55%, transparent);
-    }
-
-    button.manage-action--clear {
-      --mat-button-outlined-label-text-color: var(--mat-sys-on-surface);
-      --mat-button-outlined-outline-color: var(--mat-sys-outline);
-      --mat-button-outlined-state-layer-color: var(--mat-sys-on-surface);
-    }
   }
 
   .loading-message,
@@ -143,7 +133,7 @@
   border: 2px solid transparent;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--gns3-motion-duration-standard) ease;
   background-color: var(--mat-sys-surface-container);
 
   &:hover {

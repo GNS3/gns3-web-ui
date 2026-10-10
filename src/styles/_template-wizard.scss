@@ -1,3 +1,5 @@
+@use 'forms' as forms;
+
 /*
  * Shared layout for every "new template" page.
  *
@@ -5,6 +7,7 @@
  * This file only supplies the common wizard shell and responsive behaviour.
  */
 .template-wizard {
+  @include forms.outlined;
   box-sizing: border-box;
   width: calc(100% - 40px);
   max-width: 1600px;
@@ -107,7 +110,8 @@
   height: auto;
   padding: 14px 16px;
   border-radius: 14px;
-  transition: color 160ms ease, background-color 160ms ease;
+  transition: color var(--gns3-motion-duration-standard) ease,
+    background-color var(--gns3-motion-duration-standard) ease;
 }
 
 .template-wizard__stepper .mat-horizontal-stepper-header:hover {
@@ -128,7 +132,8 @@
   border-top: 0;
   border-left: 2px solid var(--mat-sys-outline-variant);
   opacity: 0.65;
-  transition: border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+  transition: border-color var(--gns3-motion-duration-standard) ease,
+    box-shadow var(--gns3-motion-duration-standard) ease, opacity var(--gns3-motion-duration-standard) ease;
 }
 
 .template-wizard__stepper .mat-stepper-horizontal-line:has(+ .mat-horizontal-stepper-header[aria-selected='true']),
@@ -223,10 +228,7 @@
   flex-direction: column;
 }
 
-.new-template-wizard
-  .template-wizard__stepper
-  .mat-horizontal-stepper-content-current
-  > .template-wizard__panel {
+.new-template-wizard .template-wizard__stepper .mat-horizontal-stepper-content-current > .template-wizard__panel {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -388,6 +390,14 @@
   width: 100%;
 }
 
+// Dynamic subscripts reserve no empty space. Separate controls even when
+// their form wrappers and shared field components are siblings of each other.
+.template-wizard__section
+  > :is(form, mat-form-field, app-netmiko-device-type-select)
+  + :is(mat-form-field, app-netmiko-device-type-select, app-template-info-fields, .iou-add__file-row) {
+  margin-top: var(--gns3-density-space-4);
+}
+
 .template-wizard .mat-mdc-form-field-required-marker {
   color: var(--mat-sys-error);
   font-weight: 700;
@@ -397,8 +407,8 @@
   display: flex;
   box-sizing: border-box;
   align-self: stretch;
-  align-items: flex-end;
-  padding: 0 12px 8px 8px;
+  align-items: center;
+  padding: 0 12px 0 8px;
 }
 
 .template-wizard__unit-suffix {
@@ -447,13 +457,6 @@
   font-size: 13px;
   font-weight: 400;
   line-height: 1.4;
-}
-
-.template-wizard__field-hint {
-  display: block;
-  margin: -12px 0 18px;
-  color: var(--mat-sys-on-surface-variant);
-  font-size: 13px;
 }
 
 .template-wizard__field-grid {
@@ -595,10 +598,6 @@ html[data-density='compact'] {
   .template-wizard.template-wizard .template-wizard__back {
     width: 40px;
     height: 40px;
-  }
-
-  .template-wizard .mat-mdc-form-field-text-suffix:has(.template-wizard__unit-suffix) {
-    padding-bottom: 6px;
   }
 
   .template-wizard__stepper > .mat-horizontal-stepper-wrapper {
@@ -781,10 +780,6 @@ html[data-density='compact'] {
     }
   }
 
-  .template-wizard.template-wizard app-template-info-fields {
-    margin-top: 2px;
-  }
-
   .template-wizard.template-wizard .template-info-fields {
     gap: 10px;
   }
@@ -802,10 +797,6 @@ html[data-density='compact'] {
 
   .template-wizard__section-title {
     font-size: 18px;
-  }
-
-  .template-wizard__field-hint {
-    margin: -8px 0 12px;
   }
 
   .template-wizard__field-grid {

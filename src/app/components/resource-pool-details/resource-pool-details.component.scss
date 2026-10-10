@@ -1,3 +1,5 @@
+@use '../../../styles/page-layout' as page;
+
 /**
  * Resource Pool Details Component Styles
  * Uses Material theme variables and BEM naming convention
@@ -12,7 +14,7 @@
 
 .resource-pool-details {
   padding: 20px 24px;
-  animation: fadeInSlideIn 0.4s ease-out;
+  animation: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -37,10 +39,7 @@
   }
 
   &__title {
-    font-size: 24px;
-    font-weight: 500;
-    color: var(--mat-sys-on-surface);
-    margin: 0;
+    @include page.page-title;
   }
 
   /* =============================================
@@ -98,7 +97,7 @@
     word-break: break-all;
 
     &--mono {
-      font-family: monospace;
+      font-family: var(--gns3-font-code);
       font-size: 12px;
     }
   }
@@ -174,7 +173,7 @@
     padding: 12px 16px;
     background: var(--mat-sys-surface-container-low);
     border-radius: 8px;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--gns3-motion-duration-standard) ease;
 
     &:hover {
       background: var(--mat-sys-surface-container-high);
@@ -211,13 +210,3 @@
 /* =============================================
 // Animations
 // ============================================= */
-@keyframes fadeInSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}

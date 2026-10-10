@@ -52,7 +52,8 @@ button.new-template-wizard__method-option {
   text-align: left;
   text-transform: none;
   white-space: normal;
-  transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+  transition: border-color var(--gns3-motion-duration-standard) ease,
+    background-color var(--gns3-motion-duration-standard) ease, box-shadow var(--gns3-motion-duration-standard) ease;
 
   &:hover {
     background: var(--mat-sys-surface-container-low);
@@ -213,7 +214,8 @@ button.new-template-wizard__method-option--selected {
   border-radius: var(--gns3-density-radius-lg);
   background: var(--mat-sys-surface-container-low);
   cursor: pointer;
-  transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+  transition: border-color var(--gns3-motion-duration-standard) ease,
+    background-color var(--gns3-motion-duration-standard) ease, box-shadow var(--gns3-motion-duration-standard) ease;
 
   &:hover {
     background: var(--mat-sys-surface-container);
@@ -343,7 +345,8 @@ button.new-template-wizard__method-option--selected {
     border: 1px solid var(--mat-sys-outline-variant);
     border-radius: var(--gns3-density-radius-lg);
     box-shadow: none;
-    transition: border-color 160ms ease, box-shadow 160ms ease;
+    transition: border-color var(--gns3-motion-duration-standard) ease,
+      box-shadow var(--gns3-motion-duration-standard) ease;
 
     &:hover {
       box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
@@ -425,7 +428,8 @@ button.new-template-wizard__method-option--selected {
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: var(--gns3-density-radius-lg);
   background: var(--mat-sys-surface-container-low);
-  transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+  transition: border-color var(--gns3-motion-duration-standard) ease,
+    background-color var(--gns3-motion-duration-standard) ease, box-shadow var(--gns3-motion-duration-standard) ease;
 
   &:hover {
     background: var(--mat-sys-surface-container);

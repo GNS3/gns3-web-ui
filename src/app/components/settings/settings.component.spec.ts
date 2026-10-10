@@ -181,7 +181,7 @@ describe('SettingsComponent', () => {
     component.activeCategory.set('ai');
     component.isLoadingAiSkills.set(true);
     fixture.detectChanges();
-    const button = fixture.nativeElement.querySelector('button[mat-stroked-button]');
+    const button = fixture.nativeElement.querySelector('button[mat-raised-button]');
     expect(button.textContent).toContain('Reloading…');
     expect(button.textContent).not.toContain('\\u2026');
     expect(button.disabled).toBe(true);

@@ -1,0 +1,26 @@
+// Typography and section surfaces shared by Web and Server settings.
+@mixin category-type {
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+@mixin setting-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+@mixin panel-header {
+  padding: var(--gns3-density-space-4) var(--gns3-density-page-padding);
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  h2 {
+    margin: 0;
+    font-size: calc(var(--gns3-density-section-title-size) + 2px);
+    font-weight: 650;
+    line-height: 1.2;
+  }
+}

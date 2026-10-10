@@ -13,9 +13,9 @@
 
 <div class="modal-form-container">
   @if (isLoading()) {
-    <div class="configurator-dialog-loading">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
+  <div class="configurator-dialog-loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
   } @else {
   <div class="content">
     <div class="default-content">
@@ -29,34 +29,49 @@
               </ng-template>
               <h2 class="node-config__section-heading">General settings</h2>
               <!-- Name field - full width -->
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Name</mat-label>
                 <input matInput type="text" [value]="nodeName()" (input)="nodeName.set($event.target.value)" />
               </mat-form-field>
 
               <!-- Tags field - full width -->
-              <mat-form-field class="form-field tags-field">
-                <mat-label>Tags</mat-label>
-                <mat-chip-grid #chipList>
+              <div class="gns3-chip-field">
+                <mat-form-field
+                  floatLabel="always"
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                  class="form-field tags-field"
+                >
+                  <mat-label>Tags</mat-label>
+
+                  <input
+                    matInput
+                    placeholder="Add tags"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="addTag($event)"
+                  />
+                </mat-form-field>
+                <mat-chip-grid
+                  #chipList
+                  class="gns3-chip-field__values"
+                  [class.gns3-chip-field__values--empty]="(node?.tags?.length ?? 0) === 0"
+                  aria-label="Tags"
+                >
                   @for (tag of node?.tags; track tag) {
-                  <mat-chip (removed)="removeTag(tag)">
+                  <mat-chip-row [editable]="false" [attr.title]="tag" (removed)="removeTag(tag)">
                     {{ tag }}
-                    <mat-icon matChipRemove>cancel</mat-icon>
-                  </mat-chip>
+                    <button matChipRemove type="button" [attr.aria-label]="'Remove tag ' + tag">
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  </mat-chip-row>
                   }
                 </mat-chip-grid>
-                <input
-                  matInput
-                  placeholder="Add tags"
-                  [matChipInputFor]="chipList"
-                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                  (matChipInputTokenEnd)="addTag($event)"
-                />
-              </mat-form-field>
+              </div>
 
               <!-- Two-column grid for other fields -->
-              <div class="node-config__quad-grid">
-                <mat-form-field class="form-field">
+              <div class="node-config__quad-grid gns3-form-layout-fixed">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Platform</mat-label>
                   <mat-select [value]="platform()" (valueChange)="platform.set($event)">
                     @for (platform of selectPlatform; track platform) {
@@ -67,18 +82,18 @@
                   </mat-select>
                 </mat-form-field>
 
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>RAM</mat-label>
                   <input matInput type="text" [value]="ram()" (input)="ram.set($event.target.value)" />
                   <span matSuffix>MB</span>
                 </mat-form-field>
 
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>vCPUs</mat-label>
                   <input matInput type="text" min="1" [value]="cpus()" (input)="cpus.set($event.target.value)" />
                 </mat-form-field>
 
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Boot priority</mat-label>
                   <mat-select [value]="bootPriority()" (valueChange)="bootPriority.set($event)">
                     @for (priority of bootPriorities; track priority[1]) {
@@ -90,7 +105,7 @@
                 </mat-form-field>
               </div>
 
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>On close</mat-label>
                 <mat-select [value]="onClose()" (valueChange)="onClose.set($event)">
                   @for (option of onCloseOptions; track option[1]) {
@@ -101,8 +116,8 @@
                 </mat-select>
               </mat-form-field>
 
-              <div class="node-config__two-grid">
-                <mat-form-field class="form-field">
+              <div class="node-config__two-grid gns3-form-layout-fixed">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Console type</mat-label>
                   <mat-select [value]="consoleType()" (valueChange)="consoleType.set($event)">
                     @for (type of consoleTypes; track type) {
@@ -110,7 +125,7 @@
                     }
                   </mat-select>
                 </mat-form-field>
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Auxiliary console type</mat-label>
                   <mat-select [value]="auxType()" (valueChange)="auxType.set($event)">
                     @for (type of auxConsoleTypes; track type) {
@@ -121,8 +136,13 @@
               </div>
 
               <div class="three-column-grid">
-                <app-netmiko-device-type-select [(value)]="netmikoDeviceType" [controller]="controller" class="form-field" />
-                <mat-form-field class="form-field">
+                <app-netmiko-device-type-select
+                  subscriptSizing="fixed"
+                  [(value)]="netmikoDeviceType"
+                  [controller]="controller"
+                  class="form-field"
+                />
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Default username</mat-label>
                   <input
                     matInput
@@ -132,7 +152,7 @@
                     [placeholder]="defaultUsernamePlaceholder() || 'Username to log into this node'"
                   />
                 </mat-form-field>
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
                   <mat-label>Default password</mat-label>
                   <input
                     matInput
@@ -166,7 +186,7 @@
                     <span class="disk-card__badge">Primary Master</span>
                   </div>
                   <div class="disk-card__content">
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Disk image</mat-label>
                       <input
                         matInput
@@ -195,7 +215,7 @@
                         </mat-optgroup>
                       </mat-autocomplete>
                     </mat-form-field>
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Disk interface</mat-label>
                       <mat-select [value]="hdaDiskInterface()" (valueChange)="hdaDiskInterface.set($event)">
                         @for (interface of diskInterfaces; track interface) {
@@ -215,7 +235,7 @@
                     <span class="disk-card__badge">Primary Slave</span>
                   </div>
                   <div class="disk-card__content">
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Disk image</mat-label>
                       <input
                         matInput
@@ -244,7 +264,7 @@
                         </mat-optgroup>
                       </mat-autocomplete>
                     </mat-form-field>
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Disk interface</mat-label>
                       <mat-select [value]="hdbDiskInterface()" (valueChange)="hdbDiskInterface.set($event)">
                         @for (interface of diskInterfaces; track interface) {
@@ -264,7 +284,7 @@
                     <span class="disk-card__badge">Secondary Master</span>
                   </div>
                   <div class="disk-card__content">
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Disk image</mat-label>
                       <input
                         matInput
@@ -293,7 +313,7 @@
                         </mat-optgroup>
                       </mat-autocomplete>
                     </mat-form-field>
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Disk interface</mat-label>
                       <mat-select [value]="hdcDiskInterface()" (valueChange)="hdcDiskInterface.set($event)">
                         @for (interface of diskInterfaces; track interface) {
@@ -313,7 +333,7 @@
                     <span class="disk-card__badge">Secondary Slave</span>
                   </div>
                   <div class="disk-card__content">
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Disk image</mat-label>
                       <input
                         matInput
@@ -342,7 +362,7 @@
                         </mat-optgroup>
                       </mat-autocomplete>
                     </mat-form-field>
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Disk interface</mat-label>
                       <mat-select [value]="hddDiskInterface()" (valueChange)="hddDiskInterface.set($event)">
                         @for (interface of diskInterfaces; track interface) {
@@ -380,7 +400,7 @@
                     accept=".iso"
                   />
                 </div>
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                   <mat-label>Image</mat-label>
                   <input
                     matInput
@@ -420,8 +440,8 @@
                 <span class="node-config__tab-label"><mat-icon>lan</mat-icon>Network</span>
               </ng-template>
               <h2 class="node-config__section-heading">Network settings</h2>
-              <div>
-                <mat-form-field class="form-field">
+              <div class="form-container">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                   <mat-label>Number of adapters</mat-label>
                   <input
                     matInput
@@ -431,11 +451,11 @@
                     (input)="adapters.set($event.target.value)"
                   />
                 </mat-form-field>
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                   <mat-label>Base MAC</mat-label>
                   <input matInput [value]="macAddress()" (input)="macAddress.set($event.target.value)" type="text" />
                 </mat-form-field>
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                   <mat-label>Type</mat-label>
                   <mat-select [value]="adapterType()" (valueChange)="adapterType.set($event)">
                     @for (type of networkTypes; track type.value) {
@@ -471,7 +491,11 @@
                           Upload to device
                         </button>
                         <button mat-raised-button (click)="fileinitrdGlobal.click()">Upload globally</button>
-                        <mat-form-field class="form-field node-config__file-field">
+                        <mat-form-field
+                          appearance="outline"
+                          subscriptSizing="dynamic"
+                          class="form-field node-config__file-field"
+                        >
                           <mat-label>Initial RAM disk (initrd)</mat-label>
                           <input
                             matInput
@@ -528,7 +552,11 @@
                           Upload to device
                         </button>
                         <button mat-raised-button (click)="filekernelGlobal.click()">Upload globally</button>
-                        <mat-form-field class="form-field node-config__file-field">
+                        <mat-form-field
+                          appearance="outline"
+                          subscriptSizing="dynamic"
+                          class="form-field node-config__file-field"
+                        >
                           <mat-label>Kernel image</mat-label>
                           <input
                             matInput
@@ -578,7 +606,7 @@
                         (change)="uploadKernelImageFile($event, 'global')"
                       />
                     </div>
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Kernel command line</mat-label>
                       <input
                         matInput
@@ -602,7 +630,11 @@
                           Upload to device
                         </button>
                         <button mat-raised-button (click)="filebiosGlobal.click()">Upload globally</button>
-                        <mat-form-field class="form-field node-config__file-field">
+                        <mat-form-field
+                          appearance="outline"
+                          subscriptSizing="dynamic"
+                          class="form-field node-config__file-field"
+                        >
                           <mat-label>Bios image</mat-label>
                           <input
                             matInput
@@ -667,7 +699,7 @@
                     <mat-checkbox [checked]="createConfigDisk()" (change)="createConfigDisk.set($event.checked)"
                       >Auto-create config disk</mat-checkbox
                     >
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Max CPUs (hot-plug)</mat-label>
                       <input matInput type="text" [value]="maxcpus()" (input)="maxcpus.set($event.target.value)" />
                     </mat-form-field>
@@ -678,7 +710,7 @@
                       Activate CPU throttling
                     </mat-checkbox>
                     @if (activateCpuThrottling()) {
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Percentage of CPU allowed</mat-label>
                       <input
                         matInput
@@ -688,7 +720,7 @@
                       />
                     </mat-form-field>
                     }
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Process priority</mat-label>
                       <mat-select [value]="processPriority()" (valueChange)="processPriority.set($event)">
                         @for (priority of priorities; track priority) {
@@ -707,11 +739,11 @@
                     <h3 class="disk-card__title">Additional settings</h3>
                   </div>
                   <div class="disk-card__content">
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Qemu binary path</mat-label>
                       <input matInput type="text" [value]="qemuPath()" (input)="qemuPath.set($event.target.value)" />
                     </mat-form-field>
-                    <mat-form-field class="form-field">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                       <mat-label>Options</mat-label>
                       <input matInput type="text" [value]="options()" (input)="options.set($event.target.value)" />
                     </mat-form-field>
@@ -730,7 +762,7 @@
                 <span class="node-config__tab-label"><mat-icon>bar_chart</mat-icon>Usage</span>
               </ng-template>
               <h2 class="node-config__section-heading">Usage notes</h2>
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Usage</mat-label>
                 <textarea
                   matInput
@@ -751,11 +783,16 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying() || isLoading()">
+  <button
+    mat-button
+    (click)="onSaveClick()"
+    tabindex="2"
+    mat-raised-button
+    color="primary"
+    [disabled]="isApplying() || isLoading()"
+  >
     @if (isApplying()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      Apply
-    }
+    <mat-spinner diameter="20"></mat-spinner>
+    } @else { Apply }
   </button>
 </div>

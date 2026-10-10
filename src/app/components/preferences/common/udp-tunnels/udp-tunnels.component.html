@@ -1,13 +1,13 @@
-<div class="udp-tunnels__input-grid">
-  <mat-form-field>
+<div class="udp-tunnels__input-grid gns3-form-layout-fixed">
+  <mat-form-field appearance="outline" subscriptSizing="fixed">
     <mat-label>Name</mat-label>
     <input matInput type="text" [value]="newPortName()" (input)="newPortName.set($event.target.value)" />
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field appearance="outline" subscriptSizing="fixed">
     <mat-label>Remote host</mat-label>
     <input matInput type="text" [value]="newPortRhost()" (input)="newPortRhost.set($event.target.value)" />
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field appearance="outline" subscriptSizing="fixed">
     <mat-label>Local port</mat-label>
     <input
       matInput
@@ -18,7 +18,7 @@
       (input)="newPortLport.set(+$event.target.value)"
     />
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field appearance="outline" subscriptSizing="fixed">
     <mat-label>Remote port</mat-label>
     <input
       matInput

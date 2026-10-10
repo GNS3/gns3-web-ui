@@ -1,30 +1,33 @@
 @if (isReady()) {
 <header class="group-management__header">
   <h1 class="group-management__title">Groups</h1>
+</header>
+
+<div class="group-management__toolbar">
+  <form class="group-management__search-form">
+    <mat-form-field appearance="fill" class="group-management__search" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        aria-label="Search groups by name"
+        placeholder="Search groups by name"
+        [value]="searchText()"
+        (input)="searchText.set($event.target.value)"
+      />
+    </mat-form-field>
+  </form>
   <div class="group-management__actions">
     <button
-      mat-raised-button
-      color="primary"
-      class="group-management__button"
+      mat-flat-button
+      class="group-management__button group-management__button--destructive"
       [disabled]="selection.selected.length === 0"
       (click)="onDelete(selection.selected)"
     >
-      Delete Selected
+      Delete selected
     </button>
-    <button mat-raised-button color="primary" class="group-management__button" (click)="addGroup()">Add Group</button>
+    <button mat-raised-button color="primary" class="group-management__button" (click)="addGroup()">Add group</button>
   </div>
-</header>
-
-<form class="group-management__search-form">
-  <mat-form-field class="group-management__search">
-    <input
-      matInput
-      placeholder="Search group by name"
-      [value]="searchText()"
-      (input)="searchText.set($event.target.value)"
-    />
-  </mat-form-field>
-</form>
+</div>
 
 <div class="group-management__table-container">
   <table mat-table [dataSource]="dataSource | groupFilter : searchText()" matSort #groupsSort="matSort">

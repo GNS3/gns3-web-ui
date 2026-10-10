@@ -20,8 +20,16 @@
   <div class="resize-handle resize-handle-left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
   <div class="resize-handle resize-handle-top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
   <div class="resize-handle resize-handle-top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
-  <div class="resize-handle resize-handle-bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
-  <div class="resize-handle resize-handle-bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+  <div
+    class="resize-handle resize-handle-bottom-left"
+    mwlResizeHandle
+    [resizeEdges]="{ bottom: true, left: true }"
+  ></div>
+  <div
+    class="resize-handle resize-handle-bottom-right"
+    mwlResizeHandle
+    [resizeEdges]="{ bottom: true, right: true }"
+  ></div>
   }
 
   <div class="marker-manager__content">
@@ -51,31 +59,39 @@
               <div class="marker-manager__form-title">
                 {{ editingDefinition() ? 'Edit definition' : 'New definition' }}
               </div>
-              <div style="display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start;">
-                <mat-form-field class="form-field">
+              <div class="marker-manager__single-grid">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                   <mat-label>BPF expression</mat-label>
-                  <textarea matInput formControlName="bpf" placeholder="arp or icmp" rows="1" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="4"></textarea>
+                  <textarea
+                    matInput
+                    formControlName="bpf"
+                    placeholder="arp or icmp"
+                    rows="1"
+                    cdkTextareaAutosize
+                    cdkAutosizeMinRows="1"
+                    cdkAutosizeMaxRows="4"
+                  ></textarea>
                   @if (definitionForm.get('bpf')?.hasError('required')) {
                   <mat-error>BPF is required</mat-error>
                   }
                 </mat-form-field>
               </div>
-              <div style="display: grid; grid-template-columns: 2.7fr 0.7fr 0.9fr 0.8fr 0.5fr auto auto; gap: 16px; align-items: start;">
-                <mat-form-field class="form-field">
+              <div class="marker-manager__definition-grid">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" floatLabel="always" class="form-field">
                   <mat-label>Name</mat-label>
                   <span matTextPrefix class="global-prefix">global-&nbsp;</span>
                   <input matInput formControlName="name" placeholder="auto" />
-                    @if (definitionForm.get('name')?.hasError('required')) {
-                    <mat-error>Name is required</mat-error>
-                    } @if (definitionForm.get('name')?.hasError('notGlobalName')) {
-                    <mat-error>Name cannot start with "global"</mat-error>
-                    }
+                  @if (definitionForm.get('name')?.hasError('required')) {
+                  <mat-error>Name is required</mat-error>
+                  } @if (definitionForm.get('name')?.hasError('notGlobalName')) {
+                  <mat-error>Name cannot start with "global"</mat-error>
+                  }
                 </mat-form-field>
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                   <mat-label>Tag</mat-label>
                   <input matInput type="number" formControlName="tag" placeholder="—" min="0" />
                 </mat-form-field>
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                   <mat-label>Serial encapsulation</mat-label>
                   <mat-select formControlName="data_link_type" placeholder="Ethernet only">
                     @for (dlt of serialDataLinkTypes; track dlt.value) {
@@ -83,31 +99,37 @@
                     }
                   </mat-select>
                 </mat-form-field>
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                   <mat-label>Highlight ms</mat-label>
                   <input matInput type="number" formControlName="highlight_duration" placeholder="500" />
                   @if (definitionForm.get('highlight_duration')?.hasError('required')) {
                   <mat-error>Required</mat-error>
-                  }
-                  @if (definitionForm.get('highlight_duration')?.hasError('min')) {
+                  } @if (definitionForm.get('highlight_duration')?.hasError('min')) {
                   <mat-error>Must be ≥ 1</mat-error>
                   }
                 </mat-form-field>
-                <mat-form-field class="form-field">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                   <mat-label>Color</mat-label>
                   <input matInput type="color" formControlName="color" class="color-input" />
                 </mat-form-field>
-                <button mat-flat-button color="primary" type="submit" [disabled]="definitionForm.invalid || submittingDefinition()" style="align-self: start; margin-top: 18px;">
-                  @if (submittingDefinition()) {
+                <div class="marker-manager__definition-actions">
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    type="submit"
+                    [disabled]="definitionForm.invalid || submittingDefinition()"
+                  >
+                    @if (submittingDefinition()) {
                     <mat-spinner class="marker-manager__btn-spinner" [diameter]="18" />
                     {{ editingDefinition() ? 'Saving…' : 'Creating…' }}
-                  } @else {
+                    } @else {
                     {{ editingDefinition() ? 'Save' : 'Create' }}
+                    }
+                  </button>
+                  @if (editingDefinition()) {
+                  <button mat-stroked-button type="button" (click)="cancelEditDefinition()">Cancel</button>
                   }
-                </button>
-                @if (editingDefinition()) {
-                <button mat-stroked-button type="button" (click)="cancelEditDefinition()" style="align-self: start; margin-top: 18px;">Cancel</button>
-                }
+                </div>
               </div>
             </form>
 
@@ -122,9 +144,10 @@
               @if (loading()) {
               <div class="marker-manager__empty">Loading…</div>
               } @if (!loading() && definitions().length === 0) {
-              <div class="marker-manager__empty">No definitions. Create one above — it applies to all capable links.</div>
-              }
-              @for (row of definitions(); track row.name) {
+              <div class="marker-manager__empty">
+                No definitions. Create one above — it applies to all capable links.
+              </div>
+              } @for (row of definitions(); track row.name) {
               <div
                 class="marker-manager__row"
                 [class.marker-manager__row--editing]="editingDefinition() === row.name"
@@ -141,13 +164,12 @@
 
                 @if (row.tag !== null) {
                 <span class="marker-manager__chip marker-manager__chip--tag" title="Replay tag">#{{ row.tag }}</span>
-                }
-
-                @if (row.highlight_duration !== null) {
+                } @if (row.highlight_duration !== null) {
                 <span class="marker-manager__chip">{{ row.highlight_duration }}ms</span>
-                }
-                @if (row.direction) {
-                <span class="marker-manager__chip marker-manager__chip--dir" title="Direction filter">{{ row.direction }}</span>
+                } @if (row.direction) {
+                <span class="marker-manager__chip marker-manager__chip--dir" title="Direction filter">{{
+                  row.direction
+                }}</span>
                 }
                 <span class="marker-manager__chip marker-manager__chip--links" title="Links carrying this definition">
                   → {{ row.linkCount }} link{{ row.linkCount === 1 ? '' : 's' }}
@@ -168,9 +190,9 @@
                 </button>
                 <button mat-icon-button (click)="deleteDefinition(row)" matTooltip="Delete (clears all copies)">
                   @if (isDeletingDefinition(row.name)) {
-                    <mat-spinner class="marker-manager__toggle-spinner" [diameter]="18" />
+                  <mat-spinner class="marker-manager__toggle-spinner" [diameter]="18" />
                   } @else {
-                    <mat-icon>delete</mat-icon>
+                  <mat-icon>delete</mat-icon>
                   }
                 </button>
               </div>
@@ -189,8 +211,10 @@
             }
 
             <!-- Node + Link selector (cascading filter) -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start;">
-              <mat-form-field class="form-field">
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--gns3-form-row-gap); align-items: start"
+            >
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Node</mat-label>
                 <input
                   matInput
@@ -199,14 +223,18 @@
                   [matAutocomplete]="nodeAuto"
                   placeholder="Filter by node…"
                 />
-                <mat-autocomplete #nodeAuto="matAutocomplete" [displayWith]="displayNode" (optionSelected)="onNodeSelect($event.option.value)">
+                <mat-autocomplete
+                  #nodeAuto="matAutocomplete"
+                  [displayWith]="displayNode"
+                  (optionSelected)="onNodeSelect($event.option.value)"
+                >
                   <mat-option [value]="null">All nodes</mat-option>
                   @for (opt of filteredNodeOptions(); track opt.id) {
                   <mat-option [value]="opt.id">{{ opt.name }}</mat-option>
                   }
                 </mat-autocomplete>
               </mat-form-field>
-              <mat-form-field class="form-field">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                 <mat-label>Link</mat-label>
                 <input
                   matInput
@@ -215,7 +243,11 @@
                   [matAutocomplete]="linkAuto"
                   [placeholder]="selectedNodeId() ? 'Select a link…' : 'Pick a node first…'"
                 />
-                <mat-autocomplete #linkAuto="matAutocomplete" [displayWith]="displayLink" (optionSelected)="onLinkSelect($event.option.value)">
+                <mat-autocomplete
+                  #linkAuto="matAutocomplete"
+                  [displayWith]="displayLink"
+                  (optionSelected)="onLinkSelect($event.option.value)"
+                >
                   <mat-option [value]="null">All links</mat-option>
                   @for (opt of filteredLinkOptions(); track opt.id) {
                   <mat-option [value]="opt.id">{{ opt.name }}</mat-option>
@@ -232,7 +264,8 @@
                 <span class="marker-manager__group-count">{{ group.markers.length }}</span>
                 <span class="marker-manager__row-spacer"></span>
                 <button
-                  mat-stroked-button
+                  mat-raised-button
+                  color="primary"
                   class="add-button"
                   (click)="toggleAddMarker(group.linkId)"
                   [class.add-button--active]="addingToLink() === group.linkId"
@@ -247,15 +280,12 @@
 
               @if (groupError(group.linkId); as msg) {
               <div class="marker-manager__error">{{ msg }}</div>
-              }
-              @if (definitions().length > 0) {
+              } @if (definitions().length > 0) {
               <div class="marker-manager__hint">
                 <mat-icon>info</mat-icon>
                 Definitions are active — inherited markers on this link are managed via the Definitions tab.
               </div>
-              }
-
-              @if (addingToLink() === group.linkId) {
+              } @if (addingToLink() === group.linkId) {
               <app-marker-form
                 [form]="markerForm"
                 mode="create"
@@ -266,10 +296,11 @@
                 (save)="submitMarker(group.linkId)"
                 (cancel)="toggleAddMarker(group.linkId)"
               />
-              }
-
-              @for (m of group.markers; track m.name) {
-                <ng-container [ngTemplateOutlet]="markerSlot" [ngTemplateOutletContext]="{ $implicit: m, linkId: group.linkId }" />
+              } @for (m of group.markers; track m.name) {
+              <ng-container
+                [ngTemplateOutlet]="markerSlot"
+                [ngTemplateOutletContext]="{ $implicit: m, linkId: group.linkId }"
+              />
               }
             </div>
             }
@@ -283,10 +314,10 @@
               </div>
               } @else if (linkGroups().length > 50) {
               <div class="marker-manager__empty">
-                {{ linkGroups().length }} links have markers. Use the <strong>Node / Link</strong> selector above to filter by a specific link.
+                {{ linkGroups().length }} links have markers. Use the <strong>Node / Link</strong> selector above to
+                filter by a specific link.
               </div>
-              } @else {
-              @for (group of linkGroups(); track group.linkId) {
+              } @else { @for (group of linkGroups(); track group.linkId) {
               <div class="marker-manager__group">
                 <div class="marker-manager__group-header" (click)="toggleGroup(group.linkId)">
                   <mat-icon class="marker-manager__group-chevron">
@@ -296,7 +327,8 @@
                   <span class="marker-manager__group-count">{{ group.markers.length }}</span>
                   <span class="marker-manager__row-spacer"></span>
                   <button
-                    mat-stroked-button
+                    mat-raised-button
+                    color="primary"
                     class="add-button"
                     (click)="$event.stopPropagation(); toggleAddMarker(group.linkId)"
                     [class.add-button--active]="addingToLink() === group.linkId"
@@ -306,11 +338,9 @@
                   </button>
                 </div>
 
-                @if (!isGroupCollapsed(group.linkId)) {
-                @if (groupError(group.linkId); as msg) {
+                @if (!isGroupCollapsed(group.linkId)) { @if (groupError(group.linkId); as msg) {
                 <div class="marker-manager__error">{{ msg }}</div>
-                }
-                @if (addingToLink() === group.linkId) {
+                } @if (addingToLink() === group.linkId) {
                 <app-marker-form
                   [form]="markerForm"
                   mode="create"
@@ -321,15 +351,14 @@
                   (save)="submitMarker(group.linkId)"
                   (cancel)="toggleAddMarker(group.linkId)"
                 />
-                }
-
-                @for (m of group.markers; track m.name) {
-                  <ng-container [ngTemplateOutlet]="markerSlot" [ngTemplateOutletContext]="{ $implicit: m, linkId: group.linkId }" />
-                }
-                }
+                } @for (m of group.markers; track m.name) {
+                <ng-container
+                  [ngTemplateOutlet]="markerSlot"
+                  [ngTemplateOutletContext]="{ $implicit: m, linkId: group.linkId }"
+                />
+                } }
               </div>
-              }
-              }
+              } }
             </div>
             }
           </div>
@@ -341,77 +370,71 @@
           @if (activeTabIndex() === 2) {
           <div class="marker-manager__panel gns3-replay-tags">
             @if (loading()) {
-              <div class="marker-manager__empty">Loading…</div>
+            <div class="marker-manager__empty">Loading…</div>
             } @else if (tags().length === 0) {
-              <div class="marker-manager__empty">
-                No tagged markers yet — set a Tag on a definition or a link marker to build a replay timeline.
-              </div>
-            }
+            <div class="marker-manager__empty">
+              No tagged markers yet — set a Tag on a definition or a link marker to build a replay timeline.
+            </div>
+            } @for (row of tags(); track row.tag) {
+            <div class="gns3-replay-tags__row">
+              <span class="gns3-replay-tags__tag">#{{ row.tag }}</span>
+              <span class="gns3-replay-tags__meta">
+                {{ row.markers.length }} marker{{ row.markers.length === 1 ? '' : 's' }} on {{ row.linkCount }} link{{
+                  row.linkCount === 1 ? '' : 's'
+                }}
+              </span>
+              @if (row.enabled.length > 0) {
+              <span
+                class="gns3-replay-tags__chip gns3-replay-tags__chip--capturing"
+                title="Replay needs every marker under the tag paused"
+              >
+                {{ row.enabled.length }} capturing
+              </span>
+              }
+              <span class="marker-manager__row-spacer"></span>
+              <button mat-flat-button color="primary" class="gns3-replay-tags__action" (click)="startReplayFor(row)">
+                @if (pausingTag() === row.tag) { Pausing… } @else if (row.enabled.length > 0) { Pause &amp; replay }
+                @else { Replay }
+              </button>
+            </div>
 
-            @for (row of tags(); track row.tag) {
-              <div class="gns3-replay-tags__row">
-                <span class="gns3-replay-tags__tag">#{{ row.tag }}</span>
-                <span class="gns3-replay-tags__meta">
-                  {{ row.markers.length }} marker{{ row.markers.length === 1 ? '' : 's' }} on
-                  {{ row.linkCount }} link{{ row.linkCount === 1 ? '' : 's' }}
-                </span>
-                @if (row.enabled.length > 0) {
+            @if (pausePanelTag() === row.tag && row.enabled.length > 0) {
+            <div class="gns3-replay-tags__pause-panel">
+              <div class="gns3-replay-tags__pause-title">Pause these markers to unlock replay:</div>
+              <ul class="gns3-replay-tags__pause-list">
+                @for (m of row.enabled; track m.link_id + '/' + m.name) {
+                <li>
+                  {{ linkLabel(m.link_id) }} — {{ m.name }}
+                  @if (m.inherited_from) {
                   <span
-                    class="gns3-replay-tags__chip gns3-replay-tags__chip--capturing"
-                    title="Replay needs every marker under the tag paused"
+                    class="marker-manager__chip marker-manager__chip--inherited"
+                    matTooltip="Global rule — paused via its definition"
+                    >inherited</span
                   >
-                    {{ row.enabled.length }} capturing
-                  </span>
-                }
-                <span class="marker-manager__row-spacer"></span>
-                <button mat-flat-button color="primary" class="gns3-replay-tags__action" (click)="startReplayFor(row)">
-                  @if (pausingTag() === row.tag) {
-                    Pausing…
-                  } @else if (row.enabled.length > 0) {
-                    Pause &amp; replay
-                  } @else {
-                    Replay
                   }
+                </li>
+                }
+              </ul>
+              <div class="gns3-replay-tags__pause-actions">
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [disabled]="pausingTag() !== null"
+                  (click)="pausePanelTag.set(null)"
+                >
+                  Cancel
+                </button>
+                <button
+                  mat-flat-button
+                  color="primary"
+                  [disabled]="pausingTag() !== null"
+                  (click)="pauseAllAndReplay(row)"
+                >
+                  @if (pausingTag() === row.tag) { Pausing… } @else { Pause all &amp; replay }
                 </button>
               </div>
-
-              @if (pausePanelTag() === row.tag && row.enabled.length > 0) {
-              <div class="gns3-replay-tags__pause-panel">
-                <div class="gns3-replay-tags__pause-title">Pause these markers to unlock replay:</div>
-                <ul class="gns3-replay-tags__pause-list">
-                  @for (m of row.enabled; track m.link_id + '/' + m.name) {
-                    <li>
-                      {{ linkLabel(m.link_id) }} — {{ m.name }}
-                      @if (m.inherited_from) {
-                        <span
-                          class="marker-manager__chip marker-manager__chip--inherited"
-                          matTooltip="Global rule — paused via its definition"
-                          >inherited</span
-                        >
-                      }
-                    </li>
-                  }
-                </ul>
-                <div class="gns3-replay-tags__pause-actions">
-                  <button mat-stroked-button type="button" [disabled]="pausingTag() !== null" (click)="pausePanelTag.set(null)">
-                    Cancel
-                  </button>
-                  <button
-                    mat-flat-button
-                    color="primary"
-                    [disabled]="pausingTag() !== null"
-                    (click)="pauseAllAndReplay(row)"
-                  >
-                    @if (pausingTag() === row.tag) {
-                      Pausing…
-                    } @else {
-                      Pause all &amp; replay
-                    }
-                  </button>
-                </div>
-              </div>
-              }
-            }
+            </div>
+            } }
           </div>
           }
         </mat-tab>
@@ -436,20 +459,18 @@
      via [ngTemplateOutlet]="markerSlot" so the markup lives in one place. Kept inside
      this component's template so the marker-manager__* (BEM) styles still apply. -->
 <ng-template #markerSlot let-m let-linkId="linkId">
-  @if (editingMarker(); as edit) {
-    @if (edit.linkId === linkId && edit.name === m.name) {
-    <app-marker-form
-      [form]="markerEditForm"
-      mode="edit"
-      [captureOptions]="linkEndpoints(linkId)"
-      [dataLinkOptions]="serialDataLinkTypes"
-      [linkType]="linkTypeOf(linkId)"
-      [submitting]="submittingEditMarker()"
-      (save)="submitEditMarker(linkId)"
-      (cancel)="cancelEditMarker()"
-    />
-    }
-  } @else {
+  @if (editingMarker(); as edit) { @if (edit.linkId === linkId && edit.name === m.name) {
+  <app-marker-form
+    [form]="markerEditForm"
+    mode="edit"
+    [captureOptions]="linkEndpoints(linkId)"
+    [dataLinkOptions]="serialDataLinkTypes"
+    [linkType]="linkTypeOf(linkId)"
+    [submitting]="submittingEditMarker()"
+    (save)="submitEditMarker(linkId)"
+    (cancel)="cancelEditMarker()"
+  />
+  } } @else {
   <div class="marker-manager__row" [class.marker-manager__row--disabled]="m.enabled === false">
     <span
       class="marker-manager__swatch"
@@ -461,11 +482,9 @@
 
     @if (m.capture_node_id) {
     <span class="marker-manager__chip" title="Capture node (observer)">{{ nodeName(m.capture_node_id) }}</span>
-    }
-    @if (m.direction) {
+    } @if (m.direction) {
     <span class="marker-manager__chip marker-manager__chip--dir" title="Direction filter">{{ m.direction }}</span>
-    }
-    @if (m.inherited_from) {
+    } @if (m.inherited_from) {
     <span class="marker-manager__chip marker-manager__chip--inherited" matTooltip="Inherited — edit via Definitions">
       inherited
     </span>
@@ -491,9 +510,9 @@
     </button>
     <button mat-icon-button (click)="deleteMarker(linkId, m.name)" matTooltip="Delete">
       @if (isDeletingMarker(linkId, m.name)) {
-        <mat-spinner class="marker-manager__toggle-spinner" [diameter]="18" />
+      <mat-spinner class="marker-manager__toggle-spinner" [diameter]="18" />
       } @else {
-        <mat-icon>delete</mat-icon>
+      <mat-icon>delete</mat-icon>
       }
     </button>
     }

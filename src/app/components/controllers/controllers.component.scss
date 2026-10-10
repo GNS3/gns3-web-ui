@@ -1,3 +1,6 @@
+@use '../../../styles/buttons' as buttons;
+@use '../../../styles/page-layout' as page;
+
 :host {
   display: block;
   width: 100%;
@@ -5,7 +8,7 @@
 }
 
 .controllers-page {
-  animation: controllers-fade-in 0.4s ease-out;
+  animation: none;
 }
 
 .controllers-page__header,
@@ -36,10 +39,7 @@
 }
 
 .controllers-page__title {
-  margin: 0;
-  color: var(--mat-sys-on-surface);
-  font-size: 32px;
-  font-weight: 500;
+  @include page.page-title;
   white-space: nowrap;
 }
 
@@ -48,19 +48,7 @@
 }
 
 button.controllers-page__button {
-  height: var(--gns3-density-control-height);
-  border-radius: 12px;
-  padding-inline: 18px;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  text-transform: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover:not([disabled]) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
-  }
+  @include buttons.geometry;
 }
 
 .controllers-page__toolbar {
@@ -104,11 +92,11 @@ button.controllers-page__button {
 .controllers-page__table-container {
   position: relative;
   min-width: 0;
-  overflow: hidden;
   border-radius: 16px;
   background: var(--mat-sys-surface);
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
-    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  border: var(--gns3-surface-border);
+  box-shadow: none;
+  overflow-x: auto;
 }
 
 .controllers-page__table-container--loading {
@@ -145,7 +133,7 @@ mat-table {
 
 mat-row {
   border-left: 3px solid var(--mat-sys-outline-variant);
-  transition: background-color 180ms ease;
+  transition: background-color var(--gns3-motion-duration-standard) ease;
 
   &:nth-child(even) {
     background: color-mix(in srgb, var(--mat-sys-on-surface) 1%, transparent);
@@ -272,7 +260,6 @@ mat-header-cell .mat-sort-header-container {
       text-decoration: underline;
     }
   }
-
 }
 
 .controllers-page__status,
@@ -338,19 +325,16 @@ mat-header-cell .mat-sort-header-container {
 
 button.controllers-page__action {
   --controller-action-color: var(--mat-sys-on-surface-variant);
-  width: 32px;
-  height: 32px;
+  @include buttons.action-icon(var(--gns3-density-control-height-sm));
   color: var(--controller-action-color);
-  --mat-icon-button-state-layer-size: 32px;
-  --mat-icon-button-icon-size: 20px;
+  --mat-icon-button-state-layer-color: var(--controller-action-color);
 
-  mat-icon {
+  &:not(:disabled) mat-icon {
     color: var(--controller-action-color);
-    transition: transform 150ms ease;
   }
 
-  &:hover mat-icon {
-    transform: scale(1.15);
+  &:disabled mat-icon {
+    color: var(--gns3-button-disabled-label-color);
   }
 }
 
@@ -428,7 +412,7 @@ button.controllers-page__action--delete {
     height: 32px;
     border-radius: 50%;
     color: var(--mat-sys-on-surface-variant);
-    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--gns3-motion-duration-standard) cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
 
     &:hover {
@@ -467,17 +451,6 @@ button.controllers-page__action--delete {
   }
 }
 
-@keyframes controllers-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @media (max-width: 900px) {
   .controllers-page__header,
   .controllers-page__toolbar {
@@ -506,10 +479,6 @@ button.controllers-page__action--delete {
   .controllers-page__main,
   .controllers-page__footer {
     padding-inline: 16px;
-  }
-
-  .controllers-page__title {
-    font-size: 25px;
   }
 
   .controllers-page__header-actions {

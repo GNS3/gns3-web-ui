@@ -8,9 +8,9 @@
         can be selected from the dropdown in the HDD tab.
       </p>
       <mat-card class="matCard">
-        <div class="form-container">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px">
-            <mat-form-field class="form-field">
+        <div class="form-container gns3-form-grid-container">
+          <div class="gns3-form-grid">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
               <mat-label>Mount point *</mat-label>
               <mat-select [value]="mountPoint()" (valueChange)="mountPoint.set($event)">
                 @for (mp of mountPointOptions; track mp) {
@@ -18,7 +18,7 @@
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field class="form-field">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
               <mat-label>Filename *</mat-label>
               <input
                 matInput
@@ -30,7 +30,7 @@
             </mat-form-field>
           </div>
 
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Format *</mat-label>
             <mat-select [value]="format()" (valueChange)="format.set($event)">
               @for (format of formatOptions; track format) {
@@ -39,12 +39,12 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Size (MB) *</mat-label>
             <input matInput type="text" [value]="size()" (input)="size.set($event.target.value)" />
           </mat-form-field>
 
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Preallocation</mat-label>
             <mat-select [value]="preallocation()" (valueChange)="preallocation.set($event)">
               @for (prealloc of preallocationsOptions; track prealloc) {
@@ -53,7 +53,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Lazy refcounts</mat-label>
             <mat-select [value]="lazyRefcounts()" (valueChange)="lazyRefcounts.set($event)">
               <mat-option value="on">on</mat-option>
@@ -62,7 +62,7 @@
           </mat-form-field>
 
           @if (format() === 'qcow2') {
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Cluster size (KB)</mat-label>
             <mat-select [value]="clusterSize()" (valueChange)="clusterSize.set($event)">
               <mat-option value="">Default (64)</mat-option>
@@ -72,7 +72,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Refcount bits</mat-label>
             <mat-select [value]="refcountBits()" (valueChange)="refcountBits.set($event)">
               <mat-option value="">Default (12)</mat-option>
@@ -82,7 +82,7 @@
             </mat-select>
           </mat-form-field>
           } @if (format() === 'vmdk') {
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Subformat</mat-label>
             <mat-select [value]="subformat()" (valueChange)="subformat.set($event)">
               <mat-option value="">Default</mat-option>
@@ -92,7 +92,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Adapter type</mat-label>
             <mat-select [value]="adapterType()" (valueChange)="adapterType.set($event)">
               <mat-option value="">Default</mat-option>
@@ -102,7 +102,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Zeroed grain</mat-label>
             <mat-select [value]="zeroedGrain()" (valueChange)="zeroedGrain.set($event)">
               <mat-option value="">Default</mat-option>
@@ -111,7 +111,7 @@
             </mat-select>
           </mat-form-field>
           } @if (format() === 'vhd' || format() === 'vpc') {
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Subformat</mat-label>
             <mat-select [value]="subformat()" (valueChange)="subformat.set($event)">
               <mat-option value="">Default</mat-option>
@@ -121,7 +121,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Static</mat-label>
             <mat-select [value]="static()" (valueChange)="static.set($event)">
               <mat-option value="">Default</mat-option>
@@ -130,7 +130,7 @@
             </mat-select>
           </mat-form-field>
           } @if (format() === 'vdi') {
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
             <mat-label>Static</mat-label>
             <mat-select [value]="static()" (valueChange)="static.set($event)">
               <mat-option value="">Default</mat-option>
@@ -149,9 +149,7 @@
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
   <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying()">
     @if (isApplying()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      Apply
-    }
+    <mat-spinner diameter="20"></mat-spinner>
+    } @else { Apply }
   </button>
 </div>

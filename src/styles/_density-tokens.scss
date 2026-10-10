@@ -16,6 +16,26 @@
  */
 
 :root {
+  --gns3-font-code: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+  --gns3-surface-border: 1px solid var(--mat-sys-outline-variant);
+  --gns3-motion-duration-standard: 160ms;
+  --gns3-motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --gns3-action-icon-size: 20px;
+  --gns3-action-gap: var(--gns3-density-space-1);
+  --gns3-status-indicator-size: 10px;
+  --gns3-status-available-color: var(--custom-mat-sys-success);
+  --gns3-status-unavailable-color: var(--mat-sys-error);
+  /* Shared button typography in both densities. */
+  --gns3-button-label-size: 15px;
+  --gns3-button-label-weight: 500;
+  --gns3-button-label-line-height: 20px;
+  --gns3-button-label-spacing: 0.3px;
+  --gns3-helper-text-size: 12px;
+  --gns3-helper-text-line-height: 16px;
+  --gns3-helper-text-weight: 400;
+  --gns3-button-disabled-label-color: color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent);
+  --gns3-button-disabled-container-color: color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent);
+
   /* ---- Control heights (buttons, inputs, tab items) ---- */
   --gns3-density-control-height: 44px; // default action/control
   --gns3-density-control-height-sm: 36px; // small/secondary controls
@@ -35,6 +55,9 @@
   --gns3-density-space-4: 16px;
   --gns3-density-space-5: 24px;
   --gns3-density-space-6: 32px;
+
+  // Space between form control surfaces; fixed helper rows consume this gap.
+  --gns3-form-row-gap: var(--gns3-density-space-4);
 
   /* ---- Structural spacing ---- */
   --gns3-density-page-padding: 24px;
@@ -57,6 +80,12 @@
   --gns3-density-section-title-size: 21px;
   --gns3-density-section-header-font: var(--mat-sys-title-large-font, Roboto, sans-serif);
   --gns3-density-section-header-title-size: calc(var(--gns3-density-section-title-size) + 2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --gns3-motion-duration-standard: 0ms;
+  }
 }
 
 /* Compact density: scale all tokens down to the density -2 baseline. */
@@ -91,14 +120,14 @@ html[data-density='compact'] {
   );
   --gns3-density-section-header-padding: 8px 16px;
 
-  /* ---- Corner radii ---- */
+  /* ---- Corner radius ---- */
   --gns3-density-radius-sm: 6px;
   --gns3-density-radius-md: 8px;
   --gns3-density-radius-lg: 10px;
   --gns3-density-radius-xl: 12px;
 
   /* ---- Typography ---- */
-  --gns3-density-page-title-size: 27px;
+  --gns3-density-page-title-size: 24px;
   --gns3-density-section-title-size: 18px;
   --gns3-density-section-header-font: var(--mat-sys-title-large-font, Roboto, sans-serif);
   --gns3-density-section-header-title-size: calc(var(--gns3-density-section-title-size) + 2px);

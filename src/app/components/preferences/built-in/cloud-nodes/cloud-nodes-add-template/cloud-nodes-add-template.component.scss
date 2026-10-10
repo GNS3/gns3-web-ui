@@ -21,7 +21,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  animation: fadeInSlideIn 0.4s ease-out;
+  animation: none;
 }
 
 .cloud-nodes-add__back-btn {
@@ -29,7 +29,7 @@
   height: 48px;
   border-radius: 12px;
   color: var(--mat-sys-on-surface);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--gns3-motion-duration-standard) cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
@@ -51,7 +51,7 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 0 20px 20px;
-  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+  animation: none;
 }
 
 /* =============================================
@@ -117,16 +117,6 @@
 /* =============================================
 // Animations
 // ============================================= */
-@keyframes fadeInSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 /* =============================================
 // Responsive Design

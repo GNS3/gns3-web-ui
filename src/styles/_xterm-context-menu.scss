@@ -65,11 +65,11 @@
   max-width: 240px;
 
   /* Typography */
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: var(--mat-sys-body-medium-font, Roboto), sans-serif;
   font-size: 13px;
 
   /* Animation */
-  animation: xtermContextMenuFadeIn 150ms var(--mat-sys-motion-easing-emphasized);
+  animation: xtermContextMenuFadeIn var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
 
   /* Interaction */
   cursor: default;
@@ -92,8 +92,8 @@
 
     /* Interaction */
     cursor: pointer;
-    transition: background-color 150ms var(--mat-sys-motion-easing-linear),
-      color 150ms var(--mat-sys-motion-easing-linear);
+    transition: background-color var(--gns3-motion-duration-standard) linear,
+      color var(--gns3-motion-duration-standard) linear;
 
     /* Accessibility */
     &[role='menuitem']:focus-visible {

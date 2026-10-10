@@ -23,10 +23,22 @@ import { ValidationService } from '@services/validation';
   styleUrl: '../../../../preferences/preferences.component.scss',
   styles: [
     `
+      :host {
+        display: block;
+        min-width: 0;
+        container-type: inline-size;
+      }
+
       .fr-switch__input-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0 16px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0 var(--gns3-density-space-4);
+      }
+
+      @container (max-width: 480px) {
+        .fr-switch__input-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
       }
 
       .fr-switch__add-btn {

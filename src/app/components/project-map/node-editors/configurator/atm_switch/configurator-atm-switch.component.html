@@ -13,9 +13,9 @@
 
 <div class="modal-form-container">
   @if (isLoading()) {
-    <div class="configurator-dialog-loading">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
+  <div class="configurator-dialog-loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
   } @else {
   <div class="node-config__single-tab" role="tablist" aria-label="Node configuration sections">
     <div role="tab" aria-selected="true">
@@ -26,7 +26,7 @@
     <div class="default-content">
       <mat-card>
         <h2 class="node-config__section-heading">ATM mappings</h2>
-        <mat-form-field class="form-field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
           <mat-label>Name</mat-label>
           <input matInput type="text" [value]="nameSignal()" (input)="nameSignal.set($event.target.value)" />
         </mat-form-field>
@@ -34,12 +34,12 @@
           Use VPI only (VP tunnel)
         </mat-checkbox>
 
-        <div class="atm-switch__input-grid">
-          <mat-form-field class="form-field">
+        <div class="atm-switch__input-grid gns3-form-layout-fixed">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Source Port</mat-label>
             <input matInput type="text" [value]="sourcePort()" (input)="sourcePort.set($event.target.value)" />
           </mat-form-field>
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Destination Port</mat-label>
             <input
               matInput
@@ -50,23 +50,23 @@
           </mat-form-field>
         </div>
 
-        <div class="atm-switch__input-grid">
-          <mat-form-field class="form-field">
+        <div class="atm-switch__input-grid gns3-form-layout-fixed">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Source VCI</mat-label>
             <input matInput type="text" [value]="sourceVci()" (input)="sourceVci.set($event.target.value)" />
           </mat-form-field>
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Destination VCI</mat-label>
             <input matInput type="text" [value]="destinationVci()" (input)="destinationVci.set($event.target.value)" />
           </mat-form-field>
         </div>
 
-        <div class="atm-switch__input-grid">
-          <mat-form-field class="form-field">
+        <div class="atm-switch__input-grid gns3-form-layout-fixed">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Source VPI</mat-label>
             <input matInput type="text" [value]="sourceVpi()" (input)="sourceVpi.set($event.target.value)" />
           </mat-form-field>
-          <mat-form-field class="form-field">
+          <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-field">
             <mat-label>Destination VPI</mat-label>
             <input matInput type="text" [value]="destinationVpi()" (input)="destinationVpi.set($event.target.value)" />
           </mat-form-field>
@@ -112,11 +112,16 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isApplying() || isLoading()">
+  <button
+    mat-button
+    (click)="onSaveClick()"
+    tabindex="2"
+    mat-raised-button
+    color="primary"
+    [disabled]="isApplying() || isLoading()"
+  >
     @if (isApplying()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      Apply
-    }
+    <mat-spinner diameter="20"></mat-spinner>
+    } @else { Apply }
   </button>
 </div>

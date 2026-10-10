@@ -82,7 +82,7 @@ mat-dialog-title {
     }
 
     code {
-      font-family: 'Courier New', monospace;
+      font-family: var(--gns3-font-code);
       font-size: 13px;
       background: var(--mat-sys-surface-container-high);
       color: var(--mat-sys-on-surface);

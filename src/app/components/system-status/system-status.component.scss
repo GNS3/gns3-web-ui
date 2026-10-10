@@ -1,3 +1,6 @@
+@use '../../../styles/buttons' as buttons;
+@use '../../../styles/page-layout' as page;
+
 :host {
   display: block;
   width: 100%;
@@ -30,13 +33,10 @@
 }
 
 .system-status__title {
+  @include page.page-title;
   display: flex;
   align-items: center;
   gap: var(--gns3-density-space-3);
-  margin: 4px 0 2px;
-  font-size: 32px;
-  font-weight: 680;
-  letter-spacing: -0.02em;
 }
 
 .system-status__title mat-icon {
@@ -53,19 +53,7 @@
 }
 
 .system-status__header-actions button {
-  height: var(--gns3-density-control-height);
-  padding-inline: 18px;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  text-transform: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover:not([disabled]) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
-  }
+  @include buttons.geometry;
 }
 
 .system-status__header-actions mat-progress-spinner {
@@ -404,7 +392,7 @@
   height: 100%;
   border-radius: inherit;
   background: var(--resource-color);
-  transition: width 300ms ease;
+  transition: width var(--gns3-motion-duration-standard) ease;
 }
 
 .resource-meter small {
@@ -507,10 +495,6 @@
 @media (max-width: 640px) {
   .system-status {
     padding: 18px 14px 30px;
-  }
-
-  .system-status__title {
-    font-size: 27px;
   }
 
   .system-status__header-actions {

@@ -18,8 +18,16 @@
   <div class="resize-handle resize-handle-left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
   <div class="resize-handle resize-handle-top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
   <div class="resize-handle resize-handle-top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
-  <div class="resize-handle resize-handle-bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
-  <div class="resize-handle resize-handle-bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+  <div
+    class="resize-handle resize-handle-bottom-left"
+    mwlResizeHandle
+    [resizeEdges]="{ bottom: true, left: true }"
+  ></div>
+  <div
+    class="resize-handle resize-handle-bottom-right"
+    mwlResizeHandle
+    [resizeEdges]="{ bottom: true, right: true }"
+  ></div>
 
   <mat-tab-group
     class="inspector-tabs"
@@ -151,7 +159,7 @@
           </div>
         </div>
 
-        <mat-menu #nodeActionsMenu="matMenu">
+        <mat-menu #nodeActionsMenu="matMenu" class="topology-node-actions-menu">
           <button mat-menu-item [disabled]="!canOpenConsole(selectedNode)" (click)="openConsole()">
             <mat-icon>terminal</mat-icon>
             <span>Open console</span>
@@ -191,23 +199,19 @@
             </span>
             <span class="compute-metric">
               <span>CPU</span>
-              <strong
-                >{{
-                  compute.cpu_usage_percent !== null && compute.cpu_usage_percent !== undefined
-                    ? (compute.cpu_usage_percent | number: '1.0-1') + '%'
-                    : '-'
-                }}</strong
-              >
+              <strong>{{
+                compute.cpu_usage_percent !== null && compute.cpu_usage_percent !== undefined
+                  ? (compute.cpu_usage_percent | number : '1.0-1') + '%'
+                  : '-'
+              }}</strong>
             </span>
             <span class="compute-metric">
               <span>Memory</span>
-              <strong
-                >{{
-                  compute.memory_usage_percent !== null && compute.memory_usage_percent !== undefined
-                    ? (compute.memory_usage_percent | number: '1.0-1') + '%'
-                    : '-'
-                }}</strong
-              >
+              <strong>{{
+                compute.memory_usage_percent !== null && compute.memory_usage_percent !== undefined
+                  ? (compute.memory_usage_percent | number : '1.0-1') + '%'
+                  : '-'
+              }}</strong>
             </span>
           </div>
           } @empty {

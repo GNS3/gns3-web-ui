@@ -125,7 +125,7 @@ g.node:hover {
   align-items: center;
   @extend .shadow-normal;
   z-index: 2;
-  transition: background-color 200ms ease;
+  transition: background-color var(--gns3-motion-duration-standard) ease;
 
   // Set all icons to white
   mat-icon {
@@ -201,7 +201,7 @@ g.node:hover {
     border-radius: 20px;
     background: none;
     font-size: 14px;
-    transition: transform 100ms ease;
+    transition: transform var(--gns3-motion-duration-standard) ease;
 
     mat-icon {
       color: var(--mat-sys-on-primary);
@@ -257,7 +257,7 @@ g.node:hover {
   border-radius: 0 0 4px 0;
   @extend .shadow-subtle;
   z-index: 2;
-  transition: background-color 200ms ease;
+  transition: background-color var(--gns3-motion-duration-standard) ease;
 
   // Ensure toolbar itself is a flex container
   display: flex;
@@ -301,7 +301,7 @@ g.node:hover {
     height: 40px;
     border-radius: 20px;
     margin: 2px 0;
-    transition: transform 100ms ease;
+    transition: transform var(--gns3-motion-duration-standard) ease;
   }
 
   .menu-button:hover,
@@ -377,7 +377,7 @@ img {
   background: var(--mat-sys-surface);
   height: 48px;
   padding-top: 16px;
-  transition: background-color 200ms ease;
+  transition: background-color var(--gns3-motion-duration-standard) ease;
 
   .arrow-button {
     outline: 0;
@@ -402,16 +402,15 @@ img {
   height: 48px;
   padding-top: 16px;
   padding-bottom: 16px;
-  transition: 35s;
   width: 0;
   overflow: hidden;
-  transition: 100ms ease;
+  transition: var(--gns3-motion-duration-standard) ease;
   @extend .shadow-medium;
   display: flex;
 
   .menu-button {
     outline: 0;
-    transition: 0.5s;
+    transition: var(--gns3-motion-duration-standard) ease;
     margin-bottom: 16px;
     width: 40px;
     margin-right: 16px;
@@ -424,7 +423,7 @@ img {
 
   .arrow-button {
     outline: 0;
-    transition: 0.5s;
+    transition: var(--gns3-motion-duration-standard) ease;
     margin-bottom: 16px;
   }
 }
@@ -512,7 +511,7 @@ g.drawing_body.drawing_selected .rotation-handle-stem {
 
 g.drawing_body.drawing_selected .rotation-handle-knob {
   fill: var(--mat-sys-primary);
-  stroke: var(--gns3-bright-text);
+  stroke: var(--mat-sys-on-primary);
   stroke-width: 2;
 }
 
@@ -544,7 +543,8 @@ g.node text,
     box-sizing: border-box;
     align-items: center;
     padding-inline: var(--gns3-density-space-3);
-    transition: color 120ms ease, background-color 120ms ease;
+    transition: color var(--gns3-motion-duration-standard) ease,
+      background-color var(--gns3-motion-duration-standard) ease;
   }
 
   mat-checkbox:not(.mat-mdc-checkbox-disabled):hover {
@@ -588,18 +588,18 @@ g.node text,
     width: 180px;
     cursor: pointer;
     user-select: none;
-    transition: background-color 150ms var(--mat-sys-motion-easing-linear);
+    transition: background-color var(--gns3-motion-duration-standard) linear;
     background: var(--mat-sys-surface);
     border-radius: 8px;
     box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
       0 0 0 1px var(--mat-sys-outline-variant);
 
     &:hover {
-      background: var(--mat-sys-hover-state-layer);
+      background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, var(--mat-sys-surface));
     }
 
     &:active {
-      background: var(--mat-sys-focus-state-layer);
+      background: color-mix(in srgb, var(--mat-sys-on-surface) 12%, var(--mat-sys-surface));
     }
 
     // Minimized state - slightly different appearance

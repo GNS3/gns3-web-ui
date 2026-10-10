@@ -1,8 +1,8 @@
 <h1 mat-dialog-title>Create new user</h1>
 <form [formGroup]="addUserForm">
-  <div mat-dialog-content>
-    <div class="form-row">
-      <mat-form-field appearance="fill">
+  <div mat-dialog-content class="gns3-form-stack">
+    <div class="form-row gns3-form-layout-fixed">
+      <mat-form-field appearance="outline">
         <mat-label>Username</mat-label>
         <input matInput type="text" formControlName="username" placeholder="Username" />
         @if (form.username?.touched && form.username?.errors && form.username?.errors.required) {
@@ -14,13 +14,13 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="outline">
         <mat-label>Full name</mat-label>
         <input matInput type="text" formControlName="full_name" placeholder="Full name" />
       </mat-form-field>
     </div>
 
-    <mat-form-field appearance="fill" class="full-width-field">
+    <mat-form-field appearance="outline" class="full-width-field">
       <mat-label>Email</mat-label>
       <input matInput type="text" formControlName="email" placeholder="Email" />
       @if (form.email?.touched && form.email?.errors && form.email?.errors.required) {
@@ -30,20 +30,32 @@
       }
     </mat-form-field>
 
-    <div class="form-row">
-      <mat-form-field appearance="fill">
+    <div class="form-row gns3-form-layout-fixed">
+      <mat-form-field appearance="outline">
         <mat-label>Password</mat-label>
         <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Password" />
-        <mat-icon matSuffix (click)="hidePassword = !hidePassword" style="cursor: pointer; font-size: 18px;">{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        <mat-icon matSuffix (click)="hidePassword = !hidePassword" style="cursor: pointer; font-size: 18px">{{
+          hidePassword ? 'visibility_off' : 'visibility'
+        }}</mat-icon>
         @if (form.password?.touched && form.password?.errors) {
         <mat-error>A password between 6 and 100 characters is required.</mat-error>
         }
       </mat-form-field>
 
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="outline">
         <mat-label>Confirm Password</mat-label>
-        <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword" placeholder="Confirm Password" />
-        <mat-icon matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" style="cursor: pointer; font-size: 18px;">{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        <input
+          matInput
+          [type]="hideConfirmPassword ? 'password' : 'text'"
+          formControlName="confirmPassword"
+          placeholder="Confirm Password"
+        />
+        <mat-icon
+          matSuffix
+          (click)="hideConfirmPassword = !hideConfirmPassword"
+          style="cursor: pointer; font-size: 18px"
+          >{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon
+        >
         @if (form.confirmPassword?.touched && form.confirmPassword?.errors) {
         <mat-error>Password and Confirm password must be the same.</mat-error>
         }
@@ -54,9 +66,16 @@
     <mat-divider class="my-2"></mat-divider>
     <h6>Add user to groups:</h6>
 
-    <mat-form-field appearance="fill" class="full-width-field">
+    <mat-form-field appearance="outline" class="full-width-field">
       <mat-label>Groups</mat-label>
-      <input type="text" matInput [matAutocomplete]="auto" [formControl]="autocompleteControl" (click)="openGroupPanel()" #groupInput />
+      <input
+        type="text"
+        matInput
+        [matAutocomplete]="auto"
+        [formControl]="autocompleteControl"
+        (click)="openGroupPanel()"
+        #groupInput
+      />
       <mat-autocomplete
         #auto="matAutocomplete"
         [displayWith]="displayFn"

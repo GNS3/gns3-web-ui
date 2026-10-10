@@ -7,7 +7,7 @@
 .delete-files {
   display: flex;
   flex-direction: column;
-  min-width: 400px;
+  min-width: 0;
 }
 
 /* =============================================
@@ -92,7 +92,8 @@
 // ============================================= */
 @media (max-width: 480px) {
   .delete-files {
-    min-width: 300px;
+    min-width: 0;
+    width: min(300px, 100%);
   }
 
   .delete-files__title {

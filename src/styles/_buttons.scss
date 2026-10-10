@@ -1,0 +1,97 @@
+// Geometry is shared; Material button variants retain their visual hierarchy.
+@mixin geometry($height: var(--gns3-density-control-height)) {
+  height: $height;
+  min-height: $height;
+  padding-inline: var(--gns3-density-space-4);
+  border-radius: var(--gns3-density-radius-lg);
+  font-family: var(--mat-sys-label-large-font, Roboto), sans-serif;
+  font-size: var(--gns3-button-label-size);
+  font-weight: var(--gns3-button-label-weight);
+  line-height: var(--gns3-button-label-line-height);
+  letter-spacing: var(--gns3-button-label-spacing);
+  text-transform: none;
+
+  @each $variant in filled, outlined, protected, text {
+    --mat-button-#{$variant}-container-height: #{$height};
+    --mat-button-#{$variant}-label-text-size: var(--gns3-button-label-size);
+    --mat-button-#{$variant}-label-text-weight: var(--gns3-button-label-weight);
+    --mat-button-#{$variant}-label-text-tracking: var(--gns3-button-label-spacing);
+  }
+}
+
+@mixin primary {
+  &:not(:disabled) {
+    color: var(--mat-sys-on-primary);
+    background-color: var(--mat-sys-primary);
+    --mat-button-protected-label-text-color: var(--mat-sys-on-primary);
+    --mat-button-protected-container-color: var(--mat-sys-primary);
+    --mat-button-protected-state-layer-color: var(--mat-sys-on-primary);
+  }
+}
+
+@mixin secondary {
+  &:not(:disabled) {
+    color: var(--mat-sys-on-surface);
+    border-color: var(--mat-sys-outline);
+    --mat-button-outlined-label-text-color: var(--mat-sys-on-surface);
+    --mat-button-outlined-state-layer-color: var(--mat-sys-on-surface);
+  }
+}
+
+@mixin disabled {
+  &:disabled {
+    color: var(--gns3-button-disabled-label-color);
+    background-color: var(--gns3-button-disabled-container-color);
+    box-shadow: none;
+
+    @each $variant in filled, protected, tonal {
+      --mat-button-#{$variant}-disabled-label-text-color: var(--gns3-button-disabled-label-color);
+      --mat-button-#{$variant}-disabled-container-color: var(--gns3-button-disabled-container-color);
+    }
+  }
+}
+
+@mixin destructive {
+  &:not(:disabled) {
+    color: var(--mat-sys-on-error);
+    background-color: var(--mat-sys-error);
+    --mat-button-filled-label-text-color: var(--mat-sys-on-error);
+    --mat-button-filled-container-color: var(--mat-sys-error);
+    --mat-button-filled-state-layer-color: var(--mat-sys-on-error);
+  }
+}
+
+@mixin icon($size: var(--gns3-density-icon-button)) {
+  width: $size;
+  height: $size;
+  --mat-icon-button-state-layer-size: #{$size};
+  border-radius: var(--gns3-density-radius-lg);
+}
+
+@mixin action-icon($size: var(--gns3-density-icon-button)) {
+  @include icon($size);
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  --mat-icon-button-icon-size: var(--gns3-action-icon-size);
+  --mat-icon-button-touch-target-size: #{$size};
+
+  mat-icon {
+    width: var(--gns3-action-icon-size);
+    height: var(--gns3-action-icon-size);
+    font-size: var(--gns3-action-icon-size);
+    line-height: var(--gns3-action-icon-size);
+  }
+}
+
+@mixin action-column($count) {
+  $width: calc(
+    #{$count} * var(--gns3-density-icon-button) + (#{$count} - 1) * var(--gns3-action-gap) + 2 * var(--gns3-density-space-4)
+  );
+  flex: 0 0 $width;
+  min-width: $width;
+  box-sizing: border-box;
+  padding-inline: var(--gns3-density-space-4);
+}

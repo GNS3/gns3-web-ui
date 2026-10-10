@@ -1,3 +1,4 @@
+@if (!embedded()) {
 <div mat-dialog-title class="node-config__header">
   <h1 class="node-config__title">
     Edit network configuration <span aria-hidden="true">—</span> Docker {{ node?.name }}
@@ -13,7 +14,9 @@
   </button>
 </div>
 
-<div class="network-editor__shell">
+}
+
+<div class="network-editor__shell" [class.network-editor__shell--embedded]="embedded()">
   <aside class="network-editor__sidebar" aria-label="Network configuration sections">
     <nav>
       <button
@@ -49,7 +52,9 @@
     <div class="network-editor__empty-state" role="alert">
       <mat-icon>error_outline</mat-icon>
       <h3>Network configuration could not be loaded</h3>
-      <p>Close this dialog and try again. No changes can be applied until the current file is available.</p>
+      <p>
+        Reopen the network configuration and try again. No changes can be applied until the current file is available.
+      </p>
     </div>
     } @else if (activeSection() === 'interfaces') {
     <section aria-labelledby="network-editor-interfaces-title">
@@ -93,7 +98,7 @@
             <div class="network-editor__subsection">
               <h4>IPv4 configuration</h4>
               <div class="form-grid">
-                <mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="fixed">
                   <mat-label>Addressing mode</mat-label>
                   <mat-select
                     [value]="networkInterface.ipv4Mode"
@@ -105,7 +110,7 @@
                   </mat-select>
                 </mat-form-field>
 
-                <mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="fixed">
                   <mat-label>Hostname</mat-label>
                   <input
                     matInput
@@ -118,7 +123,7 @@
                   }
                 </mat-form-field>
 
-                <mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="fixed">
                   <mat-label>MTU</mat-label>
                   <input
                     matInput
@@ -133,7 +138,7 @@
                 </mat-form-field>
 
                 @if (networkInterface.ipv4Mode === 'static') {
-                <mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="fixed">
                   <mat-label>IPv4 address</mat-label>
                   <input
                     matInput
@@ -146,7 +151,7 @@
                   }
                 </mat-form-field>
 
-                <mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="fixed">
                   <mat-label>Subnet mask</mat-label>
                   <mat-select
                     [value]="networkInterface.netmask"
@@ -161,7 +166,7 @@
                   }
                 </mat-form-field>
 
-                <mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="fixed">
                   <mat-label>IPv4 gateway</mat-label>
                   <input
                     matInput
@@ -175,7 +180,7 @@
                 </mat-form-field>
                 }
 
-                <mat-form-field class="form-grid__full">
+                <mat-form-field appearance="outline" subscriptSizing="fixed" class="form-grid__full">
                   <mat-label>DNS nameservers</mat-label>
                   <input
                     matInput
@@ -194,7 +199,7 @@
             <div class="network-editor__subsection">
               <h4>IPv6 configuration</h4>
               <div class="form-grid">
-                <mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="fixed">
                   <mat-label>Addressing mode</mat-label>
                   <mat-select
                     [value]="networkInterface.ipv6Mode"
@@ -209,7 +214,7 @@
                 </mat-form-field>
 
                 @if (networkInterface.ipv6Mode === 'static') {
-                <mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="fixed">
                   <mat-label>IPv6 address</mat-label>
                   <input
                     matInput
@@ -222,7 +227,7 @@
                   }
                 </mat-form-field>
 
-                <mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="fixed">
                   <mat-label>Prefix length</mat-label>
                   <input
                     matInput
@@ -236,7 +241,7 @@
                   }
                 </mat-form-field>
 
-                <mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="fixed">
                   <mat-label>IPv6 gateway</mat-label>
                   <input
                     matInput
@@ -289,6 +294,21 @@
   </main>
 </div>
 
+@if (embedded()) {
+<div class="network-editor__actions">
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    [disabled]="blocked() || loading() || loadFailed() || saving()"
+    (click)="onSaveClick()"
+  >
+    @if (saving()) {
+    <mat-spinner diameter="20"></mat-spinner>
+    } @else { Apply network configuration }
+  </button>
+</div>
+} @if (!embedded()) {
 <div mat-dialog-actions>
   <button mat-button color="accent" type="button" [disabled]="saving()" (click)="onCancelClick()">Cancel</button>
   <button
@@ -301,9 +321,9 @@
     [disabled]="loading() || loadFailed() || saving()"
   >
     @if (saving()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      Apply
-    }
+    <mat-spinner diameter="20"></mat-spinner>
+    } @else { Apply }
   </button>
 </div>
+
+}

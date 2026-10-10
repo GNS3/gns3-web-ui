@@ -79,7 +79,7 @@
 
 .upload-item {
   padding: 8px 8px 8px;
-  transition: opacity 0.4s ease, max-height 0.4s ease;
+  transition: opacity var(--gns3-motion-duration-standard) ease, max-height var(--gns3-motion-duration-standard) ease;
   opacity: 1;
 
   &.dismissing {

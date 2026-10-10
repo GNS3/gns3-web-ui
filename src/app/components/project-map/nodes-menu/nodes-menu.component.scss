@@ -15,7 +15,7 @@
 
 .menu-button {
   margin: 0 4px;
-  transition: transform 100ms ease;
+  transition: transform var(--gns3-motion-duration-standard) ease;
 
   mat-icon {
     color: var(--mat-sys-on-primary);

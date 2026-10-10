@@ -1,4 +1,8 @@
+@use '../../../../styles/buttons' as buttons;
+@use '../../../../styles/forms' as forms;
+
 .marker-manager {
+  @include forms.outlined;
   position: fixed;
   z-index: 1000;
   background: var(--mat-sys-surface);
@@ -7,7 +11,7 @@
   box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent),
     0 4px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
   overflow: visible;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow var(--gns3-motion-duration-standard) ease;
 
   &:hover {
     box-shadow: 0 12px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
@@ -75,12 +79,8 @@
 
     .minimize-button,
     .close-button {
-      width: 24px;
-      height: 24px;
-      padding: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      --gns3-action-icon-size: 16px;
+      @include buttons.action-icon(24px);
       vertical-align: middle;
 
       mat-icon {
@@ -109,7 +109,34 @@
   }
 
   &__panel {
+    container: marker-pane / inline-size;
     padding: 12px 16px 16px;
+  }
+
+  &__single-grid,
+  &__definition-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--gns3-form-row-gap);
+    align-items: start;
+  }
+
+  &__definition-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: var(--gns3-form-row-gap);
+  }
+
+  &__definition-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--gns3-density-space-3);
+    margin-bottom: var(--gns3-density-space-4);
+
+    button {
+      @include buttons.geometry;
+    }
   }
 
   &__form {
@@ -307,10 +334,11 @@
     }
   }
 
-  // Match the configurator-dialog style: no appearance, full-width cells
+  // Match outlined configurator fields without a second helper-row gap.
   .form-field {
     width: 100%;
-    margin-bottom: 4px;
+    min-width: 0;
+    margin: 0;
   }
 
   .global-prefix {
@@ -318,10 +346,19 @@
   }
 
   .color-input {
+    display: block;
+    appearance: none;
+    border: 0;
+    border-radius: var(--gns3-density-radius-sm);
     cursor: pointer;
     block-size: 20px;
     inline-size: 100%;
     box-sizing: border-box;
+
+    &:focus-visible {
+      outline: 2px solid var(--mat-sys-primary);
+      outline-offset: 3px;
+    }
   }
 
   .add-button {
@@ -342,12 +379,8 @@
   }
 
   .marker-manager__row button.mat-mdc-icon-button {
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    --gns3-action-icon-size: 16px;
+    @include buttons.action-icon(28px);
 
     mat-icon {
       font-size: 16px;
@@ -367,12 +400,24 @@
   }
 }
 
+@container marker-pane (max-width: 800px) {
+  .marker-manager__definition-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container marker-pane (max-width: 480px) {
+  .marker-manager__definition-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 // ---- resize handles (cloned from node-file-manager-inline) ----
 .resize-handle {
   position: absolute;
   z-index: 100;
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--gns3-motion-duration-standard) ease;
 
   .marker-manager:hover & {
     opacity: 1;

@@ -146,13 +146,10 @@ app-markdown-viewer {
 
   // Inline code
   code {
-    background-color: var(
-      --markdown-viewer-code-bg,
-      color-mix(in srgb, var(--mat-sys-on-surface) 15%, transparent)
-    );
+    background-color: var(--markdown-viewer-code-bg, color-mix(in srgb, var(--mat-sys-on-surface) 15%, transparent));
     padding: 2px 6px;
     border-radius: 4px;
-    font-family: monospace;
+    font-family: var(--gns3-font-code);
     font-size: 0.9em;
   }
 
@@ -182,7 +179,7 @@ app-markdown-viewer {
     cursor: pointer;
     max-height: 400px;
     overflow: hidden;
-    transition: max-height 0.3s ease;
+    transition: max-height var(--gns3-motion-duration-standard) ease;
 
     &::after {
       content: '▼ View full code (click to expand)';

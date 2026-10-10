@@ -1,5 +1,5 @@
 .template__add-btn {
-  transition: transform 100ms ease;
+  transition: transform var(--gns3-motion-duration-standard) ease;
 
   mat-icon {
     color: var(--mat-sys-on-primary);

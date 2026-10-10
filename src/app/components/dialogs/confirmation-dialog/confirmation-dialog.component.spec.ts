@@ -101,11 +101,45 @@ describe('ConfirmationDialogComponent', () => {
 
     it('should render optional details and note', () => {
       expect(fixture.nativeElement.querySelectorAll('.confirmation-dialog__details li').length).toBe(2);
-      expect(fixture.nativeElement.querySelector('.confirmation-dialog__note').textContent).toContain('cannot be undone');
+      expect(fixture.nativeElement.querySelector('.confirmation-dialog__note').textContent).toContain(
+        'cannot be undone'
+      );
     });
   });
 
   describe('actions', () => {
+    async function renderDialog(data: ConfirmationDialogData) {
+      fixture.destroy();
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [ConfirmationDialogComponent],
+        providers: [
+          { provide: MatDialogRef, useValue: mockDialogRef },
+          { provide: MAT_DIALOG_DATA, useValue: data },
+        ],
+      }).compileComponents();
+      fixture = TestBed.createComponent(ConfirmationDialogComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }
+
+    it.each(['danger', 'warning', 'neutral'] as const)('should confirm from the rendered %s action', async (tone) => {
+      await renderDialog({ ...defaultDialogData, tone });
+
+      const buttons = fixture.nativeElement.querySelectorAll('.confirm-button');
+      expect(buttons.length).toBe(1);
+      buttons[0].click();
+      expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+    });
+
+    it('should keep the confirm action hidden when requested', async () => {
+      await renderDialog({ ...defaultDialogData, hideConfirm: true });
+
+      expect(fixture.nativeElement.querySelector('.confirm-button')).toBeNull();
+      fixture.nativeElement.querySelector('.cancel-button').click();
+      expect(mockDialogRef.close).toHaveBeenCalledWith(false);
+    });
+
     it('should close dialog with false on onNoClick', () => {
       component.onNoClick();
       expect(mockDialogRef.close).toHaveBeenCalledWith(false);
