@@ -285,6 +285,220 @@ describe('NewTemplateDialogComponent', () => {
     fixture.destroy();
   });
 
+  describe('custom files confirmation', () => {
+    it('waits for Yes before enabling custom files', () => {
+      const answer = new Subject<boolean>();
+      mockDialog.open.mockReturnValue({ afterClosed: () => answer });
+      const source = { checked: true };
+      component.onAllowCustomFilesChange({ checked: true, source } as any);
+      expect(source.checked).toBe(false);
+      expect(component.allowCustomFiles()).toBe(false);
+      expect(mockDialog.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({
+            title: 'Custom files',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            message: expect.stringContaining('Do you want to proceed?'),
+          }),
+        })
+      );
+      answer.next(true);
+      expect(component.allowCustomFiles()).toBe(true);
+    });
+
+    it.each([false, undefined])('keeps custom files disabled after declining or dismissing (%s)', (answer) => {
+      mockDialog.open.mockReturnValue({ afterClosed: () => of(answer) });
+      component.onAllowCustomFilesChange({ checked: true, source: { checked: true } } as any);
+      expect(component.allowCustomFiles()).toBe(false);
+    });
+
+    it('disables custom files without prompting when unchecked', () => {
+      component.allowCustomFiles.set(true);
+      component.onAllowCustomFilesChange({ checked: false } as any);
+      expect(component.allowCustomFiles()).toBe(false);
+      expect(mockDialog.open).not.toHaveBeenCalled();
+    });
+
+    it('does not enable custom files for a different appliance after confirmation', () => {
+      const answer = new Subject<boolean>();
+      mockDialog.open.mockReturnValue({ afterClosed: () => answer });
+      component.onAllowCustomFilesChange({ checked: true, source: { checked: true } } as any);
+      component.applianceToInstall.set(createMockAppliance());
+      answer.next(true);
+      expect(component.allowCustomFiles()).toBe(false);
+    });
+  });
+
+  describe('custom appliance versions', () => {
+    it('copies settings and image slots without changing the original appliance', () => {
+      const appliance = createMockAppliance();
+      appliance.versions[0].settings = 'special';
+      appliance.versions[0].images.cdrom_image = 'install.iso';
+      component.applianceToInstall.set(appliance);
+      component.selectedVersion.set(appliance.versions[0]);
+      component.startNewVersion();
+      component.newVersionName.setValue(' 2.0 ');
+      component.newVersionFiles.hda_disk_image.setValue('new.img');
+      component.saveNewVersion();
+      expect(appliance.versions).toHaveLength(1);
+      expect(appliance.images).toHaveLength(1);
+      expect(component.selectedVersion()).toEqual({
+        name: '2.0',
+        settings: 'special',
+        images: { hda_disk_image: 'new.img', cdrom_image: 'install.iso' },
+      });
+      expect(component.filesReady()).toBe(false);
+      component.allowCustomFiles.set(true);
+      component.qemuImages.set([{ filename: 'new.img' }, { filename: 'install.iso' }] as Image[]);
+      expect(component.filesReady()).toBe(true);
+      component.allowCustomFiles.set(false);
+      expect(component.filesReady()).toBe(false);
+    });
+
+    it('rejects duplicate names and paths without partially adding images', () => {
+      const appliance = createMockAppliance();
+      component.applianceToInstall.set(appliance);
+      component.startNewVersion();
+      component.newVersionName.setValue('1.0');
+      component.saveNewVersion();
+      expect(component.applianceToInstall()).toBe(appliance);
+      component.newVersionName.setValue('2.0');
+      component.newVersionFiles.hda_disk_image.setValue('../image.img');
+      component.saveNewVersion();
+      expect(component.applianceToInstall()).toBe(appliance);
+      expect(mockToasterService.error).toHaveBeenCalledTimes(2);
+    });
+
+    it('matches custom files by filename only when explicitly enabled', () => {
+      component.applianceToInstall.set(createMockAppliance());
+      component.qemuImages.set([{ filename: 'test-image.img', checksum: 'different' }] as Image[]);
+      expect(component.checkImageFromVersion('test-image.img')).toBe(false);
+      component.allowCustomFiles.set(true);
+      expect(component.checkImageFromVersion('test-image.img')).toBe(true);
+      expect(component.findControllerImageName('test-image.img')).toBe('test-image.img');
+      component.qemuImages.set([{ filename: 'unrelated.img', checksum: 'different' }] as Image[]);
+      expect(component.checkImageFromVersion('test-image.img')).toBe(false);
+    });
+
+    it('creates a template from custom images and preserves version settings', () => {
+      const appliance = createMockAppliance();
+      component.applianceToInstall.set(appliance);
+      component.startNewVersion();
+      component.newVersionName.setValue('2.0');
+      component.newVersionFiles.hda_disk_image.setValue('new.img');
+      component.saveNewVersion();
+      component.allowCustomFiles.set(true);
+      component.qemuImages.set([{ filename: 'new.img', checksum: 'new-checksum' }] as Image[]);
+      component.templateNameControl.setValue('Custom appliance');
+      component.createTemplate();
+      expect(mockQemuService.addTemplate).toHaveBeenCalledWith(
+        mockController,
+        expect.objectContaining({
+          hda_disk_image: 'new.img',
+          ram: 512,
+          name: 'Custom appliance',
+        })
+      );
+    });
+
+    it('records a new image checksum without mutating the registry definition', async () => {
+      const appliance = createMockAppliance();
+      component.applianceToInstall.set(appliance);
+      component.startNewVersion();
+      component.newVersionName.setValue('2.0');
+      component.newVersionFiles.hda_disk_image.setValue('new.img');
+      component.saveNewVersion();
+      vi.spyOn(component as any, 'computeChecksumMd5').mockResolvedValue('computed-md5');
+      const upload = vi.spyOn(component as any, 'importImageFile').mockImplementation(() => {});
+      component.importImage({ target: { files: [new File(['image'], 'new.img')] } }, 'new.img');
+      await Promise.resolve();
+      expect(upload).toHaveBeenCalledWith('new.img');
+      expect(component.applianceToInstall().images.find((image) => image.filename === 'new.img').md5sum).toBe(
+        'computed-md5'
+      );
+      expect(appliance.images).toHaveLength(1);
+      component.qemuImages.set([{ filename: 'server.img', checksum: 'computed-md5' }] as Image[]);
+      expect(component.filesReady()).toBe(true);
+      expect(component.findControllerImageName('new.img')).toBe('server.img');
+    });
+
+    it('accepts a different upload checksum when custom files are enabled', async () => {
+      component.applianceToInstall.set(createMockAppliance());
+      component.allowCustomFiles.set(true);
+      vi.spyOn(component as any, 'computeChecksumMd5').mockResolvedValue('different');
+      const upload = vi.spyOn(component as any, 'importImageFile').mockImplementation(() => {});
+      component.importImage({ target: { files: [new File(['image'], 'custom.img')] } }, 'test-image.img');
+      await Promise.resolve();
+      expect(upload).toHaveBeenCalledWith('test-image.img');
+      expect(mockDialog.open).not.toHaveBeenCalled();
+    });
+
+    it('prefers the named custom image over a published checksum match', () => {
+      component.applianceToInstall.set(createMockAppliance());
+      component.qemuImages.set([
+        { filename: 'published.img', checksum: 'abc123' },
+        { filename: 'test-image.img', checksum: 'different' },
+      ] as Image[]);
+      expect(component.findControllerImageName('test-image.img')).toBe('published.img');
+      component.allowCustomFiles.set(true);
+      expect(component.findControllerImageName('test-image.img')).toBe('test-image.img');
+    });
+
+    it('keeps checksum confirmation for imported definitions without a checksum', async () => {
+      const appliance = createMockAppliance();
+      appliance.images[0].md5sum = '';
+      component.applianceToInstall.set(appliance);
+      vi.spyOn(component as any, 'computeChecksumMd5').mockResolvedValue('computed');
+      const upload = vi.spyOn(component as any, 'importImageFile').mockImplementation(() => {});
+      component.importImage({ target: { files: [new File(['image'], 'test-image.img')] } }, 'test-image.img');
+      await Promise.resolve();
+      expect(mockDialog.open).toHaveBeenCalled();
+      expect(upload).not.toHaveBeenCalled();
+      expect(appliance.images[0].md5sum).toBe('');
+    });
+
+    it('does not upload or change another appliance after a checksum calculation', async () => {
+      component.applianceToInstall.set(createMockAppliance());
+      let finish: (checksum: string) => void;
+      vi.spyOn(component as any, 'computeChecksumMd5').mockReturnValue(
+        new Promise<string>((resolve) => {
+          finish = resolve;
+        })
+      );
+      const upload = vi.spyOn(component as any, 'importImageFile').mockImplementation(() => {});
+      component.importImage({ target: { files: [new File(['image'], 'test-image.img')] } }, 'test-image.img');
+      const other = createMockAppliance();
+      component.applianceToInstall.set(other);
+      finish('computed');
+      await Promise.resolve();
+      expect(upload).not.toHaveBeenCalled();
+      expect(component.applianceToInstall()).toBe(other);
+      expect(other.images[0].md5sum).toBe('abc123');
+    });
+
+    it('handles cleared required fields without throwing or changing the appliance', () => {
+      const appliance = createMockAppliance();
+      component.applianceToInstall.set(appliance);
+      component.startNewVersion();
+      component.newVersionName.reset();
+      expect(() => component.saveNewVersion()).not.toThrow();
+      component.newVersionName.setValue('2.0');
+      component.newVersionFiles.hda_disk_image.reset();
+      expect(() => component.saveNewVersion()).not.toThrow();
+      expect(component.applianceToInstall()).toBe(appliance);
+    });
+
+    it('resets custom file permission and drafts when switching appliances', () => {
+      component.allowCustomFiles.set(true);
+      component.versionDraft.set(createMockAppliance().versions[0]);
+      component.selectAppliance(createMockAppliance());
+      expect(component.allowCustomFiles()).toBe(false);
+      expect(component.versionDraft()).toBeNull();
+    });
+  });
+
   describe('Creation', () => {
     it('should create the component', () => {
       expect(component).toBeTruthy();
@@ -1090,6 +1304,32 @@ describe('NewTemplateDialogComponent', () => {
   });
 
   describe('template rendering', () => {
+    it('shows Appliance info only from step three and opens the selected appliance', () => {
+      const appliance = createMockAppliance();
+      component.applianceToInstall.set(appliance);
+      const findInfoButton = () =>
+        Array.from(
+          (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
+            '.template-wizard__step-actions button'
+          )
+        ).find((button) => button.textContent.trim() === 'Appliance info');
+      for (const index of [0, 1]) {
+        component.selectedStepIndex.set(index);
+        fixture.detectChanges();
+        expect(findInfoButton()).toBeUndefined();
+      }
+      for (const index of [2, 3]) {
+        component.selectedStepIndex.set(index);
+        fixture.detectChanges();
+        expect(findInfoButton()).toBeTruthy();
+      }
+      findInfoButton().click();
+      expect(mockDialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: { appliance } }));
+      component.applianceToInstall.set(null);
+      fixture.detectChanges();
+      expect(findInfoButton()).toBeUndefined();
+    });
+
     it('should render the wizard page shell with the shared template-wizard classes', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       expect(compiled.querySelector('.template-wizard.new-template-wizard')).toBeTruthy();

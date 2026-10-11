@@ -28,6 +28,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -100,6 +101,7 @@ const IMAGE_SLOTS: (keyof Images)[] = [
     MatExpansionModule,
     MatIconModule,
     MatTooltipModule,
+    MatCheckboxModule,
     FileUploadModule,
   ],
 })
@@ -115,6 +117,10 @@ export class NewTemplateDialogComponent implements OnInit {
   readonly selectedVersion = signal<Version | null>(null);
   readonly selectedImage = signal<string | null>(null);
   readonly isCreating = signal(false);
+  readonly allowCustomFiles = signal(false);
+  readonly versionDraft = signal<Version | null>(null);
+  readonly newVersionName = new UntypedFormControl('', Validators.required);
+  readonly newVersionFiles: Partial<Record<keyof Images, UntypedFormControl>> = {};
 
   // ------------------------------------------------------------------
   // Registry browsing state
@@ -178,6 +184,7 @@ export class NewTemplateDialogComponent implements OnInit {
   readonly isUploading = signal(false);
   readonly isImportingAppliance = signal(false);
   private checksumCancelled = false;
+  private customImageFilenames = new Set<string>();
 
   // ------------------------------------------------------------------
   // Review state
@@ -407,6 +414,7 @@ export class NewTemplateDialogComponent implements OnInit {
 
   setAction(action: CreationAction) {
     this.action.set(action);
+    this.resetCustomVersionState();
     this.applianceToInstall.set(null);
     this.selectedVersion.set(null);
     this.selectedImage.set(null);
@@ -419,6 +427,7 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   selectAppliance(appliance: Appliance) {
+    this.resetCustomVersionState();
     this.applianceToInstall.set(appliance);
     this.selectedVersion.set(null);
     this.selectedImage.set(null);
@@ -609,6 +618,7 @@ export class NewTemplateDialogComponent implements OnInit {
         if (appliance.dynamips) appliance.emulator = 'Dynamips';
         if (appliance.iou) appliance.emulator = 'Iou';
         if (appliance.qemu) appliance.emulator = 'Qemu';
+        this.resetCustomVersionState();
         this.applianceToInstall.set(appliance);
         this.selectedVersion.set(null);
         this.selectedImage.set(null);
@@ -636,6 +646,103 @@ export class NewTemplateDialogComponent implements OnInit {
   // ------------------------------------------------------------------
   // Image handling
   // ------------------------------------------------------------------
+  private resetCustomVersionState(): void {
+    this.allowCustomFiles.set(false);
+    this.versionDraft.set(null);
+    this.customImageFilenames.clear();
+    this.newVersionName.reset('');
+    for (const slot of IMAGE_SLOTS) delete this.newVersionFiles[slot];
+  }
+
+  onAllowCustomFilesChange(event: MatCheckboxChange): void {
+    if (!event.checked) {
+      this.allowCustomFiles.set(false);
+      return;
+    }
+    // Material toggles the checkbox before emitting the event. Keep it
+    // unchecked until the user explicitly accepts the warning.
+    event.source.checked = false;
+    const appliance = this.applianceToInstall();
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      autoFocus: '.cancel-button',
+      disableClose: true,
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel', 'dialog-small-panel'],
+      data: {
+        title: 'Custom files',
+        message:
+          'This option allows files with different MD5 checksums. This feature is only for advanced users and can lead ' +
+          'to unexpected problems. Do you want to proceed?',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+        tone: 'warning',
+        icon: 'help',
+      },
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((answer: boolean) => {
+        if (this.applianceToInstall() === appliance) {
+          this.allowCustomFiles.set(answer === true);
+        }
+        this.cd.markForCheck();
+      });
+  }
+
+  startNewVersion(): void {
+    const base = this.selectedVersion() || this.applianceToInstall()?.versions?.[0];
+    if (!base) return;
+    this.newVersionName.setValue('');
+    for (const slot of IMAGE_SLOTS) {
+      delete this.newVersionFiles[slot];
+      if (base.images[slot]) {
+        this.newVersionFiles[slot] = new UntypedFormControl(base.images[slot], Validators.required);
+      }
+    }
+    this.versionDraft.set(base);
+  }
+
+  saveNewVersion(): void {
+    const appliance = this.applianceToInstall();
+    const base = this.versionDraft();
+    if (!appliance || !base) return;
+    const name = (this.newVersionName.value || '').trim();
+    if (!name || appliance.versions.some((version) => version.name === name)) {
+      this.toasterService.error('Please enter a unique version name');
+      return;
+    }
+    const images: Images = {};
+    const definitions = [...(appliance.images || [])];
+    const customFilenames: string[] = [];
+    for (const { key } of this.getVersionImages(base)) {
+      const filename = (this.newVersionFiles[key]?.value || '').trim();
+      if (!filename || /[/\\]/.test(filename) || filename === '.' || filename === '..') {
+        this.toasterService.error('Please enter an image filename without a path');
+        return;
+      }
+      images[key] = filename;
+      if (!definitions.some((image) => image.filename === filename)) {
+        definitions.push({ filename, version: name, md5sum: '', filesize: 0 } as Image);
+        customFilenames.push(filename);
+      }
+    }
+    customFilenames.forEach((filename) => this.customImageFilenames.add(filename));
+    const version: Version = { ...base, name, images };
+    this.applianceToInstall.set({ ...appliance, images: definitions, versions: [...appliance.versions, version] });
+    this.selectedVersion.set(version);
+    this.versionDraft.set(null);
+  }
+
+  private findMatchingControllerImage(images: Image[], definition: Image): Image | undefined {
+    // In custom mode the explicitly named file takes precedence over a
+    // published checksum match that may be a different appliance version.
+    if (this.allowCustomFiles()) {
+      const custom = images.find((image) => image.filename === definition.filename);
+      if (custom) return custom;
+    }
+    return definition.md5sum ? images.find((image) => image.checksum === definition.md5sum) : undefined;
+  }
+
   refreshImages() {
     this.qemuService.getImages(this.controller).subscribe({
       next: (qemuImages) => {
@@ -710,6 +817,7 @@ export class NewTemplateDialogComponent implements OnInit {
       return;
     }
 
+    const applianceAtStart = this.applianceToInstall();
     this.uploadingImageName = imageName;
     this.checksumCancelled = false;
     // Open the progress snackbar up front and drive it from the MD5 computation,
@@ -724,6 +832,11 @@ export class NewTemplateDialogComponent implements OnInit {
     })
       .then((output) => {
         if (this.checksumCancelled) return;
+        if (this.applianceToInstall() !== applianceAtStart) {
+          this.resetUploadState();
+          this.cd.markForCheck();
+          return;
+        }
 
         const imageToInstall = this.applianceToInstall()?.images?.find((n) => n.filename === imageName);
 
@@ -737,7 +850,20 @@ export class NewTemplateDialogComponent implements OnInit {
           return;
         }
 
-        if (imageToInstall.md5sum !== output) {
+        // New version images have no published checksum. Record the checksum
+        // of the user's file so subsequent readiness checks remain strict.
+        const isCustomVersionImage = this.customImageFilenames.has(imageName);
+        if (isCustomVersionImage) {
+          const appliance = this.applianceToInstall();
+          this.applianceToInstall.set({
+            ...appliance,
+            images: appliance.images.map((image) =>
+              image === imageToInstall ? { ...image, md5sum: output, filesize: file.size } : image
+            ),
+          });
+        }
+
+        if (!isCustomVersionImage && imageToInstall.md5sum !== output && !this.allowCustomFiles()) {
           // Close the checksum snackbar so it does not linger behind the dialog.
           this.uploadServiceService.processBarCount(null);
           this.uploadServiceService.setMessage('');
@@ -756,17 +882,25 @@ export class NewTemplateDialogComponent implements OnInit {
               icon: 'verified_user',
             },
           });
-          dialogRef.afterClosed().subscribe((answer: boolean) => {
-            if (answer) {
-              this.openSnackBar();
-              this.uploadServiceService.setMessage('Uploading');
-              this.uploadServiceService.setComputing(false);
-              this.importImageFile(imageName);
-            } else {
-              this.resetUploadState();
-              this.cd.markForCheck();
-            }
-          });
+          dialogRef
+            .afterClosed()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((answer: boolean) => {
+              if (this.checksumCancelled || this.applianceToInstall() !== applianceAtStart) {
+                this.resetUploadState();
+                this.cd.markForCheck();
+                return;
+              }
+              if (answer) {
+                this.openSnackBar();
+                this.uploadServiceService.setMessage('Uploading');
+                this.uploadServiceService.setComputing(false);
+                this.importImageFile(imageName);
+              } else {
+                this.resetUploadState();
+                this.cd.markForCheck();
+              }
+            });
         } else {
           this.uploadServiceService.setMessage('Uploading');
           this.uploadServiceService.setComputing(false);
@@ -833,11 +967,11 @@ export class NewTemplateDialogComponent implements OnInit {
     const imageToInstall = appliance.images?.find((n) => n.filename === image);
     if (!imageToInstall) return false;
     if (appliance.qemu) {
-      if (this.qemuImages().filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
+      if (this.findMatchingControllerImage(this.qemuImages(), imageToInstall)) return true;
     } else if (appliance.dynamips) {
-      if (this.iosImages().filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
+      if (this.findMatchingControllerImage(this.iosImages(), imageToInstall)) return true;
     } else if (appliance.iou) {
-      if (this.iouImages().filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
+      if (this.findMatchingControllerImage(this.iouImages(), imageToInstall)) return true;
     }
 
     return false;
@@ -911,6 +1045,11 @@ export class NewTemplateDialogComponent implements OnInit {
     }
   }
 
+  canDownloadImage(filename: string): boolean {
+    const image = this.applianceToInstall()?.images?.find((image) => image.filename === filename);
+    return !!(image?.direct_download_url || image?.download_url);
+  }
+
   downloadImageFromVersion(image: string) {
     this.applianceToInstall().images.forEach((n) => {
       if (n.filename === image) this.downloadImage(n);
@@ -931,9 +1070,9 @@ export class NewTemplateDialogComponent implements OnInit {
     const appliance = this.applianceToInstall();
     let iou_image = image.filename;
     let imageToInstall = appliance.images.filter((n) => n.filename === iou_image)[0];
-    let imageToUse = this.iouImages().filter((n) => n.checksum === imageToInstall.md5sum);
-    if (imageToUse.length > 0) {
-      iou_image = imageToUse[0].filename; // use the image name from the controller
+    const imageToUse = this.findMatchingControllerImage(this.iouImages(), imageToInstall);
+    if (imageToUse) {
+      iou_image = imageToUse.filename; // use the image name from the controller
     }
 
     let iouTemplate: IouTemplate = new IouTemplate();
@@ -960,9 +1099,9 @@ export class NewTemplateDialogComponent implements OnInit {
     const appliance = this.applianceToInstall();
     let ios_image = image.filename;
     let imageToInstall = appliance.images.filter((n) => n.filename === ios_image)[0];
-    let imageToUse = this.iosImages().filter((n) => n.checksum === imageToInstall.md5sum);
-    if (imageToUse.length > 0) {
-      ios_image = imageToUse[0].filename; // use the image name from the controller
+    const imageToUse = this.findMatchingControllerImage(this.iosImages(), imageToInstall);
+    if (imageToUse) {
+      ios_image = imageToUse.filename; // use the image name from the controller
     }
 
     let iosTemplate: IosTemplate = new IosTemplate();
@@ -1032,9 +1171,9 @@ export class NewTemplateDialogComponent implements OnInit {
     if (image_name) {
       const imageToInstall = this.applianceToInstall()?.images?.find((n) => n.filename === image_name);
       if (!imageToInstall) return image_name;
-      const imageToUse = this.qemuImages().filter((n) => n.checksum === imageToInstall.md5sum);
-      if (imageToUse.length > 0) {
-        image_name = imageToUse[0].filename; // use the image name from the controller
+      const imageToUse = this.findMatchingControllerImage(this.qemuImages(), imageToInstall);
+      if (imageToUse) {
+        image_name = imageToUse.filename; // use the image name from the controller
       }
     }
     return image_name;

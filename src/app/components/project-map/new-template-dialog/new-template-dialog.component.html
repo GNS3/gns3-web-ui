@@ -405,6 +405,7 @@
                           mat-raised-button
                           color="primary"
                           type="button"
+                          [disabled]="!canDownloadImage(image.filename)"
                           (click)="downloadImageFromVersion(image.filename)"
                         >
                           <mat-icon>download</mat-icon>
@@ -513,7 +514,56 @@
                 </div>
                 }
               </div>
+              } @if (versionDraft(); as base) {
+              <section class="template-wizard__section">
+                <h3 class="new-template-wizard__version-heading">Create a new version for this appliance</h3>
+                <mat-form-field appearance="outline" class="template-wizard__field">
+                  <mat-label>Version name</mat-label>
+                  <input matInput [formControl]="newVersionName" required />
+                </mat-form-field>
+                @for (image of getVersionImages(base); track image.key) {
+                <mat-form-field appearance="outline" class="template-wizard__field">
+                  <mat-label>{{ image.key }} filename</mat-label>
+                  <input matInput [formControl]="newVersionFiles[image.key]" required />
+                </mat-form-field>
+                }
+                <div class="new-template-wizard__version-actions">
+                  <button
+                    mat-raised-button
+                    type="button"
+                    class="new-template-wizard__save-version"
+                    (click)="saveNewVersion()"
+                  >
+                    Save version
+                  </button>
+                  <button
+                    mat-raised-button
+                    type="button"
+                    class="new-template-wizard__cancel-version"
+                    (click)="versionDraft.set(null)"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </section>
               }
+              <div class="new-template-wizard__files-footer">
+                <div class="new-template-wizard__file-options">
+                  <mat-checkbox [checked]="allowCustomFiles()" (change)="onAllowCustomFilesChange($event)">
+                    Allow custom files
+                  </mat-checkbox>
+                  @if (applianceToInstall().qemu) {
+                  <button
+                    mat-stroked-button
+                    type="button"
+                    (click)="startNewVersion()"
+                    [disabled]="isUploading() || !applianceToInstall().versions?.length"
+                  >
+                    Create new version
+                  </button>
+                  }
+                </div>
+              </div>
             </section>
           </div>
         </mat-step>
@@ -606,7 +656,9 @@
         Cancel
       </button>
       <div class="template-wizard__step-actions">
-        @if (selectedStepIndex() > 0) {
+        @if (selectedStepIndex() >= 2 && applianceToInstall(); as appliance) {
+        <button mat-stroked-button type="button" (click)="showInfo(appliance)">Appliance info</button>
+        } @if (selectedStepIndex() > 0) {
         <button mat-button type="button" class="template-wizard__previous" (click)="stepper.previous()">
           <mat-icon>arrow_back</mat-icon>
           Back

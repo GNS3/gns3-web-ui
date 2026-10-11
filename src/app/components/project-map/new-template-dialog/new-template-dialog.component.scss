@@ -673,3 +673,40 @@ button.new-template-wizard__method-option--selected {
     justify-content: flex-end;
   }
 }
+
+.new-template-wizard__files-footer {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.new-template-wizard__file-options {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+
+  button {
+    flex: 0 0 auto;
+    width: auto;
+  }
+}
+
+.new-template-wizard__version-heading {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.new-template-wizard__version-actions {
+  display: flex;
+  gap: 16px;
+
+  .new-template-wizard__save-version {
+    background-color: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+  }
+
+  .new-template-wizard__cancel-version {
+    background-color: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+  }
+}
