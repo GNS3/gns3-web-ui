@@ -170,6 +170,7 @@
        once and for all. -->
   @if (controller.id && project.project_id) {
     <app-d3-map
+      (contextmenu)="onTopologyContextMenu($event)"
       [controller]="controller"
       [project]="project"
       [symbols]="symbols"
