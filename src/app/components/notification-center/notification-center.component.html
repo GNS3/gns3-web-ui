@@ -99,6 +99,17 @@
       <button
         mat-icon-button
         type="button"
+        class="notification-center__item-copy"
+        matTooltip="Copy notification"
+        aria-label="Copy notification"
+        [cdkCopyToClipboard]="notification.message"
+        [cdkCopyToClipboardAttempts]="3"
+      >
+        <mat-icon>content_copy</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        type="button"
         class="notification-center__item-remove"
         matTooltip="Remove"
         aria-label="Remove notification"

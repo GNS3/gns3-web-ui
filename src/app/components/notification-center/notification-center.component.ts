@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, HostListener, computed, inject, signal } from '@angular/core';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -13,7 +14,7 @@ type NotificationFilter = 'all' | 'activity' | 'error' | 'warning';
   standalone: true,
   templateUrl: './notification-center.component.html',
   styleUrl: './notification-center.component.scss',
-  imports: [MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [ClipboardModule, MatButtonModule, MatIconModule, MatTooltipModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotificationCenterComponent {

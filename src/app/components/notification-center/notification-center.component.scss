@@ -174,7 +174,7 @@
   --notification-accent: var(--mat-sys-primary);
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   border-bottom: 1px solid var(--mat-sys-outline-variant);
   background: var(--mat-sys-surface-container-lowest);
 
@@ -260,6 +260,7 @@
   white-space: pre-line;
 }
 
+.notification-center__item-copy,
 .notification-center__item-remove {
   align-self: center;
   margin-right: var(--gns3-density-space-2);
