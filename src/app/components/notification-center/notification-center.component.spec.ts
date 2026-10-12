@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { NotificationCenterService } from '@services/notification-center.service';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NotificationCenterComponent } from './notification-center.component';
 
 describe('NotificationCenterComponent', () => {
@@ -65,6 +66,24 @@ describe('NotificationCenterComponent', () => {
 
     expect(notificationCenter.unreadCount()).toBe(0);
     expect(notificationCenter.notifications()[0].read).toBe(true);
+  });
+
+  it('copies the complete notification message without marking it read, removing it, or closing the panel', () => {
+    const message = 'QEMU process has stopped, return code: 1\n' + 'Long command with arguments '.repeat(200);
+    const notification = notificationCenter.add('error', message);
+    notificationCenter.togglePanel();
+    const pending = { copy: vi.fn().mockReturnValue(true), destroy: vi.fn() };
+    const beginCopy = vi.spyOn(TestBed.inject(Clipboard), 'beginCopy').mockReturnValue(pending as any);
+    fixture.detectChanges();
+
+    fixture.nativeElement.querySelector('.notification-center__item-copy').click();
+
+    expect(beginCopy).toHaveBeenCalledWith(message);
+    expect(pending.copy).toHaveBeenCalledOnce();
+    expect(pending.destroy).toHaveBeenCalledOnce();
+    expect(notificationCenter.notifications()).toEqual([notification]);
+    expect(notificationCenter.unreadCount()).toBe(1);
+    expect(notificationCenter.panelOpen()).toBe(true);
   });
 
   it('removes an item without propagating the row click', () => {
