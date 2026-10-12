@@ -1029,6 +1029,94 @@ describe('ProjectMapComponent', () => {
   });
 
   describe('Toggle Draw Line Mode', () => {
+    it.each(['svg', 'grid', 'preview'])('should cancel link mode on right-clicking %s', (background) => {
+      component.tools.draw_link = true;
+      const markForCheck = vi.spyOn((component as any).cd, 'markForCheck');
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.classList.add('map');
+      let target: Element = svg;
+      if (background === 'grid') {
+        target = svg.appendChild(document.createElementNS(svg.namespaceURI, 'rect'));
+      } else if (background === 'preview') {
+        const preview = svg.appendChild(document.createElementNS(svg.namespaceURI, 'g'));
+        preview.classList.add('drawing-line-tool');
+        target = preview.appendChild(document.createElementNS(svg.namespaceURI, 'path'));
+      }
+      svg.addEventListener('contextmenu', (event) => component.onTopologyContextMenu(event as MouseEvent));
+      const event = new MouseEvent('contextmenu', { button: 2, bubbles: true, cancelable: true });
+
+      target.dispatchEvent(event);
+
+      expect(component.tools.draw_link).toBe(false);
+      expect(mockToolsService.drawLinkToolActivation).toHaveBeenCalledWith(false);
+      expect(markForCheck).toHaveBeenCalled();
+      expect(event.defaultPrevented).toBe(true);
+    });
+
+    it.each(['rect', 'path', 'image', 'text'])('should preserve right-click behavior on topology %s objects', (tag) => {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.classList.add('map');
+      const node = svg.appendChild(document.createElementNS(svg.namespaceURI, 'g'));
+      const shape = node.appendChild(document.createElementNS(svg.namespaceURI, tag));
+      svg.addEventListener('contextmenu', (event) => component.onTopologyContextMenu(event as MouseEvent));
+      component.tools.draw_link = true;
+      const objectEvent = new MouseEvent('contextmenu', { button: 2, bubbles: true, cancelable: true });
+
+      shape.dispatchEvent(objectEvent);
+      expect(component.tools.draw_link).toBe(true);
+      expect(objectEvent.defaultPrevented).toBe(false);
+
+      component.tools.draw_link = false;
+      const backgroundEvent = new MouseEvent('contextmenu', { button: 2, cancelable: true });
+      svg.dispatchEvent(backgroundEvent);
+      expect(component.tools.draw_link).toBe(false);
+      expect(backgroundEvent.defaultPrevented).toBe(false);
+      expect(mockToolsService.drawLinkToolActivation).not.toHaveBeenCalled();
+    });
+
+    it('should cancel link mode and refresh the toolbar even when a menu consumes Escape', () => {
+      component.addKeyboardListeners();
+      component.tools.draw_link = true;
+      const markForCheck = vi.spyOn((component as any).cd, 'markForCheck');
+      const menu = document.createElement('button');
+      menu.addEventListener('keydown', (event) => event.stopPropagation());
+      document.body.appendChild(menu);
+
+      try {
+        menu.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+
+        expect(component.tools.draw_link).toBe(false);
+        expect(mockToolsService.drawLinkToolActivation).toHaveBeenCalledWith(false);
+        expect(markForCheck).toHaveBeenCalled();
+      } finally {
+        menu.remove();
+      }
+    });
+
+    it('should leave link mode unchanged for other keys and when already inactive', () => {
+      component.addKeyboardListeners();
+      component.tools.draw_link = true;
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+      expect(component.tools.draw_link).toBe(true);
+
+      component.tools.draw_link = false;
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+      expect(component.tools.draw_link).toBe(false);
+      expect(mockToolsService.drawLinkToolActivation).not.toHaveBeenCalled();
+    });
+
+    it('should remove the Escape listener when the component is destroyed', () => {
+      component.addKeyboardListeners();
+      component.ngOnDestroy();
+      component.tools.draw_link = true;
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+
+      expect(component.tools.draw_link).toBe(true);
+      expect(mockToolsService.drawLinkToolActivation).not.toHaveBeenCalled();
+    });
+
     it('should toggle draw link mode on', () => {
       component.tools.draw_link = false;
 

@@ -19,7 +19,7 @@ import { ActivatedRoute, ParamMap, Router, RouterModule } from '@angular/router'
 import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
 
 import * as Mousetrap from 'mousetrap';
-import { from, Observable, Subscription } from 'rxjs';
+import { from, fromEvent, Observable, Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import * as d3 from 'd3';
@@ -596,6 +596,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   addKeyboardListeners() {
+    // Capture Escape before the interface menu can stop propagation.
+    this.projectMapSubscription.add(
+      fromEvent<KeyboardEvent>(document, 'keydown', { capture: true }).subscribe((event) => {
+        if (event.key === 'Escape') this.cancelDrawLineMode();
+      })
+    );
+
     Mousetrap.bind('ctrl++', (event: Event) => {
       event.preventDefault();
       this.zoomIn();
@@ -1262,6 +1269,25 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toggleDrawLineMode() {
     this.tools.draw_link = !this.tools.draw_link;
     this.toolsService.drawLinkToolActivation(this.tools.draw_link);
+  }
+
+  private cancelDrawLineMode() {
+    if (this.tools.draw_link) {
+      this.toggleDrawLineMode();
+      this.cd.markForCheck();
+    }
+  }
+
+  public onTopologyContextMenu(event: MouseEvent) {
+    // The temporary link preview can also be under the cursor on an empty canvas.
+    if (
+      this.tools.draw_link &&
+      event.target instanceof Element &&
+      event.target.matches('svg.map, svg.map > rect, svg.map g.drawing-line-tool > path')
+    ) {
+      event.preventDefault();
+      this.cancelDrawLineMode();
+    }
   }
 
   public toggleShowInterfaceLabels(enabled: boolean) {
