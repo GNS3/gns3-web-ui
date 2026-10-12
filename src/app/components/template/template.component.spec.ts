@@ -60,7 +60,8 @@ describe('TemplateComponent', () => {
 
     mockSymbolService = {
       list: vi.fn().mockReturnValue(of([])),
-      getSymbolFromTemplate: vi.fn().mockReturnValue('http://localhost:3080/v4/symbols/router/raw'),
+      getSymbolFromTemplate: vi.fn().mockReturnValue('http://localhost:3080/v3/symbols/router/raw'),
+      getSymbolBlobUrl: vi.fn().mockReturnValue(of('blob:router')),
     };
 
     mockThemeService = {
@@ -433,6 +434,25 @@ describe('TemplateComponent', () => {
   });
 
   describe('openDialog', () => {
+    it('should load symbols for templates installed in another tab when the palette opens', () => {
+      const installedTemplate = { ...createMockTemplate('new', 'New appliance', 'qemu'), symbol: 'new-symbol.svg' };
+      const symbolUrl = new Subject<string>();
+      mockTemplateService.list.mockReturnValue(of([installedTemplate]));
+      mockSymbolService.getSymbolBlobUrl.mockReturnValue(symbolUrl);
+
+      component.openDialog();
+
+      expect(mockSymbolService.getSymbolBlobUrl).toHaveBeenCalledWith(mockController, '/symbols/new-symbol.svg/raw');
+      expect(mockDialogRef.componentInstance.refreshSymbolImages).not.toHaveBeenCalled();
+
+      symbolUrl.next('blob:new-symbol');
+      symbolUrl.complete();
+
+      const dialogData = mockDialog.open.mock.calls[0][1].data;
+      expect(dialogData.symbolUrls.get(installedTemplate.symbol)).toBe('blob:new-symbol');
+      expect(mockDialogRef.componentInstance.refreshSymbolImages).toHaveBeenCalledOnce();
+    });
+
     it('should open one backdrop-free desktop palette', () => {
       component.openDialog();
       component.openDialog();
@@ -524,7 +544,7 @@ describe('TemplateComponent', () => {
 
       mockSymbolService = {
         list: vi.fn().mockReturnValue(of([])),
-        getSymbolFromTemplate: vi.fn().mockReturnValue('http://localhost:3080/v4/symbols/router/raw'),
+        getSymbolFromTemplate: vi.fn().mockReturnValue('http://localhost:3080/v3/symbols/router/raw'),
         getSymbolBlobUrl: vi.fn().mockReturnValue(of('blob:http://example.com/symbol')),
       };
 
