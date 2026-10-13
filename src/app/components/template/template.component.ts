@@ -544,6 +544,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
       position: narrowViewport ? undefined : { top: projectHeaderHeight },
     });
     this.addNodesDialogRef = dialogRef;
+    this.loadTemplates();
 
     const paletteSubscriptions = new Subscription();
     paletteSubscriptions.add(

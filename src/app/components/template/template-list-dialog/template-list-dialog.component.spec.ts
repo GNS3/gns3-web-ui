@@ -130,6 +130,23 @@ describe('TemplateListDialogComponent', () => {
   });
 
   describe('Creation', () => {
+    it('renders a newly installed template symbol when its blob URL arrives after opening', async () => {
+      vi.useRealTimers();
+      const template = { template_id: 'new-template', name: 'New appliance', symbol: 'new-symbol.svg' } as Template;
+      const symbolUrls = new Map<string, string>();
+      TestBed.inject(MAT_DIALOG_DATA).symbolUrls = symbolUrls;
+      mockTemplateService.list.mockReturnValue(of([template]));
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.template-card__image')).toBeNull();
+
+      symbolUrls.set(template.symbol, 'blob:new-symbol');
+      component.refreshSymbolImages();
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.querySelector('.template-card__image').getAttribute('src')).toBe('blob:new-symbol');
+      expect(fixture.nativeElement.querySelector('.template-card__fallback-icon')).toBeNull();
+    });
+
     it('should create the component', () => {
       expect(component).toBeTruthy();
     });
