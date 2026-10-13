@@ -91,13 +91,5 @@
   @include buttons.geometry;
   flex-shrink: 0;
   width: auto;
-  margin-top: 12px;
-  border: 2px dashed color-mix(in srgb, var(--mat-sys-outline) 40%, transparent);
-  color: var(--mat-sys-on-surface-variant);
-
-  &:hover {
-    border-color: var(--mat-sys-primary);
-    color: var(--mat-sys-primary);
-    background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
-  }
+  margin: 0;
 }

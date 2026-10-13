@@ -1,3 +1,5 @@
+@use '../../../../styles/buttons' as buttons;
+
 /**
  * Appliance metadata form — the card surface and section header come from the
  * host page's __form-card section (Metadata tab).
@@ -6,16 +8,15 @@
   display: block;
 
   &__form {
-    padding: 16px 24px 24px;
+    padding: var(--gns3-density-card-padding);
     display: flex;
     flex-direction: column;
-    gap: 16px;
   }
 
   &__two-column-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--gns3-density-space-4);
   }
 
   &__field {
@@ -29,6 +30,11 @@
   &__actions {
     display: flex;
     justify-content: flex-end;
+  }
+
+  &__remove-btn {
+    @include buttons.geometry;
+    @include buttons.destructive;
   }
 }
 

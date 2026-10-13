@@ -1,6 +1,6 @@
 <div class="template-metadata">
   <div class="template-metadata__form">
-    <div class="template-metadata__two-column-grid">
+    <div class="template-metadata__two-column-grid gns3-form-grid gns3-form-layout-fixed">
       @for (entry of fields; track entry.field) {
       <mat-form-field
         appearance="outline"
@@ -44,7 +44,7 @@
       }
     </div>
     <div class="template-metadata__actions">
-      <button mat-button type="button" (click)="remove()">
+      <button mat-flat-button class="template-metadata__remove-btn" type="button" (click)="remove()">
         <mat-icon>delete</mat-icon>
         Remove metadata
       </button>
