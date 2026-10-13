@@ -183,6 +183,10 @@
   background: color-mix(in srgb, var(--mat-sys-surface-variant) 50%, transparent);
   border-radius: 12px;
   padding: 16px;
+
+  > mat-form-field + mat-form-field {
+    margin-top: var(--gns3-density-space-4);
+  }
 }
 
 .qemu-template-details__disk-title {
