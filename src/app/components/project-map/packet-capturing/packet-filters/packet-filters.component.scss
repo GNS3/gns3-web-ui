@@ -54,8 +54,19 @@
 .packet-filters__advanced-toggle {
   grid-column: 1 / -1;
   display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 4px;
   padding: 4px 0;
+}
+
+// Marks the advanced filters as experimental
+.packet-filters__experimental-badge {
+  padding: 2px 8px;
+  border-radius: 8px;
+  font: var(--mat-sys-label-small);
+  color: var(--mat-sys-on-tertiary-container);
+  background-color: var(--mat-sys-tertiary-container);
 }
 
 .packet-filters__empty {

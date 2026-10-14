@@ -71,6 +71,7 @@
             <mat-icon>{{ this.showAdvanced() ? 'expand_less' : 'expand_more' }}</mat-icon>
             {{ this.showAdvanced() ? 'Hide advanced filters' : 'Show advanced filters' }} ({{ this.advancedGroups.length }})
           </button>
+          <span class="packet-filters__experimental-badge">Experimental</span>
         </div>
         @if (this.showAdvanced()) {
           @for (group of this.advancedGroups; track group.key) {
