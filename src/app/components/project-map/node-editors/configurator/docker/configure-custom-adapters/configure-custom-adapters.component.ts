@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatDialogRef, MatDialogModule, MatDialogContent } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -9,7 +9,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Node } from '../../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
-import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { ValidationService } from '@services/validation';
@@ -25,19 +24,17 @@ export class ConfigureCustomAdaptersDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfigureCustomAdaptersDialogComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
-  private dockerConfigurationService = inject(DockerConfigurationService);
   private validationService = inject(ValidationService);
   private cdr = inject(ChangeDetectorRef);
 
   controller: Controller;
   node: Node;
-  /** Save callback for template mode */
+  /** Save callback for configuration and template dialogs. */
   saveHandler: (adapters: any[]) => void;
+  validateAdapterCount?: (count: number) => string | undefined;
 
   readonly adapters = model<any[]>([]);
   readonly isApplying = signal(false);
-
-  constructor() {}
 
   ngOnInit() {
     const currentAdapters: any[] = this.adapters();
@@ -107,12 +104,28 @@ export class ConfigureCustomAdaptersDialogComponent implements OnInit {
       this.toasterService.error('One or more MAC addresses are invalid (expected XX:XX:XX:XX:XX:XX)');
       return;
     }
+    const requiredAdapters = this.adapters().length;
+    if (this.adapters().some((adapter, index) => adapter.adapter_number !== index)) {
+      this.toasterService.error(
+        'Only adapters at the end can be removed. Removing adapters in the middle would renumber the remaining ports.'
+      );
+      return;
+    }
+    const portError = this.validateAdapterCount
+      ? this.validateAdapterCount(requiredAdapters)
+      : this.node && this.nodeService.validateConnectedPorts(this.node, requiredAdapters);
+    if (portError) {
+      this.toasterService.error(portError);
+      return;
+    }
     if (this.saveHandler) {
       this.saveHandler(this.adapters());
       this.onCancelClick();
     } else if (this.node) {
+      this.node.properties.adapters = requiredAdapters;
       this.node.custom_adapters = this.adapters().map((a: any) => ({
         ...a,
+        port_name: a.port_name || undefined,
         mac_address: a.mac_address || null,
       }));
       this.isApplying.set(true);

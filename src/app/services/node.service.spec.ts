@@ -7,10 +7,13 @@ import { Node } from '../cartography/models/node';
 import { Project } from '@models/project';
 import { Template } from '@models/template';
 import { Label } from '../cartography/models/label';
+import { LinksDataSource } from '../cartography/datasources/links-datasource';
+import { Link } from '@models/link';
 import { HttpClient } from '@angular/common/http';
 
 describe('NodeService', () => {
   let service: NodeService;
+  let links: LinksDataSource;
   let mockHttpController: any;
   let mockHttp: HttpClient;
   let mockController: Controller;
@@ -83,7 +86,96 @@ describe('NodeService', () => {
       symbol: 'test.svg',
     } as Template;
 
-    service = new NodeService(mockHttpController, mockHttp);
+    links = new LinksDataSource();
+    service = new NodeService(mockHttpController, mockHttp, links);
+  });
+
+  describe('connected ports', () => {
+    beforeEach(() => {
+      mockNode.node_type = 'qemu';
+      mockNode.properties = { adapters: 8 } as Node['properties'];
+      links.set([{ project_id: mockNode.project_id, nodes: [
+        { node_id: 'other-node', adapter_number: 9, port_number: 0 },
+        { node_id: mockNode.node_id, adapter_number: 4, port_number: 0 },
+      ] }] as Link[]);
+      mockHttpController.put.mockReturnValue(of(mockNode));
+    });
+
+    for (const method of ['updateNode', 'updateNodeWithCustomAdapters'] as const) {
+      it(`${method} allows reducing to the highest connected adapter plus one and increasing`, async () => {
+        for (const adapters of [5, 10]) {
+          mockNode.properties.adapters = adapters;
+          await firstValueFrom(service[method](mockController, mockNode));
+        }
+        expect(mockHttpController.put).toHaveBeenCalledTimes(2);
+      });
+
+      it(`${method} rejects removing the highest connected adapter`, async () => {
+        mockNode.properties.adapters = 4;
+        await expect(firstValueFrom(service[method](mockController, mockNode))).rejects.toThrow('Cannot remove connected adapter 4');
+        expect(mockHttpController.put).not.toHaveBeenCalled();
+      });
+    }
+
+    it('allows any reduction without connected links', async () => {
+      links.set([]);
+      mockNode.properties.adapters = 0;
+      await firstValueFrom(service.updateNode(mockController, mockNode));
+      expect(mockHttpController.put).toHaveBeenCalled();
+    });
+
+    it('protects connected switch ports when editing custom ports', async () => {
+      mockNode.node_type = 'ethernet_switch';
+      mockNode.properties = { ports_mapping: [{ port_number: 0 }] } as Node['properties'];
+      links.set([{ project_id: mockNode.project_id, nodes: [
+        { node_id: mockNode.node_id, adapter_number: 0, port_number: 2 },
+      ] }] as Link[]);
+      await expect(firstValueFrom(service.updateNode(mockController, mockNode))).rejects.toThrow('port 2');
+      expect(mockHttpController.put).not.toHaveBeenCalled();
+    });
+
+    for (const nodeType of ['cloud', 'nat']) {
+      it(`uses list positions for ${nodeType} ports with repeated mapping numbers`, async () => {
+        mockNode.node_type = nodeType;
+        mockNode.properties = { ports_mapping: [{ port_number: 0 }, { port_number: 0 }] } as Node['properties'];
+        links.set([{ project_id: mockNode.project_id, nodes: [
+          { node_id: mockNode.node_id, adapter_number: 0, port_number: 1 },
+        ] }] as Link[]);
+        await firstValueFrom(service.updateNode(mockController, mockNode));
+        mockNode.properties.ports_mapping.pop();
+        await expect(firstValueFrom(service.updateNode(mockController, mockNode))).rejects.toThrow('port 1');
+        expect(mockHttpController.put).toHaveBeenCalledTimes(1);
+      });
+    }
+
+    it('rejects shifting a connected switch port when an earlier port is deleted', async () => {
+      mockNode.node_type = 'ethernet_switch';
+      mockNode.properties = { ports_mapping: [0, 2, 3, 4].map((port_number) => ({ port_number })) } as Node['properties'];
+      links.set([{ project_id: mockNode.project_id, nodes: [
+        { node_id: mockNode.node_id, adapter_number: 0, port_number: 2 },
+      ] }] as Link[]);
+      await expect(firstValueFrom(service.updateNode(mockController, mockNode))).rejects.toThrow('port 2');
+      expect(mockHttpController.put).not.toHaveBeenCalled();
+    });
+
+    it('previews adapter counts without modifying the node or sending a request', () => {
+      expect(service.validateConnectedPorts(mockNode, 4)).toContain('Cannot remove connected adapter 4');
+      expect(service.validateConnectedPorts(mockNode, 5)).toBeUndefined();
+      expect(mockNode.properties.adapters).toBe(8);
+      expect(mockHttpController.put).not.toHaveBeenCalled();
+    });
+
+    it.each([[4, 1, true], [4, 0, false], [3, 4, false]])(
+      'validates IOU ethernet=%i serial=%i without moving connected serial adapter 4',
+      (ethernet_adapters, serial_adapters, allowed) => {
+        mockNode.node_type = 'iou';
+        mockNode.properties = { ethernet_adapters, serial_adapters } as Node['properties'];
+        mockNode.ports = [{ adapter_number: 4, port_number: 0, link_type: 'serial' }] as Node['ports'];
+        const error = service.validateConnectedPorts(mockNode);
+        if (allowed) expect(error).toBeUndefined();
+        else expect(error).toContain('Cannot remove connected adapter 4');
+      }
+    );
   });
 
   describe('Service Creation', () => {

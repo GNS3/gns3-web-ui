@@ -5,7 +5,6 @@ import { Node } from '../../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
-import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { ConfigureCustomAdaptersDialogComponent } from './configure-custom-adapters.component';
 import { ValidationService } from '@services/validation';
 import { ChangeDetectorRef } from '@angular/core';
@@ -94,6 +93,7 @@ describe('ConfigureCustomAdaptersDialogComponent', () => {
     } as Controller;
 
     mockNodeService = {
+      validateConnectedPorts: vi.fn().mockReturnValue(undefined),
       updateNodeWithCustomAdapters: vi.fn().mockReturnValue(of(undefined)),
     };
 
@@ -110,7 +110,6 @@ describe('ConfigureCustomAdaptersDialogComponent', () => {
       markForCheck: vi.fn(),
     };
 
-    const mockDockerConfigurationService = {};
     const mockValidationService = {
       validateMacAddress: vi.fn().mockReturnValue({ isValid: true }),
     };
@@ -121,7 +120,6 @@ describe('ConfigureCustomAdaptersDialogComponent', () => {
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
-        { provide: DockerConfigurationService, useValue: mockDockerConfigurationService },
         { provide: ValidationService, useValue: mockValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
@@ -186,8 +184,60 @@ describe('ConfigureCustomAdaptersDialogComponent', () => {
       fixture.detectChanges();
     });
 
-    it('should assign adapters to node.custom_adapters', () => {
+    it('should reject invalid changes before invoking the parent save callback', () => {
+      component.saveHandler = vi.fn();
+      component.validateAdapterCount = vi.fn().mockReturnValue('Cannot remove connected adapter 2, port 0.');
+      component.removeAdapter(1);
       component.onSaveClick();
+
+      expect(component.validateAdapterCount).toHaveBeenCalledWith(1);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Cannot remove connected adapter 2, port 0.');
+      expect(component.saveHandler).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should reject deleting ports 4 and 5 while retaining ports 7 and 8', () => {
+      component.saveHandler = vi.fn();
+      component.validateAdapterCount = vi.fn().mockReturnValue(undefined);
+      for (let i = 2; i < 8; i++) component.addAdapter();
+      component.removeAdapter(3);
+      component.removeAdapter(4);
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Only adapters at the end can be removed'));
+      expect(component.saveHandler).not.toHaveBeenCalled();
+      expect(mockNodeService.updateNodeWithCustomAdapters).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+      expect(component.adapters().map((adapter) => adapter.adapter_number)).toEqual([0, 1, 2, 5, 6, 7]);
+    });
+
+    it('should apply removing unused adapters from the end', () => {
+      component.saveHandler = vi.fn();
+      component.validateAdapterCount = vi.fn().mockReturnValue(undefined);
+      component.removeAdapter(1);
+      component.onSaveClick();
+
+      expect(component.validateAdapterCount).toHaveBeenCalledWith(1);
+      expect(component.saveHandler).toHaveBeenCalledWith(component.adapters());
+      expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should validate standalone node changes before modifying the node', () => {
+      mockNodeService.validateConnectedPorts.mockReturnValue('Connected adapter would be removed');
+      const properties = { ...mockNode.properties };
+      component.onSaveClick();
+
+      expect(mockNode.properties).toEqual(properties);
+      expect(mockNode.custom_adapters).toBeUndefined();
+      expect(mockNodeService.updateNodeWithCustomAdapters).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should assign adapters and their count to the node', () => {
+      component.addAdapter();
+      component.onSaveClick();
+      expect(mockNode.properties.adapters).toBe(3);
+      expect(mockNode.custom_adapters[2].port_name).toBeUndefined();
 
       expect(mockNode.custom_adapters).toBeDefined();
       expect(mockNode.custom_adapters.length).toBe(component.adapters().length);

@@ -448,6 +448,44 @@ describe('CustomAdaptersComponent', () => {
       expect(result.requiredAdapters).toBe(3);
     });
 
+    it('should show the connected-port error and stay open when Apply is rejected', () => {
+      const validateAdapterCount = vi.fn().mockReturnValue('Cannot remove connected adapter 2, port 0.');
+      createComponent(createMockData({ validateAdapterCount }));
+      component.onAdd();
+      component.configureCustomAdapters();
+
+      expect(validateAdapterCount).toHaveBeenCalledWith(1);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Cannot remove connected adapter 2, port 0.');
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+      expect(component.adapters().length).toBe(1);
+    });
+
+    it('should apply removing unused adapters from the end', () => {
+      const validateAdapterCount = vi.fn().mockReturnValue(undefined);
+      createComponent(createMockData({ validateAdapterCount }));
+      for (let i = 0; i < 8; i++) component.onAdd();
+      component.delete(component.adapters()[7]);
+      component.delete(component.adapters()[6]);
+      component.configureCustomAdapters();
+
+      expect(validateAdapterCount).toHaveBeenCalledWith(6);
+      expect(mockDialogRef.close).toHaveBeenCalledWith(expect.objectContaining({ requiredAdapters: 6 }));
+    });
+
+    it('should reject deleting ports 4 and 5 while retaining ports 7 and 8', () => {
+      const validateAdapterCount = vi.fn().mockReturnValue(undefined);
+      createComponent(createMockData({ validateAdapterCount }));
+      for (let i = 0; i < 8; i++) component.onAdd();
+      const adapters = [...component.adapters()];
+      component.delete(adapters[3]);
+      component.delete(adapters[4]);
+      component.configureCustomAdapters();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Only adapters at the end can be removed'));
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+      expect(component.adapters().map((adapter) => adapter.adapter_number)).toEqual([0, 1, 2, 5, 6, 7]);
+    });
+
     it('should handle segment size when calculating default port names', () => {
       createComponent(createMockData({ portNameFormat: 'eth{0}', portSegmentSize: 2, defaultAdapterType: 'e1000' }));
       component.onAdd();

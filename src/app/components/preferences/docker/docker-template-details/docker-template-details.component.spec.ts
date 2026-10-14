@@ -175,6 +175,20 @@ describe('DockerTemplateDetailsComponent', () => {
     }
   });
 
+  it.each([0, 4])('opens all %i template adapters, including default entries around sparse overrides', (count) => {
+    const instance: any = { adapters: { set: vi.fn() } };
+    mockDialog.open.mockReturnValue({ componentInstance: instance });
+    component.dockerTemplate = createMockDockerTemplate();
+    component.dockerTemplate.custom_adapters = [{ adapter_number: 2, port_name: 'custom2' }] as any;
+    component.adaptersCount.set(count);
+    component.editCustomAdapters();
+    const adapters = instance.adapters.set.mock.calls[0][0];
+    expect(adapters.map((adapter: any) => adapter.adapter_number)).toEqual(Array.from({ length: count }, (_, i) => i));
+    if (count) expect(adapters[2].port_name).toBe('custom2');
+    instance.saveHandler(adapters);
+    expect(component.dockerTemplate.custom_adapters[0]?.port_name).toBeUndefined();
+  });
+
   describe('Creation', () => {
     it('should create the component', () => {
       expect(component).toBeTruthy();
