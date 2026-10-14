@@ -413,7 +413,7 @@
             />
             <mat-hint>Example: aaaa.bbbb.cccc (leave empty to let the server allocate a MAC address).</mat-hint>
           </mat-form-field>
-          <button mat-button class="ios-details__action-btn" (click)="generateBaseMAC()">Generate Base MAC</button>
+          <button mat-raised-button color="primary" type="button" class="ios-details__action-btn" (click)="generateBaseMAC()">Generate Base MAC</button>
         </div>
 
         <div class="ios-details__symbol-row">
@@ -431,7 +431,7 @@
               placeholder="Idle-PC"
             />
           </mat-form-field>
-          <button mat-button class="ios-details__action-btn" (click)="findIdlePC()">Idle-PC finder</button>
+          <button mat-raised-button color="primary" type="button" class="ios-details__action-btn" (click)="findIdlePC()">Idle-PC finder</button>
         </div>
 
         <div class="three-column-grid gns3-form-layout-fixed">

@@ -106,8 +106,8 @@
 }
 
 .iou-add__browse-btn {
-  margin-top: 4px;
-  height: 48px;
+  margin-top: 0;
+  height: var(--gns3-density-control-height);
 }
 
 /* =============================================

@@ -159,10 +159,7 @@
   }
 }
 
-/* Match the "Pull image" button height to the Image field so it sits flush. */
 .docker-details__image-row .docker-details__pull-btn {
-  align-self: flex-start;
-  height: var(--gns3-density-form-field-height);
   white-space: nowrap;
 }
 

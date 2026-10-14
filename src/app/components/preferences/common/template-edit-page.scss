@@ -236,8 +236,14 @@ button[class*='__cancel-btn'].mat-mdc-button {
   border: 1px solid var(--mat-sys-outline);
 }
 
-button[class*='__config-btn'].mat-mdc-raised-button {
+button[class*='__config-btn'],
+button.docker-details__extra-config-btn,
+.udp-tunnels__add-btn > button {
   @include buttons.geometry;
+  width: fit-content;
+  max-width: 100%;
+  align-self: center;
+  border-radius: var(--mat-sys-corner-full, 999px);
 }
 
 /* Usage is a free-form description, so it should use the complete editor
@@ -261,19 +267,13 @@ button[class*='__config-btn'].mat-mdc-raised-button {
   resize: vertical;
 }
 
-/* File pickers inside a form already inherit the form's horizontal inset.
-   Removing their nested inset keeps Advanced fields aligned with General
-   fields while leaving standalone disk/image rows unchanged. */
+/* Nested file pickers use the form's padding and gap. */
 [class$='__form'] [class*='__file-row'] {
-  padding-inline: 0;
+  padding: 0;
 }
 
 [class*='__file-row'] {
   align-items: flex-start;
-}
-
-button[class*='__browse-btn'] {
-  margin-top: 0;
 }
 
 [class$='__symbol-row'] {
@@ -282,17 +282,18 @@ button[class*='__browse-btn'] {
   gap: var(--gns3-density-card-gap);
 }
 
-/* Match the action button height to the neighbouring form fields so the
-   button sits flush with the field box instead of floating above/below it. */
-[class$='__symbol-row'] [class$='__symbol-btn'],
-[class$='__symbol-row'] [class$='__action-btn'],
-button[class*='__browse-btn'] {
+/* Center standard-height actions on the field box, excluding helper text. */
+[class$='__symbol-row'] [class*='__symbol-btn'],
+[class$='__symbol-row'] [class*='__action-btn'],
+[class*='__file-row'] > button[class*='__browse-btn'],
+.docker-details__image-row > button.docker-details__pull-btn {
+  @include buttons.geometry;
+  border-radius: var(--mat-sys-corner-full, 999px);
+  width: fit-content;
+  max-width: 100%;
+  flex: 0 0 auto;
   align-self: flex-start;
-  height: var(--gns3-density-form-field-height);
-}
-
-[class$='__symbol-row'] [class$='__field'] {
-  flex: 1;
+  margin-top: var(--template-field-action-offset, calc((var(--gns3-density-form-field-height) - var(--gns3-density-control-height)) / 2));
 }
 
 :host-context([data-density='compact']) {
@@ -310,6 +311,14 @@ button[class*='__browse-btn'] {
 
   [class$='__header-actions'] button {
     flex: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  [class$='__symbol-row'],
+  [class*='__file-row'],
+  .docker-details__image-row {
+    --template-field-action-offset: 0px;
   }
 }
 

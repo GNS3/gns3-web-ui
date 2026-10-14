@@ -1,3 +1,5 @@
+@use '../../../../../styles/buttons' as buttons;
+
 /**
  * GNS3 IOS Add Template Component Styles
  * BEM naming applied, Material theme variables used
@@ -147,8 +149,9 @@
 }
 
 .ios-add__action-btn {
+  @include buttons.geometry;
+  border-radius: var(--mat-sys-corner-full, 999px);
   align-self: flex-start;
-  text-transform: none;
 }
 
 /* =============================================

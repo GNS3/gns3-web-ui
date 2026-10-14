@@ -333,7 +333,7 @@
           </mat-form-field>
         </div>
         <div class="udp-tunnels__add-btn">
-          <button mat-button (click)="onAddUdpInterface()">Add</button>
+          <button mat-stroked-button type="button" (click)="onAddUdpInterface()">Add UDP tunnel</button>
         </div>
         <table mat-table [dataSource]="dataSourceUdp" class="cloud-nodes-details__table">
           <ng-container matColumnDef="name">
