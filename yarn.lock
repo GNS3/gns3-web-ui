@@ -3750,10 +3750,10 @@
     "@webassemblyjs/ast" "1.14.1"
     "@xtuc/long" "4.2.2"
 
-"@xterm/addon-attach@^0.11.0":
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/@xterm/addon-attach/-/addon-attach-0.11.0.tgz#081474e38cf643725380db8530d842cd045c9eb1"
-  integrity sha512-JboCN0QAY6ZLY/SSB/Zl2cQ5zW1Eh4X3fH7BnuR1NB7xGRhzbqU2Npmpiw/3zFlxDaU88vtKzok44JKi2L2V2Q==
+"@xterm/addon-attach@^0.12.0":
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/@xterm/addon-attach/-/addon-attach-0.12.0.tgz#58d9b1feb8e9e7b5403ccc1491623497c522e704"
+  integrity sha512-1lxvXM4JYSm60lbFmE8WMOy2oF2ip3Ye8jWorSAmwy7x8FiC53netEJ5RguL8+FSRj79MUQsNCb2hprY2QA2ig==
 
 "@xterm/addon-fit@^0.10.0":
   version "0.10.0"
