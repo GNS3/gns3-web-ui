@@ -18,6 +18,15 @@
       0 6px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
   }
 
+  // The empty definitions view should end below its message, not fill the
+  // default window height. An explicit user resize retains its chosen size.
+  &.fit-empty-definitions {
+    .marker-manager__content {
+      height: auto;
+      max-height: inherit;
+    }
+  }
+
   &.is-dragging {
     box-shadow: 0 16px 48px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
       0 8px 16px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
@@ -210,6 +219,10 @@
     flex-direction: column;
     gap: 4px;
     margin-top: 8px;
+
+    .marker-manager__empty {
+      padding-block: 4px;
+    }
   }
 
   &__group {

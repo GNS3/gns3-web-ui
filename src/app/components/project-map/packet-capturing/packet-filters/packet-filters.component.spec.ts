@@ -1,3 +1,5 @@
+import { By } from '@angular/platform-browser';
+import { BpfPresetsComponent } from '../../bpf-presets/bpf-presets.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError, Subject } from 'rxjs';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -195,6 +197,16 @@ describe('PacketFiltersDialogComponent', () => {
 
   afterEach(() => {
     fixture.destroy();
+  });
+
+  it('renders the shared BPF presets and applies selections without losing other filters', () => {
+    mockLinkService.getLink.mockReturnValue(of(createMockLink({ bpf: ['host 10.0.0.1'], delay: [100] })));
+    fixture.detectChanges();
+    const presets = fixture.debugElement.query(By.directive(BpfPresetsComponent)).componentInstance as BpfPresetsComponent;
+    expect(presets.multiline()).toBe(true);
+    presets.select('tcp');
+    component.onYesClick();
+    expect(component.link.filters).toEqual({ bpf: ['host 10.0.0.1\ntcp'], delay: [100] });
   });
 
   describe('Creation', () => {

@@ -1,3 +1,4 @@
+import { BpfPresetsComponent } from '../bpf-presets/bpf-presets.component';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
@@ -43,6 +44,7 @@ export const MARKER_CAPTURE_AUTO = 'auto';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
+    BpfPresetsComponent,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -55,6 +57,8 @@ export const MARKER_CAPTURE_AUTO = 'auto';
   ],
   template: `
     <form class="marker-form" [formGroup]="form()" (ngSubmit)="save.emit()">
+      <app-bpf-presets [expression]="form().get('bpf')?.value || ''"
+        (expressionChange)="form().get('bpf')?.setValue($event)" />
       <div class="marker-form__row marker-form__row--full">
         <mat-form-field class="marker-form__field">
           <mat-label>BPF expression</mat-label>
