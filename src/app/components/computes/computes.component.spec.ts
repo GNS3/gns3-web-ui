@@ -78,6 +78,7 @@ describe('ComputesComponent', () => {
       updateCompute: vi.fn().mockReturnValue(of({})),
       deleteCompute: vi.fn().mockReturnValue(of({})),
       connectCompute: vi.fn().mockReturnValue(of({})),
+      disconnectCompute: vi.fn().mockReturnValue(of({})),
     } as any as ComputeService;
 
     mockNotificationService = {
@@ -135,11 +136,14 @@ describe('ComputesComponent', () => {
         { provide: ControllerService, useValue: mockControllerService },
         { provide: NotificationService, useValue: mockNotificationService },
         { provide: ToasterService, useValue: mockToasterService },
-        { provide: MatDialog, useValue: mockDialog },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],
-    }).compileComponents();
+    })
+      // The standalone component imports MatDialogModule, so its own injector
+      // provides the real MatDialog — override at every level instead.
+      .overrideProvider(MatDialog, { useValue: mockDialog })
+      .compileComponents();
 
     fixture = TestBed.createComponent(ComputesComponent);
     component = fixture.componentInstance;
@@ -157,7 +161,7 @@ describe('ComputesComponent', () => {
   });
 
   it('should have correct displayedColumns', () => {
-    expect(component.displayedColumns).toEqual(['name', 'status', 'host', 'platform', 'resources', 'actions']);
+    expect(component.displayedColumns).toEqual(['name', 'status', 'host', 'platform', 'resources', 'autoConnect', 'actions']);
   });
 
   it('should filter computes by search text and connection status', () => {
@@ -352,6 +356,122 @@ describe('ComputesComponent', () => {
       await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to connect compute');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('toggleAutoConnect', () => {
+    let remote: Compute;
+
+    beforeEach(async () => {
+      // Zoneless initial CD runs ngOnInit; flush its async compute load before
+      // seeding the test list, or it overwrites _computes mid-test.
+      await vi.runAllTimersAsync();
+      remote = {
+        ...mockComputes[0],
+        compute_id: 'remote',
+        name: 'Remote Compute',
+        connected: false,
+        auto_connect: false,
+      } as Compute;
+      component['controller'] = mockController;
+      component['_computes'].set([remote]);
+    });
+
+    it('should flip the flag optimistically and PUT only the auto_connect field', async () => {
+      component.toggleAutoConnect(remote, true);
+
+      expect(component.computes()[0].auto_connect).toBe(true);
+      expect(mockComputeService.updateCompute).toHaveBeenCalledWith(mockController, 'remote', { auto_connect: true });
+      await vi.runAllTimersAsync();
+    });
+
+    it('should not toast on success (WS compute.updated refreshes the row)', async () => {
+      component.toggleAutoConnect(remote, true);
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.success).not.toHaveBeenCalled();
+      expect(mockToasterService.error).not.toHaveBeenCalled();
+    });
+
+    it('should revert the optimistic flip and toast when the PUT fails', async () => {
+      mockComputeService.updateCompute = vi
+        .fn()
+        .mockReturnValue(throwError(() => ({ error: { message: 'Update rejected' } })));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.toggleAutoConnect(remote, true);
+      await vi.runAllTimersAsync();
+
+      expect(component.computes()[0].auto_connect).toBe(false);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Update rejected');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('disconnectCompute', () => {
+    let remote: Compute;
+
+    beforeEach(async () => {
+      await vi.runAllTimersAsync();
+      remote = {
+        ...mockComputes[0],
+        compute_id: 'remote',
+        name: 'Remote Compute',
+        connected: true,
+        auto_connect: true,
+      } as Compute;
+      component['controller'] = mockController;
+      component['_computes'].set([remote]);
+    });
+
+    it('should toast when the disconnect request is accepted', async () => {
+      component.disconnectCompute(remote);
+      await vi.runAllTimersAsync();
+
+      expect(mockComputeService.disconnectCompute).toHaveBeenCalledWith(mockController, 'remote', false);
+      expect(mockToasterService.success).toHaveBeenCalledWith('Disconnect request sent');
+    });
+
+    it('should ask for confirmation on 409 and retry with force after confirm', async () => {
+      mockComputeService.disconnectCompute = vi
+        .fn()
+        .mockReturnValueOnce(throwError(() => ({ status: 409, error: { message: 'Compute is used by opened projects' } })))
+        .mockReturnValue(of(undefined));
+      mockDialogRef.afterClosed = vi.fn().mockReturnValue(of(true));
+
+      component.disconnectCompute(remote);
+      await vi.runAllTimersAsync();
+
+      expect(mockDialog.open).toHaveBeenCalled();
+      expect(mockComputeService.disconnectCompute).toHaveBeenCalledTimes(2);
+      expect(mockComputeService.disconnectCompute).toHaveBeenLastCalledWith(mockController, 'remote', true);
+      expect(mockToasterService.success).toHaveBeenCalledWith('Disconnect request sent');
+    });
+
+    it('should not force-disconnect when the confirmation is dismissed', async () => {
+      mockComputeService.disconnectCompute = vi
+        .fn()
+        .mockReturnValueOnce(throwError(() => ({ status: 409, error: { message: 'Compute is used by opened projects' } })));
+
+      component.disconnectCompute(remote);
+      await vi.runAllTimersAsync();
+
+      expect(mockDialog.open).toHaveBeenCalled();
+      expect(mockComputeService.disconnectCompute).toHaveBeenCalledTimes(1);
+    });
+
+    it('should toast on non-409 errors without opening a dialog', async () => {
+      mockComputeService.disconnectCompute = vi
+        .fn()
+        .mockReturnValue(throwError(() => ({ error: { message: 'Not found' } })));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.disconnectCompute(remote);
+      await vi.runAllTimersAsync();
+
+      expect(mockDialog.open).not.toHaveBeenCalled();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Not found');
       expect(cdrSpy).toHaveBeenCalled();
     });
   });

@@ -22,6 +22,8 @@ export interface Compute {
   capabilities: Capabilities;
   compute_id: string;
   connected: boolean;
+  // Server-managed auto-connect flag (absent on servers without the feature)
+  auto_connect?: boolean;
   cpu_usage_percent: number;
   disk_usage_percent?: number;
   host: string;
@@ -40,6 +42,7 @@ export interface ComputeCreate {
   user?: string;
   password?: string;
   name?: string;
+  auto_connect?: boolean;
 }
 
 export interface ComputeUpdate {
@@ -49,4 +52,5 @@ export interface ComputeUpdate {
   user?: string;
   password?: string;
   name?: string;
+  auto_connect?: boolean;
 }

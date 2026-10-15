@@ -305,6 +305,14 @@
     flex: 1 1 auto;
     overflow: hidden;
   }
+
+  // Add/Edit Compute dialog: the auto-connect toggle is a bare slide-toggle in
+  // a gns3-form-layout-fixed stack (row-gap 0), give it the field rhythm.
+  app-add-compute-dialog .add-compute-dialog__auto-connect {
+    display: flex;
+    align-items: center;
+    margin: 4px 0 12px;
+  }
 }
 
 /* =============================================

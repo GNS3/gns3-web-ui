@@ -21,6 +21,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Controller } from '@models/controller';
@@ -50,6 +51,7 @@ import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-di
     MatInputModule,
     MatSelectModule,
     MatProgressSpinnerModule,
+    MatSlideToggleModule,
     ReactiveFormsModule,
   ],
 })
@@ -101,7 +103,7 @@ export class ComputesComponent implements OnInit, OnDestroy {
     });
   });
   connectedCount = computed(() => this.computes().filter((compute) => compute.connected).length);
-  displayedColumns = ['name', 'status', 'host', 'platform', 'resources', 'actions'];
+  displayedColumns = ['name', 'status', 'host', 'platform', 'resources', 'autoConnect', 'actions'];
   loading = signal(true);
   private subscription = new Subscription();
 
@@ -312,6 +314,62 @@ export class ComputesComponent implements OnInit, OnDestroy {
     });
   }
 
+  toggleAutoConnect(compute: Compute, enabled: boolean) {
+    const previous = compute.auto_connect ?? false;
+    // Optimistic flip; the server confirms via a compute.updated WS event.
+    this._computes.update((computes) =>
+      computes.map((c) => (c.compute_id === compute.compute_id ? { ...c, auto_connect: enabled } : c))
+    );
+    this.computeService.updateCompute(this.controller, compute.compute_id, { auto_connect: enabled }).subscribe({
+      error: (err) => {
+        this._computes.update((computes) =>
+          computes.map((c) => (c.compute_id === compute.compute_id ? { ...c, auto_connect: previous } : c))
+        );
+        const message = err.error?.message || err.message || 'Failed to update auto-connect setting';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
+  }
+
+  disconnectCompute(compute: Compute, force: boolean = false) {
+    this.computeService.disconnectCompute(this.controller, compute.compute_id, force).subscribe({
+      next: () => {
+        this.toasterService.success('Disconnect request sent');
+      },
+      error: (err) => {
+        if (err.status === 409) {
+          this.confirmForceDisconnect(compute);
+        } else {
+          const message = err.error?.message || err.message || 'Failed to disconnect compute';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
+      },
+    });
+  }
+
+  private confirmForceDisconnect(compute: Compute) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
+      autoFocus: '.cancel-button',
+      disableClose: true,
+      data: {
+        title: 'Force disconnect?',
+        message: `Compute "${compute.name || compute.compute_id}" is used by opened projects.`,
+        note: 'Only the controller connection is closed — nodes keep running unmanaged.',
+        confirmButtonText: 'Force disconnect',
+        tone: 'danger',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.disconnectCompute(compute, true);
+      }
+    });
+  }
+
   getStatusIcon(compute: Compute): string {
     return compute.connected ? 'check_circle' : 'cancel';
   }
@@ -358,6 +416,7 @@ export class ComputesComponent implements OnInit, OnDestroy {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatSlideToggleModule,
   ],
 })
 export class AddComputeDialogComponent {
@@ -376,6 +435,7 @@ export class AddComputeDialogComponent {
     port: new UntypedFormControl(3080, [Validators.required, Validators.min(1), Validators.max(65535)]),
     user: new UntypedFormControl('gns3'),
     password: new UntypedFormControl('gns3'),
+    autoConnect: new UntypedFormControl(false),
   });
 
   isEditMode = false;
@@ -390,6 +450,7 @@ export class AddComputeDialogComponent {
         port: this.data.compute.port,
         user: this.data.compute.user,
         password: '',
+        autoConnect: this.data.compute.auto_connect ?? false,
       });
     }
   }
@@ -406,6 +467,7 @@ export class AddComputeDialogComponent {
       port: formValue.port!,
       user: formValue.user || undefined,
       name: formValue.name || undefined,
+      auto_connect: !!formValue.autoConnect,
     };
 
     // Only include password if user entered a password (empty/null causes 500 error)

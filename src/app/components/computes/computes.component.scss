@@ -152,7 +152,7 @@ button.computes-page__button {
 
 mat-table {
   width: 100%;
-  min-width: 1040px;
+  min-width: 1120px;
 }
 
 .mat-mdc-row,
@@ -234,9 +234,15 @@ mat-header-cell {
   justify-content: center;
 }
 
+.mat-column-autoConnect {
+  flex: 10 1 0;
+  min-width: 104px;
+  justify-content: center;
+}
+
 .mat-column-actions {
   flex: 14 1 0;
-  min-width: 155px;
+  min-width: 190px;
   justify-content: center;
 }
 
@@ -354,7 +360,8 @@ mat-header-cell {
 }
 
 .computes-page__unavailable,
-.computes-page__managed-label {
+.computes-page__managed-label,
+.computes-page__auto-connect-na {
   color: var(--mat-sys-on-surface-variant);
   font-size: 12px;
 }
@@ -386,7 +393,8 @@ button.computes-page__action--edit {
   --compute-action-color: var(--mat-sys-primary);
 }
 
-button.computes-page__action--delete {
+button.computes-page__action--delete,
+button.computes-page__action--disconnect {
   --compute-action-color: var(--mat-sys-error);
 }
 
