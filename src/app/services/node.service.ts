@@ -7,13 +7,15 @@ import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
 import { HttpController } from './http-controller.service';
+import { LinksDataSource } from '../cartography/datasources/links-datasource';
 import { environment } from 'environments/environment';
 
 @Injectable()
 export class NodeService {
   constructor(
     private httpController: HttpController,
-    private http: HttpClient
+    private http: HttpClient,
+    private linksDataSource: LinksDataSource
   ) {}
 
   getNodeById(controller: Controller, projectId: string, nodeId: string) {
@@ -133,12 +135,17 @@ export class NodeService {
     });
   }
 
-  updateNode(controller: Controller, node: Node): Observable<Node> {
+  updateNode(controller: Controller, node: Node, customAdapters?: Node['custom_adapters']): Observable<Node> {
+    const portError = this.validateConnectedPorts(node);
+    if (portError) {
+      return throwError(() => new Error(portError));
+    }
     return this.httpController.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       ...(node.console_type ? { console_type: node.console_type } : {}),
       ...(node.aux_type ? { aux_type: node.aux_type } : {}),
       console_auto_start: node.console_auto_start,
       locked: node.locked,
+      ...(customAdapters !== undefined ? { custom_adapters: customAdapters } : {}),
       name: node.name,
       properties: node.properties,
       tags: node.tags,
@@ -149,40 +156,48 @@ export class NodeService {
   }
 
   updateNodeWithCustomAdapters(controller: Controller, node: Node): Observable<Node> {
-    // Filter out null values from custom_adapters for QEMU nodes
-    const filtered_custom_adapters = node.custom_adapters
-      ? node.custom_adapters.map((adapter) => {
-          const filteredAdapter: any = {
-            adapter_number: adapter.adapter_number,
-            adapter_type: adapter.adapter_type,
-          };
+    const adapters = (node.custom_adapters || []).map(({ adapter_number, adapter_type, port_name, mac_address }) => ({
+      adapter_number,
+      adapter_type,
+      ...(port_name != null ? { port_name } : {}),
+      ...(mac_address != null ? { mac_address } : {}),
+    }));
+    return this.updateNode(controller, node, adapters);
+  }
 
-          // Only include port_name if it's not null
-          if (adapter.port_name !== null && adapter.port_name !== undefined) {
-            filteredAdapter.port_name = adapter.port_name;
-          }
+  validateConnectedPorts(node: Node, adapters = node.properties?.adapters): string | undefined {
+    const properties = node.properties;
+    if (!properties) return;
 
-          // Only include mac_address if it's not null
-          if (adapter.mac_address !== null && adapter.mac_address !== undefined) {
-            filteredAdapter.mac_address = adapter.mac_address;
-          }
-
-          return filteredAdapter;
-        })
-      : [];
-
-    return this.httpController.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
-      ...(node.console_type ? { console_type: node.console_type } : {}),
-      ...(node.aux_type ? { aux_type: node.aux_type } : {}),
-      console_auto_start: node.console_auto_start,
-      custom_adapters: filtered_custom_adapters,
-      name: node.name,
-      properties: node.properties,
-      tags: node.tags,
-      netmiko_device_type: node.netmiko_device_type,
-      default_username: node.default_username,
-      default_password: node.default_password,
-    });
+    for (const link of this.linksDataSource.getItems()) {
+      if (link.project_id !== node.project_id) continue;
+      for (const endpoint of link.nodes) {
+        if (endpoint.node_id !== node.node_id) continue;
+        let removed = false;
+        if (adapters !== undefined) {
+          removed = endpoint.adapter_number >= adapters;
+        } else if (node.node_type === 'iou') {
+          const port = node.ports?.find((port) =>
+            port.adapter_number === endpoint.adapter_number && port.port_number === endpoint.port_number
+          );
+          const serialStart = Math.min(...(node.ports || [])
+            .filter((port) => port.link_type === 'serial').map((port) => port.adapter_number));
+          // Changing the ethernet count also moves the serial adapters' addresses.
+          removed = port?.link_type === 'serial'
+            ? properties.ethernet_adapters !== serialStart ||
+              endpoint.adapter_number >= properties.ethernet_adapters + properties.serial_adapters
+            : endpoint.adapter_number >= properties.ethernet_adapters;
+        } else if (properties.ports_mapping !== undefined) {
+          const port = properties.ports_mapping[endpoint.port_number];
+          // Cloud/NAT mappings are addressed by list position, not their stored port_number.
+          removed = !port || (['ethernet_switch', 'ethernet_hub'].includes(node.node_type) &&
+            port.port_number !== endpoint.port_number);
+        }
+        if (removed) {
+          return `Cannot remove connected adapter ${endpoint.adapter_number}, port ${endpoint.port_number}. Disconnect its links first.`;
+        }
+      }
+    }
   }
 
   delete(controller: Controller, node: Node) {

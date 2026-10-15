@@ -366,19 +366,12 @@ export class DockerTemplateDetailsComponent implements OnInit {
   }
 
   editCustomAdapters() {
-    // Use existing custom_adapters, or generate from adaptersCount
-    let adapters = this.dockerTemplate.custom_adapters || [];
-    if (adapters.length === 0) {
-      adapters = Array.from(
-        { length: this.adaptersCount() || 1 },
-        (_, i) =>
-          ({
-            adapter_number: i,
-            port_name: '',
-            adapter_type: '',
-          } as any)
-      );
-    }
+    const adapters = Array.from({ length: this.adaptersCount() }, (_, i) => ({
+      adapter_number: i,
+      port_name: '',
+      adapter_type: '',
+      ...this.dockerTemplate.custom_adapters?.find((adapter) => adapter.adapter_number === i),
+    }));
     const dialogConfig = this.dialogConfig.openConfig('base', {
       autoFocus: false,
       panelClass: ['base-dialog-panel', 'docker-configurator-dialog-panel', 'dialog-extra-large-panel'],
@@ -395,6 +388,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
     instance.saveHandler = (updatedAdapters: any[]) => {
       this.dockerTemplate.custom_adapters = updatedAdapters.map((a: any) => ({
         ...a,
+        port_name: a.port_name || undefined,
         mac_address: a.mac_address || null,
       })) as any;
       this.adaptersCount.set(updatedAdapters.length);

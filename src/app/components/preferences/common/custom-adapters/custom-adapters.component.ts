@@ -23,6 +23,7 @@ export interface CustomAdaptersDialogData {
   firstPortName?: string;
   defaultAdapterType?: string; // Default adapter type (for incremental save)
   currentAdapters?: number; // Current adapters count
+  validateAdapterCount?: (count: number) => string | undefined;
 }
 
 export interface CustomAdaptersDialogResult {
@@ -51,7 +52,6 @@ export class CustomAdaptersComponent {
   private toasterService = inject(ToasterService);
 
   readonly adapters = model<CustomAdapter[]>([]);
-  public numberOfAdapters: number;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: CustomAdaptersDialogData) {
     this.adapters.set(data.adapters ? [...data.adapters] : []);
@@ -150,6 +150,19 @@ export class CustomAdaptersComponent {
   }
 
   configureCustomAdapters() {
+    const requiredAdapters = this.adapters().length;
+    if (this.adapters().some((adapter, index) => adapter.adapter_number !== index)) {
+      this.toasterService.error(
+        'Only adapters at the end can be removed. Removing adapters in the middle would renumber the remaining ports.'
+      );
+      return;
+    }
+    const portError = this.data.validateAdapterCount?.(requiredAdapters);
+    if (portError) {
+      this.toasterService.error(portError);
+      return;
+    }
+
     // Check for invalid MAC addresses before submitting
     if (this.hasInvalidMacAddresses()) {
       const invalidAdapters = this.adapters().filter(
@@ -189,9 +202,6 @@ export class CustomAdaptersComponent {
         });
       }
     }
-
-    // Calculate required adapters based on the current adapter count
-    const requiredAdapters = this.adapters().length;
 
     const result: CustomAdaptersDialogResult = {
       adapters: customAdapters, // Only non-default adapters

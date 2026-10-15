@@ -110,6 +110,7 @@ describe('ConfiguratorDialogDockerComponent', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    mockNode.custom_adapters = undefined;
 
     mockDialogRef = { close: vi.fn() };
 
@@ -137,6 +138,7 @@ describe('ConfiguratorDialogDockerComponent', () => {
     mockNodeService = {
       getNode: vi.fn().mockReturnValue(of(mockNode)),
       updateNode: vi.fn().mockReturnValue(of(undefined)),
+      updateNodeWithCustomAdapters: vi.fn().mockReturnValue(of(undefined)),
       getNetworkConfiguration: vi.fn().mockReturnValue(of('auto eth0\niface eth0 inet dhcp\n')),
       saveNetworkConfiguration: vi.fn().mockReturnValue(of(undefined)),
     };
@@ -215,6 +217,48 @@ describe('ConfiguratorDialogDockerComponent', () => {
       expect(component.consoleHttpPort).toBeTruthy();
       expect(component.consoleHttpPath).toBeTruthy();
       expect(component.consoleAutoStart()).toBe(false);
+    });
+  });
+
+  describe('custom adapter dialog', () => {
+    it('should include default ports, validate proposed counts, and preserve adapter numbers', () => {
+      const instance: any = { adapters: { set: vi.fn() } };
+      mockDialog.open.mockReturnValue({ componentInstance: instance });
+      mockNodeService.validateConnectedPorts = vi.fn().mockReturnValue('Connected adapter would be removed');
+      component.adapter.set('4');
+      component.node.custom_adapters = [{ adapter_number: 2, port_name: 'custom2' }];
+      component.configureCustomAdapters();
+
+      const adapters = instance.adapters.set.mock.calls[0][0];
+      expect(adapters.map((adapter: any) => adapter.adapter_number)).toEqual([0, 1, 2, 3]);
+      expect(adapters[2].port_name).toBe('custom2');
+      expect(instance.validateAdapterCount(2)).toBe('Connected adapter would be removed');
+      expect(mockNodeService.validateConnectedPorts).toHaveBeenCalledWith(component.node, 2);
+      expect(component.adapter()).toBe('4');
+
+      instance.saveHandler(adapters.slice(0, 3));
+      expect(component.adapter()).toBe('3');
+      expect(component.node.custom_adapters[0].port_name).toBeUndefined();
+    });
+
+    it('should persist custom adapters when applying the node configuration', () => {
+      component.node.custom_adapters = [{ adapter_number: 0, port_name: 'custom0' }];
+      component.adapter.set('1');
+      component.consoleHttpPort.set('80');
+      component.consoleHttpPath.set('/path');
+      component.onSaveClick();
+
+      expect(mockNodeService.updateNodeWithCustomAdapters).toHaveBeenCalledWith(mockController, component.node);
+      expect(mockNodeService.updateNode).not.toHaveBeenCalled();
+    });
+
+    it('should preserve an explicitly empty adapter list', () => {
+      const instance: any = { adapters: { set: vi.fn() } };
+      mockDialog.open.mockReturnValue({ componentInstance: instance });
+      component.adapter.set('0');
+      component.configureCustomAdapters();
+
+      expect(instance.adapters.set).toHaveBeenCalledWith([]);
     });
   });
 

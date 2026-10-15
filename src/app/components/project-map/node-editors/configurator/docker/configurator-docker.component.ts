@@ -194,22 +194,23 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   }
 
   configureCustomAdapters() {
-    // Generate adapter data from current node state
-    let adapters = this.node.custom_adapters || [];
-    if (adapters.length === 0) {
-      const count = parseInt(this.adapter(), 10) || 1;
-      adapters = Array.from({ length: count }, (_, i) => ({
-        adapter_number: i,
-        mac_address: '',
-      }));
-    }
+    // Include default adapters as well as sparse custom overrides.
+    const count = parseInt(this.adapter(), 10) || 0;
+    const adapters = Array.from({ length: count }, (_, i) => ({
+      adapter_number: i,
+      port_name: this.node.ports?.find((port) => port.adapter_number === i)?.name || '',
+      mac_address: '',
+      ...this.node.custom_adapters?.find((adapter) => adapter.adapter_number === i),
+    }));
     this.dialogRef = this.dialog.open(ConfigureCustomAdaptersDialogComponent, this.conf);
     let instance = this.dialogRef.componentInstance;
     instance.controller = this.controller;
     instance.adapters.set(adapters);
+    instance.validateAdapterCount = (count: number) => this.nodeService.validateConnectedPorts(this.node, count);
     instance.saveHandler = (updatedAdapters: any[]) => {
       this.node.custom_adapters = updatedAdapters.map((a: any) => ({
         ...a,
+        port_name: a.port_name || undefined,
         mac_address: a.mac_address || null,
       }));
       this.adapter.set(updatedAdapters.length.toString());
@@ -337,7 +338,10 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
 
     this.isApplying.set(true);
     this.dialogReference.disableClose = true;
-    this.nodeService.updateNode(this.controller, this.node).subscribe({
+    const update = this.node.custom_adapters
+      ? this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node)
+      : this.nodeService.updateNode(this.controller, this.node);
+    update.subscribe({
       next: () => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.dialogReference.close();

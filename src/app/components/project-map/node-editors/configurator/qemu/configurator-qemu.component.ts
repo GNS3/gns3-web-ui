@@ -527,6 +527,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         firstPortName: firstPortName,
         defaultAdapterType: defaultAdapterType,
         currentAdapters: adapterCount,
+        validateAdapterCount: (count: number) => this.nodeService.validateConnectedPorts(this.node, count),
       } as CustomAdaptersDialogData,
     });
 
