@@ -7,12 +7,23 @@ import { ToasterService } from '@services/toaster.service';
 describe('Shared BPF presets', () => {
   const error = vi.fn();
   beforeEach(() => {
-    localStorage.removeItem('gns3.bpf-presets');
+    // Own the storage mock: other suites and DOM environments may replace
+    // localStorage with an object that does not use Storage.prototype.
+    const items = new Map<string, string>();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn((key: string) => items.get(key) ?? null),
+      setItem: vi.fn((key: string, value: string) => {
+        items.set(key, value);
+      }),
+      removeItem: vi.fn((key: string) => {
+        items.delete(key);
+      }),
+    });
     TestBed.configureTestingModule({ providers: [{ provide: ToasterService, useValue: { error } }] });
   });
   afterEach(() => {
     vi.restoreAllMocks();
-    localStorage.removeItem('gns3.bpf-presets');
+    vi.unstubAllGlobals();
   });
 
   it('shares saved filters across control instances and persists updates and deletion', () => {
@@ -115,7 +126,7 @@ describe('Shared BPF presets', () => {
 
   it('keeps the library intact when storage fails', () => {
     const service = TestBed.inject(BpfPresetsService);
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
       throw new Error('Quota');
     });
     expect(service.save('TCP', 'tcp')).toBe(false);
