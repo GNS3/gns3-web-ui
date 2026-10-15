@@ -50,7 +50,7 @@
     "angular-resizable-element": "^8.0.3",
     "bootstrap": "5.3.8",
     "command-exists": "^1.2.9",
-    "core-js": "^3.22.3",
+    "core-js": "^3.50.0",
     "css-tree": "^2.1.0",
     "dagre-d3-es": "7.0.14",
     "eev": "^0.1.5",
