@@ -1,3 +1,4 @@
+import { BpfPresetsComponent } from '../bpf-presets/bpf-presets.component';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -116,6 +117,7 @@ function notGlobalName(control: AbstractControl): { notGlobalName: true } | null
   styleUrl: './marker-manager.component.scss',
   imports: [
     CommonModule,
+    BpfPresetsComponent,
     ReactiveFormsModule,
     MatIconModule,
     MatButtonModule,
@@ -164,8 +166,19 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     height: `${this.DEFAULT_HEIGHT}px`,
   };
 
+  get renderedWindowStyle() {
+    return this.fitEmptyDefinitions()
+      ? { ...this.style, height: 'auto', maxHeight: `calc(100dvh - ${this.style.top})` }
+      : this.style;
+  }
+
   public resizedWidth = this.DEFAULT_WIDTH;
   public resizedHeight = this.DEFAULT_HEIGHT;
+
+  readonly manuallyResized = signal(false);
+  readonly fitEmptyDefinitions = computed(() =>
+    this.activeTabIndex() === 0 && !this.loading() && this.definitions().length === 0 && !this.manuallyResized()
+  );
 
   private isDraggingSignal = signal(false);
   private isResizingSignal = signal(false);
@@ -1248,12 +1261,16 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   }
 
   onResizeStart(): void {
+    // Resizing starts from the rendered content height, which can differ
+    // from the default height while the definitions list is empty.
+    this.resizedHeight = this.windowWrapper()?.nativeElement.getBoundingClientRect().height || this.resizedHeight;
     this.isResizingSignal.set(true);
     this.setContentPointerEvents('none');
     this.cdr.markForCheck();
   }
 
   onResizeEnd(event: ResizeEvent): void {
+    this.manuallyResized.set(true);
     const constrained = this.boundaryService.constrainResizeSize(
       event.rectangle.width || this.resizedWidth,
       event.rectangle.height || this.resizedHeight,
@@ -1325,7 +1342,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
 
         // Constrain drag to viewport (mirrors web-console-inline)
         const w = this.resizedWidth;
-        const h = this.resizedHeight;
+        const h = windowElement.getBoundingClientRect().height || this.resizedHeight;
         const maxLeft = window.innerWidth - w;
         const topOffset = this.boundaryService.getConfigValue().topOffset || 0;
         const maxTop = window.innerHeight - h - topOffset;

@@ -5,8 +5,21 @@
     <header class="packet-filters__group-header">
       <h2 class="packet-filters__group-name">{{ group.name }}</h2>
     </header>
-    <div class="packet-filters__fields">
+    <div class="packet-filters__fields" [style.grid-template-columns]="group.key === 'bpf' ? '1fr' : null">
       @for (param of group.params; track param.name) {
+        @if (group.key === 'bpf' && param.kind === 'textarea') {
+          <div>
+            <p>
+              Matching packets are dropped. Use BPF capture syntax, one expression per line, rather than Wireshark display
+              syntax.
+            </p>
+            <app-bpf-presets
+              [expression]="param.value.toString()"
+              [multiline]="true"
+              (expressionChange)="onParamChange(param, $event)"
+            />
+          </div>
+        }
         <mat-form-field appearance="outline" class="packet-filters__field">
           <mat-label>{{ param.name }}</mat-label>
           @switch (param.kind) {

@@ -81,6 +81,29 @@ describe('MarkerManagerComponent', () => {
     fixture.componentRef.setInput('project', project);
   });
 
+  it('fits empty definitions to content while preserving other tabs and explicit sizing', () => {
+    markerService.listDefinitions.mockReturnValue(of({}));
+    markerService.aggregateList.mockReturnValue(of({}));
+    fixture.detectChanges();
+    expect(component.fitEmptyDefinitions()).toBe(true);
+    expect(fixture.nativeElement.querySelector('.marker-manager').style.height).toBe('auto');
+    component.activeTabIndex.set(1);
+    expect(component.fitEmptyDefinitions()).toBe(false);
+    component.activeTabIndex.set(0);
+    component.manuallyResized.set(true);
+    expect(component.fitEmptyDefinitions()).toBe(false);
+  });
+
+  it('starts resizing from the actual content height of an empty window', () => {
+    markerService.listDefinitions.mockReturnValue(of({}));
+    markerService.aggregateList.mockReturnValue(of({}));
+    fixture.detectChanges();
+    const element = fixture.nativeElement.querySelector('.marker-manager');
+    vi.spyOn(element, 'getBoundingClientRect').mockReturnValue({ height: 460 } as DOMRect);
+    component.onResizeStart();
+    expect(component.resizedHeight).toBe(460);
+  });
+
   it('loads definitions and aggregate on init', () => {
     markerService.listDefinitions.mockReturnValue(
       of({ arp: { bpf: 'arp', tag: 5, link_ids: ['a', 'b'] } })

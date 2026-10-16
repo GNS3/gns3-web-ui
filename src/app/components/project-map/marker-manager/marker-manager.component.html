@@ -4,7 +4,8 @@
   [class.is-dragging]="isDragging()"
   [class.is-resizing]="isResizing()"
   [class.is-minimized]="isMinimized()"
-  [ngStyle]="style"
+  [ngStyle]="renderedWindowStyle"
+  [class.fit-empty-definitions]="fitEmptyDefinitions()"
   [style.z-index]="zIndex()"
   (mousedown)="onWindowFocus()"
   mwlResizable
@@ -59,6 +60,8 @@
               <div class="marker-manager__form-title">
                 {{ editingDefinition() ? 'Edit definition' : 'New definition' }}
               </div>
+              <app-bpf-presets [expression]="definitionForm.get('bpf')?.value || ''"
+                (expressionChange)="definitionForm.get('bpf')?.setValue($event)" />
               <div class="marker-manager__single-grid">
                 <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
                   <mat-label>BPF expression</mat-label>

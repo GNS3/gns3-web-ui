@@ -1,3 +1,4 @@
+import { BpfPresetsComponent } from '../../bpf-presets/bpf-presets.component';
 import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -70,6 +71,7 @@ const KERNEL_ONLY_FILTER_TYPES = ['rate', 'reorder', 'gemodel', 'duplicate', 'se
   styleUrl: './packet-filters.component.scss',
   imports: [
     CommonModule,
+    BpfPresetsComponent,
     ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
