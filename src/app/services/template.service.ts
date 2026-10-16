@@ -15,8 +15,10 @@ export class TemplateService {
     return this.httpController.get<Template[]>(controller, '/templates') as Observable<Template[]>;
   }
 
-  deleteTemplate(controller: Controller, templateId: string): Observable<any> {
-    return this.httpController.delete(controller, `/templates/${templateId}`, { observe: 'body' });
+  deleteTemplate(controller: Controller, templateId: string, pruneImages = false): Observable<any> {
+    return this.httpController.delete(controller, `/templates/${templateId}${pruneImages ? '?prune_images=true' : ''}`, {
+      observe: 'body',
+    });
   }
 
   /**

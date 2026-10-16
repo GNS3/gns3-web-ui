@@ -20,7 +20,10 @@ export class DeleteTemplateComponent {
   private dialog = inject(MatDialog);
   private toasterService = inject(ToasterService);
 
-  deleteItem(templateName, templateId) {
+  deleteItem(templateName: string, templateId: string, templateType?: string) {
+    const pruneImages = ['qemu', 'dynamips', 'iou'].includes(templateType)
+      ? { label: 'Also delete unused images belonging to this template', checked: false }
+      : undefined;
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
       autoFocus: '.cancel-button',
@@ -30,13 +33,14 @@ export class DeleteTemplateComponent {
         note: 'This action cannot be undone.',
         confirmButtonText: 'Delete template',
         tone: 'danger',
+        checkbox: pruneImages,
       },
       disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((answer: boolean) => {
       if (answer) {
-        this.templateService.deleteTemplate(this.controller(), templateId).subscribe({
+        this.templateService.deleteTemplate(this.controller(), templateId, pruneImages?.checked ?? false).subscribe({
           next: () => {
             this.deleteEvent.emit(templateId);
             this.toasterService.success(`Template ${templateName} deleted.`);

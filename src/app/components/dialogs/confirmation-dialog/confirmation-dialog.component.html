@@ -18,6 +18,14 @@
       <li>{{ detail }}</li>
       }
     </ul>
+    } @if (data.checkbox; as checkbox) {
+    <mat-checkbox
+      class="confirmation-dialog__checkbox"
+      [checked]="checkbox.checked"
+      (change)="checkbox.checked = $event.checked"
+    >
+      {{ checkbox.label }}
+    </mat-checkbox>
     } @if (data.note) {
     <p class="confirmation-dialog__note">{{ data.note }}</p>
     }

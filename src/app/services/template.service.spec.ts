@@ -212,6 +212,20 @@ describe('TemplateService', () => {
     });
   });
 
+  it('requests image cleanup only when explicitly enabled', () => {
+    mockHttpController.delete.mockReturnValue(of(undefined));
+    service.deleteTemplate(mockController, 'tmpl-123', true);
+    expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/templates/tmpl-123?prune_images=true', {
+      observe: 'body',
+    });
+  });
+
+  it('preserves the original request when image cleanup is explicitly disabled', () => {
+    mockHttpController.delete.mockReturnValue(of(undefined));
+    service.deleteTemplate(mockController, 'tmpl-123', false);
+    expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/templates/tmpl-123', { observe: 'body' });
+  });
+
   describe('newTemplateCreated Subject', () => {
     it('should emit event when next is called', () => {
       let receivedTemplate: Template | undefined;

@@ -65,6 +65,11 @@
   }
 }
 
+.confirmation-dialog__checkbox {
+  display: block;
+  margin-top: var(--gns3-density-space-3);
+}
+
 .confirmation-dialog__details {
   max-height: 180px;
   margin: var(--gns3-density-space-3) 0 0;
