@@ -586,7 +586,37 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
+    // A viewport change alters the viewport term of getSize() (halfViewW/H).
+    // Re-anchor the origin BEFORE the redraw — otherwise the redraw() origin
+    // lock (#1696) freezes the stale pre-resize value, the content renders
+    // off-center, and the next drag-end adopts the fresh origin with a
+    // clamped scrollBy: the whole-canvas jump (#1868).
+    this.reanchorOrigin();
     this.changeLayout();
+  }
+
+  /**
+   * Adopt getSize()'s freshly computed origin after a viewport change (the
+   * resize counterpart of the drag-end re-anchor). scrollBy keeps the
+   * viewport on the same content while scroll overflow exists; without
+   * overflow it clamps and the content simply re-centers — imperceptible
+   * when it was centered before the resize. Data-driven redraws keep the
+   * origin lock from PR 1696 and never pass through here.
+   */
+  private reanchorOrigin() {
+    if (!this.mapChangeDetectorRef.hasBeenDrawn) {
+      return;
+    }
+    const prevOriginX = this.context.centerX ?? this.context.size.width / 2;
+    const prevOriginY = this.context.centerY ?? this.context.size.height / 2;
+    const newSize = this.getSize();
+    const newOriginX = this.context.centerX ?? newSize.width / 2;
+    const newOriginY = this.context.centerY ?? newSize.height / 2;
+    // Scroll BEFORE resizing the SVG (same ordering as drag-end) so the
+    // browser cannot clamp the compensation when the canvas shrinks.
+    window.scrollBy(newOriginX - prevOriginX, newOriginY - prevOriginY);
+    this.context.size = newSize;
+    this.svg.attr('width', newSize.width).attr('height', newSize.height);
   }
 
   /**
