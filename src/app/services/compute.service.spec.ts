@@ -239,6 +239,40 @@ describe('ComputeService', () => {
     });
   });
 
+  describe('disconnectCompute', () => {
+    it('should call httpController.post with correct endpoint', () => {
+      mockHttpController.post.mockReturnValue(of(undefined));
+
+      service.disconnectCompute(mockController, 'comp-1');
+
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/computes/comp-1/disconnect', null);
+    });
+
+    it('should not append a force query by default', () => {
+      mockHttpController.post.mockReturnValue(of(undefined));
+
+      service.disconnectCompute(mockController, 'comp-1');
+
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/computes/comp-1/disconnect', null);
+    });
+
+    it('should append ?force=true when force is requested', () => {
+      mockHttpController.post.mockReturnValue(of(undefined));
+
+      service.disconnectCompute(mockController, 'comp-1', true);
+
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/computes/comp-1/disconnect?force=true', null);
+    });
+
+    it('should return Observable', () => {
+      mockHttpController.post.mockReturnValue(of(undefined));
+
+      const result = service.disconnectCompute(mockController, 'comp-1');
+
+      expect(result).toBeInstanceOf(Observable);
+    });
+  });
+
   describe('getStatistics', () => {
     it('should call httpController.get with correct endpoint', () => {
       const mockStats: ControllerStatistics = {

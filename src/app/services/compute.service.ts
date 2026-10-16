@@ -41,6 +41,15 @@ export class ComputeService {
     return this.httpController.post<void>(controller, `/computes/${computeId}/connect`, null) as Observable<void>;
   }
 
+  disconnectCompute(controller: Controller, computeId: string, force: boolean = false): Observable<void> {
+    const query = force ? '?force=true' : '';
+    return this.httpController.post<void>(
+      controller,
+      `/computes/${computeId}/disconnect${query}`,
+      null
+    ) as Observable<void>;
+  }
+
   getStatistics(controller: Controller): Observable<ControllerStatistics> {
     return this.httpController.get<ControllerStatistics>(controller, `/statistics`);
   }
