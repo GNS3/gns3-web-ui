@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ 20, 22, 24 ]
+        node: [ 22, 24, 26 ]
     name: Node ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v7
@@ -27,6 +27,12 @@ jobs:
         run: yarn install --frozen-lockfile --immutable
       - name: Test
         run: yarn ng test --watch=false
+        env:
+          # Node >= 25 ships a native localStorage getter on globalThis that
+          # shadows jsdom's implementation inside the vitest environment
+          # (nodejs/node#60303); disable it so tests see jsdom's storage.
+          # The flag does not exist on Node < 25, hence the condition.
+          NODE_OPTIONS: ${{ matrix.node >= 25 && '--no-webstorage' || '' }}
 
   lint-check:
     runs-on: ubuntu-latest

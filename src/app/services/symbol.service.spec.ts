@@ -204,6 +204,18 @@ describe('SymbolService', () => {
   });
 
   describe('getSymbolBlobUrl', () => {
+    let createObjectURLSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      // jsdom's Blob is not processable by Node's URL.createObjectURL,
+      // so stub the API instead of relying on their cross-compatibility
+      createObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url');
+    });
+
+    afterEach(() => {
+      createObjectURLSpy.mockRestore();
+    });
+
     it('should call httpController.getBlob', () => {
       const mockBlob = new Blob(['test'], { type: 'image/svg+xml' });
       mockHttpController.getBlob.mockReturnValue(of(mockBlob));
