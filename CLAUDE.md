@@ -18,7 +18,7 @@
 | **License** | GPLv3 |
 | **Framework** | Angular 21.0.0 (Zoneless) |
 | **Package Manager** | Yarn |
-| **Node Version** | >=18.0.0 |
+| **Node Version** | >=22.22.2 |
 
 ### Technology Stack
 
