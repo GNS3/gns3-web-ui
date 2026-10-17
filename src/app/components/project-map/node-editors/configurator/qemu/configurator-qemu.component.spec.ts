@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ChangeDetectorRef } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import { of, throwError, Subject } from 'rxjs';
 import { ConfiguratorDialogQemuComponent } from './configurator-qemu.component';
 import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { QemuService } from '@services/qemu.service';
@@ -263,6 +263,21 @@ describe('ConfiguratorDialogQemuComponent', () => {
     component.node = createMockNode();
 
     fixture.detectChanges();
+  });
+
+  it('replaces stale ISO dropdown options after an asynchronous inventory refresh', () => {
+    component.globalIsoImages = ['deleted.iso'];
+    component.filteredGlobalIsoImages = ['deleted.iso'];
+    const images = new Subject<any[]>();
+    mockImageManagerService.getImages.mockReturnValue(images);
+    (component as any).refreshGlobalImages();
+    images.next([
+      { filename: 'deleted.iso', availability: 'missing' },
+      { filename: 'drivers.ISO', path: '/images/QEMU/drivers/drivers.ISO', reference: 'drivers/drivers.ISO', availability: 'available' },
+    ]);
+    expect(component.globalIsoImages).toEqual(['drivers/drivers.ISO']);
+    expect(component.filteredGlobalIsoImages).toEqual(['drivers/drivers.ISO']);
+    images.complete();
   });
 
   afterEach(() => {

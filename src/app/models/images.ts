@@ -1,6 +1,7 @@
 export class Image {
   filename: string;
   path: string;
+  reference?: string;
   image_type: string;
   image_size: number;
   checksum: string;

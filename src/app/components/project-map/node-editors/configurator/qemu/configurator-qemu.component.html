@@ -380,7 +380,8 @@
               <ng-template mat-tab-label>
                 <span class="node-config__tab-label"><mat-icon>album</mat-icon>CD/DVD</span>
               </ng-template>
-              <h2 class="node-config__section-heading">CD/DVD drive</h2>
+              @for (imageSignal of [cdromImage, cdrom2Image]; track $index; let slot = $index) {
+              <h2 class="node-config__section-heading">CD/DVD drive {{ slot + 1 }}</h2>
               <div class="form-container">
                 <div class="node-config__inline-actions">
                   <button mat-raised-button color="primary" (click)="fileDevice.click()">Upload to device</button>
@@ -389,14 +390,14 @@
                     type="file"
                     #fileDevice
                     class="nonvisible"
-                    (change)="uploadCdromImageFile($event, 'device')"
+                    (change)="uploadCdromImageFile($event, 'device', slot + 1)"
                     accept=".iso"
                   />
                   <input
                     type="file"
                     #fileGlobal
                     class="nonvisible"
-                    (change)="uploadCdromImageFile($event, 'global')"
+                    (change)="uploadCdromImageFile($event, 'global', slot + 1)"
                     accept=".iso"
                   />
                 </div>
@@ -405,8 +406,8 @@
                   <input
                     matInput
                     type="text"
-                    [value]="cdromImage()"
-                    (input)="cdromImage.set($event.target.value); onCdromInput($event)"
+                    [value]="imageSignal()"
+                    (input)="imageSignal.set($event.target.value); onCdromInput($event)"
                     [matAutocomplete]="isoAuto"
                     #isoTrigger="matAutocompleteTrigger"
                     (focus)="
@@ -417,7 +418,7 @@
                       refreshGlobalImages()
                     "
                   />
-                  <mat-autocomplete #isoAuto="matAutocomplete" (optionSelected)="cdromImage.set($event.option.value)">
+                  <mat-autocomplete #isoAuto="matAutocomplete" (optionSelected)="imageSignal.set($event.option.value)">
                     @if (filteredIsoFiles.length) {
                     <mat-optgroup label="This device files">
                       @for (file of filteredIsoFiles; track file) {
@@ -434,6 +435,7 @@
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
+              }
             </mat-tab>
             <mat-tab>
               <ng-template mat-tab-label>
