@@ -9,6 +9,7 @@ export class QemuTemplate {
   builtin: boolean;
   category: string;
   cdrom_image: string;
+  cdrom2_image?: string;
   compute_id: string;
   console_auto_start: boolean;
   console_type: string;

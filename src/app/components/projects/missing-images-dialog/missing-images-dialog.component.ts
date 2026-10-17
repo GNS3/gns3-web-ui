@@ -69,6 +69,7 @@ const IMAGE_PROPERTY_LABELS: Record<string, string> = {
   hdc_disk_image: 'Hard disk (HDC)',
   hdd_disk_image: 'Hard disk (HDD)',
   cdrom_image: 'CD-ROM',
+  cdrom2_image: 'Second CD-ROM',
   initrd: 'Initrd',
   kernel_image: 'Kernel',
   bios_image: 'BIOS',

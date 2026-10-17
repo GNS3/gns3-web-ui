@@ -789,6 +789,18 @@ describe('NewTemplateDialogComponent', () => {
     });
   });
 
+  it('keeps both ISO slots when building an imported QEMU template', () => {
+    const appliance = createMockAppliance();
+    const version = appliance.versions[0];
+    version.images = { cdrom_image: 'installer.iso', cdrom2_image: 'drivers.iso' };
+    component.applianceToInstall.set(appliance);
+    const template = (component as any).buildQemuTemplate(version, 'Windows installer');
+    expect(template.cdrom_image).toBe('installer.iso');
+    expect(template.cdrom2_image).toBe('drivers.iso');
+    expect(component.getVersionImages(version).map((image) => image.key))
+      .toEqual(['cdrom_image', 'cdrom2_image']);
+  });
+
   describe('version helpers', () => {
     it('should list the images of a version in a stable order', () => {
       const version = {
@@ -866,6 +878,15 @@ describe('NewTemplateDialogComponent', () => {
       component.applianceToInstall.set(createMockAppliance());
       component.qemuImages.set([{ filename: 'controller-image.img', checksum: 'abc123' } as Image]);
       expect(component.findControllerImageName('test-image.img')).toBe('controller-image.img');
+    });
+
+    it('preserves the canonical subfolder reference of a checksum match', () => {
+      component.applianceToInstall.set(createMockAppliance());
+      component.qemuImages.set([{
+        ...createMockAppliance().images[0],
+        filename: 'controller-image.img', checksum: 'abc123', reference: 'vendor/controller-image.img',
+      } as Image]);
+      expect(component.findControllerImageName('test-image.img')).toBe('vendor/controller-image.img');
     });
 
     it('should return original name when image_name is null', () => {

@@ -222,6 +222,31 @@ describe('QemuVmTemplateDetailsComponent', () => {
     fixture.destroy();
   });
 
+  it('removes deleted ISOs from the dropdown when inventory is refreshed', () => {
+    const component = fixture.componentInstance;
+    component.cdromImage.set('deleted.iso');
+    mockImageManagerService.getImages.mockReturnValue(of([
+      { filename: 'deleted.iso', path: '/images/QEMU/deleted.iso', availability: 'available' },
+    ]));
+    component.refreshGlobalImages();
+    expect(component.filteredGlobalImages.map((image) => image.filename)).toEqual(['deleted.iso']);
+
+    mockImageManagerService.getImages.mockReturnValue(of([
+      { filename: 'deleted.iso', path: '/images/QEMU/deleted.iso', availability: 'missing' },
+      { filename: 'installer.ISO', path: '/images/QEMU/installers/installer.ISO', reference: 'installers/installer.ISO', availability: 'available' },
+      { filename: 'invalid.iso', availability: 'invalid' },
+    ]));
+    component.refreshGlobalImages();
+    expect(component.filteredGlobalImages.map((image) => image.path)).toEqual(['installers/installer.ISO']);
+    expect(component.cdromImage()).toBe('deleted.iso');
+  });
+
+  it('searches the displayed ISO subfolder path', () => {
+    fixture.componentInstance.globalImages = [{ filename: 'linux.iso', path: 'installers/linux.iso' }] as any;
+    fixture.componentInstance.onCdromInput({ target: { value: 'installers/' } } as any);
+    expect(fixture.componentInstance.filteredGlobalImages).toHaveLength(1);
+  });
+
   it('should create', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
@@ -502,6 +527,13 @@ describe('QemuVmTemplateDetailsComponent', () => {
     fixture.componentInstance.uploadCdromImageFile(mockEvent);
 
     expect(fixture.componentInstance.cdromImage()).toBe('test.iso');
+  });
+
+  it('uploads a driver ISO into the second slot without replacing the installer', () => {
+    fixture.componentInstance.cdromImage.set('installer.iso');
+    fixture.componentInstance.uploadCdromImageFile({ target: { files: [{ name: 'drivers.iso' }] } } as any, 2);
+    expect(fixture.componentInstance.cdromImage()).toBe('installer.iso');
+    expect(fixture.componentInstance.cdrom2Image()).toBe('drivers.iso');
   });
 
   it('should not update cdrom image when no file selected', () => {

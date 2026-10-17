@@ -258,8 +258,8 @@
             <mat-autocomplete #hdaAuto="matAutocomplete" (optionSelected)="hdaDiskImage.set($event.option.value)">
               @if (filteredImages.length) {
               <mat-optgroup label="Global images">
-                @for (image of filteredImages; track image.filename) {
-                <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                @for (image of filteredImages; track image.path) {
+                <mat-option [value]="image.path || image.filename">{{ image.path || image.filename }}</mat-option>
                 }
               </mat-optgroup>
               }
@@ -292,8 +292,8 @@
             <mat-autocomplete #hdbAuto="matAutocomplete" (optionSelected)="hdbDiskImage.set($event.option.value)">
               @if (filteredImages.length) {
               <mat-optgroup label="Global images">
-                @for (image of filteredImages; track image.filename) {
-                <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                @for (image of filteredImages; track image.path) {
+                <mat-option [value]="image.path || image.filename">{{ image.path || image.filename }}</mat-option>
                 }
               </mat-optgroup>
               }
@@ -326,8 +326,8 @@
             <mat-autocomplete #hdcAuto="matAutocomplete" (optionSelected)="hdcDiskImage.set($event.option.value)">
               @if (filteredImages.length) {
               <mat-optgroup label="Global images">
-                @for (image of filteredImages; track image.filename) {
-                <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                @for (image of filteredImages; track image.path) {
+                <mat-option [value]="image.path || image.filename">{{ image.path || image.filename }}</mat-option>
                 }
               </mat-optgroup>
               }
@@ -360,8 +360,8 @@
             <mat-autocomplete #hddAuto="matAutocomplete" (optionSelected)="hddDiskImage.set($event.option.value)">
               @if (filteredImages.length) {
               <mat-optgroup label="Global images">
-                @for (image of filteredImages; track image.filename) {
-                <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                @for (image of filteredImages; track image.path) {
+                <mat-option [value]="image.path || image.filename">{{ image.path || image.filename }}</mat-option>
                 }
               </mat-optgroup>
               }
@@ -391,12 +391,13 @@
       </div>
       @if (activeSection === 'cddvd') {
       <div class="qemu-template-details__form">
+        @for (imageSignal of [cdromImage, cdrom2Image]; track $index; let slot = $index) {
         <div class="qemu-template-details__file-row">
           <input
             type="file"
             #filecdrom
             class="qemu-template-details__file-input"
-            (change)="uploadCdromImageFile($event)"
+            (change)="uploadCdromImageFile($event, slot + 1)"
             accept=".iso"
           />
           <button
@@ -412,27 +413,28 @@
             subscriptSizing="dynamic"
             class="qemu-template-details__field qemu-template-details__field--flex"
           >
-            <mat-label>Image</mat-label>
+            <mat-label>CD/DVD {{ slot + 1 }} image</mat-label>
             <input
               matInput
-              [value]="cdromImage()"
-              (input)="onCdromInput($event); cdromImage.set($event.target.value)"
+              [value]="imageSignal()"
+              (input)="onCdromInput($event); imageSignal.set($event.target.value)"
               [matAutocomplete]="cdromAuto"
               (focus)="refreshGlobalImages()"
               type="text"
               placeholder="Image"
             />
-            <mat-autocomplete #cdromAuto="matAutocomplete">
+            <mat-autocomplete #cdromAuto="matAutocomplete" (optionSelected)="imageSignal.set($event.option.value)">
               @if (filteredGlobalImages.length) {
               <mat-optgroup label="Global images">
-                @for (image of filteredGlobalImages; track image.filename) {
-                <mat-option [value]="image.filename">{{ image.filename }}</mat-option>
+                @for (image of filteredGlobalImages; track image.path) {
+                <mat-option [value]="image.path || image.filename">{{ image.path || image.filename }}</mat-option>
                 }
               </mat-optgroup>
               }
             </mat-autocomplete>
           </mat-form-field>
         </div>
+        }
       </div>
       }
     </section>

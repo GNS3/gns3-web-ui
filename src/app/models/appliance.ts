@@ -82,6 +82,7 @@ export interface Images {
   hdc_disk_image?: string;
   hdd_disk_image?: string;
   cdrom_image?: string;
+  cdrom2_image?: string;
 }
 
 export interface Version {
