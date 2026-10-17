@@ -408,7 +408,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
 
   deleteTemplate(template: TemplateListItem, deleteComponent: DeleteTemplateComponent): void {
     if (!template.builtin) {
-      deleteComponent.deleteItem(template.name, template.template_id);
+      deleteComponent.deleteItem(template.name, template.template_id, template.template_type);
     }
   }
 

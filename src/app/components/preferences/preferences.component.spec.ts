@@ -355,7 +355,7 @@ describe('PreferencesComponent', () => {
     component.deleteTemplate(templates[2], { deleteItem } as any);
 
     expect(deleteItem).toHaveBeenCalledTimes(1);
-    expect(deleteItem).toHaveBeenCalledWith('Edge Router', 'qemu-1');
+    expect(deleteItem).toHaveBeenCalledWith('Edge Router', 'qemu-1', 'qemu');
   });
 
   it('removes a deleted template from local state without refetching the list', () => {

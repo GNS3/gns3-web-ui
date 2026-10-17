@@ -107,6 +107,10 @@ describe('ConfirmationDialogComponent', () => {
     });
   });
 
+  it('does not show a checkbox for existing confirmation dialogs', () => {
+    expect(fixture.nativeElement.querySelector('mat-checkbox')).toBeNull();
+  });
+
   describe('actions', () => {
     async function renderDialog(data: ConfirmationDialogData) {
       fixture.destroy();
@@ -122,6 +126,17 @@ describe('ConfirmationDialogComponent', () => {
       component = fixture.componentInstance;
       fixture.detectChanges();
     }
+
+    it('updates the optional checkbox while keeping the boolean confirmation result', async () => {
+      const checkbox = { label: 'Delete unused images', checked: false };
+      await renderDialog({ message: 'Delete template?', checkbox });
+      const input = fixture.nativeElement.querySelector('input[type="checkbox"]') as HTMLInputElement;
+      expect(input.checked).toBe(false);
+      input.click();
+      expect(checkbox.checked).toBe(true);
+      component.onYesClick();
+      expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+    });
 
     it.each(['danger', 'warning', 'neutral'] as const)('should confirm from the rendered %s action', async (tone) => {
       await renderDialog({ ...defaultDialogData, tone });
