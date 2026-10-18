@@ -1,3 +1,4 @@
+import { QemuCdromInterface } from '@models/qemu/qemu-cdrom';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -128,6 +129,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   // CD/DVD
   readonly cdromImage = model('');
   readonly cdrom2Image = model('');
+  readonly cdromInterfaces = [signal<QemuCdromInterface>('ide'), signal<QemuCdromInterface>('ide')];
   // Advanced
   readonly initrd = model('');
   readonly kernelImage = model('');
@@ -182,6 +184,8 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         this.hddDiskInterface.set(node.properties.hdd_disk_interface || '');
         this.cdromImage.set(node.properties.cdrom_image || '');
         this.cdrom2Image.set(node.properties.cdrom2_image || '');
+        this.cdromInterfaces[0].set(node.properties.cdrom_interface || 'ide');
+        this.cdromInterfaces[1].set(node.properties.cdrom2_interface || 'ide');
         this.initrd.set(node.properties.initrd || '');
         this.kernelImage.set(node.properties.kernel_image || '');
         this.kernelCommandLine.set(node.properties.kernel_command_line || '');
@@ -560,6 +564,8 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     this.node.properties.hdd_disk_interface = this.hddDiskInterface();
     this.node.properties.cdrom_image = this.cdromImage();
     this.node.properties.cdrom2_image = this.cdrom2Image();
+    this.node.properties.cdrom_interface = this.cdromInterfaces[0]();
+    this.node.properties.cdrom2_interface = this.cdromInterfaces[1]();
     this.node.properties.initrd = this.initrd();
     this.node.properties.kernel_image = this.kernelImage();
     this.node.properties.kernel_command_line = this.kernelCommandLine();
@@ -582,10 +588,21 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     this.node.properties.adapter_type = this.adapterType();
     this.node.properties.replicate_network_connection_state = this.replicateNetworkState();
 
+    const requestedInterfaces = this.cdromInterfaces.map((interfaceSignal) => interfaceSignal());
     this.isApplying.set(true);
     this.dialogRef.disableClose = true;
     this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe({
-      next: () => {
+      next: (savedNode) => {
+        const savedProperties = savedNode.properties;
+        if (!savedProperties || (
+          (savedProperties.cdrom_interface || 'ide') !== requestedInterfaces[0] ||
+          (savedProperties.cdrom2_interface || 'ide') !== requestedInterfaces[1]
+        )) {
+          this.toasterService.error('The server did not save the CD-ROM interfaces. Check that the compute server is updated and the node is stopped.');
+          this.isApplying.set(false);
+          this.dialogRef.disableClose = false;
+          return;
+        }
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
       },

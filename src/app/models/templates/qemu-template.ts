@@ -1,3 +1,4 @@
+import { QemuCdromInterface } from '@models/qemu/qemu-cdrom';
 import { ApplianceMetadata } from '../appliance-metadata';
 import { CustomAdapter } from '../qemu/qemu-custom-adapter';
 
@@ -10,6 +11,8 @@ export class QemuTemplate {
   category: string;
   cdrom_image: string;
   cdrom2_image?: string;
+  cdrom_interface?: QemuCdromInterface;
+  cdrom2_interface?: QemuCdromInterface;
   compute_id: string;
   console_auto_start: boolean;
   console_type: string;

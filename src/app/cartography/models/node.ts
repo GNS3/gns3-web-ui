@@ -1,3 +1,4 @@
+import { QemuCdromInterface } from '@models/qemu/qemu-cdrom';
 import { Port } from '@models/port';
 import { Label } from './label';
 import { ExtraConfig } from '@models/templates/extra-config';
@@ -54,6 +55,8 @@ export class Properties {
   boot_priority: string;
   cdrom_image: string;
   cdrom2_image?: string;
+  cdrom_interface?: QemuCdromInterface;
+  cdrom2_interface?: QemuCdromInterface;
   cdrom_image_md5sum?: string | null;
   cdrom2_image_md5sum?: string | null;
   cpu_throttling: number;

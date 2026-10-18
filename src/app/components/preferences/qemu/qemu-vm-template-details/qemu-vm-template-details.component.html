@@ -390,48 +390,59 @@
         }}</mat-icon>
       </div>
       @if (activeSection === 'cddvd') {
-      <div class="qemu-template-details__form">
+      <div class="qemu-template-details__disk-grid">
         @for (imageSignal of [cdromImage, cdrom2Image]; track $index; let slot = $index) {
-        <div class="qemu-template-details__file-row">
-          <input
-            type="file"
-            #filecdrom
-            class="qemu-template-details__file-input"
-            (change)="uploadCdromImageFile($event, slot + 1)"
-            accept=".iso"
-          />
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="filecdrom.click()"
-            class="qemu-template-details__browse-btn"
-          >
-            Upload
-          </button>
-          <mat-form-field
-            appearance="outline"
-            subscriptSizing="dynamic"
-            class="qemu-template-details__field qemu-template-details__field--flex"
-          >
-            <mat-label>CD/DVD {{ slot + 1 }} image</mat-label>
+
+        <div class="qemu-template-details__disk-item qemu-template-details__cdrom-card">
+          <h4 class="qemu-template-details__disk-title">CD/DVD {{ slot + 1 }}</h4>
+          <div class="qemu-template-details__file-row">
             <input
-              matInput
-              [value]="imageSignal()"
-              (input)="onCdromInput($event); imageSignal.set($event.target.value)"
-              [matAutocomplete]="cdromAuto"
-              (focus)="refreshGlobalImages()"
-              type="text"
-              placeholder="Image"
+              type="file"
+              #filecdrom
+              class="qemu-template-details__file-input"
+              (change)="uploadCdromImageFile($event, slot + 1)"
+              accept=".iso"
             />
-            <mat-autocomplete #cdromAuto="matAutocomplete" (optionSelected)="imageSignal.set($event.option.value)">
-              @if (filteredGlobalImages.length) {
-              <mat-optgroup label="Global images">
-                @for (image of filteredGlobalImages; track image.path) {
-                <mat-option [value]="image.path || image.filename">{{ image.path || image.filename }}</mat-option>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="filecdrom.click()"
+              class="qemu-template-details__browse-btn"
+            >
+              Upload
+            </button>
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="qemu-template-details__field qemu-template-details__field--flex"
+            >
+              <mat-label>CD/DVD {{ slot + 1 }} image</mat-label>
+              <input
+                matInput
+                [value]="imageSignal()"
+                (input)="onCdromInput($event); imageSignal.set($event.target.value)"
+                [matAutocomplete]="cdromAuto"
+                (focus)="refreshGlobalImages()"
+                type="text"
+                placeholder="Image"
+              />
+              <mat-autocomplete #cdromAuto="matAutocomplete" (optionSelected)="imageSignal.set($event.option.value)">
+                @if (filteredGlobalImages.length) {
+                <mat-optgroup label="Global images">
+                  @for (image of filteredGlobalImages; track image.path) {
+                  <mat-option [value]="image.path || image.filename">{{ image.path || image.filename }}</mat-option>
+                  }
+                </mat-optgroup>
                 }
-              </mat-optgroup>
-              }
-            </mat-autocomplete>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Interface</mat-label>
+            <mat-select [value]="cdromInterfaces[slot]()" (valueChange)="cdromInterfaces[slot].set($event)">
+              <mat-option value="ide">ide</mat-option>
+              <mat-option value="sata">sata</mat-option>
+            </mat-select>
           </mat-form-field>
         </div>
         }

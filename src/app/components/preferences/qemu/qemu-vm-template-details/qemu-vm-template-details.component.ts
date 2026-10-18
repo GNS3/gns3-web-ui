@@ -1,3 +1,4 @@
+import { QemuCdromInterface } from '@models/qemu/qemu-cdrom';
 import {
   Component,
   ChangeDetectionStrategy,
@@ -145,6 +146,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   // CD/DVD
   cdromImage = model('');
   readonly cdrom2Image = model('');
+  readonly cdromInterfaces = [signal<QemuCdromInterface>('ide'), signal<QemuCdromInterface>('ide')];
 
   // Network
   adapters = model(0);
@@ -254,6 +256,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
     this.cdromImage.set(this.qemuTemplate.cdrom_image || '');
     this.cdrom2Image.set(this.qemuTemplate.cdrom2_image || '');
+    this.cdromInterfaces[0].set(this.qemuTemplate.cdrom_interface || 'ide');
+    this.cdromInterfaces[1].set(this.qemuTemplate.cdrom2_interface || 'ide');
 
     this.adapters.set(this.qemuTemplate.adapters || 0);
     this.firstPortName.set(this.qemuTemplate.first_port_name || '');
@@ -526,6 +530,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
     this.qemuTemplate.cdrom_image = this.cdromImage();
     this.qemuTemplate.cdrom2_image = this.cdrom2Image();
+    this.qemuTemplate.cdrom_interface = this.cdromInterfaces[0]();
+    this.qemuTemplate.cdrom2_interface = this.cdromInterfaces[1]();
 
     this.qemuTemplate.adapters = this.adapters();
     this.qemuTemplate.first_port_name = this.firstPortName();

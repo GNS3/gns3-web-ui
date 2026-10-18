@@ -1,3 +1,4 @@
+import { QemuCdromInterface } from '@models/qemu/qemu-cdrom';
 import { CustomAdapter } from './qemu/qemu-custom-adapter';
 import { ExtraConfig } from './templates/extra-config';
 
@@ -13,6 +14,8 @@ export interface Image {
 }
 
 export interface Qemu {
+  cdrom_interface?: QemuCdromInterface;
+  cdrom2_interface?: QemuCdromInterface;
   adapter_type: string;
   adapters: number;
   arch: string;

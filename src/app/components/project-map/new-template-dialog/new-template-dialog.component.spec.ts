@@ -793,10 +793,14 @@ describe('NewTemplateDialogComponent', () => {
     const appliance = createMockAppliance();
     const version = appliance.versions[0];
     version.images = { cdrom_image: 'installer.iso', cdrom2_image: 'drivers.iso' };
+    appliance.qemu.cdrom_interface = 'sata';
+    appliance.qemu.cdrom2_interface = 'sata';
     component.applianceToInstall.set(appliance);
     const template = (component as any).buildQemuTemplate(version, 'Windows installer');
     expect(template.cdrom_image).toBe('installer.iso');
     expect(template.cdrom2_image).toBe('drivers.iso');
+    expect(template.cdrom_interface).toBe('sata');
+    expect(template.cdrom2_interface).toBe('sata');
     expect(component.getVersionImages(version).map((image) => image.key))
       .toEqual(['cdrom_image', 'cdrom2_image']);
   });

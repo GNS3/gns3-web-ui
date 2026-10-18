@@ -380,62 +380,85 @@
               <ng-template mat-tab-label>
                 <span class="node-config__tab-label"><mat-icon>album</mat-icon>CD/DVD</span>
               </ng-template>
-              @for (imageSignal of [cdromImage, cdrom2Image]; track $index; let slot = $index) {
-              <h2 class="node-config__section-heading">CD/DVD drive {{ slot + 1 }}</h2>
-              <div class="form-container">
-                <div class="node-config__inline-actions">
-                  <button mat-raised-button color="primary" (click)="fileDevice.click()">Upload to device</button>
-                  <button mat-raised-button (click)="fileGlobal.click()">Upload globally</button>
-                  <input
-                    type="file"
-                    #fileDevice
-                    class="nonvisible"
-                    (change)="uploadCdromImageFile($event, 'device', slot + 1)"
-                    accept=".iso"
-                  />
-                  <input
-                    type="file"
-                    #fileGlobal
-                    class="nonvisible"
-                    (change)="uploadCdromImageFile($event, 'global', slot + 1)"
-                    accept=".iso"
-                  />
+              <h2 class="node-config__section-heading">CD-ROM drives</h2>
+              <div class="disk-cards-grid">
+                @for (imageSignal of [cdromImage, cdrom2Image]; track $index; let slot = $index) {
+
+                <div class="disk-card">
+                  <div class="disk-card__header">
+                    <h3 class="disk-card__title">CD/DVD {{ slot + 1 }}</h3>
+                  </div>
+                  <div class="disk-card__content">
+                    <div class="node-config__inline-actions">
+                      <button mat-raised-button color="primary" (click)="fileDevice.click()">Upload to device</button>
+                      <button mat-raised-button (click)="fileGlobal.click()">Upload globally</button>
+                      <input
+                        type="file"
+                        #fileDevice
+                        class="nonvisible"
+                        (change)="uploadCdromImageFile($event, 'device', slot + 1)"
+                        accept=".iso"
+                      />
+                      <input
+                        type="file"
+                        #fileGlobal
+                        class="nonvisible"
+                        (change)="uploadCdromImageFile($event, 'global', slot + 1)"
+                        accept=".iso"
+                      />
+                    </div>
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
+                      <mat-label>Image</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        [value]="imageSignal()"
+                        (input)="imageSignal.set($event.target.value); onCdromInput($event)"
+                        [matAutocomplete]="isoAuto"
+                        #isoTrigger="matAutocompleteTrigger"
+                        (focus)="
+                          filteredIsoFiles = projectIsoFiles;
+                          filteredGlobalIsoImages = globalIsoImages;
+                          isoTrigger.openPanel();
+                          refreshNodeFiles();
+                          refreshGlobalImages()
+                        "
+                      />
+                      <mat-autocomplete
+                        #isoAuto="matAutocomplete"
+                        (optionSelected)="imageSignal.set($event.option.value)"
+                      >
+                        @if (filteredIsoFiles.length) {
+                        <mat-optgroup label="This device files">
+                          @for (file of filteredIsoFiles; track file) {
+                          <mat-option [value]="file">{{ file }}</mat-option>
+                          }
+                        </mat-optgroup>
+                        } @if (filteredGlobalIsoImages.length) {
+                        <mat-optgroup label="Global images">
+                          @for (image of filteredGlobalIsoImages; track image) {
+                          <mat-option [value]="image">{{ image }}</mat-option>
+                          }
+                        </mat-optgroup>
+                        }
+                      </mat-autocomplete>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
+                      <mat-label>Interface</mat-label>
+                      <mat-select
+                        [value]="cdromInterfaces[slot]()"
+                        [disabled]="node.status !== 'stopped' || isApplying()"
+                        (valueChange)="cdromInterfaces[slot].set($event)"
+                      >
+                        <mat-option value="ide">ide</mat-option>
+                        <mat-option value="sata">sata</mat-option>
+                      </mat-select>
+                      <mat-hint>Interface changes require a stopped node.</mat-hint>
+                    </mat-form-field>
+                  </div>
                 </div>
-                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-field">
-                  <mat-label>Image</mat-label>
-                  <input
-                    matInput
-                    type="text"
-                    [value]="imageSignal()"
-                    (input)="imageSignal.set($event.target.value); onCdromInput($event)"
-                    [matAutocomplete]="isoAuto"
-                    #isoTrigger="matAutocompleteTrigger"
-                    (focus)="
-                      filteredIsoFiles = projectIsoFiles;
-                      filteredGlobalIsoImages = globalIsoImages;
-                      isoTrigger.openPanel();
-                      refreshNodeFiles();
-                      refreshGlobalImages()
-                    "
-                  />
-                  <mat-autocomplete #isoAuto="matAutocomplete" (optionSelected)="imageSignal.set($event.option.value)">
-                    @if (filteredIsoFiles.length) {
-                    <mat-optgroup label="This device files">
-                      @for (file of filteredIsoFiles; track file) {
-                      <mat-option [value]="file">{{ file }}</mat-option>
-                      }
-                    </mat-optgroup>
-                    } @if (filteredGlobalIsoImages.length) {
-                    <mat-optgroup label="Global images">
-                      @for (image of filteredGlobalIsoImages; track image) {
-                      <mat-option [value]="image">{{ image }}</mat-option>
-                      }
-                    </mat-optgroup>
-                    }
-                  </mat-autocomplete>
-                </mat-form-field>
+                }
               </div>
-              }
             </mat-tab>
             <mat-tab>
               <ng-template mat-tab-label>

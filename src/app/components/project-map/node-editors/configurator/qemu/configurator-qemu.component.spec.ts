@@ -1,3 +1,5 @@
+import { By } from '@angular/platform-browser';
+import { MatSelect } from '@angular/material/select';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ChangeDetectorRef } from '@angular/core';
@@ -170,7 +172,7 @@ describe('ConfiguratorDialogQemuComponent', () => {
     mockNodeService = {
       getNode: vi.fn().mockReturnValue(of(createMockNode())),
       getNodeFiles: vi.fn().mockReturnValue(of([])),
-      updateNodeWithCustomAdapters: vi.fn().mockReturnValue(of({})),
+      updateNodeWithCustomAdapters: vi.fn().mockImplementation(() => of(component.node)),
     };
 
     mockQemuService = {
@@ -413,6 +415,35 @@ describe('ConfiguratorDialogQemuComponent', () => {
       expect(component.node.name).toBe('Updated VM');
       expect(component.node.properties.ram).toBe(1024);
       expect(component.node.properties.platform).toBe('aarch64');
+    });
+
+    it('should save CD-ROM interfaces selected in the form', async () => {
+      component.node.status = 'stopped';
+      await vi.advanceTimersByTimeAsync(500);
+      fixture.detectChanges();
+      const tabs = fixture.nativeElement.querySelectorAll('[role="tab"]');
+      tabs[2].click();
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(500);
+      fixture.detectChanges();
+      const selects = fixture.debugElement.queryAll(By.directive(MatSelect))
+        .filter((element) => element.nativeElement.closest('.disk-card')?.textContent.includes('CD/DVD'));
+      expect(selects.length).toBe(2);
+      for (const select of selects) {
+        select.triggerEventHandler('valueChange', 'sata');
+      }
+      component.onSaveClick();
+      expect(component.node.properties.cdrom_interface).toBe('sata');
+      expect(component.node.properties.cdrom2_interface).toBe('sata');
+    });
+
+    it('should keep the dialog open when the server discards SATA interfaces', () => {
+      component.cdromInterfaces[0].set('sata');
+      mockNodeService.updateNodeWithCustomAdapters.mockReturnValue(of(createMockNode()));
+      component.onSaveClick();
+      expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('did not save the CD-ROM interfaces'));
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+      expect(component.isApplying()).toBe(false);
     });
 
     it('should update network properties on save', () => {

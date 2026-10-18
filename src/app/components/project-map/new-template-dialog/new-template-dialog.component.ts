@@ -1213,6 +1213,8 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.hdd_disk_image = this.findControllerImageName(version.images.hdd_disk_image);
     qemuTemplate.cdrom_image = this.findControllerImageName(version.images.cdrom_image);
     qemuTemplate.cdrom2_image = this.findControllerImageName(version.images.cdrom2_image);
+    qemuTemplate.cdrom_interface = qemuProps.cdrom_interface || 'ide';
+    qemuTemplate.cdrom2_interface = qemuProps.cdrom2_interface || 'ide';
     qemuTemplate.template_type = 'qemu';
     qemuTemplate.usage = version.usage || appliance.usage;
     // v8 template_properties carry `platform`; v1-v6 qemu blocks use `arch`
