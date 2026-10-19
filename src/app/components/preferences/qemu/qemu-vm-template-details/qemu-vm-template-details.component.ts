@@ -1,3 +1,4 @@
+import { QemuCdromInterface } from '@models/qemu/qemu-cdrom';
 import {
   Component,
   ChangeDetectionStrategy,
@@ -23,7 +24,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
-import { QemuImage } from '@models/qemu/qemu-image';
+import { QemuImage, qemuImagePath, isAvailableIsoImage } from '@models/qemu/qemu-image';
 import { Image } from '@models/images';
 import { Controller } from '@models/controller';
 import { QemuTemplate } from '@models/templates/qemu-template';
@@ -144,6 +145,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
   // CD/DVD
   cdromImage = model('');
+  readonly cdrom2Image = model('');
+  readonly cdromInterfaces = [signal<QemuCdromInterface>('ide'), signal<QemuCdromInterface>('ide')];
 
   // Network
   adapters = model(0);
@@ -199,16 +202,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
             this.toasterService.error(err.error?.message || err.message || 'Failed to load images');
           },
         });
-        this.imageManagerService.getImages(this.controller).subscribe({
-          next: (images: Image[]) => {
-            this.globalImages = images;
-            this.filteredGlobalImages = images;
-            this.cd.markForCheck();
-          },
-          error: (err) => {
-            this.toasterService.error(err.error?.message || err.message || 'Failed to load global images');
-          },
-        });
+        this.refreshGlobalImages();
         this.qemuService.getTemplate(this.controller, template_id).subscribe({
           next: (qemuTemplate: QemuTemplate) => {
             this.qemuTemplate = qemuTemplate;
@@ -261,6 +255,9 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     this.hddDiskInterface.set(this.qemuTemplate.hdd_disk_interface || '');
 
     this.cdromImage.set(this.qemuTemplate.cdrom_image || '');
+    this.cdrom2Image.set(this.qemuTemplate.cdrom2_image || '');
+    this.cdromInterfaces[0].set(this.qemuTemplate.cdrom_interface || 'ide');
+    this.cdromInterfaces[1].set(this.qemuTemplate.cdrom2_interface || 'ide');
 
     this.adapters.set(this.qemuTemplate.adapters || 0);
     this.firstPortName.set(this.qemuTemplate.first_port_name || '');
@@ -322,9 +319,14 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   refreshGlobalImages() {
     this.imageManagerService.getImages(this.controller).subscribe({
       next: (images: Image[]) => {
-        this.globalImages = images;
-        this.filteredGlobalImages = images;
+        this.globalImages = images
+          .filter(isAvailableIsoImage)
+          .map((img) => ({ ...img, path: qemuImagePath(img) }));
+        this.filteredGlobalImages = this.globalImages;
         this.cd.markForCheck();
+      },
+      error: (err) => {
+        this.toasterService.error(err.error?.message || err.message || 'Failed to load global images');
       },
     });
   }
@@ -341,10 +343,10 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     });
   }
 
-  uploadCdromImageFile(event: Event) {
+  uploadCdromImageFile(event: Event, slot = 1) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.uploadFile(input.files[0], this.cdromImage);
+      this.uploadFile(input.files[0], slot === 1 ? this.cdromImage : this.cdrom2Image);
     }
   }
 
@@ -436,7 +438,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
   onCdromInput(event: Event) {
     const value = (event.target as HTMLInputElement).value.toLowerCase();
-    this.filteredGlobalImages = this.globalImages.filter((img) => img.filename.toLowerCase().includes(value));
+    this.filteredGlobalImages = this.globalImages.filter((img) => (img.path || img.filename).toLowerCase().includes(value));
   }
 
   onAdvancedInput(event: Event) {
@@ -527,6 +529,9 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     this.qemuTemplate.hdd_disk_interface = this.hddDiskInterface();
 
     this.qemuTemplate.cdrom_image = this.cdromImage();
+    this.qemuTemplate.cdrom2_image = this.cdrom2Image();
+    this.qemuTemplate.cdrom_interface = this.cdromInterfaces[0]();
+    this.qemuTemplate.cdrom2_interface = this.cdromInterfaces[1]();
 
     this.qemuTemplate.adapters = this.adapters();
     this.qemuTemplate.first_port_name = this.firstPortName();

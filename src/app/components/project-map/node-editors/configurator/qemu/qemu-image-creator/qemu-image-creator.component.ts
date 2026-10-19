@@ -18,7 +18,7 @@ import { ValidationService } from '@services/validation';
 @Component({
   selector: 'app-qemu-image-creator',
   templateUrl: './qemu-image-creator.component.html',
-  styleUrl: '../../configurator.component.scss',
+  styleUrls: ['../../configurator.component.scss', './qemu-image-creator.component.scss'],
   imports: [
     CommonModule,
     FormsModule,

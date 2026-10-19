@@ -42,6 +42,7 @@ import { ProgressService } from '../../../common/progress/progress.service';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { Appliance, Image, Images, Version } from '@models/appliance';
 import { Controller } from '@models/controller';
+import { qemuImagePath } from '@models/qemu/qemu-image';
 import { Template } from '@models/template';
 import { DockerTemplate } from '@models/templates/docker-template';
 import { IosTemplate } from '@models/templates/ios-template';
@@ -77,6 +78,7 @@ const IMAGE_SLOTS: (keyof Images)[] = [
   'hdc_disk_image',
   'hdd_disk_image',
   'cdrom_image',
+  'cdrom2_image',
 ];
 
 @Component({
@@ -1173,7 +1175,7 @@ export class NewTemplateDialogComponent implements OnInit {
       if (!imageToInstall) return image_name;
       const imageToUse = this.findMatchingControllerImage(this.qemuImages(), imageToInstall);
       if (imageToUse) {
-        image_name = imageToUse.filename; // use the image name from the controller
+        image_name = qemuImagePath(imageToUse);
       }
     }
     return image_name;
@@ -1210,6 +1212,9 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.hdc_disk_image = this.findControllerImageName(version.images.hdc_disk_image);
     qemuTemplate.hdd_disk_image = this.findControllerImageName(version.images.hdd_disk_image);
     qemuTemplate.cdrom_image = this.findControllerImageName(version.images.cdrom_image);
+    qemuTemplate.cdrom2_image = this.findControllerImageName(version.images.cdrom2_image);
+    qemuTemplate.cdrom_interface = qemuProps.cdrom_interface || 'ide';
+    qemuTemplate.cdrom2_interface = qemuProps.cdrom2_interface || 'ide';
     qemuTemplate.template_type = 'qemu';
     qemuTemplate.usage = version.usage || appliance.usage;
     // v8 template_properties carry `platform`; v1-v6 qemu blocks use `arch`

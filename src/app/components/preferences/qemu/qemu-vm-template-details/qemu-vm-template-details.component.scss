@@ -312,3 +312,18 @@
     height: 44px;
   }
 }
+
+.qemu-template-details__cdrom-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+
+  .qemu-template-details__disk-title {
+    margin-bottom: 0;
+  }
+
+  > mat-form-field {
+    width: 100%;
+  }
+}

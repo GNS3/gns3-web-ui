@@ -91,7 +91,7 @@ describe('BundledControllerFinderComponent', () => {
 
     it('should call getLocalController with hostname and port from document location', async () => {
       fixture.detectChanges();
-      await vi.runAllTimersAsync();
+      await vi.advanceTimersByTimeAsync(100);
       // getLocalController is called with the hostname and port from document.location
       expect(mockControllerService.getLocalController).toHaveBeenCalled();
       const [host, port] = mockControllerService.getLocalController.mock.calls[0];
@@ -101,13 +101,15 @@ describe('BundledControllerFinderComponent', () => {
 
     it('should navigate to controller projects page on success', async () => {
       fixture.detectChanges();
-      await vi.runAllTimersAsync();
+      await vi.advanceTimersByTimeAsync(100);
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 42, 'projects']);
     });
 
     it('should deactivate progress service after successful navigation', async () => {
       fixture.detectChanges();
-      await vi.runAllTimersAsync();
+      await vi.advanceTimersByTimeAsync(99);
+      expect(mockProgressService.deactivate).not.toHaveBeenCalled();
+      await vi.advanceTimersByTimeAsync(1);
       expect(mockProgressService.deactivate).toHaveBeenCalledTimes(1);
     });
   });

@@ -1,3 +1,4 @@
+import { QemuCdromInterface } from '@models/qemu/qemu-cdrom';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,7 +18,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { QemuBinary } from '@models/qemu/qemu-binary';
-import { QemuImage } from '@models/qemu/qemu-image';
+import { QemuImage, qemuImagePath, isAvailableIsoImage } from '@models/qemu/qemu-image';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { TemplateService } from '@services/template.service';
@@ -127,6 +128,8 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   readonly hddDiskInterface = model('');
   // CD/DVD
   readonly cdromImage = model('');
+  readonly cdrom2Image = model('');
+  readonly cdromInterfaces = [signal<QemuCdromInterface>('ide'), signal<QemuCdromInterface>('ide')];
   // Advanced
   readonly initrd = model('');
   readonly kernelImage = model('');
@@ -180,6 +183,9 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         this.hddDiskImage.set(node.properties.hdd_disk_image_backing_file || node.properties.hdd_disk_image || '');
         this.hddDiskInterface.set(node.properties.hdd_disk_interface || '');
         this.cdromImage.set(node.properties.cdrom_image || '');
+        this.cdrom2Image.set(node.properties.cdrom2_image || '');
+        this.cdromInterfaces[0].set(node.properties.cdrom_interface || 'ide');
+        this.cdromInterfaces[1].set(node.properties.cdrom2_interface || 'ide');
         this.initrd.set(node.properties.initrd || '');
         this.kernelImage.set(node.properties.kernel_image || '');
         this.kernelCommandLine.set(node.properties.kernel_command_line || '');
@@ -252,16 +258,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
           },
           error: () => {},
         });
-        // Load global ISO images
-        this.imageManagerService.getImages(this.controller).subscribe({
-          next: (images: any[]) => {
-            this.globalIsoImages = images
-              .filter((img: any) => img.filename?.endsWith('.iso'))
-              .map((img: any) => img.filename);
-            this.cd.markForCheck();
-          },
-          error: () => {},
-        });
+        this.refreshGlobalImages();
         // allGlobalFiles is already loaded by qemuService.getImages() above
         this.getConfiguration();
         this.cd.markForCheck();
@@ -358,6 +355,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
             (f: any) => f.file_type?.toLowerCase().includes('iso 9660') || f.file_type?.toLowerCase().includes('cd-rom')
           )
           .map((f: any) => f.path);
+        this.filteredIsoFiles = this.projectIsoFiles;
         this.cd.markForCheck();
       },
       error: () => {},
@@ -367,40 +365,23 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   private refreshGlobalImages() {
     this.imageManagerService.getImages(this.controller).subscribe({
       next: (images: any[]) => {
-        this.globalIsoImages = images
-          .filter((img: any) => img.filename?.endsWith('.iso'))
-          .map((img: any) => img.filename);
+        this.globalIsoImages = images.filter(isAvailableIsoImage).map((img: any) => qemuImagePath(img));
+        this.filteredGlobalIsoImages = this.globalIsoImages;
         this.cd.markForCheck();
       },
       error: () => {},
     });
   }
 
-  uploadCdromImageFile(event, target: 'global' | 'device' = 'global') {
-    const file = event.target.files[0];
+  uploadCdromImageFile(event: Event, target: 'global' | 'device' = 'global', slot = 1) {
+    const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
-    const filename = file.name;
-    const upload$ =
-      target === 'device'
-        ? this.nodeService.uploadNodeFile(this.controller, this.node.project_id, this.node.node_id, filename, file)
-        : this.imageManagerService.uploadedImage(this.controller, false, filename, file);
-    upload$.subscribe({
-      next: () => {
-        this.node.properties.cdrom_image = filename;
-        this.cdromImage.set(filename);
-        if (target === 'device') {
-          this.refreshNodeFiles();
-        } else {
-          this.refreshGlobalImages();
-        }
-        this.toasterService.success(`Uploaded ${filename}`);
-        this.cd.markForCheck();
-      },
-      error: (err) => {
-        const msg = err.error?.message || err.message || 'Failed to upload image';
-        this.toasterService.error(msg);
-      },
-    });
+    this.uploadFile(
+      file,
+      slot === 1 ? this.cdromImage : this.cdrom2Image,
+      slot === 1 ? 'cdrom_image' : 'cdrom2_image',
+      target
+    );
   }
 
   private uploadFile(file: File, signal: { set: (v: string) => void }, propKey: string, target: 'device' | 'global') {
@@ -582,6 +563,9 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     this.node.properties.hdd_disk_image = this.hddDiskImage();
     this.node.properties.hdd_disk_interface = this.hddDiskInterface();
     this.node.properties.cdrom_image = this.cdromImage();
+    this.node.properties.cdrom2_image = this.cdrom2Image();
+    this.node.properties.cdrom_interface = this.cdromInterfaces[0]();
+    this.node.properties.cdrom2_interface = this.cdromInterfaces[1]();
     this.node.properties.initrd = this.initrd();
     this.node.properties.kernel_image = this.kernelImage();
     this.node.properties.kernel_command_line = this.kernelCommandLine();
@@ -604,10 +588,21 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     this.node.properties.adapter_type = this.adapterType();
     this.node.properties.replicate_network_connection_state = this.replicateNetworkState();
 
+    const requestedInterfaces = this.cdromInterfaces.map((interfaceSignal) => interfaceSignal());
     this.isApplying.set(true);
     this.dialogRef.disableClose = true;
     this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe({
-      next: () => {
+      next: (savedNode) => {
+        const savedProperties = savedNode.properties;
+        if (!savedProperties || (
+          (savedProperties.cdrom_interface || 'ide') !== requestedInterfaces[0] ||
+          (savedProperties.cdrom2_interface || 'ide') !== requestedInterfaces[1]
+        )) {
+          this.toasterService.error('The server did not save the CD-ROM interfaces. Check that the compute server is updated and the node is stopped.');
+          this.isApplying.set(false);
+          this.dialogRef.disableClose = false;
+          return;
+        }
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
       },
