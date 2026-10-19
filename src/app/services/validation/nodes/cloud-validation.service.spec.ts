@@ -18,6 +18,21 @@ describe('CloudValidationService', () => {
     service = TestBed.inject(CloudValidationService);
   });
 
+  describe('bridged TAP names', () => {
+    for (const name of ['tap-interface-too-long', 'tap bad', '/dev/tap0', 'tap0\n']) {
+      it(`should reject ${JSON.stringify(name)} only for bridged TAPs`, () => {
+        expect(service.validateInterfaceName(name).isValid).toBe(true);
+        expect(service.validateInterfaceName(name, true).isValid).toBe(false);
+      });
+    }
+
+    it('should accept valid Linux TAP names', () => {
+      for (const name of ['tap0', 'tap_1.2:3-4', 'abcdefghijklmno']) {
+        expect(service.validateInterfaceName(name, true).isValid).toBe(true);
+      }
+    });
+  });
+
   describe('validateName', () => {
     it('should pass validation for non-empty name', () => {
       const result = service.validateName('Cloud-1');

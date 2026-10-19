@@ -19,6 +19,7 @@ export interface HostInterfaceIPAddress {
 export interface NetworkInterface {
   name: string;
   special: boolean;
+  is_bridge?: boolean;
   type: string;
   ip_addresses?: HostInterfaceIPAddress[];
   status?: string; // 'up' | 'down' — link carrier state (psutil isup)

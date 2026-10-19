@@ -47,14 +47,22 @@ export class CloudValidationService {
 
   /**
    * Validates network interface name
-   * Must be non-empty string
+   * Must be non-empty; bridged TAPs must also use a Linux interface name
+   * Legacy unbridged names and device paths remain supported
    * System-level existence check is done server-side
    */
-  validateInterfaceName(interfaceName: string): ValidationResult {
+  validateInterfaceName(interfaceName: string, bridgedTap = false): ValidationResult {
     if (!interfaceName || interfaceName.trim() === '') {
       return {
         isValid: false,
         errorMessage: 'Interface name is required',
+      };
+    }
+
+    if (bridgedTap && (interfaceName.length > 15 || /[^a-zA-Z0-9_.:-]/.test(interfaceName))) {
+      return {
+        isValid: false,
+        errorMessage: 'A bridged TAP name must be 1-15 letters, digits, underscores, dots, colons or hyphens',
       };
     }
 

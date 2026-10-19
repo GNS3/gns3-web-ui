@@ -160,7 +160,7 @@ describe('ConfiguratorDialogCloudComponent', () => {
     component.controller = mockController;
     component.node = mockNode;
     component.portsMappingUdp.set(mockUdpTunnelsData);
-    component.name = 'Cloud-1';
+    component.nodeName.set('Cloud-1');
   });
 
   afterEach(() => {
@@ -346,6 +346,15 @@ describe('ConfiguratorDialogCloudComponent', () => {
     });
   });
 
+  it('should offer only compute interfaces identified as bridges', () => {
+    mockNode.properties.interfaces = [
+      { name: 'eth0', type: 'ethernet', special: false },
+      { name: 'virbr0', type: 'ethernet', special: true, is_bridge: true },
+    ];
+    component.ngOnInit();
+    expect(component.availableBridges().map((iface) => iface.name)).toEqual(['virbr0']);
+  });
+
   describe('onAddTapInterface', () => {
     beforeEach(() => {
       mockCloudValidationService.validateInterfaceName.mockReturnValue({ isValid: true });
@@ -363,6 +372,23 @@ describe('ConfiguratorDialogCloudComponent', () => {
       expect(component.portsMappingTap()[component.portsMappingTap().length - 1].type).toBe('tap');
     });
 
+    it('should request bridged TAP name validation when a bridge is selected', () => {
+      component.tapInterface.set('tap0');
+      component.tapBridge.set('virbr0');
+      component.onAddTapInterface();
+      expect(mockCloudValidationService.validateInterfaceName).toHaveBeenCalledWith('tap0', true);
+    });
+
+    it('should preserve optional bridge assignments for multiple TAPs', () => {
+      for (const name of ['tap0', 'tap1']) {
+        component.tapInterface.set(name);
+        component.tapBridge.set('virbr0');
+        component.onAddTapInterface();
+      }
+      expect(component.portsMappingTap().slice(-2).map((port) => port.bridge)).toEqual(['virbr0', 'virbr0']);
+      expect(component.tapBridge()).toBe('');
+    });
+
     it('should not add tap interface when tapInterface is empty', () => {
       component.tapInterface.set('');
       const initialLength = component.portsMappingTap().length;
@@ -377,7 +403,7 @@ describe('ConfiguratorDialogCloudComponent', () => {
 
       component.onAddTapInterface();
 
-      expect(mockCloudValidationService.validateInterfaceName).toHaveBeenCalledWith('tap0');
+      expect(mockCloudValidationService.validateInterfaceName).toHaveBeenCalledWith('tap0', false);
     });
 
     it('should show error when interface name validation fails', () => {
@@ -499,6 +525,17 @@ describe('ConfiguratorDialogCloudComponent', () => {
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Remote console port must be between 1 and 65535');
       expect(mockNodeService.updateNode).not.toHaveBeenCalled();
+    });
+
+    it('should save TAP bridge assignments with the node port mappings', () => {
+      component.tapInterface.set('tap0');
+      component.tapBridge.set('virbr0');
+      component.onAddTapInterface();
+      component.onSaveClick();
+      const savedNode = mockNodeService.updateNode.mock.calls[0][1];
+      expect(savedNode.properties.ports_mapping).toContainEqual(
+        expect.objectContaining({ type: 'tap', interface: 'tap0', bridge: 'virbr0' })
+      );
     });
 
     it('should merge model signal values back into node properties', () => {
@@ -640,7 +677,7 @@ describe('ConfiguratorDialogCloudComponent', () => {
 
   describe('dialog title', () => {
     it('should display node name in title', () => {
-      component.name = 'Cloud-1';
+      component.nodeName.set('Cloud-1');
       fixture.detectChanges();
 
       const title = fixture.nativeElement.querySelector('.node-config__title');
