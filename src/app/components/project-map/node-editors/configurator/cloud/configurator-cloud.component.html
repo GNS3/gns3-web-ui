@@ -1,5 +1,5 @@
 <div mat-dialog-title class="node-config__header">
-  <h1 class="node-config__title">Configure Node <span aria-hidden="true">—</span> Cloud {{ name }}</h1>
+  <h1 class="node-config__title">Configure Node <span aria-hidden="true">—</span> Cloud {{ nodeName() }}</h1>
   <button
     mat-icon-button
     type="button"
@@ -20,7 +20,7 @@
   <div class="content">
     <div class="default-content">
       <mat-card class="matCard">
-        @if (name) {
+        @if (node) {
         <mat-tab-group>
           <mat-tab>
             <ng-template mat-tab-label>
@@ -130,6 +130,15 @@
                     placeholder="TAP interface"
                   />
                 </mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>Bridge (optional)</mat-label>
+                  <mat-select [value]="tapBridge()" (selectionChange)="tapBridge.set($event.value)">
+                    <mat-option value="">None</mat-option>
+                    @for (bridge of availableBridges(); track bridge.name) {
+                      <mat-option [value]="bridge.name">{{ bridge.name }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
                 <button mat-flat-button color="primary" class="node-config__add-button" (click)="onAddTapInterface()">
                   Add
                 </button>
@@ -139,6 +148,11 @@
                 <ng-container matColumnDef="name">
                   <th mat-header-cell *matHeaderCellDef>Interface</th>
                   <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="bridge">
+                  <th mat-header-cell *matHeaderCellDef>Bridge</th>
+                  <td mat-cell *matCellDef="let element">{{ element.bridge || 'None' }}</td>
                 </ng-container>
 
                 <ng-container matColumnDef="actions">

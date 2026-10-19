@@ -19,7 +19,6 @@ import type { HostInterfaceIPAddress, NetworkInterface } from '../../../../../ca
 import { UdpTunnelsComponent } from '@components/preferences/common/udp-tunnels/udp-tunnels.component';
 import { formatFlags, formatIpAddress, formatIpAddresses, formatInterfaceMeta } from './ip-address.util';
 import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
-import { QemuBinary } from '@models/qemu/qemu-binary';
 import { Controller } from '@models/controller';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
 import { NodeService } from '@services/node.service';
@@ -60,22 +59,18 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
 
   controller: Controller;
   node: Node;
-  name: string;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
-  onCloseOptions = [];
-  bootPriorities = [];
-  diskInterfaces: string[] = [];
 
   portsMappingEthernet = signal<PortsMappingEntity[]>([]);
   portsMappingTap = signal<PortsMappingEntity[]>([]);
   portsMappingUdp = signal<PortsMappingEntity[]>([]);
 
   ethernetDisplayColumns: string[] = ['name', 'ipAddresses', 'actions'];
-  tapDisplayColumns: string[] = ['name', 'actions'];
-  displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
-  networkTypes = [];
+  tapDisplayColumns: string[] = ['name', 'bridge', 'actions'];
   readonly tapInterface = model('');
+  readonly tapBridge = model('');
+  availableBridges = signal<NetworkInterface[]>([]);
   readonly ethernetInterface = model('');
   availableEthernetInterfaces = signal<NetworkInterface[]>([]);
 
@@ -96,7 +91,6 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
     this.nodeService.getNode(this.controller, this.node).subscribe({
       next: (node: Node) => {
         this.node = node;
-        this.name = node.name;
 
         // Update model signals with node data
         this.nodeName.set(node.name || '');
@@ -118,6 +112,8 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
             this.node.properties.interfaces.filter((iface) => iface.type === 'ethernet')
           );
         }
+
+        this.availableBridges.set((node.properties.interfaces ?? []).filter((iface) => iface.is_bridge));
 
         this.portsMappingEthernet.set(
           this.node.properties.ports_mapping.filter((elem) => elem.type === 'ethernet')
@@ -202,7 +198,7 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   onAddTapInterface() {
     if (this.tapInterface()) {
       // Validate interface name
-      const nameValidation = this.validationService.validateInterfaceName(this.tapInterface());
+      const nameValidation = this.validationService.validateInterfaceName(this.tapInterface(), !!this.tapBridge());
       if (!nameValidation.isValid) {
         this.toasterService.error(nameValidation.errorMessage || 'Invalid interface name');
         return;
@@ -223,9 +219,11 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
           name: this.tapInterface(),
           port_number: 0,
           type: 'tap',
+          ...(this.tapBridge() ? { bridge: this.tapBridge() } : {}),
         },
       ]);
       this.tapInterface.set('');
+      this.tapBridge.set('');
     }
   }
 
