@@ -7167,10 +7167,10 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-ng2-file-upload@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/ng2-file-upload/-/ng2-file-upload-3.0.0.tgz#55ce8752a93cf234a754fe1009ceff40c625582c"
-  integrity sha512-Xz7Pa9bC9loZ7eu1EzdAyPb3dpLbGe1G1nHgf+YUvtqQepxdQ3OBtd04Jbg3yx8r+nhi8tKGmdajsBAkeA87rA==
+ng2-file-upload@^12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/ng2-file-upload/-/ng2-file-upload-12.0.0.tgz#315616af5541185df42535e18bb559f7b9d02978"
+  integrity sha512-KzQxldYjf1E+KLmNMn7n4fn9pjMPUsUHNOhKMoYAuJfJLwab2NT8aY7i54QKhH5+i6WKV5Raftr33x9drIhj1Q==
   dependencies:
     tslib "^2.3.0"
 
