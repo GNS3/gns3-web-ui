@@ -87,7 +87,7 @@
     "@angular-eslint/schematics": "^21.3.1",
     "@angular-eslint/template-parser": "^21.3.1",
     "@angular/build": "^21.2.5",
-    "@angular/cli": "^21.2.3",
+    "@angular/cli": "^21.2.27",
     "@angular/compiler-cli": "^21.0.0",
     "@angular/language-service": "^21.0.0",
     "@babel/runtime": "^7.29.2",
