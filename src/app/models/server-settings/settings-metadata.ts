@@ -462,7 +462,7 @@ export const SETTINGS_METADATA: SettingsSectionMeta[] = [
         { key: 'ovmf_firmware_dir', label: 'OVMF firmware directory', type: 'string', defaultValue: '/usr/share/OVMF' },
         {
           key: 'enable_hardware_acceleration',
-          label: 'Hardware acceleration (KVM/HAXM)',
+          label: 'Hardware acceleration (KVM)',
           type: 'boolean',
           width: 'half',
           defaultValue: true,
