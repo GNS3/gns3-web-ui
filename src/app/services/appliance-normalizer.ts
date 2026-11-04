@@ -149,3 +149,61 @@ export function getVersionSettingProperties(appliance: Appliance, version: Versi
   }
   return merged;
 }
+
+/**
+ * Converts the appliance-only qemu keys and returns the properties as they
+ * must land on a template: `kvm: "disable"` becomes a `-machine accel=tcg`
+ * qemu option, `arch` is renamed `platform`, and `path` plus the structural
+ * fields are dropped. Everything else (uefi, tpm, options, cpu settings...)
+ * passes through untouched.
+ *
+ * Mirrors gns3server/controller/appliance_to_template.py: the kvm conversion
+ * and reserved pops in _add_qemu_config (registry versions 1-6) and
+ * _new_template_v8 (registry version 8).
+ */
+export function normalizeQemuProperties(props: { [key: string]: any }): { [key: string]: any } {
+  const normalized = { ...props };
+
+  // kvm is not a valid template property: convert it to the equivalent qemu
+  // option like the server does
+  const kvm = normalized.kvm ?? 'allow';
+  delete normalized.kvm;
+  let options = normalized.options || '';
+  if (kvm === 'disable' && !options.includes('-machine accel=tcg')) {
+    options += ' -machine accel=tcg';
+  }
+  normalized.options = options.trim();
+
+  // v1-v6 qemu blocks call it `arch`; templates use `platform`
+  if (normalized.platform === undefined && normalized.arch !== undefined) {
+    normalized.platform = normalized.arch;
+  }
+  delete normalized.arch;
+
+  // not valid on a template
+  delete normalized.path;
+  delete normalized.template_type;
+  delete normalized.compute_id;
+  delete normalized.version;
+
+  return normalized;
+}
+
+/**
+ * Fallback symbol for a template installed from an appliance, based on the
+ * appliance category before the multilayer_switch remap. Mirrors the defaults
+ * in gns3server/controller/appliance_to_template.py so templates installed via
+ * the web UI carry the same symbol as a server-side install.
+ */
+export function getDefaultApplianceSymbol(category: string | undefined, templateType: string): string | undefined {
+  if (category === 'guest') {
+    return templateType === 'docker' ? ':/symbols/docker_guest.svg' : ':/symbols/qemu_guest.svg';
+  }
+  const symbols: { [category: string]: string } = {
+    router: ':/symbols/router.svg',
+    switch: ':/symbols/ethernet_switch.svg',
+    multilayer_switch: ':/symbols/multilayer_switch.svg',
+    firewall: ':/symbols/firewall.svg',
+  };
+  return symbols[category || ''];
+}
