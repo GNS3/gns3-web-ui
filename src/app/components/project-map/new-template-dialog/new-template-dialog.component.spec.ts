@@ -15,6 +15,7 @@ import { IouService } from '@services/iou.service';
 import { QemuService } from '@services/qemu.service';
 import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
+import { normalizeAppliance } from '@services/appliance-normalizer';
 import { ProgressService } from '../../../common/progress/progress.service';
 import { UploadServiceService } from '../../../common/uploading-processbar/upload-service.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -162,6 +163,54 @@ describe('NewTemplateDialogComponent', () => {
     name: 'Test Template',
     template_type: 'qemu',
   } as Template;
+
+  // Mirrors the v8 appliance from issue #1891 (alpine-cloud.gns3a): uefi and
+  // options live in the default settings group's template_properties, the
+  // version selects the aarch64 group and no symbol is defined anywhere.
+  const createV8QemuAppliance = (): Appliance =>
+    ({
+      name: 'Alpine Cloud Guest',
+      appliance_id: 'edbaa01e-2032-4ee2-bb9f-dd5c4d84c270',
+      category: 'guest',
+      registry_version: 8,
+      usage: '\nUsername: alpine\nPassword: alpine',
+      settings: [
+        {
+          name: 'default',
+          default: true,
+          template_type: 'qemu',
+          template_properties: {
+            port_name_format: 'eth{0}',
+            adapter_type: 'virtio-net-pci',
+            adapters: 1,
+            ram: 1024,
+            hda_disk_interface: 'virtio',
+            console_type: 'telnet',
+            boot_priority: 'c',
+            options: '-nographic',
+            uefi: true,
+          },
+        },
+        {
+          name: 'aarch64',
+          template_type: 'qemu',
+          template_properties: {
+            platform: 'aarch64',
+          },
+        },
+      ],
+      images: [],
+      versions: [
+        {
+          name: '3.24.3 (aarch64)',
+          settings: 'aarch64',
+          images: {
+            hda_disk_image: 'alpine-3.24.3-aarch64-cloudinit-r0.qcow2',
+            cdrom_image: 'alpine-cloud-init-data.iso',
+          },
+        } as Version,
+      ],
+    } as unknown as Appliance);
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -803,6 +852,58 @@ describe('NewTemplateDialogComponent', () => {
     expect(template.cdrom2_interface).toBe('sata');
     expect(component.getVersionImages(version).map((image) => image.key))
       .toEqual(['cdrom_image', 'cdrom2_image']);
+  });
+
+  it('copies v8 template properties (uefi, options) onto the QEMU template', () => {
+    // Regression test for issue #1891: uefi and options defined in a v8
+    // settings group never reached the created template.
+    const appliance = normalizeAppliance(createV8QemuAppliance());
+    const version = appliance.versions[0];
+    component.applianceToInstall.set(appliance);
+    const template = (component as any).buildQemuTemplate(version, 'Alpine Cloud Guest TEST');
+
+    expect(template.uefi).toBe(true);
+    expect(template.options).toBe('-nographic');
+    // the version's aarch64 settings group merged over the default group
+    expect(template.platform).toBe('aarch64');
+    expect(template.ram).toBe(1024);
+    expect(template.adapter_type).toBe('virtio-net-pci');
+    expect(template.hda_disk_image).toBe('alpine-3.24.3-aarch64-cloudinit-r0.qcow2');
+    expect(template.cdrom_image).toBe('alpine-cloud-init-data.iso');
+    expect(template.cdrom_interface).toBe('ide');
+    expect(template.usage).toContain('Username: alpine');
+  });
+
+  it('falls back to the category default symbol for v8 appliances without one', () => {
+    const appliance = normalizeAppliance(createV8QemuAppliance());
+    component.applianceToInstall.set(appliance);
+    const template = (component as any).buildQemuTemplate(appliance.versions[0], 'Alpine Cloud Guest TEST');
+
+    expect(template.symbol).toBe(':/symbols/qemu_guest.svg');
+    expect(template.category).toBe('guest');
+  });
+
+  it('prefers an explicit symbol over the category default', () => {
+    const appliance = normalizeAppliance(createV8QemuAppliance());
+    appliance.versions[0].symbol = ':/symbols/custom.svg';
+    component.applianceToInstall.set(appliance);
+    const template = (component as any).buildQemuTemplate(appliance.versions[0], 'Alpine Cloud Guest TEST');
+
+    expect(template.symbol).toBe(':/symbols/custom.svg');
+  });
+
+  it('converts kvm disable into a tcg qemu option on legacy appliances', () => {
+    const appliance = createMockAppliance();
+    appliance.qemu.kvm = 'disable';
+    appliance.qemu.options = '-nographic';
+    appliance.custom_adapters = [{ adapter_number: 0, adapter_type: 'e1000', port_name: 'mgmt0' }];
+    component.applianceToInstall.set(appliance);
+    const template = (component as any).buildQemuTemplate(appliance.versions[0], 'Test Appliance');
+
+    expect(template.options).toBe('-nographic -machine accel=tcg');
+    // arch from legacy qemu blocks maps onto the template platform
+    expect(template.platform).toBe('x86_64');
+    expect(template.custom_adapters).toEqual([{ adapter_number: 0, adapter_type: 'e1000', port_name: 'mgmt0' }]);
   });
 
   describe('version helpers', () => {
