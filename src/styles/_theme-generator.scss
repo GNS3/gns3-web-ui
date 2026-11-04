@@ -137,6 +137,16 @@ $theme-configs: (
       ),
     )
   );
+  // Warnings must stay yellow in every theme so they never collapse into the
+  // error red (the tertiary palette is red/rose/orange in several themes).
+  $warning-theme: mat.define-theme(
+    (
+      color: (
+        theme-type: map.get($config, theme-type),
+        primary: mat.$yellow-palette,
+      ),
+    )
+  );
 
   :root.#{$class-name} {
     @include mat.all-component-themes($theme);
@@ -144,6 +154,10 @@ $theme-configs: (
     @include mat.system-level-typography($theme);
     --custom-mat-sys-success: #{mat.get-theme-color($success-theme, primary)};
     --custom-mat-sys-on-success: #{mat.get-theme-color($success-theme, on-primary)};
+    --custom-mat-sys-warning: #{mat.get-theme-color($warning-theme, primary)};
+    --custom-mat-sys-on-warning: #{mat.get-theme-color($warning-theme, on-primary)};
+    --custom-mat-sys-warning-container: #{mat.get-theme-color($warning-theme, primary-container)};
+    --custom-mat-sys-on-warning-container: #{mat.get-theme-color($warning-theme, on-primary-container)};
   }
 
   .cdk-overlay-container.#{$class-name},
