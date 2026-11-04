@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog.component';
 import { ImageManagerService } from '@services/image-manager.service';
-import { ToasterService } from '@services/toaster.service';
+import { ControllerError } from '@services/http-controller.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { of } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -23,6 +23,8 @@ describe('DeleteAllImageFilesDialogComponent', () => {
   };
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockImageManagerService = {
       deleteFile: vi.fn(),
     };
@@ -39,7 +41,6 @@ describe('DeleteAllImageFilesDialogComponent', () => {
       imports: [DeleteAllImageFilesDialogComponent, MatDialogModule, MatButtonModule, MatProgressSpinnerModule],
       providers: [
         { provide: ImageManagerService, useValue: mockImageManagerService },
-        { provide: ToasterService, useValue: { success: vi.fn(), error: vi.fn() } },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: mockDeleteData },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
@@ -69,9 +70,9 @@ describe('DeleteAllImageFilesDialogComponent', () => {
       expect(component.isUsedFiles).toBe(false);
     });
 
-    it('should initialize with empty arrays for deleteFliesDetails and fileNotDeleted', () => {
-      expect(component.deleteFliesDetails).toEqual([]);
-      expect(component.fileNotDeleted).toEqual([]);
+    it('should initialize with empty results', () => {
+      expect(component.failedMessages).toEqual([]);
+      expect(component.deletedCount).toBe(0);
     });
   });
 
@@ -120,34 +121,65 @@ describe('DeleteAllImageFilesDialogComponent', () => {
       expect(component.isUsedFiles).toBe(true);
     });
 
-    it('should have empty deleteFliesDetails when all files deleted', () => {
+    it('should have no failed messages when all files deleted', () => {
       mockImageManagerService.deleteFile.mockReturnValue(of(null));
       component.deleteFile();
       fixture.detectChanges();
-      expect((component.deleteFliesDetails as any).length).toBe(0);
+      expect(component.failedMessages.length).toBe(0);
     });
 
-    it('should have fileNotDeleted count equal to total files', () => {
+    it('should count every deleted file', () => {
       mockImageManagerService.deleteFile.mockReturnValue(of(null));
       component.deleteFile();
       fixture.detectChanges();
-      expect((component.fileNotDeleted as any).length).toBe(2);
+      expect(component.deletedCount).toBe(2);
     });
   });
 
   describe('deleteFile() - some files fail to delete', () => {
-    it('should populate deleteFliesDetails with error responses', () => {
-      const errorResponse = { error: { message: 'File in use by template' } };
-      mockImageManagerService.deleteFile.mockReturnValueOnce(of(errorResponse)).mockReturnValueOnce(of(null));
+    it('should collect server messages from ControllerError (transformed by HttpController)', () => {
+      // HttpController converts HTTP errors to ControllerError: the server message lives
+      // in .message and there is no .error property.
+      const controllerError = new ControllerError("Image 'image1.img' is used by one or more templates: FRR-qemu");
+      mockImageManagerService.deleteFile.mockReturnValueOnce(of(controllerError)).mockReturnValueOnce(of(null));
       component.deleteFile();
       fixture.detectChanges();
-      expect((component.deleteFliesDetails as any).length).toBe(1);
-      expect((component.deleteFliesDetails as any)[0]).toEqual(errorResponse);
+      expect(component.failedMessages.length).toBe(1);
+      expect(component.failedMessages[0]).toBe("Image 'image1.img' is used by one or more templates: FRR-qemu");
+      expect(component.deletedCount).toBe(1);
+    });
+
+    it('should collect server messages from a raw HttpErrorResponse', () => {
+      // Error paths that bypass ControllerErrorHandler (e.g. failed token refresh) emit
+      // the raw HttpErrorResponse, where the server message lives in error.message.
+      const httpError = { error: { message: 'Image is used by one or more projects: test-project' } };
+      mockImageManagerService.deleteFile.mockReturnValueOnce(of(httpError)).mockReturnValueOnce(of(null));
+      component.deleteFile();
+      fixture.detectChanges();
+      expect(component.failedMessages.length).toBe(1);
+      expect(component.failedMessages[0]).toBe('Image is used by one or more projects: test-project');
+    });
+
+    it('should fall back to a generic message when the error has no message', () => {
+      mockImageManagerService.deleteFile.mockReturnValueOnce(of({})).mockReturnValueOnce(of(null));
+      component.deleteFile();
+      fixture.detectChanges();
+      expect(component.failedMessages).toEqual(['Failed to delete image']);
+    });
+
+    it('should render the server messages in the dialog list', () => {
+      const controllerError = new ControllerError("Image 'image1.img' is used by one or more templates: FRR-qemu");
+      mockImageManagerService.deleteFile.mockReturnValueOnce(of(controllerError)).mockReturnValueOnce(of(null));
+      component.deleteFile();
+      fixture.detectChanges();
+      const listItems = fixture.nativeElement.querySelectorAll('.delete-files__list-item');
+      expect(listItems.length).toBe(1);
+      expect(listItems[0].textContent).toContain("Image 'image1.img' is used by one or more templates: FRR-qemu");
     });
 
     it('should show error title when some files cannot be deleted', () => {
-      const errorResponse = { error: { message: 'File in use' } };
-      mockImageManagerService.deleteFile.mockReturnValueOnce(of(errorResponse)).mockReturnValueOnce(of(null));
+      const controllerError = new ControllerError('File in use');
+      mockImageManagerService.deleteFile.mockReturnValueOnce(of(controllerError)).mockReturnValueOnce(of(null));
       component.deleteFile();
       fixture.detectChanges();
       const compiled = fixture.nativeElement;
@@ -155,8 +187,8 @@ describe('DeleteAllImageFilesDialogComponent', () => {
     });
 
     it('should show success count for deleted files', () => {
-      const errorResponse = { error: { message: 'File in use' } };
-      mockImageManagerService.deleteFile.mockReturnValueOnce(of(errorResponse)).mockReturnValueOnce(of(null));
+      const controllerError = new ControllerError('File in use');
+      mockImageManagerService.deleteFile.mockReturnValueOnce(of(controllerError)).mockReturnValueOnce(of(null));
       component.deleteFile();
       fixture.detectChanges();
       const compiled = fixture.nativeElement;
@@ -171,15 +203,15 @@ describe('DeleteAllImageFilesDialogComponent', () => {
       // Verify the state is properly set after deletion
       expect(component.isDelete).toBe(true);
       expect(component.isUsedFiles).toBe(true);
-      expect((component.deleteFliesDetails as any).length).toBe(0);
-      expect((component.fileNotDeleted as any).length).toBe(2);
+      expect(component.failedMessages.length).toBe(0);
+      expect(component.deletedCount).toBe(2);
     });
   });
 
   describe('Close button', () => {
     it('should close dialog when close button is clicked after deletion completes', () => {
-      const errorResponse = { error: { message: 'File in use' } };
-      mockImageManagerService.deleteFile.mockReturnValueOnce(of(errorResponse)).mockReturnValueOnce(of(null));
+      const controllerError = new ControllerError('File in use');
+      mockImageManagerService.deleteFile.mockReturnValueOnce(of(controllerError)).mockReturnValueOnce(of(null));
       component.deleteFile();
       fixture.detectChanges();
       const compiled = fixture.nativeElement;
@@ -191,10 +223,6 @@ describe('DeleteAllImageFilesDialogComponent', () => {
   });
 
   describe('deleteFile() error handling', () => {
-    it('should have ToasterService injected', () => {
-      expect(component['toasterService']).toBeDefined();
-    });
-
     it('should have cd (ChangeDetectorRef) injected', () => {
       expect(component['cd']).toBeDefined();
     });

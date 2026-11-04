@@ -76,6 +76,8 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   readonly syncing = signal(false);
   readonly pageSizeOptions = [5, 10, 25, 50, 100];
   readonly displayedColumns = ['select', 'filename', 'status', 'image_type', 'image_size', 'created_at', 'actions'];
+  readonly dateTimeFormatShort = 'yyyy-MM-dd HH:mm';
+  readonly dateTimeFormatFull = 'yyyy-MM-dd HH:mm:ss';
 
   readonly imageTypes = computed(() =>
     Array.from(
