@@ -172,7 +172,9 @@
 
           <ng-container matColumnDef="created_at">
             <mat-header-cell *matHeaderCellDef mat-sort-header>Created</mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.created_at ? (row.created_at | date : 'short') : '—' }}</mat-cell>
+            <mat-cell *matCellDef="let row">{{
+              row.created_at ? (row.created_at | date : dateTimeFormatShort) : '—'
+            }}</mat-cell>
           </ng-container>
 
           <ng-container matColumnDef="actions">
@@ -413,21 +415,21 @@
           <div class="image-manager__detail-item">
             <span class="image-manager__detail-icon"><mat-icon>verified</mat-icon></span>
             <span class="image-manager__detail-label">Last verified</span>
-            <span class="image-manager__detail-value">{{ image.last_verified_at | date : 'medium' }}</span>
+            <span class="image-manager__detail-value">{{ image.last_verified_at | date : dateTimeFormatFull }}</span>
           </div>
           }
           <div class="image-manager__detail-item">
             <span class="image-manager__detail-icon"><mat-icon>event</mat-icon></span>
             <span class="image-manager__detail-label">Created</span>
             <span class="image-manager__detail-value">{{
-              image.created_at ? (image.created_at | date : 'medium') : '—'
+              image.created_at ? (image.created_at | date : dateTimeFormatFull) : '—'
             }}</span>
           </div>
           <div class="image-manager__detail-item">
             <span class="image-manager__detail-icon"><mat-icon>update</mat-icon></span>
             <span class="image-manager__detail-label">Updated</span>
             <span class="image-manager__detail-value">{{
-              image.updated_at ? (image.updated_at | date : 'medium') : '—'
+              image.updated_at ? (image.updated_at | date : dateTimeFormatFull) : '—'
             }}</span>
           </div>
           <div class="image-manager__detail-item">

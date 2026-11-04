@@ -4,10 +4,8 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ImageManagerService } from '@services/image-manager.service';
-import { ToasterService } from '@services/toaster.service';
-import { Observable, of, forkJoin } from 'rxjs';
+import { forkJoin, of, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ImageData } from '@models/images';
 
 @Component({
   standalone: true,
@@ -19,13 +17,12 @@ import { ImageData } from '@models/images';
 })
 export class DeleteAllImageFilesDialogComponent implements OnInit {
   private imageService = inject(ImageManagerService);
-  private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
 
   isDelete: boolean = true;
   isUsedFiles: boolean = false;
-  deleteFliesDetails: ImageData = [];
-  fileNotDeleted: ImageData = [];
+  failedMessages: string[] = [];
+  deletedCount = 0;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public deleteData: any,
@@ -44,25 +41,22 @@ export class DeleteAllImageFilesDialogComponent implements OnInit {
   }
 
   deleteFile() {
-    const calls = [];
-    this.deleteData.deleteFilesPaths.forEach((pathElement) => {
-      calls.push(
-        this.imageService
-          .deleteFile(this.deleteData.controller, pathElement.filename)
-          .pipe(catchError((error) => of(error)))
-      );
-    });
+    // each call resolves to null on success (204 No Content) or to an error object
+    const calls: Observable<any>[] = this.deleteData.deleteFilesPaths.map((pathElement) =>
+      this.imageService.deleteFile(this.deleteData.controller, pathElement.filename).pipe(catchError((error) => of(error)))
+    );
     forkJoin(calls).subscribe({
       next: (responses) => {
-        this.deleteFliesDetails = responses.filter((x) => x !== null);
-        this.fileNotDeleted = responses.filter((x) => x === null);
+        // A successful DELETE returns 204 No Content (null body). Failed requests emit an
+        // error object: HttpController converts HTTP errors to ControllerError whose
+        // message is the server message, while a raw HttpErrorResponse keeps it in
+        // error.message. Both shapes are handled below.
+        this.deletedCount = responses.filter((response) => response === null).length;
+        this.failedMessages = responses
+          .filter((response) => response !== null)
+          .map((response) => response?.error?.message || response?.message || 'Failed to delete image');
         this.isUsedFiles = true;
         this.isDelete = true;
-        this.cd.markForCheck();
-      },
-      error: (err) => {
-        const message = err.error?.message || err.message || 'Failed to delete files';
-        this.toasterService.error(message);
         this.cd.markForCheck();
       },
     });

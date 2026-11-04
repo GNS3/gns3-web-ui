@@ -6,19 +6,15 @@
   </mat-dialog-content>
   } @if (isUsedFiles) {
   <mat-dialog-content class="delete-files__content">
-    @if (deleteFliesDetails.length > 0) {
-    <h5 class="delete-files__error-title">Images can't be deleted because image used in one or more template.</h5>
+    @if (failedMessages.length > 0) {
+    <h5 class="delete-files__error-title">The following images can't be deleted:</h5>
     <ul class="delete-files__list">
-      @for (message of deleteFliesDetails; track $index; let i = $index) {
-      <li class="delete-files__list-item" [class.delete-files__list-item--error]="message?.error?.message">
-        @if (message !== null) {
-        {{ i + 1 }}. {{ message?.error?.message }}
-        }
-      </li>
+      @for (message of failedMessages; track $index) {
+      <li class="delete-files__list-item delete-files__list-item--error">{{ message }}</li>
       }
     </ul>
-    } @if (fileNotDeleted.length > 0) {
-    <h5 class="delete-files__success-title">{{ fileNotDeleted.length }} Images deleted successfully.</h5>
+    } @if (deletedCount > 0) {
+    <h5 class="delete-files__success-title">{{ deletedCount }} Images deleted successfully.</h5>
     }
   </mat-dialog-content>
   <mat-dialog-actions class="delete-files__actions">
