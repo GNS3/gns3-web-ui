@@ -9,8 +9,8 @@
     @if (failedMessages.length > 0) {
     <h5 class="delete-files__error-title">The following images can't be deleted:</h5>
     <ul class="delete-files__list">
-      @for (message of failedMessages; track $index; let i = $index) {
-      <li class="delete-files__list-item delete-files__list-item--error">{{ i + 1 }}. {{ message }}</li>
+      @for (message of failedMessages; track $index) {
+      <li class="delete-files__list-item delete-files__list-item--error">{{ message }}</li>
       }
     </ul>
     } @if (deletedCount > 0) {
