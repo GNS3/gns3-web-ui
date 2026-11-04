@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { Appliance } from '@models/appliance';
-import { normalizeAppliance, getDefaultSetting, getVersionSettingProperties, buildApplianceMetadata } from './appliance-normalizer';
+import {
+  normalizeAppliance,
+  getDefaultSetting,
+  getVersionSettingProperties,
+  buildApplianceMetadata,
+  normalizeQemuProperties,
+  getDefaultApplianceSymbol,
+} from './appliance-normalizer';
 
 function createV8Appliance(): Appliance {
   return {
@@ -260,6 +267,107 @@ describe('appliance-normalizer', () => {
 
       expect(buildApplianceMetadata(appliance)).toBeNull();
       expect(buildApplianceMetadata(appliance, { name: '1.0', images: {} } as any)).toBeNull();
+    });
+  });
+
+  describe('normalizeQemuProperties', () => {
+    it('should pass template properties through untouched', () => {
+      const props = {
+        ram: 1024,
+        adapters: 1,
+        adapter_type: 'virtio-net-pci',
+        console_type: 'telnet',
+        boot_priority: 'c',
+        hda_disk_interface: 'virtio',
+        options: '-nographic',
+        uefi: true,
+        tpm: false,
+        platform: 'aarch64',
+      };
+
+      const normalized = normalizeQemuProperties(props);
+
+      expect(normalized).toEqual(props);
+    });
+
+    it('should not mutate the input properties', () => {
+      const props = { kvm: 'disable', arch: 'x86_64', ram: 512 };
+
+      normalizeQemuProperties(props);
+
+      expect(props).toEqual({ kvm: 'disable', arch: 'x86_64', ram: 512 });
+    });
+
+    it('should convert kvm disable into a tcg qemu option', () => {
+      const normalized = normalizeQemuProperties({ kvm: 'disable', options: '-nographic' });
+
+      expect(normalized.kvm).toBeUndefined();
+      expect(normalized.options).toBe('-nographic -machine accel=tcg');
+    });
+
+    it('should not duplicate the tcg option when already present', () => {
+      const normalized = normalizeQemuProperties({ kvm: 'disable', options: '-machine accel=tcg' });
+
+      expect(normalized.options).toBe('-machine accel=tcg');
+    });
+
+    it('should keep options untouched when kvm is allowed', () => {
+      expect(normalizeQemuProperties({ kvm: 'allow', options: '-nographic' }).options).toBe('-nographic');
+      expect(normalizeQemuProperties({ kvm: 'require', options: '-nographic' }).options).toBe('-nographic');
+    });
+
+    it('should default options to an empty string', () => {
+      expect(normalizeQemuProperties({ ram: 512 }).options).toBe('');
+      expect(normalizeQemuProperties({ options: '  -nographic  ' }).options).toBe('-nographic');
+    });
+
+    it('should rename arch to platform when platform is not set', () => {
+      const normalized = normalizeQemuProperties({ arch: 'x86_64', ram: 512 });
+
+      expect(normalized.platform).toBe('x86_64');
+      expect(normalized.arch).toBeUndefined();
+    });
+
+    it('should prefer an explicit platform over arch', () => {
+      const normalized = normalizeQemuProperties({ arch: 'x86_64', platform: 'aarch64' });
+
+      expect(normalized.platform).toBe('aarch64');
+      expect(normalized.arch).toBeUndefined();
+    });
+
+    it('should drop properties that are not valid on a template', () => {
+      const normalized = normalizeQemuProperties({
+        ram: 512,
+        path: '/usr/bin/qemu-system-x86_64',
+        template_type: 'qemu',
+        compute_id: 'local',
+        version: '1.0',
+      });
+
+      expect(normalized.ram).toBe(512);
+      expect(normalized.path).toBeUndefined();
+      expect(normalized.template_type).toBeUndefined();
+      expect(normalized.compute_id).toBeUndefined();
+      expect(normalized.version).toBeUndefined();
+    });
+  });
+
+  describe('getDefaultApplianceSymbol', () => {
+    it('should return the guest symbols based on the template type', () => {
+      expect(getDefaultApplianceSymbol('guest', 'qemu')).toBe(':/symbols/qemu_guest.svg');
+      expect(getDefaultApplianceSymbol('guest', 'docker')).toBe(':/symbols/docker_guest.svg');
+    });
+
+    it('should map the non-guest categories', () => {
+      expect(getDefaultApplianceSymbol('router', 'qemu')).toBe(':/symbols/router.svg');
+      expect(getDefaultApplianceSymbol('switch', 'qemu')).toBe(':/symbols/ethernet_switch.svg');
+      expect(getDefaultApplianceSymbol('multilayer_switch', 'qemu')).toBe(':/symbols/multilayer_switch.svg');
+      expect(getDefaultApplianceSymbol('firewall', 'qemu')).toBe(':/symbols/firewall.svg');
+    });
+
+    it('should return undefined for an unknown or missing category', () => {
+      expect(getDefaultApplianceSymbol(undefined, 'qemu')).toBeUndefined();
+      expect(getDefaultApplianceSymbol('unknown', 'qemu')).toBeUndefined();
     });
   });
 });

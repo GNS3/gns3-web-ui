@@ -53,6 +53,8 @@ import {
   getVersionSettingProperties,
   buildApplianceMetadata,
   normalizeAppliance,
+  normalizeQemuProperties,
+  getDefaultApplianceSymbol,
 } from '@services/appliance-normalizer';
 import { ControllerService } from '@services/controller.service';
 import { DockerService } from '@services/docker.service';
@@ -1187,22 +1189,28 @@ export class NewTemplateDialogComponent implements OnInit {
     const versionProps = getVersionSettingProperties(appliance, version) || {};
     const qemuProps: any = { ...(appliance.qemu || {}), ...versionProps };
 
-    let qemuTemplate: QemuTemplate = new QemuTemplate();
-    qemuTemplate.ram = qemuProps.ram;
-    qemuTemplate.adapters = qemuProps.adapters;
-    qemuTemplate.adapter_type = qemuProps.adapter_type;
-    qemuTemplate.boot_priority = qemuProps.boot_priority;
-    qemuTemplate.console_type = qemuProps.console_type;
-    qemuTemplate.hda_disk_interface = qemuProps.hda_disk_interface;
-    qemuTemplate.hdb_disk_interface = qemuProps.hdb_disk_interface;
-    qemuTemplate.hdc_disk_interface = qemuProps.hdc_disk_interface;
-    qemuTemplate.hdd_disk_interface = qemuProps.hdd_disk_interface;
-    qemuTemplate.category = version.category || this.getCategory();
+    // Copy every appliance qemu property onto the template instead of
+    // cherry-picking fields: the registry keeps adding template properties
+    // (uefi, tpm, options...) that must reach the template without this
+    // builder having to know each one. Mirrors the server's
+    // appliance_to_template.py (new_template.update(properties));
+    // normalizeQemuProperties converts the appliance-only keys first.
+    const qemuTemplate = Object.assign(new QemuTemplate(), normalizeQemuProperties(qemuProps)) as QemuTemplate;
+
+    // category/usage/symbol resolve from the template properties, then the
+    // version, then the appliance (same fallback chain as the server), with
+    // the multilayer_switch remap and the category-based default symbol
+    const category = qemuProps.category || version.category || appliance.category;
+    qemuTemplate.category = category === 'multilayer_switch' ? 'switch' : category;
+    qemuTemplate.usage = qemuProps.usage || version.usage || appliance.usage;
+    qemuTemplate.symbol =
+      qemuProps.symbol || version.symbol || appliance.symbol || getDefaultApplianceSymbol(category, 'qemu');
+
     qemuTemplate.first_port_name = qemuProps.first_port_name ?? appliance.first_port_name;
     qemuTemplate.port_name_format = qemuProps.port_name_format ?? appliance.port_name_format;
     qemuTemplate.port_segment_size = qemuProps.port_segment_size ?? appliance.port_segment_size;
+    qemuTemplate.custom_adapters = qemuProps.custom_adapters ?? appliance.custom_adapters ?? [];
     qemuTemplate.default_name_format = appliance.default_name_format;
-    qemuTemplate.symbol = version.symbol || appliance.symbol;
     qemuTemplate.tags = appliance.tags || [];
     qemuTemplate.compute_id = 'local';
     qemuTemplate.template_id = uuid();
@@ -1216,9 +1224,6 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.cdrom_interface = qemuProps.cdrom_interface || 'ide';
     qemuTemplate.cdrom2_interface = qemuProps.cdrom2_interface || 'ide';
     qemuTemplate.template_type = 'qemu';
-    qemuTemplate.usage = version.usage || appliance.usage;
-    // v8 template_properties carry `platform`; v1-v6 qemu blocks use `arch`
-    qemuTemplate.platform = qemuProps.platform ?? qemuProps.arch;
     qemuTemplate.netmiko_device_type = qemuProps.netmiko_device_type || appliance.netmiko_device_type || null;
     qemuTemplate.appliance_metadata = buildApplianceMetadata(appliance, version);
     qemuTemplate.name = name;
