@@ -62,7 +62,7 @@
   border-radius: var(--gns3-density-radius-md);
 
   &--warning {
-    --server-settings-accent: var(--mat-sys-tertiary);
+    --server-settings-accent: var(--custom-mat-sys-warning);
   }
 
   &--error {

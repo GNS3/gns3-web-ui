@@ -519,13 +519,13 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
 // ============================================= */
 .confirmation-warning-panel {
   .mat-mdc-dialog-surface {
-    border: 1px solid var(--mat-sys-tertiary-container);
+    border: 1px solid var(--custom-mat-sys-warning-container);
   }
 
   .confirm-button,
   button.mat-mdc-raised-button {
-    background-color: var(--mat-sys-tertiary);
-    color: var(--mat-sys-on-tertiary);
+    background-color: var(--custom-mat-sys-warning);
+    color: var(--custom-mat-sys-on-warning);
   }
 }
 
@@ -804,7 +804,7 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
   }
 
   .add-image-dialog-compatibility-warning {
-    color: var(--mat-sys-error);
+    color: var(--custom-mat-sys-warning);
   }
 
   /* Responsive Design */
