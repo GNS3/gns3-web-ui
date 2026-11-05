@@ -591,6 +591,28 @@ button.new-template-wizard__method-option--selected {
   }
 }
 
+/* Usage notes below the summary list: appliance `usage` field, often
+   multi-line, so preserve line breaks and wrap anywhere. */
+.new-template-wizard__usage {
+  margin-top: var(--gns3-density-space-4);
+}
+
+.new-template-wizard__usage-title {
+  margin: 0 0 4px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.new-template-wizard__usage-text {
+  margin: 0;
+  color: var(--mat-sys-on-surface);
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
 /* Let Material's own mdc-button layout (inline-flex + align-items: center)
    drive the label and the trailing arrow, exactly like the "Next" button, so
    the arrow shares the same vertical centre line as the text. The label stays

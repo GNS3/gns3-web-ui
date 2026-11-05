@@ -1429,6 +1429,52 @@ describe('NewTemplateDialogComponent', () => {
     });
   });
 
+  describe('review summary credentials and usage', () => {
+    it('should expose appliance-level credentials and usage', () => {
+      component.applianceToInstall.set({
+        ...createMockAppliance(),
+        default_username: 'admin',
+        default_password: 'Admin@123',
+      });
+      expect(component.getSummaryDefaultUsername()).toBe('admin');
+      expect(component.getSummaryDefaultPassword()).toBe('Admin@123');
+      expect(component.getSummaryUsage()).toBe('Test usage');
+    });
+
+    it('should let the selected version override appliance-level values', () => {
+      component.applianceToInstall.set({
+        ...createMockAppliance(),
+        default_username: 'admin',
+        default_password: 'appliance-pass',
+        usage: 'appliance usage',
+      });
+      component.selectedVersion.set({
+        name: '2.0',
+        default_username: 'root',
+        default_password: 'version-pass',
+        usage: 'version usage',
+      } as Version);
+      expect(component.getSummaryDefaultUsername()).toBe('root');
+      expect(component.getSummaryDefaultPassword()).toBe('version-pass');
+      expect(component.getSummaryUsage()).toBe('version usage');
+    });
+
+    it('should treat a version-level empty string as unset instead of falling back', () => {
+      component.applianceToInstall.set({
+        ...createMockAppliance(),
+        default_username: 'admin',
+      });
+      component.selectedVersion.set({ name: '2.0', default_username: '' } as Version);
+      expect(component.getSummaryDefaultUsername()).toBe('');
+    });
+
+    it('should return empty strings without a selected appliance', () => {
+      expect(component.getSummaryDefaultUsername()).toBe('');
+      expect(component.getSummaryDefaultPassword()).toBe('');
+      expect(component.getSummaryUsage()).toBe('');
+    });
+  });
+
   describe('template rendering', () => {
     it('shows Appliance info only from step three and opens the selected appliance', () => {
       const appliance = createMockAppliance();
