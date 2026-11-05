@@ -1304,6 +1304,34 @@ export class NewTemplateDialogComponent implements OnInit {
       .join(', ');
   }
 
+  getSummaryDefaultUsername(): string {
+    return this.getSummaryApplianceField('default_username');
+  }
+
+  getSummaryDefaultPassword(): string {
+    return this.getSummaryApplianceField('default_password');
+  }
+
+  getSummaryUsage(): string {
+    return this.getSummaryApplianceField('usage');
+  }
+
+  /**
+   * Credential/usage value for the review summary: the selected version's
+   * value overrides the appliance-level one, mirroring the precedence in
+   * buildApplianceMetadata (appliance-normalizer.ts). Null, undefined and
+   * empty string all count as unset.
+   */
+  private getSummaryApplianceField(field: 'default_username' | 'default_password' | 'usage'): string {
+    const appliance = this.applianceToInstall();
+    if (!appliance) return '';
+    const versionFields = this.selectedVersion() as unknown as { [key: string]: unknown } | null;
+    const applianceFields = appliance as unknown as { [key: string]: unknown };
+    const value = versionFields?.[field] ?? applianceFields[field];
+    if (value === undefined || value === null || value === '') return '';
+    return String(value);
+  }
+
   private computeChecksumMd5(file: File, encode = false, onProgress?: (percent: number) => void): Promise<string> {
     return new Promise((resolve, reject) => {
       const chunkSize = 2097152;

@@ -643,7 +643,25 @@
                   <dd>{{ image }}</dd>
                 </div>
                 }
+                @if (getSummaryDefaultUsername()) {
+                <div>
+                  <dt>Default username</dt>
+                  <dd>{{ getSummaryDefaultUsername() }}</dd>
+                </div>
+                }
+                @if (getSummaryDefaultPassword()) {
+                <div>
+                  <dt>Default password</dt>
+                  <dd>{{ getSummaryDefaultPassword() }}</dd>
+                </div>
+                }
               </dl>
+              @if (getSummaryUsage()) {
+              <div class="new-template-wizard__usage">
+                <h3 class="new-template-wizard__usage-title">Usage</h3>
+                <p class="new-template-wizard__usage-text">{{ getSummaryUsage() }}</p>
+              </div>
+              }
             </section>
             }
           </div>
