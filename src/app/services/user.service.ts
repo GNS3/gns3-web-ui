@@ -12,7 +12,7 @@ export class UserService {
   constructor(private httpController: HttpController) {}
 
   getInformationAboutLoggedUser(controller: Controller) {
-    return this.httpController.get<User>(controller, '/access/users/me/');
+    return this.httpController.get<User>(controller, '/access/users/me');
   }
 
   get(controller: Controller, user_id: string) {

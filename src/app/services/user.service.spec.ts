@@ -64,7 +64,7 @@ describe('UserService', () => {
 
       service.getInformationAboutLoggedUser(mockController);
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users/me/');
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users/me');
     });
 
     it('should return Observable from httpController', () => {
