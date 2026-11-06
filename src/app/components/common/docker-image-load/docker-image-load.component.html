@@ -1,0 +1,60 @@
+<div class="docker-image-load">
+  <input
+    #fileInput
+    type="file"
+    class="docker-image-load__input"
+    accept=".tar,.tar.gz,.tgz"
+    (change)="onFileSelected($event)"
+  />
+  <!-- The trigger stays in place while loading so the toolbar does not reflow.
+       mat-icon must stay a direct child of the button: Material projects it
+       into its own icon slot, which keeps the label vertically centred. -->
+  @if (variant() === 'raised') {
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    class="docker-image-load__button"
+    [disabled]="disabled() || isBusy()"
+    (click)="fileInput.click()"
+  >
+    <mat-icon>upload_file</mat-icon>
+    {{ buttonLabel() }}
+  </button>
+  } @else {
+  <button
+    mat-stroked-button
+    type="button"
+    class="docker-image-load__button"
+    [disabled]="disabled() || isBusy()"
+    (click)="fileInput.click()"
+  >
+    <mat-icon>upload_file</mat-icon>
+    {{ buttonLabel() }}
+  </button>
+  } @if (isBusy()) {
+  <!-- Fixed-width detail panel: the file name is ellipsized so a long archive
+       name cannot stretch the surrounding toolbar. -->
+  <div class="docker-image-load__progress" role="status">
+    <div class="docker-image-load__progress-head">
+      <span class="docker-image-load__name" [title]="loadFileName()">{{ loadFileName() }}</span>
+      <span class="docker-image-load__status">
+        {{ loadState() === 'uploading' ? loadProgress() + '%' : 'Loading into Docker…' }}
+      </span>
+      <button
+        mat-icon-button
+        type="button"
+        class="docker-image-load__cancel"
+        aria-label="Cancel Docker image upload"
+        (click)="cancel()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <mat-progress-bar
+      [mode]="loadState() === 'uploading' ? 'determinate' : 'indeterminate'"
+      [value]="loadProgress()"
+    />
+  </div>
+  }
+</div>

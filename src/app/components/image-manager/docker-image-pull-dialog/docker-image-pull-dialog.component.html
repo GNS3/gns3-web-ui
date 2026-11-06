@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Pull Docker image</h2>
+
+<mat-dialog-content>
+  <p class="docker-image-pull-dialog__hint">
+    Enter the image reference to download from its registry onto the local server.
+  </p>
+  <mat-form-field appearance="outline" class="docker-image-pull-dialog__field" subscriptSizing="dynamic">
+    <mat-label>Image name</mat-label>
+    <input
+      matInput
+      type="text"
+      placeholder="e.g. ubuntu:24.04"
+      autocomplete="off"
+      [value]="imageName()"
+      (input)="imageName.set($event.target.value)"
+      (keyup.enter)="pull()"
+    />
+    <mat-hint>Include a tag when you do not want the default <code>:latest</code>.</mat-hint>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" class="cancel-button" (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" type="button" [disabled]="!imageName().trim()" (click)="pull()">
+    Pull image
+  </button>
+</mat-dialog-actions>

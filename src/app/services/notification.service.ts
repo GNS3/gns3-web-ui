@@ -5,6 +5,7 @@ import { Compute } from '@models/compute';
 import { Project } from '@models/project';
 import { SettingsUpdatedEvent } from '@models/server-settings/server-settings';
 import { ComputeService } from '@services/compute.service';
+import { DockerImageDeletedNotification, DockerImagePullNotification } from '@models/docker/docker-image';
 
 export interface ComputeNotification {
   action: 'compute.created' | 'compute.updated' | 'compute.deleted';
@@ -50,6 +51,13 @@ export class NotificationService {
 
   // Event emitter for server settings notifications
   public serverSettingsNotificationEmitter = new EventEmitter<ServerSettingsNotification>();
+
+  // Event emitter for Docker image pull progress (global stream, filtered by
+  // progress_id at the consumer).
+  public dockerImagePullEmitter = new EventEmitter<DockerImagePullNotification>();
+
+  // Emitted after any client deleted a Docker image, so open sessions refresh.
+  public dockerImageDeletedEmitter = new EventEmitter<DockerImageDeletedNotification>();
 
   // Emitted after an unexpected WS reconnect: the notification stream does not
   // replay events missed while disconnected, so consumers resync over HTTP.
@@ -268,6 +276,12 @@ export class NotificationService {
         break;
       case 'settings.updated':
         this.serverSettingsNotificationEmitter.emit(message as ServerSettingsNotification);
+        break;
+      case 'docker.image.pull':
+        this.dockerImagePullEmitter.emit(message as DockerImagePullNotification);
+        break;
+      case 'docker.image.deleted':
+        this.dockerImageDeletedEmitter.emit(message as DockerImageDeletedNotification);
         break;
     }
   }

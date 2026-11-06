@@ -20,6 +20,36 @@
           <mat-icon>add</mat-icon>
           Add Image
         </button>
+        <button
+          mat-raised-button
+          class="image-manager__button"
+          color="primary"
+          (click)="openPullDockerImageDialog()"
+          [disabled]="dockerPull.isPulling() || !controller"
+        >
+          <!-- Keep mat-icon as a direct child: Material projects it into its own
+               icon slot. Inside @if it falls into the label and the text drops
+               to the button's bottom edge. -->
+          <mat-icon [class.image-manager__button-icon--spinning]="dockerPull.isPulling()">cloud_download</mat-icon>
+          {{ dockerPull.isPulling() ? 'Pulling…' : 'Pull Docker Image' }}
+        </button>
+        <input
+          #dockerLoadInput
+          type="file"
+          class="image-manager__docker-load-input"
+          accept=".tar,.tar.gz,.tgz"
+          (change)="onDockerLoadFileSelected($event)"
+        />
+        <button
+          mat-raised-button
+          class="image-manager__button"
+          color="primary"
+          [disabled]="dockerLoad.isBusy() || !controller"
+          (click)="dockerLoadInput.click()"
+        >
+          <mat-icon>upload_file</mat-icon>
+          {{ dockerLoad.buttonLabel() }}
+        </button>
         <button mat-raised-button class="image-manager__button" color="primary" (click)="installAllImages()">
           <mat-icon>done_all</mat-icon>
           Install Images
@@ -30,6 +60,59 @@
         </button>
       </div>
     </header>
+
+    @if (dockerPull.isPulling() || dockerLoad.isBusy()) {
+    <!-- Progress gets its own row under the actions so long image names cannot
+         stretch the button row. Registry pulls report per-layer progress, tar
+         uploads report byte progress followed by the daemon's load phase. -->
+    <div class="image-manager__docker-jobs">
+      @if (dockerPull.isPulling()) {
+      <div class="image-manager__docker-job" role="status">
+        <div class="image-manager__docker-job-head">
+          <mat-icon class="image-manager__docker-job-icon">cloud_download</mat-icon>
+          <span class="image-manager__docker-job-name" [title]="dockerPull.imageName()">{{
+            dockerPull.imageName()
+          }}</span>
+          <span class="image-manager__docker-job-status">{{ dockerPull.statusLabel() }}</span>
+        </div>
+        <mat-progress-bar
+          [mode]="dockerPull.progressPercent() === null ? 'indeterminate' : 'determinate'"
+          [value]="dockerPull.progressPercent() ?? 0"
+        />
+        @if (dockerPull.message()) {
+        <span class="image-manager__docker-job-message" [title]="dockerPull.message()">{{
+          dockerPull.message()
+        }}</span>
+        }
+      </div>
+      } @if (dockerLoad.isBusy()) {
+      <div class="image-manager__docker-job" role="status">
+        <div class="image-manager__docker-job-head">
+          <mat-icon class="image-manager__docker-job-icon">upload_file</mat-icon>
+          <span class="image-manager__docker-job-name" [title]="dockerLoad.loadFileName()">{{
+            dockerLoad.loadFileName()
+          }}</span>
+          <span class="image-manager__docker-job-status">
+            {{ dockerLoad.loadState() === 'uploading' ? dockerLoad.loadProgress() + '%' : 'Loading into Docker…' }}
+          </span>
+          <button
+            mat-icon-button
+            type="button"
+            class="image-manager__docker-job-cancel"
+            aria-label="Cancel Docker image upload"
+            (click)="dockerLoad.cancel()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <mat-progress-bar
+          [mode]="dockerLoad.loadState() === 'uploading' ? 'determinate' : 'indeterminate'"
+          [value]="dockerLoad.loadProgress()"
+        />
+      </div>
+      }
+    </div>
+    }
 
     <div class="image-manager__toolbar">
       <form class="image-manager__search-form">
@@ -114,7 +197,7 @@
               <mat-checkbox
                 (click)="onRowCheckboxClick($event, row)"
                 [checked]="isRowSelected(row)"
-                [disabled]="!isPersistedRow(row)"
+                [disabled]="!isSelectableRow(row)"
                 [attr.aria-label]="'Select ' + row.filename"
               />
             </mat-cell>
@@ -213,6 +296,16 @@
                 >
                   <mat-icon>delete</mat-icon>
                 </button>
+                } @else if (isDockerRow(row)) {
+                <button
+                  mat-icon-button
+                  class="image-manager__action-button image-manager__action-button--delete"
+                  (click)="$event.stopPropagation(); deleteDockerImage(row)"
+                  matTooltip="Delete Docker image"
+                  [attr.aria-label]="'Delete Docker image ' + row.filename"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
                 } @else if (row.uploadStatus === 'uploading' || row.uploadStatus === 'queued') {
                 <button
                   mat-icon-button
@@ -231,9 +324,7 @@
           <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" />
           <mat-row
             *matRowDef="let row; columns: displayedColumns"
-            [class.image-manager__row--selected]="
-              (selectedImage()?.tempId || selectedImage()?.path) === (row.tempId || row.path)
-            "
+            [class.image-manager__row--selected]="isDetailsRow(row)"
             [class.image-manager__row-highlight]="isHighlighted(row)"
             (click)="selectImage(row)"
           />
@@ -262,9 +353,7 @@
         @for (row of paginatedRows(); track trackByRow($index, row)) {
         <article
           class="image-manager__card"
-          [class.image-manager__card--selected]="
-            (selectedImage()?.tempId || selectedImage()?.path) === (row.tempId || row.path)
-          "
+          [class.image-manager__card--selected]="isDetailsRow(row)"
           [class.image-manager__row-highlight]="isHighlighted(row)"
           (click)="selectImage(row)"
         >
@@ -272,7 +361,7 @@
             <div class="image-manager__card-icon">
               <mat-icon>{{ imageTypeIcon(row) }}</mat-icon>
             </div>
-            @if (isPersistedRow(row)) {
+            @if (isSelectableRow(row)) {
             <mat-checkbox
               (click)="onRowCheckboxClick($event, row)"
               [checked]="isRowSelected(row)"
@@ -328,6 +417,16 @@
               (click)="$event.stopPropagation(); deleteFile(row.path)"
               matTooltip="Delete image"
               [attr.aria-label]="'Delete ' + row.filename"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+            } @else if (isDockerRow(row)) {
+            <button
+              mat-icon-button
+              class="image-manager__action-button image-manager__action-button--delete"
+              (click)="$event.stopPropagation(); deleteDockerImage(row)"
+              matTooltip="Delete Docker image"
+              [attr.aria-label]="'Delete Docker image ' + row.filename"
             >
               <mat-icon>delete</mat-icon>
             </button>
@@ -425,6 +524,15 @@
               image.created_at ? (image.created_at | date : dateTimeFormatFull) : '—'
             }}</span>
           </div>
+          @if (isDockerRow(image)) {
+          @if (image.dockerId) {
+          <div class="image-manager__detail-item image-manager__detail-item--stacked">
+            <span class="image-manager__detail-icon"><mat-icon>fingerprint</mat-icon></span>
+            <span class="image-manager__detail-label">Image ID</span>
+            <span class="image-manager__detail-value image-manager__detail-value--mono">{{ image.dockerId }}</span>
+          </div>
+          }
+          } @else {
           <div class="image-manager__detail-item">
             <span class="image-manager__detail-icon"><mat-icon>update</mat-icon></span>
             <span class="image-manager__detail-label">Updated</span>
@@ -451,6 +559,7 @@
               image.path || 'Not available while uploading'
             }}</span>
           </div>
+          }
         </div>
 
         <div class="image-manager__details-actions">
@@ -462,6 +571,15 @@
           >
             <mat-icon>delete</mat-icon>
             Delete Image
+          </button>
+          } @else if (isDockerRow(image)) {
+          <button
+            mat-stroked-button
+            class="image-manager__details-action image-manager__details-action--delete"
+            (click)="deleteDockerImage(image)"
+          >
+            <mat-icon>delete</mat-icon>
+            Delete Docker Image
           </button>
           } @else if (image.uploadStatus === 'uploading' || image.uploadStatus === 'queued') {
           <button

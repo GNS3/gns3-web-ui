@@ -42,6 +42,7 @@ import { ProgressService } from '../../../common/progress/progress.service';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { Appliance, Image, Images, Version } from '@models/appliance';
 import { Controller } from '@models/controller';
+import { DockerImage } from '@models/docker/docker-image';
 import { qemuImagePath } from '@models/qemu/qemu-image';
 import { Template } from '@models/template';
 import { DockerTemplate } from '@models/templates/docker-template';
@@ -57,6 +58,7 @@ import {
   getDefaultApplianceSymbol,
 } from '@services/appliance-normalizer';
 import { ControllerService } from '@services/controller.service';
+import { DockerImagePullService } from '@services/docker-image-pull.service';
 import { DockerService } from '@services/docker.service';
 import { IosService } from '@services/ios.service';
 import { IouService } from '@services/iou.service';
@@ -64,6 +66,7 @@ import { QemuService } from '@services/qemu.service';
 import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
 import { ApplianceInfoDialogComponent } from './appliance-info-dialog/appliance-info-dialog.component';
+import { DockerImageLoadComponent } from '@components/common/docker-image-load/docker-image-load.component';
 import { UploadServiceService } from '../../../common/uploading-processbar/upload-service.service';
 import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
 import { templateNameAsyncValidator } from '../../../validators/template-name-async-validator';
@@ -88,7 +91,7 @@ const IMAGE_SLOTS: (keyof Images)[] = [
   selector: 'app-new-template-dialog',
   templateUrl: './new-template-dialog.component.html',
   styleUrls: ['./new-template-dialog.component.scss'],
-  providers: [ProjectNameValidator],
+  providers: [ProjectNameValidator, DockerImagePullService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -107,6 +110,7 @@ const IMAGE_SLOTS: (keyof Images)[] = [
     MatTooltipModule,
     MatCheckboxModule,
     FileUploadModule,
+    DockerImageLoadComponent,
   ],
 })
 export class NewTemplateDialogComponent implements OnInit {
@@ -195,6 +199,13 @@ export class NewTemplateDialogComponent implements OnInit {
   // ------------------------------------------------------------------
   templateNameControl: UntypedFormControl;
   readonly nameValid = signal(false);
+
+  // ------------------------------------------------------------------
+  // Docker image availability (docker appliances have no files step)
+  // ------------------------------------------------------------------
+  readonly dockerImageStatus = signal<'unknown' | 'checking' | 'present' | 'missing'>('unknown');
+  /** Registry pull progress, fed by the global `docker.image.pull` stream. */
+  readonly dockerPull = inject(DockerImagePullService);
 
   readonly requiresImages = computed(() => {
     const appliance = this.applianceToInstall();
@@ -296,6 +307,9 @@ export class NewTemplateDialogComponent implements OnInit {
 
   ngOnInit() {
     this.setupUploaders();
+
+    // Re-check availability once a registry pull completes.
+    this.dockerPull.completed.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.checkDockerImage());
 
     // The wizard is now a routed page. When no controller was provided as an
     // input (e.g. directly routed), resolve it from the URL before loading the
@@ -414,6 +428,11 @@ export class NewTemplateDialogComponent implements OnInit {
     if (this.requiresImages() && event.selectedIndex === 2) {
       this.refreshImages();
     }
+    // Docker appliances skip the files step, so their image is only checked
+    // when the review step is reached.
+    if (this.applianceToInstall()?.docker && event.selectedIndex === this.lastStepIndex()) {
+      this.checkDockerImage();
+    }
   }
 
   setAction(action: CreationAction) {
@@ -422,6 +441,7 @@ export class NewTemplateDialogComponent implements OnInit {
     this.applianceToInstall.set(null);
     this.selectedVersion.set(null);
     this.selectedImage.set(null);
+    this.resetDockerImageState();
     // Selecting a creation method is enough to move to the browse step, so the
     // import page (with its file picker) is shown right away.
     setTimeout(() => {
@@ -435,6 +455,7 @@ export class NewTemplateDialogComponent implements OnInit {
     this.applianceToInstall.set(appliance);
     this.selectedVersion.set(null);
     this.selectedImage.set(null);
+    this.resetDockerImageState();
     if (this.templateNameControl) {
       this.templateNameControl.setValue(appliance.name);
     }
@@ -813,6 +834,53 @@ export class NewTemplateDialogComponent implements OnInit {
             .subscribe(() => this.refreshImagesUntilReady(filename, attempt + 1));
         },
       });
+  }
+
+  // ------------------------------------------------------------------
+  // Docker image availability (docker appliances)
+  // ------------------------------------------------------------------
+
+  /** Check whether the appliance's docker image already exists on the local compute. */
+  checkDockerImage(): void {
+    const imageName = this.applianceToInstall()?.docker?.image;
+    if (!imageName) return;
+    this.dockerImageStatus.set('checking');
+    this.cd.markForCheck();
+    this.dockerService.getImagesForCompute(this.controller, 'local').subscribe({
+      next: (images) => {
+        this.dockerImageStatus.set(this.isDockerImagePresent(images, imageName) ? 'present' : 'missing');
+        this.cd.markForCheck();
+      },
+      error: () => {
+        // Keep the install path usable; the section shows manual actions.
+        this.dockerImageStatus.set('unknown');
+        this.cd.markForCheck();
+      },
+    });
+  }
+
+  private isDockerImagePresent(images: DockerImage[], imageName: string): boolean {
+    // An untagged docker reference resolves to :latest; a registry port
+    // ("host:5000/name") must not be mistaken for a tag.
+    const lastSegment = imageName.split('/').pop() ?? '';
+    const normalized = lastSegment.includes(':') ? imageName : `${imageName}:latest`;
+    return images.some((image) => image.image === imageName || image.image === normalized);
+  }
+
+  /** Pull the appliance's docker image from its registry onto the local compute. */
+  pullDockerImage(): void {
+    const imageName = this.applianceToInstall()?.docker?.image;
+    if (!imageName) return;
+    this.dockerPull.start(this.controller, imageName, 'local');
+  }
+
+  /** Re-check after the shared load component finished installing an archive. */
+  onDockerImageLoaded(): void {
+    this.checkDockerImage();
+  }
+
+  private resetDockerImageState(): void {
+    this.dockerImageStatus.set('unknown');
   }
 
   importImage(event, imageName) {

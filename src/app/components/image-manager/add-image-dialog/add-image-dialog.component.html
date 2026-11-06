@@ -26,9 +26,12 @@
     }
   </ul>
   }
+  <!-- The server detects the image type from the file header (magic bytes),
+       not the extension; .vdi/.vhd are not recognised and are rejected (422).
+       The list below only guides the file picker. -->
   <input
     type="file"
-    accept=".bin,.image,.iol,.qcow2,.vmdk,.raw,.img,.iso,.fd,.vhd,.vdi"
+    accept=".bin,.image,.iol,.qcow2,.vmdk,.raw,.img,.iso,.fd"
     multiple
     #fileInput
     class="add-image-dialog-file-input"

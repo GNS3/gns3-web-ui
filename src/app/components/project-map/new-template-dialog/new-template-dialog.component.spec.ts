@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpEventType } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,12 +7,14 @@ import { of, Subject, throwError } from 'rxjs';
 import { NewTemplateDialogComponent } from './new-template-dialog.component';
 import { Appliance, Image, Version } from '@models/appliance';
 import { Controller } from '@models/controller';
+import { DockerImage } from '@models/docker/docker-image';
 import { Template } from '@models/template';
 import { ApplianceService } from '@services/appliances.service';
 import { ControllerService } from '@services/controller.service';
 import { DockerService } from '@services/docker.service';
 import { IosService } from '@services/ios.service';
 import { IouService } from '@services/iou.service';
+import { NotificationService } from '@services/notification.service';
 import { QemuService } from '@services/qemu.service';
 import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
@@ -270,6 +273,9 @@ describe('NewTemplateDialogComponent', () => {
 
     mockDockerService = {
       addTemplate: vi.fn().mockReturnValue(of(mockTemplate)),
+      getImagesForCompute: vi.fn().mockReturnValue(of([{ image: 'ubuntu:latest' } as DockerImage])),
+      pullImage: vi.fn().mockReturnValue(of(undefined)),
+      loadImage: vi.fn().mockReturnValue(of({ type: HttpEventType.Response, body: '' })),
     };
 
     mockToasterService = {
@@ -315,6 +321,7 @@ describe('NewTemplateDialogComponent', () => {
         { provide: IouService, useValue: mockIouService },
         { provide: DockerService, useValue: mockDockerService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NotificationService, useValue: { dockerImagePullEmitter: new Subject() } },
         { provide: ProgressService, useValue: mockProgressService },
         { provide: UploadServiceService, useValue: mockUploadServiceService },
         { provide: MatSnackBar, useValue: mockSnackBar },
@@ -332,6 +339,80 @@ describe('NewTemplateDialogComponent', () => {
 
   afterEach(() => {
     fixture.destroy();
+  });
+
+  describe('docker image availability', () => {
+    it('marks the image present when the local compute lists it', () => {
+      mockDockerService.getImagesForCompute.mockReturnValue(of([{ image: 'ubuntu:latest' } as DockerImage]));
+      component.applianceToInstall.set(createDockerAppliance());
+
+      component.checkDockerImage();
+
+      expect(mockDockerService.getImagesForCompute).toHaveBeenCalledWith(mockController, 'local');
+      expect(component.dockerImageStatus()).toBe('present');
+    });
+
+    it('marks the image missing when the compute does not list it', () => {
+      mockDockerService.getImagesForCompute.mockReturnValue(of([{ image: 'alpine:latest' } as DockerImage]));
+      component.applianceToInstall.set(createDockerAppliance());
+
+      component.checkDockerImage();
+
+      expect(component.dockerImageStatus()).toBe('missing');
+    });
+
+    it('matches an untagged reference against its :latest tag', () => {
+      mockDockerService.getImagesForCompute.mockReturnValue(of([{ image: 'gns3/iol-xe:latest' } as DockerImage]));
+      component.applianceToInstall.set({
+        ...createDockerAppliance(),
+        docker: { ...createDockerAppliance().docker!, image: 'gns3/iol-xe' },
+      } as Appliance);
+
+      component.checkDockerImage();
+
+      expect(component.dockerImageStatus()).toBe('present');
+    });
+
+    it('keeps the section usable when the availability check fails', () => {
+      mockDockerService.getImagesForCompute.mockReturnValue(throwError(() => ({ message: 'boom' })));
+      component.applianceToInstall.set(createDockerAppliance());
+
+      component.checkDockerImage();
+
+      expect(component.dockerImageStatus()).toBe('unknown');
+    });
+
+    it('pulls the appliance image on the local compute and re-checks', () => {
+      mockDockerService.getImagesForCompute.mockReturnValue(
+        of([{ image: 'ubuntu:latest' } as DockerImage])
+      );
+      mockDockerService.pullImage.mockReturnValue(of(undefined));
+      component.applianceToInstall.set(createDockerAppliance());
+
+      component.pullDockerImage();
+
+      expect(mockDockerService.pullImage).toHaveBeenCalledWith(
+        mockController,
+        'ubuntu:latest',
+        'local',
+        expect.any(String)
+      );
+      expect(mockToasterService.success).toHaveBeenCalledWith("Docker image 'ubuntu:latest' pulled");
+      expect(component.dockerImageStatus()).toBe('present');
+      expect(component.dockerPull.isPulling()).toBe(false);
+    });
+
+    it('re-checks availability after a loaded archive', () => {
+      mockDockerService.getImagesForCompute.mockReturnValue(of([]));
+      component.applianceToInstall.set(createDockerAppliance());
+      component.checkDockerImage();
+      expect(component.dockerImageStatus()).toBe('missing');
+
+      mockDockerService.getImagesForCompute.mockReturnValue(of([{ image: 'ubuntu:latest' } as DockerImage]));
+      component.onDockerImageLoaded();
+
+      expect(component.dockerImageStatus()).toBe('present');
+    });
   });
 
   describe('custom files confirmation', () => {

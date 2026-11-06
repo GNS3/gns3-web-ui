@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { HttpEventType } from '@angular/common/http';
 import { DockerService } from './docker.service';
 import { HttpController } from './http-controller.service';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { Controller } from '@models/controller';
 import { DockerTemplate } from '@models/templates/docker-template';
 
@@ -23,6 +24,7 @@ describe('DockerService', () => {
       post: vi.fn(),
       put: vi.fn(),
       delete: vi.fn(),
+      postFile: vi.fn(),
     };
 
     mockController = {
@@ -125,6 +127,58 @@ describe('DockerService', () => {
         mockController,
         '/computes/remote-compute/docker/images/pull',
         { image: 'nginx:latest' }
+      );
+    });
+
+    it('should forward the progress id for notification-stream events', () => {
+      mockHttpController.post.mockReturnValue(of(undefined));
+
+      service.pullImage(mockController, 'nginx:latest', 'local', 'pull-123');
+
+      expect(mockHttpController.post).toHaveBeenCalledWith(
+        mockController,
+        '/computes/local/docker/images/pull?progress_id=pull-123',
+        { image: 'nginx:latest' }
+      );
+    });
+  });
+
+  describe('loadImage', () => {
+    it('should stream the archive to the compute load endpoint', () => {
+      mockHttpController.postFile.mockReturnValue(of({ type: HttpEventType.Response, body: '' }));
+
+      const file = new File(['tar-bytes'], 'iol-xe.tar.gz');
+      const result = service.loadImage(mockController, 'remote-compute', file);
+
+      expect(mockHttpController.postFile).toHaveBeenCalledWith(
+        mockController,
+        '/computes/remote-compute/docker/images/load',
+        file
+      );
+      expect(result).toBeInstanceOf(Observable);
+    });
+  });
+
+  describe('deleteImage', () => {
+    it('should delete by encoded image reference without force by default', () => {
+      mockHttpController.delete.mockReturnValue(of(undefined));
+
+      service.deleteImage(mockController, 'local', 'ios-xr/xrd-control-plane:24.4.1');
+
+      expect(mockHttpController.delete).toHaveBeenCalledWith(
+        mockController,
+        '/computes/local/docker/images/ios-xr%2Fxrd-control-plane%3A24.4.1?force=false'
+      );
+    });
+
+    it('should forward the force flag', () => {
+      mockHttpController.delete.mockReturnValue(of(undefined));
+
+      service.deleteImage(mockController, 'local', 'ubuntu:latest', true);
+
+      expect(mockHttpController.delete).toHaveBeenCalledWith(
+        mockController,
+        '/computes/local/docker/images/ubuntu%3Alatest?force=true'
       );
     });
   });

@@ -252,6 +252,42 @@ describe('NotificationService', () => {
       expect(emitSpy).toHaveBeenCalledWith(message);
     });
 
+    it('should emit docker.image.pull progress notifications', () => {
+      const emitSpy = vi.spyOn(service.dockerImagePullEmitter, 'emit');
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
+
+      const message = {
+        action: 'docker.image.pull',
+        event: {
+          compute_id: 'local',
+          progress_id: 'pull-1',
+          image: 'debian',
+          state: 'downloading',
+          layers_total: 2,
+          layers_done: 1,
+          message: 'Downloading [==>   ] 40/100',
+        },
+      };
+      ws.onmessage?.({ data: JSON.stringify(message) });
+
+      expect(emitSpy).toHaveBeenCalledWith(message);
+    });
+
+    it('should emit docker.image.deleted notifications', () => {
+      const emitSpy = vi.spyOn(service.dockerImageDeletedEmitter, 'emit');
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
+
+      const message = {
+        action: 'docker.image.deleted',
+        event: { compute_id: 'local', image: 'debian:latest' },
+      };
+      ws.onmessage?.({ data: JSON.stringify(message) });
+
+      expect(emitSpy).toHaveBeenCalledWith(message);
+    });
+
     it('should ignore unknown actions', () => {
       const emitSpy = vi.spyOn(service.computeNotificationEmitter, 'emit');
       service.connectToComputeNotifications(mockController);
