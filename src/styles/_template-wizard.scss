@@ -199,7 +199,10 @@
   width: 100%;
   min-width: 0;
   padding: 24px;
-  overflow: visible;
+  /* Deliberately keep Material's default overflow clipping here: the stepper's
+     built-in step-content transition slides the incoming panel in from
+     translateX(-100%). Without clipping, that panel renders on top of the
+     step rail while sliding instead of appearing inside the content area. */
 }
 
 .template-wizard__stepper .mat-horizontal-stepper-content-current {
