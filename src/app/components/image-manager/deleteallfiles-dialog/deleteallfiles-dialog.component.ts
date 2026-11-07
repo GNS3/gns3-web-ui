@@ -4,8 +4,9 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ImageManagerService } from '@services/image-manager.service';
+import { DockerService } from '@services/docker.service';
 import { forkJoin, of, Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -17,6 +18,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class DeleteAllImageFilesDialogComponent implements OnInit {
   private imageService = inject(ImageManagerService);
+  private dockerService = inject(DockerService);
   private cd = inject(ChangeDetectorRef);
 
   isDelete: boolean = true;
@@ -42,9 +44,21 @@ export class DeleteAllImageFilesDialogComponent implements OnInit {
 
   deleteFile() {
     // each call resolves to null on success (204 No Content) or to an error object
-    const calls: Observable<any>[] = this.deleteData.deleteFilesPaths.map((pathElement) =>
-      this.imageService.deleteFile(this.deleteData.controller, pathElement.filename).pipe(catchError((error) => of(error)))
-    );
+    const calls: Observable<any>[] = this.deleteData.deleteFilesPaths.map((row) => {
+      if (row?.rowType === 'docker' && row.dockerImage) {
+        // Docker images are deleted from the daemon. A 409 means a container
+        // still uses the image: keep it and report the server message.
+        return this.dockerService
+          .deleteImage(this.deleteData.controller, this.deleteData.computeId ?? 'local', row.dockerImage, false)
+          .pipe(
+            map(() => null),
+            catchError((error) => of(error))
+          );
+      }
+      return this.imageService
+        .deleteFile(this.deleteData.controller, row.filename)
+        .pipe(catchError((error) => of(error)));
+    });
     forkJoin(calls).subscribe({
       next: (responses) => {
         // A successful DELETE returns 204 No Content (null body). Failed requests emit an

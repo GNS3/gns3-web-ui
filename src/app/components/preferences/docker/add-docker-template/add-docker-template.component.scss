@@ -106,6 +106,13 @@
   align-self: flex-start;
   margin-top: calc((var(--gns3-density-form-field-height) - var(--gns3-density-control-height-sm)) / 2);
   white-space: nowrap;
+
+  // The spinner sits in the button's label slot, where its default
+  // display:block would push the "Pulling…" text onto a second line.
+  .mat-mdc-progress-spinner {
+    display: inline-flex;
+    vertical-align: middle;
+  }
 }
 
 /* =============================================

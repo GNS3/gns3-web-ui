@@ -4,15 +4,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog.component';
 import { ImageManagerService } from '@services/image-manager.service';
+import { DockerService } from '@services/docker.service';
 import { ControllerError } from '@services/http-controller.service';
 import { ChangeDetectorRef } from '@angular/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('DeleteAllImageFilesDialogComponent', () => {
   let component: DeleteAllImageFilesDialogComponent;
   let fixture: ComponentFixture<DeleteAllImageFilesDialogComponent>;
   let mockImageManagerService: any;
+  let mockDockerService: any;
   let mockDialogRef: any;
   let mockChangeDetectorRef: any;
 
@@ -29,6 +31,10 @@ describe('DeleteAllImageFilesDialogComponent', () => {
       deleteFile: vi.fn(),
     };
 
+    mockDockerService = {
+      deleteImage: vi.fn(),
+    };
+
     mockDialogRef = {
       close: vi.fn(),
     };
@@ -41,6 +47,7 @@ describe('DeleteAllImageFilesDialogComponent', () => {
       imports: [DeleteAllImageFilesDialogComponent, MatDialogModule, MatButtonModule, MatProgressSpinnerModule],
       providers: [
         { provide: ImageManagerService, useValue: mockImageManagerService },
+        { provide: DockerService, useValue: mockDockerService },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: mockDeleteData },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
@@ -219,6 +226,45 @@ describe('DeleteAllImageFilesDialogComponent', () => {
       closeButton.click();
       fixture.detectChanges();
       expect(mockDialogRef.close).toHaveBeenCalledWith(false);
+    });
+  });
+
+  describe('deleteFile() - docker images', () => {
+    it('deletes docker rows through the daemon and file rows through the image service', () => {
+      mockImageManagerService.deleteFile.mockReturnValue(of(null));
+      mockDockerService.deleteImage.mockReturnValue(of(undefined));
+      component.deleteData.computeId = 'local';
+      component.deleteData.deleteFilesPaths = [
+        { rowType: 'docker', dockerImage: 'debian:latest', filename: 'debian:latest' },
+        { rowType: 'image', filename: 'image1.img', path: '/images/QEMU/image1.img' },
+      ];
+
+      component.deleteFile();
+      fixture.detectChanges();
+
+      expect(mockDockerService.deleteImage).toHaveBeenCalledWith(
+        mockDeleteData.controller,
+        'local',
+        'debian:latest',
+        false
+      );
+      expect(mockImageManagerService.deleteFile).toHaveBeenCalledWith(mockDeleteData.controller, 'image1.img');
+      expect(component.deletedCount).toBe(2);
+      expect(component.failedMessages).toEqual([]);
+    });
+
+    it('keeps an image used by a container and reports the daemon message', () => {
+      const conflict = new ControllerError('image is being used by a container');
+      mockDockerService.deleteImage.mockReturnValue(throwError(() => conflict));
+      component.deleteData.deleteFilesPaths = [
+        { rowType: 'docker', dockerImage: 'debian:latest', filename: 'debian:latest' },
+      ];
+
+      component.deleteFile();
+      fixture.detectChanges();
+
+      expect(component.deletedCount).toBe(0);
+      expect(component.failedMessages).toEqual(['image is being used by a container']);
     });
   });
 

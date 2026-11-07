@@ -19,20 +19,27 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
+import { DockerImageLoadService } from '@components/common/docker-image-load/docker-image-load.service';
+import { DockerImagePullService } from '@services/docker-image-pull.service';
 import { Controller } from '@models/controller';
+import { DockerImage } from '@models/docker/docker-image';
 import { Image, ImageSyncJob } from '@models/images';
 import { ControllerService } from '@services/controller.service';
+import { DockerService } from '@services/docker.service';
 import { ImageManagerService } from '@services/image-manager.service';
+import { NotificationService } from '@services/notification.service';
 import { ImageUploadEvent, ImageUploadSessionService } from '@services/image-upload-session.service';
 import { ToasterService } from '@services/toaster.service';
 import { Observable, Subscription, timer, switchMap, exhaustMap, takeWhile, finalize } from 'rxjs';
 import { AddImageDialogComponent } from './add-image-dialog/add-image-dialog.component';
+import { DockerImagePullDialogComponent } from './docker-image-pull-dialog/docker-image-pull-dialog.component';
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog/deleteallfiles-dialog.component';
 import { ImageTableRow } from './image-database-file';
 
@@ -58,7 +65,9 @@ type ImageSortDirection = 'asc' | 'desc' | '';
     MatCheckboxModule,
     MatProgressBarModule,
     MatTooltipModule,
+    MatProgressSpinnerModule,
   ],
+  providers: [DockerImageLoadService, DockerImagePullService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageManagerComponent implements OnInit, OnDestroy {
@@ -74,6 +83,18 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   readonly pageSize = signal(25);
   readonly rows = signal<ImageTableRow[]>([]);
   readonly syncing = signal(false);
+
+  // Docker images live on the compute's Docker daemon, not in the image
+  // directory, but they are merged into the same table as file images so
+  // search, the type filter and bulk selection work across all types.
+  readonly dockerImages = signal<DockerImage[]>([]);
+  /** Registry pull progress, fed by the global `docker.image.pull` stream. */
+  readonly dockerPull = inject(DockerImagePullService);
+  /** Tar upload state; the progress row lives under the toolbar row. */
+  readonly dockerLoad = inject(DockerImageLoadService);
+  private dockerLoadSubscription?: Subscription;
+  private dockerPullSubscription?: Subscription;
+  private dockerDeletedSubscription?: Subscription;
   readonly pageSizeOptions = [5, 10, 25, 50, 100];
   readonly displayedColumns = ['select', 'filename', 'status', 'image_type', 'image_size', 'created_at', 'actions'];
   readonly dateTimeFormatShort = 'yyyy-MM-dd HH:mm';
@@ -129,6 +150,13 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   });
 
   selectedPaths = new Set<string>();
+  /**
+   * Bumped on every selection change. Checkbox bindings live inside Material
+   * Table's throttled/OnPush view, so mutating a plain Set does not mark them
+   * dirty in zoneless mode; reading this signal in the selection getters makes
+   * the header and row checkboxes update.
+   */
+  private readonly selectionVersion = signal(0);
   highlightedFilename: string | null = null;
 
   private images: Image[] = [];
@@ -137,11 +165,13 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   private queryParamsSubscription: Subscription;
   private refreshAfterUploadTimer: ReturnType<typeof setTimeout>;
   private highlightTimer: ReturnType<typeof setTimeout>;
-  private lastSelectedPath: string | null = null;
+  private lastSelectedKey: string | null = null;
   private syncSubscription?: Subscription;
   private destroyed = false;
 
   private imageService = inject(ImageManagerService);
+  private dockerService = inject(DockerService);
+  private notificationService = inject(NotificationService);
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private dialog = inject(MatDialog);
@@ -164,12 +194,26 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
       }
     });
 
+    // Refresh the table when a tar archive finished loading on the compute.
+    this.dockerLoadSubscription = this.dockerLoad.imageLoaded.subscribe(() => this.getDockerImages());
+    // Refresh after a registry pull completes.
+    this.dockerPullSubscription = this.dockerPull.completed.subscribe(() => this.getDockerImages());
+    // Another client (or session) may delete an image; the server announces
+    // it on the global stream so every open Image Manager stays in sync.
+    this.dockerDeletedSubscription = this.notificationService.dockerImageDeletedEmitter.subscribe((notification) => {
+      const computeId = notification?.event?.compute_id;
+      if (!computeId || computeId === 'local') {
+        this.getDockerImages();
+      }
+    });
+
     this.controllerService.get(this.controllerId).then(
       (controller: Controller) => {
         if (this.destroyed) return;
         this.controller = controller;
         if (controller.authToken) {
           this.getImages();
+          this.getDockerImages();
           const pendingJob = this.pendingSyncJob();
           if (pendingJob) this.followSync(this.pollSyncJob(pendingJob));
         }
@@ -188,12 +232,148 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
     this.syncSubscription?.unsubscribe();
     this.uploadEventsSubscription?.unsubscribe();
     this.queryParamsSubscription?.unsubscribe();
+    this.dockerLoadSubscription?.unsubscribe();
+    this.dockerPullSubscription?.unsubscribe();
+    this.dockerDeletedSubscription?.unsubscribe();
     if (this.refreshAfterUploadTimer) {
       clearTimeout(this.refreshAfterUploadTimer);
     }
     if (this.highlightTimer) {
       clearTimeout(this.highlightTimer);
     }
+  }
+
+  /** List the Docker images present on the local compute's Docker daemon. */
+  getDockerImages(): void {
+    if (!this.controller) return;
+    this.dockerService.getImagesForCompute(this.controller, 'local').subscribe({
+      next: (images) => {
+        this.dockerImages.set(images || []);
+        this.refreshTableRows();
+        this.cd.markForCheck();
+      },
+      error: () => {
+        // The image page stays usable when the compute has no Docker support.
+        this.dockerImages.set([]);
+        this.refreshTableRows();
+        this.cd.markForCheck();
+      },
+    });
+  }
+
+  /** Start a tar upload from the toolbar's hidden file input. */
+  onDockerLoadFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file || !this.controller) return;
+    this.dockerLoad.start(this.controller, 'local', file);
+  }
+
+  /** Ask for an image reference and pull it onto the local compute. */
+  openPullDockerImageDialog(): void {
+    const dialogRef = this.dialog.open(DockerImagePullDialogComponent, {
+      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'docker-image-pull-dialog-panel'],
+      autoFocus: 'input',
+    });
+    dialogRef.afterClosed().subscribe((image: string | undefined) => {
+      const name = image?.trim();
+      if (!name || !this.controller) return;
+      this.dockerPull.start(this.controller, name, 'local');
+    });
+  }
+
+  /** Remove a Docker image from the local daemon, offering force on a 409. */
+  deleteDockerImage(row: ImageTableRow): void {
+    const image = row?.dockerImage;
+    if (!image || !this.controller) return;
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Delete Docker image?',
+        message: `"${image}" will be removed from the local server.`,
+        note: 'Containers using this image are not deleted.',
+        confirmButtonText: 'Delete image',
+        tone: 'danger',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (!result) {
+        return;
+      }
+      this.removeDockerImage(image, false);
+    });
+  }
+
+  /**
+   * Delete a Docker image. A 409 carries a structured `code` identifying the
+   * conflict; each code is confirmed at most once, so forcing past template
+   * references can still surface the running-container conflict, but a code
+   * repeating after its confirmation is reported instead of looping.
+   */
+  private removeDockerImage(image: string, force: boolean, confirmedCode?: string): void {
+    this.dockerService.deleteImage(this.controller, 'local', image, force).subscribe({
+      next: () => {
+        if (this.selectedImage()?.dockerImage === image) {
+          this.closeDetails();
+        }
+        this.getDockerImages();
+        this.toasterService.success(`Docker image '${image}' deleted`);
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        // HttpController rewrites failures to ControllerError; the parsed
+        // response body ({message, code, details}) stays on
+        // `originalError.error`.
+        const body = err?.originalError?.error ?? err?.error;
+        const status = err?.originalError?.status ?? err?.status;
+        const code = body?.code;
+        if (status === 409 && code && code !== confirmedCode) {
+          this.confirmForceRemoveDockerImage(image, code, body, err?.message);
+          return;
+        }
+        const message = err?.message || body?.message || `Failed to delete Docker image '${image}'`;
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
+  }
+
+  private confirmForceRemoveDockerImage(image: string, code: string, body: any, fallbackMessage?: string): void {
+    const isTemplateConflict = code === 'image_referenced_by_templates';
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel', 'dialog-small-panel'],
+      autoFocus: '.cancel-button',
+      data: isTemplateConflict
+        ? {
+            title: 'Image is used by templates',
+            message: `"${image}" is referenced by templates. Nodes created from these templates cannot start once the image is deleted.`,
+            details: body?.details?.referenced_by_templates?.length
+              ? body.details.referenced_by_templates
+              : undefined,
+            note: 'Deleting the image does not delete the templates.',
+            confirmButtonText: 'Delete anyway',
+            tone: 'warning',
+          }
+        : {
+            title: 'Image is in use',
+            // compute_conflict messages are already human readable (node + project).
+            message: body?.message || fallbackMessage || `"${image}" is still in use.`,
+            note: 'Force removal may break the node that uses this image.',
+            confirmButtonText: 'Force remove',
+            tone: 'warning',
+          },
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (!result) {
+        return;
+      }
+      this.removeDockerImage(image, true, code);
+    });
   }
 
   getImages(): void {
@@ -350,12 +530,26 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
     return row?.rowType === 'image';
   }
 
+  isDockerRow(row: ImageTableRow): boolean {
+    return row?.rowType === 'docker';
+  }
+
+  /** Checkbox-selectable rows: file images and Docker images (not uploads). */
+  isSelectableRow(row: ImageTableRow): boolean {
+    return row?.rowType === 'image' || row?.rowType === 'docker';
+  }
+
   hasUploadState(row: ImageTableRow): boolean {
     return row?.rowType === 'upload';
   }
 
   formatImageSize(row: ImageTableRow): string {
-    const size = Number(row.image_size || 0);
+    // Pre-3.1 computes do not report Docker image sizes, so "unknown" must not
+    // be rendered as a real 0 MB.
+    if (row.image_size == null) {
+      return '—';
+    }
+    const size = Number(row.image_size);
     if (!size) {
       return '0 MB';
     }
@@ -431,34 +625,47 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
 
-    if (!this.isPersistedRow(row)) {
+    if (!this.isSelectableRow(row)) {
       return;
     }
 
+    const key = this.rowKey(row);
     const shouldSelect = !this.isRowSelected(row);
-    if (event.shiftKey && this.lastSelectedPath) {
-      const selectedRange = this.selectRowRange(this.lastSelectedPath, row.path, shouldSelect);
+    if (event.shiftKey && this.lastSelectedKey) {
+      const selectedRange = this.selectRowRange(this.lastSelectedKey, key, shouldSelect);
       if (!selectedRange) {
         this.toggleRowSelection(row, shouldSelect);
       }
     } else {
       this.toggleRowSelection(row, shouldSelect);
     }
-    this.lastSelectedPath = row.path || null;
+    this.lastSelectedKey = key || null;
   }
 
   trackByRow(index: number, row: ImageTableRow): string {
-    return row.tempId || row.path || `${row.filename}-${index}`;
+    // MatTable calls the trackBy function detached from the component, so this
+    // method must not rely on `this`. Inline the row key here.
+    return (
+      row?.tempId ||
+      row?.path ||
+      (row?.dockerImage ? `docker:${row.dockerImage}` : '') ||
+      `${row?.filename}-${index}`
+    );
+  }
+
+  private rowKey(row: ImageTableRow): string {
+    return row.tempId || row.path || (row.dockerImage ? `docker:${row.dockerImage}` : '');
   }
 
   isAllSelected(): boolean {
-    const selectablePaths = new Set(
+    this.selectionVersion();
+    const selectableKeys = new Set(
       this.getSelectableRows()
-        .map((row) => row.path)
-        .filter((path): path is string => !!path)
+        .map((row) => this.rowKey(row))
+        .filter((key): key is string => !!key)
     );
-    const numSelected = Array.from(this.selectedPaths).filter((path) => selectablePaths.has(path)).length;
-    return selectablePaths.size > 0 && numSelected === selectablePaths.size;
+    const numSelected = Array.from(this.selectedPaths).filter((key) => selectableKeys.has(key)).length;
+    return selectableKeys.size > 0 && numSelected === selectableKeys.size;
   }
 
   selectAllImages(): void {
@@ -467,22 +674,31 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   unChecked(): void {
     this.selectedPaths.clear();
-    this.lastSelectedPath = null;
+    this.lastSelectedKey = null;
+    this.touchSelection();
   }
 
   allChecked(): void {
     this.getSelectableRows().forEach((row) => {
-      if (row.path) {
-        this.selectedPaths.add(row.path);
+      const key = this.rowKey(row);
+      if (key) {
+        this.selectedPaths.add(key);
       }
     });
+    this.touchSelection();
+  }
+
+  private touchSelection(): void {
+    this.selectionVersion.update((version) => version + 1);
   }
 
   hasSelection(): boolean {
+    this.selectionVersion();
     return this.selectedPaths.size > 0;
   }
 
   selectedCount(): number {
+    this.selectionVersion();
     return this.selectedPaths.size;
   }
 
@@ -492,7 +708,9 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
       autoFocus: '.cancel-button',
       data: {
         title: 'Install all images?',
-        message: 'GNS3 will attempt to create templates automatically from the available image checksums.',
+        message:
+          'GNS3 will attempt to create templates automatically from the available image checksums. ' +
+          'Docker images are not included in this automatic installation; use Pull Docker Image or Load from tar file instead.',
         confirmButtonText: 'Install images',
         tone: 'neutral',
         icon: 'install_desktop',
@@ -522,7 +740,9 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
       autoFocus: '.cancel-button',
       data: {
         title: 'Prune unused images?',
-        message: 'All images that are not used by a template will be permanently deleted.',
+        message:
+          'All image files that are not used by a template will be permanently deleted. ' +
+          'Docker images are not affected, because they are managed separately by the Docker daemon.',
         note: 'This action cannot be undone.',
         confirmButtonText: 'Prune images',
         tone: 'danger',
@@ -572,7 +792,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
         title: 'Delete selected images?',
         message: `${images.length} selected ${images.length === 1 ? 'image' : 'images'} will be permanently deleted.`,
         details: images.map((image) => image.filename),
-        note: 'Images used by templates will be reported and kept.',
+        note: 'Images used by templates or running containers will be reported and kept.',
         confirmButtonText: images.length === 1 ? 'Delete image' : 'Delete images',
         tone: 'danger',
       },
@@ -598,6 +818,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
       disableClose: true,
       data: {
         controller: this.controller,
+        computeId: 'local',
         deleteFilesPaths: images,
         autoStart: true,
       },
@@ -606,6 +827,8 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe((allFilesDeleted: boolean) => {
       this.unChecked();
       this.getImages();
+      // Selected rows may include Docker images, which live on the daemon.
+      this.getDockerImages();
       if (allFilesDeleted) {
         this.toasterService.success('All files deleted');
       }
@@ -688,15 +911,27 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
       ...image,
       rowType: 'image' as const,
     }));
+    // Docker images are not files on disk, but they belong in the same table so
+    // search, the type filter and sorting work across every image type.
+    const dockerRows: ImageTableRow[] = this.dockerImages().map((image) => ({
+      rowType: 'docker' as const,
+      filename: image.image,
+      image_type: 'docker',
+      image_size: image.size,
+      created_at: image.created != null ? new Date(Number(image.created) * 1000).toISOString() : undefined,
+      availability: 'available',
+      dockerImage: image.image,
+      dockerId: image.id,
+    }));
     const uploadingRows = Array.from(this.uploadRows.values());
-    const rows = [...uploadingRows, ...persistedRows];
-    this.removeInvalidSelections(persistedRows);
+    const rows = [...uploadingRows, ...persistedRows, ...dockerRows];
+    this.removeInvalidSelections([...persistedRows, ...dockerRows]);
     this.rows.set(rows);
 
     const selected = this.selectedImage();
     if (selected) {
-      const selectedKey = selected.tempId || selected.path;
-      const refreshedSelection = rows.find((row) => (row.tempId || row.path) === selectedKey);
+      const selectedKey = this.rowKey(selected);
+      const refreshedSelection = rows.find((row) => this.rowKey(row) === selectedKey);
       this.selectedImage.set(refreshedSelection || null);
     }
 
@@ -706,15 +941,20 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
     }
   }
 
-  private removeInvalidSelections(persistedRows: ImageTableRow[]): void {
-    const persistedPaths = new Set(persistedRows.map((row) => row.path).filter((path): path is string => !!path));
-    Array.from(this.selectedPaths).forEach((path) => {
-      if (!persistedPaths.has(path)) {
-        this.selectedPaths.delete(path);
+  private removeInvalidSelections(validRows: ImageTableRow[]): void {
+    const validKeys = new Set(validRows.map((row) => this.rowKey(row)).filter((key): key is string => !!key));
+    let changed = false;
+    Array.from(this.selectedPaths).forEach((key) => {
+      if (!validKeys.has(key)) {
+        this.selectedPaths.delete(key);
+        changed = true;
       }
     });
-    if (this.lastSelectedPath && !persistedRows.some((row) => row.path === this.lastSelectedPath)) {
-      this.lastSelectedPath = null;
+    if (changed) {
+      this.touchSelection();
+    }
+    if (this.lastSelectedKey && !validKeys.has(this.lastSelectedKey)) {
+      this.lastSelectedKey = null;
     }
   }
 
@@ -732,17 +972,17 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   }
 
   private getSelectableRows(): ImageTableRow[] {
-    return this.filteredRows().filter((row) => this.isPersistedRow(row));
+    return this.filteredRows().filter((row) => this.isSelectableRow(row));
   }
 
   private getVisibleSelectableRows(): ImageTableRow[] {
-    return this.paginatedRows().filter((row) => this.isPersistedRow(row));
+    return this.paginatedRows().filter((row) => this.isSelectableRow(row));
   }
 
-  private selectRowRange(fromPath: string, toPath: string, shouldSelect: boolean): boolean {
+  private selectRowRange(fromKey: string, toKey: string, shouldSelect: boolean): boolean {
     const visibleRows = this.getVisibleSelectableRows();
-    const fromIndex = visibleRows.findIndex((row) => row.path === fromPath);
-    const toIndex = visibleRows.findIndex((row) => row.path === toPath);
+    const fromIndex = visibleRows.findIndex((row) => this.rowKey(row) === fromKey);
+    const toIndex = visibleRows.findIndex((row) => this.rowKey(row) === toKey);
 
     if (fromIndex < 0 || toIndex < 0) {
       return false;
@@ -763,22 +1003,39 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   }
 
   isRowSelected(row: ImageTableRow): boolean {
-    return !!row?.path && this.selectedPaths.has(row.path);
+    this.selectionVersion();
+    const key = this.rowKey(row);
+    return !!key && this.selectedPaths.has(key);
+  }
+
+  /** Whether this row is the one currently shown in the details panel. */
+  isDetailsRow(row: ImageTableRow): boolean {
+    const selected = this.selectedImage();
+    // Docker rows have no path, so comparing paths would match every docker
+    // row at once (`undefined === undefined`); compare unified row keys.
+    return !!selected && this.rowKey(selected) === this.rowKey(row);
   }
 
   private selectRow(row: ImageTableRow): void {
-    if (row?.path) {
-      this.selectedPaths.add(row.path);
+    const key = this.rowKey(row);
+    if (key) {
+      this.selectedPaths.add(key);
+      this.touchSelection();
     }
   }
 
   private deselectRow(row: ImageTableRow): void {
-    if (row?.path) {
-      this.selectedPaths.delete(row.path);
+    const key = this.rowKey(row);
+    if (key) {
+      this.selectedPaths.delete(key);
+      this.touchSelection();
     }
   }
 
   private getSelectedRows(): ImageTableRow[] {
-    return this.rows().filter((row) => this.isPersistedRow(row) && !!row.path && this.selectedPaths.has(row.path));
+    return this.rows().filter((row) => {
+      const key = this.rowKey(row);
+      return this.isSelectableRow(row) && !!key && this.selectedPaths.has(key);
+    });
   }
 }

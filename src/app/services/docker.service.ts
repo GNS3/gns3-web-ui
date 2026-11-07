@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpEvent } from '@angular/common/http';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { DockerImage } from '@models/docker/docker-image';
@@ -34,10 +35,39 @@ export class DockerService {
     >;
   }
 
-  pullImage(controller: Controller, image: string, computeId: string): Observable<void> {
-    return this.httpController.post<void>(controller, `/computes/${computeId}/docker/images/pull`, {
+  /**
+   * Pull an image on a compute. Pass a `progressId` to receive
+   * `docker.image.pull` events on the global notification stream for this
+   * request; the request itself resolves (204) when the pull finishes, or
+   * fails with 409 when the daemon reports an error.
+   */
+  pullImage(controller: Controller, image: string, computeId: string, progressId?: string): Observable<void> {
+    const query = progressId ? `?progress_id=${encodeURIComponent(progressId)}` : '';
+    return this.httpController.post<void>(controller, `/computes/${computeId}/docker/images/pull${query}`, {
       image,
     }) as Observable<void>;
+  }
+
+  /**
+   * Load a Docker image onto a compute from a `docker save` archive
+   * (plain tar or gzip compressed). The file is streamed as a raw request
+   * body; the request completes (204) only after the compute's Docker
+   * daemon has finished loading, so `UploadProgress` reaching 100% is
+   * followed by a wait for the final response event.
+   */
+  loadImage(controller: Controller, computeId: string, file: File): Observable<HttpEvent<unknown>> {
+    return this.httpController.postFile(controller, `/computes/${computeId}/docker/images/load`, file);
+  }
+
+  /**
+   * Remove a Docker image from a compute's daemon. The daemon refuses with a
+   * 409 when a container still uses the image unless `force` is set.
+   */
+  deleteImage(controller: Controller, computeId: string, image: string, force = false): Observable<void> {
+    return this.httpController.delete<void>(
+      controller,
+      `/computes/${computeId}/docker/images/${encodeURIComponent(image)}?force=${force}`
+    ) as Observable<void>;
   }
 
   addTemplate(controller: Controller, dockerTemplate: any): Observable<any> {

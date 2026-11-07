@@ -111,8 +111,13 @@
                     [disabled]="isPulling() || !filename().trim()"
                     (click)="pullImage()"
                   >
+                    @if (isPulling()) {
+                    <mat-spinner diameter="18"></mat-spinner>
+                    <span>Pulling…</span>
+                    } @else {
                     <mat-icon>cloud_download</mat-icon>
-                    {{ isPulling() ? 'Pulling…' : 'Pull image' }}
+                    <span>Pull image</span>
+                    }
                   </button>
                 </div>
                 }

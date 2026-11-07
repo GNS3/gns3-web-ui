@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpEvent, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from 'environments/environment';
@@ -175,6 +175,34 @@ export class HttpController {
       controller,
       this.http.post(intercepted.url, body, intercepted.options),
       'POST', url, body, options
+    );
+  }
+
+  /**
+   * Upload a file as a raw request body while exposing progress events
+   * (`HttpEventType.UploadProgress` for the byte transfer, `HttpEventType.Response`
+   * when the server replies). Use for endpoints that stream `request` bodies
+   * (e.g. image uploads, `docker images/load`). Endpoints accepting multipart
+   * form data are not supported; wrap the file in `FormData` at the call site
+   * if that is ever needed.
+   */
+  postFile(controller: Controller, url: string, file: Blob, options?: TextOptions): Observable<HttpEvent<unknown>> {
+    const opts = this.getTextOptions(options);
+    opts.reportProgress = true;
+    const intercepted = this.getOptionsForController<TextOptions>(controller, url, opts);
+    this.requestsNotificationEmitter.emit(`POST ${intercepted.url}`);
+
+    const request = new HttpRequest('POST', intercepted.url, file, {
+      // getOptionsForController always leaves headers as a plain record.
+      headers: new HttpHeaders(intercepted.options.headers as { [name: string]: string }),
+      reportProgress: true,
+      responseType: 'text',
+    });
+
+    return this.handleResponse<HttpEvent<unknown>>(
+      controller,
+      this.http.request(request),
+      'POST', url, file, opts
     );
   }
 
@@ -405,6 +433,9 @@ export class HttpController {
       body: body,
       headers: intercepted.options.headers,
       params: intercepted.options.params,
+      // Carry progress reporting through a 401 refresh retry so retried
+      // uploads keep emitting UploadProgress events.
+      reportProgress: intercepted.options.reportProgress === true,
       responseType: intercepted.options.responseType || ('json' as const),
     }) as Observable<T>;
   }

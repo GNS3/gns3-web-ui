@@ -2,8 +2,12 @@ import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ControllerService } from '@services/controller.service';
+import { DockerService } from '@services/docker.service';
+import { DockerImagePullService } from '@services/docker-image-pull.service';
+import { DockerImageLoadService } from '@components/common/docker-image-load/docker-image-load.service';
 import { ImageManagerService } from '@services/image-manager.service';
 import { ImageUploadSessionService } from '@services/image-upload-session.service';
+import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { EMPTY, of, throwError } from 'rxjs';
@@ -37,6 +41,13 @@ describe('Image Manager synchronization', () => {
         { provide: ImageUploadSessionService, useValue: { events$: EMPTY } },
         { provide: Router, useValue: {} },
         { provide: ChangeDetectorRef, useValue: { markForCheck: vi.fn() } },
+        // The spec constructs the component with `new` (no node injector), so
+        // the component-level docker services must come from TestBed instead.
+        // Their own dependencies are mocked below.
+        { provide: DockerService, useValue: { getImagesForCompute: vi.fn().mockReturnValue(of([])) } },
+        { provide: NotificationService, useValue: { dockerImagePullEmitter: EMPTY, dockerImageDeletedEmitter: EMPTY } },
+        DockerImageLoadService,
+        DockerImagePullService,
       ],
     });
     component = TestBed.runInInjectionContext(() => new ImageManagerComponent());

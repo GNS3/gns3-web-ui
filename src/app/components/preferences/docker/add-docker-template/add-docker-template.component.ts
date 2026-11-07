@@ -4,6 +4,7 @@ import { goBackOrNavigate } from '@utils/back-navigation.util';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -34,6 +35,7 @@ import { TemplateInfoFieldsComponent } from '../../common/template-info-fields/t
     NetmikoDeviceTypeSelectComponent,
     MatIconModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
     MatRadioModule,
     MatFormFieldModule,
     MatInputModule,

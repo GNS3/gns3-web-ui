@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { HttpController, ControllerError, ControllerErrorHandler, JsonOptions } from './http-controller.service';
 import { Controller, ControllerProtocol } from '@models/controller';
@@ -28,6 +28,7 @@ describe('HttpController', () => {
       patch: vi.fn(),
       head: vi.fn(),
       options: vi.fn(),
+      request: vi.fn(),
     } as any as HttpClient;
 
     mockErrorHandler = {
@@ -464,6 +465,69 @@ describe('HttpController', () => {
       service.get(mockController, '/test').subscribe({ error: () => {} });
 
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'login']);
+    });
+  });
+
+  describe('postFile', () => {
+    const file = new File(['tar-bytes'], 'image.tar', { type: 'application/x-tar' });
+
+    it('should POST the raw file body with progress reporting and text response type', () => {
+      (mockHttp.request as any).mockReturnValue(of({ type: HttpEventType.Response }));
+
+      service.postFile(mockController, '/computes/local/docker/images/load', file).subscribe();
+
+      expect(mockHttp.request).toHaveBeenCalledTimes(1);
+      const request = (mockHttp.request as any).mock.calls[0][0];
+      expect(request.method).toBe('POST');
+      expect(request.url).toBe(
+        'http://localhost:3080/' + environment.current_version + '/computes/local/docker/images/load'
+      );
+      expect(request.body).toBe(file);
+      expect(request.reportProgress).toBe(true);
+      expect(request.responseType).toBe('text');
+      expect(request.headers.get('Authorization')).toBe('Bearer test-token');
+    });
+
+    it('should emit a notification for the upload', () => {
+      let emitted: string | undefined;
+      service.requestsNotificationEmitter.subscribe((value) => (emitted = value));
+      (mockHttp.request as any).mockReturnValue(of({ type: HttpEventType.Response }));
+
+      service.postFile(mockController, '/images/load', file).subscribe();
+
+      expect(emitted).toBe('POST http://localhost:3080/' + environment.current_version + '/images/load');
+    });
+
+    it('should route non-401 failures through the error handler', () => {
+      const failure = new HttpErrorResponse({ status: 500, error: { message: 'invalid tar' } });
+      (mockHttp.request as any).mockReturnValue(throwError(() => failure));
+
+      let caught: any;
+      service.postFile(mockController, '/images/load', file).subscribe({ error: (err) => (caught = err) });
+
+      expect(mockErrorHandler.handleError).toHaveBeenCalledWith(failure);
+      expect(caught).toBe(failure);
+    });
+
+    it('should retry with progress reporting after a 401 token refresh', () => {
+      localStorage.setItem('refresh_token_1', 'refresh-token');
+      const unauthorized = new HttpErrorResponse({ status: 401, statusText: 'Unauthorized' });
+      (mockHttp.request as any)
+        .mockReturnValueOnce(throwError(() => unauthorized))
+        .mockReturnValue(of({ type: HttpEventType.Response, body: '' }));
+      (mockHttp.post as any).mockReturnValue(of({ access_token: 'new-token' }));
+
+      service.postFile(mockController, '/images/load', file).subscribe();
+
+      expect(mockHttp.request).toHaveBeenCalledTimes(2);
+      const [retryMethod, retryUrl, retryOptions] = (mockHttp.request as any).mock.calls[1];
+      expect(retryMethod).toBe('POST');
+      expect(retryUrl).toBe('http://localhost:3080/' + environment.current_version + '/images/load');
+      expect(retryOptions.reportProgress).toBe(true);
+      expect(retryOptions.body).toBe(file);
+      expect(retryOptions.headers).toMatchObject({ Authorization: 'Bearer new-token' });
+
+      localStorage.removeItem('refresh_token_1');
     });
   });
 

@@ -1,0 +1,60 @@
+@use '../../../../styles/buttons' as buttons;
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--gns3-density-space-3);
+}
+
+/* Match the project's button geometry so this action lines up with the
+   buttons in whichever toolbar or form row it is placed in. */
+button.docker-image-load__button {
+  @include buttons.geometry;
+  /* The label switches to a percentage while busy; keep the width stable so
+     the surrounding toolbar does not shift. */
+  min-inline-size: 180px;
+}
+
+.docker-image-load__input {
+  display: none;
+}
+
+/* Two-phase feedback: byte progress while uploading, indeterminate while the
+   compute's Docker daemon loads the streamed archive. The panel has a fixed
+   footprint so long archive names cannot stretch the toolbar. */
+.docker-image-load__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  inline-size: clamp(220px, 26vw, 320px);
+  flex: 0 1 auto;
+}
+
+.docker-image-load__progress-head {
+  display: flex;
+  align-items: center;
+  gap: var(--gns3-density-space-2);
+  min-inline-size: 0;
+}
+
+.docker-image-load__name {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface);
+}
+
+.docker-image-load__status {
+  flex: 0 0 auto;
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+}
+
+.docker-image-load__cancel {
+  flex: 0 0 auto;
+}

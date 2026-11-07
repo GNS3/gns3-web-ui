@@ -663,6 +663,57 @@
               </div>
               }
             </section>
+
+            @if (appliance.docker && dockerImageStatus() !== 'present') {
+            <section class="template-wizard__section">
+              <h2 class="template-wizard__section-title">Docker image</h2>
+              <div class="new-template-wizard__docker">
+                @if (dockerImageStatus() === 'checking') {
+                <div class="new-template-wizard__docker-status">
+                  <mat-spinner diameter="16"></mat-spinner>
+                  <span>Checking whether the image is on the server…</span>
+                </div>
+                }
+                @if (dockerImageStatus() === 'missing') {
+                <div class="new-template-wizard__docker-status">
+                  <mat-icon class="new-template-wizard__docker-missing">error_outline</mat-icon>
+                  <span>The image is not on the server yet. Nodes will fail to start until it is installed.</span>
+                </div>
+                }
+                @if (dockerImageStatus() !== 'checking') {
+                <div class="new-template-wizard__docker-actions">
+                  <button
+                    mat-stroked-button
+                    type="button"
+                    [disabled]="dockerPull.isPulling()"
+                    (click)="pullDockerImage()"
+                  >
+                    <mat-icon [class.new-template-wizard__pull-icon--spinning]="dockerPull.isPulling()"
+                      >cloud_download</mat-icon
+                    >
+                    {{ dockerPull.isPulling() ? 'Pulling…' : 'Pull from registry' }}
+                  </button>
+                  <app-docker-image-load
+                    [controller]="controller"
+                    [disabled]="dockerPull.isPulling()"
+                    (imageLoaded)="onDockerImageLoaded()"
+                  />
+                </div>
+                @if (dockerPull.isPulling()) {
+                <div class="new-template-wizard__docker-pull" role="status">
+                  <mat-progress-bar
+                    [mode]="dockerPull.progressPercent() === null ? 'indeterminate' : 'determinate'"
+                    [value]="dockerPull.progressPercent() ?? 0"
+                  />
+                  <span class="new-template-wizard__docker-pull-status" [title]="dockerPull.message()">
+                    {{ dockerPull.statusLabel() }}
+                  </span>
+                </div>
+                }
+                }
+              </div>
+            </section>
+            }
             }
           </div>
         </mat-step>
