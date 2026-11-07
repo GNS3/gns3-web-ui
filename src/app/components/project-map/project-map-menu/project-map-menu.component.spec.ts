@@ -6,7 +6,6 @@ import { Subject, of } from 'rxjs';
 import { ProjectMapMenuComponent } from './project-map-menu.component';
 import { ThemeService } from '@services/theme.service';
 import { ProjectService } from '@services/project.service';
-import { NodeService } from '@services/node.service';
 import { DrawingService } from '@services/drawing.service';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { ToolsService } from '@services/tools.service';
@@ -32,7 +31,6 @@ describe('ProjectMapMenuComponent', () => {
   // Mock services
   let mockThemeService: any;
   let mockProjectService: any;
-  let mockNodeService: any;
   let mockDrawingService: any;
   let mockMapSettingsService: any;
   let mockToolsService: any;
@@ -70,10 +68,6 @@ describe('ProjectMapMenuComponent', () => {
       drawings: vi.fn().mockReturnValue(of([])),
       lockAllNodes: vi.fn().mockReturnValue(of({})),
       unLockAllNodes: vi.fn().mockReturnValue(of({})),
-    };
-
-    mockNodeService = {
-      updateNode: vi.fn().mockReturnValue(of({})),
     };
 
     mockDrawingService = {
@@ -188,7 +182,6 @@ describe('ProjectMapMenuComponent', () => {
       providers: [
         { provide: ThemeService, useValue: mockThemeService },
         { provide: ProjectService, useValue: mockProjectService },
-        { provide: NodeService, useValue: mockNodeService },
         { provide: DrawingService, useValue: mockDrawingService },
         { provide: MapSettingsService, useValue: mockMapSettingsService },
         { provide: ToolsService, useValue: mockToolsService },
@@ -262,11 +255,30 @@ describe('ProjectMapMenuComponent', () => {
       expect(mockProjectService.getProjectStatus).toHaveBeenCalled();
     });
 
-    it('should call getAllNodesAndDrawingStatus on init', () => {
+    it('should call getAllNodesAndDrawingStatus when the project input becomes available', () => {
       const getAllNodesAndDrawingStatusSpy = vi.spyOn(component, 'getAllNodesAndDrawingStatus');
-      component.ngOnInit();
+      // New object identity so the input signal notifies its consumers
+      fixture.componentRef.setInput('project', { ...mockProject } as Project);
+      fixture.detectChanges();
 
       expect(getAllNodesAndDrawingStatusSpy).toHaveBeenCalled();
+    });
+
+    it('should sync toolbar lock icon from project status when project becomes available', () => {
+      mockProjectService.getProjectStatus.mockReturnValue(of(true));
+      fixture.componentRef.setInput('project', { ...mockProject } as Project);
+      fixture.detectChanges();
+
+      expect(component.isLocked).toBe(true);
+      expect(component.lock).toBe('lock');
+    });
+
+    it('should not refresh lock status while the project input is an empty shell', () => {
+      const getAllNodesAndDrawingStatusSpy = vi.spyOn(component, 'getAllNodesAndDrawingStatus');
+      fixture.componentRef.setInput('project', {} as Project);
+      fixture.detectChanges();
+
+      expect(getAllNodesAndDrawingStatusSpy).not.toHaveBeenCalled();
     });
 
     it('should subscribe to AI chat panel state', () => {
@@ -547,23 +559,30 @@ describe('ProjectMapMenuComponent', () => {
     it('should fetch nodes and update nodes data source', () => {
       const mockNodes = [{ node_id: 'node1' } as Node];
       mockProjectService.nodes.mockReturnValue(of(mockNodes));
-      mockNodeService.updateNode.mockReturnValue(of(mockNodes[0]));
 
       component.getAllNodesAndDrawingStatus();
 
       expect(mockProjectService.nodes).toHaveBeenCalledWith(mockController, mockProject.project_id);
-      expect(mockNodesDataSource.update).toHaveBeenCalled();
+      expect(mockNodesDataSource.update).toHaveBeenCalledWith(mockNodes[0]);
     });
 
     it('should fetch drawings and update drawings data source', () => {
       const mockDrawings = [{ drawing_id: 'draw1' } as Drawing];
       mockProjectService.drawings.mockReturnValue(of(mockDrawings));
-      mockDrawingService.update.mockReturnValue(of(mockDrawings[0]));
 
       component.getAllNodesAndDrawingStatus();
 
       expect(mockProjectService.drawings).toHaveBeenCalledWith(mockController, mockProject.project_id);
-      expect(mockDrawingsDataSource.update).toHaveBeenCalled();
+      expect(mockDrawingsDataSource.update).toHaveBeenCalledWith(mockDrawings[0]);
+    });
+
+    it('should not write nodes or drawings back via PUT', () => {
+      mockProjectService.nodes.mockReturnValue(of([{ node_id: 'node1' } as Node]));
+      mockProjectService.drawings.mockReturnValue(of([{ drawing_id: 'draw1' } as Drawing]));
+
+      component.getAllNodesAndDrawingStatus();
+
+      expect(mockDrawingService.update).not.toHaveBeenCalled();
     });
   });
 

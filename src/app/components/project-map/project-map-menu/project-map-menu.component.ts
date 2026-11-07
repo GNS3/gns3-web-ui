@@ -6,6 +6,7 @@ import {
   Output,
   EventEmitter,
   ChangeDetectorRef,
+  effect,
   inject,
   input,
 } from '@angular/core';
@@ -17,11 +18,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { DrawingAddedComponent } from '../../drawings-listeners/drawing-added/drawing-added.component';
-import { NodeService } from '@services/node.service';
 import { Subscription } from 'rxjs';
 import * as svg from 'save-svg-as-png';
-import { Drawing } from '../../../cartography/models/drawing';
-import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 import { DrawingService } from '@services/drawing.service';
@@ -62,7 +60,6 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   private dialog = inject(MatDialog);
   private themeService = inject(ThemeService);
   private projectServices = inject(ProjectService);
-  private nodeService = inject(NodeService);
   private nodesDataSource = inject(NodesDataSource);
   private drawingsDataSource = inject(DrawingsDataSource);
   private drawingsEventSource = inject(DrawingsEventSource);
@@ -72,8 +69,6 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   readonly project = input<Project>(undefined);
   readonly controller = input<Controller>(undefined);
   @Output() aiChatOpened = new EventEmitter<void>();
-  private nodes: Node[] = [];
-  private drawing: Drawing[] = [];
 
   public selectedDrawing: string;
   public lock: string = 'lock_open';
@@ -91,6 +86,20 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   private projectSubscriptions: Subscription[] = [];
   private aiChatStateSubscription: Subscription;
 
+  constructor() {
+    // The toolbar (and this menu) renders outside the parent's
+    // @if (controller.id && project.project_id) gate, so the component is
+    // created while the project input is still an empty shell and a plain
+    // ngOnInit-time call to getAllNodesAndDrawingStatus() early-returns —
+    // the toolbar lock icon never synced with the server on project open.
+    // Watching the input revives that sync (read-only: GET requests only).
+    effect(() => {
+      if (this.project()?.project_id) {
+        this.getAllNodesAndDrawingStatus();
+      }
+    });
+  }
+
   ngOnInit() {
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
@@ -102,7 +111,6 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         }
       })
     );
-    this.getAllNodesAndDrawingStatus();
 
     // Subscribe to drawing completed event to reset tool state
     this.projectSubscriptions.push(
@@ -496,20 +504,15 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       },
     });
+
+    // The list responses already carry each item's `locked` flag, so the lock
+    // icons can be refreshed by feeding the data sources directly — no need to
+    // write every node/drawing back via PUT (which fired one request per item
+    // on every project open and would fail with 403 for read-only users).
     this.projectServices.nodes(controller, project.project_id).subscribe({
       next: (response) => {
-        this.nodes = response;
-        this.nodes.forEach((node) => {
-          this.nodeService.updateNode(controller, node).subscribe({
-            next: (node) => {
-              this.nodesDataSource.update(node);
-            },
-            error: (err) => {
-              const message = err.error?.message || err.message || 'Failed to update node';
-              this.toaster.error(message);
-              this.cdr.markForCheck();
-            },
-          });
+        response.forEach((node) => {
+          this.nodesDataSource.update(node);
         });
       },
       error: (err) => {
@@ -519,20 +522,10 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.projectServices.drawings(this.controller(), this.project().project_id).subscribe({
+    this.projectServices.drawings(controller, project.project_id).subscribe({
       next: (response) => {
-        this.drawing = response;
-        this.drawing.forEach((drawing) => {
-          this.drawingService.update(this.controller(), drawing).subscribe({
-            next: (drawing) => {
-              this.drawingsDataSource.update(drawing);
-            },
-            error: (err) => {
-              const message = err.error?.message || err.message || 'Failed to update drawing';
-              this.toaster.error(message);
-              this.cdr.markForCheck();
-            },
-          });
+        response.forEach((drawing) => {
+          this.drawingsDataSource.update(drawing);
         });
       },
       error: (err) => {
