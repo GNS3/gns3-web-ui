@@ -6,6 +6,7 @@ import {
   Output,
   EventEmitter,
   ChangeDetectorRef,
+  effect,
   inject,
   input,
 } from '@angular/core';
@@ -85,6 +86,20 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   private projectSubscriptions: Subscription[] = [];
   private aiChatStateSubscription: Subscription;
 
+  constructor() {
+    // The toolbar (and this menu) renders outside the parent's
+    // @if (controller.id && project.project_id) gate, so the component is
+    // created while the project input is still an empty shell and a plain
+    // ngOnInit-time call to getAllNodesAndDrawingStatus() early-returns —
+    // the toolbar lock icon never synced with the server on project open.
+    // Watching the input revives that sync (read-only: GET requests only).
+    effect(() => {
+      if (this.project()?.project_id) {
+        this.getAllNodesAndDrawingStatus();
+      }
+    });
+  }
+
   ngOnInit() {
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
@@ -96,7 +111,6 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         }
       })
     );
-    this.getAllNodesAndDrawingStatus();
 
     // Subscribe to drawing completed event to reset tool state
     this.projectSubscriptions.push(

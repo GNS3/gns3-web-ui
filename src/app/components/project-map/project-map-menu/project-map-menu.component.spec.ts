@@ -255,11 +255,30 @@ describe('ProjectMapMenuComponent', () => {
       expect(mockProjectService.getProjectStatus).toHaveBeenCalled();
     });
 
-    it('should call getAllNodesAndDrawingStatus on init', () => {
+    it('should call getAllNodesAndDrawingStatus when the project input becomes available', () => {
       const getAllNodesAndDrawingStatusSpy = vi.spyOn(component, 'getAllNodesAndDrawingStatus');
-      component.ngOnInit();
+      // New object identity so the input signal notifies its consumers
+      fixture.componentRef.setInput('project', { ...mockProject } as Project);
+      fixture.detectChanges();
 
       expect(getAllNodesAndDrawingStatusSpy).toHaveBeenCalled();
+    });
+
+    it('should sync toolbar lock icon from project status when project becomes available', () => {
+      mockProjectService.getProjectStatus.mockReturnValue(of(true));
+      fixture.componentRef.setInput('project', { ...mockProject } as Project);
+      fixture.detectChanges();
+
+      expect(component.isLocked).toBe(true);
+      expect(component.lock).toBe('lock');
+    });
+
+    it('should not refresh lock status while the project input is an empty shell', () => {
+      const getAllNodesAndDrawingStatusSpy = vi.spyOn(component, 'getAllNodesAndDrawingStatus');
+      fixture.componentRef.setInput('project', {} as Project);
+      fixture.detectChanges();
+
+      expect(getAllNodesAndDrawingStatusSpy).not.toHaveBeenCalled();
     });
 
     it('should subscribe to AI chat panel state', () => {
