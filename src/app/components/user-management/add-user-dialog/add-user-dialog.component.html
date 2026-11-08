@@ -38,7 +38,7 @@
           hidePassword ? 'visibility_off' : 'visibility'
         }}</mat-icon>
         @if (form.password?.touched && form.password?.errors) {
-        <mat-error>A password between 6 and 100 characters is required.</mat-error>
+        <mat-error>A password between 8 and 100 characters is required.</mat-error>
         }
       </mat-form-field>
 
@@ -64,7 +64,7 @@
 
     <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
     <mat-divider class="my-2"></mat-divider>
-    <h6>Add user to groups:</h6>
+    <h6>User groups:</h6>
 
     <mat-form-field appearance="outline" class="full-width-field">
       <mat-label>Groups</mat-label>
@@ -76,6 +76,7 @@
         (click)="openGroupPanel()"
         #groupInput
       />
+      <mat-hint>At least one group is required. The first selected group is assigned at creation.</mat-hint>
       <mat-autocomplete
         #auto="matAutocomplete"
         [displayWith]="displayFn"
