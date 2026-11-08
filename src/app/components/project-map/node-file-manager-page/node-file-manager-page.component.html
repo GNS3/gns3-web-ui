@@ -15,7 +15,7 @@
       </span>
     </div>
     }
-    <div class="node-file-manager__progress-btn">
+    <div class="node-file-manager__progress-btn" *appHasProjectPrivilege="'Node.Modify'">
       <div
         class="node-file-manager__progress-fill"
         style="background: var(--mat-sys-primary-container)"
@@ -51,7 +51,13 @@
       <span class="node-file-manager__title">Editing: {{ file.path }}</span>
       <div class="node-file-manager__edit-actions">
         <button mat-button (click)="cancelEdit()" [disabled]="saving()">Cancel</button>
-        <button mat-raised-button color="primary" (click)="saveEdit()" [disabled]="saving() || loadingContent()">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="saveEdit()"
+          [disabled]="saving() || loadingContent()"
+          *appHasProjectPrivilege="'Node.Modify'"
+        >
           Save
         </button>
       </div>
@@ -157,7 +163,7 @@
           <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
           <mat-cell
             *matCellDef="let row"
-            [style.cursor]="row.isDir ? 'pointer' : isEditableFile(row) ? 'pointer' : 'default'"
+            [style.cursor]="row.isDir ? 'pointer' : isEditableFile(row) && canReadFiles ? 'pointer' : 'default'"
             class="node-file-manager__mono"
             (dblclick)="row.isDir ? navigateToDir(row.path) : isEditableFile(row) && editFile(row)"
           >
@@ -196,15 +202,15 @@
 <!-- Context Menu -->
 <mat-menu #rowMenu="matMenu">
   <ng-template matMenuContent let-file="file">
-    <button mat-menu-item (click)="downloadFile(file)" [disabled]="file.isDir">
+    <button mat-menu-item (click)="downloadFile(file)" [disabled]="file.isDir" *appHasProjectPrivilege="'Node.Audit'">
       <mat-icon>download</mat-icon> Download
     </button>
     <button mat-menu-item (click)="copyPath(file.path)">
       <mat-icon>{{ copied() === file.path ? 'check' : 'content_copy' }}</mat-icon>
       {{ copied() === file.path ? 'Copied!' : 'Copy path' }}
     </button>
-    <mat-divider></mat-divider>
-    <button mat-menu-item (click)="deleteFile(file)">
+    <mat-divider *appHasProjectPrivilege="'Node.Modify'"></mat-divider>
+    <button mat-menu-item (click)="deleteFile(file)" *appHasProjectPrivilege="'Node.Modify'">
       <mat-icon>delete</mat-icon> {{ file.isDir ? 'Delete directory' : 'Delete' }}
     </button>
   </ng-template>
