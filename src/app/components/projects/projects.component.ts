@@ -53,6 +53,7 @@ import {
 } from './topology-preview/topology-preview-dialog.component';
 import { TopologyPreviewService } from '@services/topology-preview.service';
 import { TopologyPreviewData } from '@services/gns3-file.mapper';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 @Component({
   selector: 'app-projects',
@@ -76,6 +77,7 @@ import { TopologyPreviewData } from '@services/gns3-file.mapper';
     MatPaginatorModule,
     MatTooltipModule,
     TopologyPreviewComponent,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

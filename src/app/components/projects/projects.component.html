@@ -8,12 +8,19 @@
           mat-raised-button
           class="projects__button projects__button--primary"
           color="primary"
+          *appHasPrivilege="'Project.Allocate'"
           (click)="addBlankProject()"
         >
           <mat-icon>add</mat-icon>
           New project
         </button>
-        <button mat-raised-button class="projects__button" color="primary" (click)="importProject()">
+        <button
+          mat-raised-button
+          class="projects__button"
+          color="primary"
+          *appHasPrivilege="'Project.Allocate'"
+          (click)="importProject()"
+        >
           <mat-icon>cloud_upload</mat-icon>
           Import project
         </button>
@@ -145,6 +152,7 @@
                 <button
                   mat-icon-button
                   class="projects__action-button projects__action-button--start"
+                  *appHasPrivilege="'Project.Allocate'"
                   (click)="open(row)"
                   matTooltip="Start project"
                   aria-label="Start project"
@@ -155,6 +163,7 @@
                 <button
                   mat-icon-button
                   class="projects__action-button projects__action-button--stop"
+                  *appHasPrivilege="'Project.Allocate'"
                   (click)="close(row)"
                   matTooltip="Stop project"
                   aria-label="Stop project"
@@ -170,6 +179,7 @@
                 <button
                   mat-icon-button
                   class="projects__action-button projects__action-button--details"
+                  *appHasPrivilege="'Project.Audit'"
                   (click)="selectProject(row)"
                   matTooltip="View project details"
                   aria-label="View project details"
@@ -179,6 +189,7 @@
                 <button
                   mat-icon-button
                   class="projects__action-button projects__action-button--edit"
+                  *appHasPrivilege="'Project.Modify'"
                   (click)="editProject(row)"
                   matTooltip="Edit project"
                   aria-label="Edit project"
@@ -189,6 +200,7 @@
                 <button
                   mat-icon-button
                   class="projects__action-button projects__action-button--duplicate"
+                  *appHasPrivilege="'Project.Audit'"
                   (click)="duplicate(row)"
                   matTooltip="Duplicate project"
                   aria-label="Duplicate project"
@@ -199,6 +211,7 @@
                 <button
                   mat-icon-button
                   class="projects__action-button projects__action-button--export"
+                  *appHasPrivilege="'Project.Audit'"
                   (click)="exportSelectProject(row)"
                   matTooltip="Export project"
                   aria-label="Export project"
@@ -212,7 +225,13 @@
           <ng-container matColumnDef="delete">
             <mat-header-cell *matHeaderCellDef>
               @if (selection.selected.length > 1) {
-              <button mat-button (click)="deleteAllFiles()" color="warn" matTooltip="Delete all selected">
+              <button
+                mat-button
+                *appHasPrivilege="'Project.Allocate'"
+                (click)="deleteAllFiles()"
+                color="warn"
+                matTooltip="Delete all selected"
+              >
                 <mat-icon>delete</mat-icon>
               </button>
               }
@@ -222,6 +241,7 @@
               <button
                 mat-icon-button
                 class="projects__action-button projects__action-button--delete"
+                *appHasPrivilege="'Project.Allocate'"
                 (click)="delete(row)"
                 color="warn"
                 matTooltip="Delete project"
@@ -287,6 +307,7 @@
             <button
               mat-icon-button
               class="projects__action-button projects__action-button--start"
+              *appHasPrivilege="'Project.Allocate'"
               (click)="$event.stopPropagation(); open(project)"
               matTooltip="Start project"
               aria-label="Start project"
@@ -297,6 +318,7 @@
             <button
               mat-icon-button
               class="projects__action-button projects__action-button--stop"
+              *appHasPrivilege="'Project.Allocate'"
               (click)="$event.stopPropagation(); close(project)"
               matTooltip="Stop project"
               aria-label="Stop project"
@@ -312,6 +334,7 @@
             <button
               mat-icon-button
               class="projects__action-button projects__action-button--details"
+              *appHasPrivilege="'Project.Audit'"
               (click)="$event.stopPropagation(); selectProject(project)"
               matTooltip="View project details"
               aria-label="View project details"
@@ -321,6 +344,7 @@
             <button
               mat-icon-button
               class="projects__action-button projects__action-button--edit"
+              *appHasPrivilege="'Project.Modify'"
               (click)="$event.stopPropagation(); editProject(project)"
               matTooltip="Edit project"
               aria-label="Edit project"
@@ -331,6 +355,7 @@
             <button
               mat-icon-button
               class="projects__action-button projects__action-button--duplicate"
+              *appHasPrivilege="'Project.Audit'"
               (click)="$event.stopPropagation(); duplicate(project)"
               matTooltip="Duplicate project"
               aria-label="Duplicate project"
@@ -341,6 +366,7 @@
             <button
               mat-icon-button
               class="projects__action-button projects__action-button--export"
+              *appHasPrivilege="'Project.Audit'"
               (click)="$event.stopPropagation(); exportSelectProject(project)"
               matTooltip="Export project"
               aria-label="Export project"
@@ -516,6 +542,7 @@
           <button
             mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--start"
+            *appHasPrivilege="'Project.Allocate'"
             (click)="open(project); closeDetails()"
             matTooltip="Start project"
             aria-label="Start project"
@@ -526,6 +553,7 @@
           <button
             mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--stop"
+            *appHasPrivilege="'Project.Allocate'"
             (click)="close(project)"
             matTooltip="Stop project"
             aria-label="Stop project"
@@ -536,6 +564,7 @@
           <button
             mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--edit"
+            *appHasPrivilege="'Project.Modify'"
             (click)="editProject(project)"
             matTooltip="Edit project"
             aria-label="Edit project"
@@ -546,6 +575,7 @@
           <button
             mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--duplicate"
+            *appHasPrivilege="'Project.Audit'"
             (click)="duplicate(project)"
             matTooltip="Duplicate project"
             aria-label="Duplicate project"
@@ -556,6 +586,7 @@
           <button
             mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--export"
+            *appHasPrivilege="'Project.Audit'"
             (click)="exportSelectProject(project)"
             matTooltip="Export project"
             aria-label="Export project"
@@ -566,6 +597,7 @@
           <button
             mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--delete"
+            *appHasPrivilege="'Project.Allocate'"
             (click)="delete(project); closeDetails()"
             matTooltip="Delete project"
             aria-label="Delete project"

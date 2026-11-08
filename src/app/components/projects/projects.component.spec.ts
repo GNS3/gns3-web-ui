@@ -17,6 +17,7 @@ import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.se
 import { TopologyPreviewService } from '@services/topology-preview.service';
 import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
+import { PermissionService } from '@services/permission.service';
 import { NotificationService, ProjectNotification } from '@services/notification.service';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -148,6 +149,15 @@ describe('ProjectsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ProjectsComponent, MarkdownModule.forRoot()],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: (privilege: string) => true,
+            hasAny: (privileges: string[]) => true,
+            privileges: () => new Set<string>(['Project.Allocate', 'Project.Audit', 'Project.Modify']),
+            loaded: () => true,
+          },
+        },
         { provide: ProjectService, useValue: mockProjectService },
         { provide: SettingsService, useValue: mockSettingsService },
         { provide: ProgressService, useValue: mockProgressService },
