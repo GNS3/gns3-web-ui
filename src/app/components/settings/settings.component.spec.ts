@@ -10,6 +10,7 @@ import { ControllerService } from '@services/controller.service';
 import { InterfaceDensityService } from '@services/interface-density.service';
 import { ConsoleService } from '@services/settings/console.service';
 import { AiChatService } from '@services/ai-chat.service';
+import { PermissionService } from '@services/permission.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('SettingsComponent', () => {
@@ -164,6 +165,18 @@ describe('SettingsComponent', () => {
         { provide: InterfaceDensityService, useValue: mockInterfaceDensityService },
         { provide: ConsoleService, useValue: mockConsoleService },
         { provide: AiChatService, useValue: mockAiChatService },
+        // Grant-all permission mock: the AI settings card is gated on the
+        // superadmin flag, so the reload-skills button must render in specs.
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['Server.Audit']),
+            isSuperadmin: () => true,
+            loaded: () => true,
+          },
+        },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],
     }).compileComponents();

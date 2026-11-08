@@ -594,4 +594,13 @@ UI_MAP: dict[str, dict[str, str]] = {
         "page": "AI profiles dialog (group)",
         "action": "Set as group default (= Group.Modify)",
     },
+
+    # ------------------------------------------------------------------
+    # Copilot (AI skills)
+    # ------------------------------------------------------------------
+    "POST /copilot/reload/skills": {
+        "page": "Web settings → AI",
+        "action": "Reload skills (superadmin only, hidden otherwise)",
+        "note": "gate is is_superadmin in the handler, not a named privilege",
+    },
 }

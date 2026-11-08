@@ -2,7 +2,7 @@
 
 > **Generated file — do not edit by hand.**
 >
-> Source: `gns3-server` branch `feat/rbac-out-of-the-box` @ `55f879b3c`, generated 2026-11-08.
+> Source: `gns3-server` branch `feat/rbac-out-of-the-box` @ `55f879b3c`, generated 2026-11-09.
 >
 > Regenerate with:
 >
@@ -22,7 +22,7 @@ All paths are relative to the controller API root (`/v3`).
 - No privilege gate declared: **5** (may still be protected outside the decorator)
 - Distinct privilege names: **49**
 - Endpoints called by a Web UI service: **168**
-- Endpoints with a curated Web UI page/action: **196**
+- Endpoints with a curated Web UI page/action: **197**
 
 ## Endpoints by module
 
@@ -338,7 +338,7 @@ All paths are relative to the controller API root (`/v3`).
 
 | Method | Path | Privilege | Web UI page | Web UI action | Service |
 |--------|------|-----------|-------------|---------------|---------|
-| POST | `/copilot/reload/skills` | — (login only) | — | (to be filled) | `src/app/services/ai-chat.service.ts:reloadSkills` |
+| POST | `/copilot/reload/skills` | — (login only) | Web settings → AI | Reload skills (superadmin only, hidden otherwise)<br>gate is is_superadmin in the handler, not a named privilege | `src/app/services/ai-chat.service.ts:reloadSkills` |
 
 ### Copilot chat — `chat.py`
 

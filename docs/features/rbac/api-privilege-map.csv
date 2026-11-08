@@ -49,7 +49,7 @@ controller,controller.py,POST,/shutdown,— (login only),shutdown,,,,
 controller,controller.py,GET,/statistics,— (login only),statistics,System status page,Load system statistics,,src/app/services/compute.service.ts:getStatistics
 controller,controller.py,GET,/version,— (no gate declared),get_version,App shell,Show the controller version,,src/app/services/controller.service.ts:checkControllerVersion | src/app/services/version.service.ts:get
 controller,controller.py,POST,/version,— (no gate declared),check_version,,,,
-copilot,copilot.py,POST,/copilot/reload/skills,— (login only),reload_skills,,,,src/app/services/ai-chat.service.ts:reloadSkills
+copilot,copilot.py,POST,/copilot/reload/skills,— (login only),reload_skills,Web settings → AI,"Reload skills (superadmin only, hidden otherwise)","gate is is_superadmin in the handler, not a named privilege",src/app/services/ai-chat.service.ts:reloadSkills
 drawings,drawings.py,GET,/projects/{project_id}/drawings,Drawing.Audit,get_drawings,Project view,Load drawing objects,,src/app/services/project.service.ts:drawings
 drawings,drawings.py,POST,/projects/{project_id}/drawings,Drawing.Allocate,create_drawing,Project view drawing toolbar,Add a shape or text (= Drawing.Allocate),,src/app/services/drawing.service.ts:add | src/app/services/drawing.service.ts:duplicate
 drawings,drawings.py,DELETE,/projects/{project_id}/drawings/{drawing_id},Drawing.Allocate,delete_drawing,Project view drawing object,Delete a drawing (= Drawing.Allocate),,src/app/services/drawing.service.ts:delete

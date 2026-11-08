@@ -41,11 +41,17 @@ export class PermissionService {
 
   /** Privileges of the user on the active controller (empty until loaded). */
   readonly privileges = signal<ReadonlySet<string>>(new Set());
+  /**
+   * Superadmin flag of the user on the active controller. Gates the few
+   * endpoints that check `is_superadmin` directly instead of a named
+   * privilege (e.g. POST /copilot/reload/skills).
+   */
+  readonly isSuperadmin = signal(false);
   /** True once the active controller's privileges have been fetched (successfully or not). */
   readonly loaded = signal(false);
 
   private currentControllerId: number | null = null;
-  private readonly privilegeCache = new Map<number, ReadonlySet<string>>();
+  private readonly privilegeCache = new Map<number, { privileges: ReadonlySet<string>; isSuperadmin: boolean }>();
   private readonly inflightRequests = new Map<number, Promise<ReadonlySet<string>>>();
 
   has(privilege: string): boolean {
@@ -65,17 +71,20 @@ export class PermissionService {
     this.currentControllerId = controllerId;
     const cached = this.privilegeCache.get(controllerId);
     if (cached) {
-      this.privileges.set(cached);
+      this.privileges.set(cached.privileges);
+      this.isSuperadmin.set(cached.isSuperadmin);
       this.loaded.set(true);
       return;
     }
     this.privileges.set(new Set());
+    this.isSuperadmin.set(false);
     this.loaded.set(false);
     void this.ready(controllerId).catch(() => {
       // Fetch failed: render as zero privileges. The server remains the
       // authority; gated chrome stays hidden instead of flashing in.
       if (this.currentControllerId === controllerId) {
         this.privileges.set(new Set());
+        this.isSuperadmin.set(false);
         this.loaded.set(true);
       }
     });
@@ -89,7 +98,7 @@ export class PermissionService {
   async ready(controllerId: number): Promise<ReadonlySet<string>> {
     const cached = this.privilegeCache.get(controllerId);
     if (cached) {
-      return cached;
+      return cached.privileges;
     }
 
     const inflight = this.inflightRequests.get(controllerId);
@@ -111,6 +120,7 @@ export class PermissionService {
     this.privilegeCache.clear();
     this.currentControllerId = null;
     this.privileges.set(new Set());
+    this.isSuperadmin.set(false);
     this.loaded.set(false);
   }
 
@@ -121,9 +131,11 @@ export class PermissionService {
     );
 
     const privilegeSet = new Set<string>(response.privileges ?? []);
-    this.privilegeCache.set(controllerId, privilegeSet);
+    const entry = { privileges: privilegeSet, isSuperadmin: response.is_superadmin ?? false };
+    this.privilegeCache.set(controllerId, entry);
     if (this.currentControllerId === controllerId) {
       this.privileges.set(privilegeSet);
+      this.isSuperadmin.set(entry.isSuperadmin);
       this.loaded.set(true);
     }
     return privilegeSet;
