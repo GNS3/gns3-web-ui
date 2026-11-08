@@ -1,0 +1,224 @@
+﻿Module,Source file,Method,Path,Privilege,Handler,Web UI page,Web UI action,Notes,Web UI service (auto-matched)
+acl,acl.py,GET,/access/acl,ACE.Audit,get_aces,Management — ACL page,Load the ACE list,,src/app/services/acl.service.ts:list
+acl,acl.py,POST,/access/acl,ACE.Allocate,create_ace,Management — ACL page,Add ACE (= ACE.Allocate),,src/app/services/acl.service.ts:add
+acl,acl.py,GET,/access/acl/endpoints,ACE.Audit,endpoints,Management — ACL page,Load the assignable endpoint catalog,,src/app/services/acl.service.ts:getEndpoints
+acl,acl.py,DELETE,/access/acl/{ace_id},ACE.Allocate,delete_ace,Management — ACL page,Delete ACE / bulk delete (= ACE.Allocate),,src/app/services/acl.service.ts:delete
+acl,acl.py,GET,/access/acl/{ace_id},ACE.Audit,get_ace,Management — ACL page,Read a single ACE,,src/app/services/acl.service.ts:get
+acl,acl.py,PUT,/access/acl/{ace_id},ACE.Modify,update_ace,Management — ACL page,Edit ACE (= ACE.Modify),,src/app/services/acl.service.ts:update
+api_keys,api_keys.py,GET,/access/api-keys,— (login only),list_api_keys,,,,src/app/services/api-key.service.ts:list
+api_keys,api_keys.py,POST,/access/api-keys,— (login only),create_api_key,,,,src/app/services/api-key.service.ts:create
+api_keys,api_keys.py,DELETE,/access/api-keys/{api_key_id},— (login only),delete_api_key,,,,src/app/services/api-key.service.ts:delete
+api_keys,api_keys.py,POST,/access/api-keys/{api_key_id}/restore,— (login only),restore_api_key,,,,src/app/services/api-key.service.ts:restore
+api_keys,api_keys.py,POST,/access/api-keys/{api_key_id}/revoke,— (login only),revoke_api_key,,,,src/app/services/api-key.service.ts:revoke
+appliances,appliances.py,GET,/appliances,Appliance.Audit,get_appliances,Install appliance wizard,Load the appliance registry (= Appliance.Audit),,src/app/services/appliances.service.ts:return
+appliances,appliances.py,GET,/appliances/{appliance_id},Appliance.Audit,get_appliance,Install appliance wizard,Read a single appliance,,
+appliances,appliances.py,POST,/appliances/{appliance_id}/install,Appliance.Allocate,install_appliance,Install appliance wizard,Install the selected version (= Appliance.Allocate),,
+appliances,appliances.py,POST,/appliances/{appliance_id}/version,Appliance.Allocate,add_appliance_version,Install appliance wizard,Add an appliance version (= Appliance.Allocate),,
+chat,chat.py,POST,/copilot/projects/{project_id}/chat/inject,— (login only),inject_issue,,,,
+chat,chat.py,GET,/copilot/projects/{project_id}/chat/sessions,— (login only),list_sessions,,,,src/app/services/ai-chat.service.ts:getSessions
+chat,chat.py,DELETE,/copilot/projects/{project_id}/chat/sessions/{session_id},— (login only),delete_session,,,,src/app/services/ai-chat.service.ts:deleteSession
+chat,chat.py,PATCH,/copilot/projects/{project_id}/chat/sessions/{session_id},— (login only),rename_session,,,,
+chat,chat.py,POST,/copilot/projects/{project_id}/chat/sessions/{session_id}/abort,— (login only),abort_session,,,,src/app/services/ai-chat.service.ts:abortChat
+chat,chat.py,GET,/copilot/projects/{project_id}/chat/sessions/{session_id}/history,— (login only),get_history,,,,src/app/services/ai-chat.service.ts:getSessionHistory
+chat,chat.py,DELETE,/copilot/projects/{project_id}/chat/sessions/{session_id}/pin,— (login only),unpin_session,,,,src/app/services/ai-chat.service.ts:unpinSession
+chat,chat.py,PUT,/copilot/projects/{project_id}/chat/sessions/{session_id}/pin,— (login only),pin_session,,,,src/app/services/ai-chat.service.ts:pinSession
+chat,chat.py,POST,/copilot/projects/{project_id}/chat/stream,— (login only),stream_chat,,,,
+computes,computes.py,GET,/computes,Compute.Audit,get_computes,Computes page / Add node palette / Templates page,Load the compute list,,src/app/services/compute.service.ts:getComputes
+computes,computes.py,POST,/computes,Compute.Allocate,create_compute,Computes page,Add Compute (= Compute.Allocate),,src/app/services/compute.service.ts:createCompute
+computes,computes.py,DELETE,/computes/{compute_id},Compute.Allocate,delete_compute,Computes page,Delete compute (= Compute.Allocate),,src/app/services/compute.service.ts:deleteCompute
+computes,computes.py,GET,/computes/{compute_id},Compute.Audit,get_compute,Computes page,Read a single compute,,src/app/services/compute.service.ts:getCompute
+computes,computes.py,PUT,/computes/{compute_id},Compute.Modify,update_compute,Computes page,Edit compute / Auto-connect toggle (= Compute.Modify),,src/app/services/compute.service.ts:updateCompute
+computes,computes.py,POST,/computes/{compute_id}/connect,Compute.Audit,connect_compute,Computes page,Connect (= Compute.Audit),,src/app/services/compute.service.ts:connectCompute
+computes,computes.py,POST,/computes/{compute_id}/disconnect,Compute.Audit,disconnect_compute,Computes page,Disconnect (= Compute.Audit),,
+computes,computes.py,GET,/computes/{compute_id}/docker/images,— (login only),docker_get_images,Image manager page / install wizard,List Docker images (no privilege gate),,src/app/services/docker.service.ts:getImages | src/app/services/docker.service.ts:getImagesForCompute
+computes,computes.py,POST,/computes/{compute_id}/docker/images/load,Compute.Modify,docker_load_image,Image manager page,Load a Docker tar (= Compute.Modify),,
+computes,computes.py,POST,/computes/{compute_id}/docker/images/pull,Compute.Modify,docker_pull_image,Image manager page,Pull Docker Image (= Compute.Modify),,
+computes,computes.py,DELETE,/computes/{compute_id}/docker/images/{image:path},Compute.Modify,docker_delete_image,Image manager page,Delete Docker Image (= Compute.Modify),,src/app/services/docker.service.ts:deleteImage
+computes,computes.py,POST,/computes/{compute_id}/dynamips/auto_idlepc,— (login only),dynamips_autoidlepc,,,,src/app/services/ios.service.ts:findIdlePC
+computes,computes.py,GET,/computes/{compute_id}/virtualbox/vms,— (login only),virtualbox_vms,,,,src/app/services/virtual-box.service.ts:getVirtualMachines
+computes,computes.py,GET,/computes/{compute_id}/vmware/vms,— (login only),vmware_vms,,,,src/app/services/vmware.service.ts:getVirtualMachines
+computes,computes.py,GET,/computes/{compute_id}/{emulator}/{endpoint_path:path},— (login only),forward_get,,,,
+computes,computes.py,POST,/computes/{compute_id}/{emulator}/{endpoint_path:path},— (login only),forward_post,,,,
+computes,computes.py,PUT,/computes/{compute_id}/{emulator}/{endpoint_path:path},— (login only),forward_put,,,,
+controller,controller.py,GET,/iou_license,— (login only),get_iou_license,,,,
+controller,controller.py,PUT,/iou_license,— (login only),update_iou_license,,,,
+controller,controller.py,GET,/notifications,— (login only),controller_http_notifications,Global,Notification stream (SSE),,
+controller,controller.py,WEBSOCKET,/notifications/ws,— (login only),controller_ws_notifications,Global,Notification stream (WebSocket),,
+controller,controller.py,POST,/reload,— (login only),reload,,,,
+controller,controller.py,POST,/shutdown,— (login only),shutdown,,,,
+controller,controller.py,GET,/statistics,— (login only),statistics,System status page,Load system statistics,,src/app/services/compute.service.ts:getStatistics
+controller,controller.py,GET,/version,— (no gate declared),get_version,App shell,Show the controller version,,src/app/services/controller.service.ts:checkControllerVersion | src/app/services/version.service.ts:get
+controller,controller.py,POST,/version,— (no gate declared),check_version,,,,
+copilot,copilot.py,POST,/copilot/reload/skills,— (login only),reload_skills,,,,src/app/services/ai-chat.service.ts:reloadSkills
+drawings,drawings.py,GET,/projects/{project_id}/drawings,Drawing.Audit,get_drawings,Project view,Load drawing objects,,src/app/services/project.service.ts:drawings
+drawings,drawings.py,POST,/projects/{project_id}/drawings,Drawing.Allocate,create_drawing,Project view drawing toolbar,Add a shape or text (= Drawing.Allocate),,src/app/services/drawing.service.ts:add | src/app/services/drawing.service.ts:duplicate
+drawings,drawings.py,DELETE,/projects/{project_id}/drawings/{drawing_id},Drawing.Allocate,delete_drawing,Project view drawing object,Delete a drawing (= Drawing.Allocate),,src/app/services/drawing.service.ts:delete
+drawings,drawings.py,GET,/projects/{project_id}/drawings/{drawing_id},Drawing.Audit,get_drawing,Project view,Read a drawing object,,
+drawings,drawings.py,PUT,/projects/{project_id}/drawings/{drawing_id},Drawing.Modify,update_drawing,Project view drawing object,Move or edit a drawing (= Drawing.Modify),,src/app/services/drawing.service.ts:updatePosition | src/app/services/drawing.service.ts:updateSizeAndPosition | src/app/services/drawing.service.ts:updateText | src/app/services/drawing.service.ts:update
+groups,groups.py,GET,/access/groups,Group.Audit,get_user_groups,Management — Groups page,Load the group list,,src/app/services/group.service.ts:getGroups
+groups,groups.py,POST,/access/groups,Group.Allocate,create_user_group,Management — Groups page,Add group (= Group.Allocate),,src/app/services/group.service.ts:addGroup
+groups,groups.py,DELETE,/access/groups/{user_group_id},Group.Allocate,delete_user_group,Management — Groups page,Delete / bulk delete (= Group.Allocate),,src/app/services/group.service.ts:delete
+groups,groups.py,GET,/access/groups/{user_group_id},Group.Audit,get_user_group,Group details dialog,Read a group,,src/app/services/group.service.ts:get
+groups,groups.py,PUT,/access/groups/{user_group_id},Group.Modify,update_user_group,Group details dialog,Update Group (= Group.Modify),,src/app/services/group.service.ts:update
+groups,groups.py,GET,/access/groups/{user_group_id}/members,Group.Audit,get_user_group_members,Group details dialog,Load the member list,,src/app/services/group.service.ts:getGroupMember
+groups,groups.py,DELETE,/access/groups/{user_group_id}/members/{user_id},Group.Modify,remove_member_from_group,Group details dialog,Remove user (= Group.Modify),,src/app/services/group.service.ts:removeUser
+groups,groups.py,PUT,/access/groups/{user_group_id}/members/{user_id},Group.Modify,add_member_to_group,Group details dialog,Add user (= Group.Modify),,src/app/services/group.service.ts:addMemberToGroup
+images,images.py,GET,/images,Image.Audit,get_images,Image manager page,Load the image list (page entry needs Image.Audit plus a write privilege),,src/app/services/image-manager.service.ts:getImages | src/app/services/ios.service.ts:getImages | src/app/services/iou.service.ts:getImages | src/app/services/qemu.service.ts:getImages
+images,images.py,POST,/images/compatibility,Image.Allocate,check_image_compatibility,Image manager page,Check image checksums (= Image.Allocate),,src/app/services/image-manager.service.ts:checkCompatibility
+images,images.py,GET,/images/compatibility/catalog,Image.Allocate,image_compatibility_catalog,Image manager page,Load the known image-size catalog (= Image.Allocate),,src/app/services/image-manager.service.ts:getCompatibilityCatalog
+images,images.py,POST,/images/install,Image.Allocate,install_images,Image manager page,Install Images (= Image.Allocate),,src/app/services/image-manager.service.ts:installImages
+images,images.py,DELETE,/images/prune,Image.Allocate,prune_images,Image manager page,Prune Images (= Image.Allocate),,src/app/services/image-manager.service.ts:pruneImages
+images,images.py,POST,/images/qemu/{image_path:path},Image.Allocate,create_qemu_image,Image manager page,Create a QEMU disk image (= Image.Allocate),,
+images,images.py,POST,/images/sync,Image.Allocate,sync_images,Image manager page,Sync Images (= Image.Allocate),,src/app/services/image-manager.service.ts:syncImages
+images,images.py,GET,/images/sync/jobs/{job_id},Image.Audit,get_image_sync_job,Image manager page,Poll the sync job progress,,src/app/services/image-manager.service.ts:getSyncJob
+images,images.py,POST,/images/upload/{image_path:path},Image.Allocate,upload_image,Image manager page,Add Image (= Image.Allocate),,src/app/services/image-manager.service.ts:uploadedImage
+images,images.py,DELETE,/images/{image_path:path},Image.Allocate,delete_image,Image manager page,Delete Image (= Image.Allocate),,src/app/services/image-manager.service.ts:deleteFile
+images,images.py,GET,/images/{image_path:path},Image.Audit,get_image,Image manager page,Read a single image,,
+links,links.py,GET,/projects/{project_id}/links,Link.Audit,get_links,Project view,Load links,,src/app/services/project.service.ts:links
+links,links.py,POST,/projects/{project_id}/links,Link.Allocate,create_link,Project view (canvas link drawing),Create a link (= Link.Allocate),,src/app/services/link.service.ts
+links,links.py,POST,/projects/{project_id}/links/batch,Link.Allocate,create_links,Project view (canvas link drawing),Create several links at once,,
+links,links.py,DELETE,/projects/{project_id}/links/{link_id},Link.Allocate,delete_link,Link context menu / Del key,Delete a link (= Link.Allocate),,src/app/services/link.service.ts:deleteLink
+links,links.py,GET,/projects/{project_id}/links/{link_id},Link.Audit,get_link,Project view / link details,Read a link,,src/app/services/link.service.ts:getLink
+links,links.py,PUT,/projects/{project_id}/links/{link_id},Link.Modify,update_link,Link context menu / link filter,"Edit the link, its filters or marker enabled state (= Link.Modify)",,src/app/services/link.service.ts:updateLink | src/app/services/link.service.ts:updateLinkStyle | src/app/services/link.service.ts:updateNodes
+links,links.py,GET,/projects/{project_id}/links/{link_id}/available_filters,Link.Audit,get_filters,Link context menu (Filter),Load the available filters (server is authoritative),,src/app/services/link.service.ts:getAvailableFilters
+links,links.py,GET,/projects/{project_id}/links/{link_id}/capture/file,Link.Capture,download_capture_file,Packet capture,Download the pcap file (= Link.Capture),,
+links,links.py,POST,/projects/{project_id}/links/{link_id}/capture/start,Link.Capture,start_capture,Link context menu / capture toolbar,Start capture (= Link.Capture),,src/app/services/link.service.ts:startCaptureOnLink
+links,links.py,POST,/projects/{project_id}/links/{link_id}/capture/stop,Link.Capture,stop_capture,Link context menu / capture toolbar,Stop capture (= Link.Capture),,src/app/services/link.service.ts:stopCaptureOnLink
+links,links.py,GET,/projects/{project_id}/links/{link_id}/capture/stream,Link.Capture,stream_pcap,Packet capture,Stream the pcap data (= Link.Capture),,src/app/services/link.service.ts:streamPcap
+links,links.py,WEBSOCKET,/projects/{project_id}/links/{link_id}/capture/web-wireshark,Link.Capture,web_wireshark_websocket,Web Wireshark window,Live packet capture (= Link.Capture),,
+links,links.py,POST,/projects/{project_id}/links/{link_id}/capture/wireshark/restart,Link.Capture,restart_wireshark,Packet capture,Restart the Wireshark session (= Link.Capture),,
+links,links.py,GET,/projects/{project_id}/links/{link_id}/iface,Link.Audit,get_iface,Link details,Read interface information,,
+links,links.py,GET,/projects/{project_id}/links/{link_id}/markers,Link.Audit,get_markers,Marker manager,Read the markers of a single link,,src/app/services/marker.service.ts:list
+links,links.py,POST,/projects/{project_id}/links/{link_id}/markers,Link.Modify,create_marker,Marker manager — Links tab,Add Marker (= Link.Modify),,src/app/services/marker.service.ts:create
+links,links.py,DELETE,/projects/{project_id}/links/{link_id}/markers/{marker_name},Link.Modify,delete_marker,Marker manager — Links tab,Delete (= Link.Modify),,src/app/services/marker.service.ts:delete
+links,links.py,PUT,/projects/{project_id}/links/{link_id}/markers/{marker_name},Link.Modify,update_marker,Marker manager — Links tab,Enable/disable or Edit (= Link.Modify),,src/app/services/marker.service.ts:update | src/app/services/marker.service.ts:setEnabled
+links,links.py,POST,/projects/{project_id}/links/{link_id}/reset,Link.Modify,reset_link,Link context menu,Reset (= Link.Modify),,src/app/services/link.service.ts:resetLink
+llm_model_configs,llm_model_configs.py,GET,/access/groups/{group_id}/llm-model-configs,Group.Audit,get_group_llm_model_configs,AI profiles dialog (group),Load the group's configs (entry = Group.Modify),,src/app/services/ai-profiles.service.ts:getGroupConfigs
+llm_model_configs,llm_model_configs.py,POST,/access/groups/{group_id}/llm-model-configs,Group.Modify,create_group_llm_model_config,AI profiles dialog (group),New Configuration (= Group.Modify),,src/app/services/ai-profiles.service.ts:createGroupConfig
+llm_model_configs,llm_model_configs.py,GET,/access/groups/{group_id}/llm-model-configs/default,Group.Audit,get_group_default_llm_model_config,AI profiles dialog (group),Read the group default profile,,src/app/services/ai-profiles.service.ts:getDefaultGroupConfig
+llm_model_configs,llm_model_configs.py,PUT,/access/groups/{group_id}/llm-model-configs/default/{config_id},Group.Modify,set_group_default_llm_model_config,AI profiles dialog (group),Set as group default (= Group.Modify),,src/app/services/ai-profiles.service.ts:setDefaultGroupConfig
+llm_model_configs,llm_model_configs.py,DELETE,/access/groups/{group_id}/llm-model-configs/{config_id},Group.Modify,delete_group_llm_model_config,AI profiles dialog (group),Delete (= Group.Modify),,src/app/services/ai-profiles.service.ts:deleteGroupConfig
+llm_model_configs,llm_model_configs.py,PUT,/access/groups/{group_id}/llm-model-configs/{config_id},Group.Modify,update_group_llm_model_config,AI profiles dialog (group),Edit (= Group.Modify),,src/app/services/ai-profiles.service.ts:updateGroupConfig | src/app/services/ai-profiles.service.ts:unsetDefaultGroupConfig
+llm_model_configs,llm_model_configs.py,GET,/access/users/{user_id}/llm-model-configs,LLMConfig.Audit,get_user_llm_model_configs,AI profiles dialog (user),Load the user's configs (entry = LLMConfig.Modify),,src/app/services/ai-profiles.service.ts:getConfigs
+llm_model_configs,llm_model_configs.py,POST,/access/users/{user_id}/llm-model-configs,LLMConfig.Modify,create_user_llm_model_config,AI profiles dialog (user),New profile (= LLMConfig.Modify),,src/app/services/ai-profiles.service.ts:createConfig
+llm_model_configs,llm_model_configs.py,GET,/access/users/{user_id}/llm-model-configs/default,LLMConfig.Audit,get_user_default_llm_model_config,AI profiles dialog (user),Read the default profile,,src/app/services/ai-profiles.service.ts:getDefaultConfig
+llm_model_configs,llm_model_configs.py,PUT,/access/users/{user_id}/llm-model-configs/default/{config_id},LLMConfig.Modify,set_user_default_llm_model_config,AI profiles dialog (user),Set as default (= LLMConfig.Modify),,src/app/services/ai-profiles.service.ts:setDefaultConfig
+llm_model_configs,llm_model_configs.py,GET,/access/users/{user_id}/llm-model-configs/own,LLMConfig.Audit,get_user_own_llm_model_configs,AI profiles dialog (user),Read own configs,,src/app/services/ai-profiles.service.ts:getOwnConfigs
+llm_model_configs,llm_model_configs.py,DELETE,/access/users/{user_id}/llm-model-configs/{config_id},LLMConfig.Modify,delete_user_llm_model_config,AI profiles dialog (user),Delete profile (= LLMConfig.Modify),,src/app/services/ai-profiles.service.ts:deleteConfig
+llm_model_configs,llm_model_configs.py,PUT,/access/users/{user_id}/llm-model-configs/{config_id},LLMConfig.Modify,update_user_llm_model_config,AI profiles dialog (user),Edit profile (= LLMConfig.Modify),,src/app/services/ai-profiles.service.ts:updateConfig | src/app/services/ai-profiles.service.ts:unsetDefaultConfig
+netmiko,netmiko.py,GET,/netmiko/device_types,— (login only),get_netmiko_device_types,,,,src/app/services/netmiko-device-types.service.ts:getDeviceTypes
+nodes,nodes.py,GET,/projects/{project_id}/nodes,Node.Audit,get_nodes,Project view,Load topology nodes,,src/app/services/project.service.ts:nodes
+nodes,nodes.py,POST,/projects/{project_id}/nodes,Node.Allocate,create_node,Add node palette / template drag-and-drop,Create a node (= Node.Allocate),,
+nodes,nodes.py,POST,/projects/{project_id}/nodes/batch,Node.Allocate,create_nodes,Add node palette,Create several nodes at once (Number of nodes > 1),,
+nodes,nodes.py,POST,/projects/{project_id}/nodes/console/reset,Node.Console,reset_console_all_nodes,Project view menu,Reset all consoles (= Node.Console),,src/app/services/node.service.ts:resetAllNodes
+nodes,nodes.py,POST,/projects/{project_id}/nodes/reload,Node.PowerMgmt,reload_all_nodes,Project view menu,Reload all nodes (= Node.PowerMgmt),,src/app/services/node.service.ts:reloadAll
+nodes,nodes.py,POST,/projects/{project_id}/nodes/start,Node.PowerMgmt,start_all_nodes,Project view menu,Start all nodes (= Node.PowerMgmt),,src/app/services/node.service.ts:startAll
+nodes,nodes.py,POST,/projects/{project_id}/nodes/stop,Node.PowerMgmt,stop_all_nodes,Project view menu,Stop all nodes (= Node.PowerMgmt),,src/app/services/node.service.ts:stopAll
+nodes,nodes.py,POST,/projects/{project_id}/nodes/suspend,Node.PowerMgmt,suspend_all_nodes,Project view menu,Suspend all nodes (= Node.PowerMgmt),,src/app/services/node.service.ts:suspendAll
+nodes,nodes.py,DELETE,/projects/{project_id}/nodes/{node_id},Node.Allocate,delete_node,Node context menu / Del key,Delete a node (= Node.Allocate),,src/app/services/node.service.ts:delete
+nodes,nodes.py,GET,/projects/{project_id}/nodes/{node_id},Node.Audit,get_node,Project view / node details,Read a single node,,src/app/services/node.service.ts:getNodeById | src/app/services/node.service.ts:getNode
+nodes,nodes.py,PUT,/projects/{project_id}/nodes/{node_id},Node.Modify,update_node,Node context menu / properties dialog,"Move, rename or reconfigure (= Node.Modify)",,src/app/services/node.service.ts:updatePosition | src/app/services/node.service.ts:updateLabel | src/app/services/node.service.ts:updateSymbol | src/app/services/node.service.ts:update | src/app/services/node.service.ts:updateNode
+nodes,nodes.py,POST,/projects/{project_id}/nodes/{node_id}/console/reset,Node.Console,console_reset,Node context menu,Reset console (= Node.Console),,
+nodes,nodes.py,WEBSOCKET,/projects/{project_id}/nodes/{node_id}/console/vnc,Node.Console,vnc_console,Console window,Open the VNC console (= Node.Console),,
+nodes,nodes.py,WEBSOCKET,/projects/{project_id}/nodes/{node_id}/console/ws,Node.Console,ws_console,Console window,Open the node console (= Node.Console),,
+nodes,nodes.py,POST,/projects/{project_id}/nodes/{node_id}/duplicate,Node.Allocate,duplicate_node,Node context menu,Duplicate (= Node.Allocate),,src/app/services/node.service.ts:duplicate
+nodes,nodes.py,GET,/projects/{project_id}/nodes/{node_id}/dynamips/auto_idlepc,Node.Audit,auto_idlepc,Node context menu,Auto Idle-PC (read-only probe),,src/app/services/node.service.ts:getAutoIdlePC
+nodes,nodes.py,GET,/projects/{project_id}/nodes/{node_id}/dynamips/idlepc_proposals,Node.Audit,idlepc_proposals,Node context menu,Idle-PC candidate values,,src/app/services/node.service.ts:getIdlePCProposals
+nodes,nodes.py,GET,/projects/{project_id}/nodes/{node_id}/files,Node.Audit,list_node_files,Node file manager,Load the file tree,,src/app/services/node.service.ts:getNodeFilesRecursive
+nodes,nodes.py,DELETE,/projects/{project_id}/nodes/{node_id}/files/{file_path:path},Node.Modify,delete_node_file,Node file manager,Delete a file (= Node.Modify),,src/app/services/node.service.ts:deleteNodeFile
+nodes,nodes.py,GET,/projects/{project_id}/nodes/{node_id}/files/{file_path:path},Node.Audit,get_file,Node file manager,Open or read a file (code-gated on Node.Audit),,src/app/services/node.service.ts:getNodeFileContent
+nodes,nodes.py,POST,/projects/{project_id}/nodes/{node_id}/files/{file_path:path},Node.Modify,post_file,Node file manager,Save / Upload (= Node.Modify),,src/app/services/node.service.ts:uploadNodeFile | src/app/services/node.service.ts:saveNodeFileContent
+nodes,nodes.py,POST,/projects/{project_id}/nodes/{node_id}/isolate,Link.Modify,isolate_node,Node context menu,Isolate (= Link.Modify),,src/app/services/node.service.ts:isolate
+nodes,nodes.py,GET,/projects/{project_id}/nodes/{node_id}/links,Link.Audit,get_node_links,Node context menu,Read the node's links,,
+nodes,nodes.py,DELETE,/projects/{project_id}/nodes/{node_id}/qemu/disk_image/{disk_name},Node.Allocate,delete_disk_image,Node context menu,Delete a disk image (= Node.Allocate),,
+nodes,nodes.py,POST,/projects/{project_id}/nodes/{node_id}/qemu/disk_image/{disk_name},Node.Allocate,create_disk_image,Node context menu,Create a disk image (= Node.Allocate),,src/app/services/qemu.service.ts:createDiskImage
+nodes,nodes.py,PUT,/projects/{project_id}/nodes/{node_id}/qemu/disk_image/{disk_name},Node.Allocate,update_disk_image,Node context menu,Resize a disk image (= Node.Allocate),,
+nodes,nodes.py,POST,/projects/{project_id}/nodes/{node_id}/reload,Node.PowerMgmt,reload_node,Node context menu / Nodes menu,Reload (= Node.PowerMgmt),,src/app/services/node.service.ts:reload
+nodes,nodes.py,POST,/projects/{project_id}/nodes/{node_id}/start,Node.PowerMgmt,start_node,Node context menu / Nodes menu,Start (= Node.PowerMgmt),,src/app/services/node.service.ts:start
+nodes,nodes.py,POST,/projects/{project_id}/nodes/{node_id}/stop,Node.PowerMgmt,stop_node,Node context menu / Nodes menu,Stop (= Node.PowerMgmt),,src/app/services/node.service.ts:stop
+nodes,nodes.py,POST,/projects/{project_id}/nodes/{node_id}/suspend,Node.PowerMgmt,suspend_node,Node context menu / Nodes menu,Suspend (= Node.PowerMgmt),,src/app/services/node.service.ts:suspend
+nodes,nodes.py,POST,/projects/{project_id}/nodes/{node_id}/unisolate,Link.Modify,unisolate_node,Node context menu,Remove isolation (= Link.Modify),,src/app/services/node.service.ts:unisolate
+pools,pools.py,GET,/pools,Pool.Audit,get_resource_pools,Management — Pools page / project dialog,Load the resource pool list,,src/app/services/resource-pools.service.ts:getAll
+pools,pools.py,POST,/pools,Pool.Allocate,create_resource_pool,Management — Pools page,Add resource pool (= Pool.Allocate),,src/app/services/resource-pools.service.ts:add
+pools,pools.py,DELETE,/pools/{resource_pool_id},Pool.Allocate,delete_resource_pool,Management — Pools page,Delete selected (= Pool.Allocate),,src/app/services/resource-pools.service.ts:delete
+pools,pools.py,GET,/pools/{resource_pool_id},Pool.Audit,get_resource_pool,Resource pool detail page,Load a resource pool,,src/app/services/resource-pools.service.ts:get
+pools,pools.py,PUT,/pools/{resource_pool_id},Pool.Modify,update_resource_pool,Resource pool detail page,Update resource pool / Add project (= Pool.Modify),,src/app/services/resource-pools.service.ts:update
+pools,pools.py,GET,/pools/{resource_pool_id}/resources,Pool.Audit,get_pool_resources,Resource pool detail page,Load the pool's resources,,src/app/services/resource-pools.service.ts:get | src/app/services/resource-pools.service.ts:switchMap
+pools,pools.py,DELETE,/pools/{resource_pool_id}/resources/{resource_id},Pool.Modify,remove_resource_from_pool,Resource pool detail page,Delete resource (= Pool.Modify),,src/app/services/resource-pools.service.ts:deleteResource
+pools,pools.py,PUT,/pools/{resource_pool_id}/resources/{resource_id},Pool.Modify,add_resource_to_pool,Resource pool detail page,Add a project to the pool (= Pool.Modify),,src/app/services/resource-pools.service.ts:addResource
+privileges,privileges.py,GET,/access/privileges,— (login only),get_privileges,Role detail page,Load the assignable privilege catalog,,src/app/services/privilege.service.ts:get
+projects,projects.py,GET,/projects,— (login only),get_projects,Projects page,Load the project list (the server filters by ACE/resource pool),,src/app/services/project.service.ts:list
+projects,projects.py,POST,/projects,Project.Allocate,create_project,Projects page,New project (button = Project.Allocate),,src/app/services/project.service.ts:add
+projects,projects.py,POST,/projects/load,Project.Allocate,load_project,Projects page,Reload the projects on the controller,,
+projects,projects.py,DELETE,/projects/{project_id},Project.Allocate,delete_project,Projects page,Delete project (button = Project.Allocate),,src/app/services/project.service.ts:delete
+projects,projects.py,GET,/projects/{project_id},Project.Audit,get_project,Project view,Load the project when it is opened,,src/app/services/project.service.ts:get
+projects,projects.py,PUT,/projects/{project_id},Project.Modify,update_project,Project view,"Save project settings, Map settings PUT items (= Project.Modify)",,src/app/services/project.service.ts:update
+projects,projects.py,POST,/projects/{project_id}/close,Project.Allocate,close_project,Project view toolbar,Close project (menu = Project.Allocate),,src/app/services/project.service.ts:close
+projects,projects.py,POST,/projects/{project_id}/duplicate,Project.Audit,duplicate_project,Projects page,Duplicate project (button = Project.Audit),,src/app/services/project.service.ts:duplicate
+projects,projects.py,GET,/projects/{project_id}/export,Project.Audit,export_project,Projects page / Project view menu,Export project (button = Project.Audit),,src/app/services/project.service.ts:export
+projects,projects.py,GET,/projects/{project_id}/files/{file_path:path},Project.Audit,get_file,Project files,Read a project file,,
+projects,projects.py,POST,/projects/{project_id}/files/{file_path:path},Project.Modify,write_file,Project files,Write or upload a project file,,
+projects,projects.py,GET,/projects/{project_id}/gns3file,Project.Audit,get_project_gns3_file,Topology preview,Read the .gns3 file to render the static preview,,src/app/services/project.service.ts:gns3file
+projects,projects.py,POST,/projects/{project_id}/import,Project.Allocate,import_project,Projects page,Import project (button = Project.Allocate),,
+projects,projects.py,POST,/projects/{project_id}/lock,Project.Modify,lock_project,Project view menu / canvas context menu,Lock all (= Project.Modify),,src/app/services/drawing.service.ts:lockAllNodes
+projects,projects.py,GET,/projects/{project_id}/locked,Project.Audit,locked_project,Project view,Read the lock state,,
+projects,projects.py,GET,/projects/{project_id}/marker-definitions,Project.Audit,get_marker_definitions,Marker manager — Definitions tab,Load the definitions,,src/app/services/marker.service.ts:listDefinitions
+projects,projects.py,POST,/projects/{project_id}/marker-definitions,Project.Modify,create_marker_definition,Marker manager — Definitions tab,Create a definition (= Project.Modify),,src/app/services/marker.service.ts:createDefinition
+projects,projects.py,DELETE,/projects/{project_id}/marker-definitions/{def_name},Project.Modify,delete_marker_definition,Marker manager — Definitions tab,Delete a definition (= Project.Modify),,src/app/services/marker.service.ts:deleteDefinition
+projects,projects.py,PUT,/projects/{project_id}/marker-definitions/{def_name},Project.Modify,update_marker_definition,Marker manager — Definitions tab,Edit a definition (= Project.Modify),,src/app/services/marker.service.ts:updateDefinition
+projects,projects.py,POST,/projects/{project_id}/marker-definitions/{def_name}/pause,Project.Modify,pause_marker_definition,Marker manager — Definitions tab,Pause (= Project.Modify),,src/app/services/marker.service.ts:pauseDefinition
+projects,projects.py,POST,/projects/{project_id}/marker-definitions/{def_name}/resume,Project.Modify,resume_marker_definition,Marker manager — Definitions tab,Resume (= Project.Modify),,src/app/services/marker.service.ts:resumeDefinition
+projects,projects.py,GET,/projects/{project_id}/markers,Project.Audit,get_project_markers,Marker manager,Load the aggregate markers when the window opens,,src/app/services/marker.service.ts:aggregateList
+projects,projects.py,GET,/projects/{project_id}/markers/tags/{tag}/replay/frame/detail,Project.Audit,replay_tag_frame_detail,Marker replay overlay,Load a single frame's detail,,src/app/services/marker-replay.service.ts:replayFrameDetail
+projects,projects.py,GET,/projects/{project_id}/markers/tags/{tag}/replay/frames,Project.Audit,replay_tag_frames,Marker replay overlay,Load the replay frame list,,
+projects,projects.py,GET,/projects/{project_id}/markers/tags/{tag}/replay/range,Project.Audit,replay_tag_range,Marker replay overlay,Load the replay frame range,,
+projects,projects.py,GET,/projects/{project_id}/me/privileges,Project.Audit,get_logged_in_user_privileges_on_project,Project view (global),Data source for privilege-based rendering inside the project,,src/app/services/project-permission.service.ts:load
+projects,projects.py,GET,/projects/{project_id}/notifications,Project.Audit,project_http_notifications,Project view,Project notifications / events,,
+projects,projects.py,WEBSOCKET,/projects/{project_id}/notifications/markers/ws,Project.Audit,project_marker_ws_notifications,Marker manager / project view,Realtime marker notifications (= Project.Audit),,
+projects,projects.py,WEBSOCKET,/projects/{project_id}/notifications/ws,Project.Audit,project_ws_notifications,Project view,Project realtime events (= Project.Audit),,
+projects,projects.py,POST,/projects/{project_id}/open,Project.Allocate,open_project,Projects page,Open project (button = Project.Allocate),,src/app/services/project.service.ts:open
+projects,projects.py,GET,/projects/{project_id}/stats,Project.Audit,get_project_stats,Project view,Project statistics (node/link counts),,src/app/services/project.service.ts:getStatistics
+projects,projects.py,POST,/projects/{project_id}/templates/{template_id},Node.Allocate,create_node_from_template,Add node palette,Create a node from a template (= Node.Allocate),,src/app/services/node.service.ts:createFromTemplate
+projects,projects.py,POST,/projects/{project_id}/unlock,Project.Modify,unlock_project,Project view menu / canvas context menu,Unlock all (= Project.Modify),,src/app/services/drawing.service.ts:unLockAllNodes
+roles,roles.py,GET,/access/roles,Role.Audit,get_roles,Management — Roles page,Load the role list,,src/app/services/role.service.ts:get
+roles,roles.py,POST,/access/roles,Role.Allocate,create_role,Management — Roles page,Add role (= Role.Allocate),,src/app/services/role.service.ts:create
+roles,roles.py,DELETE,/access/roles/{role_id},Role.Allocate,delete_role,Management — Roles page,Delete roles (= Role.Allocate),,src/app/services/role.service.ts:delete
+roles,roles.py,GET,/access/roles/{role_id},Role.Audit,get_role,Role detail page,Load a role,,src/app/services/role.service.ts:getById
+roles,roles.py,PUT,/access/roles/{role_id},Role.Modify,update_role,Role detail page,Update Role (= Role.Modify),,src/app/services/role.service.ts:update
+roles,roles.py,GET,/access/roles/{role_id}/privileges,Role.Audit,get_role_privileges,Role detail page,Load the role's privileges,,
+roles,roles.py,DELETE,/access/roles/{role_id}/privileges/{privilege_id},Role.Modify,remove_privilege_from_role,Role detail page,Revoke a privilege (= Role.Modify),,src/app/services/role.service.ts:removePrivileges
+roles,roles.py,PUT,/access/roles/{role_id}/privileges/{privilege_id},Role.Modify,add_privilege_to_role,Role detail page,Grant a privilege (= Role.Modify),,src/app/services/role.service.ts:setPrivileges
+settings,settings.py,GET,/settings,Server.Audit,get_server_settings,Server settings page,Load the server settings,,src/app/services/server-settings.service.ts:getServerSettings
+settings,settings.py,PUT,/settings,Server.Modify,update_server_settings,Server settings page,Save changes (= Server.Modify),,src/app/services/server-settings.service.ts:updateServerSettings
+snapshots,snapshots.py,GET,/projects/{project_id}/snapshots,Snapshot.Audit,get_snapshots,Snapshots dialog,Load the snapshot list,,src/app/services/snapshot.service.ts:list
+snapshots,snapshots.py,POST,/projects/{project_id}/snapshots,Snapshot.Allocate,create_snapshot,Snapshots dialog,Create snapshot (= Snapshot.Allocate),,src/app/services/snapshot.service.ts:create
+snapshots,snapshots.py,DELETE,/projects/{project_id}/snapshots/{snapshot_id},Snapshot.Allocate,delete_snapshot,Snapshots dialog,Delete snapshot (= Snapshot.Allocate),,src/app/services/snapshot.service.ts:delete
+snapshots,snapshots.py,POST,/projects/{project_id}/snapshots/{snapshot_id}/restore,Snapshot.Restore,restore_snapshot,Snapshots dialog,Restore snapshot (= Snapshot.Restore),,src/app/services/snapshot.service.ts:restore
+symbols,symbols.py,GET,/symbols,Symbol.Audit,get_symbols,Templates page / Add node palette,Load symbols and icons,,src/app/services/symbol.service.ts:load
+symbols,symbols.py,GET,/symbols/default_symbols,Symbol.Audit,get_default_symbols,Templates page,Load the default symbol list,,
+symbols,symbols.py,DELETE,/symbols/{symbol_id:path},Symbol.Allocate,delete_symbol,Template detail page,Delete a symbol (= Symbol.Allocate),,src/app/services/symbol.service.ts:delete
+symbols,symbols.py,GET,/symbols/{symbol_id:path}/dimensions,Symbol.Audit,get_symbol_dimensions,Template detail page / Add node palette,Read symbol dimensions,,src/app/services/symbol.service.ts:getDimensions
+symbols,symbols.py,GET,/symbols/{symbol_id:path}/raw,Symbol.Audit,get_symbol,Template detail page / Add node palette,Read the symbol image,,
+symbols,symbols.py,POST,/symbols/{symbol_id:path}/raw,Symbol.Allocate,upload_symbol,Template detail page,Upload a custom symbol (= Symbol.Allocate),,src/app/services/symbol.service.ts:add
+templates,templates.py,GET,/templates,Template.Audit,get_templates,Templates page / Add node palette,Load the template list (read-only users only use it through the Add node palette),,src/app/services/built-in-templates.service.ts:getTemplates | src/app/services/docker.service.ts:getTemplates | src/app/services/ios.service.ts:getTemplates | src/app/services/iou.service.ts:getTemplates | src/app/services/qemu.service.ts:getTemplates | src/app/services/template.service.ts:list | src/app/services/virtual-box.service.ts:getTemplates | src/app/services/vmware.service.ts:getTemplates | src/app/services/vpcs.service.ts:getTemplates
+templates,templates.py,POST,/templates,Template.Allocate,create_template,Templates page / install wizard,"Create a template, duplicate one, or import an appliance (= Template.Allocate)",,src/app/services/built-in-templates.service.ts:addTemplate | src/app/services/docker.service.ts:addTemplate | src/app/services/ios.service.ts:addTemplate | src/app/services/iou.service.ts:addTemplate | src/app/services/qemu.service.ts:addTemplate | src/app/services/template.service.ts:switchMap | src/app/services/virtual-box.service.ts:addTemplate | src/app/services/vmware.service.ts:addTemplate | src/app/services/vpcs.service.ts:addTemplate
+templates,templates.py,DELETE,/templates/{template_id},Template.Allocate,delete_template,Templates page,Delete the template (= Template.Allocate),,
+templates,templates.py,GET,/templates/{template_id},Template.Audit,get_template,Template detail page,Load a single template (route needs Template.Audit),,src/app/services/built-in-templates.service.ts:getTemplate | src/app/services/docker.service.ts:getTemplate | src/app/services/ios.service.ts:getTemplate | src/app/services/iou.service.ts:getTemplate | src/app/services/qemu.service.ts:getTemplate | src/app/services/template.service.ts:duplicate | src/app/services/virtual-box.service.ts:getTemplate | src/app/services/vmware.service.ts:getTemplate | src/app/services/vpcs.service.ts:getTemplate
+templates,templates.py,PUT,/templates/{template_id},Template.Modify,update_template,Template detail page,Save the template (= Template.Modify),,src/app/services/built-in-templates.service.ts:saveTemplate | src/app/services/docker.service.ts:saveTemplate | src/app/services/ios.service.ts:saveTemplate | src/app/services/iou.service.ts:saveTemplate | src/app/services/qemu.service.ts:saveTemplate | src/app/services/virtual-box.service.ts:saveTemplate | src/app/services/vmware.service.ts:saveTemplate | src/app/services/vpcs.service.ts:saveTemplate
+templates,templates.py,GET,/templates/{template_id}/base-config/{filename},Template.Audit,get_base_config,Template detail page,Read a base config,,
+templates,templates.py,PUT,/templates/{template_id}/base-config/{filename},Template.Modify,update_base_config,Template detail page,Save a base config (= Template.Modify),,
+templates,templates.py,GET,/templates/{template_id}/base-configs,Template.Audit,list_base_configs,Template detail page,List base configs,,
+templates,templates.py,POST,/templates/{template_id}/duplicate,Template.Allocate,duplicate_template,Templates page,Duplicate (= Template.Allocate),,
+users,users.py,GET,/access/users,User.Audit,get_users,Management — Users page,Load the user list,,src/app/services/user.service.ts:list
+users,users.py,POST,/access/users,User.Allocate,create_user,Management — Users page,Add user (= User.Allocate),,src/app/services/user.service.ts:add
+users,users.py,POST,/access/users/authenticate,— (no gate declared),authenticate,Login page,Sign in with an existing token,,src/app/services/login.service.ts:getLoggedUserRefToken
+users,users.py,POST,/access/users/login,— (no gate declared),login,Login page,Sign in,,src/app/services/login.service.ts:login
+users,users.py,POST,/access/users/logout,— (login only),logout,App shell,Sign out,,
+users,users.py,GET,/access/users/me,— (login only),get_logged_in_user,App shell,Load the signed-in user,,src/app/services/login.service.ts:getLoggedUser | src/app/services/user.service.ts:getInformationAboutLoggedUser
+users,users.py,PUT,/access/users/me,— (login only),update_logged_in_user,Profile / Change password dialog,"Edit own profile or password (self-service, no admin privilege)",,src/app/services/user.service.ts:update
+users,users.py,GET,/access/users/me/privileges,— (login only),get_logged_in_user_privileges,App shell,Data source for privilege-based rendering of the sidebar and pages,,src/app/services/permission.service.ts:fetch
+users,users.py,POST,/access/users/refresh,— (no gate declared),refresh_access_token,Global,Token refresh (automatic in HttpController),,
+users,users.py,DELETE,/access/users/{user_id},User.Allocate,delete_user,Management — Users page,Delete / bulk delete (= User.Allocate),,src/app/services/user.service.ts:delete
+users,users.py,GET,/access/users/{user_id},User.Audit,get_user,Management — Users page / user details dialog,Read a user,,src/app/services/user.service.ts:get
+users,users.py,PUT,/access/users/{user_id},User.Modify,update_user,User details dialog,Save changes / Change Password (= User.Modify),,src/app/services/user.service.ts:update
+users,users.py,GET,/access/users/{user_id}/groups,Group.Audit,get_user_memberships,User details dialog,Load the user's groups (the server requires Group.Audit),,src/app/services/user.service.ts:getGroupsByUserId
