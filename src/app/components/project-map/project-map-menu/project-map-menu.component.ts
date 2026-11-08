@@ -35,6 +35,7 @@ import { DrawingsDataSource } from '../../../cartography/datasources/drawings-da
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { AiChatStore } from '../../../stores/ai-chat.store';
+import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.directive';
 @Component({
   standalone: true,
   selector: 'app-project-map-menu',
@@ -50,6 +51,7 @@ import { AiChatStore } from '../../../stores/ai-chat.store';
     MatDividerModule,
     MatMenuModule,
     DrawingAddedComponent,
+    HasProjectPrivilegeDirective,
   ],
 })
 export class ProjectMapMenuComponent implements OnInit, OnDestroy {
@@ -69,6 +71,11 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   readonly project = input<Project>(undefined);
   readonly controller = input<Controller>(undefined);
   @Output() aiChatOpened = new EventEmitter<void>();
+
+  get readonly() {
+    const project = this.project();
+    return !!project && this.projectServices.isReadOnly(project);
+  }
 
   public selectedDrawing: string;
   public lock: string = 'lock_open';

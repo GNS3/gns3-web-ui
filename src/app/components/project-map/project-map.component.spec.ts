@@ -714,14 +714,22 @@ describe('ProjectMapComponent', () => {
     mockNodesWidget = { };
     mockMarkerFlashService = { reset: () => {} };
     mockMarkerRegistryService = { reset: () => {} };
+    const projectMapPrivileges = new Set<string>([
+      'Node.Allocate',
+      'Link.Allocate',
+      'Snapshot.Audit',
+      'Project.Allocate',
+      'Project.Audit',
+      'Project.Modify',
+    ]);
     mockProjectPermissionService = {
       load: vi.fn(),
       clear: vi.fn(),
-      has: vi.fn(() => false),
-      hasAny: vi.fn(() => false),
+      has: (privilege: string) => projectMapPrivileges.has(privilege),
+      hasAny: (privileges: string[]) => privileges.some((privilege) => projectMapPrivileges.has(privilege)),
       canWrite: vi.fn(() => false),
-      privileges: () => new Set<string>(),
-      loaded: () => false,
+      privileges: () => projectMapPrivileges,
+      loaded: () => true,
     };
 
     // Configure TestBed with cartography module and all required mocks

@@ -15,9 +15,15 @@
     <div class="project-titlebar-controls">
       @if (!readonly) {
       <div class="menu-button-group primary-controls">
-        <app-template [controller]="controller" [project]="project" (nodeCreationChange)="onNodeCreation($event)">
+        <app-template
+          *appHasProjectPrivilege="'Node.Allocate'"
+          [controller]="controller"
+          [project]="project"
+          (nodeCreationChange)="onNodeCreation($event)"
+        >
         </app-template>
         <button
+          *appHasProjectPrivilege="'Link.Allocate'"
           matTooltip="Add a link"
           matTooltipClass="custom-tooltip"
           matTooltipPosition="below"
@@ -98,31 +104,31 @@
     <!-- Project Settings sub-menu -->
     <mat-menu #projectMenu="matMenu" [overlapTrigger]="false">
       <div>
-        <button mat-menu-item (click)="addNewProject()">
+        <button mat-menu-item *appHasProjectPrivilege="'Project.Allocate'" (click)="addNewProject()">
           <mat-icon>add</mat-icon>
           <span>Add new blank project</span>
         </button>
-        <button mat-menu-item (click)="saveProject()">
+        <button mat-menu-item *appHasProjectPrivilege="'Project.Audit'" (click)="saveProject()">
           <mat-icon>save</mat-icon>
           <span>Save project as</span>
         </button>
-        <button mat-menu-item (click)="editProject()">
+        <button mat-menu-item *appHasProjectPrivilege="'Project.Modify'" (click)="editProject()">
           <mat-icon>edit</mat-icon>
           <span>Edit project</span>
         </button>
-        <button mat-menu-item (click)="exportProject()">
+        <button mat-menu-item *appHasProjectPrivilege="'Project.Audit'" (click)="exportProject()">
           <mat-icon>call_made</mat-icon>
           <span>Export project</span>
         </button>
-        <button mat-menu-item (click)="importProject()">
+        <button mat-menu-item *appHasProjectPrivilege="'Project.Allocate'" (click)="importProject()">
           <mat-icon>call_received</mat-icon>
           <span>Import project</span>
         </button>
-        <button mat-menu-item (click)="closeProject()">
+        <button mat-menu-item *appHasProjectPrivilege="'Project.Allocate'" (click)="closeProject()">
           <mat-icon>close</mat-icon>
           <span>Close project</span>
         </button>
-        <button mat-menu-item (click)="deleteProject()">
+        <button mat-menu-item *appHasProjectPrivilege="'Project.Allocate'" (click)="deleteProject()">
           <mat-icon>delete</mat-icon>
           <span>Delete project</span>
         </button>
@@ -132,7 +138,11 @@
     <!-- Map Settings sub-menu -->
     <mat-menu #viewMenu="matMenu" class="map-settings-menu" [overlapTrigger]="false">
       <div class="options-item">
-        <mat-checkbox [checked]="isInterfaceLabelVisible" (change)="toggleShowInterfaceLabels($event.checked)">
+        <mat-checkbox
+          *appHasProjectPrivilege="'Project.Modify'"
+          [checked]="isInterfaceLabelVisible"
+          (change)="toggleShowInterfaceLabels($event.checked)"
+        >
           Show interface labels
         </mat-checkbox>
         <mat-checkbox [checked]="isConsoleVisible" (change)="toggleShowConsole($event.checked)">
@@ -144,12 +154,28 @@
         <mat-checkbox [checked]="notificationsVisibility" (change)="toggleNotifications($event.checked)">
           Show notification toasts
         </mat-checkbox>
-        <mat-checkbox [checked]="layersVisibility" (change)="toggleLayers($event.checked)"> Show layers </mat-checkbox>
+        <mat-checkbox
+          *appHasProjectPrivilege="'Project.Modify'"
+          [checked]="layersVisibility"
+          (change)="toggleLayers($event.checked)"
+        >
+          Show layers
+        </mat-checkbox>
         <mat-checkbox [checked]="itemLockStatusVisibility" (change)="toggleItemLockStatus($event.checked)">
           Show item lock status
         </mat-checkbox>
-        <mat-checkbox [checked]="gridVisibility" (change)="toggleGrid($event.checked)"> Show grid </mat-checkbox>
-        <mat-checkbox [checked]="project.snap_to_grid" (change)="toggleSnapToGrid($event.checked)">
+        <mat-checkbox
+          *appHasProjectPrivilege="'Project.Modify'"
+          [checked]="gridVisibility"
+          (change)="toggleGrid($event.checked)"
+        >
+          Show grid
+        </mat-checkbox>
+        <mat-checkbox
+          *appHasProjectPrivilege="'Project.Modify'"
+          [checked]="project.snap_to_grid"
+          (change)="toggleSnapToGrid($event.checked)"
+        >
           Snap to grid
         </mat-checkbox>
         <mat-checkbox [checked]="symbolScaling" (change)="toggleSymbolScaling($event.checked)">
@@ -266,7 +292,12 @@
     </div>
     @if (!readonly) {
     <div class="section">
-      <app-snapshot-menu-item [controller]="controller" [project]="project"> </app-snapshot-menu-item>
+      <app-snapshot-menu-item
+        *appHasProjectPrivilege="'Snapshot.Audit'"
+        [controller]="controller"
+        [project]="project"
+      >
+      </app-snapshot-menu-item>
     </div>
     }
   </div>

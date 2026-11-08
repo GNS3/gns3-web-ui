@@ -52,6 +52,7 @@ import { AlignHorizontallyActionComponent } from './actions/align-horizontally/a
 import { AlignVerticallyActionComponent } from './actions/align_vertically/align-vertically.component';
 import { ShowInFileManagerActionComponent } from './actions/show-in-file-manager-action/show-in-file-manager-action.component';
 import { FixMissingImageActionComponent } from './actions/fix-missing-image-action/fix-missing-image-action.component';
+import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.directive';
 
 @Component({
   selector: 'app-context-menu',
@@ -101,6 +102,7 @@ import { FixMissingImageActionComponent } from './actions/fix-missing-image-acti
     AlignVerticallyActionComponent,
     ShowInFileManagerActionComponent,
     FixMissingImageActionComponent,
+    HasProjectPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -207,6 +209,39 @@ export class ContextMenuComponent implements OnInit {
    */
   isCloudLikeNode(nodeType: string): boolean {
     return nodeType === 'cloud' || nodeType === 'ethernet_switch' || nodeType === 'ethernet_hub' || nodeType === 'nat';
+  }
+
+  /**
+   * Privileges required to duplicate the current selection — one entry per
+   * selected element kind, all of them required (the directive matches 'all').
+   */
+  get duplicatePrivileges(): string[] {
+    const privileges: string[] = [];
+    if (this.nodes.length) privileges.push('Node.Allocate');
+    if (this.drawings.length) privileges.push('Drawing.Allocate');
+    return privileges;
+  }
+
+  /** Privileges required to delete the current selection (nodes, drawings and/or links). */
+  get deletePrivileges(): string[] {
+    const privileges = this.duplicatePrivileges;
+    if (this.links.length) privileges.push('Link.Allocate');
+    return privileges;
+  }
+
+  /** Privileges required to change the layer or lock state of the current selection. */
+  get layerPrivileges(): string[] {
+    const privileges: string[] = [];
+    if (this.nodes.length) privileges.push('Node.Modify');
+    if (this.drawings.length) privileges.push('Drawing.Modify');
+    return privileges;
+  }
+
+  /** Privilege required to edit the selected text: drawing text, link text or node/label text. */
+  get editTextPrivileges(): string[] {
+    if (this.drawings.length) return ['Drawing.Modify'];
+    if (this.linkNodes.length) return ['Link.Modify'];
+    return ['Node.Modify'];
   }
 
   private resetCapabilities() {

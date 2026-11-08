@@ -1,4 +1,6 @@
+@if (!readonly) {
 <button
+  *appHasProjectPrivilege="'Drawing.Allocate'"
   matTooltip="Add a note"
   matTooltipClass="custom-tooltip"
   matTooltipPosition="left"
@@ -16,6 +18,7 @@
   (change)="uploadImageFile($event)"
 />
 <button
+  *appHasProjectPrivilege="'Drawing.Allocate'"
   matTooltip="Insert a picture"
   matTooltipClass="custom-tooltip"
   matTooltipPosition="left"
@@ -26,6 +29,7 @@
   <mat-icon>image</mat-icon>
 </button>
 <button
+  *appHasProjectPrivilege="'Drawing.Allocate'"
   matTooltip="Draw a rectangle"
   matTooltipClass="custom-tooltip"
   matTooltipPosition="left"
@@ -36,6 +40,7 @@
   <mat-icon [ngClass]="getCssClassForIcon('rectangle')">crop_3_2</mat-icon>
 </button>
 <button
+  *appHasProjectPrivilege="'Drawing.Allocate'"
   matTooltip="Draw an ellipse"
   matTooltipClass="custom-tooltip"
   matTooltipPosition="left"
@@ -47,6 +52,7 @@
 </button>
 @if (!isLightThemeEnabled) {
 <button
+  *appHasProjectPrivilege="'Drawing.Allocate'"
   matTooltip="Draw a line"
   matTooltipClass="custom-tooltip"
   matTooltipPosition="left"
@@ -68,6 +74,7 @@
 </button>
 } @if (isLightThemeEnabled) {
 <button
+  *appHasProjectPrivilege="'Drawing.Allocate'"
   matTooltip="Draw a line"
   matTooltipClass="custom-tooltip"
   matTooltipPosition="left"
@@ -89,6 +96,7 @@
 </button>
 }
 <button
+  *appHasProjectPrivilege="'Drawing.Allocate'"
   matTooltip="Draw a curve"
   matTooltipClass="custom-tooltip"
   matTooltipPosition="left"
@@ -110,6 +118,7 @@
   </svg>
 </button>
 <button
+  *appHasProjectPrivilege="'Project.Modify'"
   matTooltip="Lock or unlock all items"
   matTooltipClass="custom-tooltip"
   matTooltipPosition="left"
@@ -119,6 +128,7 @@
 >
   <mat-icon [ngClass]="{ unmarkedLight: !isLocked && isLightThemeEnabled, marked: isLocked }">{{ lock }}</mat-icon>
 </button>
+}
 <button
   matTooltip="Take a screenshot"
   matTooltipClass="custom-tooltip"

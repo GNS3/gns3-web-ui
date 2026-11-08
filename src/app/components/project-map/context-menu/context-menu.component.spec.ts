@@ -12,6 +12,7 @@ import { LinkNode } from '@models/link-node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
+import { ProjectPermissionService } from '@services/project-permission.service';
 
 describe('ContextMenuComponent', () => {
   let component: ContextMenuComponent;
@@ -230,11 +231,34 @@ describe('ContextMenuComponent', () => {
       isReadOnly: vi.fn((project: Project) => project.readonly),
     };
 
+    const contextMenuPrivileges = [
+      'Node.Audit',
+      'Node.Modify',
+      'Node.PowerMgmt',
+      'Node.Console',
+      'Node.Allocate',
+      'Link.Modify',
+      'Link.Capture',
+      'Link.Audit',
+      'Link.Allocate',
+      'Drawing.Modify',
+      'Drawing.Allocate',
+    ];
+
     await TestBed.configureTestingModule({
       imports: [ContextMenuComponent, MatMenuModule],
       providers: [
         { provide: DomSanitizer, useValue: mockSanitizer },
         { provide: ProjectService, useValue: mockProjectService },
+        {
+          provide: ProjectPermissionService,
+          useValue: {
+            privileges: () => new Set<string>(contextMenuPrivileges),
+            has: (privilege: string) => contextMenuPrivileges.includes(privilege),
+            hasAny: () => true,
+            loaded: () => true,
+          },
+        },
       ],
     }).compileComponents();
 

@@ -11,9 +11,11 @@ import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeService } from '@services/node.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ControllerService } from '@services/controller.service';
+import { ProjectService } from '@services/project.service';
 import { SettingsService } from '@services/settings.service';
 import { ToasterService } from '@services/toaster.service';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
+import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.directive';
 
 @Component({
   standalone: true,
@@ -21,7 +23,7 @@ import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-di
   templateUrl: './nodes-menu.component.html',
   styleUrls: ['./nodes-menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, HasProjectPrivilegeDirective],
 })
 export class NodesMenuComponent {
   private nodeService = inject(NodeService);
@@ -29,12 +31,18 @@ export class NodesMenuComponent {
   private nodesDataSource = inject(NodesDataSource);
   private toasterService = inject(ToasterService);
   private controllerService = inject(ControllerService);
+  private projectService = inject(ProjectService);
   private settingsService = inject(SettingsService);
   private mapSettingsService = inject(MapSettingsService);
   private dialog = inject(MatDialog);
   private cdr = inject(ChangeDetectorRef);
   readonly project = input<Project>(undefined);
   readonly controller = input<Controller>(undefined);
+
+  get readonly() {
+    const project = this.project();
+    return !!project && this.projectService.isReadOnly(project);
+  }
 
   async startConsoleForAllNodes() {
     if (this.mapSettingsService.openConsolesInWidget) {

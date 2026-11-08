@@ -132,6 +132,7 @@ import { NotificationCenterComponent } from '@components/notification-center/not
 import { NotificationCenterService } from '@services/notification-center.service';
 import { describeTopologyItems } from '@utils/topology-delete-summary.util';
 import type { TopologyItemCounts } from '@utils/topology-delete-summary.util';
+import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.directive';
 
 @Component({
   selector: 'app-project-map',
@@ -171,6 +172,7 @@ import type { TopologyItemCounts } from '@utils/topology-delete-summary.util';
     MarkerManagerComponent,
     MarkerReplayOverlayComponent,
     NotificationCenterComponent,
+    HasProjectPrivilegeDirective,
   ],
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
@@ -667,6 +669,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     };
     const selectedCount = selectedNodes.length + selectedLinks.length + selectedDrawings.length;
     if (selectedCount === 0) return;
+    // Honest rendering gate for the keyboard path: the context-menu delete action is
+    // hidden by privilege, so the Del key must not offer the same operation either.
+    if (this.readonly) return;
+    const requiredPrivileges: string[] = [];
+    if (selectedNodes.length) requiredPrivileges.push('Node.Allocate');
+    if (selectedDrawings.length) requiredPrivileges.push('Drawing.Allocate');
+    if (selectedLinks.length) requiredPrivileges.push('Link.Allocate');
+    if (!requiredPrivileges.every((privilege) => this.projectPermissionService.has(privilege))) return;
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-danger-panel'],
       autoFocus: '.cancel-button',
