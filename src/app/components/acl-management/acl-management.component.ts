@@ -16,19 +16,18 @@ import {
   ChangeDetectorRef,
   Component,
   OnInit,
-  QueryList,
-  ViewChildren,
   inject,
   signal,
-  AfterViewInit,
+  computed,
+  effect,
   model,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -37,6 +36,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Controller } from '@models/controller';
 import { ACE } from '@models/api/ACE';
@@ -50,7 +50,8 @@ import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-di
 import { Endpoint } from '@models/api/endpoint';
 import { ResourcePool } from '@models/resourcePools/ResourcePool';
 import { ResourcePoolsService } from '@services/resource-pools.service';
-import { AceFilterPipe } from '@filters/ace-filter.pipe';
+
+type AceSortDirection = 'asc' | 'desc' | '';
 
 @Component({
   selector: 'app-acl-management',
@@ -61,7 +62,7 @@ import { AceFilterPipe } from '@filters/ace-filter.pipe';
     FormsModule,
     RouterModule,
     MatTableModule,
-    MatPaginator,
+    MatPaginatorModule,
     MatSortModule,
     MatCheckboxModule,
     MatButtonModule,
@@ -71,11 +72,11 @@ import { AceFilterPipe } from '@filters/ace-filter.pipe';
     MatInputModule,
     MatDialogModule,
     MatCardModule,
-    AceFilterPipe,
+    MatProgressSpinnerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AclManagementComponent implements OnInit, AfterViewInit {
+export class AclManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private toasterService = inject(ToasterService);
@@ -84,19 +85,61 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
   public dialog = inject(MatDialog);
   private cdr = inject(ChangeDetectorRef);
 
-  @ViewChildren('acesPaginator') acesPaginator: QueryList<MatPaginator>;
-  @ViewChildren('acesSort') acesSort: QueryList<MatSort>;
   controller: Controller;
-  public displayedColumns = ['select', 'path', 'user/group', 'role', 'propagate', 'allowed', 'updated_at'];
+  public displayedColumns = ['select', 'path', 'user/group', 'role', 'propagate', 'allowed', 'updated_at', 'actions'];
   selection = new SelectionModel<ACE>(true, []);
-  aces: ACE[];
-  dataSource = new MatTableDataSource<ACE>();
   readonly isReady = signal(false);
   readonly searchText = model('');
   readonly endpoints = signal<Endpoint[]>([]);
   readonly resourcePools = signal<ResourcePool[]>([]);
+  readonly aces = signal<ACE[]>([]);
 
-  constructor() {}
+  // Sorting / pagination state (same pattern as user-management)
+  readonly sortActive = signal('path');
+  readonly sortDirection = signal<AceSortDirection>('asc');
+  readonly pageIndex = signal(0);
+  readonly pageSize = signal(10);
+  readonly pageSizeOptions = [5, 10, 20];
+
+  /** ACEs matching the search text, sorted by the active column. */
+  readonly filteredAces = computed(() => {
+    const search = this.searchText().trim().toLowerCase();
+    const aces = this.aces();
+
+    const matched = search
+      ? aces.filter((ace) =>
+          [this.getNameByUuidFromEndpoint(ace.path), this.getNameByUuidFromEndpoint(ace.user_id ?? ''), this.getNameByUuidFromEndpoint(ace.group_id ?? ''), this.getNameByUuidFromEndpoint(ace.role_id)]
+            .some((value) => value.toLowerCase().includes(search))
+        )
+      : aces;
+
+    const active = this.sortActive();
+    const direction = this.sortDirection();
+    if (!active || !direction) {
+      return matched;
+    }
+
+    return [...matched].sort(
+      (left, right) =>
+        this.sortValue(left, active).localeCompare(this.sortValue(right, active), undefined, { numeric: true, sensitivity: 'base' }) *
+        (direction === 'asc' ? 1 : -1)
+    );
+  });
+
+  readonly paginatedAces = computed(() => {
+    const start = this.pageIndex() * this.pageSize();
+    return this.filteredAces().slice(start, start + this.pageSize());
+  });
+
+  constructor() {
+    // Keep the page index valid whenever the filtered set shrinks.
+    effect(() => {
+      const lastPage = Math.max(Math.ceil(this.filteredAces().length / this.pageSize()) - 1, 0);
+      if (this.pageIndex() > lastPage) {
+        this.pageIndex.set(lastPage);
+      }
+    });
+  }
 
   ngOnInit(): void {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
@@ -126,33 +169,47 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
-    this.acesPaginator.changes.subscribe((comps: QueryList<MatPaginator>) => {
-      this.dataSource.paginator = comps.first;
-    });
+  onSortChange(sort: Sort): void {
+    this.sortActive.set(sort.active || 'path');
+    this.sortDirection.set(sort.direction);
+    this.pageIndex.set(0);
+  }
 
-    this.acesSort.changes.subscribe((comps: QueryList<MatSort>) => {
-      this.dataSource.sort = comps.first;
-    });
+  onPageChange(event: PageEvent): void {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+  }
 
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      switch (property) {
-        case 'path':
-        case 'user/group':
-        case 'role':
-          return item[property] ? item[property].toLowerCase() : '';
-        default:
-          return item[property];
-      }
-    };
+  onSearchChange(value: string): void {
+    this.searchText.set(value);
+    this.pageIndex.set(0);
+  }
+
+  trackAce(_index: number, ace: ACE): string {
+    return ace.ace_id;
+  }
+
+  private sortValue(ace: ACE, property: string): string {
+    switch (property) {
+      case 'path':
+        return this.getNameByUuidFromEndpoint(ace.path).toLowerCase();
+      case 'user/group':
+        return this.getNameByUuidFromEndpoint((ace.user_id ?? ace.group_id) ?? '').toLowerCase();
+      case 'role':
+        return this.getNameByUuidFromEndpoint(ace.role_id).toLowerCase();
+      case 'propagate':
+      case 'allowed':
+        return ace[property] ? '1' : '0';
+      default:
+        return String(ace[property as keyof ACE] ?? '').toLowerCase();
+    }
   }
 
   refresh() {
     this.aclService.list(this.controller).subscribe({
       next: (aces: ACE[]) => {
         this.isReady.set(true);
-        this.aces = aces;
-        this.dataSource.data = aces;
+        this.aces.set(aces);
         this.selection.clear();
       },
       error: (err) => {
@@ -175,14 +232,26 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(() => this.refresh());
   }
 
+  onEdit(ace: ACE) {
+    const dialogRef = this.dialog.open(AddAceDialogComponent, {
+      panelClass: ['base-dialog-panel', 'add-ace-dialog-panel', 'dialog-extra-large-panel'],
+      autoFocus: false,
+      disableClose: true,
+      data: { endpoints: this.endpoints(), ace },
+    });
+    let instance = dialogRef.componentInstance;
+    instance.controller = this.controller;
+    dialogRef.afterClosed().subscribe(() => this.refresh());
+  }
+
   onDelete(ace: ACE) {
     this.dialog
       .open(ConfirmationDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
-          title: 'Delete access rule?',
-          message: `The access rule for "${ace.path}" will be permanently deleted.`,
+          title: 'Delete ACE rule?',
+          message: `The ACE rule for "${ace.path}" will be permanently deleted.`,
           confirmButtonText: 'Delete rule',
           tone: 'danger',
         },
@@ -192,7 +261,7 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
         if (isDeletedConfirm) {
           this.aclService.delete(this.controller, ace.ace_id).subscribe({
             next: () => {
-              this.toasterService.success('Access rule deleted.');
+              this.toasterService.success('ACE rule deleted.');
               this.refresh();
             },
             error: (err) => {
@@ -206,13 +275,16 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
   }
 
   isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.aces.length;
-    return numSelected === numRows;
+    const visibleAces = this.filteredAces();
+    return visibleAces.length > 0 && this.selection.selected.length === visibleAces.length;
   }
 
   masterToggle() {
-    this.isAllSelected() ? this.selection.clear() : this.aces.forEach((row) => this.selection.select(row));
+    if (this.isAllSelected()) {
+      this.selection.clear();
+    } else {
+      this.filteredAces().forEach((row) => this.selection.select(row));
+    }
   }
 
   deleteMultiple() {
@@ -222,8 +294,8 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
-          title: 'Delete access rules?',
-          message: `${selectedAces.length} selected access rules will be permanently deleted.`,
+          title: 'Delete ACE rules?',
+          message: `${selectedAces.length} selected ACE rules will be permanently deleted.`,
           details: selectedAces.map((ace) => ace.path),
           confirmButtonText: 'Delete rules',
           tone: 'danger',
@@ -234,7 +306,7 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
         if (isDeletedConfirm) {
           const completion = createActionCompletion(selectedAces.length, (count) => {
             if (count > 0) {
-              this.toasterService.success(`${count} access ${count === 1 ? 'rule' : 'rules'} deleted.`);
+              this.toasterService.success(`${count} ACE ${count === 1 ? 'rule' : 'rules'} deleted.`);
               this.refresh();
             }
           });
@@ -255,6 +327,10 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
   }
 
   getNameByUuidFromEndpoint(path: string): string {
+    if (!path) {
+      return '';
+    }
+
     // Check if the path is a resource pool path (/pools/{pool_id})
     const poolMatch = path.match(/^\/pools\/(.+)$/);
     if (poolMatch) {

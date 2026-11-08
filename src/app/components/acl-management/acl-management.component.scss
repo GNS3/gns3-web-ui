@@ -151,6 +151,41 @@
   text-align: center;
 }
 
+// Actions column (unified icon-button pattern from user-management)
+.acl-management__actions-col {
+  @include buttons.action-column(2);
+  white-space: nowrap;
+}
+
+.acl-management__actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+button.acl-management__action {
+  --acl-action-color: var(--mat-sys-on-surface-variant);
+  @include buttons.action-icon(var(--gns3-density-control-height-sm));
+  color: var(--acl-action-color);
+  --mat-icon-button-state-layer-color: var(--acl-action-color);
+
+  &:not(:disabled) mat-icon {
+    color: var(--acl-action-color);
+  }
+
+  &:disabled mat-icon {
+    color: var(--gns3-button-disabled-label-color);
+  }
+}
+
+button.acl-management__action--edit {
+  --acl-action-color: var(--mat-sys-primary);
+}
+
+button.acl-management__action--delete {
+  --acl-action-color: var(--mat-sys-error);
+}
+
 /* =============================================
 // Loading Spinner
 // ============================================= */

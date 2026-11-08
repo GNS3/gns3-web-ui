@@ -44,6 +44,12 @@ import { startWith, map } from 'rxjs/operators';
 import { ResourcePool } from '@models/resourcePools/ResourcePool';
 import { EndpointNode, EndpointTreeAdapter } from '@components/acl-management/add-ace-dialog/EndpointTreeAdapter';
 
+export interface AddAceDialogData {
+  endpoints: Endpoint[];
+  /** When set, the dialog edits this ACE (PUT) instead of creating a new one (POST). */
+  ace?: ACE;
+}
+
 @Component({
   standalone: true,
   selector: 'app-add-ace-dialog',
@@ -96,6 +102,10 @@ export class AddAceDialogComponent implements OnInit {
   filteredEndpoint: Endpoint[] = [];
   endpointTypes: string[];
 
+  /** ACE being edited, or null in creation mode. */
+  editingAce: ACE | null = null;
+  private pendingPoolId: string | null = null;
+
   userAutocompleteControl = new UntypedFormControl();
   groupAutocompleteControl = new UntypedFormControl();
   roleAutocompleteControl = new UntypedFormControl();
@@ -116,19 +126,39 @@ export class AddAceDialogComponent implements OnInit {
   treeControl = new NestedTreeControl<EndpointNode>((node) => node.children);
   treeDataSource: ArrayDataSource<EndpointNode>;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { endpoints: Endpoint[] }) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: AddAceDialogData) {
     this.endpoints = data.endpoints;
     const treeAdapter = new EndpointTreeAdapter(this.endpoints);
     const data_tree = treeAdapter.buildTreeFromEndpoints();
     this.treeDataSource = new ArrayDataSource(data_tree);
-    console.log(data_tree);
+
+    if (data.ace) {
+      this.editingAce = data.ace;
+      this.allowed = data.ace.allowed;
+      this.prefillTarget(data.ace);
+    }
+  }
+
+  /** Preselect the target (endpoint or resource pool) of the ACE being edited. */
+  private prefillTarget(ace: ACE): void {
+    const poolMatch = ace.path.match(/^\/pools\/(.+)$/);
+    const endpointMatch = this.endpoints.find((candidate) => candidate.endpoint === ace.path);
+    if (poolMatch) {
+      this.showResourcePools = true;
+      this.pendingPoolId = poolMatch[1];
+    } else if (endpointMatch) {
+      this.selectedEndpoint = endpointMatch;
+    } else {
+      // Keep a path that no longer resolves (e.g. stale UUID) selected so an untouched save preserves it.
+      this.selectedEndpoint = { endpoint: ace.path, name: ace.path, endpoint_type: RessourceType.root };
+    }
   }
 
   ngOnInit(): void {
     this.addAceForm = new UntypedFormGroup({
-      type: new UntypedFormControl(AceType.user),
+      type: new UntypedFormControl(this.editingAce ? this.editingAce.ace_type : AceType.user),
       role_id: new UntypedFormControl(),
-      propagate: new UntypedFormControl(true),
+      propagate: new UntypedFormControl(this.editingAce ? this.editingAce.propagate : true),
     });
 
     // Clear selections when switching between user/group type
@@ -143,6 +173,9 @@ export class AddAceDialogComponent implements OnInit {
     this.resourcePoolsService.getAll(this.controller).subscribe({
       next: (pools: ResourcePool[]) => {
         this.resourcePools = pools;
+        if (this.pendingPoolId) {
+          this.selectedResourcePool = pools.find((pool) => pool.resource_pool_id === this.pendingPoolId) ?? null;
+        }
         this.cd.markForCheck();
       },
       error: (err) => {
@@ -155,6 +188,12 @@ export class AddAceDialogComponent implements OnInit {
     this.groupService.getGroups(this.controller).subscribe({
       next: (groups: Group[]) => {
         this.groups = groups;
+        if (this.editingAce?.group_id) {
+          const group = groups.find((candidate) => candidate.user_group_id === this.editingAce?.group_id);
+          if (group) {
+            this.groupSelection(group);
+          }
+        }
         this.filteredGroups = this.groupAutocompleteControl.valueChanges.pipe(
           startWith(''),
           map((value) => this._filter(value, groups))
@@ -170,6 +209,12 @@ export class AddAceDialogComponent implements OnInit {
     this.userService.list(this.controller).subscribe({
       next: (users: User[]) => {
         this.users = users;
+        if (this.editingAce?.user_id) {
+          const user = users.find((candidate) => candidate.user_id === this.editingAce?.user_id);
+          if (user) {
+            this.userSelection(user);
+          }
+        }
         this.filteredUsers = this.userAutocompleteControl.valueChanges.pipe(
           startWith(''),
           map((value) => this._filterUser(value, users))
@@ -185,6 +230,12 @@ export class AddAceDialogComponent implements OnInit {
     this.roleService.get(this.controller).subscribe({
       next: (roles: Role[]) => {
         this.roles = roles;
+        if (this.editingAce?.role_id) {
+          const role = roles.find((candidate) => candidate.role_id === this.editingAce?.role_id);
+          if (role) {
+            this.roleSelection(role);
+          }
+        }
         this.filteredRoles = this.roleAutocompleteControl.valueChanges.pipe(
           startWith(''),
           map((value) => this._filterRole(value, roles))
@@ -207,7 +258,7 @@ export class AddAceDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  onAddClick() {
+  onSaveClick() {
     // Check if either endpoint or resource pool is selected
     if (!this.selectedEndpoint && !this.selectedResourcePool) {
       this.toasterService.error('Please select an endpoint or a resource pool');
@@ -222,7 +273,7 @@ export class AddAceDialogComponent implements OnInit {
       return;
     }
 
-    const ACE = {
+    const fields = {
       ace_type: this.form.type.value,
       allowed: this.allowed,
       group_id: this.form.type.value === AceType.group ? this.selectedGroup.user_group_id : null,
@@ -232,19 +283,37 @@ export class AddAceDialogComponent implements OnInit {
       user_id: this.form.type.value === AceType.user ? this.selectedUser.user_id : null,
     };
 
-    if (ACE.path && ACE.role_id && (ACE.user_id || ACE.group_id)) {
-      this.aclService.add(this.controller, ACE).subscribe({
-        next: (ace: ACE) => {
-          this.toasterService.success(`ACE was added for path ${ACE.path}`);
+    if (!fields.path || !fields.role_id || (!fields.user_id && !fields.group_id)) {
+      return;
+    }
+
+    if (this.editingAce) {
+      const updatedAce: ACE = { ...this.editingAce, ...fields };
+      this.aclService.update(this.controller, updatedAce).subscribe({
+        next: () => {
+          this.toasterService.success(`ACE rule was updated for path ${updatedAce.path}`);
         },
         error: (err) => {
-          const message = err.error?.message || err.message || 'Failed to create ACE';
+          const message = err.error?.message || err.message || 'Failed to update ACE';
           this.toasterService.error(message);
           this.cd.markForCheck();
         },
       });
       this.dialogRef.close();
+      return;
     }
+
+    this.aclService.add(this.controller, fields).subscribe({
+      next: () => {
+        this.toasterService.success(`ACE was added for path ${fields.path}`);
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to create ACE';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
+    this.dialogRef.close();
   }
 
   changeAllowed() {

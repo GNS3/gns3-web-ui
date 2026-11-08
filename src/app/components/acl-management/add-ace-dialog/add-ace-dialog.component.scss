@@ -187,9 +187,8 @@
 }
 
 .ace-form__actions {
-  margin-top: auto;
-  padding-top: 16px;
   display: flex;
+  flex-wrap: nowrap;
   justify-content: flex-end;
   gap: 8px;
 }
