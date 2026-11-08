@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ChangeDetectorRef } from '@angular/core';
 import { of, throwError } from 'rxjs';
-import { AddAceDialogComponent } from './add-ace-dialog.component';
+import { AddAceDialogComponent, AddAceDialogData } from './add-ace-dialog.component';
 import { AceType, ACE } from '@models/api/ACE';
 import { Endpoint, RessourceType } from '@models/api/endpoint';
 import { EndpointNode } from '@components/acl-management/add-ace-dialog/EndpointTreeAdapter';
@@ -10,6 +10,7 @@ import { Controller } from '@models/controller';
 import { User } from '@models/users/user';
 import { Group } from '@models/groups/group';
 import { Role } from '@models/api/role';
+import { ResourcePool } from '@models/resourcePools/ResourcePool';
 import { AclService } from '@services/acl.service';
 import { UserService } from '@services/user.service';
 import { GroupService } from '@services/group.service';
@@ -64,8 +65,13 @@ describe('AddAceDialogComponent', () => {
 
   const mockRoles: Role[] = [{ role_id: 'r1', name: 'Admin' } as Role, { role_id: 'r2', name: 'Viewer' } as Role];
 
-  beforeEach(async () => {
-    vi.clearAllMocks();
+  const mockPools: ResourcePool[] = [{ resource_pool_id: 'pool1', name: 'Pool 1' } as ResourcePool];
+
+  async function createDialog(dialogData: AddAceDialogData) {
+    if (fixture) {
+      fixture.destroy();
+    }
+    TestBed.resetTestingModule();
 
     mockDialogRef = {
       close: vi.fn(),
@@ -73,6 +79,7 @@ describe('AddAceDialogComponent', () => {
 
     mockAclService = {
       add: vi.fn().mockReturnValue(of({} as ACE)),
+      update: vi.fn().mockReturnValue(of({} as ACE)),
     };
 
     mockUserService = {
@@ -100,14 +107,14 @@ describe('AddAceDialogComponent', () => {
       imports: [AddAceDialogComponent],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: { endpoints: mockEndpoints } },
+        { provide: MAT_DIALOG_DATA, useValue: dialogData },
         { provide: AclService, useValue: mockAclService },
         { provide: UserService, useValue: mockUserService },
         { provide: GroupService, useValue: mockGroupService },
         { provide: RoleService, useValue: mockRoleService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
-        { provide: ResourcePoolsService, useValue: { getAll: vi.fn().mockReturnValue(of([])) } },
+        { provide: ResourcePoolsService, useValue: { getAll: vi.fn().mockReturnValue(of(mockPools)) } },
       ],
     }).compileComponents();
 
@@ -115,6 +122,11 @@ describe('AddAceDialogComponent', () => {
     component = fixture.componentInstance;
     // Inject controller from service
     component.controller = mockController;
+  }
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    await createDialog({ endpoints: mockEndpoints });
   });
 
   afterEach(() => {
@@ -134,6 +146,10 @@ describe('AddAceDialogComponent', () => {
 
     it('should have correct AceType values', () => {
       expect(component.types).toEqual(Object.values(AceType));
+    });
+
+    it('should not be in edit mode without an ACE', () => {
+      expect(component.editingAce).toBeNull();
     });
   });
 
@@ -463,7 +479,7 @@ describe('AddAceDialogComponent', () => {
     });
   });
 
-  describe('onAddClick', () => {
+  describe('onSaveClick (create mode)', () => {
     beforeEach(() => {
       component.ngOnInit();
     });
@@ -473,7 +489,7 @@ describe('AddAceDialogComponent', () => {
       component.selectedRole = mockRoles[0];
       component.selectedUser = mockUsers[0];
 
-      component.onAddClick();
+      component.onSaveClick();
 
       expect(mockAclService.add).not.toHaveBeenCalled();
       expect(mockDialogRef.close).not.toHaveBeenCalled();
@@ -484,7 +500,7 @@ describe('AddAceDialogComponent', () => {
       component.selectedRole = null;
       component.selectedUser = mockUsers[0];
 
-      component.onAddClick();
+      component.onSaveClick();
 
       expect(mockAclService.add).not.toHaveBeenCalled();
     });
@@ -495,7 +511,7 @@ describe('AddAceDialogComponent', () => {
       component.selectedUser = null;
       component.selectedGroup = null;
 
-      component.onAddClick();
+      component.onSaveClick();
 
       expect(mockAclService.add).not.toHaveBeenCalled();
     });
@@ -507,7 +523,7 @@ describe('AddAceDialogComponent', () => {
       component.selectedUser = mockUsers[0];
       component.selectedGroup = null;
 
-      component.onAddClick();
+      component.onSaveClick();
 
       expect(mockAclService.add).toHaveBeenCalledWith(
         mockController,
@@ -527,7 +543,7 @@ describe('AddAceDialogComponent', () => {
       component.selectedUser = null;
       component.selectedGroup = mockGroups[0];
 
-      component.onAddClick();
+      component.onSaveClick();
 
       expect(mockAclService.add).toHaveBeenCalledWith(
         mockController,
@@ -546,7 +562,7 @@ describe('AddAceDialogComponent', () => {
       component.selectedUser = mockUsers[0];
       component.form.propagate.setValue(false);
 
-      component.onAddClick();
+      component.onSaveClick();
 
       expect(mockAclService.add).toHaveBeenCalledWith(
         mockController,
@@ -562,7 +578,7 @@ describe('AddAceDialogComponent', () => {
       component.selectedUser = mockUsers[0];
       component.allowed = false;
 
-      component.onAddClick();
+      component.onSaveClick();
 
       expect(mockAclService.add).toHaveBeenCalledWith(
         mockController,
@@ -577,7 +593,7 @@ describe('AddAceDialogComponent', () => {
       component.selectedRole = mockRoles[0];
       component.selectedUser = mockUsers[0];
 
-      component.onAddClick();
+      component.onSaveClick();
 
       expect(mockToasterService.success).toHaveBeenCalledWith('ACE was added for path /projects');
     });
@@ -589,7 +605,7 @@ describe('AddAceDialogComponent', () => {
       component.selectedRole = mockRoles[0];
       component.selectedUser = mockUsers[0];
 
-      component.onAddClick();
+      component.onSaveClick();
 
       await vi.runAllTimersAsync();
 
@@ -604,11 +620,150 @@ describe('AddAceDialogComponent', () => {
       component.selectedRole = mockRoles[0];
       component.selectedUser = mockUsers[0];
 
-      component.onAddClick();
+      component.onSaveClick();
 
       await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create ACE');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('edit mode', () => {
+    const mockEditAce: ACE = {
+      ace_id: 'ace9',
+      ace_type: AceType.user,
+      path: '/access/projects',
+      propagate: false,
+      allowed: false,
+      user_id: 'u1',
+      role_id: 'r1',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-02',
+    };
+
+    beforeEach(async () => {
+      await createDialog({ endpoints: mockEndpoints, ace: mockEditAce });
+    });
+
+    it('should expose the ACE being edited', () => {
+      expect(component.editingAce).toEqual(mockEditAce);
+    });
+
+    it('should prefill allowed from the ACE', () => {
+      expect(component.allowed).toBe(false);
+    });
+
+    it('should preselect the endpoint matching the ACE path', () => {
+      expect(component.selectedEndpoint).toEqual(mockEndpoints[1]);
+    });
+
+    it('should initialize the form with values from the ACE', () => {
+      component.ngOnInit();
+
+      expect(component.form.type.value).toBe(AceType.user);
+      expect(component.form.propagate.value).toBe(false);
+    });
+
+    it('should preselect user and role after the lists load', () => {
+      component.ngOnInit();
+
+      expect(component.selectedUser).toEqual(mockUsers[0]);
+      expect(component.selectedRole).toEqual(mockRoles[0]);
+    });
+
+    it('should switch to resource pools view and preselect the pool for a /pools path', async () => {
+      await createDialog({ endpoints: mockEndpoints, ace: { ...mockEditAce, path: '/pools/pool1' } });
+      component.ngOnInit();
+
+      expect(component.showResourcePools).toBe(true);
+      expect(component.selectedResourcePool).toEqual(mockPools[0]);
+      expect(component.selectedEndpoint).toBeFalsy();
+    });
+
+    it('should keep an unresolvable path selected so an untouched save preserves it', async () => {
+      await createDialog({ endpoints: mockEndpoints, ace: { ...mockEditAce, path: '/projects/deadbeef' } });
+
+      expect(component.selectedEndpoint?.endpoint).toBe('/projects/deadbeef');
+    });
+  });
+
+  describe('onSaveClick (edit mode)', () => {
+    const mockEditAce: ACE = {
+      ace_id: 'ace9',
+      ace_type: AceType.user,
+      path: '/access/projects',
+      propagate: false,
+      allowed: false,
+      user_id: 'u1',
+      role_id: 'r1',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-02',
+    };
+
+    beforeEach(async () => {
+      await createDialog({ endpoints: mockEndpoints, ace: mockEditAce });
+      component.ngOnInit();
+    });
+
+    it('should call aclService.update instead of add', () => {
+      component.onSaveClick();
+
+      expect(mockAclService.update).toHaveBeenCalledWith(
+        mockController,
+        expect.objectContaining({
+          ace_id: 'ace9',
+          path: '/access/projects',
+          role_id: 'r1',
+          user_id: 'u1',
+        })
+      );
+      expect(mockAclService.add).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should send flipped allowed and propagate values', () => {
+      component.allowed = true;
+      component.form.propagate.setValue(true);
+
+      component.onSaveClick();
+
+      expect(mockAclService.update).toHaveBeenCalledWith(
+        mockController,
+        expect.objectContaining({
+          allowed: true,
+          propagate: true,
+        })
+      );
+    });
+
+    it('should show success toast on successful update', () => {
+      component.onSaveClick();
+
+      expect(mockToasterService.success).toHaveBeenCalledWith('ACE rule was updated for path /access/projects');
+    });
+
+    it('should show error toast on failed update', async () => {
+      mockAclService.update.mockReturnValue(throwError(() => ({ error: { message: 'Failed to update ACE' } })));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.onSaveClick();
+
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update ACE');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show fallback error message when update error has no message', async () => {
+      mockAclService.update.mockReturnValue(throwError(() => ({})));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.onSaveClick();
+
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update ACE');
       expect(cdrSpy).toHaveBeenCalled();
     });
   });

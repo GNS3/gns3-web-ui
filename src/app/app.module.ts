@@ -289,7 +289,6 @@ import { ConfirmationDeleteAllProjectsComponent } from '@components/projects/con
 import { AclManagementComponent } from '@components/acl-management/acl-management.component';
 import { AddAceDialogComponent } from '@components/acl-management/add-ace-dialog/add-ace-dialog.component';
 import { AutocompleteComponent } from '@components/acl-management/add-ace-dialog/autocomplete/autocomplete.component';
-import { AceFilterPipe } from '@filters/ace-filter.pipe';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { CdkTreeModule } from '@angular/cdk/tree';
 
@@ -394,7 +393,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    AceFilterPipe,
     NameFilter,
     DateFilter,
     GroupFilterPipe,

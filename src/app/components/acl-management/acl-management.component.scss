@@ -5,7 +5,7 @@
 /**
  * GNS3 ACL Management Component Styles
  * BEM naming applied, Material theme variables used
- * Design language unified with user-management page
+ * Rules are grouped by subject (user/group) in collapsible sections.
  */
 
 :host {
@@ -58,7 +58,7 @@
 }
 
 /* =============================================
-// Table Container
+// List Container
 // ============================================= */
 .acl-management__table-container {
   border-radius: 16px;
@@ -66,103 +66,189 @@
   background: var(--mat-sys-surface);
   @include page.surface;
   @include page.page-motion;
-  overflow-x: auto;
 }
 
-.acl-management__table-container--hidden {
-  display: none;
+.acl-management__groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gns3-density-space-3);
+  padding: var(--gns3-density-space-4);
 }
 
 /* =============================================
-// Material Table Internal DOM Styling
+// Empty state
 // ============================================= */
-.mat-mdc-table {
-  width: 100%;
-}
+.acl-management__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gns3-density-space-3);
+  padding: 48px var(--gns3-density-space-4);
+  color: var(--mat-sys-on-surface-variant);
 
-.mat-mdc-header-row {
-  height: var(--mat-table-header-container-height);
-}
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: var(--mat-sys-outline);
+  }
 
-.mat-mdc-row {
-  height: var(--mat-table-row-item-container-height);
-  transition: background-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
-  cursor: default;
-  position: relative;
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+  p {
+    margin: 0;
   }
 }
 
-// Zebra striping - even rows
-.mat-mdc-row:nth-child(even) {
-  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 1%, transparent);
+/* =============================================
+// Group (one subject: user or group)
+// ============================================= */
+.acl-group {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--gns3-density-radius-lg);
+  background: var(--mat-sys-surface);
+  overflow: hidden;
+
+  &--expanded {
+    border-color: color-mix(in srgb, var(--mat-sys-primary) 35%, var(--mat-sys-outline-variant));
+  }
+}
+
+.acl-group__header {
+  display: flex;
+  align-items: center;
+  gap: var(--gns3-density-space-3);
+  padding: 6px var(--gns3-density-space-3);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
 
   &:hover {
     background-color: color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent);
   }
 }
 
-// Header row styles
-.mat-header-row,
-.mat-mdc-header-row {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--mat-sys-surface-container-highest);
-  box-shadow: inset 0 -2px var(--mat-sys-primary);
-  --mat-sort-arrow-color: var(--mat-sys-primary);
-
-  .mat-mdc-header-cell {
-    color: var(--mat-sys-on-surface);
-    font-size: 13px;
-    font-weight: 650;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
+.acl-group__toggle {
+  @include buttons.action-icon(var(--gns3-density-control-height-sm));
+  color: var(--mat-sys-on-surface-variant);
 }
 
-// Cell spacing and alignment
-.mat-mdc-header-cell,
-.mat-mdc-cell {
-  text-align: left;
-  vertical-align: middle;
-  padding: 0 var(--gns3-density-space-4);
+.acl-group__subject-icon {
+  color: var(--mat-sys-primary);
 }
 
-.mat-mdc-cell {
+.acl-group__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 14px;
+  font-weight: 600;
   color: var(--mat-sys-on-surface);
 }
 
-// Text overflow
-.acl-management__overflow-text {
-  text-overflow: ellipsis;
+.acl-group__type {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: var(--gns3-density-radius-sm);
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.5px;
+}
+
+.acl-group__count {
+  flex-shrink: 0;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 13px;
+}
+
+/* =============================================
+// Group body: rule rows
+// ============================================= */
+.acl-group__body {
+  overflow-x: auto;
+  padding: 0 var(--gns3-density-space-3) var(--gns3-density-space-3);
+}
+
+.acl-group__grid {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1.6fr) minmax(0, 1fr) 90px 90px 150px 96px;
+  align-items: center;
+  column-gap: var(--gns3-density-space-3);
+  min-width: 760px;
+
+  &--header {
+    padding: var(--gns3-density-space-2) 0;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    font-size: 12px;
+    font-weight: 650;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &--row {
+    padding: var(--gns3-density-space-2) 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 50%, transparent);
+    font-size: 14px;
+    color: var(--mat-sys-on-surface);
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+    }
+  }
+
+  &--selected {
+    background-color: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+  }
+}
+
+.acl-group__cell-name {
   overflow: hidden;
-  white-space: nowrap;
-  padding-right: 5px;
-}
-
-// Small column for checkbox
-.acl-management__small-col {
-  width: 60px;
-  min-width: 60px;
-  text-align: center;
-}
-
-// Actions column (unified icon-button pattern from user-management)
-.acl-management__actions-col {
-  @include buttons.action-column(2);
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.acl-management__actions-cell {
+.acl-group__cell-date {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 13px;
+}
+
+.acl-group__cell-actions {
   display: flex;
   align-items: center;
   gap: 3px;
 }
 
+.acl-group__allowed {
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.5px;
+  color: var(--custom-mat-sys-success);
+
+  &--denied {
+    color: var(--mat-sys-error);
+  }
+}
+
+.acl-group__paginator {
+  --mat-paginator-container-background-color: transparent;
+  --mat-paginator-container-size: var(--gns3-density-control-height);
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  min-height: 0;
+}
+
+/* =============================================
+// Row action icon buttons (unified pattern)
+// ============================================= */
 button.acl-management__action {
   --acl-action-color: var(--mat-sys-on-surface-variant);
   @include buttons.action-icon(var(--gns3-density-control-height-sm));
@@ -202,18 +288,6 @@ button.acl-management__action--delete {
 }
 
 /* =============================================
-// Paginator
-// ============================================= */
-mat-paginator {
-  background: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-}
-
-/* =============================================
-// Animations
-// ============================================= */
-
-/* =============================================
 // Responsive Design
 // ============================================= */
 @media (max-width: 768px) {
@@ -227,14 +301,4 @@ mat-paginator {
   .acl-management__button {
     flex: 1 1 auto;
   }
-
-  .mat-mdc-header-cell,
-  .mat-mdc-cell {
-    padding: 0 var(--gns3-density-space-3);
-    font-size: 13px;
-  }
-}
-
-button.acl-management__button.mat-mdc-raised-button {
-  @include buttons.primary;
 }

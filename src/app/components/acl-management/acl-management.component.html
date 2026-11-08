@@ -9,8 +9,8 @@
       <mat-icon matPrefix>search</mat-icon>
       <input
         matInput
-        aria-label="Search by path, user/group or role"
-        placeholder="Search by path, user/group or role"
+        aria-label="Search by user/group, path or role"
+        placeholder="Search by user/group, path or role"
         [value]="searchText()"
         (input)="onSearchChange($event.target.value)"
       />
@@ -38,127 +38,120 @@
 </div>
 
 <div class="acl-management__table-container">
-  <table
-    mat-table
-    [dataSource]="paginatedAces()"
-    [trackBy]="trackAce"
-    matSort
-    [matSortActive]="sortActive()"
-    [matSortDirection]="sortDirection()"
-    (matSortChange)="onSortChange($event)"
-  >
-    <ng-container matColumnDef="select">
-      <th mat-header-cell *matHeaderCellDef class="acl-management__small-col">
-        <mat-checkbox
-          (change)="$event ? masterToggle() : null"
-          [checked]="selection.hasValue() && isAllSelected()"
-          [indeterminate]="selection.hasValue() && !isAllSelected()"
-          aria-label="Select all visible ACE rules"
+  @if (filteredGroups().length > 0) {
+  <div class="acl-management__groups">
+    @for (group of filteredGroups(); track group.key) {
+    <section class="acl-group" [class.acl-group--expanded]="isExpanded(group)">
+      <header class="acl-group__header" (click)="toggleGroup(group)">
+        <button
+          mat-icon-button
+          class="acl-group__toggle"
+          [attr.aria-label]="(isExpanded(group) ? 'Collapse ' : 'Expand ') + group.name"
+          [attr.aria-expanded]="isExpanded(group)"
+          tabindex="-1"
         >
-        </mat-checkbox>
-      </th>
-      <td mat-cell *matCellDef="let row" class="acl-management__small-col">
+          <mat-icon>{{ isExpanded(group) ? 'expand_more' : 'chevron_right' }}</mat-icon>
+        </button>
+        <mat-icon class="acl-group__subject-icon" [matTooltip]="group.subjectType === 'user' ? 'User' : 'Group'">
+          {{ group.subjectType === 'user' ? 'person' : 'groups' }}
+        </mat-icon>
+        <span class="acl-group__name" [matTooltip]="group.name">{{ group.name }}</span>
+        <span class="acl-group__type">{{ group.subjectType === 'user' ? 'USER' : 'GROUP' }}</span>
+        <span class="acl-group__count">{{ group.aces.length }} {{ group.aces.length === 1 ? 'rule' : 'rules' }}</span>
         <mat-checkbox
+          class="acl-group__select"
           (click)="$event.stopPropagation()"
-          (change)="$event ? selection.toggle(row) : null"
-          [checked]="selection.isSelected(row)"
-          [attr.aria-label]="'Select ACE rule for ' + getNameByUuidFromEndpoint(row.path)"
+          (change)="$event ? toggleGroupSelection(group) : null"
+          [checked]="isGroupAllSelected(group)"
+          [indeterminate]="isGroupPartiallySelected(group)"
+          [attr.aria-label]="'Select all visible ACE rules of ' + group.name"
         >
         </mat-checkbox>
-      </td>
-    </ng-container>
+      </header>
 
-    <ng-container matColumnDef="path">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>PATH</th>
-      <td mat-cell *matCellDef="let element">
-        <span class="acl-management__overflow-text">{{ getNameByUuidFromEndpoint(element.path) }}</span>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="user/group">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>USER/GROUP</th>
-      <td mat-cell *matCellDef="let element">
-        <span class="acl-management__overflow-text">
-          @if (element.ace_type === 'user') {
-          {{ getNameByUuidFromEndpoint(element.user_id) }}
-          } @else {
-          {{ getNameByUuidFromEndpoint(element.group_id) }}
-          }
-        </span>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="role">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>ROLE</th>
-      <td mat-cell *matCellDef="let element">
-        <span class="acl-management__overflow-text">{{ getNameByUuidFromEndpoint(element.role_id) }}</span>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="propagate">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>PROPAGATE</th>
-      <td mat-cell *matCellDef="let element">{{ element.propagate }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="allowed">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>ALLOWED</th>
-      <td mat-cell *matCellDef="let element">{{ element.allowed }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="created_at">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>CREATED</th>
-      <td mat-cell *matCellDef="let element">
-        <span class="acl-management__overflow-text">{{ element.created_at }}</span>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="updated_at">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>LAST UPDATE</th>
-      <td mat-cell *matCellDef="let element">
-        <span class="acl-management__overflow-text">{{ element.updated_at }}</span>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef class="acl-management__actions-col">ACTIONS</th>
-      <td mat-cell *matCellDef="let row" class="acl-management__actions-col">
-        <div class="acl-management__actions-cell">
-          <button
-            mat-icon-button
-            class="acl-management__action acl-management__action--edit"
-            (click)="onEdit(row)"
-            matTooltip="Edit ACE rule"
-            [attr.aria-label]="'Edit ACE rule for ' + getNameByUuidFromEndpoint(row.path)"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            class="acl-management__action acl-management__action--delete"
-            (click)="onDelete(row)"
-            matTooltip="Delete ACE rule"
-            [attr.aria-label]="'Delete ACE rule for ' + getNameByUuidFromEndpoint(row.path)"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
+      @if (isExpanded(group)) {
+      <div class="acl-group__body">
+        <div class="acl-group__grid acl-group__grid--header">
+          <span></span>
+          <span>PATH</span>
+          <span>ROLE</span>
+          <span>PROPAGATE</span>
+          <span>ALLOWED</span>
+          <span>LAST UPDATE</span>
+          <span>ACTIONS</span>
         </div>
-      </td>
-    </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
+        @for (ace of pagedAcesFor(group); track ace.ace_id) {
+        <div class="acl-group__grid acl-group__grid--row" [class.acl-group__grid--selected]="selection.isSelected(ace)">
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(ace) : null"
+            [checked]="selection.isSelected(ace)"
+            [attr.aria-label]="'Select ACE rule for ' + getNameByUuidFromEndpoint(ace.path)"
+          >
+          </mat-checkbox>
+          <span class="acl-group__cell-name" [matTooltip]="getNameByUuidFromEndpoint(ace.path)">
+            {{ getNameByUuidFromEndpoint(ace.path) }}
+          </span>
+          <span class="acl-group__cell-name" [matTooltip]="getNameByUuidFromEndpoint(ace.role_id)">
+            {{ getNameByUuidFromEndpoint(ace.role_id) }}
+          </span>
+          <span>{{ ace.propagate }}</span>
+          <span class="acl-group__allowed" [class.acl-group__allowed--denied]="!ace.allowed">
+            {{ ace.allowed ? 'ALLOWED' : 'DENY' }}
+          </span>
+          <span class="acl-group__cell-date">{{ ace.updated_at }}</span>
+          <span class="acl-group__cell-actions">
+            <button
+              mat-icon-button
+              class="acl-management__action acl-management__action--edit"
+              (click)="onEdit(ace)"
+              matTooltip="Edit ACE rule"
+              [attr.aria-label]="'Edit ACE rule for ' + getNameByUuidFromEndpoint(ace.path)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              class="acl-management__action acl-management__action--delete"
+              (click)="onDelete(ace)"
+              matTooltip="Delete ACE rule"
+              [attr.aria-label]="'Delete ACE rule for ' + getNameByUuidFromEndpoint(ace.path)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </span>
+        </div>
+        }
 
-  <mat-paginator
-    [length]="filteredAces().length"
-    [pageIndex]="pageIndex()"
-    [pageSize]="pageSize()"
-    [pageSizeOptions]="pageSizeOptions"
-    (page)="onPageChange($event)"
-    showFirstLastButtons
-    aria-label="Select page"
-  >
-  </mat-paginator>
+        @if (group.aces.length > rulePageOf(group).pageSize) {
+        <mat-paginator
+          class="acl-group__paginator"
+          [length]="group.aces.length"
+          [pageIndex]="rulePageOf(group).pageIndex"
+          [pageSize]="rulePageOf(group).pageSize"
+          [pageSizeOptions]="rulePageSizeOptions"
+          (page)="onRulePageChange(group, $event)"
+          showFirstLastButtons
+          aria-label="Select page of ACE rules"
+        >
+        </mat-paginator>
+        }
+      </div>
+      }
+    </section>
+    }
+  </div>
+  } @else {
+  <div class="acl-management__empty">
+    <mat-icon>manage_accounts</mat-icon>
+    @if (searchText().trim()) {
+    <p>No users or groups match "{{ searchText() }}".</p>
+    } @else {
+    <p>No access control entries yet.</p>
+    }
+  </div>
+  }
 </div>
 } @else {
 <div class="acl-management__loader">

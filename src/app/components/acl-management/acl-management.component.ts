@@ -19,15 +19,12 @@ import {
   inject,
   signal,
   computed,
-  effect,
   model,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,11 +32,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Controller } from '@models/controller';
-import { ACE } from '@models/api/ACE';
+import { ACE, AceType } from '@models/api/ACE';
 import { ActivatedRoute } from '@angular/router';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
@@ -51,7 +47,19 @@ import { Endpoint } from '@models/api/endpoint';
 import { ResourcePool } from '@models/resourcePools/ResourcePool';
 import { ResourcePoolsService } from '@services/resource-pools.service';
 
-type AceSortDirection = 'asc' | 'desc' | '';
+/** ACE rules sharing one subject (a user or a group). */
+interface AceGroup {
+  key: string;
+  subjectType: AceType;
+  subjectId: string;
+  name: string;
+  aces: ACE[];
+}
+
+interface RulePageState {
+  pageIndex: number;
+  pageSize: number;
+}
 
 @Component({
   selector: 'app-acl-management',
@@ -61,9 +69,7 @@ type AceSortDirection = 'asc' | 'desc' | '';
     CommonModule,
     FormsModule,
     RouterModule,
-    MatTableModule,
     MatPaginatorModule,
-    MatSortModule,
     MatCheckboxModule,
     MatButtonModule,
     MatIconModule,
@@ -71,7 +77,6 @@ type AceSortDirection = 'asc' | 'desc' | '';
     MatFormFieldModule,
     MatInputModule,
     MatDialogModule,
-    MatCardModule,
     MatProgressSpinnerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,7 +91,6 @@ export class AclManagementComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   controller: Controller;
-  public displayedColumns = ['select', 'path', 'user/group', 'role', 'propagate', 'allowed', 'updated_at', 'actions'];
   selection = new SelectionModel<ACE>(true, []);
   readonly isReady = signal(false);
   readonly searchText = model('');
@@ -94,52 +98,49 @@ export class AclManagementComponent implements OnInit {
   readonly resourcePools = signal<ResourcePool[]>([]);
   readonly aces = signal<ACE[]>([]);
 
-  // Sorting / pagination state (same pattern as user-management)
-  readonly sortActive = signal('path');
-  readonly sortDirection = signal<AceSortDirection>('asc');
-  readonly pageIndex = signal(0);
-  readonly pageSize = signal(10);
-  readonly pageSizeOptions = [5, 10, 20];
+  // Grouping / expansion / pagination state
+  readonly expandedGroups = signal<ReadonlySet<string>>(new Set());
+  readonly rulePageSizeOptions = [10, 15, 20];
+  readonly rulePageByGroup = signal<Record<string, RulePageState>>({});
 
-  /** ACEs matching the search text, sorted by the active column. */
-  readonly filteredAces = computed(() => {
-    const search = this.searchText().trim().toLowerCase();
-    const aces = this.aces();
-
-    const matched = search
-      ? aces.filter((ace) =>
-          [this.getNameByUuidFromEndpoint(ace.path), this.getNameByUuidFromEndpoint(ace.user_id ?? ''), this.getNameByUuidFromEndpoint(ace.group_id ?? ''), this.getNameByUuidFromEndpoint(ace.role_id)]
-            .some((value) => value.toLowerCase().includes(search))
-        )
-      : aces;
-
-    const active = this.sortActive();
-    const direction = this.sortDirection();
-    if (!active || !direction) {
-      return matched;
-    }
-
-    return [...matched].sort(
-      (left, right) =>
-        this.sortValue(left, active).localeCompare(this.sortValue(right, active), undefined, { numeric: true, sensitivity: 'base' }) *
-        (direction === 'asc' ? 1 : -1)
-    );
-  });
-
-  readonly paginatedAces = computed(() => {
-    const start = this.pageIndex() * this.pageSize();
-    return this.filteredAces().slice(start, start + this.pageSize());
-  });
-
-  constructor() {
-    // Keep the page index valid whenever the filtered set shrinks.
-    effect(() => {
-      const lastPage = Math.max(Math.ceil(this.filteredAces().length / this.pageSize()) - 1, 0);
-      if (this.pageIndex() > lastPage) {
-        this.pageIndex.set(lastPage);
+  /** ACE rules grouped by subject (user/group), sorted by subject name. */
+  readonly aceGroups = computed<AceGroup[]>(() => {
+    const groups = new Map<string, AceGroup>();
+    for (const ace of this.aces()) {
+      const subjectId = (ace.ace_type === AceType.user ? ace.user_id : ace.group_id) ?? '';
+      const key = `${ace.ace_type}:${subjectId}`;
+      let group = groups.get(key);
+      if (!group) {
+        group = {
+          key,
+          subjectType: ace.ace_type,
+          subjectId,
+          name: this.getNameByUuidFromEndpoint(subjectId),
+          aces: [],
+        };
+        groups.set(key, group);
       }
-    });
-  }
+      group.aces.push(ace);
+    }
+    return [...groups.values()]
+      .map((group) => ({ ...group, aces: this.sortAces(group.aces) }))
+      .sort(
+        (left, right) =>
+          left.name.localeCompare(right.name, undefined, { numeric: true, sensitivity: 'base' }) ||
+          left.subjectType.localeCompare(right.subjectType)
+      );
+  });
+
+  /** Groups narrowed to rules matching the search text (all rules when the search is empty). */
+  readonly filteredGroups = computed<AceGroup[]>(() => {
+    const search = this.searchText().trim().toLowerCase();
+    if (!search) {
+      return this.aceGroups();
+    }
+    return this.aceGroups()
+      .map((group) => ({ ...group, aces: group.aces.filter((ace) => this.aceMatchesSearch(ace, search)) }))
+      .filter((group) => group.aces.length > 0);
+  });
 
   ngOnInit(): void {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
@@ -169,40 +170,79 @@ export class AclManagementComponent implements OnInit {
     });
   }
 
-  onSortChange(sort: Sort): void {
-    this.sortActive.set(sort.active || 'path');
-    this.sortDirection.set(sort.direction);
-    this.pageIndex.set(0);
+  // ------------------------------------------------------------------
+  // Expansion
+  // ------------------------------------------------------------------
+
+  isExpanded(group: AceGroup): boolean {
+    // Searching forces matched groups open so the matched rules are visible.
+    return this.searchText().trim().length > 0 || this.expandedGroups().has(group.key);
   }
 
-  onPageChange(event: PageEvent): void {
-    this.pageIndex.set(event.pageIndex);
-    this.pageSize.set(event.pageSize);
+  toggleGroup(group: AceGroup): void {
+    const expanded = new Set(this.expandedGroups());
+    if (expanded.has(group.key)) {
+      expanded.delete(group.key);
+    } else {
+      expanded.add(group.key);
+    }
+    this.expandedGroups.set(expanded);
+  }
+
+  // ------------------------------------------------------------------
+  // Pagination (groups and per-group rules)
+  // ------------------------------------------------------------------
+
+  rulePageOf(group: AceGroup): RulePageState {
+    const state = this.rulePageByGroup()[group.key] ?? { pageIndex: 0, pageSize: this.rulePageSizeOptions[0] };
+    const lastPage = Math.max(Math.ceil(group.aces.length / state.pageSize) - 1, 0);
+    return { pageIndex: Math.min(state.pageIndex, lastPage), pageSize: state.pageSize };
+  }
+
+  pagedAcesFor(group: AceGroup): ACE[] {
+    const { pageIndex, pageSize } = this.rulePageOf(group);
+    const start = pageIndex * pageSize;
+    return group.aces.slice(start, start + pageSize);
+  }
+
+  onRulePageChange(group: AceGroup, event: PageEvent): void {
+    this.rulePageByGroup.update((pages) => ({
+      ...pages,
+      [group.key]: { pageIndex: event.pageIndex, pageSize: event.pageSize },
+    }));
   }
 
   onSearchChange(value: string): void {
     this.searchText.set(value);
-    this.pageIndex.set(0);
+    this.rulePageByGroup.set({});
+  }
+
+  // ------------------------------------------------------------------
+  // Selection (per rule; group header checkbox toggles the group's visible rules)
+  // ------------------------------------------------------------------
+
+  isGroupAllSelected(group: AceGroup): boolean {
+    return group.aces.length > 0 && group.aces.every((ace) => this.selection.isSelected(ace));
+  }
+
+  isGroupPartiallySelected(group: AceGroup): boolean {
+    return !this.isGroupAllSelected(group) && group.aces.some((ace) => this.selection.isSelected(ace));
+  }
+
+  toggleGroupSelection(group: AceGroup): void {
+    if (this.isGroupAllSelected(group)) {
+      group.aces.forEach((ace) => this.selection.deselect(ace));
+    } else {
+      group.aces.forEach((ace) => this.selection.select(ace));
+    }
+  }
+
+  trackGroup(_index: number, group: AceGroup): string {
+    return group.key;
   }
 
   trackAce(_index: number, ace: ACE): string {
     return ace.ace_id;
-  }
-
-  private sortValue(ace: ACE, property: string): string {
-    switch (property) {
-      case 'path':
-        return this.getNameByUuidFromEndpoint(ace.path).toLowerCase();
-      case 'user/group':
-        return this.getNameByUuidFromEndpoint((ace.user_id ?? ace.group_id) ?? '').toLowerCase();
-      case 'role':
-        return this.getNameByUuidFromEndpoint(ace.role_id).toLowerCase();
-      case 'propagate':
-      case 'allowed':
-        return ace[property] ? '1' : '0';
-      default:
-        return String(ace[property as keyof ACE] ?? '').toLowerCase();
-    }
   }
 
   refresh() {
@@ -274,19 +314,6 @@ export class AclManagementComponent implements OnInit {
       });
   }
 
-  isAllSelected() {
-    const visibleAces = this.filteredAces();
-    return visibleAces.length > 0 && this.selection.selected.length === visibleAces.length;
-  }
-
-  masterToggle() {
-    if (this.isAllSelected()) {
-      this.selection.clear();
-    } else {
-      this.filteredAces().forEach((row) => this.selection.select(row));
-    }
-  }
-
   deleteMultiple() {
     const selectedAces = [...this.selection.selected];
     this.dialog
@@ -351,5 +378,21 @@ export class AclManagementComponent implements OnInit {
     }
 
     return path;
+  }
+
+  private sortAces(aces: ACE[]): ACE[] {
+    return [...aces].sort((left, right) =>
+      this.getNameByUuidFromEndpoint(left.path)
+        .localeCompare(this.getNameByUuidFromEndpoint(right.path), undefined, { numeric: true, sensitivity: 'base' })
+    );
+  }
+
+  private aceMatchesSearch(ace: ACE, search: string): boolean {
+    return [
+      this.getNameByUuidFromEndpoint(ace.path),
+      this.getNameByUuidFromEndpoint(ace.user_id ?? ''),
+      this.getNameByUuidFromEndpoint(ace.group_id ?? ''),
+      this.getNameByUuidFromEndpoint(ace.role_id),
+    ].some((value) => value.toLowerCase().includes(search));
   }
 }
