@@ -20,7 +20,6 @@ import {
   ApiKeyManagementDialogData,
 } from '@components/api-key-management/api-key-management-dialog.component';
 import { Controller } from '@models/controller';
-import { User } from '@models/users/user';
 import { ControllerManagementService } from '@services/controller-management.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
@@ -38,6 +37,8 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NotificationCenterComponent } from '@components/notification-center/notification-center.component';
 import { NotificationCenterService } from '@services/notification-center.service';
+import { PermissionService } from '@services/permission.service';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 @Component({
   selector: 'app-default-layout',
@@ -55,6 +56,7 @@ import { NotificationCenterService } from '@services/notification-center.service
     MatListModule,
     ProgressComponent,
     NotificationCenterComponent,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -72,7 +74,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   readonly sidenavOpened = signal(true);
   readonly isSmallScreen = signal(false);
   readonly sidebarMode = signal<'side' | 'over'>('side');
-  readonly isAdministrator = signal(false);
 
   private controllerManagement = inject(ControllerManagementService);
   private toasterService = inject(ToasterService);
@@ -86,6 +87,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   private connectionManager = inject(ConnectionManagerService);
   private breakpointObserver = inject(BreakpointObserver);
   readonly notificationCenter = inject(NotificationCenterService);
+  private readonly permissionService = inject(PermissionService);
 
   ngOnInit() {
     this.notificationCenter.closePanel();
@@ -209,6 +211,9 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       // Clear refresh token
       localStorage.removeItem(`refresh_token_${controller.id}`);
 
+      // Privileges are per-user: never serve them from cache after logout
+      this.permissionService.invalidate();
+
       controller.authToken = null;
       this.controllerService.update(controller).then((val) => {
         // Disconnect WebSocket connection on logout
@@ -235,13 +240,17 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   getData() {
     const requestedControllerId = this.controllerId;
     this.controller = undefined;
-    this.isAdministrator.set(false);
 
     const numericControllerId = Number(requestedControllerId);
     if (!Number.isInteger(numericControllerId) || numericControllerId <= 0) {
       this.cd.markForCheck();
       return;
     }
+
+    // Load the privilege list alongside the controller/user fetches: the
+    // sidebar renders from privileges (PermissionService) instead of the
+    // previous superadmin flag. Fetch failures degrade to zero privileges.
+    this.permissionService.activate(numericControllerId);
 
     this.controllerService.get(numericControllerId).then(
       (controller: Controller) => {
@@ -250,33 +259,13 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
         }
 
         this.controller = controller;
-        if (!controller) {
-          this.cd.markForCheck();
-          return;
-        }
-        this.userService.getInformationAboutLoggedUser(controller).subscribe({
-          next: (user: User) => {
-            if (this.controllerId !== requestedControllerId) {
-              return;
-            }
-            this.isAdministrator.set(Boolean(user.is_superadmin));
-            this.cd.markForCheck();
-          },
-          error: () => {
-            if (this.controllerId !== requestedControllerId) {
-              return;
-            }
-            this.isAdministrator.set(false);
-            this.cd.markForCheck();
-          },
-        });
+        this.cd.markForCheck();
       },
       () => {
         if (this.controllerId !== requestedControllerId) {
           return;
         }
         this.controller = undefined;
-        this.isAdministrator.set(false);
         this.cd.markForCheck();
       }
     );

@@ -505,7 +505,7 @@ describe('HttpController', () => {
       let caught: any;
       service.postFile(mockController, '/images/load', file).subscribe({ error: (err) => (caught = err) });
 
-      expect(mockErrorHandler.handleError).toHaveBeenCalledWith(failure);
+      expect(mockErrorHandler.handleError).toHaveBeenCalledWith(failure, '/images/load');
       expect(caught).toBe(failure);
     });
 
@@ -605,9 +605,11 @@ describe('ControllerError', () => {
 
 describe('ControllerErrorHandler', () => {
   let handler: ControllerErrorHandler;
+  let toasterMock: { error: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
-    handler = new ControllerErrorHandler();
+    toasterMock = { error: vi.fn() };
+    handler = new ControllerErrorHandler(toasterMock as any);
   });
 
   it('should be instance of ControllerErrorHandler', () => {

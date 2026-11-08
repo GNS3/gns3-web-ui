@@ -32,6 +32,7 @@
           mat-list-item
           class="sidebar__nav-item"
           routerLinkActive="active"
+          *appHasPrivilege="'Compute.Audit'"
           [routerLink]="['/controller', controllerId, 'computes']"
           (click)="isSmallScreen() && sidenav.close()"
         >
@@ -62,6 +63,7 @@
           mat-list-item
           class="sidebar__nav-item"
           routerLinkActive="active"
+          *appHasPrivilege="'Image.Audit'"
           [routerLink]="['/controller', controllerId, 'image-manager']"
           (click)="isSmallScreen() && sidenav.close()"
         >
@@ -72,6 +74,7 @@
           mat-list-item
           class="sidebar__nav-item"
           routerLinkActive="active"
+          *appHasPrivilege="'Template.Audit'"
           [routerLink]="['/controller', controllerId, 'preferences']"
           (click)="isSmallScreen() && sidenav.close()"
         >
@@ -89,11 +92,11 @@
           <mat-icon matListItemIcon>settings</mat-icon>
           <span matListItemTitle>Web settings</span>
         </a>
-        @if (isAdministrator()) {
         <a
           mat-list-item
           class="sidebar__nav-item"
           routerLinkActive="active"
+          *appHasPrivilege="'Server.Audit'"
           [routerLink]="['/controller', controllerId, 'server-settings']"
           (click)="isSmallScreen() && sidenav.close()"
         >
@@ -104,13 +107,14 @@
           mat-list-item
           class="sidebar__nav-item"
           routerLinkActive="active"
+          *appHasPrivilege="['User.Audit', 'Group.Audit', 'Role.Audit', 'Pool.Audit', 'ACE.Audit']; match: 'any'"
           [routerLink]="['/controller', controllerId, 'management', 'users']"
           (click)="isSmallScreen() && sidenav.close()"
         >
           <mat-icon matListItemIcon>manage_accounts</mat-icon>
           <span matListItemTitle>Access Management</span>
         </a>
-        } }
+        }
       </mat-nav-list>
 
       <!-- Support Section -->

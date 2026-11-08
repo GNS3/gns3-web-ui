@@ -51,6 +51,7 @@ import { MarkerFlashService } from '@services/marker-flash.service';
 import { DrawingService } from '@services/drawing.service';
 import { ProgressService } from '../../common/progress/progress.service';
 import { ProjectWebServiceHandler } from '../../handlers/project-web-service-handler';
+import { ProjectPermissionService } from '@services/project-permission.service';
 import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
 import { NodeWidget } from '../../cartography/widgets/node';
 import { DrawingsWidget } from '../../cartography/widgets/drawings';
@@ -270,6 +271,7 @@ describe('ProjectMapComponent', () => {
   let mockNodesWidget: any;
   let mockMarkerFlashService: any;
   let mockMarkerRegistryService: any;
+  let mockProjectPermissionService: any;
 
   // Mock data
   let mockController: Controller;
@@ -712,6 +714,15 @@ describe('ProjectMapComponent', () => {
     mockNodesWidget = { };
     mockMarkerFlashService = { reset: () => {} };
     mockMarkerRegistryService = { reset: () => {} };
+    mockProjectPermissionService = {
+      load: vi.fn(),
+      clear: vi.fn(),
+      has: vi.fn(() => false),
+      hasAny: vi.fn(() => false),
+      canWrite: vi.fn(() => false),
+      privileges: () => new Set<string>(),
+      loaded: () => false,
+    };
 
     // Configure TestBed with cartography module and all required mocks
     // Note: CartographyModule provides 67+ services that are used by child components
@@ -722,6 +733,7 @@ describe('ProjectMapComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: ControllerService, useValue: mockControllerService },
+        { provide: ProjectPermissionService, useValue: mockProjectPermissionService },
         { provide: ProjectService, useValue: mockProjectService },
         { provide: NodeService, useValue: mockNodeService },
         { provide: LinkService, useValue: mockLinkService },

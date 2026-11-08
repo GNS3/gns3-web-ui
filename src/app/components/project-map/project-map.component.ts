@@ -78,6 +78,7 @@ import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeService } from '@services/node.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { NotificationService } from '@services/notification.service';
+import { ProjectPermissionService } from '@services/project-permission.service';
 import { ProjectService } from '@services/project.service';
 import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
 import { ControllerService } from '@services/controller.service';
@@ -343,6 +344,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private ethernetLinkWidget = inject(EthernetLinkWidget);
   private serialLinkWidget = inject(SerialLinkWidget);
   private notificationService = inject(NotificationService);
+  private readonly projectPermissionService = inject(ProjectPermissionService);
   readonly notificationCenter = inject(NotificationCenterService);
   private title = inject(Title);
   private nodeConsoleService = inject(NodeConsoleService);
@@ -537,6 +539,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
             this.projectService.open(this.controller, this.project.project_id);
             this.title.setTitle(this.project.name);
+
+            // Project-scoped privilege list: the exact judgement source for
+            // everything rendered inside the project view.
+            this.projectPermissionService.load(this.controller, this.project.project_id);
 
             // Initialize visibility settings from project or fallback to localStorage/defaults
             this.isInterfaceLabelVisible =
@@ -2082,6 +2088,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.destroyed = true;
     this.notificationCenter.closePanel();
+    this.projectPermissionService.clear();
 
     // Close AI Chat when leaving project
     this.onLeaveProject();

@@ -42,7 +42,7 @@ import { WebConsoleFullWindowComponent } from '@components/web-console-full-wind
 import { NodeFileManagerPageComponent } from '@components/project-map/node-file-manager-page/node-file-manager-page.component';
 import { ConsoleGuard } from './guards/console-guard';
 import { LoginGuard } from './guards/login-guard';
-import { AdministratorGuard } from './guards/administrator-guard';
+import { PrivilegeGuard } from './guards/privilege-guard';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ControllerResolve } from '@resolvers/controller-resolve';
 import { UserManagementComponent } from '@components/user-management/user-management.component';
@@ -69,7 +69,12 @@ const routes: Routes = [
       { path: 'controllers', component: ControllersComponent },
       { path: '', redirectTo: 'controllers', pathMatch: 'full' },
       { path: 'bundled', component: BundledControllerFinderComponent },
-      { path: 'controller/:controller_id/image-manager', component: ImageManagerComponent },
+      {
+        path: 'controller/:controller_id/image-manager',
+        component: ImageManagerComponent,
+        canActivate: [PrivilegeGuard],
+        data: { privileges: ['Image.Audit'] },
+      },
       {
         path: 'controller/:controller_id/dashboard',
         redirectTo: 'controller/:controller_id/systemstatus',
@@ -87,12 +92,14 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/server-settings',
         component: ServerSettingsComponent,
-        canActivate: [LoginGuard, AdministratorGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Server.Audit'] },
       },
       {
         path: 'controller/:controller_id/management/pools/:pool_id',
         component: ResourcePoolDetailsComponent,
-        canActivate: [LoginGuard, AdministratorGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Pool.Audit'] },
         resolve: {
           pool: ResourcePoolsResolver,
           controller: ControllerResolve,
@@ -110,7 +117,12 @@ const routes: Routes = [
         component: DirectLinkComponent,
         canActivate: [LoginGuard],
       },
-      { path: 'controller/:controller_id/preferences', component: PreferencesComponent, canActivate: [LoginGuard] },
+      {
+        path: 'controller/:controller_id/preferences',
+        component: PreferencesComponent,
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit'] },
+      },
       {
         // New template wizard: install from the registry or import an appliance.
         // Opened as its own page (like the manual template creation pages).
@@ -121,7 +133,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/computes',
         component: ComputesComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Compute.Audit'] },
       },
       {
         path: 'controller/:controller_id/preferences/builtin/ethernet-hubs/addtemplate',
@@ -238,34 +251,49 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/management',
         component: ManagementComponent,
-        canActivate: [LoginGuard, AdministratorGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: {
+          privileges: ['User.Audit', 'Group.Audit', 'Role.Audit', 'Pool.Audit', 'ACE.Audit'],
+          privilegeMatch: 'any',
+        },
         children: [
           {
             path: 'users',
             component: UserManagementComponent,
+            canActivate: [PrivilegeGuard],
+            data: { privileges: ['User.Audit'] },
           },
           {
             path: 'groups',
             component: GroupManagementComponent,
+            canActivate: [PrivilegeGuard],
+            data: { privileges: ['Group.Audit'] },
           },
           {
             path: 'roles',
             component: RoleManagementComponent,
+            canActivate: [PrivilegeGuard],
+            data: { privileges: ['Role.Audit'] },
           },
           {
             path: 'pools',
             component: ResourcePoolsManagementComponent,
+            canActivate: [PrivilegeGuard],
+            data: { privileges: ['Pool.Audit'] },
           },
           {
             path: 'ACL',
             component: AclManagementComponent,
+            canActivate: [PrivilegeGuard],
+            data: { privileges: ['ACE.Audit'] },
           },
         ],
       },
       {
         path: 'controller/:controller_id/management/roles/:role_id',
         component: RoleDetailComponent,
-        canActivate: [LoginGuard, AdministratorGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Role.Audit'] },
         resolve: {
           role: RoleDetailResolver,
           controller: ControllerResolve,

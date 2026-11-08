@@ -6,6 +6,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { Controller, ControllerProtocol } from '@models/controller';
 import { AuthResponse } from '@models/authResponse';
+import { ToasterService } from '@services/toaster.service';
 
 /* tslint:disable:interface-over-type-literal */
 export type JsonOptions = {
@@ -84,7 +85,15 @@ export class ControllerError extends Error {
 
 @Injectable()
 export class ControllerErrorHandler {
-  handleError(error: HttpErrorResponse) {
+  // 403 toast throttling: batch operations (e.g. "start all" denied for
+  // every node) trigger one 403 per request — show a single toast.
+  private static readonly FORBIDDEN_TOAST_THROTTLE_MS = 3000;
+  private lastForbiddenMessage: string | null = null;
+  private lastForbiddenToastAt = 0;
+
+  constructor(private toaster: ToasterService) {}
+
+  handleError(error: HttpErrorResponse, url?: string) {
     let err: Error = error;
 
     if (error.name === 'HttpErrorResponse' && error.status === 0) {
@@ -97,7 +106,36 @@ export class ControllerErrorHandler {
     //  window.location.reload();
     //}
 
+    // The flattened privilege list can overestimate (a privilege granted
+    // on one resource path does not grant it everywhere): whenever the
+    // server denies an action the UI offered, report it uniformly.
+    if (error.status === 403 && !this.isAuthEndpoint(url)) {
+      this.notifyForbidden(error);
+    }
+
     return throwError(() => err);
+  }
+
+  private isAuthEndpoint(url?: string): boolean {
+    if (!url) {
+      return false;
+    }
+    return (
+      url.endsWith('/access/users/login') ||
+      url.endsWith('/access/users/authenticate') ||
+      url.endsWith('/access/users/refresh')
+    );
+  }
+
+  private notifyForbidden(error: HttpErrorResponse): void {
+    const message = error.error?.message || 'Permission denied';
+    const now = Date.now();
+    if (message === this.lastForbiddenMessage && now - this.lastForbiddenToastAt < ControllerErrorHandler.FORBIDDEN_TOAST_THROTTLE_MS) {
+      return;
+    }
+    this.lastForbiddenMessage = message;
+    this.lastForbiddenToastAt = now;
+    this.toaster.error(message);
   }
 }
 
@@ -326,14 +364,14 @@ export class HttpController {
       catchError((error: HttpErrorResponse) => {
         // Only intercept 401; skip auth endpoints to avoid loops
         if (error.status !== 401) {
-          return this.errorHandler.handleError(error);
+          return this.errorHandler.handleError(error, url);
         }
         if (
           url.endsWith('/access/users/login') ||
           url.endsWith('/access/users/authenticate') ||
           url.endsWith('/access/users/refresh')
         ) {
-          return this.errorHandler.handleError(error);
+          return this.errorHandler.handleError(error, url);
         }
 
         const refreshToken = localStorage.getItem(`refresh_token_${controller.id}`);
