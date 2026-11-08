@@ -256,7 +256,18 @@ describe('AddUserDialogComponent', () => {
       expect(mockUserService.add).not.toHaveBeenCalled();
     });
 
-    it('should call userService.add with form values when form is valid', () => {
+    it('should reject passwords shorter than 8 characters', () => {
+      component.addUserForm.patchValue({
+        username: 'newuser',
+        email: 'newuser@example.com',
+        password: '1234567',
+        confirmPassword: '1234567',
+      });
+
+      expect(component.addUserForm.get('password')?.valid).toBe(false);
+    });
+
+    it('should not call userService.add when no group is selected', () => {
       component.addUserForm.patchValue({
         username: 'newuser',
         email: 'newuser@example.com',
@@ -266,6 +277,23 @@ describe('AddUserDialogComponent', () => {
         is_active: true,
       });
       component.onAddClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Please select at least one user group');
+      expect(mockUserService.add).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should call userService.add with form values including the first group as user_group_id', () => {
+      component.addUserForm.patchValue({
+        username: 'newuser',
+        email: 'newuser@example.com',
+        password: 'password123',
+        confirmPassword: 'password123',
+        full_name: 'New User',
+        is_active: true,
+      });
+      component.selectedGroup(mockGroups[0]);
+      component.onAddClick();
       expect(mockUserService.add).toHaveBeenCalledWith(
         mockController,
         expect.objectContaining({
@@ -274,6 +302,7 @@ describe('AddUserDialogComponent', () => {
           password: 'password123',
           full_name: 'New User',
           is_active: true,
+          user_group_id: 'group-1',
         })
       );
     });
@@ -287,13 +316,14 @@ describe('AddUserDialogComponent', () => {
         full_name: 'New User',
         is_active: true,
       });
+      component.selectedGroup(mockGroups[0]);
       component.onAddClick();
 
       expect(mockToasterService.success).toHaveBeenCalledWith('User newuser added');
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
 
-    it('should add user to selected groups on success', () => {
+    it('should only add memberships for groups beyond the primary group', () => {
       component.addUserForm.patchValue({
         username: 'newuser',
         email: 'newuser@example.com',
@@ -306,8 +336,13 @@ describe('AddUserDialogComponent', () => {
       component.selectedGroup(mockGroups[1]);
       component.onAddClick();
 
-      expect(mockGroupService.addMemberToGroup).toHaveBeenCalledTimes(2);
-      expect(mockToasterService.success).toHaveBeenCalledWith('user newuser was added to group Admins');
+      expect(mockUserService.add).toHaveBeenCalledWith(
+        mockController,
+        expect.objectContaining({ user_group_id: 'group-1' })
+      );
+      expect(mockGroupService.addMemberToGroup).toHaveBeenCalledTimes(1);
+      expect(mockGroupService.addMemberToGroup).toHaveBeenCalledWith(mockController, mockGroups[1], mockUser);
+      expect(mockToasterService.success).toHaveBeenCalledWith('user newuser was added to group Users');
     });
 
     it('should show error toast when userService.add fails', () => {
@@ -322,6 +357,7 @@ describe('AddUserDialogComponent', () => {
         full_name: 'Existing User',
         is_active: true,
       });
+      component.selectedGroup(mockGroups[0]);
       component.onAddClick();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('User already exists');
@@ -339,6 +375,7 @@ describe('AddUserDialogComponent', () => {
         full_name: 'New User',
         is_active: true,
       });
+      component.selectedGroup(mockGroups[0]);
       component.onAddClick();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create user');
@@ -356,6 +393,7 @@ describe('AddUserDialogComponent', () => {
         full_name: 'New User',
         is_active: true,
       });
+      component.selectedGroup(mockGroups[0]);
 
       const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
       component.onAddClick();
@@ -375,6 +413,7 @@ describe('AddUserDialogComponent', () => {
         full_name: 'New User',
         is_active: true,
       });
+      component.selectedGroup(mockGroups[0]);
       component.onAddClick();
 
       expect(mockDialogRef.close).not.toHaveBeenCalled();
@@ -479,6 +518,7 @@ describe('AddUserDialogComponent', () => {
           is_active: true,
         });
         component.selectedGroup(mockGroups[0]);
+        component.selectedGroup(mockGroups[1]);
         component.onAddClick();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Add member failed');
@@ -495,6 +535,7 @@ describe('AddUserDialogComponent', () => {
           is_active: true,
         });
         component.selectedGroup(mockGroups[0]);
+        component.selectedGroup(mockGroups[1]);
         component.onAddClick();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Failed to add user to group');
