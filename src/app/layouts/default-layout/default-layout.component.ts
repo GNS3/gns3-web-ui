@@ -5,6 +5,7 @@ import {
   HostListener,
   OnDestroy,
   OnInit,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -88,6 +89,24 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   private breakpointObserver = inject(BreakpointObserver);
   readonly notificationCenter = inject(NotificationCenterService);
   private readonly permissionService = inject(PermissionService);
+
+  /**
+   * The Templates and Image manager pages are management surfaces: every
+   * action on them is a write. With only the read privilege the page would
+   * render a list and nothing else, so it stays out of the sidebar (and the
+   * route guard blocks it) — the template list a read-only user needs is the
+   * Add node palette, which only requires Template.Audit.
+   */
+  readonly canManageImages = computed(
+    () =>
+      this.permissionService.has('Image.Audit') &&
+      (this.permissionService.has('Image.Allocate') || this.permissionService.has('Compute.Modify')),
+  );
+  readonly canManageTemplates = computed(
+    () =>
+      this.permissionService.has('Template.Audit') &&
+      (this.permissionService.has('Template.Allocate') || this.permissionService.has('Template.Modify')),
+  );
 
   ngOnInit() {
     this.notificationCenter.closePanel();

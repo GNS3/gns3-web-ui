@@ -6,7 +6,13 @@ import { ProjectPermissionService } from '@services/project-permission.service';
  *
  * Usage:
  *   <button *appHasProjectPrivilege="'Node.Allocate'">Add node</button>
- *   <button *appHasProjectPrivilege="['Node.Modify', 'Node.Allocate']; match: 'any'">Edit</button>
+ *   <ng-template [appHasProjectPrivilege]="['Node.Modify', 'Node.Allocate']" [match]="'any'">
+ *     <button>Edit</button>
+ *   </ng-template>
+ *
+ * Use the long form whenever `match` is needed: the structural microsyntax
+ * (`; match: 'any'`) binds an `appHasProjectPrivilegeMatch` input the
+ * directive does not declare, which silently falls back to the default 'all'.
  *
  * Reads the privilege list evaluated on the current project's resource
  * path (ProjectPermissionService) — the exact judgement source for

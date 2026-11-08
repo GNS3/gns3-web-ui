@@ -59,28 +59,29 @@
           <mat-icon matListItemIcon>work</mat-icon>
           <span matListItemTitle>Projects</span>
         </a>
+        @if (canManageImages()) {
         <a
           mat-list-item
           class="sidebar__nav-item"
           routerLinkActive="active"
-          *appHasPrivilege="'Image.Audit'"
           [routerLink]="['/controller', controllerId, 'image-manager']"
           (click)="isSmallScreen() && sidenav.close()"
         >
           <mat-icon matListItemIcon>image</mat-icon>
           <span matListItemTitle>Image manager</span>
         </a>
+        } @if (canManageTemplates()) {
         <a
           mat-list-item
           class="sidebar__nav-item"
           routerLinkActive="active"
-          *appHasPrivilege="'Template.Audit'"
           [routerLink]="['/controller', controllerId, 'preferences']"
           (click)="isSmallScreen() && sidenav.close()"
         >
           <mat-icon matListItemIcon>settings_applications</mat-icon>
           <span matListItemTitle>Templates</span>
         </a>
+        }
         } @if (controllerId) {
         <a
           mat-list-item
@@ -103,17 +104,24 @@
           <mat-icon matListItemIcon>dns</mat-icon>
           <span matListItemTitle>Server settings</span>
         </a>
-        <a
-          mat-list-item
-          class="sidebar__nav-item"
-          routerLinkActive="active"
-          *appHasPrivilege="['User.Audit', 'Group.Audit', 'Role.Audit', 'Pool.Audit', 'ACE.Audit']; match: 'any'"
-          [routerLink]="['/controller', controllerId, 'management', 'users']"
-          (click)="isSmallScreen() && sidenav.close()"
+        <!-- Long form on purpose: the structural microsyntax would rewrite
+             `match: 'any'` into an unknown appHasPrivilegeMatch binding and
+             silently fall back to requiring all five privileges. -->
+        <ng-template
+          [appHasPrivilege]="['User.Audit', 'Group.Audit', 'Role.Audit', 'Pool.Audit', 'ACE.Audit']"
+          [match]="'any'"
         >
-          <mat-icon matListItemIcon>manage_accounts</mat-icon>
-          <span matListItemTitle>Access Management</span>
-        </a>
+          <a
+            mat-list-item
+            class="sidebar__nav-item"
+            routerLinkActive="active"
+            [routerLink]="['/controller', controllerId, 'management', 'users']"
+            (click)="isSmallScreen() && sidenav.close()"
+          >
+            <mat-icon matListItemIcon>manage_accounts</mat-icon>
+            <span matListItemTitle>Access Management</span>
+          </a>
+        </ng-template>
         }
       </mat-nav-list>
 

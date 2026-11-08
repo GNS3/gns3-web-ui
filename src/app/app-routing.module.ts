@@ -70,10 +70,16 @@ const routes: Routes = [
       { path: '', redirectTo: 'controllers', pathMatch: 'full' },
       { path: 'bundled', component: BundledControllerFinderComponent },
       {
+        // Management page: readable with Image.Audit, but it only exists to
+        // act on the library (Image.Allocate) or the Docker daemon
+        // (Compute.Modify). Read-only visitors don't see it at all.
         path: 'controller/:controller_id/image-manager',
         component: ImageManagerComponent,
         canActivate: [PrivilegeGuard],
-        data: { privileges: ['Image.Audit'] },
+        data: {
+          privileges: ['Image.Audit'],
+          privilegesAny: ['Image.Allocate', 'Compute.Modify'],
+        },
       },
       {
         path: 'controller/:controller_id/dashboard',
@@ -118,10 +124,16 @@ const routes: Routes = [
         canActivate: [LoginGuard],
       },
       {
+        // Management page: readable with Template.Audit, but it only exists
+        // to create/install (Template.Allocate) or configure (Template.Modify)
+        // templates. Read-only visitors use the Add node palette instead.
         path: 'controller/:controller_id/preferences',
         component: PreferencesComponent,
         canActivate: [LoginGuard, PrivilegeGuard],
-        data: { privileges: ['Template.Audit'] },
+        data: {
+          privileges: ['Template.Audit'],
+          privilegesAny: ['Template.Allocate', 'Template.Modify'],
+        },
       },
       {
         // New template wizard: install from the registry or import an appliance.
@@ -147,7 +159,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/builtin/ethernet-hubs/:template_id',
         component: EthernetHubsTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
 
       {
@@ -159,7 +172,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/builtin/ethernet-switches/:template_id',
         component: EthernetSwitchesTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
 
       {
@@ -171,7 +185,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/builtin/cloud-nodes/:template_id',
         component: CloudNodesTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
 
       {
@@ -183,13 +198,15 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/dynamips/templates/:template_id',
         component: IosTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
 
       {
         path: 'controller/:controller_id/preferences/qemu/templates/:template_id',
         component: QemuVmTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
       {
         path: 'controller/:controller_id/preferences/qemu/addtemplate',
@@ -201,7 +218,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/vpcs/templates/:template_id',
         component: VpcsTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
       {
         path: 'controller/:controller_id/preferences/vpcs/addtemplate',
@@ -239,7 +257,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/docker/templates/:template_id',
         component: DockerTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
       {
         path: 'controller/:controller_id/preferences/docker/addtemplate',
@@ -250,7 +269,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/iou/templates/:template_id',
         component: IouTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
       {
         path: 'controller/:controller_id/preferences/iou/addtemplate',

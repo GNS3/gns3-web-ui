@@ -6,7 +6,13 @@ import { PermissionService } from '@services/permission.service';
  *
  * Usage:
  *   <button *appHasPrivilege="'Compute.Allocate'">Add compute</button>
- *   <a *appHasPrivilege="['User.Audit', 'Group.Audit']; match: 'any'">Management</a>
+ *   <ng-template [appHasPrivilege]="['User.Audit', 'Group.Audit']" [match]="'any'">
+ *     <a>Management</a>
+ *   </ng-template>
+ *
+ * Use the long form whenever `match` is needed: the structural microsyntax
+ * (`; match: 'any'`) binds an `appHasPrivilegeMatch` input the directive does
+ * not declare, which silently falls back to the default 'all'.
  *
  * Reads the flattened global privilege list of the active controller
  * (PermissionService). Inside the project view use

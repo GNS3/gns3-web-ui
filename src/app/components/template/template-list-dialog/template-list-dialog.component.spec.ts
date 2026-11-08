@@ -18,6 +18,7 @@ import { Project } from '@models/project';
 import { Template } from '@models/template';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
 import { ChangeDetectorRef } from '@angular/core';
+import { PermissionService } from '@services/permission.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 const mockController: Controller = {
@@ -110,6 +111,15 @@ describe('TemplateListDialogComponent', () => {
           },
         },
         { provide: MatDialogRef, useValue: mockDialogRef },
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['Template.Audit', 'Template.Allocate']),
+            loaded: () => true,
+          },
+        },
         { provide: TemplateService, useValue: mockTemplateService },
         { provide: ComputeService, useValue: mockComputeService },
         { provide: ToasterService, useValue: mockToasterService },

@@ -265,12 +265,15 @@
                   <mat-icon>info</mat-icon>
                 </button>
                 @if (canConfigure(template)) {
+                <!-- Configure opens the template detail editor (PUT /templates/{id})
+                     = Template.Modify. -->
                 <button
                   mat-icon-button
                   class="templates-page__action templates-page__action--edit"
                   (click)="$event.stopPropagation(); configureTemplate(template)"
                   matTooltip="Configure template"
                   [attr.aria-label]="'Configure ' + template.name"
+                  *appHasPrivilege="'Template.Modify'"
                 >
                   <mat-icon>edit</mat-icon>
                 </button>
@@ -393,6 +396,7 @@
               (click)="$event.stopPropagation(); configureTemplate(template)"
               matTooltip="Configure template"
               [attr.aria-label]="'Configure ' + template.name"
+              *appHasPrivilege="'Template.Modify'"
             >
               <mat-icon>edit</mat-icon>
             </button>
@@ -543,6 +547,7 @@
             color="primary"
             class="templates-page__details-action templates-page__details-action--edit"
             (click)="configureTemplate(template)"
+            *appHasPrivilege="'Template.Modify'"
           >
             <mat-icon>edit</mat-icon>
             Configure

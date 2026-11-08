@@ -11,18 +11,24 @@
     <span>Add nodes</span>
   </span>
   <span class="dialog-title__actions">
-    <a
-      mat-button
-      class="dialog-title__preferences"
-      color="accent"
-      aria-label="Template preferences"
-      [routerLink]="['/controller', controller?.id, 'preferences']"
-      target="_blank"
-      rel="noopener"
-    >
-      <mat-icon>tune</mat-icon>
-      <span>Template preferences</span>
-    </a>
+    <!-- The Templates page is management-only (route guard: Template.Audit plus
+         a write privilege); don't offer a dead link when the user can't manage.
+         Explicit ng-template form: the structural microsyntax would turn
+         `match: 'any'` into an appHasPrivilegeMatch binding. -->
+    <ng-template [appHasPrivilege]="['Template.Allocate', 'Template.Modify']" [match]="'any'">
+      <a
+        mat-button
+        class="dialog-title__preferences"
+        color="accent"
+        aria-label="Template preferences"
+        [routerLink]="['/controller', controller?.id, 'preferences']"
+        target="_blank"
+        rel="noopener"
+      >
+        <mat-icon>tune</mat-icon>
+        <span>Template preferences</span>
+      </a>
+    </ng-template>
     <button mat-icon-button aria-label="Close add nodes" (click)="onNoClick()">
       <mat-icon>close</mat-icon>
     </button>

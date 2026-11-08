@@ -41,6 +41,7 @@ import { TemplateService } from '@services/template.service';
 import { ComputeService } from '@services/compute.service';
 import { ToasterService } from '@services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 export interface TemplateListDialogData {
   controller: Controller;
   project: Project;
@@ -85,6 +86,7 @@ export const COMPUTE_ASK_ON_DROP = '__ask__';
     MatExpansionModule,
     MatTooltipModule,
     DragDropModule,
+    HasPrivilegeDirective,
   ],
 })
 export class TemplateListDialogComponent implements OnInit {

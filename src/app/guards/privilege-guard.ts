@@ -18,6 +18,16 @@ import { PermissionService } from '@services/permission.service';
  * to the system status page, mirroring the previous administrator
  * guard behaviour. LoginGuard must run first so the request is
  * authenticated.
+ *
+ * `data.privilegesAny` adds an optional "at least one of" group on top of
+ * `data.privileges` (which are all required). It expresses management
+ * pages whose content needs a read privilege but which only make sense
+ * with one of several write privileges:
+ *
+ *   data: {
+ *     privileges: ['Template.Audit'],
+ *     privilegesAny: ['Template.Allocate', 'Template.Modify'],
+ *   }
  */
 @Injectable()
 export class PrivilegeGuard implements CanActivate {
@@ -33,16 +43,20 @@ export class PrivilegeGuard implements CanActivate {
     }
 
     const required: string[] = route.data?.['privileges'] ?? [];
-    if (required.length === 0) {
+    const anyOf: string[] = route.data?.['privilegesAny'] ?? [];
+    if (required.length === 0 && anyOf.length === 0) {
       return true;
     }
     const match: 'all' | 'any' = route.data?.['privilegeMatch'] ?? 'all';
 
     try {
       const privileges = await this.permissionService.ready(numericControllerId);
-      const allowed =
-        match === 'any' ? required.some((privilege) => privileges.has(privilege)) : required.every((privilege) => privileges.has(privilege));
-      if (allowed) {
+      const allowedRequired =
+        match === 'any'
+          ? required.some((privilege) => privileges.has(privilege))
+          : required.every((privilege) => privileges.has(privilege));
+      const allowedAnyOf = anyOf.length === 0 || anyOf.some((privilege) => privileges.has(privilege));
+      if (allowedRequired && allowedAnyOf) {
         return true;
       }
     } catch {
