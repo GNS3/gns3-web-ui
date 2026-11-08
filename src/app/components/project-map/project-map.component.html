@@ -15,8 +15,11 @@
     <div class="project-titlebar-controls">
       @if (!readonly) {
       <div class="menu-button-group primary-controls">
+        <!-- Creating a node needs Node.Allocate; the palette that feeds it lists
+             templates, which needs Template.Audit. Without both the button would
+             only open a selector that cannot load. -->
         <app-template
-          *appHasProjectPrivilege="'Node.Allocate'"
+          *appHasProjectPrivilege="['Node.Allocate', 'Template.Audit']"
           [controller]="controller"
           [project]="project"
           (nodeCreationChange)="onNodeCreation($event)"

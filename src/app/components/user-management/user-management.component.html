@@ -8,16 +8,24 @@
         <mat-icon>refresh</mat-icon>
         Refresh
       </button>
+      <!-- POST/DELETE /access/users = User.Allocate -->
       <button
         mat-flat-button
         class="users-page__bulk-delete"
         [disabled]="selection.isEmpty()"
         (click)="deleteMultiple()"
+        *appHasPrivilege="'User.Allocate'"
       >
         <mat-icon>delete</mat-icon>
         Delete selected
       </button>
-      <button mat-raised-button color="primary" class="users-page__add" (click)="addUser()">
+      <button
+        mat-raised-button
+        color="primary"
+        class="users-page__add"
+        (click)="addUser()"
+        *appHasPrivilege="'User.Allocate'"
+      >
         <mat-icon>person_add</mat-icon>
         Add user
       </button>
@@ -210,6 +218,7 @@
                 (click)="$event.stopPropagation(); openAiProfileDialog(user)"
                 matTooltip="Manage AI profiles"
                 [attr.aria-label]="'Manage AI profiles for ' + user.username"
+                *appHasPrivilege="'LLMConfig.Modify'"
               >
                 <mat-icon>psychology</mat-icon>
               </button>
@@ -219,6 +228,7 @@
                 (click)="$event.stopPropagation(); onDelete(user)"
                 matTooltip="Delete user"
                 [attr.aria-label]="'Delete ' + user.username"
+                *appHasPrivilege="'User.Allocate'"
               >
                 <mat-icon>delete</mat-icon>
               </button>
@@ -313,6 +323,7 @@
             matTooltip="Manage AI profiles"
             (click)="$event.stopPropagation(); openAiProfileDialog(user)"
             [attr.aria-label]="'Manage AI profiles for ' + user.username"
+            *appHasPrivilege="'LLMConfig.Modify'"
           >
             <mat-icon>psychology</mat-icon>
           </button>
@@ -322,6 +333,7 @@
             matTooltip="Delete user"
             (click)="$event.stopPropagation(); onDelete(user)"
             [attr.aria-label]="'Delete ' + user.username"
+            *appHasPrivilege="'User.Allocate'"
           >
             <mat-icon>delete</mat-icon>
           </button>
@@ -397,6 +409,7 @@
           color="primary"
           class="users-page__details-action users-page__details-action--ai"
           (click)="openAiProfileDialog(user)"
+          *appHasPrivilege="'LLMConfig.Modify'"
         >
           <mat-icon>psychology</mat-icon>AI profiles
         </button>
@@ -404,6 +417,7 @@
           mat-stroked-button
           class="users-page__details-action users-page__details-action--delete"
           (click)="onDelete(user)"
+          *appHasPrivilege="'User.Allocate'"
         >
           <mat-icon>delete</mat-icon>Delete
         </button>

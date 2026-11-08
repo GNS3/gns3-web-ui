@@ -6,6 +6,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { PermissionService } from '@services/permission.service';
 import { Controller } from '@models/controller';
 
 describe('ManagementComponent', () => {
@@ -52,6 +53,16 @@ describe('ManagementComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ManagementComponent, RouterModule, MatTabsModule],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () =>
+              new Set<string>(['User.Audit', 'Group.Audit', 'Role.Audit', 'Pool.Audit', 'ACE.Audit']),
+            loaded: () => true,
+          },
+        },
         { provide: ControllerService, useValue: mockControllerService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: ToasterService, useValue: mockToasterService },

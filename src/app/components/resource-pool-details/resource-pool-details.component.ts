@@ -20,6 +20,7 @@ import { Project } from '@models/project';
 import { Observable } from 'rxjs';
 import { Resource } from '@models/resourcePools/Resource';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 @Component({
   selector: 'app-resource-pool-details',
@@ -38,6 +39,7 @@ import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-di
     MatAutocompleteModule,
     MatDialogModule,
     MatTooltipModule,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

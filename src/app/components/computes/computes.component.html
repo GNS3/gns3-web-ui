@@ -9,12 +9,14 @@
         <mat-icon>refresh</mat-icon>
         Refresh
       </button>
+      <!-- POST /computes = Compute.Allocate -->
       <button
         mat-raised-button
         color="primary"
         class="computes-page__button"
         (click)="openAddDialog()"
         [disabled]="!controller"
+        *appHasPrivilege="'Compute.Allocate'"
       >
         <mat-icon>add</mat-icon>
         Add Compute
@@ -186,12 +188,15 @@
                 <mat-icon>link_off</mat-icon>
               </button>
               }
+              <!-- Edit (PUT) needs Compute.Modify; Delete needs Compute.Allocate.
+                   Connect/Disconnect only need Compute.Audit, covered by the route. -->
               <button
                 mat-icon-button
                 class="computes-page__action computes-page__action--edit"
                 (click)="openEditDialog(compute)"
                 matTooltip="Edit compute"
                 [attr.aria-label]="'Edit ' + (compute.name || compute.compute_id)"
+                *appHasPrivilege="'Compute.Modify'"
               >
                 <mat-icon>edit</mat-icon>
               </button>
@@ -201,6 +206,7 @@
                 (click)="deleteCompute(compute)"
                 matTooltip="Delete compute"
                 [attr.aria-label]="'Delete ' + (compute.name || compute.compute_id)"
+                *appHasPrivilege="'Compute.Allocate'"
               >
                 <mat-icon>delete</mat-icon>
               </button>
@@ -213,9 +219,9 @@
           </mat-cell>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" />
+        <mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true" />
         <mat-row
-          *matRowDef="let compute; columns: displayedColumns"
+          *matRowDef="let compute; columns: displayedColumns()"
           [class.computes-page__row--connected]="compute.connected"
         />
       </mat-table>
@@ -228,7 +234,13 @@
           compute server to extend the controller's resources. }
         </p>
         @if (!searchText() && statusFilter() === 'all') {
-        <button mat-raised-button color="primary" class="computes-page__button" (click)="openAddDialog()">
+        <button
+          mat-raised-button
+          color="primary"
+          class="computes-page__button"
+          (click)="openAddDialog()"
+          *appHasPrivilege="'Compute.Allocate'"
+        >
           <mat-icon>add</mat-icon>
           Add Compute
         </button>

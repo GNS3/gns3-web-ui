@@ -126,9 +126,11 @@ const routes: Routes = [
       {
         // New template wizard: install from the registry or import an appliance.
         // Opened as its own page (like the manual template creation pages).
+        // Creating a template (whatever the source) POSTs /templates.
         path: 'controller/:controller_id/preferences/new-template',
         component: NewTemplateDialogComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/computes',
@@ -139,7 +141,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/builtin/ethernet-hubs/addtemplate',
         component: EthernetHubsAddTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/preferences/builtin/ethernet-hubs/:template_id',
@@ -150,7 +153,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/builtin/ethernet-switches/addtemplate',
         component: EthernetSwitchesAddTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/preferences/builtin/ethernet-switches/:template_id',
@@ -161,7 +165,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/builtin/cloud-nodes/addtemplate',
         component: CloudNodesAddTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/preferences/builtin/cloud-nodes/:template_id',
@@ -172,7 +177,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/dynamips/templates/addtemplate',
         component: AddIosTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/preferences/dynamips/templates/:template_id',
@@ -188,7 +194,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/qemu/addtemplate',
         component: AddQemuVmTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
 
       {
@@ -199,7 +206,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/vpcs/addtemplate',
         component: AddVpcsTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
 
       // VirtualBox support deprecated since 3.1.0 - routes removed
@@ -236,7 +244,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/docker/addtemplate',
         component: AddDockerTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/preferences/iou/templates/:template_id',
@@ -246,7 +255,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/iou/addtemplate',
         component: AddIouTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/management',

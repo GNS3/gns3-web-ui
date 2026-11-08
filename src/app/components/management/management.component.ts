@@ -10,7 +10,7 @@
  *
  * Author: Sylvain MATHIEU, Elise LEBEAU
  */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -18,6 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { PermissionService } from '@services/permission.service';
 
 @Component({
   selector: 'app-management',
@@ -31,16 +32,27 @@ export class ManagementComponent implements OnInit {
   private router = inject(Router);
   private controllerService = inject(ControllerService);
   private toasterService = inject(ToasterService);
+  private permissionService = inject(PermissionService);
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
-  readonly links = signal([
-    { label: 'Users', icon: 'people', route: 'users' },
-    { label: 'Groups', icon: 'group', route: 'groups' },
-    { label: 'Roles', icon: 'badge', route: 'roles' },
-    { label: 'Pools', icon: 'folder_special', route: 'pools' },
-    { label: 'ACL', icon: 'security', route: 'ACL' },
-  ]);
+  /** Each tab is the read gate of its child route; hide the dead ones. */
+  private readonly tabPrivileges: Record<string, string> = {
+    users: 'User.Audit',
+    groups: 'Group.Audit',
+    roles: 'Role.Audit',
+    pools: 'Pool.Audit',
+    ACL: 'ACE.Audit',
+  };
+  readonly links = computed(() =>
+    [
+      { label: 'Users', icon: 'people', route: 'users' },
+      { label: 'Groups', icon: 'group', route: 'groups' },
+      { label: 'Roles', icon: 'badge', route: 'roles' },
+      { label: 'Pools', icon: 'folder_special', route: 'pools' },
+      { label: 'ACL', icon: 'security', route: 'ACL' },
+    ].filter((link) => this.permissionService.has(this.tabPrivileges[link.route])),
+  );
 
   constructor() {}
 

@@ -142,9 +142,17 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button mat-button (click)="onChangePassword()">Change Password</button>
+  <!-- Admin-side writes on another user (PUT /access/users/{id}) = User.Modify.
+       The dialog itself stays reachable for User.Audit readers. -->
+  <button mat-button (click)="onChangePassword()" *appHasPrivilege="'User.Modify'">Change Password</button>
   <button mat-button (click)="onCancel()">Cancel</button>
-  <button mat-raised-button color="primary" (click)="onSaveChanges()" [disabled]="!editUserForm.valid">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSaveChanges()"
+    [disabled]="!editUserForm.valid"
+    *appHasPrivilege="'User.Modify'"
+  >
     Save changes
   </button>
 </mat-dialog-actions>

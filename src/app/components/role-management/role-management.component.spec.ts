@@ -24,6 +24,7 @@ import { ToasterService } from '@services/toaster.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { Overlay } from '@angular/cdk/overlay';
+import { PermissionService } from '@services/permission.service';
 
 describe('RoleManagementComponent', () => {
   let component: RoleManagementComponent;
@@ -120,6 +121,15 @@ describe('RoleManagementComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RoleManagementComponent, MatDialogModule],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['Role.Audit', 'Role.Allocate']),
+            loaded: () => true,
+          },
+        },
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: RoleService, useValue: mockRoleService },

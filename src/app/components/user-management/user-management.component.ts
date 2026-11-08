@@ -32,6 +32,7 @@ import { AiProfileDialogComponent, AiProfileDialogData } from './ai-profile-dial
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { UserDetailDialogComponent, UserDetailDialogData } from './user-detail-dialog/user-detail-dialog.component';
 import { createActionCompletion } from '@utils/action-completion.util';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 type UserViewMode = 'list' | 'grid';
 type UserScope = 'all' | 'active' | 'administrators';
@@ -58,6 +59,7 @@ type UserSortDirection = 'asc' | 'desc' | '';
     MatSortModule,
     MatTableModule,
     MatTooltipModule,
+    HasPrivilegeDirective,
   ],
 })
 export class UserManagementComponent implements OnInit {

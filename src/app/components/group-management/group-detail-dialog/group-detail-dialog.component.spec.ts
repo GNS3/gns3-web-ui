@@ -18,6 +18,7 @@ import { AddUserToGroupDialogComponent } from '@components/group-details/add-use
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { UserDetailDialogComponent } from '@components/user-management/user-detail-dialog/user-detail-dialog.component';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { PermissionService } from '@services/permission.service';
 
 describe('GroupDetailDialogComponent', () => {
   let component: GroupDetailDialogComponent;
@@ -162,6 +163,15 @@ describe('GroupDetailDialogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [GroupDetailDialogComponent, MatDialogModule],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['Group.Audit', 'Group.Modify']),
+            loaded: () => true,
+          },
+        },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: dialogData },
         { provide: MatDialog, useValue: mockDialog },

@@ -17,15 +17,25 @@
     </mat-form-field>
   </form>
   <div class="group-management__actions">
+    <!-- POST/DELETE /access/groups = Group.Allocate -->
     <button
       mat-flat-button
       class="group-management__button group-management__button--destructive"
       [disabled]="selection.selected.length === 0"
       (click)="onDelete(selection.selected)"
+      *appHasPrivilege="'Group.Allocate'"
     >
       Delete selected
     </button>
-    <button mat-raised-button color="primary" class="group-management__button" (click)="addGroup()">Add group</button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="group-management__button"
+      (click)="addGroup()"
+      *appHasPrivilege="'Group.Allocate'"
+    >
+      Add group
+    </button>
   </div>
 </div>
 
@@ -80,7 +90,13 @@
         <button mat-icon-button (click)="openGroupDetailDialog(row)" matTooltip="Edit group">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button (click)="openGroupAiProfileDialog(row)" matTooltip="AI Profiles">
+        <!-- Group LLM configs are written with Group.Modify (Group.Audit is the page entry). -->
+        <button
+          mat-icon-button
+          (click)="openGroupAiProfileDialog(row)"
+          matTooltip="AI Profiles"
+          *appHasPrivilege="'Group.Modify'"
+        >
           <mat-icon>psychology</mat-icon>
         </button>
       </td>

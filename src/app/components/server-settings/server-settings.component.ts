@@ -44,6 +44,7 @@ import { ControllerService } from '@services/controller.service';
 import { NotificationService } from '@services/notification.service';
 import { ServerSettingsService } from '@services/server-settings.service';
 import { ToasterService } from '@services/toaster.service';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 @Component({
   selector: 'app-server-settings',
@@ -62,6 +63,7 @@ import { ToasterService } from '@services/toaster.service';
     MatSelectModule,
     MatSlideToggleModule,
     MatTooltipModule,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

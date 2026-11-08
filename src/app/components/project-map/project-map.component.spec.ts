@@ -716,6 +716,7 @@ describe('ProjectMapComponent', () => {
     mockMarkerRegistryService = { reset: () => {} };
     const projectMapPrivileges = new Set<string>([
       'Node.Allocate',
+      'Template.Audit',
       'Link.Allocate',
       'Snapshot.Audit',
       'Project.Allocate',

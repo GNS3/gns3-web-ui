@@ -6,17 +6,26 @@
       </div>
 
       <div class="image-manager__buttons-bar">
+        <!-- Image library writes (sync/upload/install/prune) need Image.Allocate;
+             Docker daemon operations on a compute need Compute.Modify. -->
         <button
           mat-raised-button
           class="image-manager__button"
           color="primary"
           (click)="syncImages()"
           [disabled]="syncing() || !controller"
+          *appHasPrivilege="'Image.Allocate'"
         >
           <mat-icon>sync</mat-icon>
           {{ syncing() ? 'Synchronizing…' : 'Sync Images' }}
         </button>
-        <button mat-raised-button class="image-manager__button" color="primary" (click)="addImageDialog()">
+        <button
+          mat-raised-button
+          class="image-manager__button"
+          color="primary"
+          (click)="addImageDialog()"
+          *appHasPrivilege="'Image.Allocate'"
+        >
           <mat-icon>add</mat-icon>
           Add Image
         </button>
@@ -26,6 +35,7 @@
           color="primary"
           (click)="openPullDockerImageDialog()"
           [disabled]="dockerPull.isPulling() || !controller"
+          *appHasPrivilege="'Compute.Modify'"
         >
           <!-- Keep mat-icon as a direct child: Material projects it into its own
                icon slot. Inside @if it falls into the label and the text drops
@@ -46,15 +56,27 @@
           color="primary"
           [disabled]="dockerLoad.isBusy() || !controller"
           (click)="dockerLoadInput.click()"
+          *appHasPrivilege="'Compute.Modify'"
         >
           <mat-icon>upload_file</mat-icon>
           {{ dockerLoad.buttonLabel() }}
         </button>
-        <button mat-raised-button class="image-manager__button" color="primary" (click)="installAllImages()">
+        <button
+          mat-raised-button
+          class="image-manager__button"
+          color="primary"
+          (click)="installAllImages()"
+          *appHasPrivilege="'Image.Allocate'"
+        >
           <mat-icon>done_all</mat-icon>
           Install Images
         </button>
-        <button mat-flat-button class="image-manager__button image-manager__button--danger" (click)="pruneImages()">
+        <button
+          mat-flat-button
+          class="image-manager__button image-manager__button--danger"
+          (click)="pruneImages()"
+          *appHasPrivilege="'Image.Allocate'"
+        >
           <mat-icon>delete_sweep</mat-icon>
           Prune Images
         </button>
@@ -270,6 +292,7 @@
                 (click)="$event.stopPropagation(); deleteAllFiles()"
                 matTooltip="Delete selected images"
                 aria-label="Delete selected images"
+                *appHasPrivilege="'Image.Allocate'"
               >
                 <mat-icon>delete_sweep</mat-icon>
               </button>
@@ -293,6 +316,7 @@
                   (click)="$event.stopPropagation(); deleteFile(row.path)"
                   matTooltip="Delete image"
                   [attr.aria-label]="'Delete ' + row.filename"
+                  *appHasPrivilege="'Image.Allocate'"
                 >
                   <mat-icon>delete</mat-icon>
                 </button>
@@ -303,6 +327,7 @@
                   (click)="$event.stopPropagation(); deleteDockerImage(row)"
                   matTooltip="Delete Docker image"
                   [attr.aria-label]="'Delete Docker image ' + row.filename"
+                  *appHasPrivilege="'Compute.Modify'"
                 >
                   <mat-icon>delete</mat-icon>
                 </button>
@@ -417,6 +442,7 @@
               (click)="$event.stopPropagation(); deleteFile(row.path)"
               matTooltip="Delete image"
               [attr.aria-label]="'Delete ' + row.filename"
+              *appHasPrivilege="'Image.Allocate'"
             >
               <mat-icon>delete</mat-icon>
             </button>
@@ -427,6 +453,7 @@
               (click)="$event.stopPropagation(); deleteDockerImage(row)"
               matTooltip="Delete Docker image"
               [attr.aria-label]="'Delete Docker image ' + row.filename"
+              *appHasPrivilege="'Compute.Modify'"
             >
               <mat-icon>delete</mat-icon>
             </button>
@@ -568,6 +595,7 @@
             mat-stroked-button
             class="image-manager__details-action image-manager__details-action--delete"
             (click)="deleteFile(image.path)"
+            *appHasPrivilege="'Image.Allocate'"
           >
             <mat-icon>delete</mat-icon>
             Delete Image
@@ -577,6 +605,7 @@
             mat-stroked-button
             class="image-manager__details-action image-manager__details-action--delete"
             (click)="deleteDockerImage(image)"
+            *appHasPrivilege="'Compute.Modify'"
           >
             <mat-icon>delete</mat-icon>
             Delete Docker Image

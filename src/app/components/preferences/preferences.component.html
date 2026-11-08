@@ -13,6 +13,9 @@
           <mat-icon>refresh</mat-icon>
           Refresh
         </button>
+        <!-- Template creation (wizard and manual) POSTs /templates = Template.Allocate.
+             The wizard also reads the appliance registry (Appliance.Audit) but that
+             only feeds its pick lists — the write privilege is the entry gate. -->
         <button
           mat-raised-button
           color="primary"
@@ -20,6 +23,7 @@
           [routerLink]="['/controller', controller.id, 'preferences', 'new-template']"
           matTooltip="Install an appliance from the registry or import an appliance file"
           matTooltipClass="custom-tooltip"
+          *appHasPrivilege="'Template.Allocate'"
         >
           <mat-icon>add</mat-icon>
           Install appliance
@@ -31,6 +35,7 @@
           [matMenuTriggerFor]="manualTemplateMenu"
           matTooltip="Create a template manually for a specific emulator"
           matTooltipClass="custom-tooltip"
+          *appHasPrivilege="'Template.Allocate'"
         >
           <mat-icon>build</mat-icon>
           Custom template
@@ -276,6 +281,7 @@
                   (click)="$event.stopPropagation(); duplicateTemplate(template)"
                   matTooltip="Duplicate template"
                   [attr.aria-label]="'Duplicate ' + template.name"
+                  *appHasPrivilege="'Template.Allocate'"
                 >
                   <mat-icon>content_copy</mat-icon>
                 </button>
@@ -286,6 +292,7 @@
                   (click)="$event.stopPropagation(); deleteTemplate(template, deleteComponent)"
                   matTooltip="Delete template"
                   [attr.aria-label]="'Delete ' + template.name"
+                  *appHasPrivilege="'Template.Allocate'"
                 >
                   <mat-icon>delete</mat-icon>
                 </button>
@@ -396,6 +403,7 @@
               (click)="$event.stopPropagation(); duplicateTemplate(template)"
               matTooltip="Duplicate template"
               [attr.aria-label]="'Duplicate ' + template.name"
+              *appHasPrivilege="'Template.Allocate'"
             >
               <mat-icon>content_copy</mat-icon>
             </button>
@@ -406,6 +414,7 @@
               (click)="$event.stopPropagation(); deleteTemplate(template, deleteComponent)"
               matTooltip="Delete template"
               [attr.aria-label]="'Delete ' + template.name"
+              *appHasPrivilege="'Template.Allocate'"
             >
               <mat-icon>delete</mat-icon>
             </button>
@@ -544,6 +553,7 @@
             color="primary"
             class="templates-page__details-action templates-page__details-action--duplicate"
             (click)="duplicateTemplate(template)"
+            *appHasPrivilege="'Template.Allocate'"
           >
             <mat-icon>content_copy</mat-icon>
             Duplicate
@@ -553,6 +563,7 @@
             mat-stroked-button
             class="templates-page__details-action templates-page__details-action--delete"
             (click)="deleteTemplate(template, deleteComponent)"
+            *appHasPrivilege="'Template.Allocate'"
           >
             <mat-icon>delete</mat-icon>
             Delete

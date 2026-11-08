@@ -10,6 +10,7 @@ import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { ResourcePool } from '@models/resourcePools/ResourcePool';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { PermissionService } from '@services/permission.service';
 
 const createMockResourcePool = (id: string, name: string): ResourcePool => ({
   name,
@@ -79,6 +80,15 @@ describe('ResourcePoolsManagementComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResourcePoolsManagementComponent, RouterModule],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['Pool.Audit', 'Pool.Allocate']),
+            loaded: () => true,
+          },
+        },
         { provide: ResourcePoolsService, useValue: mockResourcePoolsService },
         { provide: ControllerService, useValue: mockControllerService },
         { provide: ToasterService, useValue: mockToasterService },

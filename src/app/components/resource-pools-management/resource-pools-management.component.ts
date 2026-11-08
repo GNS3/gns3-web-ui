@@ -33,6 +33,7 @@ import { AddResourcePoolDialogComponent } from '@components/resource-pools-manag
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ResourcePoolsService } from '@services/resource-pools.service';
 import { ResourcePoolsFilterPipe } from './resource-pools-filter.pipe';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 @Component({
   selector: 'app-resource-pools-management',
@@ -53,6 +54,7 @@ import { ResourcePoolsFilterPipe } from './resource-pools-filter.pipe';
     MatDialogModule,
     MatProgressSpinnerModule,
     ResourcePoolsFilterPipe,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

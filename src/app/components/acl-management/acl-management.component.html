@@ -17,11 +17,13 @@
     </mat-form-field>
   </form>
   <div class="acl-management__actions">
+    <!-- POST/DELETE /acl = ACE.Allocate, PUT /acl/{id} = ACE.Modify -->
     <button
       mat-flat-button
       class="acl-management__button acl-management__button--destructive"
       [disabled]="selection.selected.length === 0"
       (click)="deleteMultiple()"
+      *appHasPrivilege="'ACE.Allocate'"
     >
       Delete selected
     </button>
@@ -31,6 +33,7 @@
       class="acl-management__button"
       (click)="addACE()"
       matTooltip="Add access control entry"
+      *appHasPrivilege="'ACE.Allocate'"
     >
       Add ACE
     </button>
@@ -108,6 +111,7 @@
               (click)="onEdit(ace)"
               matTooltip="Edit ACE rule"
               [attr.aria-label]="'Edit ACE rule for ' + getNameByUuidFromEndpoint(ace.path)"
+              *appHasPrivilege="'ACE.Modify'"
             >
               <mat-icon>edit</mat-icon>
             </button>
@@ -117,6 +121,7 @@
               (click)="onDelete(ace)"
               matTooltip="Delete ACE rule"
               [attr.aria-label]="'Delete ACE rule for ' + getNameByUuidFromEndpoint(ace.path)"
+              *appHasPrivilege="'ACE.Allocate'"
             >
               <mat-icon>delete</mat-icon>
             </button>

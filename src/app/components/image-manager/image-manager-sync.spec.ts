@@ -13,6 +13,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { EMPTY, of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ImageManagerComponent } from './image-manager.component';
+import { PermissionService } from '@services/permission.service';
 
 describe('Image Manager synchronization', () => {
   let component: ImageManagerComponent;
@@ -33,6 +34,15 @@ describe('Image Manager synchronization', () => {
     controllers = { get: vi.fn().mockResolvedValue({ id: 1, authToken: 'token' }) };
     TestBed.configureTestingModule({
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['Image.Audit', 'Image.Allocate', 'Compute.Modify']),
+            loaded: () => true,
+          },
+        },
         { provide: ImageManagerService, useValue: images },
         { provide: ToasterService, useValue: toaster },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => '1' } }, queryParams: of({}) } },

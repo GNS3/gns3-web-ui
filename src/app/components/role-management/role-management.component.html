@@ -17,15 +17,25 @@
     </mat-form-field>
   </form>
   <div class="role-management__actions">
+    <!-- POST/DELETE /access/roles = Role.Allocate -->
     <button
       mat-flat-button
       class="role-management__button role-management__button--destructive"
       [disabled]="selection.selected.length === 0"
       (click)="onDelete(selection.selected)"
+      *appHasPrivilege="'Role.Allocate'"
     >
       Delete roles
     </button>
-    <button mat-raised-button color="primary" class="role-management__button" (click)="addRole()">Add role</button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="role-management__button"
+      (click)="addRole()"
+      *appHasPrivilege="'Role.Allocate'"
+    >
+      Add role
+    </button>
   </div>
 </div>
 

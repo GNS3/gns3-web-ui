@@ -27,6 +27,8 @@ import { Subscription } from 'rxjs';
 import { Controller } from '@models/controller';
 import { Compute, ComputeCreate, ComputeUpdate } from '@models/compute';
 import { ComputeService } from '@services/compute.service';
+import { PermissionService } from '@services/permission.service';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 import { ControllerService } from '@services/controller.service';
 import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
@@ -53,6 +55,7 @@ import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-di
     MatProgressSpinnerModule,
     MatSlideToggleModule,
     ReactiveFormsModule,
+    HasPrivilegeDirective,
   ],
 })
 export class ComputesComponent implements OnInit, OnDestroy {
@@ -63,6 +66,7 @@ export class ComputesComponent implements OnInit, OnDestroy {
   private toasterService = inject(ToasterService);
   private dialog = inject(MatDialog);
   private cd = inject(ChangeDetectorRef);
+  private permissionService = inject(PermissionService);
 
   controller: Controller;
   private _computes = signal<Compute[]>([]);
@@ -103,7 +107,13 @@ export class ComputesComponent implements OnInit, OnDestroy {
     });
   });
   connectedCount = computed(() => this.computes().filter((compute) => compute.connected).length);
-  displayedColumns = ['name', 'status', 'host', 'platform', 'resources', 'autoConnect', 'actions'];
+  /** The auto-connect toggle column only renders its control for
+   *  Compute.Modify — without the privilege it would be an empty column. */
+  displayedColumns = computed(() =>
+    this.permissionService.has('Compute.Modify')
+      ? ['name', 'status', 'host', 'platform', 'resources', 'autoConnect', 'actions']
+      : ['name', 'status', 'host', 'platform', 'resources', 'actions'],
+  );
   loading = signal(true);
   private subscription = new Subscription();
 

@@ -46,6 +46,7 @@ import { RoleService } from '@services/role.service';
 import { AddRoleDialogComponent } from '@components/role-management/add-role-dialog/add-role-dialog.component';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { RoleFilterPipe } from '@components/role-management/role-filter.pipe';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -67,6 +68,7 @@ import { forkJoin } from 'rxjs';
     MatDialogModule,
     MatProgressSpinnerModule,
     RoleFilterPipe,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

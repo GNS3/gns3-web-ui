@@ -35,7 +35,10 @@
         </div>
 
         <div class="resource-pool-details__actions">
-          <button mat-raised-button color="primary" type="submit">Update resource pool</button>
+          <!-- Pool writes (PUT/DELETE /pools/{id}[...]) = Pool.Modify -->
+          <button mat-raised-button color="primary" type="submit" *appHasPrivilege="'Pool.Modify'">
+            Update resource pool
+          </button>
         </div>
       </form>
     </div>
@@ -69,6 +72,7 @@
           color="primary"
           (click)="addResource()"
           matTooltip="Add project"
+          *appHasPrivilege="'Pool.Modify'"
         >
           <mat-icon>add</mat-icon>
         </button>
@@ -79,7 +83,13 @@
         <div class="resource-pool-details__item">
           <span class="resource-pool-details__item-name">{{ resource.name }}</span>
           <div class="resource-pool-details__item-actions">
-            <button mat-icon-button color="warn" (click)="deleteResource(resource)" matTooltip="Delete resource">
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteResource(resource)"
+              matTooltip="Delete resource"
+              *appHasPrivilege="'Pool.Modify'"
+            >
               <mat-icon>delete</mat-icon>
             </button>
           </div>

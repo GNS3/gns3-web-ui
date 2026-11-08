@@ -46,6 +46,7 @@ import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-di
 import { Endpoint } from '@models/api/endpoint';
 import { ResourcePool } from '@models/resourcePools/ResourcePool';
 import { ResourcePoolsService } from '@services/resource-pools.service';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 /** ACE rules sharing one subject (a user or a group). */
 interface AceGroup {
@@ -78,6 +79,7 @@ interface RulePageState {
     MatInputModule,
     MatDialogModule,
     MatProgressSpinnerModule,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -28,6 +28,7 @@ import { Template } from '@models/template';
 import { ControllerService } from '@services/controller.service';
 import { SymbolService } from '@services/symbol.service';
 import { TemplateService } from '@services/template.service';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 import { ToasterService } from '@services/toaster.service';
 import { MarkdownViewerComponent } from '../../common/markdown-viewer/markdown-viewer.component';
 import {
@@ -77,6 +78,7 @@ type TemplateListItem = Template &
     MatTooltipModule,
     DeleteTemplateComponent,
     MarkdownViewerComponent,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

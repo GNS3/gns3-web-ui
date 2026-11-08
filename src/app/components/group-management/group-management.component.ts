@@ -58,6 +58,7 @@ import {
   GroupAiProfileDialogComponent,
   GroupAiProfileDialogData,
 } from '@components/group-management/group-detail-dialog/group-ai-profile-dialog/group-ai-profile-dialog.component';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 @Component({
   selector: 'app-group-management',
@@ -78,6 +79,7 @@ import {
     MatInputModule,
     MatCardModule,
     GroupFilterPipe,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

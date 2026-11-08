@@ -20,6 +20,7 @@ import { Endpoint } from '@models/api/endpoint';
 import { Role } from '@models/api/role';
 import { of, throwError } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
+import { PermissionService } from '@services/permission.service';
 
 describe('UserDetailDialogComponent', () => {
   let component: UserDetailDialogComponent;
@@ -149,6 +150,15 @@ describe('UserDetailDialogComponent', () => {
         ReactiveFormsModule,
       ],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['User.Audit', 'User.Modify']),
+            loaded: () => true,
+          },
+        },
         { provide: MAT_DIALOG_DATA, useValue: dialogData },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MatDialog, useValue: mockDialog },

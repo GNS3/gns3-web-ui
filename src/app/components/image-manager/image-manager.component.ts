@@ -42,6 +42,7 @@ import { AddImageDialogComponent } from './add-image-dialog/add-image-dialog.com
 import { DockerImagePullDialogComponent } from './docker-image-pull-dialog/docker-image-pull-dialog.component';
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog/deleteallfiles-dialog.component';
 import { ImageTableRow } from './image-database-file';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 type ImageViewMode = 'list' | 'grid';
 type ImageSortDirection = 'asc' | 'desc' | '';
@@ -66,6 +67,7 @@ type ImageSortDirection = 'asc' | 'desc' | '';
     MatProgressBarModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
+    HasPrivilegeDirective,
   ],
   providers: [DockerImageLoadService, DockerImagePullService],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -77,6 +77,7 @@
               color="primary"
               (click)="onUpdate()"
               [disabled]="(!(editRoleForm.valueChanges | async) && editRoleForm.valid) || ($role | async)?.is_builtin"
+              *appHasPrivilege="'Role.Modify'"
             >
               Update Role
             </button>
@@ -87,7 +88,7 @@
       <!-- Privileges Card -->
       <section class="role-detail__section">
         <app-privilege
-          [disable]="($role | async)?.is_builtin"
+          [disable]="($role | async)?.is_builtin || !canEditRole"
           [ownedPrivilege]="$ownedPrivilegesId | async"
           [privileges]="privileges | async"
           (update)="onPrivilegesUpdate($event)"

@@ -14,6 +14,7 @@ import { ACE, AceType } from '@models/api/ACE';
 import { Endpoint, RessourceType } from '@models/api/endpoint';
 import { ResourcePool } from '@models/resourcePools/ResourcePool';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { PermissionService } from '@services/permission.service';
 
 describe('AclManagementComponent', () => {
   let component: AclManagementComponent;
@@ -136,6 +137,15 @@ describe('AclManagementComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AclManagementComponent],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['ACE.Audit', 'ACE.Allocate', 'ACE.Modify']),
+            loaded: () => true,
+          },
+        },
         { provide: ControllerService, useValue: mockControllerService },
         { provide: AclService, useValue: mockAclService },
         { provide: ToasterService, useValue: mockToasterService },

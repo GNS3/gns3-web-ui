@@ -21,11 +21,14 @@
           </form>
         </mat-card-content>
         <mat-card-actions>
+          <!-- Group writes (PUT /access/groups/{id}) = Group.Modify; the dialog
+               itself stays readable with Group.Audit. -->
           <button
             mat-raised-button
             color="primary"
             (click)="onUpdate()"
             [disabled]="!editGroupForm.valid || group.is_builtin"
+            *appHasPrivilege="'Group.Modify'"
           >
             Update Group
           </button>
@@ -62,7 +65,12 @@
     <section class="group-detail-dialog__section">
       <div class="group-detail-dialog__section-header">
         <h3 class="group-detail-dialog__section-title">Members</h3>
-        <button mat-icon-button matTooltip="Add user" (click)="openAddUserDialog()">
+        <button
+          mat-icon-button
+          matTooltip="Add user"
+          (click)="openAddUserDialog()"
+          *appHasPrivilege="'Group.Modify'"
+        >
           <mat-icon>person_add</mat-icon>
         </button>
       </div>
@@ -91,6 +99,7 @@
                   class="destructive-icon-button"
                   matTooltip="Remove user"
                   (click)="openRemoveUserDialog(user)"
+                  *appHasPrivilege="'Group.Modify'"
                 >
                   <mat-icon>delete</mat-icon>
                 </button>

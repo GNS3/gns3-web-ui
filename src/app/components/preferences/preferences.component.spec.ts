@@ -11,6 +11,7 @@ import { of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PreferencesComponent } from './preferences.component';
 import { CopyTemplateDialogComponent } from './common/copy-template-dialog/copy-template-dialog.component';
+import { PermissionService } from '@services/permission.service';
 
 describe('PreferencesComponent', () => {
   let component: PreferencesComponent;
@@ -90,6 +91,15 @@ describe('PreferencesComponent', () => {
     await TestBed.configureTestingModule({
       imports: [PreferencesComponent],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['Template.Audit', 'Template.Allocate']),
+            loaded: () => true,
+          },
+        },
         provideRouter([]),
         {
           provide: ActivatedRoute,

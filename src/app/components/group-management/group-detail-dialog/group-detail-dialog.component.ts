@@ -38,6 +38,7 @@ import {
   UserDetailDialogComponent,
   UserDetailDialogData,
 } from '@components/user-management/user-detail-dialog/user-detail-dialog.component';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 export interface GroupDetailDialogData {
   group: Group;
@@ -63,6 +64,7 @@ export interface GroupDetailDialogData {
     MatCardModule,
     MatSelectModule,
     MatTooltipModule,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

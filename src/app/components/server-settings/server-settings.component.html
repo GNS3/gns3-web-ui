@@ -436,7 +436,15 @@
           <button mat-stroked-button type="button" (click)="discardChanges()" [disabled]="!isDirty() || isSaving()">
             Discard
           </button>
-          <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="!isDirty() || isSaving()">
+          <!-- PUT /settings = Server.Modify -->
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            (click)="save()"
+            [disabled]="!isDirty() || isSaving()"
+            *appHasPrivilege="'Server.Modify'"
+          >
             @if (isSaving()) {
             <mat-progress-spinner [diameter]="18" mode="indeterminate"></mat-progress-spinner>
             } Save changes

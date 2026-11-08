@@ -31,6 +31,8 @@ import { BehaviorSubject, Observable, forkJoin } from 'rxjs';
 import { IPrivilegesChange } from '@components/role-management/role-detail/privilege/IPrivilegesChange';
 import { map } from 'rxjs/operators';
 import { PrivilegeComponent } from '@components/role-management/role-detail/privilege/privilege.component';
+import { PermissionService } from '@services/permission.service';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 @Component({
   selector: 'app-role-detail',
@@ -47,6 +49,7 @@ import { PrivilegeComponent } from '@components/role-management/role-detail/priv
     MatIconModule,
     MatTooltipModule,
     PrivilegeComponent,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -55,8 +58,14 @@ export class RoleDetailComponent implements OnInit {
   private toastService = inject(ToasterService);
   private route = inject(ActivatedRoute);
   private privilegeService = inject(PrivilegeService);
+  private permissionService = inject(PermissionService);
   private fb = inject(FormBuilder);
   private cd = inject(ChangeDetectorRef);
+
+  /** Role writes (PUT /access/roles/{id} and its privileges) = Role.Modify. */
+  get canEditRole(): boolean {
+    return this.permissionService.has('Role.Modify');
+  }
 
   controller: Controller;
   $role: BehaviorSubject<Role> = new BehaviorSubject<Role>({

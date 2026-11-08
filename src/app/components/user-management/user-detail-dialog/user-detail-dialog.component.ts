@@ -23,6 +23,7 @@ import { Role } from '@models/api/role';
 import { userEmailAsyncValidator } from '@components/user-management/add-user-dialog/userEmailAsyncValidator';
 import { userNameAsyncValidator } from '@components/user-management/add-user-dialog/userNameAsyncValidator';
 import { ChangeUserPasswordComponent } from '@components/user-management/user-detail/change-user-password/change-user-password.component';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 import { forkJoin } from 'rxjs';
 
 export interface UserDetailDialogData {
@@ -48,6 +49,7 @@ export interface UserDetailDialogData {
     MatInputModule,
     MatCheckboxModule,
     MatCardModule,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

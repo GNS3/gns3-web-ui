@@ -12,6 +12,7 @@ import { Privilege } from '@models/api/Privilege';
 import { IPrivilegesChange } from '@components/role-management/role-detail/privilege/IPrivilegesChange';
 import { PrivilegeComponent } from '@components/role-management/role-detail/privilege/privilege.component';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { PermissionService } from '@services/permission.service';
 
 describe('RoleDetailComponent', () => {
   let component: RoleDetailComponent;
@@ -109,6 +110,15 @@ describe('RoleDetailComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, RoleDetailComponent, PrivilegeComponent],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['Role.Audit', 'Role.Modify']),
+            loaded: () => true,
+          },
+        },
         { provide: RoleService, useValue: mockRoleService },
         { provide: PrivilegeService, useValue: mockPrivilegeService },
         { provide: ToasterService, useValue: mockToastService },

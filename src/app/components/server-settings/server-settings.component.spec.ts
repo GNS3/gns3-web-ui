@@ -9,6 +9,7 @@ import { ControllerService } from '@services/controller.service';
 import { ServerSettingsService } from '@services/server-settings.service';
 import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
+import { PermissionService } from '@services/permission.service';
 
 function baseSettings(): ServerSettings {
   const values = Object.fromEntries(
@@ -68,6 +69,15 @@ describe('ServerSettingsComponent settings workspace', () => {
     await TestBed.configureTestingModule({
       imports: [ServerSettingsComponent],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['Server.Audit', 'Server.Modify']),
+            loaded: () => true,
+          },
+        },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => '1' } } } },
         { provide: ControllerService, useValue: { get: vi.fn().mockResolvedValue(controller) } },
         {
