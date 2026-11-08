@@ -14,6 +14,8 @@ import { SnapshotService } from '@services/snapshot.service';
 import { ProgressDialogComponent } from '../../../common/progress-dialog/progress-dialog.component';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { ToasterService } from '@services/toaster.service';
+import { ProjectPermissionService } from '@services/project-permission.service';
+import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.directive';
 import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-snapshot-dialog.component';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { DateFilter } from '@filters/dateFilter.pipe';
@@ -33,6 +35,7 @@ import { DateFilter } from '@filters/dateFilter.pipe';
     MatInputModule,
     MatTableModule,
     DateFilter,
+    HasProjectPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -41,6 +44,7 @@ export class SnapshotDialogComponent {
   private snapshotService = inject(SnapshotService);
   private progressDialogService = inject(ProgressDialogService);
   private toaster = inject(ToasterService);
+  private projectPermissionService = inject(ProjectPermissionService);
   private dialog = inject(MatDialog);
   private cd = inject(ChangeDetectorRef);
 
@@ -48,7 +52,13 @@ export class SnapshotDialogComponent {
   project: Project;
   snapshots = model<Snapshot[]>([]);
   searchText = model('');
-  displayedColumns = ['name', 'created_at', 'actions'];
+  /** The actions column renders only when at least one of its buttons does —
+   *  without Snapshot.Allocate or Snapshot.Restore it would be an empty column. */
+  displayedColumns = computed(() =>
+    this.projectPermissionService.hasAny(['Snapshot.Allocate', 'Snapshot.Restore'])
+      ? ['name', 'created_at', 'actions']
+      : ['name', 'created_at']
+  );
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.controller = data['controller'];

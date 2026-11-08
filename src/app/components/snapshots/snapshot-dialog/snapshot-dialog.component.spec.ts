@@ -6,6 +6,7 @@ import { SnapshotDialogComponent } from './snapshot-dialog.component';
 import { SnapshotService } from '@services/snapshot.service';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { ToasterService } from '@services/toaster.service';
+import { ProjectPermissionService } from '@services/project-permission.service';
 import { Snapshot } from '@models/snapshot';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
@@ -113,6 +114,16 @@ describe('SnapshotDialogComponent', () => {
         { provide: SnapshotService, useValue: mockSnapshotService },
         { provide: ProgressDialogService, useValue: mockProgressDialogService },
         { provide: ToasterService, useValue: mockToasterService },
+        {
+          provide: ProjectPermissionService,
+          useValue: {
+            privileges: () => new Set<string>(['Snapshot.Audit', 'Snapshot.Allocate', 'Snapshot.Restore']),
+            has: (privilege: string) => ['Snapshot.Audit', 'Snapshot.Allocate', 'Snapshot.Restore'].includes(privilege),
+            hasAny: (names: string[]) =>
+              ['Snapshot.Audit', 'Snapshot.Allocate', 'Snapshot.Restore'].some((p) => names.includes(p)),
+            loaded: () => true,
+          },
+        },
         { provide: MatDialog, useValue: mockDialog },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
@@ -141,7 +152,7 @@ describe('SnapshotDialogComponent', () => {
     });
 
     it('should have correct displayed columns', () => {
-      expect(component.displayedColumns).toEqual(['name', 'created_at', 'actions']);
+      expect(component.displayedColumns()).toEqual(['name', 'created_at', 'actions']);
     });
   });
 

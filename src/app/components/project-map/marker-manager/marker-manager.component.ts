@@ -52,6 +52,8 @@ import { MapLinksDataSource } from '../../../cartography/datasources/map-datasou
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { MarkerRegistryService } from '@services/marker-registry.service';
 import { ToasterService } from '@services/toaster.service';
+import { ProjectPermissionService } from '@services/project-permission.service';
+import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.directive';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 import { WindowManagementService } from '@services/window-management.service';
 import { MarkerFormComponent, MARKER_CAPTURE_AUTO } from './marker-form.component';
@@ -134,6 +136,7 @@ function notGlobalName(control: AbstractControl): { notGlobalName: true } | null
     ResizeHandleDirective,
     MarkerFormComponent,
     SafeColorValueAccessor,
+    HasProjectPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -371,6 +374,7 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   private nodesDataSource = inject(NodesDataSource);
   private markerRegistryService = inject(MarkerRegistryService);
   private toasterService = inject(ToasterService);
+  private projectPermissionService = inject(ProjectPermissionService);
   private dialog = inject(MatDialog);
 
   private dragStartX = 0;
@@ -615,6 +619,21 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   }
 
   // ---- tag replay (Replay tab) ----
+
+  /**
+   * Privileges the pause-panel's "Pause all & replay" needs for THIS tag row:
+   * pausing an inherited copy writes its project-level definition
+   * (Project.Modify) while pausing a private marker writes the link
+   * (Link.Modify) — collect exactly the kinds the row's still-enabled markers
+   * consist of (same mixed-selection treatment the context menu uses).
+   */
+  replayPausePrivileges(row: TagRow): string[] {
+    const privs = new Set<string>();
+    for (const m of row.enabled) {
+      privs.add(m.inherited_from ? 'Project.Modify' : 'Link.Modify');
+    }
+    return [...privs];
+  }
 
   /**
    * Replay button per tag. Tags with no capturing markers replay immediately;

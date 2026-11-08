@@ -11,6 +11,7 @@ import { MarkerRegistryService } from '@services/marker-registry.service';
 import { ToasterService } from '@services/toaster.service';
 import { WindowBoundaryService } from '@services/window-boundary.service';
 import { WindowManagementService } from '@services/window-management.service';
+import { ProjectPermissionService } from '@services/project-permission.service';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 
@@ -32,6 +33,8 @@ describe('MarkerManagerComponent', () => {
   let mapLinksDataSource: any;
 
   beforeEach(async () => {
+    // Every privilege the template gates on (the directive reads the signal).
+    const privileges = ['Project.Audit', 'Project.Modify', 'Link.Modify'];
     markerService = {
       listDefinitions: vi.fn(),
       createDefinition: vi.fn(),
@@ -59,6 +62,15 @@ describe('MarkerManagerComponent', () => {
         { provide: NodesDataSource, useValue: { get: vi.fn(), getItems: vi.fn(() => []) } },
         { provide: MarkerRegistryService, useValue: registry },
         { provide: ToasterService, useValue: { success: vi.fn(), error: vi.fn() } },
+        {
+          provide: ProjectPermissionService,
+          useValue: {
+            privileges: () => new Set<string>(privileges),
+            has: (privilege: string) => privileges.includes(privilege),
+            hasAny: (names: string[]) => names.some((n) => privileges.includes(n)),
+            loaded: () => true,
+          },
+        },
         {
           provide: WindowBoundaryService,
           useValue: { setConfig: vi.fn(), constrainResizeSize: vi.fn() },

@@ -55,8 +55,8 @@
         <mat-tab label="Definitions">
           @if (activeTabIndex() === 0) {
           <div class="marker-manager__panel">
-            <!-- Create / edit form -->
-            <form [formGroup]="definitionForm" (ngSubmit)="submitDefinition()">
+            <!-- Create / edit form (Project.Modify: create/update definition) -->
+            <form [formGroup]="definitionForm" (ngSubmit)="submitDefinition()" *appHasProjectPrivilege="'Project.Modify'">
               <div class="marker-manager__form-title">
                 {{ editingDefinition() ? 'Edit definition' : 'New definition' }}
               </div>
@@ -136,7 +136,7 @@
               </div>
             </form>
 
-            <mat-divider></mat-divider>
+            <mat-divider *appHasProjectPrivilege="'Project.Modify'"></mat-divider>
 
             @if (defError()) {
             <div class="marker-manager__error">{{ defError() }}</div>
@@ -182,16 +182,27 @@
                   mat-icon-button
                   (click)="toggleDefinitionPaused(row)"
                   [matTooltip]="row.paused ? 'Resume rule (all copies)' : 'Pause rule (disables all copies)'"
+                  *appHasProjectPrivilege="'Project.Modify'"
                 >
                   <ng-container
                     [ngTemplateOutlet]="onOffIcon"
                     [ngTemplateOutletContext]="{ $implicit: isTogglingDefinition(row.name), off: row.paused }"
                   />
                 </button>
-                <button mat-icon-button (click)="startEditDefinition(row)" matTooltip="Edit">
+                <button
+                  mat-icon-button
+                  (click)="startEditDefinition(row)"
+                  matTooltip="Edit"
+                  *appHasProjectPrivilege="'Project.Modify'"
+                >
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button (click)="deleteDefinition(row)" matTooltip="Delete (clears all copies)">
+                <button
+                  mat-icon-button
+                  (click)="deleteDefinition(row)"
+                  matTooltip="Delete (clears all copies)"
+                  *appHasProjectPrivilege="'Project.Modify'"
+                >
                   @if (isDeletingDefinition(row.name)) {
                   <mat-spinner class="marker-manager__toggle-spinner" [diameter]="18" />
                   } @else {
@@ -272,6 +283,7 @@
                   class="add-button"
                   (click)="toggleAddMarker(group.linkId)"
                   [class.add-button--active]="addingToLink() === group.linkId"
+                  *appHasProjectPrivilege="'Link.Modify'"
                 >
                   <mat-icon>add</mat-icon>
                   Marker
@@ -335,6 +347,7 @@
                     class="add-button"
                     (click)="$event.stopPropagation(); toggleAddMarker(group.linkId)"
                     [class.add-button--active]="addingToLink() === group.linkId"
+                    *appHasProjectPrivilege="'Link.Modify'"
                   >
                     <mat-icon>add</mat-icon>
                     Marker
@@ -395,7 +408,13 @@
               </span>
               }
               <span class="marker-manager__row-spacer"></span>
-              <button mat-flat-button color="primary" class="gns3-replay-tags__action" (click)="startReplayFor(row)">
+              <button
+                mat-flat-button
+                color="primary"
+                class="gns3-replay-tags__action"
+                (click)="startReplayFor(row)"
+                *appHasProjectPrivilege="'Project.Audit'"
+              >
                 @if (pausingTag() === row.tag) { Pausing… } @else if (row.enabled.length > 0) { Pause &amp; replay }
                 @else { Replay }
               </button>
@@ -432,6 +451,7 @@
                   color="primary"
                   [disabled]="pausingTag() !== null"
                   (click)="pauseAllAndReplay(row)"
+                  [appHasProjectPrivilege]="replayPausePrivileges(row)"
                 >
                   @if (pausingTag() === row.tag) { Pausing… } @else { Pause all &amp; replay }
                 </button>
@@ -502,16 +522,27 @@
       mat-icon-button
       (click)="toggleMarkerEnabled(linkId, m)"
       [matTooltip]="m.enabled === false ? 'Enable (signal + capture)' : 'Disable (signal + capture)'"
+      *appHasProjectPrivilege="'Link.Modify'"
     >
       <ng-container
         [ngTemplateOutlet]="onOffIcon"
         [ngTemplateOutletContext]="{ $implicit: isTogglingMarker(linkId, m.name), off: m.enabled === false }"
       />
     </button>
-    <button mat-icon-button (click)="startEditMarker(linkId, m)" matTooltip="Edit">
+    <button
+      mat-icon-button
+      (click)="startEditMarker(linkId, m)"
+      matTooltip="Edit"
+      *appHasProjectPrivilege="'Link.Modify'"
+    >
       <mat-icon>edit</mat-icon>
     </button>
-    <button mat-icon-button (click)="deleteMarker(linkId, m.name)" matTooltip="Delete">
+    <button
+      mat-icon-button
+      (click)="deleteMarker(linkId, m.name)"
+      matTooltip="Delete"
+      *appHasProjectPrivilege="'Link.Modify'"
+    >
       @if (isDeletingMarker(linkId, m.name)) {
       <mat-spinner class="marker-manager__toggle-spinner" [diameter]="18" />
       } @else {

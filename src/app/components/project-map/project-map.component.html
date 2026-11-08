@@ -286,6 +286,7 @@
         [class.tool-active]="isMarkerManagerVisible"
         [color]="isMarkerManagerVisible ? 'primary' : 'basic'"
         (click)="toggleMarkerManager()"
+        *appHasProjectPrivilege="'Project.Audit'"
       >
         <mat-icon>insights</mat-icon>
       </button>
