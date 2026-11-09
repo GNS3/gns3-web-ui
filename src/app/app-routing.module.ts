@@ -115,7 +115,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/systemstatus',
         component: SystemStatusComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Server.Audit'] },
       },
 
       {
@@ -148,7 +149,7 @@ const routes: Routes = [
         path: 'controller/:controller_id/computes',
         component: ComputesComponent,
         canActivate: [LoginGuard, PrivilegeGuard],
-        data: { privileges: ['Compute.Audit'] },
+        data: { privileges: ['Compute.Audit'], privilegesAny: ['Compute.Allocate', 'Compute.Modify'] },
       },
       {
         path: 'controller/:controller_id/preferences/builtin/ethernet-hubs/addtemplate',

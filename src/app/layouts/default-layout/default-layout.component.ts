@@ -107,6 +107,17 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       this.permissionService.has('Template.Audit') &&
       (this.permissionService.has('Template.Allocate') || this.permissionService.has('Template.Modify')),
   );
+  /**
+   * Computes is a management surface: Connect/Disconnect need Compute.Modify
+   * and Edit/Delete need Compute.Modify/Compute.Allocate, so a read-only
+   * visitor gets nothing out of the page (the in-project compute data comes
+   * from the polled cache, not from this page).
+   */
+  readonly canManageComputes = computed(
+    () =>
+      this.permissionService.has('Compute.Audit') &&
+      (this.permissionService.has('Compute.Allocate') || this.permissionService.has('Compute.Modify')),
+  );
 
   ngOnInit() {
     this.notificationCenter.closePanel();

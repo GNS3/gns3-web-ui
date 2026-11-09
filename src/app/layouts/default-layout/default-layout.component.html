@@ -28,21 +28,23 @@
           <span matListItemTitle>Controllers</span>
         </a>
         @if (controllerId) {
+        @if (canManageComputes()) {
         <a
           mat-list-item
           class="sidebar__nav-item"
           routerLinkActive="active"
-          *appHasPrivilege="'Compute.Audit'"
           [routerLink]="['/controller', controllerId, 'computes']"
           (click)="isSmallScreen() && sidenav.close()"
         >
           <mat-icon matListItemIcon>dns</mat-icon>
           <span matListItemTitle>Computes</span>
         </a>
+        }
         <a
           mat-list-item
           class="sidebar__nav-item"
           routerLinkActive="active"
+          *appHasPrivilege="'Server.Audit'"
           [routerLink]="['/controller', controllerId, 'systemstatus']"
           (click)="isSmallScreen() && sidenav.close()"
         >
