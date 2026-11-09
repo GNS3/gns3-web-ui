@@ -5,6 +5,7 @@ import { Compute } from '@models/compute';
 import { Project } from '@models/project';
 import { SettingsUpdatedEvent } from '@models/server-settings/server-settings';
 import { ComputeService } from '@services/compute.service';
+import { PermissionService } from '@services/permission.service';
 import { DockerImageDeletedNotification, DockerImagePullNotification } from '@models/docker/docker-image';
 
 export interface ComputeNotification {
@@ -31,6 +32,11 @@ export class NotificationService {
   // reconnect path. Mirrors the project WS liveness check in project-map.
   private readonly WS_LIVENESS_TIMEOUT_MS = 15000;
   private readonly WS_LIVENESS_CHECK_MS = 5000;
+  /** Close code the server uses when the stream privilege is missing or revoked. */
+  private readonly WS_POLICY_VIOLATION_CLOSE_CODE = 1008;
+  /** The global stream requires this privilege (superadmins hold every privilege). */
+  private readonly NOTIFICATION_STREAM_PRIVILEGE = 'Notification.Audit';
+  private readonly COMPUTE_POLL_INTERVAL_MS = 10000;
 
   private ws: WebSocket | null = null;
   private currentController: Controller | null = null;
@@ -39,6 +45,7 @@ export class NotificationService {
   private reconnectAttempt = 0;
   private livenessTimer: ReturnType<typeof setInterval> | null = null;
   private lastWsMessageAt = 0;
+  private pollTimer: ReturnType<typeof setInterval> | null = null;
 
   // Event emitters for compute notifications
   public computeNotificationEmitter = new EventEmitter<ComputeNotification>();
@@ -66,7 +73,10 @@ export class NotificationService {
   // EventEmitter for cache updates
   public computeCacheUpdated = new EventEmitter<Compute[]>();
 
-  constructor(private computeService: ComputeService) {}
+  constructor(
+    private computeService: ComputeService,
+    private permissionService: PermissionService,
+  ) {}
 
   notificationsPath(controller: Controller): string {
     let protocol: string = 'ws';
@@ -105,7 +115,77 @@ export class NotificationService {
     this.disconnect();
 
     this.currentController = controller;
-    this.openComputeNotificationsWs();
+    // The stream requires the Notification.Audit privilege and the server
+    // closes unauthorized sockets with code 1008. Decide from the cached
+    // privileges when they are already available (the common case once the
+    // layout has activated the controller); fetch them otherwise.
+    const cached = this.permissionService.cachedPrivileges(controller.id);
+    if (cached !== null) {
+      this.openStreamOrPoll(controller, cached);
+      return;
+    }
+    void this.permissionService
+      .ready(controller.id)
+      .then((privileges) => this.openStreamOrPoll(controller, privileges))
+      .catch(() => {
+        // Privilege lookup failed (e.g. transient network error): open the
+        // stream anyway and let the server decide — the 1008 close handler
+        // degrades to polling if it is denied. The server stays the authority.
+        if (this.currentController === controller) {
+          this.openComputeNotificationsWs();
+        }
+      });
+  }
+
+  /**
+   * Open the notification stream when the user holds the stream privilege,
+   * or fall back to polling the compute list otherwise (the list endpoint
+   * carries the runtime state — connected, last error, usage — and the local
+   * compute, so polling it replaces the stream for every cache consumer).
+   */
+  private openStreamOrPoll(controller: Controller, privileges: ReadonlySet<string>) {
+    if (this.currentController !== controller) {
+      return; // controller switched while the privileges were resolving
+    }
+    if (privileges.has(this.NOTIFICATION_STREAM_PRIVILEGE)) {
+      this.openComputeNotificationsWs();
+    } else {
+      this.startComputePolling();
+    }
+  }
+
+  /**
+   * Poll the compute list on an interval and push it through the cache, so
+   * consumers keep receiving updates when the notification stream cannot be
+   * opened (no Notification.Audit privilege, or the server closed the socket
+   * with the policy-violation code).
+   */
+  private startComputePolling() {
+    if (this.pollTimer || !this.currentController) {
+      return;
+    }
+    this.fetchComputesIntoCache();
+    this.pollTimer = setInterval(() => this.fetchComputesIntoCache(), this.COMPUTE_POLL_INTERVAL_MS);
+  }
+
+  private stopComputePolling() {
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer);
+      this.pollTimer = null;
+    }
+  }
+
+  private fetchComputesIntoCache() {
+    const controller = this.currentController;
+    if (!controller) {
+      return;
+    }
+    this.computeService.getComputes(controller).subscribe({
+      next: (computes) => this.setInitialComputes(computes),
+      // Keep polling across failures: a transient error must not silently
+      // freeze the compute state for users without the stream.
+      error: (error) => console.warn('Compute list polling failed', error),
+    });
   }
 
   /**
@@ -146,12 +226,20 @@ export class NotificationService {
       console.error('Compute notifications WebSocket error');
     };
 
-    this.ws.onclose = () => {
+    this.ws.onclose = (event: CloseEvent) => {
       this.ws = null;
       this.stopLivenessCheck();
       // Don't clear currentController - keep it for potential reconnection
       // currentController should only be cleared in disconnect() method
       if (this.intentionalClose) {
+        return;
+      }
+      if (event.code === this.WS_POLICY_VIOLATION_CLOSE_CODE) {
+        // The server denied the stream privilege — either at connect time or
+        // after a revocation while the stream was open (the server re-checks
+        // on every ping tick and closes with this code). Don't fight it with
+        // reconnects: degrade to polling the compute list instead.
+        this.startComputePolling();
         return;
       }
       this.scheduleReconnect();
@@ -211,6 +299,7 @@ export class NotificationService {
       this.reconnectTimer = null;
     }
     this.stopLivenessCheck();
+    this.stopComputePolling();
     this.reconnectAttempt = 0;
     if (this.ws) {
       this.ws.close();

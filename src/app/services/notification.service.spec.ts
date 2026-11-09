@@ -18,9 +18,11 @@ class MockWebSocket {
   onopen: (() => void) | null = null;
   onmessage: ((event: { data: string }) => void) | null = null;
   onerror: (() => void) | null = null;
-  onclose: (() => void) | null = null;
+  onclose: ((event: { code: number }) => void) | null = null;
+  // Default to the abnormal-closure code so tests exercising the reconnect
+  // path keep the pre-1008-handling behavior.
   close = vi.fn(() => {
-    this.onclose?.();
+    this.onclose?.({ code: 1006 });
   });
 
   constructor(url: string) {
@@ -34,6 +36,7 @@ vi.stubGlobal('WebSocket', MockWebSocket);
 describe('NotificationService', () => {
   let service: NotificationService;
   let mockComputeService: { getComputes: ReturnType<typeof vi.fn> };
+  let mockPermissionService: { cachedPrivileges: ReturnType<typeof vi.fn>; ready: ReturnType<typeof vi.fn> };
   let mockController: Controller;
 
   beforeEach(() => {
@@ -47,7 +50,14 @@ describe('NotificationService', () => {
       getComputes: vi.fn().mockReturnValue(of([])),
     };
 
-    service = new NotificationService(mockComputeService as any);
+    // Grant the stream privilege by default so existing tests exercise the
+    // WebSocket path; the cache hit keeps the connect decision synchronous.
+    mockPermissionService = {
+      cachedPrivileges: vi.fn().mockReturnValue(new Set(['Notification.Audit'])),
+      ready: vi.fn().mockResolvedValue(new Set(['Notification.Audit'])),
+    };
+
+    service = new NotificationService(mockComputeService as any, mockPermissionService as any);
 
     mockController = {
       id: 1,
@@ -312,7 +322,7 @@ describe('NotificationService', () => {
       service.connectToComputeNotifications(mockController);
       const ws = MockWebSocket.instances[0];
 
-      ws.onclose?.();
+      ws.onclose?.({ code: 1006 });
 
       // ws is cleared but currentController is kept for potential reconnection
       expect(service['ws']).toBeNull();
@@ -344,7 +354,7 @@ describe('NotificationService', () => {
       service.connectToComputeNotifications(mockController);
       const ws = MockWebSocket.instances[0];
 
-      ws.onclose?.();
+      ws.onclose?.({ code: 1006 });
 
       // Not reconnected immediately — first backoff is 1s..1.25s (+jitter).
       expect(MockWebSocket.instances).toHaveLength(1);
@@ -371,7 +381,7 @@ describe('NotificationService', () => {
       first.onopen?.(); // initial connect: consumers own the initial fetch
       expect(mockComputeService.getComputes).not.toHaveBeenCalled();
 
-      first.onclose?.(); // unexpected close → reconnect
+      first.onclose?.({ code: 1006 }); // unexpected close → reconnect
       vi.advanceTimersByTime(1300);
       const second = MockWebSocket.instances[1];
       second.onopen?.(); // reconnect: service resyncs the cache

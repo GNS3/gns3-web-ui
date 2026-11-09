@@ -58,6 +58,16 @@ export class PermissionService {
     return this.privileges().has(privilege);
   }
 
+  /**
+   * Privileges of the given controller when already cached, null when they
+   * still need to be fetched. Callers that must decide synchronously (e.g.
+   * opening the global notification stream before the first route renders)
+   * use this as a fast path and fall back to ready().
+   */
+  cachedPrivileges(controllerId: number): ReadonlySet<string> | null {
+    return this.privilegeCache.get(controllerId)?.privileges ?? null;
+  }
+
   hasAny(privileges: string[]): boolean {
     return privileges.some((privilege) => this.privileges().has(privilege));
   }
