@@ -341,8 +341,7 @@ def privilege_label(endpoint: Endpoint) -> str:
     return "— (login only)" if endpoint.auth_only else "— (no gate declared)"
 
 
-def render_markdown(endpoints: list[Endpoint], branch: str, commit: str) -> str:
-    now = dt.date.today().isoformat()
+def render_markdown(endpoints: list[Endpoint]) -> str:
     with_privilege = [e for e in endpoints if e.privileges]
     auth_only = [e for e in endpoints if not e.privileges and e.auth_only]
     public = [e for e in endpoints if not e.privileges and not e.auth_only]
@@ -354,7 +353,6 @@ def render_markdown(endpoints: list[Endpoint], branch: str, commit: str) -> str:
     out = io.StringIO()
     out.write("# GNS3 Controller API × Privilege × Web UI Map\n\n")
     out.write("> **Generated file — do not edit by hand.**\n>\n")
-    out.write(f"> Source: `gns3-server` branch `{branch}` @ `{commit}`, generated {now}.\n>\n")
     out.write("> Regenerate with:\n>\n")
     out.write("> ```bash\n> python3 scripts/rbac/generate_api_privilege_map.py --server ../gns3-server\n> ```\n\n")
     out.write("The **Privilege** column is parsed from the server's `has_privilege(...)` / "
@@ -430,7 +428,7 @@ def main() -> None:
     endpoints = build(server_root, repo_root)
     branch, commit = git_info(server_root)
 
-    markdown = render_markdown(endpoints, branch, commit)
+    markdown = render_markdown(endpoints)
     (out_dir / "api-privilege-map.md").write_text(markdown, encoding="utf-8")
 
     # UTF-8 BOM so Excel opens the Chinese columns correctly.

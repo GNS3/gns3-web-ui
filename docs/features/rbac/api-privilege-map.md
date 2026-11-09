@@ -2,8 +2,6 @@
 
 > **Generated file — do not edit by hand.**
 >
-> Source: `gns3-server` branch `feat/rbac-out-of-the-box` @ `55f879b3c`, generated 2026-11-09.
->
 > Regenerate with:
 >
 > ```bash
@@ -17,12 +15,12 @@ All paths are relative to the controller API root (`/v3`).
 ## Summary
 
 - Controller endpoints: **223** (WebSocket: 6)
-- With a privilege declaration: **182**
-- Login only (authenticated, no privilege): **36**
-- No privilege gate declared: **5** (may still be protected outside the decorator)
+- With a privilege declaration: **186**
+- Login only (authenticated, no privilege): **30**
+- No privilege gate declared: **7** (may still be protected outside the decorator)
 - Distinct privilege names: **49**
 - Endpoints called by a Web UI service: **168**
-- Endpoints with a curated Web UI page/action: **197**
+- Endpoints with a curated Web UI page/action: **206**
 
 ## Endpoints by module
 
@@ -30,13 +28,13 @@ All paths are relative to the controller API root (`/v3`).
 
 | Method | Path | Privilege | Web UI page | Web UI action | Service |
 |--------|------|-----------|-------------|---------------|---------|
-| GET | `/iou_license` | — (login only) | — | — | — |
-| PUT | `/iou_license` | — (login only) | — | — | — |
-| GET | `/notifications` | — (login only) | Global | Notification stream (SSE) | — |
-| WEBSOCKET | `/notifications/ws` | — (login only) | Global | Notification stream (WebSocket) | — |
-| POST | `/reload` | — (login only) | — | — | — |
-| POST | `/shutdown` | — (login only) | — | — | — |
-| GET | `/statistics` | — (login only) | System status page | Load system statistics | `src/app/services/compute.service.ts:getStatistics` |
+| GET | `/iou_license` | Server.Audit | — | —<br>no web UI caller | — |
+| PUT | `/iou_license` | Server.Modify | — | —<br>no web UI caller | — |
+| GET | `/notifications` | — (no gate declared) | Global | Notification stream (SSE)<br>requires Notification.Audit; without it the web UI never connects and polls GET /computes instead | — |
+| WEBSOCKET | `/notifications/ws` | — (no gate declared) | Global | Notification stream (WebSocket)<br>requires Notification.Audit; unauthorized sockets are closed with code 1008 and the web UI falls back to polling GET /computes | — |
+| POST | `/reload` | Server.Modify | — | —<br>no web UI caller | — |
+| POST | `/shutdown` | Server.Modify | — | —<br>no web UI caller | — |
+| GET | `/statistics` | Server.Audit | System status page | Load system statistics<br>the page is hidden (sidebar + route) without Server.Audit | `src/app/services/compute.service.ts:getStatistics` |
 | GET | `/version` | — (no gate declared) | App shell | Show the controller version | `src/app/services/controller.service.ts:checkControllerVersion`<br>`src/app/services/version.service.ts:get` |
 | POST | `/version` | — (no gate declared) | — | — | — |
 
@@ -144,7 +142,7 @@ All paths are relative to the controller API root (`/v3`).
 |--------|------|-----------|-------------|---------------|---------|
 | GET | `/projects` | — (login only) | Projects page | Load the project list (the server filters by ACE/resource pool) | `src/app/services/project.service.ts:list` |
 | POST | `/projects` | Project.Allocate | Projects page | New project (button = Project.Allocate) | `src/app/services/project.service.ts:add` |
-| POST | `/projects/load` | Project.Allocate | Projects page | Reload the projects on the controller | — |
+| POST | `/projects/load` | Server.Modify | Projects page | Reload the projects on the controller<br>only supported by the local service | — |
 | DELETE | `/projects/{project_id}` | Project.Allocate | Projects page | Delete project (button = Project.Allocate) | `src/app/services/project.service.ts:delete` |
 | GET | `/projects/{project_id}` | Project.Audit | Project view | Load the project when it is opened | `src/app/services/project.service.ts:get` |
 | PUT | `/projects/{project_id}` | Project.Modify | Project view | Save project settings, Map settings PUT items (= Project.Modify) | `src/app/services/project.service.ts:update` |
@@ -154,7 +152,7 @@ All paths are relative to the controller API root (`/v3`).
 | GET | `/projects/{project_id}/files/{file_path:path}` | Project.Audit | Project files | Read a project file | — |
 | POST | `/projects/{project_id}/files/{file_path:path}` | Project.Modify | Project files | Write or upload a project file | — |
 | GET | `/projects/{project_id}/gns3file` | Project.Audit | Topology preview | Read the .gns3 file to render the static preview | `src/app/services/project.service.ts:gns3file` |
-| POST | `/projects/{project_id}/import` | Project.Allocate | Projects page | Import project (button = Project.Allocate) | — |
+| POST | `/projects/{project_id}/import` | — (login only) | Projects page | Import project (button = Project.Allocate) | — |
 | POST | `/projects/{project_id}/lock` | Project.Modify | Project view menu / canvas context menu | Lock all (= Project.Modify) | `src/app/services/drawing.service.ts:lockAllNodes` |
 | GET | `/projects/{project_id}/locked` | Project.Audit | Project view | Read the lock state | — |
 | GET | `/projects/{project_id}/marker-definitions` | Project.Audit | Marker manager — Definitions tab | Load the definitions | `src/app/services/marker.service.ts:listDefinitions` |
@@ -275,8 +273,8 @@ All paths are relative to the controller API root (`/v3`).
 | DELETE | `/computes/{compute_id}` | Compute.Allocate | Computes page | Delete compute (= Compute.Allocate) | `src/app/services/compute.service.ts:deleteCompute` |
 | GET | `/computes/{compute_id}` | Compute.Audit | Computes page | Read a single compute | `src/app/services/compute.service.ts:getCompute` |
 | PUT | `/computes/{compute_id}` | Compute.Modify | Computes page | Edit compute / Auto-connect toggle (= Compute.Modify) | `src/app/services/compute.service.ts:updateCompute` |
-| POST | `/computes/{compute_id}/connect` | Compute.Audit | Computes page | Connect (= Compute.Audit) | `src/app/services/compute.service.ts:connectCompute` |
-| POST | `/computes/{compute_id}/disconnect` | Compute.Audit | Computes page | Disconnect (= Compute.Audit) | — |
+| POST | `/computes/{compute_id}/connect` | Compute.Modify | Computes page | Connect (= Compute.Modify) | `src/app/services/compute.service.ts:connectCompute` |
+| POST | `/computes/{compute_id}/disconnect` | Compute.Modify | Computes page | Disconnect (= Compute.Modify) | — |
 | GET | `/computes/{compute_id}/docker/images` | — (login only) | Image manager page / install wizard | List Docker images (no privilege gate) | `src/app/services/docker.service.ts:getImages`<br>`src/app/services/docker.service.ts:getImagesForCompute` |
 | POST | `/computes/{compute_id}/docker/images/load` | Compute.Modify | Image manager page | Load a Docker tar (= Compute.Modify) | — |
 | POST | `/computes/{compute_id}/docker/images/pull` | Compute.Modify | Image manager page | Pull Docker Image (= Compute.Modify) | — |
@@ -344,15 +342,15 @@ All paths are relative to the controller API root (`/v3`).
 
 | Method | Path | Privilege | Web UI page | Web UI action | Service |
 |--------|------|-----------|-------------|---------------|---------|
-| POST | `/copilot/projects/{project_id}/chat/inject` | — (login only) | — | — | — |
-| GET | `/copilot/projects/{project_id}/chat/sessions` | — (login only) | — | (to be filled) | `src/app/services/ai-chat.service.ts:getSessions` |
-| DELETE | `/copilot/projects/{project_id}/chat/sessions/{session_id}` | — (login only) | — | (to be filled) | `src/app/services/ai-chat.service.ts:deleteSession` |
-| PATCH | `/copilot/projects/{project_id}/chat/sessions/{session_id}` | — (login only) | — | — | — |
-| POST | `/copilot/projects/{project_id}/chat/sessions/{session_id}/abort` | — (login only) | — | (to be filled) | `src/app/services/ai-chat.service.ts:abortChat` |
-| GET | `/copilot/projects/{project_id}/chat/sessions/{session_id}/history` | — (login only) | — | (to be filled) | `src/app/services/ai-chat.service.ts:getSessionHistory` |
-| DELETE | `/copilot/projects/{project_id}/chat/sessions/{session_id}/pin` | — (login only) | — | (to be filled) | `src/app/services/ai-chat.service.ts:unpinSession` |
-| PUT | `/copilot/projects/{project_id}/chat/sessions/{session_id}/pin` | — (login only) | — | (to be filled) | `src/app/services/ai-chat.service.ts:pinSession` |
-| POST | `/copilot/projects/{project_id}/chat/stream` | — (login only) | — | — | — |
+| POST | `/copilot/projects/{project_id}/chat/inject` | — (login only) | Project view → AI chat | Inject an issue into the copilot<br>gate is Project.Audit in the handler, not a route dependency | — |
+| GET | `/copilot/projects/{project_id}/chat/sessions` | — (login only) | Project view → AI chat | List chat sessions<br>gate is Project.Audit in the handler, not a route dependency | `src/app/services/ai-chat.service.ts:getSessions` |
+| DELETE | `/copilot/projects/{project_id}/chat/sessions/{session_id}` | — (login only) | Project view → AI chat | Delete a chat session<br>gate is Project.Audit in the handler, not a route dependency | `src/app/services/ai-chat.service.ts:deleteSession` |
+| PATCH | `/copilot/projects/{project_id}/chat/sessions/{session_id}` | — (login only) | Project view → AI chat | Rename a chat session<br>gate is Project.Audit in the handler, not a route dependency | — |
+| POST | `/copilot/projects/{project_id}/chat/sessions/{session_id}/abort` | — (login only) | Project view → AI chat | Abort a running chat<br>gate is Project.Audit in the handler, not a route dependency | `src/app/services/ai-chat.service.ts:abortChat` |
+| GET | `/copilot/projects/{project_id}/chat/sessions/{session_id}/history` | — (login only) | Project view → AI chat | Load session history<br>gate is Project.Audit in the handler, not a route dependency | `src/app/services/ai-chat.service.ts:getSessionHistory` |
+| DELETE | `/copilot/projects/{project_id}/chat/sessions/{session_id}/pin` | — (login only) | Project view → AI chat | Unpin a chat session<br>gate is Project.Audit in the handler, not a route dependency | `src/app/services/ai-chat.service.ts:unpinSession` |
+| PUT | `/copilot/projects/{project_id}/chat/sessions/{session_id}/pin` | — (login only) | Project view → AI chat | Pin a chat session<br>gate is Project.Audit in the handler, not a route dependency | `src/app/services/ai-chat.service.ts:pinSession` |
+| POST | `/copilot/projects/{project_id}/chat/stream` | — (login only) | Project view → AI chat | Chat with the AI copilot<br>gate is Project.Audit in the handler, not a route dependency | — |
 
 ### API keys — `api_keys.py`
 

@@ -14,22 +14,22 @@ appliances,appliances.py,GET,/appliances,Appliance.Audit,get_appliances,Install 
 appliances,appliances.py,GET,/appliances/{appliance_id},Appliance.Audit,get_appliance,Install appliance wizard,Read a single appliance,,
 appliances,appliances.py,POST,/appliances/{appliance_id}/install,Appliance.Allocate,install_appliance,Install appliance wizard,Install the selected version (= Appliance.Allocate),,
 appliances,appliances.py,POST,/appliances/{appliance_id}/version,Appliance.Allocate,add_appliance_version,Install appliance wizard,Add an appliance version (= Appliance.Allocate),,
-chat,chat.py,POST,/copilot/projects/{project_id}/chat/inject,— (login only),inject_issue,,,,
-chat,chat.py,GET,/copilot/projects/{project_id}/chat/sessions,— (login only),list_sessions,,,,src/app/services/ai-chat.service.ts:getSessions
-chat,chat.py,DELETE,/copilot/projects/{project_id}/chat/sessions/{session_id},— (login only),delete_session,,,,src/app/services/ai-chat.service.ts:deleteSession
-chat,chat.py,PATCH,/copilot/projects/{project_id}/chat/sessions/{session_id},— (login only),rename_session,,,,
-chat,chat.py,POST,/copilot/projects/{project_id}/chat/sessions/{session_id}/abort,— (login only),abort_session,,,,src/app/services/ai-chat.service.ts:abortChat
-chat,chat.py,GET,/copilot/projects/{project_id}/chat/sessions/{session_id}/history,— (login only),get_history,,,,src/app/services/ai-chat.service.ts:getSessionHistory
-chat,chat.py,DELETE,/copilot/projects/{project_id}/chat/sessions/{session_id}/pin,— (login only),unpin_session,,,,src/app/services/ai-chat.service.ts:unpinSession
-chat,chat.py,PUT,/copilot/projects/{project_id}/chat/sessions/{session_id}/pin,— (login only),pin_session,,,,src/app/services/ai-chat.service.ts:pinSession
-chat,chat.py,POST,/copilot/projects/{project_id}/chat/stream,— (login only),stream_chat,,,,
+chat,chat.py,POST,/copilot/projects/{project_id}/chat/inject,— (login only),inject_issue,Project view → AI chat,Inject an issue into the copilot,"gate is Project.Audit in the handler, not a route dependency",
+chat,chat.py,GET,/copilot/projects/{project_id}/chat/sessions,— (login only),list_sessions,Project view → AI chat,List chat sessions,"gate is Project.Audit in the handler, not a route dependency",src/app/services/ai-chat.service.ts:getSessions
+chat,chat.py,DELETE,/copilot/projects/{project_id}/chat/sessions/{session_id},— (login only),delete_session,Project view → AI chat,Delete a chat session,"gate is Project.Audit in the handler, not a route dependency",src/app/services/ai-chat.service.ts:deleteSession
+chat,chat.py,PATCH,/copilot/projects/{project_id}/chat/sessions/{session_id},— (login only),rename_session,Project view → AI chat,Rename a chat session,"gate is Project.Audit in the handler, not a route dependency",
+chat,chat.py,POST,/copilot/projects/{project_id}/chat/sessions/{session_id}/abort,— (login only),abort_session,Project view → AI chat,Abort a running chat,"gate is Project.Audit in the handler, not a route dependency",src/app/services/ai-chat.service.ts:abortChat
+chat,chat.py,GET,/copilot/projects/{project_id}/chat/sessions/{session_id}/history,— (login only),get_history,Project view → AI chat,Load session history,"gate is Project.Audit in the handler, not a route dependency",src/app/services/ai-chat.service.ts:getSessionHistory
+chat,chat.py,DELETE,/copilot/projects/{project_id}/chat/sessions/{session_id}/pin,— (login only),unpin_session,Project view → AI chat,Unpin a chat session,"gate is Project.Audit in the handler, not a route dependency",src/app/services/ai-chat.service.ts:unpinSession
+chat,chat.py,PUT,/copilot/projects/{project_id}/chat/sessions/{session_id}/pin,— (login only),pin_session,Project view → AI chat,Pin a chat session,"gate is Project.Audit in the handler, not a route dependency",src/app/services/ai-chat.service.ts:pinSession
+chat,chat.py,POST,/copilot/projects/{project_id}/chat/stream,— (login only),stream_chat,Project view → AI chat,Chat with the AI copilot,"gate is Project.Audit in the handler, not a route dependency",
 computes,computes.py,GET,/computes,Compute.Audit,get_computes,Computes page / Add node palette / Templates page,Load the compute list,,src/app/services/compute.service.ts:getComputes
 computes,computes.py,POST,/computes,Compute.Allocate,create_compute,Computes page,Add Compute (= Compute.Allocate),,src/app/services/compute.service.ts:createCompute
 computes,computes.py,DELETE,/computes/{compute_id},Compute.Allocate,delete_compute,Computes page,Delete compute (= Compute.Allocate),,src/app/services/compute.service.ts:deleteCompute
 computes,computes.py,GET,/computes/{compute_id},Compute.Audit,get_compute,Computes page,Read a single compute,,src/app/services/compute.service.ts:getCompute
 computes,computes.py,PUT,/computes/{compute_id},Compute.Modify,update_compute,Computes page,Edit compute / Auto-connect toggle (= Compute.Modify),,src/app/services/compute.service.ts:updateCompute
-computes,computes.py,POST,/computes/{compute_id}/connect,Compute.Audit,connect_compute,Computes page,Connect (= Compute.Audit),,src/app/services/compute.service.ts:connectCompute
-computes,computes.py,POST,/computes/{compute_id}/disconnect,Compute.Audit,disconnect_compute,Computes page,Disconnect (= Compute.Audit),,
+computes,computes.py,POST,/computes/{compute_id}/connect,Compute.Modify,connect_compute,Computes page,Connect (= Compute.Modify),,src/app/services/compute.service.ts:connectCompute
+computes,computes.py,POST,/computes/{compute_id}/disconnect,Compute.Modify,disconnect_compute,Computes page,Disconnect (= Compute.Modify),,
 computes,computes.py,GET,/computes/{compute_id}/docker/images,— (login only),docker_get_images,Image manager page / install wizard,List Docker images (no privilege gate),,src/app/services/docker.service.ts:getImages | src/app/services/docker.service.ts:getImagesForCompute
 computes,computes.py,POST,/computes/{compute_id}/docker/images/load,Compute.Modify,docker_load_image,Image manager page,Load a Docker tar (= Compute.Modify),,
 computes,computes.py,POST,/computes/{compute_id}/docker/images/pull,Compute.Modify,docker_pull_image,Image manager page,Pull Docker Image (= Compute.Modify),,
@@ -40,13 +40,13 @@ computes,computes.py,GET,/computes/{compute_id}/vmware/vms,— (login only),vmwa
 computes,computes.py,GET,/computes/{compute_id}/{emulator}/{endpoint_path:path},— (login only),forward_get,,,,
 computes,computes.py,POST,/computes/{compute_id}/{emulator}/{endpoint_path:path},— (login only),forward_post,,,,
 computes,computes.py,PUT,/computes/{compute_id}/{emulator}/{endpoint_path:path},— (login only),forward_put,,,,
-controller,controller.py,GET,/iou_license,— (login only),get_iou_license,,,,
-controller,controller.py,PUT,/iou_license,— (login only),update_iou_license,,,,
-controller,controller.py,GET,/notifications,— (login only),controller_http_notifications,Global,Notification stream (SSE),,
-controller,controller.py,WEBSOCKET,/notifications/ws,— (login only),controller_ws_notifications,Global,Notification stream (WebSocket),,
-controller,controller.py,POST,/reload,— (login only),reload,,,,
-controller,controller.py,POST,/shutdown,— (login only),shutdown,,,,
-controller,controller.py,GET,/statistics,— (login only),statistics,System status page,Load system statistics,,src/app/services/compute.service.ts:getStatistics
+controller,controller.py,GET,/iou_license,Server.Audit,get_iou_license,,,no web UI caller,
+controller,controller.py,PUT,/iou_license,Server.Modify,update_iou_license,,,no web UI caller,
+controller,controller.py,GET,/notifications,— (no gate declared),controller_http_notifications,Global,Notification stream (SSE),requires Notification.Audit; without it the web UI never connects and polls GET /computes instead,
+controller,controller.py,WEBSOCKET,/notifications/ws,— (no gate declared),controller_ws_notifications,Global,Notification stream (WebSocket),requires Notification.Audit; unauthorized sockets are closed with code 1008 and the web UI falls back to polling GET /computes,
+controller,controller.py,POST,/reload,Server.Modify,reload,,,no web UI caller,
+controller,controller.py,POST,/shutdown,Server.Modify,shutdown,,,no web UI caller,
+controller,controller.py,GET,/statistics,Server.Audit,statistics,System status page,Load system statistics,the page is hidden (sidebar + route) without Server.Audit,src/app/services/compute.service.ts:getStatistics
 controller,controller.py,GET,/version,— (no gate declared),get_version,App shell,Show the controller version,,src/app/services/controller.service.ts:checkControllerVersion | src/app/services/version.service.ts:get
 controller,controller.py,POST,/version,— (no gate declared),check_version,,,,
 copilot,copilot.py,POST,/copilot/reload/skills,— (login only),reload_skills,Web settings → AI,"Reload skills (superadmin only, hidden otherwise)","gate is is_superadmin in the handler, not a named privilege",src/app/services/ai-chat.service.ts:reloadSkills
@@ -149,7 +149,7 @@ pools,pools.py,PUT,/pools/{resource_pool_id}/resources/{resource_id},Pool.Modify
 privileges,privileges.py,GET,/access/privileges,— (login only),get_privileges,Role detail page,Load the assignable privilege catalog,,src/app/services/privilege.service.ts:get
 projects,projects.py,GET,/projects,— (login only),get_projects,Projects page,Load the project list (the server filters by ACE/resource pool),,src/app/services/project.service.ts:list
 projects,projects.py,POST,/projects,Project.Allocate,create_project,Projects page,New project (button = Project.Allocate),,src/app/services/project.service.ts:add
-projects,projects.py,POST,/projects/load,Project.Allocate,load_project,Projects page,Reload the projects on the controller,,
+projects,projects.py,POST,/projects/load,Server.Modify,load_project,Projects page,Reload the projects on the controller,only supported by the local service,
 projects,projects.py,DELETE,/projects/{project_id},Project.Allocate,delete_project,Projects page,Delete project (button = Project.Allocate),,src/app/services/project.service.ts:delete
 projects,projects.py,GET,/projects/{project_id},Project.Audit,get_project,Project view,Load the project when it is opened,,src/app/services/project.service.ts:get
 projects,projects.py,PUT,/projects/{project_id},Project.Modify,update_project,Project view,"Save project settings, Map settings PUT items (= Project.Modify)",,src/app/services/project.service.ts:update
@@ -159,7 +159,7 @@ projects,projects.py,GET,/projects/{project_id}/export,Project.Audit,export_proj
 projects,projects.py,GET,/projects/{project_id}/files/{file_path:path},Project.Audit,get_file,Project files,Read a project file,,
 projects,projects.py,POST,/projects/{project_id}/files/{file_path:path},Project.Modify,write_file,Project files,Write or upload a project file,,
 projects,projects.py,GET,/projects/{project_id}/gns3file,Project.Audit,get_project_gns3_file,Topology preview,Read the .gns3 file to render the static preview,,src/app/services/project.service.ts:gns3file
-projects,projects.py,POST,/projects/{project_id}/import,Project.Allocate,import_project,Projects page,Import project (button = Project.Allocate),,
+projects,projects.py,POST,/projects/{project_id}/import,— (login only),import_project,Projects page,Import project (button = Project.Allocate),,
 projects,projects.py,POST,/projects/{project_id}/lock,Project.Modify,lock_project,Project view menu / canvas context menu,Lock all (= Project.Modify),,src/app/services/drawing.service.ts:lockAllNodes
 projects,projects.py,GET,/projects/{project_id}/locked,Project.Audit,locked_project,Project view,Read the lock state,,
 projects,projects.py,GET,/projects/{project_id}/marker-definitions,Project.Audit,get_marker_definitions,Marker manager — Definitions tab,Load the definitions,,src/app/services/marker.service.ts:listDefinitions

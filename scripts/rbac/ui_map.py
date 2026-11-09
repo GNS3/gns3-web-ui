@@ -24,9 +24,25 @@ UI_MAP: dict[str, dict[str, str]] = {
     "POST /access/users/refresh": {"page": "Global", "action": "Token refresh (automatic in HttpController)"},
     "POST /access/users/logout": {"page": "App shell", "action": "Sign out"},
     "GET /version": {"page": "App shell", "action": "Show the controller version"},
-    "GET /statistics": {"page": "System status page", "action": "Load system statistics"},
-    "GET /notifications": {"page": "Global", "action": "Notification stream (SSE)"},
-    "WEBSOCKET /notifications/ws": {"page": "Global", "action": "Notification stream (WebSocket)"},
+    "GET /statistics": {
+        "page": "System status page",
+        "action": "Load system statistics",
+        "note": "the page is hidden (sidebar + route) without Server.Audit",
+    },
+    "GET /notifications": {
+        "page": "Global",
+        "action": "Notification stream (SSE)",
+        "note": "requires Notification.Audit; without it the web UI never connects and polls GET /computes instead",
+    },
+    "WEBSOCKET /notifications/ws": {
+        "page": "Global",
+        "action": "Notification stream (WebSocket)",
+        "note": "requires Notification.Audit; unauthorized sockets are closed with code 1008 and the web UI falls back to polling GET /computes",
+    },
+    "POST /reload": {"note": "no web UI caller"},
+    "POST /shutdown": {"note": "no web UI caller"},
+    "GET /iou_license": {"note": "no web UI caller"},
+    "PUT /iou_license": {"note": "no web UI caller"},
     "GET /access/users/me": {"page": "App shell", "action": "Load the signed-in user"},
     "PUT /access/users/me": {
         "page": "Profile / Change password dialog",
@@ -43,7 +59,11 @@ UI_MAP: dict[str, dict[str, str]] = {
     # ------------------------------------------------------------------
     "GET /projects": {"page": "Projects page", "action": "Load the project list (the server filters by ACE/resource pool)"},
     "POST /projects": {"page": "Projects page", "action": "New project (button = Project.Allocate)"},
-    "POST /projects/load": {"page": "Projects page", "action": "Reload the projects on the controller"},
+    "POST /projects/load": {
+        "page": "Projects page",
+        "action": "Reload the projects on the controller",
+        "note": "only supported by the local service",
+    },
     "POST /projects/{}/import": {"page": "Projects page", "action": "Import project (button = Project.Allocate)"},
     "DELETE /projects/{}": {"page": "Projects page", "action": "Delete project (button = Project.Allocate)"},
     "POST /projects/{}/open": {"page": "Projects page", "action": "Open project (button = Project.Allocate)"},
@@ -428,8 +448,8 @@ UI_MAP: dict[str, dict[str, str]] = {
         "action": "Edit compute / Auto-connect toggle (= Compute.Modify)",
     },
     "DELETE /computes/{}": {"page": "Computes page", "action": "Delete compute (= Compute.Allocate)"},
-    "POST /computes/{}/connect": {"page": "Computes page", "action": "Connect (= Compute.Audit)"},
-    "POST /computes/{}/disconnect": {"page": "Computes page", "action": "Disconnect (= Compute.Audit)"},
+    "POST /computes/{}/connect": {"page": "Computes page", "action": "Connect (= Compute.Modify)"},
+    "POST /computes/{}/disconnect": {"page": "Computes page", "action": "Disconnect (= Compute.Modify)"},
     "GET /computes/{}/docker/images": {
         "page": "Image manager page / install wizard",
         "action": "List Docker images (no privilege gate)",
@@ -602,5 +622,55 @@ UI_MAP: dict[str, dict[str, str]] = {
         "page": "Web settings → AI",
         "action": "Reload skills (superadmin only, hidden otherwise)",
         "note": "gate is is_superadmin in the handler, not a named privilege",
+    },
+
+    # ------------------------------------------------------------------
+    # Copilot project chat (gate is Project.Audit on /projects/{project_id}
+    # checked inside the handler, not a route dependency)
+    # ------------------------------------------------------------------
+    "POST /copilot/projects/{}/chat/inject": {
+        "page": "Project view → AI chat",
+        "action": "Inject an issue into the copilot",
+        "note": "gate is Project.Audit in the handler, not a route dependency",
+    },
+    "GET /copilot/projects/{}/chat/sessions": {
+        "page": "Project view → AI chat",
+        "action": "List chat sessions",
+        "note": "gate is Project.Audit in the handler, not a route dependency",
+    },
+    "POST /copilot/projects/{}/chat/stream": {
+        "page": "Project view → AI chat",
+        "action": "Chat with the AI copilot",
+        "note": "gate is Project.Audit in the handler, not a route dependency",
+    },
+    "DELETE /copilot/projects/{}/chat/sessions/{}": {
+        "page": "Project view → AI chat",
+        "action": "Delete a chat session",
+        "note": "gate is Project.Audit in the handler, not a route dependency",
+    },
+    "PATCH /copilot/projects/{}/chat/sessions/{}": {
+        "page": "Project view → AI chat",
+        "action": "Rename a chat session",
+        "note": "gate is Project.Audit in the handler, not a route dependency",
+    },
+    "POST /copilot/projects/{}/chat/sessions/{}/abort": {
+        "page": "Project view → AI chat",
+        "action": "Abort a running chat",
+        "note": "gate is Project.Audit in the handler, not a route dependency",
+    },
+    "GET /copilot/projects/{}/chat/sessions/{}/history": {
+        "page": "Project view → AI chat",
+        "action": "Load session history",
+        "note": "gate is Project.Audit in the handler, not a route dependency",
+    },
+    "DELETE /copilot/projects/{}/chat/sessions/{}/pin": {
+        "page": "Project view → AI chat",
+        "action": "Unpin a chat session",
+        "note": "gate is Project.Audit in the handler, not a route dependency",
+    },
+    "PUT /copilot/projects/{}/chat/sessions/{}/pin": {
+        "page": "Project view → AI chat",
+        "action": "Pin a chat session",
+        "note": "gate is Project.Audit in the handler, not a route dependency",
     },
 }
