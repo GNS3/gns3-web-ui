@@ -78,7 +78,7 @@
     "yargs": "^17.4.1"
   },
   "devDependencies": {
-    "@analogjs/vite-plugin-angular": "^2.4.0",
+    "@analogjs/vite-plugin-angular": "^2.9.6",
     "@angular-devkit/build-angular": "^21.0.0",
     "@angular-eslint/builder": "^21.3.1",
     "@angular-eslint/eslint-plugin": "^21.3.1",
