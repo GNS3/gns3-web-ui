@@ -52,6 +52,27 @@ describe('MarkdownViewerComponent', () => {
       });
     });
 
+    it('should open links in a new tab by default', async () => {
+      render('[GNS3](https://www.gns3.com)');
+      await vi.waitFor(() => {
+        expect(fixture.nativeElement.querySelector('a')?.target).toBe('_blank');
+      });
+
+      const link = fixture.nativeElement.querySelector('a');
+      expect(link.getAttribute('rel')).toContain('noopener');
+      expect(link.getAttribute('rel')).toContain('noreferrer');
+    });
+
+    it('should not change link targets if disabled', async () => {
+      fixture.componentRef.setInput('openLinksInNewTab', false);
+      render('[GNS3](https://www.gns3.com)');
+      await vi.waitFor(() => {
+        expect(fixture.nativeElement.querySelector('a')).toBeTruthy();
+      });
+
+      expect(fixture.nativeElement.querySelector('a').hasAttribute('target')).toBe(false);
+    });
+
     it('should wrap tables in a scrollable container', async () => {
       render('| a | b |\n| --- | --- |\n| 1 | 2 |');
       await vi.waitFor(() => {

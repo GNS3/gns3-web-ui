@@ -29,6 +29,8 @@ import {
 export class MarkdownViewerComponent {
   /** Raw markdown source. */
   readonly data = input.required<string>();
+  /** Whether rendered links should open in a new tab. */
+  readonly openLinksInNewTab = input(true);
 
   private readonly dialog = inject(MatDialog);
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -41,6 +43,23 @@ export class MarkdownViewerComponent {
   onRenderReady(): void {
     this.processCodeBlocks();
     this.wrapTables();
+    this.processLinks();
+  }
+
+  private processLinks(): void {
+    if (!this.openLinksInNewTab()) {
+      return;
+    }
+
+    const links = this.elementRef.nativeElement.querySelectorAll<HTMLAnchorElement>('a[href]');
+
+    links.forEach((link) => {
+      link.target = '_blank';
+      const rel = new Set((link.getAttribute('rel') ?? '').split(/\s+/).filter(Boolean));
+      rel.add('noopener');
+      rel.add('noreferrer');
+      link.setAttribute('rel', [...rel].join(' '));
+    });
   }
 
   /**
