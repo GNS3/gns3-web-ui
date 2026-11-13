@@ -197,13 +197,10 @@ export function normalizeQemuProperties(props: { [key: string]: any }): { [key: 
  */
 export function getDefaultApplianceSymbol(category: string | undefined, templateType: string): string | undefined {
   if (category === 'guest') {
-    return templateType === 'docker' ? ':/symbols/docker_guest.svg' : ':/symbols/qemu_guest.svg';
+    return templateType === 'docker' ? 'docker_guest' : 'qemu_guest';
   }
-  const symbols: { [category: string]: string } = {
-    router: ':/symbols/router.svg',
-    switch: ':/symbols/ethernet_switch.svg',
-    multilayer_switch: ':/symbols/multilayer_switch.svg',
-    firewall: ':/symbols/firewall.svg',
-  };
-  return symbols[category || ''];
+  if (category === undefined) {
+    return undefined;
+  }
+  return category || '';
 }

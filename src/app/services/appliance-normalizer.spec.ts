@@ -354,20 +354,19 @@ describe('appliance-normalizer', () => {
 
   describe('getDefaultApplianceSymbol', () => {
     it('should return the guest symbols based on the template type', () => {
-      expect(getDefaultApplianceSymbol('guest', 'qemu')).toBe(':/symbols/qemu_guest.svg');
-      expect(getDefaultApplianceSymbol('guest', 'docker')).toBe(':/symbols/docker_guest.svg');
+      expect(getDefaultApplianceSymbol('guest', 'qemu')).toBe('qemu_guest');
+      expect(getDefaultApplianceSymbol('guest', 'docker')).toBe('docker_guest');
     });
 
     it('should map the non-guest categories', () => {
-      expect(getDefaultApplianceSymbol('router', 'qemu')).toBe(':/symbols/router.svg');
-      expect(getDefaultApplianceSymbol('switch', 'qemu')).toBe(':/symbols/ethernet_switch.svg');
-      expect(getDefaultApplianceSymbol('multilayer_switch', 'qemu')).toBe(':/symbols/multilayer_switch.svg');
-      expect(getDefaultApplianceSymbol('firewall', 'qemu')).toBe(':/symbols/firewall.svg');
+      expect(getDefaultApplianceSymbol('router', 'qemu')).toBe('router');
+      expect(getDefaultApplianceSymbol('switch', 'qemu')).toBe('switch');
+      expect(getDefaultApplianceSymbol('multilayer_switch', 'qemu')).toBe('multilayer_switch');
+      expect(getDefaultApplianceSymbol('firewall', 'qemu')).toBe('firewall');
     });
 
-    it('should return undefined for an unknown or missing category', () => {
+    it('should return undefined for a missing category', () => {
       expect(getDefaultApplianceSymbol(undefined, 'qemu')).toBeUndefined();
-      expect(getDefaultApplianceSymbol('unknown', 'qemu')).toBeUndefined();
     });
   });
 });

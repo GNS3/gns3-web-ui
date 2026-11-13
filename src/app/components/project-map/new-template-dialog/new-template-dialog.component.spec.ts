@@ -960,7 +960,7 @@ describe('NewTemplateDialogComponent', () => {
     component.applianceToInstall.set(appliance);
     const template = (component as any).buildQemuTemplate(appliance.versions[0], 'Alpine Cloud Guest TEST');
 
-    expect(template.symbol).toBe(':/symbols/qemu_guest.svg');
+    expect(template.symbol).toBe('qemu_guest');
     expect(template.category).toBe('guest');
   });
 
