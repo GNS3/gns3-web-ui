@@ -188,22 +188,3 @@ export function normalizeQemuProperties(props: { [key: string]: any }): { [key: 
 
   return normalized;
 }
-
-/**
- * Fallback symbol for a template installed from an appliance, based on the
- * appliance category before the multilayer_switch remap. Mirrors the defaults
- * in gns3server/controller/appliance_to_template.py so templates installed via
- * the web UI carry the same symbol as a server-side install.
- */
-export function getDefaultApplianceSymbol(category: string | undefined, templateType: string): string | undefined {
-  if (category === 'guest') {
-    return templateType === 'docker' ? ':/symbols/docker_guest.svg' : ':/symbols/qemu_guest.svg';
-  }
-  const symbols: { [category: string]: string } = {
-    router: ':/symbols/router.svg',
-    switch: ':/symbols/ethernet_switch.svg',
-    multilayer_switch: ':/symbols/multilayer_switch.svg',
-    firewall: ':/symbols/firewall.svg',
-  };
-  return symbols[category || ''];
-}

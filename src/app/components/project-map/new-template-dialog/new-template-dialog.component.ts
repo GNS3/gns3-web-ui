@@ -54,8 +54,7 @@ import {
   getVersionSettingProperties,
   buildApplianceMetadata,
   normalizeAppliance,
-  normalizeQemuProperties,
-  getDefaultApplianceSymbol,
+  normalizeQemuProperties
 } from '@services/appliance-normalizer';
 import { ControllerService } from '@services/controller.service';
 import { DockerImagePullService } from '@services/docker-image-pull.service';
@@ -1272,7 +1271,7 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.category = category === 'multilayer_switch' ? 'switch' : category;
     qemuTemplate.usage = qemuProps.usage || version.usage || appliance.usage;
     qemuTemplate.symbol =
-      qemuProps.symbol || version.symbol || appliance.symbol || getDefaultApplianceSymbol(category, 'qemu');
+      qemuProps.symbol || version.symbol || appliance.symbol
 
     qemuTemplate.first_port_name = qemuProps.first_port_name ?? appliance.first_port_name;
     qemuTemplate.port_name_format = qemuProps.port_name_format ?? appliance.port_name_format;
