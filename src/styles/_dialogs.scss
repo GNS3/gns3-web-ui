@@ -2186,6 +2186,15 @@ html[data-density='compact'] .node-configurator-dialog-panel {
   }
 }
 
+// BPF rule library: the height tier fixes the dialog box, so the content must
+// absorb the remaining space for the Cancel / Use rule action bar to stay
+// pinned to the bottom while the rule list scrolls.
+.bpf-rule-library-dialog-panel {
+  .mat-mdc-dialog-content {
+    flex: 1 1 auto;
+  }
+}
+
 // Shared destructive actions use semantic error tokens in every dialog size.
 button.destructive-button {
   @include buttons.destructive;

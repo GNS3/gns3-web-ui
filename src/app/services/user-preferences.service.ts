@@ -62,6 +62,10 @@ export const SYNCED_PREFERENCE_KEYS: readonly string[] = [
   // viewport-clamped at use time, so values from a larger screen degrade
   // safely on a smaller one — same contract as the widget geometry above)
   'gns3_replay_window_state',
+  // User-created BPF rules (JSON array of {name, expression, category};
+  // shared by marker definitions, link markers and packet filters). User
+  // scoped, so it follows the account across browsers.
+  'gns3.bpf-presets',
 ];
 
 interface UserPreferencesDoc {

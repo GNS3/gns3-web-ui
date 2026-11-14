@@ -97,15 +97,17 @@
   &__definition-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     margin-top: var(--gns3-form-row-gap);
+    margin-bottom: var(--gns3-density-space-4);
   }
 
+  // Sits in the empty cell after Color on the three-column layout, so the
+  // create/save actions share a row with the fields instead of taking one.
   &__definition-actions {
-    grid-column: 1 / -1;
+    align-self: center;
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: var(--gns3-density-space-3);
-    margin-bottom: var(--gns3-density-space-4);
 
     button {
       @include buttons.geometry;
