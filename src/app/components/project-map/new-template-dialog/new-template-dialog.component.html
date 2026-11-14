@@ -388,14 +388,12 @@
                           class="new-template-wizard__file-input"
                           #fileImage
                           (change)="importImage($event, image.filename)"
-                          ng2FileSelect
-                          [uploader]="uploaderImage"
                         />
                         <button
                           mat-raised-button
                           color="primary"
                           type="button"
-                          [disabled]="isUploading()"
+                          [disabled]="isImportingImage(image.filename)"
                           (click)="fileImage.click()"
                         >
                           <mat-icon>upload_file</mat-icon>
@@ -413,21 +411,25 @@
                         </button>
                       </div>
 
-                      @if (isUploading() && uploadingImageName === image.filename) {
+                      @if (isImportingImage(image.filename)) {
                       <div class="new-template-wizard__upload-progress">
                         <div class="new-template-wizard__progress-info">
                           <div class="new-template-wizard__progress-text">
                             <mat-icon>sync</mat-icon>
+                            @if (importPhase(image.filename) === 'checksum') {
+                            <span>Computing checksum for {{ image.filename }}...</span>
+                            } @else {
                             <span>Importing {{ image.filename }}...</span>
+                            }
                           </div>
-                          <span class="new-template-wizard__progress-percentage">{{ uploadProgress }}%</span>
+                          <span class="new-template-wizard__progress-percentage">{{ importProgress(image.filename) }}%</span>
                         </div>
-                        <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+                        <mat-progress-bar mode="determinate" [value]="importProgress(image.filename)"></mat-progress-bar>
                         <button
                           mat-button
                           type="button"
                           class="new-template-wizard__cancel-button"
-                          (click)="cancelUploading()"
+                          (click)="cancelImageImport(image.filename)"
                         >
                           Cancel
                         </button>
@@ -476,14 +478,12 @@
                       class="new-template-wizard__file-input"
                       #fileImage
                       (change)="importImage($event, image.filename)"
-                      ng2FileSelect
-                      [uploader]="uploaderImage"
                     />
                     <button
                       mat-raised-button
                       color="primary"
                       type="button"
-                      [disabled]="isUploading()"
+                      [disabled]="isImportingImage(image.filename)"
                       (click)="$event.stopPropagation(); fileImage.click()"
                     >
                       <mat-icon>upload_file</mat-icon>
@@ -491,21 +491,25 @@
                     </button>
                   </div>
 
-                  @if (isUploading() && uploadingImageName === image.filename) {
+                  @if (isImportingImage(image.filename)) {
                   <div class="new-template-wizard__upload-progress">
                     <div class="new-template-wizard__progress-info">
                       <div class="new-template-wizard__progress-text">
                         <mat-icon>sync</mat-icon>
+                        @if (importPhase(image.filename) === 'checksum') {
+                        <span>Computing checksum for {{ image.filename }}...</span>
+                        } @else {
                         <span>Importing {{ image.filename }}...</span>
+                        }
                       </div>
-                      <span class="new-template-wizard__progress-percentage">{{ uploadProgress }}%</span>
+                      <span class="new-template-wizard__progress-percentage">{{ importProgress(image.filename) }}%</span>
                     </div>
-                    <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+                    <mat-progress-bar mode="determinate" [value]="importProgress(image.filename)"></mat-progress-bar>
                     <button
                       mat-button
                       type="button"
                       class="new-template-wizard__cancel-button"
-                      (click)="cancelUploading()"
+                      (click)="cancelImageImport(image.filename)"
                     >
                       Cancel
                     </button>
@@ -557,7 +561,7 @@
                     mat-stroked-button
                     type="button"
                     (click)="startNewVersion()"
-                    [disabled]="isUploading() || !applianceToInstall().versions?.length"
+                    [disabled]="anyImportActive() || !applianceToInstall().versions?.length"
                   >
                     Create new version
                   </button>
