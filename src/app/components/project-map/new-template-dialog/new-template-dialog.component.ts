@@ -1103,11 +1103,15 @@ export class NewTemplateDialogComponent implements OnInit, OnDestroy {
     imageName: string,
     patch: Partial<ImageUploadEvent> & Pick<ImageUploadEvent, 'status'>
   ): void {
+    // Show the file the user actually picked, not the appliance-definition
+    // target name (they routinely differ: e.g. an ISO downloaded as
+    // "ubuntu-24.04.1-live-server-amd64.iso" imported as "ubuntu.iso").
+    const file = this.importFiles.get(imageName);
     this.imageUploadSessionService.emit({
       tempId: this.importSessionIds.get(imageName) ?? imageName,
-      filename: imageName,
-      image_type: this.resolveImageType(imageName),
-      image_size: this.importFiles.get(imageName)?.size ?? 0,
+      filename: file?.name ?? imageName,
+      image_type: this.resolveImageType(file?.name ?? imageName),
+      image_size: file?.size ?? 0,
       progress: 0,
       ...patch,
     });
