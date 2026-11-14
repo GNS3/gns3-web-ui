@@ -97,7 +97,10 @@ export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
 
     this.uploads.set(event.tempId, row);
 
-    if (!existing && event.status === 'queued') {
+    // A new task expands the panel so the user immediately sees the transfer,
+    // whatever its initial status is (image manager starts at 'queued', the
+    // template wizard reports its checksum phase as 'uploading').
+    if (!existing) {
       this.isExpanded.set(true);
     }
   }

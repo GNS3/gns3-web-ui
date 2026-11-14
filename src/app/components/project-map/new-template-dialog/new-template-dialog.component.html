@@ -370,7 +370,12 @@
                     >
                       <div class="new-template-wizard__image-info">
                         <span class="new-template-wizard__image-name">{{ image.filename }}</span>
-                        @if (checkImageFromVersion(image.filename)) {
+                        @if (isImportingImage(image.filename)) {
+                        <span class="new-template-wizard__status-badge new-template-wizard__status-badge--importing">
+                          <mat-icon>sync</mat-icon>
+                          <span>Importing...</span>
+                        </span>
+                        } @else if (checkImageFromVersion(image.filename)) {
                         <span class="new-template-wizard__status-badge new-template-wizard__status-badge--ready">
                           <mat-icon>check_circle</mat-icon>
                           <span>Ready</span>
@@ -410,31 +415,6 @@
                           <span>Download</span>
                         </button>
                       </div>
-
-                      @if (isImportingImage(image.filename)) {
-                      <div class="new-template-wizard__upload-progress">
-                        <div class="new-template-wizard__progress-info">
-                          <div class="new-template-wizard__progress-text">
-                            <mat-icon>sync</mat-icon>
-                            @if (importPhase(image.filename) === 'checksum') {
-                            <span>Computing checksum for {{ image.filename }}...</span>
-                            } @else {
-                            <span>Importing {{ image.filename }}...</span>
-                            }
-                          </div>
-                          <span class="new-template-wizard__progress-percentage">{{ importProgress(image.filename) }}%</span>
-                        </div>
-                        <mat-progress-bar mode="determinate" [value]="importProgress(image.filename)"></mat-progress-bar>
-                        <button
-                          mat-button
-                          type="button"
-                          class="new-template-wizard__cancel-button"
-                          (click)="cancelImageImport(image.filename)"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                      }
                     </div>
                     }
                   </div>
@@ -457,7 +437,12 @@
                 >
                   <div class="new-template-wizard__image-info">
                     <span class="new-template-wizard__image-name">{{ image.filename }}</span>
-                    @if (checkImageFromVersion(image.filename)) {
+                    @if (isImportingImage(image.filename)) {
+                    <span class="new-template-wizard__status-badge new-template-wizard__status-badge--importing">
+                      <mat-icon>sync</mat-icon>
+                      <span>Importing...</span>
+                    </span>
+                    } @else if (checkImageFromVersion(image.filename)) {
                     <span class="new-template-wizard__status-badge new-template-wizard__status-badge--ready">
                       <mat-icon>check_circle</mat-icon>
                       <span>Ready</span>
@@ -490,31 +475,6 @@
                       <span>Import</span>
                     </button>
                   </div>
-
-                  @if (isImportingImage(image.filename)) {
-                  <div class="new-template-wizard__upload-progress">
-                    <div class="new-template-wizard__progress-info">
-                      <div class="new-template-wizard__progress-text">
-                        <mat-icon>sync</mat-icon>
-                        @if (importPhase(image.filename) === 'checksum') {
-                        <span>Computing checksum for {{ image.filename }}...</span>
-                        } @else {
-                        <span>Importing {{ image.filename }}...</span>
-                        }
-                      </div>
-                      <span class="new-template-wizard__progress-percentage">{{ importProgress(image.filename) }}%</span>
-                    </div>
-                    <mat-progress-bar mode="determinate" [value]="importProgress(image.filename)"></mat-progress-bar>
-                    <button
-                      mat-button
-                      type="button"
-                      class="new-template-wizard__cancel-button"
-                      (click)="cancelImageImport(image.filename)"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                  }
                 </div>
                 }
               </div>

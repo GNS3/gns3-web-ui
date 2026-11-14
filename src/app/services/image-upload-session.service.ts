@@ -12,6 +12,12 @@ export interface ImageUploadEvent {
   errorMessage?: string;
   controller_id?: number;
   path?: string;
+  /**
+   * Optional phase description for flows that do more than a plain upload
+   * (e.g. local checksum computation before the transfer starts). Shown by
+   * the global upload indicator instead of the bare percentage.
+   */
+  phaseLabel?: string;
 }
 
 @Injectable({
