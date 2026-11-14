@@ -199,7 +199,7 @@
     </div>
     } @else {
     <div class="gns3-replay__panes" [style.zoom]="zoomCtl.css()">
-      <app-replay-packet-list class="gns3-replay__left" />
+      <app-replay-packet-list class="gns3-replay__left" (frameContextMenu)="openRowMenu($event)" />
       @if (detailOpen()) {
       <button class="gns3-replay__pane-toggle" (click)="toggleDetail()" matTooltip="Hide packet details">
         <mat-icon>chevron_right</mat-icon>
@@ -228,6 +228,33 @@
     </div>
     }
   </div>
+
+  <!-- Packet-row context menu (right-click over a row / Shift+F10 on a
+       focused row). Deliberately a LOCAL menu in the window chrome, not a
+       Material/CDK overlay: it must sit in this window's z band and OUTSIDE
+       the zoomed panes (raw clientX/clientY would be scaled otherwise).
+       The backdrop swallows the dismissing click so the action behind the
+       menu never fires. -->
+  @if (rowMenu(); as menu) {
+  <div
+    class="gns3-replay__row-menu-backdrop"
+    (mousedown)="closeRowMenu()"
+    (contextmenu)="$event.preventDefault(); closeRowMenu()"
+  ></div>
+  <div
+    class="gns3-replay__row-menu"
+    role="menu"
+    [style.left.px]="menu.x"
+    [style.top.px]="menu.y"
+    (document:keydown.escape)="closeRowMenu()"
+    (contextmenu)="$event.preventDefault()"
+  >
+    <button type="button" class="gns3-replay__row-menu-item" role="menuitem" (click)="toggleRowMenuPin()">
+      <mat-icon>push_pin</mat-icon>
+      <span>{{ svc.pinnedIdFor(menu.frame) !== null ? 'Unpin frame' : 'Pin frame' }}</span>
+    </button>
+  </div>
+  }
 </div>
 }
 

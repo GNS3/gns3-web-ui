@@ -420,6 +420,15 @@ export class MarkerReplayService {
   pinCurrent(): void {
     const frame = this.currentFrame();
     if (!frame) return;
+    this.pinFrame(frame);
+  }
+
+  /**
+   * Freeze a SPECIFIC frame (the packet list's right-click path — the row
+   * under the cursor need not be the current one). No-op when the frame is
+   * already pinned (tuple identity); otherwise exactly the pinCurrent flow.
+   */
+  pinFrame(frame: ReplayFrame): void {
     const list = this.pinnedDetails();
     if (list.some((p) => sameReplayFrame(p.frame, frame))) return;
     const entry: PinnedDetail = {
@@ -437,6 +446,11 @@ export class MarkerReplayService {
     this.fetchDetail(frame)
       .pipe(takeUntil(this.destroy$))
       .subscribe((state) => this.updatePinState(entry.id, state));
+  }
+
+  /** The pinned-entry id for a frame (tuple identity), or null when unpinned. */
+  pinnedIdFor(frame: ReplayFrame): number | null {
+    return this.pinnedDetails().find((p) => sameReplayFrame(p.frame, frame))?.id ?? null;
   }
 
   /** Drop a pinned window. */

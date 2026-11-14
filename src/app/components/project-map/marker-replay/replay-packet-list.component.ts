@@ -8,6 +8,7 @@ import {
   computed,
   effect,
   inject,
+  output,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -38,6 +39,19 @@ interface FrameRow {
   index: number;
   frame: ReplayFrame;
   time: string;
+}
+
+/**
+ * A packet row asking for its context menu (pin / unpin). The menu itself
+ * lives in the host window's chrome, NOT here: this list sits inside the
+ * zoomed content region, and a zoomed menu would be scaled and mispositioned
+ * against raw `clientX/clientY`.
+ */
+export interface FrameContextMenuRequest {
+  frame: ReplayFrame;
+  /** Viewport coordinates for the menu anchor. */
+  x: number;
+  y: number;
 }
 
 /** Frame columns whose width a header grip can drag (Info flexes last). */
@@ -94,6 +108,13 @@ function colTemplate(w: {
 export class ReplayPacketListComponent implements AfterViewInit, OnDestroy {
   readonly svc = inject(MarkerReplayService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  /**
+   * A row requested its context menu (right-click over the row, or
+   * Shift+F10 / the Menu key on a focused row). The host window renders the
+   * menu in its chrome so it stays unzoomed and inside the window's z band.
+   */
+  readonly frameContextMenu = output<FrameContextMenuRequest>();
 
   /** Exposed for the template's spacer height math. */
   readonly ROW_H = ROW_H;
@@ -202,7 +223,15 @@ export class ReplayPacketListComponent implements AfterViewInit, OnDestroy {
    * so stepping from the focused row would stick after one press (the second
    * press recomputes the same target and same-index is a no-op).
    */
-  onRowKey(e: KeyboardEvent): void {
+  onRowKey(e: KeyboardEvent, frame: ReplayFrame): void {
+    // Context-menu key or Shift+F10 opens the row menu (keyboard parity with
+    // right-click), anchored to the row's bottom-left corner.
+    if (e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) {
+      e.preventDefault();
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      this.frameContextMenu.emit({ frame, x: rect.left + 24, y: rect.bottom });
+      return;
+    }
     if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
     e.preventDefault();
     const target = this.svc.currentFrameIndex() + (e.key === 'ArrowDown' ? 1 : -1);
@@ -230,6 +259,19 @@ export class ReplayPacketListComponent implements AfterViewInit, OnDestroy {
    */
   onRowDblClick(e: MouseEvent, frame: ReplayFrame): void {
     this.svc.openPeek(frame, { x: e.clientX, y: e.clientY });
+  }
+
+  /**
+   * Right-click: select the row under the cursor (Wireshark behavior — the
+   * detail pane and the toolbar pin state stay in sync with the menu target),
+   * suppress the browser menu, and ask the host window to open the in-app one
+   * at the pointer.
+   */
+  onRowContextMenu(e: MouseEvent, row: FrameRow): void {
+    e.preventDefault();
+    e.stopPropagation();
+    this.svc.setCurrentIndex(row.index);
+    this.frameContextMenu.emit({ frame: row.frame, x: e.clientX, y: e.clientY });
   }
 
   // ---- column resize (header grips; Wireshark's draggable separators) ----

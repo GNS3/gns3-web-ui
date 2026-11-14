@@ -20,7 +20,7 @@ import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-
 
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
-import { ProtocolTreeNode } from '@models/marker-replay';
+import { ProtocolTreeNode, ReplayFrame } from '@models/marker-replay';
 import { MarkerReplayService, sameReplayFrame } from '@services/marker-replay.service';
 import { WindowManagementService } from '@services/window-management.service';
 import { UserPreferencesService } from '@services/user-preferences.service';
@@ -31,7 +31,7 @@ import { SnapGuides, clampRect, clampWindowSize, snapDraggedWindow, snapResizedW
 import { ReplayZoomController } from './replay-zoom';
 import { ReplayWindowStore } from './replay-window-state';
 import { diffTrees } from './replay-tree-diff';
-import { ReplayPacketListComponent } from './replay-packet-list.component';
+import { FrameContextMenuRequest, ReplayPacketListComponent } from './replay-packet-list.component';
 import { ReplayDetailPaneComponent } from './replay-detail-pane.component';
 import { ReplayDetailWindowComponent } from './replay-detail-window.component';
 import { ReplayPeekWindowComponent } from './replay-peek-window.component';
@@ -139,6 +139,14 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   readonly zoomCtl = new ReplayZoomController('main');
   /** Live snap-guide lines while a drag/resize attaches; null when idle. */
   readonly snapGuides = signal<SnapGuides | null>(null);
+
+  /**
+   * Packet-row context menu (right-click over a row, or Shift+F10 on a
+   * focused row). Anchored in VIEWPORT coordinates and rendered in the
+   * window chrome OUTSIDE the zoomed panes — the row's raw clientX/clientY
+   * must not be scaled by the content zoom.
+   */
+  readonly rowMenu = signal<{ frame: ReplayFrame; x: number; y: number } | null>(null);
 
   /** Focus fleet: 'main' + 'pin-<id>' → stacking boost; main is floored at 1. */
   private zSeq = 1;
@@ -337,6 +345,40 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   /** A tree field's filter_expr (from either pane) — apply it to the list. */
   onPaneApplyFilter(expr: string): void {
     this.svc.applyFilter(expr);
+  }
+
+  // ---- packet-row context menu (pin / unpin) -------------------------------
+
+  /**
+   * Open the row menu at the pointer. Coordinates arrive in VIEWPORT space
+   * (the packet list reports raw clientX/clientY) and are clamped so the
+   * single-item menu never hangs off the right/bottom edge.
+   */
+  openRowMenu(req: FrameContextMenuRequest): void {
+    const vw = typeof window === 'undefined' ? req.x + 200 : window.innerWidth;
+    const vh = typeof window === 'undefined' ? req.y + 64 : window.innerHeight;
+    this.rowMenu.set({
+      frame: req.frame,
+      x: Math.max(8, Math.min(req.x, vw - 184)),
+      y: Math.max(8, Math.min(req.y, vh - 56)),
+    });
+  }
+
+  closeRowMenu(): void {
+    this.rowMenu.set(null);
+  }
+
+  /**
+   * The menu's single action: pin the target frame, or unpin it when it is
+   * already pinned (the row menu's label mirrors this). Closes afterwards.
+   */
+  toggleRowMenuPin(): void {
+    const menu = this.rowMenu();
+    if (!menu) return;
+    const id = this.svc.pinnedIdFor(menu.frame);
+    if (id !== null) this.svc.unpin(id);
+    else this.svc.pinFrame(menu.frame);
+    this.closeRowMenu();
   }
 
   /** Mode-dependent minimum width (both panes vs. list only). */
