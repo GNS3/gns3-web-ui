@@ -471,6 +471,11 @@ mat-header-cell {
   background: color-mix(in srgb, var(--mat-sys-tertiary) 11%, transparent);
 }
 
+.templates-page__source-badge--appliance {
+  color: var(--mat-sys-secondary);
+  background: color-mix(in srgb, var(--mat-sys-secondary) 11%, transparent);
+}
+
 .templates-page__table-footer {
   display: flex;
   align-items: center;

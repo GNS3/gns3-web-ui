@@ -116,6 +116,15 @@
       <button
         type="button"
         class="templates-page__scope"
+        [class.templates-page__scope--active]="selectedScope() === 'appliance'"
+        (click)="setScope('appliance')"
+      >
+        Appliance
+        <span>{{ applianceTemplateCount() }}</span>
+      </button>
+      <button
+        type="button"
+        class="templates-page__scope"
         [class.templates-page__scope--active]="selectedScope() === 'builtin'"
         (click)="setScope('builtin')"
       >
@@ -239,9 +248,10 @@
             <mat-cell *matCellDef="let template">
               <span
                 class="templates-page__source-badge"
-                [class.templates-page__source-badge--builtin]="template.builtin"
+                [class.templates-page__source-badge--builtin]="templateSource(template) === 'builtin'"
+                [class.templates-page__source-badge--appliance]="templateSource(template) === 'appliance'"
               >
-                {{ template.builtin ? 'Built-in' : 'Custom' }}
+                {{ sourceLabel(templateSource(template)) }}
               </span>
             </mat-cell>
           </ng-container>
@@ -333,8 +343,12 @@
               <mat-icon>{{ templateTypeIcon(template.template_type) }}</mat-icon>
               }
             </span>
-            <span class="templates-page__source-badge" [class.templates-page__source-badge--builtin]="template.builtin">
-              {{ template.builtin ? 'Built-in' : 'Custom' }}
+            <span
+              class="templates-page__source-badge"
+              [class.templates-page__source-badge--builtin]="templateSource(template) === 'builtin'"
+              [class.templates-page__source-badge--appliance]="templateSource(template) === 'appliance'"
+            >
+              {{ sourceLabel(templateSource(template)) }}
             </span>
           </div>
 
@@ -470,8 +484,15 @@
           <div class="templates-page__detail-row">
             <mat-icon>badge</mat-icon>
             <span>Source</span>
-            <strong>{{ template.builtin ? 'Built-in' : 'Custom' }}</strong>
+            <strong>{{ sourceLabel(templateSource(template)) }}</strong>
           </div>
+          @if (templateSource(template) === 'appliance') {
+          <div class="templates-page__detail-row">
+            <mat-icon>extension</mat-icon>
+            <span>Appliance</span>
+            <strong [matTooltip]="applianceDisplayName(template)">{{ applianceDisplayName(template) }}</strong>
+          </div>
+          }
           <div class="templates-page__detail-row">
             <mat-icon>drive_file_rename_outline</mat-icon>
             <span>Name format</span>
