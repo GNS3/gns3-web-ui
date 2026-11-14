@@ -370,7 +370,12 @@
                     >
                       <div class="new-template-wizard__image-info">
                         <span class="new-template-wizard__image-name">{{ image.filename }}</span>
-                        @if (checkImageFromVersion(image.filename)) {
+                        @if (isImportingImage(image.filename)) {
+                        <span class="new-template-wizard__status-badge new-template-wizard__status-badge--importing">
+                          <mat-icon>sync</mat-icon>
+                          <span>Importing...</span>
+                        </span>
+                        } @else if (checkImageFromVersion(image.filename)) {
                         <span class="new-template-wizard__status-badge new-template-wizard__status-badge--ready">
                           <mat-icon>check_circle</mat-icon>
                           <span>Ready</span>
@@ -388,14 +393,12 @@
                           class="new-template-wizard__file-input"
                           #fileImage
                           (change)="importImage($event, image.filename)"
-                          ng2FileSelect
-                          [uploader]="uploaderImage"
                         />
                         <button
                           mat-raised-button
                           color="primary"
                           type="button"
-                          [disabled]="isUploading()"
+                          [disabled]="isImportingImage(image.filename)"
                           (click)="fileImage.click()"
                         >
                           <mat-icon>upload_file</mat-icon>
@@ -412,27 +415,6 @@
                           <span>Download</span>
                         </button>
                       </div>
-
-                      @if (isUploading() && uploadingImageName === image.filename) {
-                      <div class="new-template-wizard__upload-progress">
-                        <div class="new-template-wizard__progress-info">
-                          <div class="new-template-wizard__progress-text">
-                            <mat-icon>sync</mat-icon>
-                            <span>Importing {{ image.filename }}...</span>
-                          </div>
-                          <span class="new-template-wizard__progress-percentage">{{ uploadProgress }}%</span>
-                        </div>
-                        <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
-                        <button
-                          mat-button
-                          type="button"
-                          class="new-template-wizard__cancel-button"
-                          (click)="cancelUploading()"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                      }
                     </div>
                     }
                   </div>
@@ -455,7 +437,12 @@
                 >
                   <div class="new-template-wizard__image-info">
                     <span class="new-template-wizard__image-name">{{ image.filename }}</span>
-                    @if (checkImageFromVersion(image.filename)) {
+                    @if (isImportingImage(image.filename)) {
+                    <span class="new-template-wizard__status-badge new-template-wizard__status-badge--importing">
+                      <mat-icon>sync</mat-icon>
+                      <span>Importing...</span>
+                    </span>
+                    } @else if (checkImageFromVersion(image.filename)) {
                     <span class="new-template-wizard__status-badge new-template-wizard__status-badge--ready">
                       <mat-icon>check_circle</mat-icon>
                       <span>Ready</span>
@@ -476,41 +463,18 @@
                       class="new-template-wizard__file-input"
                       #fileImage
                       (change)="importImage($event, image.filename)"
-                      ng2FileSelect
-                      [uploader]="uploaderImage"
                     />
                     <button
                       mat-raised-button
                       color="primary"
                       type="button"
-                      [disabled]="isUploading()"
+                      [disabled]="isImportingImage(image.filename)"
                       (click)="$event.stopPropagation(); fileImage.click()"
                     >
                       <mat-icon>upload_file</mat-icon>
                       <span>Import</span>
                     </button>
                   </div>
-
-                  @if (isUploading() && uploadingImageName === image.filename) {
-                  <div class="new-template-wizard__upload-progress">
-                    <div class="new-template-wizard__progress-info">
-                      <div class="new-template-wizard__progress-text">
-                        <mat-icon>sync</mat-icon>
-                        <span>Importing {{ image.filename }}...</span>
-                      </div>
-                      <span class="new-template-wizard__progress-percentage">{{ uploadProgress }}%</span>
-                    </div>
-                    <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
-                    <button
-                      mat-button
-                      type="button"
-                      class="new-template-wizard__cancel-button"
-                      (click)="cancelUploading()"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                  }
                 </div>
                 }
               </div>
@@ -557,7 +521,7 @@
                     mat-stroked-button
                     type="button"
                     (click)="startNewVersion()"
-                    [disabled]="isUploading() || !applianceToInstall().versions?.length"
+                    [disabled]="anyImportActive() || !applianceToInstall().versions?.length"
                   >
                     Create new version
                   </button>

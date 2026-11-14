@@ -6,6 +6,7 @@ import {
   ElementRef,
   Input,
   OnInit,
+  OnDestroy,
   computed,
   effect,
   inject,
@@ -30,10 +31,10 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FileItem, FileUploader, ParsedResponseHeaders, FileUploadModule } from 'ng2-file-upload';
+import { FileUploader } from 'ng2-file-upload';
 import * as SparkMD5 from 'spark-md5';
 import { Subject, timer } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -69,11 +70,18 @@ import { ApplianceInfoDialogComponent } from './appliance-info-dialog/appliance-
 import { DockerImageLoadComponent } from '@components/common/docker-image-load/docker-image-load.component';
 import { UploadServiceService } from '../../../common/uploading-processbar/upload-service.service';
 import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
+import { ImageUploadEvent, ImageUploadSessionService } from '@services/image-upload-session.service';
+import { ImageUploadStatus } from '@components/image-manager/image-database-file';
 import { templateNameAsyncValidator } from '../../../validators/template-name-async-validator';
 import { ProjectNameValidator } from '../../projects/models/projectNameValidator';
 
 type CreationAction = 'install' | 'import';
 type ApplianceSort = 'name' | 'emulator' | 'vendor';
+
+interface ActiveImageImport {
+  phase: 'checksum' | 'uploading';
+  progress: number; // 0-100 within the current phase
+}
 
 const ALL_FILTER = 'all';
 const IMAGE_SLOTS: (keyof Images)[] = [
@@ -109,11 +117,10 @@ const IMAGE_SLOTS: (keyof Images)[] = [
     MatIconModule,
     MatTooltipModule,
     MatCheckboxModule,
-    FileUploadModule,
     DockerImageLoadComponent,
   ],
 })
-export class NewTemplateDialogComponent implements OnInit {
+export class NewTemplateDialogComponent implements OnInit, OnDestroy {
   @Input() controller: Controller;
 
   // ------------------------------------------------------------------
@@ -186,12 +193,20 @@ export class NewTemplateDialogComponent implements OnInit {
   // ------------------------------------------------------------------
   // Upload state
   // ------------------------------------------------------------------
-  uploaderImage: FileUploader;
-  uploadProgress: number = 0;
-  uploadingImageName: string = '';
-  readonly isUploading = signal(false);
+  /** One entry per image file being imported, keyed by the target image filename. */
+  readonly imageImports = signal<ReadonlyMap<string, ActiveImageImport>>(new Map());
+  /** Dedicated uploader per import: a shared FileUploader runs one HTTP transfer at a time. */
+  private importUploaders = new Map<string, FileUploader>();
+  /** Files picked for a still-running import, kept until the upload starts. */
+  private importFiles = new Map<string, File>();
+  /** Unique global-indicator row id per import (image filename → session id). */
+  private importSessionIds = new Map<string, string>();
+  private nextImportSessionId = 0;
+  private cancelledImports = new Set<string>();
+  /** Re-set appliance objects derived from a previous one by checksum recording. */
+  private applianceDerivations = new WeakMap<Appliance, Appliance>();
+  private uploadSnackBarRef: MatSnackBarRef<UploadingProcessbarComponent> | null = null;
   readonly isImportingAppliance = signal(false);
-  private checksumCancelled = false;
   private customImageFilenames = new Set<string>();
 
   // ------------------------------------------------------------------
@@ -264,6 +279,7 @@ export class NewTemplateDialogComponent implements OnInit {
   private progressService = inject(ProgressService);
   public snackBar = inject(MatSnackBar);
   private uploadServiceService = inject(UploadServiceService);
+  private imageUploadSessionService = inject(ImageUploadSessionService);
   private projectNameValidator = inject(ProjectNameValidator);
   private destroyRef = inject(DestroyRef);
 
@@ -321,6 +337,15 @@ export class NewTemplateDialogComponent implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+    // Only clean up a snackbar this component owns; emitting without an open
+    // ref could dismiss a progress bar driven by another flow.
+    if (this.uploadSnackBarRef) {
+      this.uploadSnackBarRef.dismiss();
+      this.uploadServiceService.processBarCount(null);
+    }
+  }
+
   private loadController(): void {
     const controllerId = this.route.snapshot.paramMap.get('controller_id') ?? '';
     this.controllerService.get(parseInt(controllerId, 10)).then(
@@ -372,43 +397,10 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   private setupUploaders(): void {
-    this.uploaderImage = new FileUploader({ url: '' });
-    this.uploaderImage.onAfterAddingFile = (file) => {
-      file.withCredentials = false;
-    };
-    this.uploaderImage.onErrorItem = (
-      item: FileItem,
-      response: string,
-      status: number,
-      headers: ParsedResponseHeaders
-    ) => {
-      this.toasterService.error(
-        status === 409 ? 'An error has occurred because image already exists' : 'Failed to import image'
-      );
-      this.resetUploadState();
-      this.cd.markForCheck();
-    };
-    this.uploaderImage.onSuccessItem = (
-      item: FileItem,
-      response: string,
-      status: number,
-      headers: ParsedResponseHeaders
-    ) => {
-      this.toasterService.success('Image successfully imported');
-      const uploadedFilename = this.uploadingImageName;
-      this.resetUploadState();
-      this.cd.markForCheck();
-      // The server computes the image checksum asynchronously after the upload
-      // finishes, so poll until the just-uploaded image shows up as installed
-      // (otherwise the image stays "missing" until a manual refresh).
-      this.refreshImagesUntilReady(uploadedFilename);
-    };
-    this.uploaderImage.onProgressItem = (progress: any) => {
-      this.uploadProgress = progress['progress'];
-      this.uploadServiceService.processBarCount(this.uploadProgress);
-      this.cd.markForCheck();
-    };
-
+    // Uploads no longer share one FileUploader: its queue runs a single HTTP
+    // transfer at a time and reassigns URLs across queued items, which corrupts
+    // parallel imports (see upstream issue #1918). Each import gets its own
+    // uploader in importImageFile instead.
     this.uploadServiceService.currentCancelItemDetails
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((isCancel) => {
@@ -884,28 +876,44 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   importImage(event, imageName) {
-    const file = event?.target?.files?.[0];
+    const input = event?.target as HTMLInputElement | null;
+    const file = input?.files?.[0];
+    // Reset the input so picking the same file again fires another change event.
+    if (input) input.value = '';
     if (!file) {
+      return;
+    }
+    // One import per image slot; importing several slots in parallel is allowed.
+    if (this.imageImports().has(imageName)) {
       return;
     }
 
     const applianceAtStart = this.applianceToInstall();
-    this.uploadingImageName = imageName;
-    this.checksumCancelled = false;
-    // Open the progress snackbar up front and drive it from the MD5 computation,
-    // so the user sees feedback during the (potentially long) local checksum phase.
-    this.uploadServiceService.setMessage('Computing checksum');
-    this.uploadServiceService.setComputing(true);
-    this.openSnackBar();
-    this.uploadServiceService.processBarCount(0);
+    this.cancelledImports.delete(imageName);
+    this.importFiles.set(imageName, file);
+    // A unique row id keeps a re-import of the same image (e.g. after leaving
+    // and reopening the wizard while an older upload is still running) from
+    // colliding with the previous row in the global indicator.
+    const sessionId = `${imageName}#${++this.nextImportSessionId}`;
+    this.importSessionIds.set(imageName, sessionId);
+    this.setImportState(imageName, { phase: 'checksum', progress: 0 });
+    // Progress is reported through the shared upload session so all imports
+    // show up together in the global upload indicator (bottom-right panel).
+    this.imageUploadSessionService.registerCancelHandler(sessionId, () => this.cancelImportInternal(imageName));
+    this.emitImportEvent(imageName, { status: 'uploading', progress: 0, phaseLabel: 'Computing checksum' });
 
     this.computeChecksumMd5(file, false, (percent) => {
-      this.uploadServiceService.processBarCount(percent);
+      // A cancelled import may finish hashing late; never let it report into
+      // a newer import of the same image.
+      if (this.importSessionIds.get(imageName) !== sessionId) return;
+      this.updateImportState(imageName, { progress: percent });
+      this.emitImportEvent(imageName, { status: 'uploading', progress: percent, phaseLabel: 'Computing checksum' });
     })
       .then((output) => {
-        if (this.checksumCancelled) return;
-        if (this.applianceToInstall() !== applianceAtStart) {
-          this.resetUploadState();
+        if (this.importSessionIds.get(imageName) !== sessionId) return;
+        if (this.cancelledImports.has(imageName)) return;
+        if (!this.applianceUnchangedSince(applianceAtStart)) {
+          this.finishImport(imageName, 'canceled');
           this.cd.markForCheck();
           return;
         }
@@ -916,7 +924,7 @@ export class NewTemplateDialogComponent implements OnInit {
         // missing from the top-level images array. Bail out cleanly instead of
         // crashing on imageToInstall.md5sum and leaving the wizard stuck.
         if (!imageToInstall) {
-          this.resetUploadState();
+          this.finishImport(imageName, 'canceled');
           this.toasterService.error(`Image '${imageName}' was not found in the appliance definition`);
           this.cd.markForCheck();
           return;
@@ -927,20 +935,30 @@ export class NewTemplateDialogComponent implements OnInit {
         const isCustomVersionImage = this.customImageFilenames.has(imageName);
         if (isCustomVersionImage) {
           const appliance = this.applianceToInstall();
-          this.applianceToInstall.set({
-            ...appliance,
-            images: appliance.images.map((image) =>
-              image === imageToInstall ? { ...image, md5sum: output, filesize: file.size } : image
-            ),
-          });
+          if (appliance) {
+            // Match by filename: with parallel imports the identity of the
+            // image object may change when another import records its checksum.
+            const updated: Appliance = {
+              ...appliance,
+              images: appliance.images.map((image) =>
+                image.filename === imageName ? { ...image, md5sum: output, filesize: file.size } : image
+              ),
+            };
+            // Track the copy-on-write lineage so parallel imports of the same
+            // appliance do not mistake this update for an appliance switch.
+            this.applianceDerivations.set(updated, appliance);
+            this.applianceToInstall.set(updated);
+          }
         }
 
         if (!isCustomVersionImage && imageToInstall.md5sum !== output && !this.allowCustomFiles()) {
-          // Close the checksum snackbar so it does not linger behind the dialog.
-          this.uploadServiceService.processBarCount(null);
-          this.uploadServiceService.setMessage('');
-          this.uploadServiceService.setComputing(false);
-          this.progressService.deactivate();
+          // Keep the row visible in the indicator while the user decides.
+          this.updateImportState(imageName, { progress: 100 });
+          this.emitImportEvent(imageName, {
+            status: 'uploading',
+            progress: 100,
+            phaseLabel: 'Waiting for confirmation',
+          });
           const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
             autoFocus: '.cancel-button',
             disableClose: true,
@@ -958,79 +976,195 @@ export class NewTemplateDialogComponent implements OnInit {
             .afterClosed()
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((answer: boolean) => {
-              if (this.checksumCancelled || this.applianceToInstall() !== applianceAtStart) {
-                this.resetUploadState();
+              if (this.importSessionIds.get(imageName) !== sessionId) {
+                return;
+              }
+              if (this.cancelledImports.has(imageName) || !this.applianceUnchangedSince(applianceAtStart)) {
+                this.finishImport(imageName, 'canceled');
                 this.cd.markForCheck();
                 return;
               }
               if (answer) {
-                this.openSnackBar();
-                this.uploadServiceService.setMessage('Uploading');
-                this.uploadServiceService.setComputing(false);
                 this.importImageFile(imageName);
               } else {
-                this.resetUploadState();
+                this.finishImport(imageName, 'canceled');
                 this.cd.markForCheck();
               }
             });
         } else {
-          this.uploadServiceService.setMessage('Uploading');
-          this.uploadServiceService.setComputing(false);
-          this.uploadServiceService.processBarCount(0);
           this.importImageFile(imageName);
         }
       })
       .catch((err) => {
         // A local read error must close the progress UI and clear the queued
         // file; otherwise the wizard remains in a stale checksum phase.
-        if (this.checksumCancelled) return;
-        this.resetUploadState();
-        this.toasterService.error(typeof err === 'string' ? err : 'MD5 computation failed - error reading the file');
+        if (this.importSessionIds.get(imageName) !== sessionId || this.cancelledImports.has(imageName)) return;
+        const message = typeof err === 'string' ? err : 'MD5 computation failed - error reading the file';
+        this.finishImport(imageName, 'error', message);
+        this.toasterService.error(message);
         this.cd.markForCheck();
       });
   }
 
   private importImageFile(imageName: string) {
     // Reading the file into memory is intentionally avoided: large disk images
-    // would blow up the browser. The file is already queued by ng2FileSelect,
-    // so we only configure the upload URL/headers and start the upload.
-    const url = this.applianceService.getUploadPath(this.controller, imageName);
-    this.uploaderImage.queue.forEach((elem) => (elem.url = url));
-
-    const itemToUpload = this.uploaderImage.queue[0];
-    const options = (itemToUpload as any)?.options;
-    if (!itemToUpload || !options) {
-      this.resetUploadState();
+    // would blow up the browser. Each import owns a dedicated uploader, so
+    // simultaneous imports cannot reassign each other's upload URL or queue
+    // (a shared FileUploader silently ignores a second concurrent transfer).
+    const file = this.importFiles.get(imageName);
+    if (!file || !this.controller) {
+      this.finishImport(imageName, 'error', 'The selected file could not be queued for upload');
       this.toasterService.error('The selected file could not be queued for upload');
       this.cd.markForCheck();
       return;
     }
-    options.disableMultipart = true;
-    options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }];
 
-    this.isUploading.set(true);
-    this.uploadProgress = 0;
-    this.uploaderImage.uploadItem(itemToUpload);
+    const uploader = new FileUploader({
+      url: this.applianceService.getUploadPath(this.controller, imageName),
+      disableMultipart: true,
+      headers: [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }],
+    });
+    uploader.onAfterAddingFile = (item) => {
+      item.withCredentials = false;
+    };
+    uploader.onProgressItem = (_item, progress) => {
+      const percent = progress?.['progress'] ?? 0;
+      this.updateImportState(imageName, { phase: 'uploading', progress: percent });
+      this.emitImportEvent(imageName, { status: 'uploading', progress: percent });
+      this.cd.markForCheck();
+    };
+    uploader.onSuccessItem = () => {
+      this.toasterService.success('Image successfully imported');
+      this.finishImport(imageName, 'uploaded');
+      this.cd.markForCheck();
+      // The server computes the image checksum asynchronously after the upload
+      // finishes, so poll until the just-uploaded image shows up as installed
+      // (otherwise the image stays "missing" until a manual refresh).
+      this.refreshImagesUntilReady(imageName);
+    };
+    uploader.onErrorItem = (_item, _response, status) => {
+      const message = status === 409 ? 'An error has occurred because image already exists' : 'Failed to import image';
+      this.toasterService.error(message);
+      this.finishImport(imageName, 'error', message);
+      this.cd.markForCheck();
+    };
+
+    this.importUploaders.set(imageName, uploader);
+    this.setImportState(imageName, { phase: 'uploading', progress: 0 });
+    this.emitImportEvent(imageName, { status: 'uploading', progress: 0 });
+    uploader.addToQueue([file]);
+    uploader.uploadItem(uploader.queue[0]);
     this.cd.markForCheck();
   }
 
   cancelUploading() {
-    this.checksumCancelled = true;
-    this.resetUploadState();
+    for (const imageName of Array.from(this.imageImports().keys())) {
+      this.cancelImportInternal(imageName);
+    }
+    this.progressService.deactivate();
     this.toasterService.warning('File upload cancelled');
     this.uploadServiceService.cancelFileUploading(false);
-    this.cd.markForCheck();
-  }
-
-  private resetUploadState(): void {
-    this.progressService.deactivate();
-    this.uploaderImage.clearQueue();
-    this.uploadProgress = 0;
-    this.isUploading.set(false);
-    this.uploadingImageName = '';
     this.uploadServiceService.processBarCount(null);
     this.uploadServiceService.setMessage('');
     this.uploadServiceService.setComputing(false);
+    this.cd.markForCheck();
+  }
+
+  isImportingImage(filename: string): boolean {
+    return this.imageImports().has(filename);
+  }
+
+  anyImportActive(): boolean {
+    return this.imageImports().size > 0;
+  }
+
+  private cancelImportInternal(imageName: string): boolean {
+    if (!this.imageImports().has(imageName)) {
+      return false;
+    }
+    this.cancelledImports.add(imageName);
+    this.importUploaders.get(imageName)?.cancelAll();
+    this.finishImport(imageName, 'canceled');
+    return true;
+  }
+
+  /** Emit a terminal state for this import and drop its bookkeeping. */
+  private finishImport(imageName: string, status: ImageUploadStatus, errorMessage?: string): void {
+    this.emitImportEvent(imageName, {
+      status,
+      errorMessage,
+      progress: status === 'uploaded' ? 100 : (this.imageImports().get(imageName)?.progress ?? 0),
+    });
+    this.clearImport(imageName);
+  }
+
+  /** Report this import to the global upload indicator. */
+  private emitImportEvent(
+    imageName: string,
+    patch: Partial<ImageUploadEvent> & Pick<ImageUploadEvent, 'status'>
+  ): void {
+    // Show the file the user actually picked, not the appliance-definition
+    // target name (they routinely differ: e.g. an ISO downloaded as
+    // "ubuntu-24.04.1-live-server-amd64.iso" imported as "ubuntu.iso").
+    const file = this.importFiles.get(imageName);
+    this.imageUploadSessionService.emit({
+      tempId: this.importSessionIds.get(imageName) ?? imageName,
+      filename: file?.name ?? imageName,
+      image_type: this.resolveImageType(file?.name ?? imageName),
+      image_size: file?.size ?? 0,
+      progress: 0,
+      ...patch,
+    });
+  }
+
+  private resolveImageType(fileName: string): string {
+    const parts = (fileName || '').split('.');
+    return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : 'unknown';
+  }
+
+  private setImportState(imageName: string, state: ActiveImageImport): void {
+    const next = new Map(this.imageImports());
+    next.set(imageName, state);
+    this.imageImports.set(next);
+  }
+
+  private updateImportState(imageName: string, patch: Partial<ActiveImageImport>): void {
+    const current = this.imageImports().get(imageName);
+    if (!current) return;
+    const next = new Map(this.imageImports());
+    next.set(imageName, { ...current, ...patch });
+    this.imageImports.set(next);
+  }
+
+  private clearImport(imageName: string): void {
+    const next = new Map(this.imageImports());
+    next.delete(imageName);
+    this.imageImports.set(next);
+    this.importUploaders.delete(imageName);
+    this.importFiles.delete(imageName);
+    const sessionId = this.importSessionIds.get(imageName);
+    if (sessionId) {
+      this.imageUploadSessionService.unregisterCancelHandler(sessionId);
+      this.importSessionIds.delete(imageName);
+    }
+    this.progressService.deactivate();
+  }
+
+  /**
+   * Whether the wizard still shows the appliance the import started with.
+   * Copy-on-write checksum updates create a new appliance object; follow the
+   * recorded lineage so parallel imports are not mistaken for an appliance
+   * switch, while selecting a different appliance still cancels them.
+   */
+  private applianceUnchangedSince(applianceAtStart: Appliance | null): boolean {
+    let current: Appliance | null | undefined = this.applianceToInstall();
+    while (current) {
+      if (current === applianceAtStart) {
+        return true;
+      }
+      current = this.applianceDerivations.get(current);
+    }
+    return false;
   }
 
   checkImageFromVersion(image: string): boolean {
@@ -1440,9 +1574,17 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   openSnackBar() {
-    this.snackBar.openFromComponent(UploadingProcessbarComponent, {
+    // Keep a single snackbar open across progress updates instead of
+    // reopening (and re-creating) it on every refresh.
+    if (this.uploadSnackBarRef) {
+      return;
+    }
+    this.uploadSnackBarRef = this.snackBar.openFromComponent(UploadingProcessbarComponent, {
       panelClass: 'uplaoding-file-snackabar',
       data: { upload_file_type: 'Image' },
+    });
+    this.uploadSnackBarRef?.afterDismissed().subscribe(() => {
+      this.uploadSnackBarRef = null;
     });
   }
 }

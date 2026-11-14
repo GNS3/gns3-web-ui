@@ -48,7 +48,13 @@
           @if (row.status === 'queued') {
           <span class="status-text">Queued</span>
           } @if (row.status === 'uploading') {
-          <span class="status-text">{{ row.progress }}%</span>
+          <span class="status-text">
+            @if (row.phaseLabel) {
+            {{ row.phaseLabel }} {{ row.progress }}%
+            } @else {
+            {{ row.progress }}%
+            }
+          </span>
           } @if (row.status === 'uploaded') {
           <span class="status-text status-done">Done</span>
           } @if (row.status === 'error') {

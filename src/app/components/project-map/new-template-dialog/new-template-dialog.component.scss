@@ -493,6 +493,15 @@ button.new-template-wizard__method-option--selected {
     background: var(--mat-sys-error-container);
     color: var(--mat-sys-on-error-container);
   }
+
+  &--importing {
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+
+    mat-icon {
+      animation: new-template-wizard-spin 1s linear infinite;
+    }
+  }
 }
 
 .new-template-wizard__image-actions {
@@ -500,56 +509,6 @@ button.new-template-wizard__method-option--selected {
   flex: 0 0 auto;
   align-items: center;
   gap: var(--gns3-density-space-2);
-}
-
-/* =============================================
-// Upload progress
-// ============================================= */
-.new-template-wizard__upload-progress {
-  display: flex;
-  flex: 1 1 100%;
-  flex-direction: column;
-  gap: var(--gns3-density-space-2);
-  padding: var(--gns3-density-space-3) var(--gns3-density-space-4);
-  border-radius: var(--gns3-density-radius-md);
-  background: var(--mat-sys-primary-container);
-
-  mat-progress-bar {
-    height: 4px;
-    border-radius: 2px;
-  }
-}
-
-.new-template-wizard__progress-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--mat-sys-on-primary-container);
-  font-size: 13px;
-}
-
-.new-template-wizard__progress-text {
-  display: flex;
-  align-items: center;
-  gap: var(--gns3-density-space-2);
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    animation: new-template-wizard-spin 1s linear infinite;
-  }
-}
-
-.new-template-wizard__progress-percentage {
-  font-weight: 500;
-}
-
-.new-template-wizard__cancel-button {
-  align-self: flex-end;
-  min-width: auto;
-  padding: 4px 8px;
-  font-size: 12px;
 }
 
 @keyframes new-template-wizard-spin {
