@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal, computed } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  inject,
+  signal,
+  computed,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -22,6 +31,7 @@ interface UploadRow extends ImageUploadEvent {
 export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
   private imageUploadSessionService = inject(ImageUploadSessionService);
   private router = inject(Router);
+  private cd = inject(ChangeDetectorRef);
 
   uploads = new Map<string, UploadRow>();
   readonly isExpanded = signal(true);
@@ -87,8 +97,10 @@ export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
         if (current) {
           current.dismissing = true;
         }
+        this.cd.markForCheck();
         setTimeout(() => {
           this.uploads.delete(event.tempId);
+          this.cd.markForCheck();
         }, 400);
       }, 3000);
     } else {
@@ -103,6 +115,10 @@ export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
     if (!existing) {
       this.isExpanded.set(true);
     }
+    // The app is zoneless and this component is OnPush, so plain Map updates
+    // from the event subscription (and from the dismiss timers) never schedule
+    // change detection on their own.
+    this.cd.markForCheck();
   }
 
   ngOnDestroy() {
