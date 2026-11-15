@@ -74,6 +74,10 @@
 .upload-list {
   max-height: 280px;
   overflow-y: auto;
+  // overflow-y: auto makes the other axis compute to auto as well, so any
+  // stray sub-pixel overflow shows a horizontal scrollbar. The rows are
+  // fit-by-design (names and messages ellipsize), so never scroll sideways.
+  overflow-x: hidden;
   padding: 8px 0;
 }
 
