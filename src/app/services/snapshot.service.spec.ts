@@ -31,6 +31,7 @@ describe('SnapshotService', () => {
     mockHttpController = {
       post: vi.fn(),
       get: vi.fn(),
+      put: vi.fn(),
       delete: vi.fn(),
     };
     mockController = createMockController();
@@ -200,6 +201,50 @@ describe('SnapshotService', () => {
       await firstValueFrom(service.restore(mockController, 'project-1', snapshotId));
 
       expect(mockHttpController.post).toHaveBeenCalledWith(mockController, expectedUrl, {});
+    });
+  });
+
+  describe('update', () => {
+    it('should call httpController.put with correct URL and description body', async () => {
+      mockHttpController.put.mockReturnValue(of({}));
+
+      await firstValueFrom(service.update(mockController, 'project-1', 'snap-1', 'new description'));
+
+      expect(mockHttpController.put).toHaveBeenCalledWith(
+        mockController,
+        '/projects/project-1/snapshots/snap-1',
+        { description: 'new description' }
+      );
+    });
+
+    it('should send an empty description when resetting to the server default', async () => {
+      mockHttpController.put.mockReturnValue(of({}));
+
+      await firstValueFrom(service.update(mockController, 'project-1', 'snap-1', ''));
+
+      expect(mockHttpController.put).toHaveBeenCalledWith(
+        mockController,
+        '/projects/project-1/snapshots/snap-1',
+        { description: '' }
+      );
+    });
+
+    it('should return the updated snapshot', async () => {
+      const updated = { snapshot_id: 'snap-1', name: 'Test Snapshot', description: 'new description' } as Snapshot;
+      mockHttpController.put.mockReturnValue(of(updated));
+
+      const result = await firstValueFrom(service.update(mockController, 'project-1', 'snap-1', 'new description'));
+
+      expect(result).toEqual(updated);
+    });
+
+    it('should propagate error when httpController.put fails', async () => {
+      const error = new Error('Update failed');
+      mockHttpController.put.mockReturnValue(throwError(() => error));
+
+      await expect(
+        firstValueFrom(service.update(mockController, 'project-1', 'snap-1', 'new description'))
+      ).rejects.toThrow('Update failed');
     });
   });
 

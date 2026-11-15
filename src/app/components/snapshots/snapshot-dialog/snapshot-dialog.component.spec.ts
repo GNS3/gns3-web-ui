@@ -25,12 +25,13 @@ describe('SnapshotDialogComponent', () => {
   let mockProject: Project;
   let mockProjectPermissionService: any;
 
-  const createMockSnapshot = (id: string, name: string): Snapshot =>
+  const createMockSnapshot = (id: string, name: string, description?: string): Snapshot =>
     ({
       snapshot_id: id,
       name,
       created_at: Date.now(),
       project_id: 'proj-1',
+      ...(description !== undefined ? { description } : {}),
     } as Snapshot);
 
   beforeEach(async () => {
@@ -39,6 +40,7 @@ describe('SnapshotDialogComponent', () => {
     mockSnapshotService = {
       list: vi.fn().mockReturnValue(of([])),
       create: vi.fn().mockReturnValue(of({})),
+      update: vi.fn().mockReturnValue(of({})),
       restore: vi.fn().mockReturnValue(of({})),
       delete: vi.fn().mockReturnValue(of({})),
     };
@@ -212,11 +214,41 @@ describe('SnapshotDialogComponent', () => {
 
       expect(component.filteredSnapshots()).toHaveLength(0);
     });
+
+    it('should filter snapshots by description case-insensitively', () => {
+      const snapshots = [
+        createMockSnapshot('1', 'Snapshot A', 'before the demo'),
+        createMockSnapshot('2', 'Snapshot B', 'stable baseline'),
+      ];
+      component.snapshots.set(snapshots);
+      component.searchText.set('BEFORE THE DEMO');
+
+      const result = component.filteredSnapshots();
+      expect(result).toHaveLength(1);
+      expect(result[0].snapshot_id).toBe('1');
+    });
+
+    it('should match a snapshot when the filter hits either name or description', () => {
+      const snapshots = [
+        createMockSnapshot('1', 'weekly', 'checkpoint one'),
+        createMockSnapshot('2', 'other', 'weekly recap'),
+        createMockSnapshot('3', 'unrelated', 'nothing'),
+      ];
+      component.snapshots.set(snapshots);
+      component.searchText.set('weekly');
+
+      const result = component.filteredSnapshots();
+      expect(result.map((s) => s.snapshot_id)).toEqual(['1', '2']);
+    });
   });
 
   describe('prototype methods', () => {
     it('should have openCreateDialog method', () => {
       expect(typeof (SnapshotDialogComponent.prototype as any).openCreateDialog).toBe('function');
+    });
+
+    it('should have editSnapshot method', () => {
+      expect(typeof (SnapshotDialogComponent.prototype as any).editSnapshot).toBe('function');
     });
 
     it('should have restoreSnapshot method', () => {
@@ -225,6 +257,141 @@ describe('SnapshotDialogComponent', () => {
 
     it('should have deleteSnapshot method', () => {
       expect(typeof (SnapshotDialogComponent.prototype as any).deleteSnapshot).toBe('function');
+    });
+  });
+
+  describe('hasCustomDescription', () => {
+    it('should return false for the server-generated default description', () => {
+      const snapshot = createMockSnapshot('1', 'test1', "Snapshot 'test1' taken on 15-11-2026 23:01:19");
+      expect(component.hasCustomDescription(snapshot)).toBe(false);
+    });
+
+    it('should return true for a user-written description', () => {
+      const snapshot = createMockSnapshot('1', 'test1', 'state before the migration');
+      expect(component.hasCustomDescription(snapshot)).toBe(true);
+    });
+
+    it('should return false when there is no description', () => {
+      const snapshot = createMockSnapshot('1', 'test1');
+      expect(component.hasCustomDescription(snapshot)).toBe(false);
+    });
+
+    it('should return false for an empty description', () => {
+      const snapshot = createMockSnapshot('1', 'test1', '');
+      expect(component.hasCustomDescription(snapshot)).toBe(false);
+    });
+
+    it('should not mistake the default text of another snapshot for this one', () => {
+      const snapshot = createMockSnapshot('1', 'test1', "Snapshot 'other' taken on 15-11-2026 23:01:19");
+      expect(component.hasCustomDescription(snapshot)).toBe(true);
+    });
+  });
+
+  describe('editSnapshot', () => {
+    it('should open the edit dialog with the snapshot', () => {
+      const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+      const dialogMock = {
+        afterClosed: vi.fn().mockReturnValue(of(undefined)),
+      };
+      const openSpy = vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+
+      component.editSnapshot(testSnapshot);
+
+      expect(openSpy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ data: { snapshot: testSnapshot } })
+      );
+    });
+
+    it('should call update with the new description and reload the list', () => {
+      const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+      const dialogMock = {
+        afterClosed: vi.fn().mockReturnValue(of('new description')),
+      };
+      vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+      mockSnapshotService.update.mockReturnValue(of({}));
+      mockSnapshotService.list.mockClear();
+
+      component.editSnapshot(testSnapshot);
+
+      expect(mockSnapshotService.update).toHaveBeenCalledWith(
+        mockController,
+        mockProject.project_id,
+        'snap-1',
+        'new description'
+      );
+      expect(mockSnapshotService.list).toHaveBeenCalled();
+      expect(mockToasterService.success).toHaveBeenCalledWith('Description of "Test Snapshot" has been updated.');
+    });
+
+    it('should send an empty description when the user clears the text', () => {
+      const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+      const dialogMock = {
+        afterClosed: vi.fn().mockReturnValue(of('')),
+      };
+      vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+      mockSnapshotService.update.mockReturnValue(of({}));
+
+      component.editSnapshot(testSnapshot);
+
+      expect(mockSnapshotService.update).toHaveBeenCalledWith(
+        mockController,
+        mockProject.project_id,
+        'snap-1',
+        ''
+      );
+    });
+
+    it('should not call update when the edit dialog is cancelled', () => {
+      const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+      const dialogMock = {
+        afterClosed: vi.fn().mockReturnValue(of(undefined)),
+      };
+      vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+
+      component.editSnapshot(testSnapshot);
+
+      expect(mockSnapshotService.update).not.toHaveBeenCalled();
+    });
+
+    it('should show error toaster when update fails', () => {
+      const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+      const dialogMock = {
+        afterClosed: vi.fn().mockReturnValue(of('new description')),
+      };
+      vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+      mockSnapshotService.update.mockReturnValue(throwError(() => ({ error: { message: 'Update failed' } })));
+
+      component.editSnapshot(testSnapshot);
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update description: Update failed');
+    });
+
+    it('should use fallback message when update error has no message', () => {
+      const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+      const dialogMock = {
+        afterClosed: vi.fn().mockReturnValue(of('new description')),
+      };
+      vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+      mockSnapshotService.update.mockReturnValue(throwError(() => ({})));
+
+      component.editSnapshot(testSnapshot);
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update description: Unknown error');
+    });
+
+    it('should call markForCheck after update completes', () => {
+      const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+      const dialogMock = {
+        afterClosed: vi.fn().mockReturnValue(of('new description')),
+      };
+      vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+      mockSnapshotService.update.mockReturnValue(of({}));
+
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.editSnapshot(testSnapshot);
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 
@@ -433,6 +600,49 @@ describe('SnapshotDialogComponent', () => {
 
         expect(cdrSpy).toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('Template Rendering', () => {
+    it('should show the description under the name for custom descriptions', () => {
+      component.snapshots.set([createMockSnapshot('1', 'snap1', 'state before the migration')]);
+      fixture.detectChanges();
+
+      const descriptionCells = fixture.nativeElement.querySelectorAll('.snapshot-dialog__description');
+      expect(descriptionCells).toHaveLength(1);
+      expect(descriptionCells[0].textContent).toContain('state before the migration');
+    });
+
+    it('should not show a description line for the server default text', () => {
+      component.snapshots.set([
+        createMockSnapshot('1', 'snap1', "Snapshot 'snap1' taken on 15-11-2026 23:01:19"),
+      ]);
+      fixture.detectChanges();
+
+      const rows = fixture.nativeElement.querySelectorAll('mat-row');
+      expect(rows).toHaveLength(1);
+      const descriptionCells = fixture.nativeElement.querySelectorAll('.snapshot-dialog__description');
+      expect(descriptionCells).toHaveLength(0);
+    });
+
+    it('should not show a description line for snapshots without a description', () => {
+      component.snapshots.set([createMockSnapshot('1', 'snap1')]);
+      fixture.detectChanges();
+
+      const rows = fixture.nativeElement.querySelectorAll('mat-row');
+      expect(rows).toHaveLength(1);
+      const descriptionCells = fixture.nativeElement.querySelectorAll('.snapshot-dialog__description');
+      expect(descriptionCells).toHaveLength(0);
+    });
+
+    it('should render an edit action per row', () => {
+      component.snapshots.set([createMockSnapshot('1', 'snap1')]);
+      fixture.detectChanges();
+
+      const editButtons = Array.from(fixture.nativeElement.querySelectorAll('button[mat-icon-button]')).filter(
+        (b: HTMLButtonElement) => b.querySelector('mat-icon')?.textContent?.trim() === 'edit'
+      );
+      expect(editButtons).toHaveLength(1);
     });
   });
 });
