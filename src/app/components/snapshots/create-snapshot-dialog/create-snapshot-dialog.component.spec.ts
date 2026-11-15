@@ -143,6 +143,13 @@ describe('CreateSnapshotDialogComponent', () => {
       const component = createComponent();
       expect(component.inputForm.invalid).toBe(true);
     });
+
+    it('should create snapshotDescription control that is optional', () => {
+      const component = createComponent();
+      const descriptionControl = component.inputForm.get('snapshotDescription');
+      expect(descriptionControl).toBeTruthy();
+      expect(descriptionControl.hasError('required')).toBe(false);
+    });
   });
 
   describe('ngOnInit - existing snapshots loading', () => {
@@ -274,6 +281,36 @@ describe('CreateSnapshotDialogComponent', () => {
         expect(component.snapshot.name).toBe('trimmed-snapshot');
         expect(mockDialogRef.close).toHaveBeenCalledWith(component.snapshot);
       });
+
+      it('should include the trimmed description in the closed snapshot', () => {
+        const component = createComponent();
+        component.inputForm.get('snapshotName').setValue('snap');
+        component.inputForm.get('snapshotDescription').setValue('  before the demo  ');
+
+        component.onAddClick();
+
+        expect(component.snapshot.description).toBe('before the demo');
+      });
+
+      it('should omit the description when it is left empty', () => {
+        const component = createComponent();
+        component.inputForm.get('snapshotName').setValue('snap');
+        component.inputForm.get('snapshotDescription').setValue('');
+
+        component.onAddClick();
+
+        expect(component.snapshot.description).toBeUndefined();
+      });
+
+      it('should omit the description when it contains only whitespace', () => {
+        const component = createComponent();
+        component.inputForm.get('snapshotName').setValue('snap');
+        component.inputForm.get('snapshotDescription').setValue('   ');
+
+        component.onAddClick();
+
+        expect(component.snapshot.description).toBeUndefined();
+      });
     });
 
     describe('edge cases for snapshot name', () => {
@@ -343,6 +380,14 @@ describe('CreateSnapshotDialogComponent', () => {
 
       const input = fixture.nativeElement.querySelector('input[formControlName="snapshotName"]');
       expect(input).toBeTruthy();
+    });
+
+    it('should have a description textarea', () => {
+      const component = createComponent();
+      fixture.detectChanges();
+
+      const textarea = fixture.nativeElement.querySelector('textarea[formControlName="snapshotDescription"]');
+      expect(textarea).toBeTruthy();
     });
   });
 
