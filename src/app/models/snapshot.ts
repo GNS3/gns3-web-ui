@@ -3,4 +3,5 @@ export class Snapshot {
   name: string;
   created_at: number;
   project_id: string;
+  description?: string;
 }
