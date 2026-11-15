@@ -17,6 +17,7 @@ import { ToasterService } from '@services/toaster.service';
 import { ProjectPermissionService } from '@services/project-permission.service';
 import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.directive';
 import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-snapshot-dialog.component';
+import { EditSnapshotDialogComponent } from '../edit-snapshot-dialog/edit-snapshot-dialog.component';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { DateFilter } from '@filters/dateFilter.pipe';
 
@@ -54,7 +55,7 @@ export class SnapshotDialogComponent {
   searchText = model('');
   /** The actions column renders only when at least one of its buttons does —
    *  without Snapshot.Allocate or Snapshot.Restore it would be an empty column.
-   *  A frozen template refuses Restore, so only Allocate still offers one. */
+   *  A frozen template refuses Restore; edit and delete (both Allocate) remain. */
   displayedColumns = computed(() =>
     (this.project?.frozen
       ? this.projectPermissionService.has('Snapshot.Allocate')
@@ -72,8 +73,18 @@ export class SnapshotDialogComponent {
   filteredSnapshots = computed(() => {
     const filter = this.searchText().toLowerCase();
     if (!filter) return this.snapshots();
-    return this.snapshots().filter((s) => s.name.toLowerCase().includes(filter));
+    return this.snapshots().filter(
+      (s) => s.name.toLowerCase().includes(filter) || (s.description ?? '').toLowerCase().includes(filter),
+    );
   });
+
+  /** The server fills every snapshot's description with
+   *  "Snapshot '<name>' taken on <date>" when the user provides none — showing
+   *  that under the name would just repeat the Name and Date columns. */
+  hasCustomDescription(snapshot: Snapshot): boolean {
+    const description = snapshot.description;
+    return !!description && !description.startsWith(`Snapshot '${snapshot.name}' taken on `);
+  }
 
   openCreateDialog() {
     const dialogRef = this.dialog.open(CreateSnapshotDialogComponent, {
@@ -102,6 +113,33 @@ export class SnapshotDialogComponent {
           },
         });
       }
+    });
+  }
+
+  editSnapshot(snapshot: Snapshot) {
+    const dialogRef = this.dialog.open(EditSnapshotDialogComponent, {
+      panelClass: ['base-dialog-panel', 'dialog-small-panel'],
+      data: { snapshot },
+    });
+
+    dialogRef.afterClosed().subscribe((description: string) => {
+      // an empty string is a valid result: it resets the description server-side
+      if (description === undefined) return;
+
+      this.snapshotService
+        .update(this.controller, this.project.project_id, snapshot.snapshot_id, description)
+        .subscribe({
+          next: () => {
+            this.loadSnapshots();
+            this.toaster.success(`Description of "${snapshot.name}" has been updated.`);
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            const errorMessage = err.error?.message || err.message || 'Unknown error';
+            this.toaster.error(`Failed to update description: ${errorMessage}`);
+            this.cd.markForCheck();
+          },
+        });
     });
   }
 
