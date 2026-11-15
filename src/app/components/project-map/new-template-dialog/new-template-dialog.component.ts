@@ -202,6 +202,8 @@ export class NewTemplateDialogComponent implements OnInit, OnDestroy {
   /** Unique global-indicator row id per import (image filename → session id). */
   private importSessionIds = new Map<string, string>();
   private nextImportSessionId = 0;
+  /** Set in ngOnDestroy; late import callbacks check it before touching wizard state. */
+  private isDestroyed = false;
   private cancelledImports = new Set<string>();
   /** Re-set appliance objects derived from a previous one by checksum recording. */
   private applianceDerivations = new WeakMap<Appliance, Appliance>();
@@ -338,6 +340,7 @@ export class NewTemplateDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.isDestroyed = true;
     // Only clean up a snackbar this component owns; emitting without an open
     // ref could dismiss a progress bar driven by another flow.
     if (this.uploadSnackBarRef) {
@@ -799,31 +802,32 @@ export class NewTemplateDialogComponent implements OnInit, OnDestroy {
   }
 
   private refreshImagesUntilReady(filename: string, attempt = 0): void {
+    // Uploads finish in the background, so this can run after the wizard was
+    // destroyed — with no UI left to mark ready. takeUntilDestroyed cannot be
+    // used here (registering on a destroyed DestroyRef throws); the flag below
+    // stops the chain instead. Both observables emit once and complete, so a
+    // plain subscribe does not leak.
+    if (this.isDestroyed) return;
     const MAX_ATTEMPTS = 15;
     const appliance = this.applianceToInstall();
     const service = appliance?.qemu ? this.qemuService : appliance?.dynamips ? this.iosService : this.iouService;
     service
       .getImages(this.controller)
-      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (images: Image[]) => {
           if (appliance?.qemu) this.qemuImages.set(images);
           else if (appliance?.dynamips) this.iosImages.set(images);
           else this.iouImages.set(images);
           this.cd.markForCheck();
-          if (this.checkImageFromVersion(filename) || attempt >= MAX_ATTEMPTS) return;
-          timer(1000)
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(() => this.refreshImagesUntilReady(filename, attempt + 1));
+          if (this.isDestroyed || this.checkImageFromVersion(filename) || attempt >= MAX_ATTEMPTS) return;
+          timer(1000).subscribe(() => this.refreshImagesUntilReady(filename, attempt + 1));
         },
         error: () => {
           // Image indexing can briefly make the image endpoint unavailable.
           // Keep polling within the same bounded retry window instead of
           // leaving the image permanently marked as missing.
-          if (attempt >= MAX_ATTEMPTS) return;
-          timer(1000)
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(() => this.refreshImagesUntilReady(filename, attempt + 1));
+          if (this.isDestroyed || attempt >= MAX_ATTEMPTS) return;
+          timer(1000).subscribe(() => this.refreshImagesUntilReady(filename, attempt + 1));
         },
       });
   }
@@ -972,9 +976,14 @@ export class NewTemplateDialogComponent implements OnInit, OnDestroy {
               icon: 'verified_user',
             },
           });
+          // The dialog lives in the root overlay, so it survives leaving the
+          // wizard route — and the answer must still be processed afterwards
+          // (cancelling has to clear the indicator row, confirming has to
+          // start the background upload). This subscription deliberately does
+          // NOT use takeUntilDestroyed; the dialog is disableClose and
+          // afterClosed emits exactly once, so it completes on its own.
           dialogRef
             .afterClosed()
-            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((answer: boolean) => {
               if (this.importSessionIds.get(imageName) !== sessionId) {
                 return;
