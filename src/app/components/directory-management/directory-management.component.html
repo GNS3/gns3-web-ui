@@ -537,6 +537,20 @@
               </td>
             </ng-container>
 
+            <!-- Super Administrator Column -->
+            <ng-container matColumnDef="isSuperadmin">
+              <th mat-header-cell *matHeaderCellDef class="directory-management__table-superadmin-col">Super Admin</th>
+              <td mat-cell *matCellDef="let element" class="directory-management__table-superadmin-col">
+                <mat-checkbox
+                  [(ngModel)]="element.isSuperadmin"
+                  (change)="onFieldChange()"
+                  matTooltip="Grants full controller superadministrator privileges to members of this group"
+                  aria-label="Super Administrator privilege"
+                >
+                </mat-checkbox>
+              </td>
+            </ng-container>
+
             <!-- Action Column -->
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef class="directory-management__table-action-col">Action</th>
