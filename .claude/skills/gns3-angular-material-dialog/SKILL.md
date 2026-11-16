@@ -143,6 +143,70 @@ injection tokens, and structural patterns the project expects.
 - [ ] Cancel button before confirm button in DOM order
 - [ ] Component class name ends in `DialogComponent`
 - [ ] Panel CSS class ends in `-dialog-panel`
+- [ ] Form fields wrapped in a `gns3-form-stack` container (not on
+      `mat-dialog-content` itself); no hand-rolled gap stacks or bare inputs
+- [ ] If the dialog contains `mat-tab-group` outside a configurator panel:
+      panel block in `_dialogs.scss` adds `.mat-mdc-tab-body-content {
+      padding-top: 16px }` so floated outline labels are not clipped
+
+---
+
+## Form Layout Inside Dialogs (gns3-form-stack)
+
+Dialog form spacing is **not** hand-rolled. Vertical rhythm comes from the
+shared `gns3-form-stack` mechanism in `src/styles/_forms.scss` (the `$layouts`
+mixin): `row-gap: var(--gns3-form-row-gap)` plus `margin-block: 0` on child
+`mat-form-field`s. Copy the shipped dialogs (`add-ace-dialog`,
+`add-user-dialog`, `edit-project-dialog`, `start-capture`), not generic
+Material patterns.
+
+Rules:
+
+- Wrap fields in a plain element carrying `class="gns3-form-stack"` — **never
+  put the class directly on the `mat-dialog-content` element** (Material sets
+  `.mat-mdc-dialog-content { display: block }` at equal specificity, the flex
+  `row-gap` never applies, and all-`dynamic`-subscript fields stack with ZERO
+  spacing).
+- Multi-column rows go in a nested `div.form-row` (or grid div) **inside** the
+  stack; do not replace the stack with a custom grid.
+- **Never** hand-roll `gap: var(--gns3-density-space-N)` stacks for form
+  fields, and **never** use bare `<input>` elements with hand-written borders
+  — every input is a `mat-form-field appearance="outline"` (with
+  `subscriptSizing="dynamic"` unless it needs a persistent hint row).
+- The dialog skill templates do not model this; the repo styles are the
+  authority. When a dialog form looks cramped or inconsistently spaced,
+  compare against `add-user-dialog` first.
+
+---
+
+## Floated Label Clipping Inside mat-tab-group
+
+An outlined field's floated label (focus/has-value state) straddles the top
+border: **about half the label text renders above the field's top edge**.
+Material assumes no ancestor clips that overhang. Wrapping content in
+`mat-tab-group` introduces Material's own scroll containers —
+`.mat-mdc-tab-body-content { height: 100%; overflow: auto }` and
+`.mat-mdc-tab-body-active { overflow-y: auto }` — flush with the first row of
+tab content. When a tab's first row is a form field, **the top half of the
+floated label is clipped on focus** (seen in the BPF rule library dialog,
+2026-11-15).
+
+`.configurator-dialog-panel` already carries the fix in `_dialogs.scss`
+(`mat-tab-group … .mat-mdc-tab-body-content { padding-top: 16px }`), but that
+rule is **scoped to the configurator panel class**. Any other dialog that puts
+`mat-tab-group` inside `mat-dialog-content` must provide the same headroom in
+its own panel block in `_dialogs.scss`:
+
+```scss
+.my-dialog-panel {
+  .mat-mdc-tab-body-content {
+    padding-top: 16px; // headroom for the floated outline label
+  }
+}
+```
+
+(`overflow: visible` on the tab body content is **not** sufficient — the
+active tab body itself scrolls and still clips.)
 
 ---
 
