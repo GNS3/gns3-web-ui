@@ -96,7 +96,7 @@
     "@typescript-eslint/parser": "^8.72.1",
     "@typescript-eslint/utils": "^8.72.1",
     "autoprefixer": "^10.6.1",
-    "esbuild": "^0.27.4",
+    "esbuild": "^0.28.2",
     "eslint": "^9.0.0",
     "file-loader": "^6.2.0",
     "husky": "^8.0.3",
