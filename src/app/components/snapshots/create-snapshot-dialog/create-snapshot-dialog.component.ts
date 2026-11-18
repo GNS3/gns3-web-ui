@@ -53,6 +53,7 @@ export class CreateSnapshotDialogComponent {
 
     this.inputForm = this.formBuilder.group({
       snapshotName: new UntypedFormControl('', Validators.required),
+      snapshotDescription: new UntypedFormControl(''),
     });
 
     if (this.project?.project_id) {
@@ -72,6 +73,7 @@ export class CreateSnapshotDialogComponent {
 
   onAddClick(): void {
     const snapshotName = this.inputForm.get('snapshotName').value?.trim();
+    const snapshotDescription = this.inputForm.get('snapshotDescription')?.value?.trim();
 
     if (this.inputForm.invalid || !snapshotName) {
       this.toasterService.error('Fill all required fields');
@@ -79,6 +81,10 @@ export class CreateSnapshotDialogComponent {
       this.toasterService.error('Snapshot with this name already exists');
     } else {
       this.snapshot.name = snapshotName;
+      // the server replaces an empty description with its default text
+      if (snapshotDescription) {
+        this.snapshot.description = snapshotDescription;
+      }
       this.dialogRef.close(this.snapshot);
     }
   }

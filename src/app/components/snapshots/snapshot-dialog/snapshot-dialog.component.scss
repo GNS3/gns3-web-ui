@@ -27,8 +27,27 @@
   &__table {
     width: 100%;
     min-width: calc(
-      340px + 2 * var(--gns3-density-icon-button) + var(--gns3-action-gap) + 2 * var(--gns3-density-space-4)
+      340px + 3 * var(--gns3-density-icon-button) + 2 * var(--gns3-action-gap) + 2 * var(--gns3-density-space-4)
     );
+  }
+
+  &__name-cell {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  &__name,
+  &__description {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__description {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 12px;
   }
 
   &__actions {
@@ -63,6 +82,6 @@ mat-cell.snapshot-dialog__column-date {
 
 mat-header-cell.snapshot-dialog__column-actions,
 mat-cell.snapshot-dialog__column-actions {
-  @include buttons.action-column(2);
+  @include buttons.action-column(3);
   justify-content: flex-end;
 }

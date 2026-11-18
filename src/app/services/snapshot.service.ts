@@ -19,6 +19,12 @@ export class SnapshotService {
     return this.httpController.get<Snapshot[]>(controller, `/projects/${project_id}/snapshots`);
   }
 
+  update(controller: Controller, project_id: string, snapshot_id: string, description: string) {
+    return this.httpController.put<Snapshot>(controller, `/projects/${project_id}/snapshots/${snapshot_id}`, {
+      description,
+    });
+  }
+
   restore(controller: Controller, project_id: string, snapshot_id: string) {
     return this.httpController.post(controller, `/projects/${project_id}/snapshots/${snapshot_id}/restore`, {});
   }

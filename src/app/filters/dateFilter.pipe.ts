@@ -6,16 +6,13 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class DateFilter implements PipeTransform {
   transform(timestamp: string): string {
-    let date = new Date(+timestamp * 1000);
+    // Render in UTC with the same format as the server's default snapshot
+    // description ("%Y-%m-%d at %H:%M:%S"), so both show identical datetimes.
+    const date = new Date(+timestamp * 1000);
+    const pad = (value: number) => String(value).padStart(2, '0');
 
-    let hours = date.getHours();
-    let minutes = '0' + date.getMinutes();
-    let seconds = '0' + date.getSeconds();
-
-    let year = date.getFullYear();
-    let month = date.getMonth() + 1;
-    let day = date.getDate();
-
-    return hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2) + ' ' + day + '/' + month + '/' + year;
+    const datePart = `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
+    const timePart = `${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:${pad(date.getUTCSeconds())}`;
+    return `${datePart} at ${timePart}`;
   }
 }

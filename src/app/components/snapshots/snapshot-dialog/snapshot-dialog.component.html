@@ -31,7 +31,14 @@
     <mat-table [dataSource]="filteredSnapshots()" class="snapshot-dialog__table">
       <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef class="snapshot-dialog__column-name">Name</mat-header-cell>
-        <mat-cell *matCellDef="let row" class="snapshot-dialog__column-name">{{ row.name }}</mat-cell>
+        <mat-cell *matCellDef="let row" class="snapshot-dialog__column-name">
+          <div class="snapshot-dialog__name-cell">
+            <div class="snapshot-dialog__name" [title]="row.name">{{ row.name }}</div>
+            @if (hasCustomDescription(row)) {
+            <div class="snapshot-dialog__description" [title]="row.description">{{ row.description }}</div>
+            }
+          </div>
+        </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="created_at">
@@ -45,6 +52,14 @@
         <mat-header-cell *matHeaderCellDef class="snapshot-dialog__column-actions">Actions</mat-header-cell>
         <mat-cell *matCellDef="let row" class="snapshot-dialog__column-actions">
           <div class="snapshot-dialog__actions">
+            <button
+              mat-icon-button
+              matTooltip="Edit description"
+              matTooltipClass="custom-tooltip"
+              (click)="editSnapshot(row)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
             <button
               mat-icon-button
               matTooltip="Restore snapshot"
