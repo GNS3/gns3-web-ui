@@ -40,7 +40,7 @@ import { NotificationCenterComponent } from '@components/notification-center/not
 import { DistributionTasksComponent } from '@components/distribution-tasks/distribution-tasks.component';
 import { NotificationCenterService } from '@services/notification-center.service';
 import { PermissionService } from '@services/permission.service';
-import { UserPreferencesService } from '@services/user-preferences.service';
+import { SessionResetService } from '@services/session-reset.service';
 import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 @Component({
@@ -92,7 +92,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   private breakpointObserver = inject(BreakpointObserver);
   readonly notificationCenter = inject(NotificationCenterService);
   private readonly permissionService = inject(PermissionService);
-  private readonly userPreferences = inject(UserPreferencesService);
+  private readonly sessionReset = inject(SessionResetService);
 
   /**
    * The Templates and Image manager pages are management surfaces: every
@@ -245,12 +245,11 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       // Clear refresh token
       localStorage.removeItem(`refresh_token_${controller.id}`);
 
-      // Privileges are per-user: never serve them from cache after logout
-      this.permissionService.invalidate();
-
-      // Server-synced preferences are per-user too: the next login must
-      // re-fetch and re-merge the document for the (possibly different) user.
-      this.userPreferences.invalidate();
+      // Privileges, server-synced preferences and distribution tracking
+      // are per-user: reset all user-scoped singletons. The session-expiry
+      // redirect in HttpController runs the same reset, so both logout
+      // paths tear down exactly the same state.
+      this.sessionReset.reset();
 
       controller.authToken = null;
       this.controllerService.update(controller).then((val) => {

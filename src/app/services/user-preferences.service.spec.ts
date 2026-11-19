@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { SYNCED_PREFERENCE_KEYS, UserPreferencesService } from './user-preferences.service';
 import { HttpController } from './http-controller.service';
 import { Controller } from '@models/controller';
@@ -116,6 +116,91 @@ describe('UserPreferencesService', () => {
       );
       // The merged document matches the server signature — nothing to push.
       expect(mockHttpController.put).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('logout (invalidate)', () => {
+    it('keeps the local mirror when the server never had a copy', () => {
+      // Sync against a controller without the endpoint (404): localStorage
+      // holds the only copy of the user's rules, so a logout must not
+      // destroy it.
+      mockHttpController.get.mockReturnValue(throwError(() => ({ status: 404 })));
+      service.sync(controller);
+      service.setItem('gns3.bpf-presets', '[{"name":"rule"}]');
+
+      service.invalidate();
+
+      expect(localStorage.getItem('gns3.bpf-presets')).toBe('[{"name":"rule"}]');
+    });
+
+    it('wipes the local mirror after a successful sync', () => {
+      mockHttpController.get.mockReturnValue(of({ preferences: { version: 1, webui: { theme: 'dark' } } }));
+      service.sync(controller);
+      expect(localStorage.getItem('theme')).toBe('dark');
+
+      service.invalidate();
+
+      expect(localStorage.getItem('theme')).toBeNull();
+      expect(localStorage.getItem('gns3_prefs_sync_baseline')).toBeNull();
+    });
+
+    it('flushes a pending debounced push before wiping the mirror', () => {
+      mockHttpController.get.mockReturnValue(of({ preferences: { version: 1, webui: { theme: 'dark' } } }));
+      service.sync(controller);
+      service.setItem('topPosition', '42'); // still inside the 2 s debounce window
+
+      service.invalidate(); // fires the flush synchronously
+
+      // The outgoing user's edit left for the server before the wipe.
+      expect(mockHttpController.put).toHaveBeenCalledWith(
+        controller,
+        '/access/users/me/preferences',
+        expect.objectContaining({ webui: expect.objectContaining({ topPosition: '42' }) }),
+      );
+    });
+
+    it('drops a preferences GET that resolves after invalidation', () => {
+      const subject = new Subject<{ preferences: { version: number; webui: Record<string, string> } }>();
+      mockHttpController.get.mockReturnValue(subject);
+      service.sync(controller);
+
+      // Session ends (logout / expiry) while the GET is in flight.
+      service.invalidate();
+      subject.next({ preferences: { version: 1, webui: { theme: 'dark' } } });
+
+      // The previous user's document is not applied to the cleared mirror
+      // and nothing is pushed from it.
+      expect(localStorage.getItem('theme')).toBeNull();
+      expect(mockHttpController.put).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('logout with a push in flight', () => {
+    beforeAll(() => {
+      vi.useFakeTimers();
+    });
+
+    afterAll(() => {
+      vi.useRealTimers();
+    });
+
+    it('does not resurrect the sync baseline when the push resolves after invalidation', async () => {
+      mockHttpController.get.mockReturnValue(of({ preferences: { version: 1, webui: { theme: 'dark' } } }));
+      service.sync(controller);
+      expect(localStorage.getItem('theme')).toBe('dark');
+
+      const subject = new Subject<unknown>();
+      mockHttpController.put.mockReturnValue(subject);
+      service.removeItem('theme'); // an edit: removal is a change too
+      await vi.advanceTimersByTimeAsync(2000); // debounce fires, PUT in flight
+
+      service.invalidate(); // logout before the server answers
+      subject.next({}); // late success
+
+      // The mirror was wiped and the late response must not rewrite the
+      // baseline for the session that no longer exists.
+      expect(localStorage.getItem('theme')).toBeNull();
+      expect(localStorage.getItem('gns3_prefs_sync_baseline')).toBeNull();
     });
   });
 });

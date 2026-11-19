@@ -177,6 +177,32 @@ describe('ProjectDistributionService', () => {
     });
   });
 
+  describe('invalidate', () => {
+    it('stops pollers, drops cards, keeps refs and forgets the restore latch', async () => {
+      mockProjectService.getDistribution.mockReturnValue(of(createJob()));
+      service.track(createController(), createJob());
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(mockProjectService.getDistribution).toHaveBeenCalledTimes(1);
+
+      service.invalidate();
+
+      expect(service.tracked().length).toBe(0);
+      // Refs stay: they belong to the outgoing user's server-side document
+      // and the same user's next login re-restores them.
+      expect(readStoredIds()).toEqual(['dist-1']);
+
+      // Pollers stopped: no further requests for the tracked job.
+      await vi.advanceTimersByTimeAsync(3000);
+      expect(mockProjectService.getDistribution).toHaveBeenCalledTimes(1);
+
+      // Restore latch forgotten: the next login restores again.
+      service.restore(createController());
+      await vi.advanceTimersByTimeAsync(0);
+      expect(mockProjectService.getDistribution).toHaveBeenCalledTimes(2);
+      expect(service.tracked().length).toBe(1);
+    });
+  });
+
   describe('restore', () => {
     it('retracks running jobs referenced for this controller, once per controller', async () => {
       store.set(

@@ -53,6 +53,12 @@ export class PermissionService {
   private currentControllerId: number | null = null;
   private readonly privilegeCache = new Map<number, { privileges: ReadonlySet<string>; isSuperadmin: boolean }>();
   private readonly inflightRequests = new Map<number, Promise<ReadonlySet<string>>>();
+  /**
+   * Bumped by invalidate(): a fetch that started before an invalidation
+   * (logout / session expiry) belongs to the previous user and its late
+   * response must never be cached for, or served to, the next one.
+   */
+  private generation = 0;
 
   has(privilege: string): boolean {
     return this.privileges().has(privilege);
@@ -125,9 +131,14 @@ export class PermissionService {
     }
   }
 
-  /** Drop all cached privilege sets (logout / user switch). */
+  /** Drop all cached privilege sets (logout / user switch / session expiry). */
   invalidate(): void {
+    this.generation++;
     this.privilegeCache.clear();
+    // Old in-flight fetches may still resolve, but the generation guard in
+    // fetch() discards their results; new callers must issue fresh ones
+    // instead of joining a request that predates the invalidation.
+    this.inflightRequests.clear();
     this.currentControllerId = null;
     this.privileges.set(new Set());
     this.isSuperadmin.set(false);
@@ -135,12 +146,20 @@ export class PermissionService {
   }
 
   private async fetch(controllerId: number): Promise<ReadonlySet<string>> {
+    const generation = this.generation;
     const controller: Controller = await this.controllerService.get(controllerId);
     const response = await firstValueFrom(
       this.httpController.get<UserPrivilegesResponse>(controller, '/access/users/me/privileges'),
     );
 
     const privilegeSet = new Set<string>(response.privileges ?? []);
+    if (generation !== this.generation) {
+      // The session was invalidated while the request was in flight: these
+      // privileges belong to the previous user. Hand them to the stale
+      // caller (its navigation is being discarded anyway) but never cache
+      // them for the next session.
+      return privilegeSet;
+    }
     const entry = { privileges: privilegeSet, isSuperadmin: response.is_superadmin ?? false };
     this.privilegeCache.set(controllerId, entry);
     if (this.currentControllerId === controllerId) {

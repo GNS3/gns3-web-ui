@@ -42,17 +42,7 @@ export class AiChatStore {
   private error$ = new BehaviorSubject<string | null>(null);
 
   // Panel state
-  private panelState$ = new BehaviorSubject<ChatPanelState>({
-    isOpen: false,
-    width: 800,
-    height: 900,
-    isMaximized: false,
-    isMinimized: false,
-    position: {
-      top: 80,
-      right: 20,
-    },
-  });
+  private panelState$ = new BehaviorSubject<ChatPanelState>(AiChatStore.defaultPanelState());
 
   // Session UI state (Map: sessionId -> uiState)
   private sessionUIStateMap = new Map<string, SessionUIState>();
@@ -61,6 +51,25 @@ export class AiChatStore {
   constructor() {
     // Restore panel state from localStorage
     this.loadPanelState();
+    // The stored state can change after construction (server merge at
+    // login, mirror wipe at logout): re-read it so the store never keeps
+    // — and re-saves on the next openPanel() — the previous user's
+    // geometry into the new user's preferences document.
+    this.userPreferences.onExternalUpdate(() => this.loadPanelState());
+  }
+
+  private static defaultPanelState(): ChatPanelState {
+    return {
+      isOpen: false,
+      width: 800,
+      height: 900,
+      isMaximized: false,
+      isMinimized: false,
+      position: {
+        top: 80,
+        right: 20,
+      },
+    };
   }
 
   /* ==================== Project & Session State ==================== */
@@ -514,6 +523,10 @@ export class AiChatStore {
         state.isMaximized = false;
         state.isMinimized = false;
         this.panelState$.next(state);
+      } else {
+        // Key absent (logout wiped the mirror): fall back to the defaults
+        // instead of keeping the previous user's geometry in memory.
+        this.panelState$.next(AiChatStore.defaultPanelState());
       }
     } catch (e) {
       console.error('Failed to load panel state:', e);

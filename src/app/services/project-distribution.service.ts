@@ -105,6 +105,24 @@ export class ProjectDistributionService {
   }
 
   /**
+   * Stops all tracking and forgets the restore latch (logout / session
+   * expiry). The persisted refs are untouched: they live in the outgoing
+   * user's server-side preferences document and the same user's next
+   * login re-restores them. Without this reset the next user on this
+   * browser would inherit the previous user's cards (whose pollers hold
+   * a Controller copy with a dead token), while the controller-id latch
+   * would keep their own running distributions untracked forever.
+   */
+  invalidate(): void {
+    for (const poller of this.pollers.values()) {
+      poller.unsubscribe();
+    }
+    this.pollers.clear();
+    this.trackedState.set([]);
+    this.restoredControllers.clear();
+  }
+
+  /**
    * Requests cancellation of a running job. The in-flight copy completes
    * before the job stops, so the card moves to "cancelling" and keeps
    * polling; copies already made are kept by their recipients.

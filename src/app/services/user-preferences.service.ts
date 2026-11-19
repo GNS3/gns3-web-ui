@@ -116,6 +116,13 @@ export class UserPreferencesService {
   private readonly syncedControllers = new Set<string>();
   private flushTimer: ReturnType<typeof setTimeout> | undefined;
   private readonly externalUpdateCallbacks = new Set<() => void>();
+  /**
+   * Bumped by invalidate(): a GET/PUT that started before an invalidation
+   * (logout / session expiry) belongs to the previous user — its late
+   * response must neither re-seed the cleared mirror nor advance the
+   * sync baseline of the session that no longer exists.
+   */
+  private generation = 0;
   /** Snapshot of the synced keys as of the last merge/push — the baseline for local-edit detection. */
   private lastSyncedValues = new Map<string, string | null>();
   private lastSizeWarningAt = 0;
@@ -239,14 +246,25 @@ export class UserPreferencesService {
       return;
     }
     this.syncedControllers.add(id);
+    const generation = this.generation;
 
     this.httpController().get<UserPreferencesResponse>(controller, UserPreferencesService.PREFERENCES_URL).subscribe({
       next: (response) => {
+        if (generation !== this.generation) {
+          // The session was invalidated while the GET was in flight: this
+          // document belongs to the previous user. Applying it would seed
+          // their values into the cleared mirror and a later flush would
+          // persist them into the next user's document.
+          return;
+        }
         this.controller = controller;
         this.enabled = true;
         this.applyServerDoc(this.extractWebui(response));
       },
       error: (err) => {
+        if (generation !== this.generation) {
+          return;
+        }
         // Allow a retry on the next guard pass for transient failures.
         this.syncedControllers.delete(id);
         if (this.statusOf(err) === 404) {
@@ -258,12 +276,29 @@ export class UserPreferencesService {
     });
   }
 
-  /** Forget sync state (logout, user switch) so the next login re-fetches. */
+  /** Forget sync state (logout, user switch, session expiry) so the next login re-fetches. */
   invalidate(): void {
+    if (this.flushTimer !== undefined) {
+      clearTimeout(this.flushTimer);
+      this.flushTimer = undefined;
+      // Edits still inside the 2 s debounce window belong to the outgoing
+      // user: push them before the mirror is torn down. This runs before
+      // the generation bump so pushDoc's guard recognizes the session of
+      // the PUT and never advances the baseline of the next one.
+      this.flush();
+    }
+    this.generation++;
     this.syncedControllers.clear();
+    const serverHasCopy = this.enabled;
     this.enabled = false;
     this.controller = undefined;
-    this.clearLocalMirror();
+    // Only wipe the local mirror when the server holds a copy of the
+    // document (sync was enabled this session): otherwise the wipe would
+    // destroy the only copy — user-created BPF rules and widget geometry
+    // against controllers without the endpoint would be lost forever.
+    if (serverHasCopy) {
+      this.clearLocalMirror();
+    }
   }
 
   /**
@@ -388,6 +423,7 @@ export class UserPreferencesService {
     if (!controller) {
       return;
     }
+    const generation = this.generation;
     const body: UserPreferencesDoc = { version: UserPreferencesService.DOC_VERSION, webui };
     if (JSON.stringify(body).length > UserPreferencesService.MAX_DOC_BYTES) {
       const now = Date.now();
@@ -399,6 +435,13 @@ export class UserPreferencesService {
     }
     this.httpController().put(controller, UserPreferencesService.PREFERENCES_URL, body).subscribe({
       next: () => {
+        if (generation !== this.generation) {
+          // The session was invalidated while the PUT was in flight: the
+          // push still saved the outgoing user's edit server-side, but the
+          // baseline must not be advanced (nor persisted) for the session
+          // that no longer exists.
+          return;
+        }
         this.lastSyncedValues = new Map(
           SYNCED_PREFERENCE_KEYS.map((key) => [key, Object.prototype.hasOwnProperty.call(webui, key) ? webui[key] : null]),
         );

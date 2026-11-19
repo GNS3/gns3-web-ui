@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse, HttpEvent, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { Observable, throwError } from 'rxjs';
@@ -7,6 +7,7 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { Controller, ControllerProtocol } from '@models/controller';
 import { AuthResponse } from '@models/authResponse';
 import { ToasterService } from '@services/toaster.service';
+import { SessionResetService } from '@services/session-reset.service';
 
 /* tslint:disable:interface-over-type-literal */
 export type JsonOptions = {
@@ -151,6 +152,7 @@ export class HttpController {
     private http: HttpClient,
     private errorHandler: ControllerErrorHandler,
     private router: Router,
+    private injector: Injector,
   ) {}
 
   get<T>(controller: Controller, url: string, options?: JsonOptions): Observable<T> {
@@ -503,6 +505,12 @@ export class HttpController {
     localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
     this.isRefreshing = false;
     this.processQueue(new Error('Session expired, redirecting to login'));
+    // User-scoped singletons (privilege cache, preferences mirror,
+    // distribution tracking) must not survive the session either: the
+    // next login on this controller may be a different user. Resolved
+    // lazily because constructor-injecting the reset service would close
+    // an instantiation cycle (it reaches services that inject this one).
+    this.injector.get(SessionResetService).reset();
     this.router.navigate(['/controller', controller.id, 'login']);
   }
 }

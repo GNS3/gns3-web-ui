@@ -2,7 +2,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { HttpClient, HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { Injector } from '@angular/core';
 import { HttpController, ControllerError, ControllerErrorHandler, JsonOptions } from './http-controller.service';
+import { SessionResetService } from './session-reset.service';
 import { Controller, ControllerProtocol } from '@models/controller';
 import { environment } from '../../environments/environment';
 import { of, throwError } from 'rxjs';
@@ -13,6 +15,8 @@ describe('HttpController', () => {
   let mockHttp: HttpClient;
   let mockErrorHandler: ControllerErrorHandler;
   let mockRouter: Router;
+  let mockInjector: Injector;
+  let mockSessionReset: { reset: ReturnType<typeof vi.fn> };
   let mockController: Controller;
 
   beforeEach(() => {
@@ -37,7 +41,13 @@ describe('HttpController', () => {
 
     mockRouter = { navigate: vi.fn() } as any as Router;
 
-    service = new HttpController(mockHttp, mockErrorHandler, mockRouter);
+    // redirectToLogin resolves SessionResetService lazily: hand it a stub
+    // instead of the TestBed injector so the reset stays a no-op and does
+    // not drag the real singleton graph into this spec.
+    mockSessionReset = { reset: vi.fn() };
+    mockInjector = { get: vi.fn(() => mockSessionReset) } as any as Injector;
+
+    service = new HttpController(mockHttp, mockErrorHandler, mockRouter, mockInjector);
 
     mockController = {
       id: 1,
@@ -465,6 +475,11 @@ describe('HttpController', () => {
       service.get(mockController, '/test').subscribe({ error: () => {} });
 
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'login']);
+      // The redirect also resets the per-user singletons (privileges,
+      // preferences mirror, distribution tracking) so the next login on
+      // this controller never inherits the previous user's state.
+      expect(mockInjector.get).toHaveBeenCalledWith(SessionResetService);
+      expect(mockSessionReset.reset).toHaveBeenCalled();
     });
   });
 
