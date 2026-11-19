@@ -15,7 +15,7 @@
   mwlResizable
   [validateResize]="chrome.validate"
   [enableGhostResize]="false"
-  (resizeStart)="chrome.onResizeStart()"
+  (resizeStart)="onManagerResizeStart()"
   (resizing)="chrome.onResizing($event)"
   (resizeEnd)="chrome.onResizeEnd($event)"
 >

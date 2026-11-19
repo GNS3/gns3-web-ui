@@ -470,6 +470,26 @@ describe('AiChatComponent', () => {
       expect(component.style['width']).toBe('720px');
       expect(component.style['height']).toBe('820px');
     });
+
+    it('clamps the panel below the project toolbar while resizing', () => {
+      // A top of 10 px puts the header under the project toolbar (56/64 px)
+      // where it cannot be grabbed — the clamp must enforce the clearance.
+      window.innerWidth = 1920;
+      window.innerHeight = 1200;
+      const mockEvent = {
+        rectangle: { width: 700, height: 800, left: 100, top: 10 },
+      } as ResizeEvent;
+      component.onResizing(mockEvent);
+      expect(component.style['top']).toBe('64px');
+    });
+
+    it('keeps the toolbar clearance when re-clamping the dragged panel', () => {
+      window.innerWidth = 1920;
+      window.innerHeight = 1200;
+      component.style = { position: 'fixed', left: '100px', top: '10px', width: '700px', height: '800px' };
+      const clamped = component['clampPanelStyle'](component.style, 0, 0);
+      expect(clamped['top']).toBe('64px');
+    });
   });
 
   describe('Drag Handling', () => {

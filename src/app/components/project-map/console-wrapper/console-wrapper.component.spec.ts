@@ -106,4 +106,30 @@ describe('ConsoleWrapperComponent', () => {
       expect(markForCheck).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('browser resize while maximized', () => {
+    it('keeps the maximized style height instead of collapsing to the pre-maximize size', () => {
+      window.innerWidth = 1200;
+      window.innerHeight = 800;
+      // Maximized: style.height holds the maximized px; resizedHeight still
+      // carries the pre-maximize manual size (toggleMaximize never updates it).
+      const host = {
+        isMinimizedSignal: signal(false),
+        MIN_WIDTH: 500,
+        MIN_HEIGHT: 400,
+        toolbarTopOffset: () => 64,
+        resizedWidth: 600,
+        resizedHeight: 400,
+        style: { position: 'fixed', left: '100px', top: '164px', width: '600px', height: '600px' },
+        applyStyleToElement: vi.fn(),
+        applyResizedRect: (ConsoleWrapperComponent.prototype as any).applyResizedRect,
+        cdr: { markForCheck: vi.fn() },
+      } as any;
+
+      (ConsoleWrapperComponent.prototype as any).onWindowResize.call(host);
+
+      expect(host.style.height).toBe('600px'); // RED before the fix: '400px'
+      expect(host.applyStyleToElement).toHaveBeenCalledWith(host.style);
+    });
+  });
 });

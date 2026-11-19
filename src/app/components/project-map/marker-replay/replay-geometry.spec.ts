@@ -1,5 +1,17 @@
 import { describe, it, expect } from 'vitest';
-import { clampRect, clampWindowSize, dockSlot, snapRect, clusterAppend, VIEWPORT_MARGIN, DOCK_GAP, DOCK_TILE_W, DOCK_TILE_H, SNAP_THRESHOLD } from './replay-geometry';
+import {
+  clampRect,
+  clampWindowSize,
+  dockSlot,
+  snapRect,
+  snapResizedWindow,
+  clusterAppend,
+  VIEWPORT_MARGIN,
+  DOCK_GAP,
+  DOCK_TILE_W,
+  DOCK_TILE_H,
+  SNAP_THRESHOLD,
+} from './replay-geometry';
 
 describe('clampWindowSize (resize-end / viewport-reclamp shared math)', () => {
   const viewport = { width: 1920, height: 1080 };
@@ -145,6 +157,126 @@ describe('snapRect (magnetic drag snap)', () => {
   it('size passes through untouched', () => {
     const r = snapRect({ left: 0, top: 0, width: 777, height: 111 }, []);
     expect(r).toEqual({ left: 0, top: 0, width: 777, height: 111 });
+  });
+});
+
+describe('snapResizedWindow (magnetic resize snap)', () => {
+  const viewport = { width: 1920, height: 1080 };
+  const minTop = 64;
+  const minW = 400;
+  const minH = 300;
+  const sibling = { left: 500, top: 200, width: 300, height: 280 };
+
+  it('left edge: does not attach one seam before the sibling while overlapping it', () => {
+    // My window already reaches across the sibling (right edge 976 > 500).
+    // The old "sibling.left − seam" candidate locked that overlap in and lit
+    // a guide at the sibling's left edge.
+    const result = snapResizedWindow(
+      { left: 476, top: 200, width: 500, height: 280 },
+      { left: true },
+      [sibling],
+      viewport,
+      minTop,
+      minW,
+      minH
+    );
+    expect(result.rect.left).toBe(476); // nothing within threshold anymore
+    expect(result.guides.x).toBeNull();
+  });
+
+  it('left edge: the before-it candidate docks my RIGHT edge one seam before the sibling', () => {
+    // Already docked (right edge 488 = sibling.left − seam): the candidate at
+    // sibling.left − seam − width lights the seam guide.
+    const result = snapResizedWindow(
+      { left: 88, top: 200, width: 400, height: 280 },
+      { left: true },
+      [sibling],
+      viewport,
+      minTop,
+      minW,
+      minH
+    );
+    expect(result.rect.left).toBe(88);
+    expect(result.rect.left + result.rect.width).toBe(488);
+    expect(result.guides.x).toBe(500);
+  });
+
+  it('top edge: does not attach one seam above the sibling while overlapping it', () => {
+    const result = snapResizedWindow(
+      { left: 100, top: 176, width: 500, height: 500 },
+      { top: true },
+      [sibling],
+      viewport,
+      minTop,
+      minW,
+      minH
+    );
+    expect(result.rect.top).toBe(176);
+    expect(result.guides.y).toBeNull();
+  });
+
+  it('top edge: the before-it candidate docks my BOTTOM edge one seam above the sibling', () => {
+    // Docked below-ish a higher sibling: bottom edge 688 = 700 − seam.
+    const higher = { left: 500, top: 700, width: 300, height: 280 };
+    const result = snapResizedWindow(
+      { left: 100, top: 288, width: 500, height: 400 },
+      { top: true },
+      [higher],
+      viewport,
+      minTop,
+      minW,
+      minH
+    );
+    expect(result.rect.top).toBe(288);
+    expect(result.rect.top + result.rect.height).toBe(688);
+    expect(result.guides.y).toBe(700);
+  });
+
+  it('right edge: never parks one seam PAST the sibling’s far edge', () => {
+    // My right edge sits at 812 = sibling.right + seam — the old trailing
+    // candidate kept it there (guide at 800, edge 12px past, window
+    // swallowing the sibling's band). It must align with the far edge.
+    const result = snapResizedWindow(
+      { left: 400, top: 600, width: 412, height: 280 },
+      { right: true },
+      [sibling],
+      viewport,
+      minTop,
+      minW,
+      minH
+    );
+    expect(result.rect.left + result.rect.width).toBe(800);
+    expect(result.guides.x).toBe(800);
+  });
+
+  it('bottom edge: never parks one seam PAST the sibling’s bottom edge', () => {
+    // Bottom at 492 = sibling.bottom + seam → aligns with the bottom edge.
+    const result = snapResizedWindow(
+      { left: 100, top: 100, width: 500, height: 392 },
+      { bottom: true },
+      [sibling],
+      viewport,
+      minTop,
+      minW,
+      minH
+    );
+    expect(result.rect.top + result.rect.height).toBe(480);
+    expect(result.guides.y).toBe(480);
+  });
+
+  it('right edge: still docks one seam BEFORE the sibling (trailing dock)', () => {
+    // My right edge at 480 → attaches at 488 = sibling.left − seam.
+    const result = snapResizedWindow(
+      { left: 80, top: 100, width: 400, height: 300 },
+      { right: true },
+      [sibling],
+      viewport,
+      minTop,
+      minW,
+      minH
+    );
+    expect(result.rect.left + result.rect.width).toBe(488);
+    expect(result.guides.x).toBe(500);
   });
 });
 

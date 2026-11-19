@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ResizeEvent } from 'angular-resizable-element';
 import { of, throwError, Subject } from 'rxjs';
 import { MarkerReplayOverlayComponent } from './marker-replay-overlay.component';
 import { REPLAY_WINDOW_STATE_KEY } from './replay-window-state';
@@ -115,6 +116,32 @@ describe('MarkerReplayOverlayComponent', () => {
     expect(component.winWidth()).toBe(Math.min(1100, window.innerWidth - 32));
     expect(component.winHeight()).toBe(Math.min(640, window.innerHeight - 96));
     expect(component.winTop()).toBe(80);
+  });
+
+  it('resize end keeps the magnetically snapped edge (no jump on release)', () => {
+    mockHttp.get.mockReturnValue(of(range));
+    fixture.detectChanges();
+    // A settled sibling to magnetize against (the peek window's rect).
+    svc.reportWindowRect('peek', { left: 980, top: 100, width: 300, height: 200 });
+    component.winLeft.set(40);
+    component.winTop.set(100);
+    component.winWidth.set(800);
+    component.winHeight.set(500);
+
+    // Right edge dragged to 960 raw — within threshold of the seam one gap
+    // before the peek window (968 = 980 − 12).
+    const ev = {
+      rectangle: { left: 40, top: 100, width: 920, height: 500 },
+      edges: { right: true },
+    } as ResizeEvent;
+    component.onResizing(ev);
+    expect(component.winWidth()).toBe(928); // snapped live
+
+    // The library's resizeEnd rectangle is the RAW pointer rect — the snap
+    // must survive the release instead of the window jumping back to 920.
+    component.onResizeEnd(ev);
+    expect(component.winWidth()).toBe(928);
+    expect(component.winLeft()).toBe(40);
   });
 
   it('shows the loading state while the range is in flight', () => {

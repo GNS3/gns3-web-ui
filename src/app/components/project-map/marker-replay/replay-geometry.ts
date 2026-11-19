@@ -251,12 +251,13 @@ export function snapResizedWindow(
 
   if (edges.left) {
     // My LEFT edge may attach to: a sibling's left (align), its right + seam
-    // (I grow out of its right side), or its left − seam (it sits on my
-    // right); rails: flush 0.
+    // (I grow out of its right side), or its left − seam − MY WIDTH (my whole
+    // window sits before it — the sibling's left minus just the seam would
+    // leave my window overlapping it); rails: flush 0.
     const cands: SnapCandidate[] = [];
     for (const s of siblings) {
       cands.push({ at: s.left, guide: s.left }, { at: s.left + s.width + DOCK_GAP, guide: s.left + s.width }, {
-        at: s.left - DOCK_GAP,
+        at: s.left - DOCK_GAP - width,
         guide: s.left,
       });
     }
@@ -271,11 +272,14 @@ export function snapResizedWindow(
   if (edges.right) {
     const right = left + width;
     const cands: SnapCandidate[] = [];
+    // A TRAILING edge docks at the sibling's edges — one seam BEFORE its
+    // left (my window ends before it) or aligned with its far edge. There is
+    // deliberately no "one seam PAST the far edge" candidate: that is the
+    // drag logic (a LEADING edge sits after the sibling); on a trailing edge
+    // it parked my window 12 px past the sibling with the guide still on the
+    // sibling's edge, i.e. a false dock that overlaps it.
     for (const s of siblings) {
-      cands.push({ at: s.left - DOCK_GAP, guide: s.left }, { at: s.left + s.width, guide: s.left + s.width }, {
-        at: s.left + s.width + DOCK_GAP,
-        guide: s.left + s.width,
-      });
+      cands.push({ at: s.left - DOCK_GAP, guide: s.left }, { at: s.left + s.width, guide: s.left + s.width });
     }
     cands.push({ at: viewport.width - WINDOW_GUTTER, guide: viewport.width - WINDOW_GUTTER });
     const hit = attach(cands, right);
@@ -288,7 +292,7 @@ export function snapResizedWindow(
     const cands: SnapCandidate[] = [];
     for (const s of siblings) {
       cands.push({ at: s.top, guide: s.top }, { at: s.top + s.height + DOCK_GAP, guide: s.top + s.height }, {
-        at: s.top - DOCK_GAP,
+        at: s.top - DOCK_GAP - height,
         guide: s.top,
       });
     }
@@ -303,11 +307,10 @@ export function snapResizedWindow(
   if (edges.bottom) {
     const bottom = top + height;
     const cands: SnapCandidate[] = [];
+    // Trailing edge, same rule as the right branch: attach at the sibling's
+    // edges, never one seam PAST its far edge.
     for (const s of siblings) {
-      cands.push({ at: s.top - DOCK_GAP, guide: s.top }, { at: s.top + s.height, guide: s.top + s.height }, {
-        at: s.top + s.height + DOCK_GAP,
-        guide: s.top + s.height,
-      });
+      cands.push({ at: s.top - DOCK_GAP, guide: s.top }, { at: s.top + s.height, guide: s.top + s.height });
     }
     cands.push({ at: viewport.height - WINDOW_GUTTER_BOTTOM, guide: viewport.height - WINDOW_GUTTER_BOTTOM });
     const hit = attach(cands, bottom);

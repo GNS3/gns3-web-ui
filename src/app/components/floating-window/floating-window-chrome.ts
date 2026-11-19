@@ -67,6 +67,8 @@ export class FloatingWindowChrome {
 
   private readonly config: FloatingWindowConfig;
   private cleanupDrag: (() => void) | null = null;
+  /** Rect when the live resize began — a gesture that ends on it changed nothing. */
+  private gestureStartRect: Rect | null = null;
   private readonly onBrowserResize = (): void => this.clampToViewport();
 
   constructor(config: FloatingWindowConfig, destroyRef?: DestroyRef) {
@@ -113,6 +115,7 @@ export class FloatingWindowChrome {
   };
 
   onResizeStart(): void {
+    this.gestureStartRect = this.rect();
     this.resizing.set(true);
   }
 
@@ -143,8 +146,30 @@ export class FloatingWindowChrome {
    * clamped rect for the host's persistence/anchor derivation.
    */
   onResizeEnd(event: ResizeEvent): Rect {
-    this.onResizing(event);
-    this.userResized.set(true);
+    const start = this.gestureStartRect;
+    const r = event.rectangle;
+    // mwlResizable also ends a gesture that never moved (a bare handle
+    // mousedown reports the starting rect). Recognizing that BEFORE the
+    // mirror matters: the live clamp can push a content-fit height up to the
+    // window minimum, which would read as "changed" and permanently kill the
+    // auto-height on a stray click.
+    const unchanged =
+      !!start &&
+      (r.width === undefined || Math.abs(r.width - start.width) < 1) &&
+      (r.height === undefined || Math.abs(r.height - start.height) < 1);
+    if (unchanged) {
+      // Restore the raw pre-gesture signals — NOT place(): the seed of a
+      // content-fit window may sit below the minimum, and the clamp would
+      // rewrite it. Fit mode owns the rendered height there anyway.
+      this.left.set(start.left);
+      this.top.set(start.top);
+      this.width.set(start.width);
+      this.height.set(start.height);
+    } else {
+      this.onResizing(event);
+      this.userResized.set(true);
+    }
+    this.gestureStartRect = null;
     this.resizing.set(false);
     return this.rect();
   }
@@ -189,13 +214,23 @@ export class FloatingWindowChrome {
       this.cleanupDrag?.();
       this.dragging.set(false);
     };
+    // A release can be LOST (Alt-Tab, an OS dialog takes the mouse): without
+    // these the gesture would stay live, the mousemove listener would keep
+    // moving the window with no button held, and hosts would keep their
+    // content pointer-events disabled.
+    const onBlur = (): void => onUp();
+    const onPointerCancel = (): void => onUp();
     this.cleanupDrag = () => {
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
+      window.removeEventListener('blur', onBlur);
+      document.removeEventListener('pointercancel', onPointerCancel);
       this.cleanupDrag = null;
     };
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
+    window.addEventListener('blur', onBlur);
+    document.addEventListener('pointercancel', onPointerCancel);
     this.dragging.set(true);
   }
 

@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ResizeEvent } from 'angular-resizable-element';
 import { of } from 'rxjs';
 
 import { ReplayPeekWindowComponent } from './replay-peek-window.component';
@@ -123,5 +124,30 @@ describe('ReplayPeekWindowComponent (transient double-click detail window)', () 
     expect(component.winWidth()).toBe(component.MIN_W);
     expect(component.winHeight()).toBe(component.MIN_H);
     expect(component.resizing()).toBe(false);
+  });
+
+  it('resize end keeps the magnetically snapped edge (no jump on release)', () => {
+    open(frames[0], { x: 100, y: 100 });
+    // A settled sibling to magnetize against (the main window's rect).
+    svc.reportWindowRect('main', { left: 600, top: 64, width: 300, height: 200 });
+    component.winLeft.set(60);
+    component.winTop.set(80);
+    component.winWidth.set(400);
+    component.winHeight.set(300);
+
+    // Right edge dragged to 580 raw — within threshold of the seam one gap
+    // before the main window (588 = 600 − 12).
+    const ev = {
+      rectangle: { left: 60, top: 80, width: 520, height: 300 },
+      edges: { right: true },
+    } as ResizeEvent;
+    component.onResizing(ev);
+    expect(component.winWidth()).toBe(528); // snapped live
+
+    // The library's resizeEnd rectangle is the RAW pointer rect — the snap
+    // must survive the release instead of the window jumping back to 520.
+    component.onResizeEnd(ev);
+    expect(component.winWidth()).toBe(528);
+    expect(component.winLeft()).toBe(60);
   });
 });

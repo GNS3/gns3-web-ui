@@ -291,9 +291,16 @@ export class ReplayPacketListComponent implements AfterViewInit, OnDestroy {
     const numeric = this.colWidths[col];
     const startW = typeof numeric === 'number' ? numeric : cell?.offsetWidth || 150;
     const startX = e.clientX;
+    // Column widths are LAYOUT px, but mousemove deltas arrive in VIEWPORT
+    // px: the panes are CSS-zoomed, so at any zoom but 100% the raw delta
+    // would make the grip trail (or outrun) the pointer. Measure the zoom
+    // from the cell itself (rendered / layout width).
+    const rendered = cell?.getBoundingClientRect().width ?? 0;
+    const layout = cell?.offsetWidth ?? 0;
+    const zoom = rendered > 0 && layout > 0 ? rendered / layout : 1;
 
     const onMove = (ev: MouseEvent): void => {
-      const next = Math.min(Math.max(startW + ev.clientX - startX, COL_MIN[col]), COL_MAX);
+      const next = Math.min(Math.max(startW + (ev.clientX - startX) / zoom, COL_MIN[col]), COL_MAX);
       (this.colWidths as Record<ResizableCol, number>)[col] = next;
       this.host.nativeElement.style.setProperty(COLS_VAR, colTemplate(this.colWidths));
     };

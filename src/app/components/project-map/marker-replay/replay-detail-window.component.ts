@@ -351,19 +351,18 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
   }
 
   onResizeEnd(event: ResizeEvent): void {
-    // Consume the FULL rectangle — left/top too: a left/top-edge drag MOVES
-    // those edges, and dropping them would snap the window back and grow it
-    // toward the opposite side (the old jump-on-release bug).
-    const r = event.rectangle;
-    if (r.left !== undefined) this.winLeft.set(r.left);
-    if (r.top !== undefined) this.winTop.set(r.top);
+    // Mirror the final rectangle through the SAME magnetic snap the live
+    // gesture applied — the library reports the RAW pointer rect here, so
+    // taking it verbatim would jump the window off the guide on release.
+    // (The full rectangle applies: a left/top-edge drag MOVES those edges.)
+    this.applyResizeSnap(event);
     // Clamp locally — WindowBoundaryService's config is GLOBAL shared state
     // (its 500px minWidth suits marker-manager, not this window).
     const vw = typeof window !== 'undefined' ? window.innerWidth : this.winWidth();
     const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
     const { width, height } = clampWindowSize(
-      event.rectangle.width || this.winWidth(),
-      event.rectangle.height || this.winHeight(),
+      this.winWidth(),
+      this.winHeight(),
       { width: vw, height: vh },
       this.MIN_W,
       this.MIN_H

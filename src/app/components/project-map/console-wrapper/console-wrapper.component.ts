@@ -699,7 +699,11 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
       this.style.top !== undefined
         ? Number(this.style.top.split('px')[0])
         : viewportHeight - (Number(this.style.bottom?.split('px')[0]) || 0) - height;
-    this.applyResizedRect({ top });
+    // Pass the CURRENT style height too: while maximized it holds the
+    // maximized px, and applyResizedRect's resizedHeight fallback is the
+    // pre-maximize size — omitting it rewrote the maximized window to the
+    // pre-maximize height on every browser resize.
+    this.applyResizedRect({ top, height });
     this.cdr.markForCheck();
   }
 

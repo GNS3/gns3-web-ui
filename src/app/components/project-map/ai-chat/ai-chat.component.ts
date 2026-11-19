@@ -1172,6 +1172,14 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
+   * Project-toolbar clearance: the panel must never rise under the toolbar,
+   * or its header cannot be grabbed (compact toolbar on narrow viewports).
+   */
+  private toolbarTopOffset(): number {
+    return typeof window === 'undefined' ? 0 : window.innerWidth <= 768 ? 56 : 64;
+  }
+
+  /**
    * Clamp a panel style into the viewport through the shared floating-window
    * helpers (replaces WindowBoundaryService's global-config clamps), applying
    * optional drag deltas and preserving the left/right anchor.
@@ -1190,7 +1198,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         ? Number(style['left'].split('px')[0]) || 0
         : viewport.width - (Number(style['right']?.split('px')[0]) || 0) - width) + deltaX;
     const top = (Number(style['top']?.split('px')[0]) || 0) + deltaY;
-    const clamped = clampRect({ left, top, width, height }, viewport, 0);
+    const clamped = clampRect({ left, top, width, height }, viewport, this.toolbarTopOffset());
     return hasLeft
       ? {
           position: 'fixed',
@@ -1285,7 +1293,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         height,
       },
       viewport,
-      0
+      this.toolbarTopOffset()
     );
     this.style = hasLeft
       ? {

@@ -200,6 +200,21 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   /** Fit-mode height cap: never grow past the viewport under the toolbar. */
   readonly fitMaxHeight = computed(() => `calc(100dvh - ${this.chrome.top()}px)`);
 
+  /**
+   * Resize-gesture start: the fitted empty view renders `height: auto`,
+   * which can be far shorter than {@link FloatingWindowChrome.height}. Fit
+   * mode yields to the signal the moment the gesture starts, so seed the
+   * signal from the RENDERED box first — otherwise the bare mousedown
+   * snaps the window to the 600 px default before the pointer moves.
+   */
+  onManagerResizeStart(): void {
+    const rendered = this.windowWrapper()?.nativeElement.getBoundingClientRect().height;
+    if (rendered && Math.abs(rendered - this.chrome.height()) >= 1) {
+      this.chrome.height.set(Math.round(rendered));
+    }
+    this.chrome.onResizeStart();
+  }
+
   private isMinimizedSignal = signal(false);
 
   readonly isDragging = this.chrome.dragging;

@@ -123,6 +123,37 @@ describe('MarkerManagerComponent', () => {
     expect(component.fitEmptyDefinitions()).toBe(false);
   });
 
+  it('a bare handle click on the fitted window neither jumps it nor kills auto-height', () => {
+    // The fitted empty view renders height:auto (shorter than the 600 px
+    // signal). A mousedown on a handle suspends fit mode — the gesture must
+    // start from the RENDERED height, and ending it without a move must
+    // leave the auto-height latch alone. Driven through the real
+    // mwlResizeHandle wiring (mousedown → library → template handler).
+    markerService.listDefinitions.mockReturnValue(of({}));
+    markerService.aggregateList.mockReturnValue(of({}));
+    fixture.detectChanges();
+    const element: HTMLElement = fixture.nativeElement.querySelector('.marker-manager');
+    expect(element.style.height).toBe('auto');
+    // The fitted window is 240 px tall on screen while the signal says 600.
+    element.getBoundingClientRect = () => DOMRect.fromRect({ x: 120, y: 80, width: 800, height: 240 });
+
+    const handle: HTMLElement = element.querySelector('.gns3-window__resize-handle--bottom')!;
+    handle.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 500, clientY: 320 }));
+    fixture.detectChanges();
+
+    // Fit mode yields to the signal for the gesture: seeded, not the 600 px default.
+    expect(component.chrome.height()).toBe(240);
+    expect(element.style.height).toBe('240px');
+
+    // A mousedown-without-move still ends the gesture on mouseup: the
+    // rectangle equals the starting one, so nothing latches.
+    document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+    fixture.detectChanges();
+    expect(component.manuallyResized()).toBe(false);
+    expect(component.fitEmptyDefinitions()).toBe(true);
+    expect(element.style.height).toBe('auto');
+  });
+
   it('loads definitions and aggregate on init', () => {
     markerService.listDefinitions.mockReturnValue(
       of({ arp: { bpf: 'arp', tag: 5, link_ids: ['a', 'b'] } })

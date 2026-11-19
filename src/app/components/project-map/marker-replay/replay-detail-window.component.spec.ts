@@ -358,6 +358,32 @@ describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
       expect(component.winHeight()).toBe(300);
       expect(svc.userWindowSize()).toEqual({ width: 500, height: 300 });
     });
+
+    it('keeps the magnetically snapped edge on release (no jump)', async () => {
+      await load();
+      // A settled sibling to magnetize against (the main window's rect).
+      svc.reportWindowRect('main', { left: 600, top: 64, width: 300, height: 200 });
+      component.winLeft.set(60);
+      component.winTop.set(80);
+      component.winWidth.set(400);
+      component.winHeight.set(300);
+
+      // Right edge dragged to 580 raw — within threshold of the seam one
+      // gap before the main window (588 = 600 − 12).
+      const snapEv = {
+        rectangle: { left: 60, top: 80, width: 520, height: 300 },
+        edges: { right: true },
+      } as ResizeEvent;
+      component.onResizing(snapEv);
+      expect(component.winWidth()).toBe(528); // snapped live
+
+      // The library's resizeEnd rectangle is the RAW pointer rect — the
+      // snap must survive the release instead of the window jumping back.
+      component.onResizeEnd(snapEv);
+      await flushFrames();
+      expect(component.winWidth()).toBe(528);
+      expect(component.winLeft()).toBe(60);
+    });
   });
 
   describe('position (dock / freed / cluster)', () => {
