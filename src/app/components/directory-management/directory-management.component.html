@@ -71,6 +71,22 @@
         </div>
       </div>
     } @else {
+      @if (ldapSettings.enabled && isPlainHttp()) {
+        <div class="directory-management__security-warning" role="alert">
+          <mat-icon class="directory-management__security-warning-icon">warning</mat-icon>
+          <div class="directory-management__security-warning-content">
+            <h2 class="directory-management__security-warning-title">Insecure HTTP Connection Detected</h2>
+            <p class="directory-management__security-warning-text">
+              Directory authentication is enabled, but GNS3 is currently being accessed over an unencrypted HTTP connection.
+              User credentials will be transmitted in plaintext across the network during login.
+            </p>
+            <p class="directory-management__security-warning-subtext">
+              To secure credentials and enable encrypted WebSockets (WSS), configure an HTTPS reverse proxy (e.g. Nginx, Caddy) or enable native SSL on the GNS3 server.
+            </p>
+          </div>
+        </div>
+      }
+
       <div class="directory-management__content" [class.directory-management__content--disabled]="!ldapSettings.enabled">
       <!-- Card D: Live Diagnostic Test Banner -->
       <section class="directory-management__banner">

@@ -715,4 +715,33 @@ describe('DirectoryManagementComponent', () => {
       expect(matcher.isErrorState({ touched: false, dirty: false } as any, null)).toBe(false);
     });
   });
+
+  describe('Insecure HTTP Security Warning', () => {
+    it('should detect plain HTTP when window.location.protocol is http:', () => {
+      expect(component.isPlainHttp()).toBe(true);
+    });
+
+    it('should render security warning banner when ldapSettings.enabled is true and protocol is http:', () => {
+      component.ldapSettings.enabled = true;
+      fixture.detectChanges();
+      const warningElement = fixture.nativeElement.querySelector('.directory-management__security-warning');
+      expect(warningElement).not.toBeNull();
+      expect(warningElement.textContent).toContain('Insecure HTTP Connection Detected');
+    });
+
+    it('should not render security warning banner when ldapSettings.enabled is false', () => {
+      component.ldapSettings.enabled = false;
+      fixture.detectChanges();
+      const warningElement = fixture.nativeElement.querySelector('.directory-management__security-warning');
+      expect(warningElement).toBeNull();
+    });
+
+    it('should not render security warning banner when isPlainHttp returns false (HTTPS)', () => {
+      vi.spyOn(component, 'isPlainHttp').mockReturnValue(false);
+      component.ldapSettings.enabled = true;
+      fixture.detectChanges();
+      const warningElement = fixture.nativeElement.querySelector('.directory-management__security-warning');
+      expect(warningElement).toBeNull();
+    });
+  });
 });

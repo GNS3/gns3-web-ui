@@ -343,6 +343,13 @@ export class DirectoryManagementComponent implements OnInit {
     return isValidTimeout(this.ldapSettings.timeout);
   }
 
+  isPlainHttp(): boolean {
+    if (typeof window !== 'undefined' && window.location) {
+      return window.location.protocol === 'http:';
+    }
+    return false;
+  }
+
   isFormValid(): boolean {
     if (!this.ldapSettings.enabled) {
       return true;
