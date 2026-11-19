@@ -15,6 +15,7 @@ import { ToasterService } from '@services/toaster.service';
 import { createActionCompletion } from '@utils/action-completion.util';
 import { describeTopologyItems } from '@utils/topology-delete-summary.util';
 import type { TopologyItemCounts } from '@utils/topology-delete-summary.util';
+import { planTopologyDeletion } from '@utils/topology-deletion.util';
 
 @Component({
   selector: 'app-delete-action',
@@ -58,12 +59,11 @@ export class DeleteActionComponent {
   }
 
   delete() {
-    const deletableNodes = this.nodes().filter((node) => !node.locked);
-    const deletableDrawings = this.drawings().filter((drawing) => !drawing.locked);
-    const deletableLinks = this.nodes().length === 0 && this.drawings().length === 0 ? this.links() : [];
+    // The ONE deletion plan shared with the Del keyboard shortcut.
+    const plan = planTopologyDeletion(this.nodes(), this.drawings(), this.links());
     const deletedCounts: TopologyItemCounts = { nodes: 0, links: 0, drawings: 0 };
     const completion = createActionCompletion(
-      deletableNodes.length + deletableDrawings.length + deletableLinks.length,
+      plan.deletableNodes.length + plan.deletableDrawings.length + plan.deletableLinks.length,
       (count) => {
         if (count > 0) {
           this.toasterService.success(`${describeTopologyItems(deletedCounts)} deleted.`);
@@ -71,70 +71,65 @@ export class DeleteActionComponent {
       }
     );
 
-    this.nodes().forEach((node) => {
-      if (!node.locked) {
-        // Do NOT remove locally here (optimistic): the canvas removal is driven
-        // by the `node.deleted` WebSocket notification, which fires once the
-        // backend has actually deleted the node. Removing optimistically made
-        // nodes vanish before the backend confirmed the delete.
-        this.nodeService.delete(this.controller(), node).subscribe({
-          next: () => {
-            deletedCounts.nodes++;
-            completion.succeed();
-          },
-          error: (err) => {
-            completion.fail();
-            const message = err.error?.message || err.message || 'Failed to delete node';
-            this.toasterService.error(message);
-            this.cdr.markForCheck();
-          },
-        });
-      } else {
-        this.toasterService.error('Cannot delete locked node: ' + node.name);
-        this.cdr.markForCheck();
-        return;
-      }
+    plan.lockedNodes.forEach((node) => {
+      this.toasterService.error('Cannot delete locked node: ' + node.name);
+      this.cdr.markForCheck();
     });
-
-    this.drawings().forEach((drawing) => {
-      if (!drawing.locked) {
-        // Removal driven by the `drawing.deleted` WS notification (see nodes above).
-        this.drawingService.delete(this.controller(), drawing).subscribe({
-          next: () => {
-            deletedCounts.drawings++;
-            completion.succeed();
-          },
-          error: (err) => {
-            completion.fail();
-            const message = err.error?.message || err.message || 'Failed to delete drawing';
-            this.toasterService.error(message);
-            this.cdr.markForCheck();
-          },
-        });
-      } else {
-        this.toasterService.error('Cannot delete locked drawing');
-        this.cdr.markForCheck();
-        return;
-      }
-    });
-
-    if (this.nodes().length == 0 && this.drawings().length == 0) {
-      this.links().forEach((link) => {
-        // Removal driven by the `link.deleted` WS notification (see nodes above).
-        this.linkService.deleteLink(this.controller(), link).subscribe({
-          next: () => {
-            deletedCounts.links++;
-            completion.succeed();
-          },
-          error: (err) => {
-            completion.fail();
-            const message = err.error?.message || err.message || 'Failed to delete link';
-            this.toasterService.error(message);
-            this.cdr.markForCheck();
-          },
-        });
-      });
+    if (plan.lockedDrawings.length > 0) {
+      this.toasterService.error('Cannot delete locked drawing');
+      this.cdr.markForCheck();
     }
+
+    plan.deletableNodes.forEach((node) => {
+      // Do NOT remove locally here (optimistic): the canvas removal is driven
+      // by the `node.deleted` WebSocket notification, which fires once the
+      // backend has actually deleted the node. Removing optimistically made
+      // nodes vanish before the backend confirmed the delete.
+      this.nodeService.delete(this.controller(), node).subscribe({
+        next: () => {
+          deletedCounts.nodes++;
+          completion.succeed();
+        },
+        error: (err) => {
+          completion.fail();
+          const message = err.error?.message || err.message || 'Failed to delete node';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
+      });
+    });
+
+    plan.deletableDrawings.forEach((drawing) => {
+      // Removal driven by the `drawing.deleted` WS notification (see nodes above).
+      this.drawingService.delete(this.controller(), drawing).subscribe({
+        next: () => {
+          deletedCounts.drawings++;
+          completion.succeed();
+        },
+        error: (err) => {
+          completion.fail();
+          const message = err.error?.message || err.message || 'Failed to delete drawing';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
+      });
+    });
+
+    plan.deletableLinks.forEach((link) => {
+      // Removal driven by the `link.deleted` WS notification (see nodes above).
+      this.linkService.deleteLink(this.controller(), link).subscribe({
+        next: () => {
+          deletedCounts.links++;
+          completion.succeed();
+        },
+        error: (err) => {
+          completion.fail();
+          const message = err.error?.message || err.message || 'Failed to delete link';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
+      });
+    });
   }
 
   private selectedItemCounts(): TopologyItemCounts {

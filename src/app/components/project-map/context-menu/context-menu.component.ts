@@ -10,6 +10,7 @@ import { Link } from '@models/link';
 import { LinkNode } from '@models/link-node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
+import { planTopologyDeletion } from '@utils/topology-deletion.util';
 import { ProjectService } from '@services/project.service';
 import { ShowNodeActionComponent } from './actions/show-node-action/show-node-action.component';
 import { ConfigActionComponent } from './actions/config-action/config-action.component';
@@ -234,9 +235,7 @@ export class ContextMenuComponent implements OnInit {
 
   /** Privileges required to delete the current selection (nodes, drawings and/or links). */
   get deletePrivileges(): string[] {
-    const privileges = this.duplicatePrivileges;
-    if (this.links.length) privileges.push('Link.Allocate');
-    return privileges;
+    return planTopologyDeletion(this.nodes, this.drawings, this.links).requiredPrivileges;
   }
 
   /** Privileges required to change the layer or lock state of the current selection. */

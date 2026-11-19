@@ -117,7 +117,7 @@
             mat-list-item
             class="sidebar__nav-item"
             routerLinkActive="active"
-            [routerLink]="['/controller', controllerId, 'management', 'users']"
+            [routerLink]="['/controller', controllerId, 'management', accessManagementRoute()]"
             (click)="isSmallScreen() && sidenav.close()"
           >
             <mat-icon matListItemIcon>manage_accounts</mat-icon>

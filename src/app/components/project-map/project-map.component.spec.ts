@@ -142,6 +142,8 @@ import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 import { Node } from '../../cartography/models/node';
 import { MapNode } from '../../cartography/models/map/map-node';
+import { MapDrawing } from '../../cartography/models/map/map-drawing';
+import { MapLink } from '../../cartography/models/map/map-link';
 import { NodeContextMenu } from '../../cartography/events/nodes';
 import { MapLabel } from '../../cartography/models/map/map-label';
 import { LabelContextMenu } from '../../cartography/events/event-source';
@@ -843,6 +845,11 @@ describe('ProjectMapComponent', () => {
         { provide: NodesWidget, useValue: mockNodesWidget },
       ],
     })
+      // Standalone components import MatDialogModule (through their own
+      // dependency graph), which installs the real MatDialog in the
+      // component's injector and shadows the TestBed provider above —
+      // overrideProvider reaches that level.
+      .overrideProvider(MatDialog, { useValue: mockMatDialog })
       // Override D3MapComponent template to simplify it (avoids complex D3.js initialization)
       .overrideComponent(D3MapComponent, { set: { template: '<svg></svg>' } })
       .compileComponents();
@@ -1482,6 +1489,65 @@ describe('ProjectMapComponent', () => {
       component.exportProject();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Project with running nodes cannot be exported.');
+    });
+  });
+
+  describe('deleteItems (Del key parity with the context-menu delete action)', () => {
+    beforeEach(() => {
+      component.controller = mockController;
+    });
+
+    function confirmDialog(): void {
+      mockMatDialog.open.mockReturnValue({ afterClosed: () => of(true) });
+    }
+
+    it('never deletes a locked node and explains the refusal', () => {
+      const lockedNode = Object.assign(new MapNode(), { id: 'node-1', name: 'Locked Node', locked: true });
+      mockSelectionManager.getSelected.mockReturnValue([lockedNode]);
+      confirmDialog();
+
+      component.deleteItems();
+
+      expect(mockMatDialog.open).not.toHaveBeenCalled();
+      expect(mockNodeService.delete).not.toHaveBeenCalled();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Cannot delete locked node: Locked Node');
+    });
+
+    it('deletes only the unlocked nodes of a mixed selection', () => {
+      const unlockedNode = Object.assign(new MapNode(), { id: 'node-1', name: 'Free Node', locked: false });
+      const lockedNode = Object.assign(new MapNode(), { id: 'node-2', name: 'Locked Node', locked: true });
+      mockSelectionManager.getSelected.mockReturnValue([unlockedNode, lockedNode]);
+      confirmDialog();
+
+      component.deleteItems();
+
+      expect(mockNodeService.delete).toHaveBeenCalledTimes(1);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Cannot delete locked node: Locked Node');
+      expect(mockToasterService.success).toHaveBeenCalledWith('1 node deleted.');
+    });
+
+    it('never deletes a locked drawing', () => {
+      const lockedDrawing = Object.assign(new MapDrawing(), { id: 'drawing-1', locked: true });
+      mockSelectionManager.getSelected.mockReturnValue([lockedDrawing]);
+      confirmDialog();
+
+      component.deleteItems();
+
+      expect(mockMatDialog.open).not.toHaveBeenCalled();
+      expect(mockDrawingService.delete).not.toHaveBeenCalled();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Cannot delete locked drawing');
+    });
+
+    it('leaves selected links to the server when nodes are deleted with them', () => {
+      const unlockedNode = Object.assign(new MapNode(), { id: 'node-1', name: 'Free Node', locked: false });
+      const link = Object.assign(new MapLink(), { id: 'link-1' });
+      mockSelectionManager.getSelected.mockReturnValue([unlockedNode, link]);
+      confirmDialog();
+
+      component.deleteItems();
+
+      expect(mockNodeService.delete).toHaveBeenCalledTimes(1);
+      expect(mockLinkService.deleteLink).not.toHaveBeenCalled();
     });
   });
 

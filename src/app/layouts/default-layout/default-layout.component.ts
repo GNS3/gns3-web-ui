@@ -123,6 +123,24 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       (this.permissionService.has('Compute.Allocate') || this.permissionService.has('Compute.Modify')),
   );
 
+  /**
+   * The five management tabs are gated independently, so the sidebar's single
+   * Access Management entry must not always point at Users: a Group (or Role,
+   * Pool, ACE) auditor would be bounced to the system status page while the
+   * tab they may actually use stays unreachable. Target the first tab the user
+   * can open, in the same order the tab bar renders them.
+   */
+  private readonly accessManagementTabs: ReadonlyArray<{ privilege: string; route: string }> = [
+    { privilege: 'User.Audit', route: 'users' },
+    { privilege: 'Group.Audit', route: 'groups' },
+    { privilege: 'Role.Audit', route: 'roles' },
+    { privilege: 'Pool.Audit', route: 'pools' },
+    { privilege: 'ACE.Audit', route: 'ACL' },
+  ];
+  readonly accessManagementRoute = computed(
+    () => this.accessManagementTabs.find((tab) => this.permissionService.has(tab.privilege))?.route ?? 'users',
+  );
+
   ngOnInit() {
     this.notificationCenter.closePanel();
     // Use filter and proper subscription for NavigationEnd

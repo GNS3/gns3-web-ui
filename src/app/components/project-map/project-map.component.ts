@@ -138,6 +138,7 @@ import { DistributionTasksComponent } from '@components/distribution-tasks/distr
 import { NotificationCenterService } from '@services/notification-center.service';
 import { describeTopologyItems } from '@utils/topology-delete-summary.util';
 import type { TopologyItemCounts } from '@utils/topology-delete-summary.util';
+import { planTopologyDeletion } from '@utils/topology-deletion.util';
 import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.directive';
 
 @Component({
@@ -682,45 +683,54 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const selectedNodes = selected.filter((item) => item instanceof MapNode);
     const selectedLinks = selected.filter((item) => item instanceof MapLink);
     const selectedDrawings = selected.filter((item) => item instanceof MapDrawing);
-    const selectedCounts: TopologyItemCounts = {
-      nodes: selectedNodes.length,
-      links: selectedLinks.length,
-      drawings: selectedDrawings.length,
-    };
-    const selectedCount = selectedNodes.length + selectedLinks.length + selectedDrawings.length;
-    if (selectedCount === 0) return;
+    if (selectedNodes.length + selectedLinks.length + selectedDrawings.length === 0) return;
     // Honest rendering gate for the keyboard path: the context-menu delete action is
     // hidden by privilege, so the Del key must not offer the same operation either.
     if (this.readonly) return;
-    const requiredPrivileges: string[] = [];
-    if (selectedNodes.length) requiredPrivileges.push('Node.Allocate');
-    if (selectedDrawings.length) requiredPrivileges.push('Drawing.Allocate');
-    if (selectedLinks.length) requiredPrivileges.push('Link.Allocate');
-    if (!requiredPrivileges.every((privilege) => this.projectPermissionService.has(privilege))) return;
+
+    // Same action table as the context menu's Delete: locked items are never
+    // deleted, links are left to the node cascade, and Node.Allocate is only
+    // required when an UNLOCKED node is actually going to be deleted.
+    const plan = planTopologyDeletion(selectedNodes, selectedDrawings, selectedLinks);
+    const deletableCount = plan.deletableNodes.length + plan.deletableDrawings.length + plan.deletableLinks.length;
+    const reportLockedRefusals = (): void => {
+      plan.lockedNodes.forEach((node) => this.toasterService.error('Cannot delete locked node: ' + node.name));
+      if (plan.lockedDrawings.length > 0) this.toasterService.error('Cannot delete locked drawing');
+    };
+    if (deletableCount === 0) {
+      // Nothing may be deleted — say why instead of opening a dialog that
+      // cannot do anything.
+      reportLockedRefusals();
+      return;
+    }
+    if (!plan.requiredPrivileges.every((privilege) => this.projectPermissionService.has(privilege))) return;
+    const deletableCounts: TopologyItemCounts = {
+      nodes: plan.deletableNodes.length,
+      links: plan.deletableLinks.length,
+      drawings: plan.deletableDrawings.length,
+    };
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-danger-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Delete selected objects?',
-        message: `${describeTopologyItems(selectedCounts)} will be permanently deleted.`,
+        message: `${describeTopologyItems(deletableCounts)} will be permanently deleted.`,
         note: 'This action cannot be undone.',
-        confirmButtonText: selectedCount === 1 ? 'Delete object' : 'Delete objects',
+        confirmButtonText: deletableCount === 1 ? 'Delete object' : 'Delete objects',
         tone: 'danger',
       },
     });
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         const deletedCounts: TopologyItemCounts = { nodes: 0, links: 0, drawings: 0 };
-        const completion = createActionCompletion(
-          selectedNodes.length + selectedLinks.length + selectedDrawings.length,
-          (count) => {
-            if (count > 0) {
-              this.toasterService.success(`${describeTopologyItems(deletedCounts)} deleted.`);
-            }
+        const completion = createActionCompletion(deletableCount, (count) => {
+          if (count > 0) {
+            this.toasterService.success(`${describeTopologyItems(deletedCounts)} deleted.`);
           }
-        );
+        });
+        reportLockedRefusals();
 
-        selectedNodes.forEach((item: MapNode) => {
+        plan.deletableNodes.forEach((item: MapNode) => {
           const node = this.mapNodeToNode.convert(item);
           this.nodeService.delete(this.controller, node).subscribe({
             next: () => {
@@ -736,7 +746,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           });
         });
 
-        selectedLinks.forEach((item: MapLink) => {
+        plan.deletableLinks.forEach((item: MapLink) => {
           const link = this.mapLinkToLink.convert(item);
           this.linkService.deleteLink(this.controller, link).subscribe({
             next: () => {
@@ -752,7 +762,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           });
         });
 
-        selectedDrawings.forEach((item: MapDrawing) => {
+        plan.deletableDrawings.forEach((item: MapDrawing) => {
           const drawing = this.mapDrawingToDrawing.convert(item);
           this.drawingService.delete(this.controller, drawing).subscribe({
             next: () => {

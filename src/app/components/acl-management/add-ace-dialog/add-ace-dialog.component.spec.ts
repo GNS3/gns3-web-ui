@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ChangeDetectorRef } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { AddAceDialogComponent, AddAceDialogData } from './add-ace-dialog.component';
 import { AceType, ACE } from '@models/api/ACE';
 import { Endpoint, RessourceType } from '@models/api/endpoint';
@@ -627,6 +627,34 @@ describe('AddAceDialogComponent', () => {
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create ACE');
       expect(cdrSpy).toHaveBeenCalled();
     });
+
+    it('should keep the dialog open until the creation succeeds', () => {
+      const pending = new Subject<ACE>();
+      mockAclService.add.mockReturnValue(pending.asObservable());
+      component.selectedEndpoint = { endpoint: '/projects', name: 'Projects', endpoint_type: RessourceType.project };
+      component.selectedRole = mockRoles[0];
+      component.selectedUser = mockUsers[0];
+
+      component.onSaveClick();
+
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+
+      pending.next({} as ACE);
+
+      expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should keep the dialog open when the creation fails', () => {
+      mockAclService.add.mockReturnValue(throwError(() => ({ error: { message: 'Failed to create ACE' } })));
+      component.selectedEndpoint = { endpoint: '/projects', name: 'Projects', endpoint_type: RessourceType.project };
+      component.selectedRole = mockRoles[0];
+      component.selectedUser = mockUsers[0];
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create ACE');
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
   });
 
   describe('edit mode', () => {
@@ -765,6 +793,28 @@ describe('AddAceDialogComponent', () => {
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update ACE');
       expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should keep the dialog open until the update succeeds', () => {
+      const pending = new Subject<ACE>();
+      mockAclService.update.mockReturnValue(pending.asObservable());
+
+      component.onSaveClick();
+
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+
+      pending.next({} as ACE);
+
+      expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should keep the dialog open when the update fails', () => {
+      mockAclService.update.mockReturnValue(throwError(() => ({ error: { message: 'Failed to update ACE' } })));
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update ACE');
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });

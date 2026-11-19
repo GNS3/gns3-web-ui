@@ -292,6 +292,10 @@ export class AddAceDialogComponent implements OnInit {
       this.aclService.update(this.controller, updatedAce).subscribe({
         next: () => {
           this.toasterService.success(`ACE rule was updated for path ${updatedAce.path}`);
+          // Close only after the server accepted the edit: the parent refreshes
+          // on afterClosed, and closing first would race the PUT (the row could
+          // still show the old values) while a failure would discard the edit.
+          this.dialogRef.close();
         },
         error: (err) => {
           const message = err.error?.message || err.message || 'Failed to update ACE';
@@ -299,13 +303,15 @@ export class AddAceDialogComponent implements OnInit {
           this.cd.markForCheck();
         },
       });
-      this.dialogRef.close();
       return;
     }
 
     this.aclService.add(this.controller, fields).subscribe({
       next: () => {
         this.toasterService.success(`ACE was added for path ${fields.path}`);
+        // Same success-close contract as the edit path: a failed POST keeps
+        // the dialog (and the typed selection) alive for a retry.
+        this.dialogRef.close();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to create ACE';
@@ -313,7 +319,6 @@ export class AddAceDialogComponent implements OnInit {
         this.cd.markForCheck();
       },
     });
-    this.dialogRef.close();
   }
 
   changeAllowed() {

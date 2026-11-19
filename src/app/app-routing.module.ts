@@ -75,7 +75,10 @@ const routes: Routes = [
         // (Compute.Modify). Read-only visitors don't see it at all.
         path: 'controller/:controller_id/image-manager',
         component: ImageManagerComponent,
-        canActivate: [PrivilegeGuard],
+        // LoginGuard must run first: PrivilegeGuard fetches privileges with
+        // whatever token exists, and an unauthenticated deep link would
+        // otherwise lose its returnUrl to the deny redirect.
+        canActivate: [LoginGuard, PrivilegeGuard],
         data: {
           privileges: ['Image.Audit'],
           privilegesAny: ['Image.Allocate', 'Compute.Modify'],

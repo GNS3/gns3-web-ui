@@ -110,7 +110,16 @@ export class GroupMcpToolsDialogComponent implements OnInit {
     return new Set(stored.filter((name) => candidateSet.has(name)));
   });
 
-  readonly isDirty = computed(() => !this.setsEqual(this.selected(), this.savedSelection()));
+  /**
+   * Stale entries are pruned by the next save (the server replaces the
+   * whitelist with the submitted intersection), so their mere presence is a
+   * pending change: without this the banner's "removed when you save" could
+   * never be acted on — Save stayed disabled because the comparable
+   * selections were already equal.
+   */
+  readonly isDirty = computed(
+    () => this.staleTools().length > 0 || !this.setsEqual(this.selected(), this.savedSelection())
+  );
 
   readonly whitelistState = computed<'unconfigured' | 'configured' | 'deny-all'>(() => {
     const stored = this.tools();
