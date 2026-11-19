@@ -34,6 +34,7 @@ describe('ProjectDistributionService', () => {
   };
   let mockNotifications: { add: ReturnType<typeof vi.fn> };
   let store: Map<string, string>;
+  let externalUpdateCallbacks: Set<() => void>;
 
   beforeAll(() => {
     vi.useFakeTimers();
@@ -50,6 +51,7 @@ describe('ProjectDistributionService', () => {
     mockProjectService = { getDistribution: vi.fn(), cancelDistribution: vi.fn() };
     mockNotifications = { add: vi.fn() };
     store = new Map<string, string>();
+    externalUpdateCallbacks = new Set();
 
     TestBed.configureTestingModule({
       providers: [
@@ -60,6 +62,10 @@ describe('ProjectDistributionService', () => {
           useValue: {
             getItem: vi.fn((key: string) => store.get(key) ?? null),
             setItem: vi.fn((key: string, value: string) => void store.set(key, value)),
+            onExternalUpdate: vi.fn((callback: () => void) => {
+              externalUpdateCallbacks.add(callback);
+              return () => externalUpdateCallbacks.delete(callback);
+            }),
           },
         },
         { provide: NotificationCenterService, useValue: mockNotifications },
@@ -75,6 +81,20 @@ describe('ProjectDistributionService', () => {
   const readStoredIds = (): string[] => {
     const raw = store.get(STORAGE_KEY);
     return raw ? (JSON.parse(raw) as { distribution_id: string }[]).map((ref) => ref.distribution_id) : [];
+  };
+
+  /** Simulates the server-side preferences merge landing (external-update callbacks). */
+  const fireExternalUpdate = (): void => {
+    for (const callback of externalUpdateCallbacks) {
+      callback();
+    }
+  };
+
+  const seedRef = (distribution_id = 'dist-1'): void => {
+    store.set(
+      STORAGE_KEY,
+      JSON.stringify([{ controller_id: 1, project_id: 'proj-1', distribution_id, name: 'Lab', total: 2 }])
+    );
   };
 
   describe('track', () => {
@@ -164,6 +184,22 @@ describe('ProjectDistributionService', () => {
 
       expect(service.tracked()[0].job.status).toBe('completed');
       expect(mockProjectService.getDistribution).toHaveBeenCalledTimes(2);
+    });
+
+    it('keeps the tracked-state reference when a poll returns an unchanged payload', async () => {
+      // 1 Hz polling must not notify subscribers (re-render the corner
+      // widget) while the job payload is identical between two polls.
+      mockProjectService.getDistribution.mockReturnValue(of(createJob()));
+      service.track(createController(), createJob());
+      const before = service.tracked();
+
+      await vi.advanceTimersByTimeAsync(2000);
+
+      // The polls happened…
+      expect(mockProjectService.getDistribution).toHaveBeenCalledTimes(2);
+      // …but the signal value was not replaced (same array, same entry).
+      expect(service.tracked()).toBe(before);
+      expect(service.tracked()[0]).toBe(before[0]);
     });
   });
 
@@ -269,6 +305,70 @@ describe('ProjectDistributionService', () => {
 
       expect(service.tracked().length).toBe(0);
       expect(readStoredIds()).toEqual([]);
+    });
+
+    it('prunes a ref left behind by another account (403)', async () => {
+      seedRef();
+      mockProjectService.getDistribution.mockReturnValue(throwError(() => ({ originalError: { status: 403 } })));
+
+      service.restore(createController());
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(service.tracked().length).toBe(0);
+      expect(readStoredIds()).toEqual([]);
+    });
+
+    it('keeps the ref when the restore probe fails transiently', async () => {
+      // A 502/timeout while the controller is still booting says nothing
+      // about the job: pruning would delete the pointer to a running job
+      // from the synced preferences document on every browser.
+      seedRef();
+      mockProjectService.getDistribution.mockReturnValue(throwError(() => ({ originalError: { status: 502 } })));
+
+      service.restore(createController());
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(service.tracked().length).toBe(0);
+      expect(readStoredIds()).toEqual(['dist-1']);
+    });
+
+    it('resumes refs that arrive with the server-side merge after restore ran', async () => {
+      mockProjectService.getDistribution.mockReturnValue(of(createJob()));
+      const controller = createController();
+
+      // Login: restore() runs before the preferences GET has merged the
+      // server document, so this browser has no refs yet (the cross-browser
+      // scenario: the ref only exists in the server-side document).
+      service.restore(controller);
+      await vi.advanceTimersByTimeAsync(0);
+      expect(mockProjectService.getDistribution).not.toHaveBeenCalled();
+
+      // The merge lands: the other browser's ref appears in storage and the
+      // external-update callbacks fire.
+      seedRef();
+      fireExternalUpdate();
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(mockProjectService.getDistribution).toHaveBeenCalledWith(controller, 'proj-1', 'dist-1');
+      expect(service.tracked().length).toBe(1);
+    });
+
+    it('does not re-probe after invalidate (logout)', async () => {
+      mockProjectService.getDistribution.mockReturnValue(of(createJob()));
+      const controller = createController();
+      service.restore(controller);
+      seedRef();
+      fireExternalUpdate();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(mockProjectService.getDistribution).toHaveBeenCalledTimes(1);
+
+      service.invalidate();
+      // A merge callback around the logout boundary (the mirror wipe fires
+      // the callbacks too) must not probe with the outgoing session.
+      fireExternalUpdate();
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(mockProjectService.getDistribution).toHaveBeenCalledTimes(1);
     });
 
     it('pushes the missed outcome for a job that finished meanwhile, without a ref', async () => {

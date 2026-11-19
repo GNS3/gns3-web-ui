@@ -56,6 +56,22 @@ export class ProjectDistributionService {
   /** Poll subscription per distribution_id (running jobs only). */
   private readonly pollers = new Map<string, Subscription>();
   private readonly restoredControllers = new Set<number>();
+  /**
+   * Controller whose session restore() last ran for; the merge callback
+   * re-probes its refs. Cleared by invalidate() so a preferences merge
+   * landing around the logout boundary probes with nobody's session.
+   */
+  private restoreController?: Controller;
+
+  constructor() {
+    // The login guard runs restore() before the preferences sync's GET has
+    // merged the server document, so refs written by another browser are
+    // not in localStorage yet when restore() reads them. Re-probe after
+    // every merge — exactly when such refs appear. Idempotent: track()
+    // ignores jobs already tracked and refs for other controllers are
+    // filtered out.
+    this.userPreferences.onExternalUpdate(() => this.restoreAfterMerge());
+  }
 
   /** Jobs to render in the corner widget, oldest first. */
   readonly tracked = this.trackedState.asReadonly();
@@ -82,17 +98,44 @@ export class ProjectDistributionService {
    * Resumes tracking the running jobs referenced by the stored refs for
    * this controller. Called on login: jobs still running come back as
    * cards, finished ones only push their missed outcome notification and
-   * forgotten ones (404/403) are pruned silently.
+   * forgotten ones (404/403) are pruned silently. Refs that arrive later
+   * with the server-side preferences merge are picked up by
+   * {@link restoreAfterMerge}.
    */
   restore(controller: Controller): void {
-    if (!controller || this.restoredControllers.has(controller.id)) {
+    if (!controller) {
+      return;
+    }
+    this.restoreController = controller;
+    if (this.restoredControllers.has(controller.id)) {
       return;
     }
     this.restoredControllers.add(controller.id);
+    this.probeRefs(controller);
+  }
+
+  /** Re-probes the session controller's refs after a server-side merge landed. */
+  private restoreAfterMerge(): void {
+    if (this.restoreController) {
+      this.probeRefs(this.restoreController);
+    }
+  }
+
+  private probeRefs(controller: Controller): void {
     for (const ref of this.readRefs().filter((candidate) => candidate.controller_id === controller.id)) {
       this.projectService.getDistribution(controller, ref.project_id, ref.distribution_id).subscribe({
         next: (job) => this.track(controller, job),
-        error: () => this.pruneRef(ref.distribution_id),
+        error: (err: unknown) => {
+          // Match onPollError: only forgotten (404) and foreign (403) refs
+          // go. Anything else (502/timeout while the controller is still
+          // booting) says nothing about the job — pruning here would delete
+          // the pointer to a running job from the synced preferences
+          // document on every browser.
+          const status = (err as { originalError?: { status?: number } })?.originalError?.status;
+          if (status === 404 || status === 403) {
+            this.pruneRef(ref.distribution_id);
+          }
+        },
       });
     }
   }
@@ -120,6 +163,7 @@ export class ProjectDistributionService {
     this.pollers.clear();
     this.trackedState.set([]);
     this.restoredControllers.clear();
+    this.restoreController = undefined;
   }
 
   /**
@@ -196,14 +240,26 @@ export class ProjectDistributionService {
   }
 
   private onPolled(distribution_id: string, job: ProjectDistribution): void {
-    this.trackedState.update((entries) =>
-      entries.map((entry) => (entry.job.distribution_id === distribution_id ? { ...entry, job } : entry))
-    );
+    this.trackedState.update((entries) => {
+      const current = entries.find((entry) => entry.job.distribution_id === distribution_id);
+      if (current && this.sameJob(current.job, job)) {
+        // Identical payload between two polls: return the same reference so
+        // the signal does not notify and subscribers (the corner widget)
+        // are not re-rendered every second.
+        return entries;
+      }
+      return entries.map((entry) => (entry.job.distribution_id === distribution_id ? { ...entry, job } : entry));
+    });
     if (isTerminalDistributionStatus(job.status)) {
       this.stopPolling(distribution_id);
       this.pruneRef(distribution_id);
       this.pushSummary(job);
     }
+  }
+
+  /** Structural comparison — poll responses are fresh objects even when unchanged. */
+  private sameJob(a: ProjectDistribution, b: ProjectDistribution): boolean {
+    return JSON.stringify(a) === JSON.stringify(b);
   }
 
   private setCancelPending(distribution_id: string, pending: boolean): void {

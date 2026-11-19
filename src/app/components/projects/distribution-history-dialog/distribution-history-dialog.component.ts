@@ -130,8 +130,13 @@ export class DistributionHistoryDialogComponent implements OnInit {
         .deleteDistributionCopies(this.data.controller, this.data.project.project_id, job.distribution_id)
         .subscribe({
           next: (updated) => {
+            // records can be null here: a concurrent action failed and its
+            // reload (load()) is in flight — the reload owns the state, so
+            // the late response must not map over null.
             this.records.update((jobs) =>
-              jobs.map((candidate) => (candidate.distribution_id === updated.distribution_id ? updated : candidate))
+              jobs === null
+                ? jobs
+                : jobs.map((candidate) => (candidate.distribution_id === updated.distribution_id ? updated : candidate))
             );
             this.toaster.success(`Deleted ${live.length} distributed ${live.length === 1 ? 'copy' : 'copies'}.`);
           },
@@ -198,8 +203,11 @@ export class DistributionHistoryDialogComponent implements OnInit {
       .subscribe({
         next: (updated) => {
           if (updated) {
+            // Null guard as in deleteCopies: a concurrent reload may own the state.
             this.records.update((jobs) =>
-              jobs.map((candidate) => (candidate.distribution_id === updated.distribution_id ? updated : candidate))
+              jobs === null
+                ? jobs
+                : jobs.map((candidate) => (candidate.distribution_id === updated.distribution_id ? updated : candidate))
             );
           } else {
             this.load();

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { provideRouter } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { DistributionHistoryDialogComponent, DistributionHistoryDialogData } from './distribution-history-dialog.component';
 import { ProjectService } from '@services/project.service';
 import { PermissionService } from '@services/permission.service';
@@ -246,6 +246,31 @@ describe('DistributionHistoryDialogComponent', () => {
 
       expect(mockToaster.error).toHaveBeenCalledWith('The distribution is still running');
     });
+
+    it('should not throw when the records were reloaded while the cleanup was in flight', () => {
+      // A concurrent action failed and triggered load() (records = null);
+      // the cleanup response then lands late and must not map over null.
+      component.records.set([createJob()]);
+      const late = new Subject<ProjectDistribution>();
+      mockProjectService.deleteDistributionCopies.mockReturnValue(late);
+
+      component.deleteCopies(createJob());
+      component.records.set(null);
+
+      expect(() =>
+        late.next(
+          createJob({
+            results: [
+              createResult('alice', { project_exists: false }),
+              createResult('bob', { project_exists: false }),
+            ],
+          })
+        )
+      ).not.toThrow();
+      // The in-flight reload owns the state; the late response leaves it alone.
+      expect(component.records()).toBeNull();
+      expect(mockToaster.success).toHaveBeenCalledWith('Deleted 2 distributed copies.');
+    });
   });
 
   describe('hasAnyLiveCopy', () => {
@@ -355,6 +380,29 @@ describe('DistributionHistoryDialogComponent', () => {
 
       expect(mockProjectService.listDistributions).toHaveBeenCalled(); // reload reflects the true state
       expect(mockToaster.error).toHaveBeenCalledWith('This distribution still has 1 existing copy/copies (users: bob)');
+    });
+
+    it('should not throw when the records were reloaded while the update was in flight', async () => {
+      // One removeJob answered 204 (record deleted → load(), records =
+      // null) while this one returns a cancelled job body: the late update
+      // must not map over the null records.
+      const late = new Subject<ProjectDistribution>();
+      mockProjectService.deleteDistribution.mockReturnValue(late);
+
+      component.removeJob(createJob());
+      component.records.set(null);
+
+      // RxJS rethrows observer exceptions on a macrotask; flushing it with
+      // fake timers attributes such a crash to this test (real timers never
+      // fire inside a zoneless TestBed).
+      vi.useFakeTimers();
+      try {
+        late.next(createJob({ status: 'cancelled', completed: 1 }));
+        await vi.advanceTimersByTimeAsync(0);
+        expect(component.records()).toBeNull();
+      } finally {
+        vi.useRealTimers();
+      }
     });
   });
 });
