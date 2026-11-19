@@ -62,13 +62,11 @@ describe('PermissionService', () => {
 
       expect(service.privileges().has('Project.Audit')).toBe(true);
       expect(service.isSuperadmin()).toBe(true);
-      expect(service.loaded()).toBe(true);
 
       service.invalidate();
 
       expect(service.privileges().size).toBe(0);
       expect(service.isSuperadmin()).toBe(false);
-      expect(service.loaded()).toBe(false);
       expect(service.cachedPrivileges(1)).toBeNull();
     });
 

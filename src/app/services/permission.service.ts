@@ -47,8 +47,6 @@ export class PermissionService {
    * privilege (e.g. POST /copilot/reload/skills).
    */
   readonly isSuperadmin = signal(false);
-  /** True once the active controller's privileges have been fetched (successfully or not). */
-  readonly loaded = signal(false);
 
   private currentControllerId: number | null = null;
   private readonly privilegeCache = new Map<number, { privileges: ReadonlySet<string>; isSuperadmin: boolean }>();
@@ -89,19 +87,16 @@ export class PermissionService {
     if (cached) {
       this.privileges.set(cached.privileges);
       this.isSuperadmin.set(cached.isSuperadmin);
-      this.loaded.set(true);
       return;
     }
     this.privileges.set(new Set());
     this.isSuperadmin.set(false);
-    this.loaded.set(false);
     void this.ready(controllerId).catch(() => {
       // Fetch failed: render as zero privileges. The server remains the
       // authority; gated chrome stays hidden instead of flashing in.
       if (this.currentControllerId === controllerId) {
         this.privileges.set(new Set());
         this.isSuperadmin.set(false);
-        this.loaded.set(true);
       }
     });
   }
@@ -142,7 +137,6 @@ export class PermissionService {
     this.currentControllerId = null;
     this.privileges.set(new Set());
     this.isSuperadmin.set(false);
-    this.loaded.set(false);
   }
 
   private async fetch(controllerId: number): Promise<ReadonlySet<string>> {
@@ -165,7 +159,6 @@ export class PermissionService {
     if (this.currentControllerId === controllerId) {
       this.privileges.set(privilegeSet);
       this.isSuperadmin.set(entry.isSuperadmin);
-      this.loaded.set(true);
     }
     return privilegeSet;
   }

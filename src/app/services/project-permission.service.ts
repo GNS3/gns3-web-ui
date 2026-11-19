@@ -56,15 +56,6 @@ export class ProjectPermissionService {
   }
 
   /**
-   * Display-layer composite: most project write actions are gated on the
-   * server by either Modify or Allocate for the same resource kind.
-   * (The server has no such combined concept — this is rendering only.)
-   */
-  canWrite(resource: string): boolean {
-    return this.hasAny([`${resource}.Modify`, `${resource}.Allocate`]);
-  }
-
-  /**
    * Load the privilege list for the given project. Idempotent while the
    * same project stays open. Called when the project view resolves its
    * project.

@@ -730,7 +730,6 @@ describe('ProjectMapComponent', () => {
       clear: vi.fn(),
       has: (privilege: string) => projectMapPrivileges.has(privilege),
       hasAny: (privileges: string[]) => privileges.some((privilege) => projectMapPrivileges.has(privilege)),
-      canWrite: vi.fn(() => false),
       privileges: () => projectMapPrivileges,
       loaded: () => true,
     };
