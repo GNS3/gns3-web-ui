@@ -465,6 +465,22 @@ describe('HttpController', () => {
 
       expect(mockErrorHandler.handleError).toHaveBeenCalled();
     });
+
+    it('should forward the request options to the error handler', () => {
+      const errorResponse = new HttpErrorResponse({ status: 403, statusText: 'Forbidden' });
+      (mockHttp.get as any).mockReturnValue(throwError(() => errorResponse));
+      (mockErrorHandler.handleError as any).mockReturnValue(throwError(() => errorResponse));
+
+      service
+        .get(mockController, '/projects/p1/distributions/d1', { suppressForbiddenToast: true })
+        .subscribe({ error: () => undefined });
+
+      expect(mockErrorHandler.handleError).toHaveBeenCalledWith(
+        errorResponse,
+        '/projects/p1/distributions/d1',
+        expect.objectContaining({ suppressForbiddenToast: true })
+      );
+    });
   });
 
   describe('Token Expiry Redirect', () => {
@@ -520,7 +536,11 @@ describe('HttpController', () => {
       let caught: any;
       service.postFile(mockController, '/images/load', file).subscribe({ error: (err) => (caught = err) });
 
-      expect(mockErrorHandler.handleError).toHaveBeenCalledWith(failure, '/images/load');
+      expect(mockErrorHandler.handleError).toHaveBeenCalledWith(
+        failure,
+        '/images/load',
+        expect.objectContaining({ responseType: 'text', reportProgress: true })
+      );
       expect(caught).toBe(failure);
     });
 
@@ -695,5 +715,23 @@ describe('ControllerErrorHandler', () => {
     });
 
     expect(result.status).toBe(500);
+  });
+
+  it('should toast a 403 on a regular action endpoint', () => {
+    const error = new HttpErrorResponse({ status: 403, error: { message: 'Permission denied' } });
+
+    handler.handleError(error, '/projects/p1/drawings').subscribe({ error: () => undefined });
+
+    expect(toasterMock.error).toHaveBeenCalledWith('Permission denied');
+  });
+
+  it('should stay silent on a 403 the caller marked as a background probe', () => {
+    const error = new HttpErrorResponse({ status: 403, error: { message: 'Permission denied' } });
+
+    handler
+      .handleError(error, '/projects/p1/distributions/d1', { suppressForbiddenToast: true })
+      .subscribe({ error: () => undefined });
+
+    expect(toasterMock.error).not.toHaveBeenCalled();
   });
 });

@@ -126,10 +126,22 @@ export class MapSettingsService {
   /** (Re)reads the persisted settings; also re-run after a server-side preferences merge. */
   private loadFromStorage(): void {
     this.isLayerNumberVisible = localStorage.getItem('layersVisibility') === 'true' ? true : false;
-    if (localStorage.getItem('integrateLinkLabelsToLinks'))
+    // The else branches re-seed the built-in defaults when the key is gone
+    // (never set, or the previous user's mirror was wiped on logout): the
+    // in-memory field must not keep the previous user's value until someone
+    // toggles it.
+    if (localStorage.getItem('integrateLinkLabelsToLinks')) {
       this.integrateLinkLabelsToLinks = localStorage.getItem('integrateLinkLabelsToLinks') === 'true' ? true : false;
-    if (localStorage.getItem('openConsolesInWidget'))
+    } else {
+      this.integrateLinkLabelsToLinks = true;
+      this.userPreferences.setItem('integrateLinkLabelsToLinks', 'true');
+    }
+    if (localStorage.getItem('openConsolesInWidget')) {
       this.openConsolesInWidget = localStorage.getItem('openConsolesInWidget') === 'true' ? true : false;
+    } else {
+      this.openConsolesInWidget = false;
+      this.userPreferences.setItem('openConsolesInWidget', 'false');
+    }
     if (!localStorage.getItem('symbolScaling')) {
       this.userPreferences.setItem('symbolScaling', 'true');
     }

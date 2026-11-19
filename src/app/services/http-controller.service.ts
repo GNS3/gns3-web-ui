@@ -25,6 +25,12 @@ export type JsonOptions = {
   reportProgress?: boolean;
   responseType?: 'json';
   withCredentials?: boolean;
+  /**
+   * Skip the global permission-denied toast. For background probes whose
+   * 404/403 the caller already handles silently (e.g. restoring distribution
+   * refs: 403 means a foreign leftover ref and is pruned without a word).
+   */
+  suppressForbiddenToast?: boolean;
 };
 
 export type TextOptions = {
@@ -94,7 +100,7 @@ export class ControllerErrorHandler {
 
   constructor(private toaster: ToasterService) {}
 
-  handleError(error: HttpErrorResponse, url?: string) {
+  handleError(error: HttpErrorResponse, url?: string, options?: JsonOptions) {
     let err: Error = error;
 
     if (error.name === 'HttpErrorResponse' && error.status === 0) {
@@ -109,8 +115,10 @@ export class ControllerErrorHandler {
 
     // The flattened privilege list can overestimate (a privilege granted
     // on one resource path does not grant it everywhere): whenever the
-    // server denies an action the UI offered, report it uniformly.
-    if (error.status === 403 && !this.isAuthEndpoint(url)) {
+    // server denies an action the UI offered, report it uniformly — unless
+    // the caller marked the request as a background probe that handles its
+    // own denials silently.
+    if (error.status === 403 && !options?.suppressForbiddenToast && !this.isAuthEndpoint(url)) {
       this.notifyForbidden(error);
     }
 
@@ -366,7 +374,7 @@ export class HttpController {
       catchError((error: HttpErrorResponse) => {
         // Only intercept 401; skip auth endpoints to avoid loops
         if (error.status !== 401) {
-          return this.errorHandler.handleError(error, url);
+          return this.errorHandler.handleError(error, url, options as JsonOptions | undefined);
         }
         if (
           url.endsWith('/access/users/login') ||

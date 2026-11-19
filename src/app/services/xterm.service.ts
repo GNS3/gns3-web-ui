@@ -75,6 +75,18 @@ export class XtermService {
       if (saved) {
         const parsed = JSON.parse(saved);
         this._settings = this._sanitizeSettings(parsed);
+      } else {
+        // No stored appearance (never customized, or the previous user's
+        // mirror was wiped on logout): fall back to the defaults instead of
+        // keeping the previous session's values in memory — the
+        // external-update broadcast would otherwise push them to every
+        // terminal as the next user's.
+        this._settings = {
+          fontSize: DEFAULT_FONT_SIZE,
+          fontFamily: null,
+          foregroundColor: null,
+          backgroundColor: null,
+        };
       }
     } catch (e) {
       // Ignore storage errors

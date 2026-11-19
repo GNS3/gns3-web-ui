@@ -197,9 +197,16 @@ export class ProjectService {
     });
   }
 
-  /** Returns the current state of one distribution job (404 once the server forgets it). */
+  /**
+   * Returns the current state of one distribution job (404 once the server
+   * forgets it). Read as a background probe (login restore, 1 s polling,
+   * cancel follow-up): callers already handle 404/403 silently (expired or
+   * foreign leftover ref), so the global permission toast stays off.
+   */
   getDistribution(controller: Controller, project_id: string, distribution_id: string): Observable<ProjectDistribution> {
-    return this.httpController.get(controller, `/projects/${project_id}/distributions/${distribution_id}`);
+    return this.httpController.get(controller, `/projects/${project_id}/distributions/${distribution_id}`, {
+      suppressForbiddenToast: true,
+    });
   }
 
   /**

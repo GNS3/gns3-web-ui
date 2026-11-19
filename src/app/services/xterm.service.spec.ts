@@ -218,4 +218,29 @@ describe('XtermService', () => {
     expect(service.getEffectiveForegroundHex()).toBe('#111111');
     expect(service.getEffectiveBackgroundHex()).toBe('#eeeeee');
   });
+
+  it('resets console appearance to defaults when the stored key is gone (logout wipe)', () => {
+    service.updateSettings({ fontSize: 28, fontFamily: 'Hack', foregroundColor: '#123456' });
+    const received: any[] = [];
+    service.settingsChanged$.subscribe((value) => received.push(value));
+
+    // Logout wipes the mirror (the storage key disappears) and fires the
+    // external-update callbacks; the service re-reads and re-broadcasts.
+    localStorage.removeItem(APPEARANCE_STORAGE_KEY);
+    const callbacks = (TestBed.inject(UserPreferencesService) as any).externalUpdateCallbacks as Set<() => void>;
+    for (const callback of callbacks) {
+      callback();
+    }
+
+    const expected = {
+      fontSize: DEFAULT_FONT_SIZE,
+      fontFamily: null,
+      foregroundColor: null,
+      backgroundColor: null,
+    };
+    // The previous user's appearance must not stay in memory…
+    expect(service.settings).toEqual(expected);
+    // …nor be broadcast to the terminals as the next user's.
+    expect(received[received.length - 1]).toEqual(expected);
+  });
 });

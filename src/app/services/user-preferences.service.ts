@@ -111,7 +111,12 @@ export class UserPreferencesService {
 
   private controller?: Controller;
   private enabled = false;
-  /** 404 from the preferences endpoint: controller predates it. */
+  /**
+   * 404 from the preferences endpoint: this controller predates it. A
+   * per-controller fact, so it is reset on every session boundary — one old
+   * controller must not disable syncing for the next one in the same SPA
+   * session (invalidate() clears it).
+   */
   private unavailable = false;
   /**
    * Controller whose preferences session is active (fetch in flight or
@@ -131,6 +136,13 @@ export class UserPreferencesService {
   private generation = 0;
   /** Snapshot of the synced keys as of the last merge/push — the baseline for local-edit detection. */
   private lastSyncedValues = new Map<string, string | null>();
+  /**
+   * Working-copy snapshot taken as the initial GET leaves: writes landing
+   * before the first merge have no baseline yet, so this snapshot is what
+   * lets the merge recognize them as local edits (and keep them winning
+   * over the older server values).
+   */
+  private localAtSyncStart = new Map<string, string | null>();
   private lastSizeWarningAt = 0;
 
   /**
@@ -262,6 +274,7 @@ export class UserPreferencesService {
     }
     this.sessionControllerId = id;
     const generation = this.generation;
+    this.localAtSyncStart = new Map(SYNCED_PREFERENCE_KEYS.map((key) => [key, this.getItem(key)]));
 
     this.httpController().get<UserPreferencesResponse>(controller, UserPreferencesService.PREFERENCES_URL).subscribe({
       next: (response) => {
@@ -304,6 +317,10 @@ export class UserPreferencesService {
     }
     this.generation++;
     this.sessionControllerId = null;
+    // Session boundary: whether the endpoint exists is a per-controller
+    // fact, so the next sync() must re-probe it instead of inheriting the
+    // previous controller's 404 verdict.
+    this.unavailable = false;
     const serverHasCopy = this.enabled;
     this.enabled = false;
     this.controller = undefined;
@@ -361,7 +378,9 @@ export class UserPreferencesService {
       const local = this.getItem(key);
       const serverRaw = Object.prototype.hasOwnProperty.call(webui, key) ? webui[key] : undefined;
       const serverValue = serverRaw === undefined || serverRaw === null ? null : String(serverRaw);
-      const locallyModified = haveBaseline && local !== this.lastSyncedValues.get(key);
+      const locallyModified = haveBaseline
+        ? local !== this.lastSyncedValues.get(key)
+        : local !== this.localAtSyncStart.get(key);
 
       if (serverValue !== null && !locallyModified && serverValue !== local) {
         // Server value wins: apply locally and let consumers re-read.
@@ -372,6 +391,17 @@ export class UserPreferencesService {
         }
         localChanged = true;
         merged[key] = serverValue;
+      } else if (serverValue === null && local !== null && !locallyModified && this.lastSyncedValues.has(key)) {
+        // The key was part of the last synced document but the server no
+        // longer has it: another browser deleted it (a removeItem + flush
+        // omits the key from the pushed document). Propagate the deletion
+        // locally instead of merging the stale value back into the document.
+        try {
+          localStorage.removeItem(key);
+        } catch {
+          // Best-effort; the value must not go back into the document.
+        }
+        localChanged = true;
       } else if (local !== null) {
         merged[key] = local;
       }

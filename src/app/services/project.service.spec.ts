@@ -904,6 +904,20 @@ describe('ProjectService', () => {
     });
   });
 
+  describe('getDistribution', () => {
+    it('reads as a background probe: the global 403 toast stays off', () => {
+      mockHttpController.get.mockReturnValue(of({}));
+
+      service.getDistribution(mockController, 'project-123', 'dist-1');
+
+      expect(mockHttpController.get).toHaveBeenCalledWith(
+        mockController,
+        '/projects/project-123/distributions/dist-1',
+        { suppressForbiddenToast: true }
+      );
+    });
+  });
+
   describe('URL Construction', () => {
     it.each([
       { projectId: 'proj-alpha', expectedPath: '/projects/proj-alpha' },

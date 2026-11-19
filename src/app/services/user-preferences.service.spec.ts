@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest';
+import { Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Subject, of, throwError } from 'rxjs';
 import { SYNCED_PREFERENCE_KEYS, UserPreferencesService } from './user-preferences.service';
@@ -224,6 +225,62 @@ describe('UserPreferencesService', () => {
       // and nothing is pushed from it.
       expect(localStorage.getItem('theme')).toBeNull();
       expect(mockHttpController.put).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('cross-session merge semantics', () => {
+    it('propagates a server-side deletion instead of resurrecting the key', () => {
+      mockHttpController.get.mockReturnValue(of({ preferences: { version: 1, webui: { theme: 'dark' } } }));
+      service.sync(controller);
+      expect(localStorage.getItem('theme')).toBe('dark');
+
+      // The browser is closed WITHOUT logout (tab close, refresh, crash):
+      // the mirror and the persisted baseline survive on disk. Meanwhile
+      // another browser deletes the key server-side (a removeItem + flush
+      // omits it from the pushed document, e.g. layers/grid toggled off).
+      mockHttpController.get.mockReturnValue(of({ preferences: { version: 1, webui: {} } }));
+
+      // Next session: a fresh instance rebuilds its baseline from disk.
+      const nextSession = new UserPreferencesService(TestBed.inject(Injector));
+      nextSession.sync(controller);
+
+      expect(localStorage.getItem('theme')).toBeNull();
+      // merged === server signature: the deletion needs no reconciling push.
+      expect(mockHttpController.put).not.toHaveBeenCalled();
+    });
+
+    it('re-enables sync for the next controller after one without the endpoint', () => {
+      mockHttpController.get.mockReturnValueOnce(throwError(() => ({ status: 404 })));
+      service.sync(controller); // old controller: preferences endpoint absent
+      service.invalidate(); // logout / session boundary
+
+      mockHttpController.get.mockReturnValue(of({ preferences: { version: 1, webui: { theme: 'dark' } } }));
+      const modern = { ...controller, id: 2 } as Controller;
+      service.sync(modern);
+
+      expect(mockHttpController.get).toHaveBeenCalledTimes(2);
+      expect(localStorage.getItem('theme')).toBe('dark');
+    });
+
+    it('keeps an edit made before the first merge lands and pushes it', () => {
+      const subject = new Subject<{ preferences: { version: number; webui: Record<string, string> } }>();
+      mockHttpController.get.mockReturnValue(subject);
+      service.sync(controller);
+
+      // A preference changes while the initial GET is in flight (no
+      // baseline yet — e.g. the first login after a logout wiped it).
+      service.setItem('theme', 'light');
+
+      subject.next({ preferences: { version: 1, webui: { theme: 'dark' } } });
+
+      // The fresh local edit wins over the older server value…
+      expect(localStorage.getItem('theme')).toBe('light');
+      // …and is reconciled into the document instead of being dropped.
+      expect(mockHttpController.put).toHaveBeenCalledWith(
+        controller,
+        '/access/users/me/preferences',
+        expect.objectContaining({ webui: expect.objectContaining({ theme: 'light' }) }),
+      );
     });
   });
 
