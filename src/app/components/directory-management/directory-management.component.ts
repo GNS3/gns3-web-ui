@@ -326,8 +326,8 @@ export class DirectoryManagementComponent implements OnInit {
       isSuperadmin: superadminSet.has(directoryGroup.trim().toLowerCase()),
     }));
 
-    if (this.ldapSettings.default_group === undefined || this.ldapSettings.default_group === null) {
-      this.ldapSettings.default_group = '';
+    if (!this.ldapSettings.default_group) {
+      this.ldapSettings.default_group = 'Users';
     }
   }
 
@@ -630,7 +630,7 @@ export class DirectoryManagementComponent implements OnInit {
       group_search_filter: this.ldapSettings.group_search_filter,
       group_mapping: mapping,
       superadmin_groups: superadminGroups,
-      default_group: this.ldapSettings.default_group ?? '',
+      default_group: this.ldapSettings.default_group || 'Users',
       start_tls: this.ldapSettings.start_tls,
       verify_cert: this.ldapSettings.verify_cert,
       ca_cert_file: this.ldapSettings.ca_cert_file?.trim() || null,

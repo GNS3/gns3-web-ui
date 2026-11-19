@@ -494,10 +494,9 @@
           >
             <mat-label>Default Fallback Group</mat-label>
             <mat-select
-              [value]="ldapSettings.default_group || ''"
+              [value]="ldapSettings.default_group || 'Users'"
               (selectionChange)="onDefaultGroupSelect($event); onFieldChange()"
             >
-              <mat-option [value]="''">-</mat-option>
               @for (grp of availableGroups; track grp.user_group_id || grp.name) {
                 <mat-option [value]="grp.name">{{ grp.name }}</mat-option>
               }

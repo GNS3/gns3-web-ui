@@ -673,12 +673,18 @@ describe('DirectoryManagementComponent', () => {
       expect(saveSpy).toHaveBeenCalledWith(true);
     });
 
-    it('should allow default_group to be empty string for none/-', () => {
-      const event: any = { value: '', source: { value: '' } };
-      component.onDefaultGroupSelect(event);
-      expect(component.ldapSettings.default_group).toBe('');
+    it('should default default_group to Users when not configured or empty', () => {
+      component.ldapSettings.default_group = '';
       const payload = component.buildLdapPayload();
-      expect(payload.default_group).toBe('');
+      expect(payload.default_group).toBe('Users');
+    });
+
+    it('should update default_group when another valid group is selected', () => {
+      const event: any = { value: 'Administrators', source: { value: 'Administrators' } };
+      component.onDefaultGroupSelect(event);
+      expect(component.ldapSettings.default_group).toBe('Administrators');
+      const payload = component.buildLdapPayload();
+      expect(payload.default_group).toBe('Administrators');
     });
 
     it('should auto-save when onToggleEnabled is called', () => {
