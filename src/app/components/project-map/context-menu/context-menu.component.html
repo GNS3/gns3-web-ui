@@ -95,7 +95,7 @@
       *appHasProjectPrivilege="duplicatePrivileges"
       [controller]="controller"
       [project]="project"
-      [nodes]="duplicableNodes"
+      [nodes]="nodes"
       [drawings]="drawings"
     ></app-duplicate-action>
     } @if (!projectService.isReadOnly(project) && drawings.length === 1 && !hasTextCapabilities) {

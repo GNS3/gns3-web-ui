@@ -337,6 +337,32 @@ describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
       expect(component.validate(ev(undefined, 300))).toBe(true);
     });
 
+    it('resolves the link anchor once per resize gesture while the leader still follows', async () => {
+      await load();
+      const path = document.querySelector('svg#map g.link[link_id="l1"] path') as SVGPathElement;
+      const rectSpy = path.getBoundingClientRect as unknown as ReturnType<typeof vi.fn>;
+      rectSpy.mockClear();
+
+      component.onResizeStart();
+      component.onResizing({
+        rectangle: { left: 60, top: 80, width: 500, height: 300 },
+        edges: { right: true },
+      } as ResizeEvent);
+      const firstLeader = component.leader();
+      component.onResizing({
+        rectangle: { left: 60, top: 80, width: 540, height: 300 },
+        edges: { right: true },
+      } as ResizeEvent);
+      const secondLeader = component.leader();
+
+      // The leader keeps following the dragged edge on every move…
+      expect(firstLeader).not.toBeNull();
+      expect(secondLeader).not.toBeNull();
+      expect(secondLeader!.x1).not.toBe(firstLeader!.x1);
+      // …while the link's viewport rect is read at most once per gesture.
+      expect(rectSpy.mock.calls.length).toBeLessThanOrEqual(1);
+    });
+
     it('clamps an under-minimum end event and FREES a docked snapshot', async () => {
       await load();
       expect(component.dragPinned()).toBe(false); // docked

@@ -134,6 +134,12 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
   private readonly subs: Subscription[] = [];
   private rafId: number | null = null;
   private rafPending = false;
+  /**
+   * Link viewport anchor resolved for the resize gesture in flight.
+   * `undefined` = no gesture (resolve on demand), `null` = the link is not
+   * on the map (the leader stays dropped for the whole gesture).
+   */
+  private resizeAnchor: { x: number; y: number } | null | undefined = undefined;
 
   constructor() {
     // The dock row REFLOWS when siblings are pinned/unpinned (index shifts)
@@ -180,6 +186,9 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
 
   /** Coalesce reposition requests into one animation-frame pass. */
   private requestReposition(): void {
+    // A reposition means the map may have moved, so a resize anchor cached
+    // for the gesture is no longer trustworthy.
+    this.resizeAnchor = undefined;
     if (this.rafPending) return;
     this.rafPending = true;
     if (typeof requestAnimationFrame === 'function') {
@@ -257,9 +266,10 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
    * sits — docked or freed. The window end attaches to the edge facing the
    * anchor.
    */
-  private updateLeader(): void {
-    const frame = this.pinned().frame;
-    const anchor = this.linkCenterScreen(frame.link_id);
+  private updateLeader(anchorOverride?: { x: number; y: number } | null): void {
+    // Resize gestures pass the anchor resolved once at gesture start; every
+    // other caller (initial placement, drag, reposition) resolves it fresh.
+    const anchor = anchorOverride !== undefined ? anchorOverride : this.currentLinkAnchor();
     if (!anchor) {
       // Link not on the map (deleted) — keep the last position, drop the leader.
       this.anchored.set(false);
@@ -276,6 +286,11 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
       x2: anchor.x,
       y2: anchor.y,
     });
+  }
+
+  /** Anchor of the pinned frame's source link, or null when it is not on the map. */
+  private currentLinkAnchor(): { x: number; y: number } | null {
+    return this.linkCenterScreen(this.pinned().frame.link_id);
   }
 
   /** Link path bounding-box center in viewport px (browser applies all transforms). */
@@ -307,6 +322,10 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
   };
 
   onResizeStart(): void {
+    // The link cannot move while the pointer is busy resizing this window:
+    // resolve its viewport anchor once for the whole gesture instead of
+    // re-querying the DOM on every pointer event (see updateLeader).
+    this.resizeAnchor = this.currentLinkAnchor();
     this.resizing.set(true);
   }
 
@@ -320,7 +339,13 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
    */
   onResizing(event: ResizeEvent): void {
     this.applyResizeSnap(event); // signals already carry the result
-    this.updateLeader();
+    // `onResizeStart` normally resolved the anchor; a caller that resizes
+    // without it (tests, programmatic gestures) gets one lazy lookup, then
+    // the same cached anchor for the rest of the gesture.
+    if (this.resizeAnchor === undefined) {
+      this.resizeAnchor = this.currentLinkAnchor();
+    }
+    this.updateLeader(this.resizeAnchor);
     this.reportRect();
   }
 
@@ -371,6 +396,9 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
     this.winWidth.set(width);
     this.winHeight.set(height);
     this.resizing.set(false);
+    // Release the gesture cache: the reposition below re-resolves the anchor
+    // and a later gesture must do the same against the map's current state.
+    this.resizeAnchor = undefined;
     this.snapGuides.set(null);
     // Remember the chosen size for the session — later pins dock at it. A
     // docked snapshot owns its size, so resizing one frees it (the dock would
