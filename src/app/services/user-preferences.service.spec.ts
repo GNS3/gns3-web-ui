@@ -119,6 +119,58 @@ describe('UserPreferencesService', () => {
     });
   });
 
+  describe('controller switching', () => {
+    const secondController = { ...controller, id: 2, host: 'other-host' } as Controller;
+
+    it('flushes pending edits to the previous controller before switching', () => {
+      mockHttpController.get.mockImplementation((target: Controller) =>
+        of(
+          String(target.id) === '1'
+            ? { preferences: { version: 1, webui: { theme: 'dark' } } }
+            : { preferences: { version: 1, webui: { widthOfWidget: '800' } } },
+        ),
+      );
+      service.sync(controller);
+      service.setItem('topPosition', '42'); // still inside the debounce window
+
+      service.sync(secondController);
+
+      // The outgoing edit left for its own controller before the switch.
+      expect(mockHttpController.put).toHaveBeenCalledTimes(1);
+      expect(mockHttpController.put.mock.calls[0][0]).toBe(controller);
+      const body = mockHttpController.put.mock.calls[0][2] as { webui: Record<string, string> };
+      expect(body.webui['topPosition']).toBe('42');
+
+      // The new controller merges its own document into a clean mirror:
+      // nothing from the previous controller is uploaded to it.
+      expect(mockHttpController.get).toHaveBeenCalledWith(secondController, '/access/users/me/preferences');
+      expect(localStorage.getItem('widthOfWidget')).toBe('800');
+      expect(localStorage.getItem('theme')).toBeNull();
+      expect(localStorage.getItem('topPosition')).toBeNull();
+    });
+
+    it('re-merges the first controller when switching back', () => {
+      mockHttpController.get.mockImplementation((target: Controller) =>
+        of({
+          preferences: {
+            version: 1,
+            webui: { theme: String(target.id) === '1' ? 'dark' : 'light' },
+          },
+        }),
+      );
+      service.sync(controller);
+      expect(localStorage.getItem('theme')).toBe('dark');
+
+      service.sync(secondController);
+      expect(localStorage.getItem('theme')).toBe('light');
+
+      service.sync(controller);
+
+      expect(mockHttpController.get).toHaveBeenCalledTimes(3);
+      expect(localStorage.getItem('theme')).toBe('dark');
+    });
+  });
+
   describe('logout (invalidate)', () => {
     it('keeps the local mirror when the server never had a copy', () => {
       // Sync against a controller without the endpoint (404): localStorage

@@ -2,12 +2,13 @@ import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BpfPreset, BpfPresetsService, CUSTOM_BPF_CATEGORY } from '@services/bpf-presets.service';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 export interface BpfRuleLibraryDialogData {
   /** Expression currently in the calling form; prefills the "New rule" editor. */
@@ -55,6 +56,7 @@ export class BpfRuleLibraryDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<BpfRuleLibraryDialogComponent>);
   private readonly library = inject(BpfPresetsService);
   private readonly data = inject<BpfRuleLibraryDialogData>(MAT_DIALOG_DATA);
+  private readonly dialog = inject(MatDialog);
 
   readonly searchText = signal('');
   readonly activeCategory = signal('All');
@@ -142,12 +144,49 @@ export class BpfRuleLibraryDialogComponent {
     const rawExpression = this.editorExpression();
     const expression = (this.data.multiline ? rawExpression : rawExpression.replace(/\r?\n/g, ' ')).trim();
     if (!name || !expression) return;
-    if (!this.library.save(name, expression)) return; // the service reports storage failures
+
     const previousName = this.editingName();
+    if (previousName !== null && previousName !== name && this.hasCustomRule(name)) {
+      // Renaming onto an existing rule would overwrite that rule and then
+      // delete the renamed one: two rules silently become one. Ask first.
+      this.dialog
+        .open(ConfirmationDialogComponent, {
+          panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-warning-panel'],
+          autoFocus: '.cancel-button',
+          data: {
+            title: 'Replace existing rule?',
+            message: `A rule named "${name}" already exists. Renaming "${previousName}" to "${name}" replaces it, so two rules become one.`,
+            confirmButtonText: 'Replace rule',
+            tone: 'warning',
+          },
+        })
+        .afterClosed()
+        .subscribe((confirmed: boolean) => {
+          if (confirmed) {
+            this.persistEdit(name, expression, previousName, useAfterSave);
+          }
+        });
+      return;
+    }
+
+    this.persistEdit(name, expression, previousName, useAfterSave);
+  }
+
+  private persistEdit(
+    name: string,
+    expression: string,
+    previousName: string | null,
+    useAfterSave: boolean
+  ): void {
+    if (!this.library.save(name, expression)) return; // the service reports storage failures
     if (previousName && previousName !== name) this.library.delete(previousName);
     this.selected.set({ name, expression, category: CUSTOM_BPF_CATEGORY, source: 'custom' });
     this.editorOpen.set(false);
     if (useAfterSave) this.dialogRef.close({ expression } satisfies BpfRuleLibraryDialogResult);
+  }
+
+  private hasCustomRule(name: string): boolean {
+    return this.library.customBpfPresets().some((preset) => preset.name === name);
   }
 
   deleteRule(rule: RuleEntry): void {

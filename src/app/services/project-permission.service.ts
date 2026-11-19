@@ -23,15 +23,29 @@ import { UserPrivilegesResponse } from '@services/permission.service';
   providedIn: 'root',
 })
 export class ProjectPermissionService {
+  /**
+   * Attempts per project: the initial fetch plus short retries for transient
+   * failures. A single failed request must not hide every write action for
+   * the lifetime of the project view.
+   */
+  private static readonly MAX_ATTEMPTS = 3;
+  private static readonly RETRY_DELAY_MS = 2000;
+
   private readonly httpController = inject(HttpController);
 
   /** Privileges evaluated on the current project's resource path (empty until loaded). */
   readonly privileges = signal<ReadonlySet<string>>(new Set());
-  /** True once the current project's privileges have been fetched (successfully or not). */
+  /**
+   * True once the current project's privileges reached a terminal state:
+   * fetched, or denied/failed after the retry budget.
+   */
   readonly loaded = signal(false);
 
   private projectId: string | null = null;
+  private controller: Controller | null = null;
   private loadSubscription: Subscription | null = null;
+  private retryTimer: ReturnType<typeof setTimeout> | null = null;
+  private attempt = 0;
 
   has(privilege: string): boolean {
     return this.privileges().has(privilege);
@@ -56,13 +70,41 @@ export class ProjectPermissionService {
    * project.
    */
   load(controller: Controller, projectId: string): void {
-    if (this.projectId === projectId) {
+    if (
+      this.projectId === projectId &&
+      (this.loaded() || this.loadSubscription !== null || this.retryTimer !== null)
+    ) {
       return;
     }
     this.projectId = projectId;
+    this.controller = controller;
     this.privileges.set(new Set());
     this.loaded.set(false);
     this.loadSubscription?.unsubscribe();
+    this.loadSubscription = null;
+    this.cancelRetry();
+    this.attempt = 0;
+    this.attemptLoad(projectId);
+  }
+
+  /** Forget the current project's privileges (leaving the project view). */
+  clear(): void {
+    this.loadSubscription?.unsubscribe();
+    this.loadSubscription = null;
+    this.cancelRetry();
+    this.projectId = null;
+    this.controller = null;
+    this.attempt = 0;
+    this.privileges.set(new Set());
+    this.loaded.set(false);
+  }
+
+  private attemptLoad(projectId: string): void {
+    const controller = this.controller;
+    if (!controller || this.projectId !== projectId) {
+      return;
+    }
+    this.attempt++;
     this.loadSubscription = this.httpController
       .get<UserPrivilegesResponse>(controller, `/projects/${projectId}/me/privileges`)
       .subscribe({
@@ -71,22 +113,40 @@ export class ProjectPermissionService {
           this.privileges.set(new Set<string>(response.privileges ?? []));
           this.loaded.set(true);
         },
-        error: () => {
+        error: (err: unknown) => {
           if (this.projectId !== projectId) return;
-          // No Project.Audit on this path (or the fetch failed): zero
-          // privileges, honest rendering. The 403 toast already reported it.
+          if (this.isRetryable(err) && this.attempt < ProjectPermissionService.MAX_ATTEMPTS) {
+            this.retryTimer = setTimeout(() => {
+              this.retryTimer = null;
+              this.attemptLoad(projectId);
+            }, ProjectPermissionService.RETRY_DELAY_MS);
+            return;
+          }
+          // No Project.Audit on this path, or the retry budget is spent:
+          // zero privileges, honest rendering. The 403 toast already
+          // reported a denial.
           this.privileges.set(new Set());
           this.loaded.set(true);
         },
       });
   }
 
-  /** Forget the current project's privileges (leaving the project view). */
-  clear(): void {
-    this.loadSubscription?.unsubscribe();
-    this.loadSubscription = null;
-    this.projectId = null;
-    this.privileges.set(new Set());
-    this.loaded.set(false);
+  private cancelRetry(): void {
+    if (this.retryTimer !== null) {
+      clearTimeout(this.retryTimer);
+      this.retryTimer = null;
+    }
+  }
+
+  /**
+   * Only transient failures are retried. A 401/403/404 is a stable answer
+   * for this path (unauthenticated, no Project.Audit, or an older server
+   * without the endpoint) — repeating it would just delay the honest
+   * zero-privilege rendering.
+   */
+  private isRetryable(err: unknown): boolean {
+    const status = (err as { originalError?: { status?: number }; status?: number } | null)?.originalError?.status
+      ?? (err as { status?: number } | null)?.status;
+    return status === undefined || status === 0 || status >= 500;
   }
 }

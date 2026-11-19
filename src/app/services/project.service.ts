@@ -208,10 +208,16 @@ export class ProjectService {
    * starts, and copies already made are kept.
    *
    * Returns 200 with the job (status "cancelling"; idempotent when already
-   * cancelling). 409 once the job reached a terminal state, 403 when the
-   * caller is neither the distributing user nor the project owner.
+   * cancelling). A job that finished meanwhile cannot be cancelled: its
+   * terminal record is deleted instead and the call answers 204 → null,
+   * so branch on the emitted value. 403 when the caller is neither the
+   * distributing user nor the project owner.
    */
-  cancelDistribution(controller: Controller, project_id: string, distribution_id: string): Observable<ProjectDistribution> {
+  cancelDistribution(
+    controller: Controller,
+    project_id: string,
+    distribution_id: string
+  ): Observable<ProjectDistribution | null> {
     return this.httpController.delete(controller, `/projects/${project_id}/distributions/${distribution_id}`);
   }
 

@@ -224,18 +224,24 @@ export class AclManagementComponent implements OnInit {
   // ------------------------------------------------------------------
 
   isGroupAllSelected(group: AceGroup): boolean {
-    return group.aces.length > 0 && group.aces.every((ace) => this.selection.isSelected(ace));
+    const visible = this.pagedAcesFor(group);
+    return visible.length > 0 && visible.every((ace) => this.selection.isSelected(ace));
   }
 
   isGroupPartiallySelected(group: AceGroup): boolean {
-    return !this.isGroupAllSelected(group) && group.aces.some((ace) => this.selection.isSelected(ace));
+    const visible = this.pagedAcesFor(group);
+    return !this.isGroupAllSelected(group) && visible.some((ace) => this.selection.isSelected(ace));
   }
 
   toggleGroupSelection(group: AceGroup): void {
+    // The header checkbox promises "Select all visible ACE rules": rules on
+    // the group's other pages must not enter the selection (Delete selected
+    // would remove rules the user never saw).
+    const visible = this.pagedAcesFor(group);
     if (this.isGroupAllSelected(group)) {
-      group.aces.forEach((ace) => this.selection.deselect(ace));
+      visible.forEach((ace) => this.selection.deselect(ace));
     } else {
-      group.aces.forEach((ace) => this.selection.select(ace));
+      visible.forEach((ace) => this.selection.select(ace));
     }
   }
 

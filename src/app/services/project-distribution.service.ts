@@ -136,6 +136,13 @@ export class ProjectDistributionService {
     this.projectService.cancelDistribution(entry.controller, entry.job.project_id, distribution_id).subscribe({
       next: (job) => {
         this.setCancelPending(distribution_id, false);
+        if (job === null) {
+          // 204: the job finished between the last poll and the click, so
+          // the server deleted its terminal record instead of cancelling
+          // it. There is no state left to poll or re-fetch.
+          this.markExpired(distribution_id);
+          return;
+        }
         this.onPolled(distribution_id, job);
       },
       error: (err: unknown) => {
@@ -211,13 +218,18 @@ export class ProjectDistributionService {
       // 404: the job record is gone (server restart or retention cleanup) —
       // copies already created are real projects and stay with their owners.
       // 403: a ref left behind by another account on this browser.
-      this.stopPolling(distribution_id);
-      this.pruneRef(distribution_id);
-      this.trackedState.update((entries) =>
-        entries.map((entry) => (entry.job.distribution_id === distribution_id ? { ...entry, expired: true } : entry))
-      );
+      this.markExpired(distribution_id);
     }
     // Other errors (controller briefly unreachable): keep polling.
+  }
+
+  /** Stops tracking a job the server no longer remembers; the card says so. */
+  private markExpired(distribution_id: string): void {
+    this.stopPolling(distribution_id);
+    this.pruneRef(distribution_id);
+    this.trackedState.update((entries) =>
+      entries.map((entry) => (entry.job.distribution_id === distribution_id ? { ...entry, expired: true } : entry))
+    );
   }
 
   private pushSummary(job: ProjectDistribution): void {

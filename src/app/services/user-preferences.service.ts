@@ -113,7 +113,13 @@ export class UserPreferencesService {
   private enabled = false;
   /** 404 from the preferences endpoint: controller predates it. */
   private unavailable = false;
-  private readonly syncedControllers = new Set<string>();
+  /**
+   * Controller whose preferences session is active (fetch in flight or
+   * merged). Exactly one session exists at a time: the local mirror holds a
+   * single user's values, so a second controller must never inherit or
+   * overwrite the first one's document.
+   */
+  private sessionControllerId: string | null = null;
   private flushTimer: ReturnType<typeof setTimeout> | undefined;
   private readonly externalUpdateCallbacks = new Set<() => void>();
   /**
@@ -236,16 +242,25 @@ export class UserPreferencesService {
   /**
    * Starts syncing against `controller`. Idempotent per controller per
    * session; called from the login guard once the session is authenticated.
+   *
+   * Only one controller session is active at a time. Switching controllers
+   * ends the previous session first (flushing its pending debounced edits to
+   * its own document), so pushes can never land in another controller's
+   * user document and returning to the first controller re-merges its
+   * document instead of trusting a stale latch.
    */
   sync(controller: Controller): void {
     if (!controller || this.unavailable) {
       return;
     }
     const id = String(controller.id);
-    if (this.syncedControllers.has(id)) {
+    if (this.sessionControllerId === id) {
       return;
     }
-    this.syncedControllers.add(id);
+    if (this.sessionControllerId !== null) {
+      this.invalidate();
+    }
+    this.sessionControllerId = id;
     const generation = this.generation;
 
     this.httpController().get<UserPreferencesResponse>(controller, UserPreferencesService.PREFERENCES_URL).subscribe({
@@ -266,7 +281,7 @@ export class UserPreferencesService {
           return;
         }
         // Allow a retry on the next guard pass for transient failures.
-        this.syncedControllers.delete(id);
+        this.sessionControllerId = null;
         if (this.statusOf(err) === 404) {
           this.unavailable = true;
         }
@@ -288,7 +303,7 @@ export class UserPreferencesService {
       this.flush();
     }
     this.generation++;
-    this.syncedControllers.clear();
+    this.sessionControllerId = null;
     const serverHasCopy = this.enabled;
     this.enabled = false;
     this.controller = undefined;

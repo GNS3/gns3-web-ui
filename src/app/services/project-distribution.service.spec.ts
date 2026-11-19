@@ -28,7 +28,10 @@ const createJob = (overrides: Partial<ProjectDistribution> = {}): ProjectDistrib
 
 describe('ProjectDistributionService', () => {
   let service: ProjectDistributionService;
-  let mockProjectService: { getDistribution: ReturnType<typeof vi.fn> };
+  let mockProjectService: {
+    getDistribution: ReturnType<typeof vi.fn>;
+    cancelDistribution: ReturnType<typeof vi.fn>;
+  };
   let mockNotifications: { add: ReturnType<typeof vi.fn> };
   let store: Map<string, string>;
 
@@ -44,7 +47,7 @@ describe('ProjectDistributionService', () => {
     vi.clearAllMocks();
     vi.clearAllTimers();
 
-    mockProjectService = { getDistribution: vi.fn() };
+    mockProjectService = { getDistribution: vi.fn(), cancelDistribution: vi.fn() };
     mockNotifications = { add: vi.fn() };
     store = new Map<string, string>();
 
@@ -161,6 +164,34 @@ describe('ProjectDistributionService', () => {
 
       expect(service.tracked()[0].job.status).toBe('completed');
       expect(mockProjectService.getDistribution).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('cancel', () => {
+    it('adopts the job returned by the DELETE (still running → cancelling)', () => {
+      service.track(createController(), createJob());
+      mockProjectService.cancelDistribution.mockReturnValue(of(createJob({ status: 'cancelling' })));
+
+      service.cancel('dist-1');
+
+      expect(mockProjectService.cancelDistribution).toHaveBeenCalledWith(expect.anything(), 'proj-1', 'dist-1');
+      expect(service.tracked()[0].job.status).toBe('cancelling');
+      expect(service.tracked()[0].cancelPending).toBe(false);
+    });
+
+    it('marks the card expired when the DELETE answers 204 (record deleted)', () => {
+      // The job finished between the last poll and the click: the server
+      // deleted the terminal record and answered 204 → null.
+      service.track(createController(), createJob());
+      mockProjectService.cancelDistribution.mockReturnValue(of(null));
+
+      expect(() => service.cancel('dist-1')).not.toThrow();
+
+      expect(service.tracked()[0].expired).toBe(true);
+      expect(service.tracked()[0].cancelPending).toBe(false);
+      expect(readStoredIds()).toEqual([]);
+      // There is no record left to re-fetch.
+      expect(mockProjectService.getDistribution).not.toHaveBeenCalled();
     });
   });
 

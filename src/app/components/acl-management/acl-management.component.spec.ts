@@ -427,6 +427,40 @@ describe('AclManagementComponent', () => {
 
       expect(group.aces.some((ace) => component.selection.isSelected(ace))).toBe(false);
     });
+
+    it('should select only the visible page rules via toggleGroupSelection', () => {
+      seedAces();
+      const group = component.filteredGroups()[0];
+      component.rulePageByGroup.set({ [group.key]: { pageIndex: 0, pageSize: 1 } });
+
+      component.toggleGroupSelection(group);
+
+      expect(component.selection.isSelected(group.aces[0])).toBe(true);
+      expect(component.selection.isSelected(group.aces[1])).toBe(false);
+    });
+
+    it('should report the group fully selected when only its visible page rules are selected', () => {
+      seedAces();
+      const group = component.filteredGroups()[0];
+      component.rulePageByGroup.set({ [group.key]: { pageIndex: 0, pageSize: 1 } });
+
+      component.selection.select(group.aces[0]);
+
+      expect(component.isGroupAllSelected(group)).toBe(true);
+      expect(component.isGroupPartiallySelected(group)).toBe(false);
+    });
+
+    it('should deselect only the visible page rules, keeping other pages selected', () => {
+      seedAces();
+      const group = component.filteredGroups()[0];
+      component.rulePageByGroup.set({ [group.key]: { pageIndex: 0, pageSize: 1 } });
+      group.aces.forEach((ace) => component.selection.select(ace));
+
+      component.toggleGroupSelection(group);
+
+      expect(component.selection.isSelected(group.aces[0])).toBe(false);
+      expect(component.selection.isSelected(group.aces[1])).toBe(true);
+    });
   });
 
   describe('refresh', () => {

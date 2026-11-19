@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { NotificationService, ComputeNotification } from './notification.service';
 import { Controller } from '@models/controller';
 import { Compute } from '@models/compute';
@@ -338,6 +338,71 @@ describe('NotificationService', () => {
 
       expect(consoleSpy).toHaveBeenCalledWith('Compute notifications WebSocket error');
       consoleSpy.mockRestore();
+    });
+  });
+
+  describe('compute polling privilege gate', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('does not poll the compute list without Compute.Audit', () => {
+      // The built-in Lab member role has neither Notification.Audit nor
+      // Compute.Audit: polling GET /computes would 403 (and toast) forever.
+      mockPermissionService.cachedPrivileges.mockReturnValue(new Set<string>());
+
+      service.connectToComputeNotifications(mockController);
+      vi.advanceTimersByTime(30000);
+
+      expect(MockWebSocket.instances).toHaveLength(0);
+      expect(mockComputeService.getComputes).not.toHaveBeenCalled();
+    });
+
+    it('polls the compute list for users with Compute.Audit but no stream privilege', () => {
+      mockPermissionService.cachedPrivileges.mockReturnValue(new Set(['Compute.Audit']));
+
+      service.connectToComputeNotifications(mockController);
+
+      expect(MockWebSocket.instances).toHaveLength(0);
+      expect(mockComputeService.getComputes).toHaveBeenCalledTimes(1);
+
+      vi.advanceTimersByTime(10000);
+      expect(mockComputeService.getComputes).toHaveBeenCalledTimes(2);
+    });
+
+    it('starts polling after a 1008 close when Compute.Audit is held', () => {
+      mockPermissionService.cachedPrivileges.mockReturnValue(new Set(['Notification.Audit', 'Compute.Audit']));
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
+
+      ws.onclose?.({ code: 1008 });
+
+      expect(mockComputeService.getComputes).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not fall back to polling after a 1008 close without Compute.Audit', () => {
+      mockPermissionService.cachedPrivileges.mockReturnValue(new Set(['Notification.Audit']));
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
+
+      ws.onclose?.({ code: 1008 });
+      vi.advanceTimersByTime(30000);
+
+      expect(mockComputeService.getComputes).not.toHaveBeenCalled();
+    });
+
+    it('stops polling after a 403 answer instead of retrying every 10 s', () => {
+      mockPermissionService.cachedPrivileges.mockReturnValue(new Set(['Compute.Audit']));
+      mockComputeService.getComputes.mockReturnValue(throwError(() => ({ originalError: { status: 403 } })));
+
+      service.connectToComputeNotifications(mockController);
+      vi.advanceTimersByTime(30000);
+
+      expect(mockComputeService.getComputes).toHaveBeenCalledTimes(1);
     });
   });
 

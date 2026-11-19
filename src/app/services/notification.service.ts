@@ -36,10 +36,14 @@ export class NotificationService {
   private readonly WS_POLICY_VIOLATION_CLOSE_CODE = 1008;
   /** The global stream requires this privilege (superadmins hold every privilege). */
   private readonly NOTIFICATION_STREAM_PRIVILEGE = 'Notification.Audit';
+  /** The polling fallback reads GET /computes, which requires this privilege. */
+  private readonly COMPUTE_LIST_PRIVILEGE = 'Compute.Audit';
   private readonly COMPUTE_POLL_INTERVAL_MS = 10000;
 
   private ws: WebSocket | null = null;
   private currentController: Controller | null = null;
+  /** Privileges the stream decision was based on (null when the lookup failed). */
+  private currentPrivileges: ReadonlySet<string> | null = null;
   private intentionalClose = false;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempt = 0;
@@ -147,11 +151,55 @@ export class NotificationService {
     if (this.currentController !== controller) {
       return; // controller switched while the privileges were resolving
     }
+    this.currentPrivileges = privileges;
     if (privileges.has(this.NOTIFICATION_STREAM_PRIVILEGE)) {
       this.openComputeNotificationsWs();
     } else {
+      // A role without Notification.Audit may still lack Compute.Audit (the
+      // built-in Lab member has neither): polling would 403 — and toast —
+      // every interval. Only poll when the list is actually readable.
+      this.pollComputesWhenVisible(privileges);
+    }
+  }
+
+  /**
+   * Start the polling fallback only for users who can read the compute list.
+   * Without Compute.Audit the 403 is stable, so there is nothing to poll.
+   */
+  private pollComputesWhenVisible(privileges: ReadonlySet<string>): void {
+    if (privileges.has(this.COMPUTE_LIST_PRIVILEGE)) {
       this.startComputePolling();
     }
+  }
+
+  /**
+   * The server closed the stream with the policy-violation code (privilege
+   * missing or revoked). Degrade to polling only when Compute.Audit is held;
+   * otherwise stop trying silently. When the initial privilege lookup failed,
+   * resolve the set now instead of failing open into a 403 loop.
+   */
+  private handleStreamDenied(): void {
+    const controller = this.currentController;
+    if (!controller) {
+      return;
+    }
+    const privileges = this.currentPrivileges;
+    if (privileges !== null) {
+      this.pollComputesWhenVisible(privileges);
+      return;
+    }
+    void this.permissionService
+      .ready(controller.id)
+      .then((resolved) => {
+        if (this.currentController !== controller) {
+          return;
+        }
+        this.currentPrivileges = resolved;
+        this.pollComputesWhenVisible(resolved);
+      })
+      .catch(() => {
+        // Privileges unknown: stay silent rather than poll into a 403 storm.
+      });
   }
 
   /**
@@ -164,8 +212,10 @@ export class NotificationService {
     if (this.pollTimer || !this.currentController) {
       return;
     }
-    this.fetchComputesIntoCache();
+    // Install the interval first: a synchronously failing first fetch (403
+    // on a stale privilege set) must find and clear it.
     this.pollTimer = setInterval(() => this.fetchComputesIntoCache(), this.COMPUTE_POLL_INTERVAL_MS);
+    this.fetchComputesIntoCache();
   }
 
   private stopComputePolling() {
@@ -182,9 +232,18 @@ export class NotificationService {
     }
     this.computeService.getComputes(controller).subscribe({
       next: (computes) => this.setInitialComputes(computes),
-      // Keep polling across failures: a transient error must not silently
-      // freeze the compute state for users without the stream.
-      error: (error) => console.warn('Compute list polling failed', error),
+      error: (error) => {
+        const status = (error as { originalError?: { status?: number } } | null)?.originalError?.status;
+        if (status === 403) {
+          // The fallback requires Compute.Audit: a denial is stable, so stop
+          // the interval instead of producing a 403 (and its toast) every tick.
+          this.stopComputePolling();
+          return;
+        }
+        // Keep polling across transient failures: they must not silently
+        // freeze the compute state for users without the stream.
+        console.warn('Compute list polling failed', error);
+      },
     });
   }
 
@@ -238,8 +297,9 @@ export class NotificationService {
         // The server denied the stream privilege — either at connect time or
         // after a revocation while the stream was open (the server re-checks
         // on every ping tick and closes with this code). Don't fight it with
-        // reconnects: degrade to polling the compute list instead.
-        this.startComputePolling();
+        // reconnects: degrade to polling only when the compute list is
+        // readable (Compute.Audit), never into a 403 loop.
+        this.handleStreamDenied();
         return;
       }
       this.scheduleReconnect();
@@ -306,6 +366,7 @@ export class NotificationService {
       this.ws = null;
     }
     this.currentController = null;
+    this.currentPrivileges = null;
     this.computeCache.clear();
   }
 
