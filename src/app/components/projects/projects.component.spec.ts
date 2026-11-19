@@ -108,6 +108,7 @@ describe('ProjectsComponent', () => {
       listAllDistributions: vi.fn().mockReturnValue(of([])),
       listDistributions: vi.fn(),
       unfreeze: vi.fn().mockReturnValue(of({})),
+      listShares: vi.fn().mockReturnValue(of([])),
       // Projects the caller did not create carry their own path-evaluated
       // privilege list; mirror the global mock set so tests keep driving
       // visibility through mockPrivileges.
@@ -957,6 +958,33 @@ describe('ProjectsComponent', () => {
       component.refresh();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to list projects');
+    });
+  });
+
+  describe('share badge recipients', () => {
+    it('reuses the in-flight request when row and details badges hover together', () => {
+      fixture.detectChanges();
+      const shares$ = new Subject<Array<{ username?: string; group_name?: string }>>();
+      mockProjectService.listShares.mockReturnValue(shares$);
+      const project = {
+        project_id: 'proj1',
+        name: 'Project A',
+        status: 'closed',
+        created_by: '',
+        share_count: 2,
+      } as Project;
+
+      component.loadShareRecipients(project);
+      component.loadShareRecipients(project);
+
+      expect(mockProjectService.listShares).toHaveBeenCalledTimes(1);
+
+      shares$.next([{ username: 'alice' }, { group_name: 'students' }]);
+      expect(component.shareTooltip(project)).toContain('alice');
+
+      // Once resolved, later hovers are served from the cache.
+      component.loadShareRecipients(project);
+      expect(mockProjectService.listShares).toHaveBeenCalledTimes(1);
     });
   });
 });

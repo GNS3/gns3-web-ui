@@ -470,6 +470,20 @@ describe('GroupDetailDialogComponent', () => {
     });
   });
 
+  describe('zoneless view refresh', () => {
+    it('marks the dialog for check after a successful rename so the title leaves the old name', async () => {
+      component.ngOnInit();
+      component.editGroupForm.get('groupname')?.setValue('RenamedGroup');
+      const markForCheck = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.onUpdate();
+      await vi.runAllTimersAsync();
+
+      expect(component.group.name).toBe('RenamedGroup');
+      expect(markForCheck).toHaveBeenCalled();
+    });
+  });
+
   describe('onUpdate', () => {
     it('should not update if form is invalid', () => {
       component.editGroupForm.get('groupname')?.setValue('');

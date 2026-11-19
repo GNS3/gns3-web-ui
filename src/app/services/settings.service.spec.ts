@@ -84,6 +84,9 @@ describe('SettingsService', () => {
     });
 
     it('should call removeItem before setItem', () => {
+      // A prior value must be cleared before the new one is written; an
+      // absent key is a no-op now (redundant writes are suppressed).
+      setupStorage({ crash_reports: 'false' });
       const removeSpy = vi.spyOn(localStorage, 'removeItem');
       service.setReportsSettings(true);
       expect(removeSpy).toHaveBeenCalledWith('crash_reports');
@@ -117,6 +120,7 @@ describe('SettingsService', () => {
     });
 
     it('should call removeItem before setItem', () => {
+      setupStorage({ statistics_command: 'false' });
       const removeSpy = vi.spyOn(localStorage, 'removeItem');
       service.setStatisticsSettings(true);
       expect(removeSpy).toHaveBeenCalledWith('statistics_command');
@@ -150,6 +154,7 @@ describe('SettingsService', () => {
     });
 
     it('should call removeItem before setItem', () => {
+      setupStorage({ console_command: 'putty.exe' });
       const removeSpy = vi.spyOn(localStorage, 'removeItem');
       service.setConsoleSettings('cmd.exe');
       expect(removeSpy).toHaveBeenCalledWith('console_command');

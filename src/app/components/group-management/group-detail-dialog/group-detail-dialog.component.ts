@@ -232,6 +232,10 @@ export class GroupDetailDialogComponent implements OnInit {
         this.group.default_max_nodes = payload.default_max_nodes ?? null;
         this.group.default_max_running_nodes = payload.default_max_running_nodes ?? null;
         this.toastService.success('Group updated successfully');
+        // The dialog title binds group.name (plain state, not a signal):
+        // without this mark the OnPush view keeps the old name until an
+        // unrelated event happens to schedule change detection.
+        this.cd.markForCheck();
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to update group';

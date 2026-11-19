@@ -214,9 +214,16 @@ export class UserPreferencesService {
   /**
    * Writes land in localStorage immediately; synced keys additionally
    * schedule a debounced push of the whole document.
+   *
+   * A write that matches the stored value is a no-op: drag handlers reassert
+   * the same geometry on every mousemove, and letting those through would
+   * redo storage work and push the pending flush further out each time.
    */
   setItem(key: string, value: string): void {
     try {
+      if (localStorage.getItem(key) === value) {
+        return;
+      }
       localStorage.setItem(key, value);
     } catch {
       return;
@@ -229,6 +236,9 @@ export class UserPreferencesService {
   /** Same contract as {@link setItem} for key removal (deletion propagates). */
   removeItem(key: string): void {
     try {
+      if (localStorage.getItem(key) === null) {
+        return;
+      }
       localStorage.removeItem(key);
     } catch {
       return;

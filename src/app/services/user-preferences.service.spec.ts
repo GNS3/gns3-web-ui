@@ -312,4 +312,41 @@ describe('UserPreferencesService', () => {
       expect(localStorage.getItem('gns3_prefs_sync_baseline')).toBeNull();
     });
   });
+
+  describe('redundant write suppression', () => {
+    it('does not reschedule the pending push when a synced value is rewritten unchanged', async () => {
+      mockHttpController.get.mockReturnValue(of({ preferences: { version: 1, webui: {} } }));
+      service.sync(controller);
+
+      service.setItem('topPosition', '42');
+      await vi.advanceTimersByTimeAsync(1500);
+      // The topology-summary drag reasserts the same geometry many times.
+      service.setItem('topPosition', '42');
+      await vi.advanceTimersByTimeAsync(600); // 2100 ms after the first write
+
+      // The original debounce still fires on schedule: one push, not a
+      // rescheduled one at 3500 ms.
+      expect(mockHttpController.put).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not touch localStorage when the stored value already matches', () => {
+      service.setItem('topPosition', '42');
+      const setItem = vi.spyOn(Storage.prototype, 'setItem');
+
+      service.setItem('topPosition', '42');
+
+      expect(setItem).not.toHaveBeenCalledWith('topPosition', '42');
+      setItem.mockRestore();
+    });
+
+    it('does not schedule a push when removing a key that is not stored', async () => {
+      mockHttpController.get.mockReturnValue(of({ preferences: { version: 1, webui: {} } }));
+      service.sync(controller);
+
+      service.removeItem('leftPosition');
+      await vi.advanceTimersByTimeAsync(2000);
+
+      expect(mockHttpController.put).not.toHaveBeenCalled();
+    });
+  });
 });

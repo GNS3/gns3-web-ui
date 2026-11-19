@@ -139,6 +139,13 @@ export class ProjectsComponent implements OnInit {
    * count text instead of retrying on every hover.
    */
   private readonly _shareRecipients = signal<ReadonlyMap<string, readonly string[]>>(new Map());
+  /**
+   * Project ids with a recipients request in flight. The row badge and the
+   * details badge can both fire `mouseenter` for the same project; the
+   * response cache only fills when the request resolves, so without this
+   * guard the second hover would send a duplicate GET.
+   */
+  private readonly shareRecipientsInFlight = new Set<string>();
 
   /** Tooltip text of a share badge: recipient names once loaded, count otherwise. */
   shareTooltip(project: Project): string {
@@ -155,13 +162,18 @@ export class ProjectsComponent implements OnInit {
     // The shares list is served only to Project.Share holders; for everyone
     // else the tooltip stays on the plain count.
     if (!this.canManageShares(project) || !project.share_count || this._shareRecipients().has(project.project_id)) return;
-    this.projectService.listShares(this.controller, project.project_id).subscribe({
+    const projectId = project.project_id;
+    if (this.shareRecipientsInFlight.has(projectId)) return;
+    this.shareRecipientsInFlight.add(projectId);
+    this.projectService.listShares(this.controller, projectId).subscribe({
       next: (shares) => {
+        this.shareRecipientsInFlight.delete(projectId);
         const names = shares.map((share) => share.username ?? share.group_name ?? '').filter(Boolean);
-        this._shareRecipients.update((map) => new Map(map).set(project.project_id, names));
+        this._shareRecipients.update((map) => new Map(map).set(projectId, names));
       },
       error: () => {
-        this._shareRecipients.update((map) => new Map(map).set(project.project_id, []));
+        this.shareRecipientsInFlight.delete(projectId);
+        this._shareRecipients.update((map) => new Map(map).set(projectId, []));
       },
     });
   }
