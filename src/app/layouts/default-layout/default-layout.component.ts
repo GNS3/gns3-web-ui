@@ -10,7 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Data, NavigationEnd, Route, Router } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { ProgressService } from '../../common/progress/progress.service';
@@ -42,6 +42,7 @@ import { NotificationCenterService } from '@services/notification-center.service
 import { PermissionService } from '@services/permission.service';
 import { SessionResetService } from '@services/session-reset.service';
 import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
+import { routeDataAllows } from '../../guards/route-privileges';
 
 @Component({
   selector: 'app-default-layout',
@@ -95,21 +96,27 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   private readonly sessionReset = inject(SessionResetService);
 
   /**
-   * The Templates and Image manager pages are management surfaces: every
-   * action on them is a write. With only the read privilege the page would
-   * render a list and nothing else, so it stays out of the sidebar (and the
-   * route guard blocks it) — the template list a read-only user needs is the
-   * Add node palette, which only requires Template.Audit.
+   * Sidebar visibility mirrors the route guards: the privilege sets of the
+   * gated pages are read from this layout's route config (the same data
+   * PrivilegeGuard evaluates) instead of re-declared here, so the sidebar
+   * and the router can no longer disagree about who may open a page.
    */
-  readonly canManageImages = computed(
-    () =>
-      this.permissionService.has('Image.Audit') &&
-      (this.permissionService.has('Image.Allocate') || this.permissionService.has('Compute.Modify')),
+  private readonly layoutChildren: readonly Route[] = this.route.routeConfig?.children ?? [];
+
+  private hasRoutePrivileges(data: Data | undefined): boolean {
+    return routeDataAllows(data, (privilege) => this.permissionService.has(privilege));
+  }
+
+  /**
+   * The Templates and Image manager pages are management surfaces: every
+   * action on them is a write (see the route data comments in
+   * app-routing.module.ts). Derived from the routes' privilege data.
+   */
+  readonly canManageImages = computed(() =>
+    this.hasRoutePrivileges(this.layoutChildren.find((child) => child.path === 'controller/:controller_id/image-manager')?.data),
   );
-  readonly canManageTemplates = computed(
-    () =>
-      this.permissionService.has('Template.Audit') &&
-      (this.permissionService.has('Template.Allocate') || this.permissionService.has('Template.Modify')),
+  readonly canManageTemplates = computed(() =>
+    this.hasRoutePrivileges(this.layoutChildren.find((child) => child.path === 'controller/:controller_id/preferences')?.data),
   );
   /**
    * Computes is a management surface: Connect/Disconnect need Compute.Modify
@@ -117,10 +124,8 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
    * visitor gets nothing out of the page (the in-project compute data comes
    * from the polled cache, not from this page).
    */
-  readonly canManageComputes = computed(
-    () =>
-      this.permissionService.has('Compute.Audit') &&
-      (this.permissionService.has('Compute.Allocate') || this.permissionService.has('Compute.Modify')),
+  readonly canManageComputes = computed(() =>
+    this.hasRoutePrivileges(this.layoutChildren.find((child) => child.path === 'controller/:controller_id/computes')?.data),
   );
 
   /**
@@ -128,17 +133,13 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
    * Access Management entry must not always point at Users: a Group (or Role,
    * Pool, ACE) auditor would be bounced to the system status page while the
    * tab they may actually use stays unreachable. Target the first tab the user
-   * can open, in the same order the tab bar renders them.
+   * can open, in the config's tab order — and hide the entry entirely when
+   * none is openable (that is exactly the management route's own 'any' gate).
    */
-  private readonly accessManagementTabs: ReadonlyArray<{ privilege: string; route: string }> = [
-    { privilege: 'User.Audit', route: 'users' },
-    { privilege: 'Group.Audit', route: 'groups' },
-    { privilege: 'Role.Audit', route: 'roles' },
-    { privilege: 'Pool.Audit', route: 'pools' },
-    { privilege: 'ACE.Audit', route: 'ACL' },
-  ];
+  private readonly managementChildren: readonly Route[] =
+    this.layoutChildren.find((child) => child.path === 'controller/:controller_id/management')?.children ?? [];
   readonly accessManagementRoute = computed(
-    () => this.accessManagementTabs.find((tab) => this.permissionService.has(tab.privilege))?.route ?? 'users',
+    () => this.managementChildren.find((child) => child.path && this.hasRoutePrivileges(child.data))?.path ?? null,
   );
 
   ngOnInit() {

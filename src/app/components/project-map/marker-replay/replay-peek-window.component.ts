@@ -12,7 +12,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
+import { ResizeEvent, ResizableDirective } from 'angular-resizable-element';
+import { FloatingWindowResizeHandlesComponent } from '../../floating-window/floating-window-resize-handles.component';
 
 import { MarkerReplayService } from '@services/marker-replay.service';
 import { SnapGuides, clampRect, clampWindowSize, snapDraggedWindow, snapResizedWindow } from './replay-geometry';
@@ -40,7 +41,7 @@ const MIN_TOP = 64;
   selector: 'app-replay-peek-window',
   templateUrl: './replay-peek-window.component.html',
   styleUrl: './replay-peek-window.component.scss',
-  imports: [CommonModule, MatIconModule, MatTooltipModule, ReplayDetailPaneComponent, ResizableDirective, ResizeHandleDirective],
+  imports: [CommonModule, MatIconModule, MatTooltipModule, ReplayDetailPaneComponent, ResizableDirective, FloatingWindowResizeHandlesComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReplayPeekWindowComponent implements OnDestroy {

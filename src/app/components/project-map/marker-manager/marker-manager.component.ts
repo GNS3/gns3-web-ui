@@ -34,7 +34,8 @@ import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { SafeColorValueAccessor } from '../../../directives/safe-color-value-accessor.directive';
 import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
+import { ResizableDirective } from 'angular-resizable-element';
+import { FloatingWindowResizeHandlesComponent } from '../../floating-window/floating-window-resize-handles.component';
 
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
@@ -133,7 +134,7 @@ function notGlobalName(control: AbstractControl): { notGlobalName: true } | null
     MatProgressSpinnerModule,
     CdkTextareaAutosize,
     ResizableDirective,
-    ResizeHandleDirective,
+    FloatingWindowResizeHandlesComponent,
     MarkerFormComponent,
     SafeColorValueAccessor,
     HasProjectPrivilegeDirective,

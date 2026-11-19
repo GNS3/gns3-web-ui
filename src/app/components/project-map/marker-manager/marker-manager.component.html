@@ -20,46 +20,7 @@
   (resizeEnd)="chrome.onResizeEnd($event)"
 >
   @if (!isMinimized()) {
-  <div
-    class="gns3-window__resize-handle gns3-window__resize-handle--top"
-    mwlResizeHandle
-    [resizeEdges]="{ top: true }"
-  ></div>
-  <div
-    class="gns3-window__resize-handle gns3-window__resize-handle--right"
-    mwlResizeHandle
-    [resizeEdges]="{ right: true }"
-  ></div>
-  <div
-    class="gns3-window__resize-handle gns3-window__resize-handle--bottom"
-    mwlResizeHandle
-    [resizeEdges]="{ bottom: true }"
-  ></div>
-  <div
-    class="gns3-window__resize-handle gns3-window__resize-handle--left"
-    mwlResizeHandle
-    [resizeEdges]="{ left: true }"
-  ></div>
-  <div
-    class="gns3-window__resize-handle gns3-window__resize-handle--top-left"
-    mwlResizeHandle
-    [resizeEdges]="{ top: true, left: true }"
-  ></div>
-  <div
-    class="gns3-window__resize-handle gns3-window__resize-handle--top-right"
-    mwlResizeHandle
-    [resizeEdges]="{ top: true, right: true }"
-  ></div>
-  <div
-    class="gns3-window__resize-handle gns3-window__resize-handle--bottom-left"
-    mwlResizeHandle
-    [resizeEdges]="{ bottom: true, left: true }"
-  ></div>
-  <div
-    class="gns3-window__resize-handle gns3-window__resize-handle--bottom-right"
-    mwlResizeHandle
-    [resizeEdges]="{ bottom: true, right: true }"
-  ></div>
+  <app-floating-window-resize-handles />
   }
 
   <div class="marker-manager__content">

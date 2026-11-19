@@ -16,7 +16,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
+import { ResizableDirective } from 'angular-resizable-element';
+import { FloatingWindowResizeHandlesComponent } from '../../floating-window/floating-window-resize-handles.component';
 import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeFileManagerPageComponent } from '../node-file-manager-page/node-file-manager-page.component';
@@ -28,7 +29,7 @@ import { FloatingWindowChrome } from '../../floating-window/floating-window-chro
   selector: 'app-node-file-manager-inline',
   templateUrl: './node-file-manager-inline.component.html',
   styleUrl: './node-file-manager-inline.component.scss',
-  imports: [CommonModule, MatIconModule, MatButtonModule, ResizableDirective, ResizeHandleDirective, NodeFileManagerPageComponent],
+  imports: [CommonModule, MatIconModule, MatButtonModule, ResizableDirective, FloatingWindowResizeHandlesComponent, NodeFileManagerPageComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeFileManagerInlineComponent {

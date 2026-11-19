@@ -79,10 +79,15 @@ onResizing(event: ResizeEvent): void {
   the edge strips stop and aiming near the visible corner hits nothing.
 - Accepted trade-offs: a window clamped flush to a viewport edge loses that
   side's handle (grab another edge); snapped neighbours share the seam gap.
-- Copy `replay-window-handles.scss` — including the trailing
-  "silent gesture" defense-in-depth rule that pins handles transparent while
-  `--resizing` (equal specificity, later-wins — keep it AFTER any future
-  tint rule).
+- Render the shared
+  `FloatingWindowResizeHandlesComponent`
+  (`src/app/components/floating-window/floating-window-resize-handles.component.ts`)
+  inside the `mwlResizable` element — `prefix="gns3-replay"` for the replay
+  fleet, the default `gns3-window` for kit windows. It carries the hit-zone
+  styles for both prefixes, including the trailing "silent gesture"
+  defense-in-depth rule that pins handles transparent while `--resizing`
+  (equal specificity, later-wins — kept AFTER any future tint rule). Do not
+  copy the eight handle divs into a window template.
 - **The window ROOT must never clip.** `overflow: hidden` on the root
   deletes every handle (they live outside the border box) and resize dies
   silently. Put `overflow: hidden` + the corner radius on the INNER content
@@ -170,7 +175,8 @@ Two adoption levels:
 
 - **`FloatingWindowChrome`** — full controller (signals + drag + resize).
   Use for new windows and for left/top-anchored windows.
-- **Kit helpers only** — `clampRect`/`clampWindowSize` + the SCSS partials,
+- **Kit helpers only** — `clampRect`/`clampWindowSize` + the shared surface
+  partials and the resize-handles component,
   when the window owns an unusual placement model (bottom/right anchors,
   maximize modes, pre-existing drag overlays). Do NOT force the controller
   on them: it is left/top semantics and would fight their anchor math.

@@ -16,7 +16,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
+import { ResizeEvent, ResizableDirective } from 'angular-resizable-element';
+import { FloatingWindowResizeHandlesComponent } from '../../floating-window/floating-window-resize-handles.component';
 
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
@@ -78,7 +79,7 @@ export const REPLAY_WINDOW_Z_BAND = 100;
     ReplayDetailWindowComponent,
     ReplayPeekWindowComponent,
     ResizableDirective,
-    ResizeHandleDirective,
+    FloatingWindowResizeHandlesComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

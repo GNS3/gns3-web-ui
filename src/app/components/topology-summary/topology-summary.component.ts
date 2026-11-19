@@ -21,6 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ResizableModule, ResizeEvent } from 'angular-resizable-element';
+import { FloatingWindowResizeHandlesComponent } from '../floating-window/floating-window-resize-handles.component';
 import { clampRect, clampWindowSize } from '../floating-window/floating-window-geometry';
 import { Subscription } from 'rxjs';
 import { LinksDataSource } from '../../cartography/datasources/links-datasource';
@@ -58,6 +59,7 @@ import { MarkerLegendComponent } from '../project-map/marker-legend/marker-legen
     MatMenuModule,
     MatCheckboxModule,
     ResizableModule,
+    FloatingWindowResizeHandlesComponent,
     MarkerLegendComponent,
   ],
 })

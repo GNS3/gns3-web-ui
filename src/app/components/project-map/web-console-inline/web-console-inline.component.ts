@@ -21,7 +21,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
+import { ResizableDirective } from 'angular-resizable-element';
+import { FloatingWindowResizeHandlesComponent } from '../../floating-window/floating-window-resize-handles.component';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -38,7 +39,7 @@ import { FloatingWindowChrome } from '../../floating-window/floating-window-chro
     MatIconModule,
     MatButtonModule,
     ResizableDirective,
-    ResizeHandleDirective,
+    FloatingWindowResizeHandlesComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

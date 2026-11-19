@@ -24,6 +24,8 @@ import { ProgressService } from '../../common/progress/progress.service';
 import { Project, isDistributedCopy, isFrozenTemplate, isTerminalDistributionStatus } from '@models/project';
 import { ProjectStatistics } from '@models/project-statistics';
 import { Controller } from '@models/controller';
+import { ProjectBadgesComponent } from './project-badges.component';
+import { ProjectActionsComponent } from './project-actions.component';
 import { ProjectService } from '@services/project.service';
 import { PermissionService } from '@services/permission.service';
 import { NotificationService, ProjectNotification } from '@services/notification.service';
@@ -86,6 +88,8 @@ import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
     MatTooltipModule,
     TopologyPreviewComponent,
     HasPrivilegeDirective,
+    ProjectBadgesComponent,
+    ProjectActionsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

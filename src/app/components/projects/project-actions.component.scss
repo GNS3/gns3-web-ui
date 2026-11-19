@@ -1,0 +1,61 @@
+// The card-overlay and details-panel action buttons. The
+// `projects__action-button` colour rules are shared with the projects
+// page's table view through _project-action-buttons.scss; everything here
+// applies only to buttons this component renders.
+
+@use '../../../styles/buttons' as buttons;
+@use './project-action-buttons';
+
+// Card-overlay buttons carry the action-icon sizing the page applies to its
+// table action cell (the page's container-scoped rule cannot reach inside
+// this component).
+.projects__action-button {
+  @include buttons.action-icon;
+  --mat-icon-button-state-layer-color: var(--projects-action-color);
+
+  mat-progress-spinner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.projects__details-action-btn {
+  @include buttons.action-icon;
+  --projects-details-action-color: var(--mat-sys-on-surface-variant);
+  --mat-icon-button-state-layer-color: var(--projects-details-action-color);
+
+  &:not(:disabled) mat-icon {
+    color: var(--projects-details-action-color);
+  }
+
+  &:disabled mat-icon {
+    color: var(--gns3-button-disabled-label-color);
+  }
+}
+
+.projects__details-action-btn--start,
+.projects__details-action-btn--edit {
+  --projects-details-action-color: var(--mat-sys-primary);
+}
+
+.projects__details-action-btn--stop,
+.projects__details-action-btn--export {
+  --projects-details-action-color: var(--mat-sys-tertiary);
+}
+
+.projects__details-action-btn--duplicate,
+.projects__details-action-btn--distribute,
+.projects__details-action-btn--share {
+  --projects-details-action-color: var(--mat-sys-secondary);
+}
+
+.projects__details-action-btn--delete {
+  --projects-details-action-color: var(--mat-sys-error);
+}

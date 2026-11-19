@@ -3,9 +3,9 @@
 // follows the replay-detail-window family (surface, 2px border, same shadow).
 
 // NO overflow:hidden on the window itself — its resize handles live entirely
-// OUTSIDE the border box (see replay-window-handles.scss for the geometry);
+// OUTSIDE the border box (see the shared resize-handles component for the
+// geometry);
 // the header/body carry the corner radii instead.
-@use './replay-window-handles';
 @use './replay-snap-guides';
 @use './replay-window-zoom';
 @use './replay-window-header';

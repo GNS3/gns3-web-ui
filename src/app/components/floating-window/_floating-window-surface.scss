@@ -6,7 +6,7 @@
 // that component's style encapsulation — this file is not global on purpose.
 //
 // NO overflow:hidden on the window: its resize handles live entirely OUTSIDE
-// the border box (see _floating-window-handles) and would be clipped. The
+// the border box (see the shared resize-handles component) and would be
 // header/body carry the corner radii instead.
 
 .gns3-window {

@@ -146,61 +146,17 @@
               <a [routerLink]="['/controller', controller.id, 'project', row.project_id]" class="projects__link">
                 {{ row.name }}
               </a>
-              @if (row.share_count) {
-              @if (canManageShares(row)) {
-              <button
-                type="button"
-                class="projects__share-badge"
-                (click)="openShares($event, row)"
-                (mouseenter)="loadShareRecipients(row)"
-                [matTooltip]="shareTooltip(row)"
-                [matTooltipClass]="['custom-tooltip', 'custom-tooltip--multiline']"
-                aria-label="View and manage shares"
-              >
-                <mat-icon class="projects__share-badge-icon">share</mat-icon>
-                {{ row.share_count }}
-              </button>
-              } @else {
-              <span
-                class="projects__share-badge projects__share-badge--static"
-                [matTooltip]="shareTooltip(row)"
-                aria-label="Shared project"
-              >
-                <mat-icon class="projects__share-badge-icon">share</mat-icon>
-                {{ row.share_count }}
-              </span>
-              }
-              }
-              @if (isDistributed(row)) {
-              <button
-                type="button"
-                class="projects__share-badge projects__distributed-badge"
-                (click)="openDistributionHistory($event, row)"
-                matTooltip="Distributed — click to view the distribution history"
-                aria-label="View distribution history"
-              >
-                <mat-icon class="projects__share-badge-icon">people</mat-icon>
-              </button>
-              }
-              @if (isFrozen(row)) {
-              <button
-                type="button"
-                class="projects__share-badge projects__frozen-badge"
-                (click)="openDistributionHistory($event, row)"
-                matTooltip="Frozen template — distributed copies exist. Click to manage distributions."
-                aria-label="Manage distributions"
-              >
-                <mat-icon class="projects__share-badge-icon">ac_unit</mat-icon>
-              </button>
-              }
-              @if (isProvidedByTeacher(row)) {
-              <span
-                class="projects__share-badge projects__provided-badge"
-                matTooltip="Provided by the teacher — duplication, export and re-distribution are disabled."
-              >
-                <mat-icon class="projects__share-badge-icon">school</mat-icon>
-              </span>
-              }
+              <app-project-badges
+                [shareCount]="row.share_count"
+                [canManageShares]="canManageShares(row)"
+                [isDistributed]="isDistributed(row)"
+                [isFrozen]="isFrozen(row)"
+                [isProvidedByTeacher]="isProvidedByTeacher(row)"
+                [shareTooltip]="shareTooltip(row)"
+                (manageSharesClick)="openShares($event, row)"
+                (recipientsHover)="loadShareRecipients(row)"
+                (historyClick)="openDistributionHistory($event, row)"
+              />
             </mat-cell>
           </ng-container>
 
@@ -380,183 +336,42 @@
                 <span class="projects__card-status-dot"></span>
                 {{ project.status === 'opened' ? 'Running' : 'Stopped' }}
               </span>
-              @if (project.share_count) {
-              @if (canManageShares(project)) {
-              <button
-                type="button"
-                class="projects__share-badge"
-                (click)="openShares($event, project)"
-                (mouseenter)="loadShareRecipients(project)"
-                [matTooltip]="shareTooltip(project)"
-                [matTooltipClass]="['custom-tooltip', 'custom-tooltip--multiline']"
-                aria-label="View and manage shares"
-              >
-                <mat-icon class="projects__share-badge-icon">share</mat-icon>
-                {{ project.share_count }}
-              </button>
-              } @else {
-              <span
-                class="projects__share-badge projects__share-badge--static"
-                [matTooltip]="shareTooltip(project)"
-                aria-label="Shared project"
-              >
-                <mat-icon class="projects__share-badge-icon">share</mat-icon>
-                {{ project.share_count }}
-              </span>
-              }
-              }
-              @if (isDistributed(project)) {
-              <button
-                type="button"
-                class="projects__share-badge projects__distributed-badge"
-                (click)="openDistributionHistory($event, project)"
-                matTooltip="Distributed — click to view the distribution history"
-                aria-label="View distribution history"
-              >
-                <mat-icon class="projects__share-badge-icon">people</mat-icon>
-              </button>
-              }
-              @if (isFrozen(project)) {
-              <button
-                type="button"
-                class="projects__share-badge projects__frozen-badge"
-                (click)="openDistributionHistory($event, project)"
-                matTooltip="Frozen template — distributed copies exist. Click to manage distributions."
-                aria-label="Manage distributions"
-              >
-                <mat-icon class="projects__share-badge-icon">ac_unit</mat-icon>
-              </button>
-              }
-              @if (isProvidedByTeacher(project)) {
-              <span
-                class="projects__share-badge projects__provided-badge"
-                matTooltip="Provided by the teacher — duplication, export and re-distribution are disabled."
-              >
-                <mat-icon class="projects__share-badge-icon">school</mat-icon>
-              </span>
-              }
+              <app-project-badges
+                [shareCount]="project.share_count"
+                [canManageShares]="canManageShares(project)"
+                [isDistributed]="isDistributed(project)"
+                [isFrozen]="isFrozen(project)"
+                [isProvidedByTeacher]="isProvidedByTeacher(project)"
+                [shareTooltip]="shareTooltip(project)"
+                (manageSharesClick)="openShares($event, project)"
+                (recipientsHover)="loadShareRecipients(project)"
+                (historyClick)="openDistributionHistory($event, project)"
+              />
             </div>
             @if (project.created_by) {
             <p class="projects__card-owner">{{ project.created_by }}</p>
             }
           </a>
 
-          <!-- Card Actions -->
-          <div class="projects__card-actions">
-            @if (project.status === 'closed') {
-            <button
-              mat-icon-button
-              class="projects__action-button projects__action-button--start"
-              *appHasPrivilege="'Project.Allocate'"
-              (click)="$event.stopPropagation(); open(project)"
-              matTooltip="Start project"
-              aria-label="Start project"
-            >
-              <mat-icon>play_arrow</mat-icon>
-            </button>
-            } @if (project.status === 'opened') {
-            <button
-              mat-icon-button
-              class="projects__action-button projects__action-button--stop"
-              *appHasPrivilege="'Project.Allocate'"
-              (click)="$event.stopPropagation(); close(project)"
-              matTooltip="Stop project"
-              aria-label="Stop project"
-              [disabled]="isProjectLoading(project.project_id)"
-            >
-              @if (isProjectLoading(project.project_id)) {
-              <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
-              } @else {
-              <mat-icon>pause</mat-icon>
-              }
-            </button>
-            }
-            <button
-              mat-icon-button
-              class="projects__action-button projects__action-button--details"
-              *appHasPrivilege="'Project.Audit'"
-              (click)="$event.stopPropagation(); selectProject(project)"
-              matTooltip="View project details"
-              aria-label="View project details"
-            >
-              <mat-icon>info</mat-icon>
-            </button>
-            @if (!isFrozen(project)) {
-            <button
-              mat-icon-button
-              class="projects__action-button projects__action-button--edit"
-              *appHasPrivilege="'Project.Modify'"
-              (click)="$event.stopPropagation(); editProject(project)"
-              matTooltip="Edit project"
-              aria-label="Edit project"
-            >
-              <mat-icon>edit</mat-icon>
-            </button>
-            }
-            @if (project.status === 'closed' && !isProvidedByTeacher(project)) {
-            <button
-              mat-icon-button
-              class="projects__action-button projects__action-button--duplicate"
-              *appHasPrivilege="'Project.Duplicate'"
-              (click)="$event.stopPropagation(); duplicate(project)"
-              matTooltip="Duplicate project"
-              aria-label="Duplicate project"
-            >
-              <mat-icon>content_copy</mat-icon>
-            </button>
-            @if (canDistribute(project)) {
-            <button
-              mat-icon-button
-              class="projects__action-button projects__action-button--distribute"
-              (click)="$event.stopPropagation(); distribute(project)"
-              matTooltip="Distribute project"
-              aria-label="Distribute project"
-            >
-              <mat-icon>people</mat-icon>
-            </button>
-            }
-            }
-            @if (canManageShares(project)) {
-            <button
-              mat-icon-button
-              class="projects__action-button projects__action-button--share"
-              (click)="$event.stopPropagation(); share(project)"
-              matTooltip="Share project"
-              aria-label="Share project"
-            >
-              <mat-icon>share</mat-icon>
-            </button>
-            }
-            @if (!isProvidedByTeacher(project)) {
-            <button
-              mat-icon-button
-              class="projects__action-button projects__action-button--export"
-              *appHasPrivilege="'Project.Export'"
-              (click)="$event.stopPropagation(); exportSelectProject(project)"
-              matTooltip="Export project"
-              aria-label="Export project"
-            >
-              <mat-icon>file_download</mat-icon>
-            </button>
-            }
-            @if (project.status === 'closed') {
-            <button
-              mat-icon-button
-              class="projects__action-button projects__action-button--delete"
-              *appHasPrivilege="'Project.Allocate'"
-              (click)="$event.stopPropagation(); delete(project)"
-              matTooltip="Delete project"
-              aria-label="Delete project"
-              [disabled]="isProjectLoading(project.project_id)"
-            >
-              @if (isProjectLoading(project.project_id)) {
-              <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
-              } @else {
-              <mat-icon>delete</mat-icon>
-              }
-            </button>
-            }
-          </div>
+          <app-project-actions
+            variant="card"
+            [project]="project"
+            [canManageShares]="canManageShares(project)"
+            [canDistribute]="canDistribute(project)"
+            [canUnfreeze]="canUnfreeze(project)"
+            [isFrozen]="isFrozen(project)"
+            [isProvidedByTeacher]="isProvidedByTeacher(project)"
+            [isProjectLoading]="isProjectLoading(project.project_id)"
+            (start)="open(project)"
+            (stop)="close(project)"
+            (details)="selectProject(project)"
+            (edit)="editProject(project)"
+            (duplicate)="duplicate(project)"
+            (distribute)="distribute(project)"
+            (share)="share(project)"
+            (exportProject)="exportSelectProject(project)"
+            (deleteProject)="delete(project)"
+          />
         </div>
         } @empty {
         <div class="projects__empty">
@@ -735,112 +550,25 @@
 
         <!-- Details Action Buttons — one compact icon row (tooltips carry the
              labels; five text buttons don't fit the panel width) -->
-        <div class="projects__details-actions">
-          @if (project.status === 'closed') {
-          <button
-            mat-icon-button
-            class="projects__details-action-btn projects__details-action-btn--start"
-            *appHasPrivilege="'Project.Allocate'"
-            (click)="open(project); closeDetails()"
-            matTooltip="Start project"
-            aria-label="Start project"
-          >
-            <mat-icon>play_arrow</mat-icon>
-          </button>
-          } @if (project.status === 'opened') {
-          <button
-            mat-icon-button
-            class="projects__details-action-btn projects__details-action-btn--stop"
-            *appHasPrivilege="'Project.Allocate'"
-            (click)="close(project)"
-            matTooltip="Stop project"
-            aria-label="Stop project"
-          >
-            <mat-icon>pause</mat-icon>
-          </button>
-          }
-          @if (!isFrozen(project)) {
-          <button
-            mat-icon-button
-            class="projects__details-action-btn projects__details-action-btn--edit"
-            *appHasPrivilege="'Project.Modify'"
-            (click)="editProject(project)"
-            matTooltip="Edit project"
-            aria-label="Edit project"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
-          }
-          @if (isFrozen(project) && canUnfreeze(project)) {
-          <button
-            mat-icon-button
-            class="projects__details-action-btn projects__details-action-btn--unfreeze"
-            (click)="unfreeze(project)"
-            matTooltip="Unfreeze template"
-            aria-label="Unfreeze template"
-          >
-            <mat-icon>lock_open</mat-icon>
-          </button>
-          }
-          @if (project.status === 'closed' && !isProvidedByTeacher(project)) {
-          <button
-            mat-icon-button
-            class="projects__details-action-btn projects__details-action-btn--duplicate"
-            *appHasPrivilege="'Project.Duplicate'"
-            (click)="duplicate(project)"
-            matTooltip="Duplicate project"
-            aria-label="Duplicate project"
-          >
-            <mat-icon>content_copy</mat-icon>
-          </button>
-          @if (canDistribute(project)) {
-          <button
-            mat-icon-button
-            class="projects__details-action-btn projects__details-action-btn--distribute"
-            (click)="distribute(project)"
-            matTooltip="Distribute project"
-            aria-label="Distribute project"
-          >
-            <mat-icon>people</mat-icon>
-          </button>
-          }
-          }
-          @if (canManageShares(project)) {
-          <button
-            mat-icon-button
-            class="projects__details-action-btn projects__details-action-btn--share"
-            (click)="share(project)"
-            matTooltip="Share project"
-            aria-label="Share project"
-          >
-            <mat-icon>share</mat-icon>
-          </button>
-          }
-          @if (!isProvidedByTeacher(project)) {
-          <button
-            mat-icon-button
-            class="projects__details-action-btn projects__details-action-btn--export"
-            *appHasPrivilege="'Project.Export'"
-            (click)="exportSelectProject(project)"
-            matTooltip="Export project"
-            aria-label="Export project"
-          >
-            <mat-icon>file_download</mat-icon>
-          </button>
-          }
-          @if (project.status === 'closed') {
-          <button
-            mat-icon-button
-            class="projects__details-action-btn projects__details-action-btn--delete"
-            *appHasPrivilege="'Project.Allocate'"
-            (click)="delete(project); closeDetails()"
-            matTooltip="Delete project"
-            aria-label="Delete project"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
-          }
-        </div>
+        <app-project-actions
+          variant="details"
+          [project]="project"
+          [canManageShares]="canManageShares(project)"
+          [canDistribute]="canDistribute(project)"
+          [canUnfreeze]="canUnfreeze(project)"
+          [isFrozen]="isFrozen(project)"
+          [isProvidedByTeacher]="isProvidedByTeacher(project)"
+          [isProjectLoading]="isProjectLoading(project.project_id)"
+          (start)="open(project); closeDetails()"
+          (stop)="close(project)"
+          (edit)="editProject(project)"
+          (unfreeze)="unfreeze(project)"
+          (duplicate)="duplicate(project)"
+          (distribute)="distribute(project)"
+          (share)="share(project)"
+          (exportProject)="exportSelectProject(project)"
+          (deleteProject)="delete(project); closeDetails()"
+        />
       </div>
       }
     </div>

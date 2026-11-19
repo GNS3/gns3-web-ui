@@ -87,7 +87,7 @@ describe('ShareProjectDialogComponent', () => {
   it('disables submit until a target is picked', () => {
     expect(component.canSubmit()).toBe(false);
 
-    component.selectUser('student-01');
+    component.recipientPicker().selectUser('student-01');
 
     expect(component.canSubmit()).toBe(true);
   });
@@ -97,13 +97,13 @@ describe('ShareProjectDialogComponent', () => {
 
     expect(component.canSubmit()).toBe(false);
 
-    component.addUser('student-01');
+    component.recipientPicker().addUser('student-01');
 
     expect(component.canSubmit()).toBe(true);
   });
 
   it('submits a single-user share with the default role', () => {
-    component.selectUser('student-01');
+    component.recipientPicker().selectUser('student-01');
     component.onSubmitClick();
 
     expect(mockProjectService.share).toHaveBeenCalledWith(controller, 'proj-1', {
@@ -114,8 +114,8 @@ describe('ShareProjectDialogComponent', () => {
 
   it('submits every chip in multiple-users mode', () => {
     component.targetMode.set('users');
-    component.addUser('student-01');
-    component.addUser('student-02');
+    component.recipientPicker().addUser('student-01');
+    component.recipientPicker().addUser('student-02');
     component.onSubmitClick();
 
     expect(mockProjectService.share).toHaveBeenCalledWith(controller, 'proj-1', {
@@ -126,7 +126,7 @@ describe('ShareProjectDialogComponent', () => {
 
   it('submits a group share with the selected role', () => {
     component.targetMode.set('group');
-    component.selectGroup('Students');
+    component.recipientPicker().selectGroup('Students');
     component.role.set('User');
     component.onSubmitClick();
 
@@ -137,21 +137,21 @@ describe('ShareProjectDialogComponent', () => {
   });
 
   it('toasts, reloads the list and resets the form on success — dialog stays open', () => {
-    component.selectUser('student-01');
+    component.recipientPicker().selectUser('student-01');
     mockProjectService.listShares.mockClear();
     component.onSubmitClick();
 
     expect(mockToasterService.success).toHaveBeenCalledWith(expect.stringContaining('student-01'));
     expect(mockProjectService.listShares).toHaveBeenCalledTimes(1);
-    expect(component.selectedUser()).toBeNull();
-    expect(component.userFilter()).toBe('');
+    expect(component.recipientPicker().selectedUser()).toBeNull();
+    expect(component.recipientPicker().userFilter()).toBe('');
     expect(component.isSubmitting()).toBe(false);
     expect(mockDialogRef.close).not.toHaveBeenCalled();
   });
 
   it('toasts and keeps the form when sharing fails', () => {
     mockProjectService.share.mockReturnValue(throwError(() => new Error('empty group')));
-    component.selectUser('student-01');
+    component.recipientPicker().selectUser('student-01');
     component.onSubmitClick();
 
     expect(mockToasterService.error).toHaveBeenCalledWith('empty group');

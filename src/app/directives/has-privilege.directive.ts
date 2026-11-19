@@ -1,5 +1,6 @@
-import { Directive, TemplateRef, ViewContainerRef, computed, effect, inject, input } from '@angular/core';
+import { Directive, Signal, inject, input } from '@angular/core';
 import { PermissionService } from '@services/permission.service';
+import { PrivilegeGateDirective } from './privilege-gate.directive';
 
 /**
  * Structural directive rendering global chrome by privilege.
@@ -23,9 +24,7 @@ import { PermissionService } from '@services/permission.service';
   selector: '[appHasPrivilege]',
   standalone: true,
 })
-export class HasPrivilegeDirective {
-  private readonly templateRef = inject<TemplateRef<unknown>>(TemplateRef);
-  private readonly viewContainer = inject(ViewContainerRef);
+export class HasPrivilegeDirective extends PrivilegeGateDirective {
   private readonly permissionService = inject(PermissionService);
 
   /** A single privilege name, or a list combined per `match`. */
@@ -36,19 +35,11 @@ export class HasPrivilegeDirective {
   /** How a privilege list is combined: 'all' (default) or 'any'. */
   readonly match = input<'all' | 'any'>('all');
 
-  private readonly allowed = computed(() => {
-    const value = this.appHasPrivilege();
-    const required = Array.isArray(value) ? value : [value];
-    const privileges = this.permissionService.privileges();
-    return this.match() === 'any' ? required.some((privilege) => privileges.has(privilege)) : required.every((privilege) => privileges.has(privilege));
-  });
+  protected readonly requiredPrivileges: Signal<string | string[]> = this.appHasPrivilege;
+  protected readonly matchMode: Signal<'all' | 'any'> = this.match;
+  protected readonly privilegeSet: Signal<ReadonlySet<string>> = this.permissionService.privileges;
 
   constructor() {
-    effect(() => {
-      this.viewContainer.clear();
-      if (this.allowed()) {
-        this.viewContainer.createEmbeddedView(this.templateRef);
-      }
-    });
+    super();
   }
 }

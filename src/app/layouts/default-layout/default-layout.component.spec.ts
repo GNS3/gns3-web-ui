@@ -71,7 +71,38 @@ describe('DefaultLayoutComponent (sidebar privilege links)', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: { get: (key: string) => (key === 'controller_id' ? '1' : null) } } },
+          useValue: {
+            snapshot: { paramMap: { get: (key: string) => (key === 'controller_id' ? '1' : null) } },
+            // The sidebar derives its privilege gates from this layout's
+            // route config — mirror the app-routing structure (the privilege
+            // sets live only there, which is the point of the derivation).
+            routeConfig: {
+              children: [
+                {
+                  path: 'controller/:controller_id/image-manager',
+                  data: { privileges: ['Image.Audit'], privilegesAny: ['Image.Allocate', 'Compute.Modify'] },
+                },
+                {
+                  path: 'controller/:controller_id/preferences',
+                  data: { privileges: ['Template.Audit'], privilegesAny: ['Template.Allocate', 'Template.Modify'] },
+                },
+                {
+                  path: 'controller/:controller_id/computes',
+                  data: { privileges: ['Compute.Audit'], privilegesAny: ['Compute.Allocate', 'Compute.Modify'] },
+                },
+                {
+                  path: 'controller/:controller_id/management',
+                  children: [
+                    { path: 'users', data: { privileges: ['User.Audit'] } },
+                    { path: 'groups', data: { privileges: ['Group.Audit'] } },
+                    { path: 'roles', data: { privileges: ['Role.Audit'] } },
+                    { path: 'pools', data: { privileges: ['Pool.Audit'] } },
+                    { path: 'ACL', data: { privileges: ['ACE.Audit'] } },
+                  ],
+                },
+              ],
+            },
+          },
         },
         { provide: ControllerManagementService, useValue: { controllerStatusChanged: EMPTY, stopAll: vi.fn() } },
         {

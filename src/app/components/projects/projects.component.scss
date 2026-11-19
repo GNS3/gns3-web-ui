@@ -1,6 +1,7 @@
 @use '../../../styles/buttons' as buttons;
 @use '../../../styles/page-layout' as page;
 @use '../../../styles/toolbar' as toolbar;
+@use './project-action-buttons';
 
 /**
  * GNS3 Projects Component Styles
@@ -319,82 +320,6 @@ mat-cell {
 }
 
 /* =============================================
-// Share Badge (table + grid card)
-// ============================================= */
-.projects__share-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-left: 8px;
-  padding: 2px 8px;
-  border: none;
-  border-radius: 20px;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  vertical-align: middle;
-  background-color: color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent);
-  color: var(--mat-sys-tertiary);
-  cursor: pointer;
-  transition: background-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-tertiary) 20%, transparent);
-  }
-}
-
-.projects__share-badge-icon {
-  font-size: 14px;
-  width: 14px;
-  height: 14px;
-}
-
-// Non-interactive variant for users without Project.Share: the count is
-// plain information, the recipient list and the manage dialog are not
-// served to them.
-.projects__share-badge--static {
-  cursor: default;
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent);
-  }
-}
-
-// The distributed badge reuses the share-badge pill without a count: it
-// marks the project as distributed, the details live one click away.
-.projects__distributed-badge {
-  background-color: color-mix(in srgb, var(--mat-sys-secondary) 12%, transparent);
-  color: var(--mat-sys-secondary);
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-secondary) 20%, transparent);
-  }
-}
-
-// A frozen template: copies exist and the server refuses modifications.
-// Clicking opens the distribution history, where the copies are managed.
-.projects__frozen-badge {
-  background-color: color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent);
-  color: var(--mat-sys-tertiary);
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-tertiary) 20%, transparent);
-  }
-}
-
-// A distributed copy the current user received: informational only.
-.projects__provided-badge {
-  background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
-  color: var(--mat-sys-primary);
-  cursor: default;
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
-  }
-}
-
-/* =============================================
 // Action Buttons
 // ============================================= */
 .projects__actions-cell {
@@ -405,52 +330,7 @@ mat-cell {
 }
 
 // Icon buttons - Material Design 3 style
-.projects__actions-cell button[mat-icon-button],
-.projects__card-actions button[mat-icon-button] {
-  @include buttons.action-icon;
-  --mat-icon-button-state-layer-color: var(--projects-action-color);
-}
-
-// Semantic action colors are theme-token based and shared by list/grid view.
-.projects__action-button {
-  --projects-action-color: var(--mat-sys-on-surface-variant);
-  color: var(--projects-action-color);
-  --mdc-circular-progress-active-indicator-color: var(--projects-action-color);
-
-  &:not(:disabled) mat-icon {
-    color: var(--projects-action-color);
-  }
-
-  &:disabled {
-    color: var(--gns3-button-disabled-label-color);
-    --projects-action-color: var(--gns3-button-disabled-label-color);
-  }
-}
-
-.projects__action-button--start,
-.projects__action-button--edit {
-  --projects-action-color: var(--mat-sys-primary);
-}
-
-.projects__action-button--stop,
-.projects__action-button--export {
-  --projects-action-color: var(--mat-sys-tertiary);
-}
-
-.projects__action-button--details,
-.projects__action-button--duplicate,
-.projects__action-button--distribute,
-.projects__action-button--share {
-  --projects-action-color: var(--mat-sys-secondary);
-}
-
-.projects__action-button--delete {
-  --projects-action-color: var(--mat-sys-error);
-}
-
-// Loading state - spinner inside icon button
-.projects__actions-cell button[mat-icon-button],
-.projects__card-actions button[mat-icon-button] {
+.projects__actions-cell button[mat-icon-button] {
   mat-progress-spinner {
     display: inline-flex;
     align-items: center;
@@ -463,6 +343,14 @@ mat-cell {
     cursor: default;
   }
 }
+
+// Semantic action colors are theme-token based and shared by list/grid view.
+
+.projects__actions-cell button[mat-icon-button] {
+  @include buttons.action-icon;
+  --mat-icon-button-state-layer-color: var(--projects-action-color);
+}
+// Loading state - spinner inside icon button
 
 /* =============================================
 // Table and grid pagination
@@ -556,12 +444,6 @@ mat-cell {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.3px;
-}
-
-/* Inside the card meta row the badge sits next to the status chip */
-.projects__card-meta .projects__share-badge {
-  margin-left: 0;
-  padding: 4px 10px;
 }
 
 .projects__card-status--opened {
@@ -897,40 +779,6 @@ mat-cell {
   align-items: center;
   justify-content: center;
   gap: var(--gns3-density-space-2);
-}
-
-.projects__details-action-btn {
-  @include buttons.action-icon;
-  --projects-details-action-color: var(--mat-sys-on-surface-variant);
-  --mat-icon-button-state-layer-color: var(--projects-details-action-color);
-
-  &:not(:disabled) mat-icon {
-    color: var(--projects-details-action-color);
-  }
-
-  &:disabled mat-icon {
-    color: var(--gns3-button-disabled-label-color);
-  }
-}
-
-.projects__details-action-btn--start,
-.projects__details-action-btn--edit {
-  --projects-details-action-color: var(--mat-sys-primary);
-}
-
-.projects__details-action-btn--stop,
-.projects__details-action-btn--export {
-  --projects-details-action-color: var(--mat-sys-tertiary);
-}
-
-.projects__details-action-btn--duplicate,
-.projects__details-action-btn--distribute,
-.projects__details-action-btn--share {
-  --projects-details-action-color: var(--mat-sys-secondary);
-}
-
-.projects__details-action-btn--delete {
-  --projects-details-action-color: var(--mat-sys-error);
 }
 
 /* =============================================

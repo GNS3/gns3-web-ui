@@ -1,0 +1,55 @@
+@if (shareCount()) {
+@if (canManageShares()) {
+<button
+  type="button"
+  class="projects__share-badge"
+  (click)="manageSharesClick.emit($event)"
+  (mouseenter)="recipientsHover.emit()"
+  [matTooltip]="shareTooltip()"
+  [matTooltipClass]="['custom-tooltip', 'custom-tooltip--multiline']"
+  aria-label="View and manage shares"
+>
+  <mat-icon class="projects__share-badge-icon">share</mat-icon>
+  {{ shareCount() }}
+</button>
+} @else {
+<span
+  class="projects__share-badge projects__share-badge--static"
+  [matTooltip]="shareTooltip()"
+  aria-label="Shared project"
+>
+  <mat-icon class="projects__share-badge-icon">share</mat-icon>
+  {{ shareCount() }}
+</span>
+}
+}
+@if (isDistributed()) {
+<button
+  type="button"
+  class="projects__share-badge projects__distributed-badge"
+  (click)="historyClick.emit($event)"
+  matTooltip="Distributed — click to view the distribution history"
+  aria-label="View distribution history"
+>
+  <mat-icon class="projects__share-badge-icon">people</mat-icon>
+</button>
+}
+@if (isFrozen()) {
+<button
+  type="button"
+  class="projects__share-badge projects__frozen-badge"
+  (click)="historyClick.emit($event)"
+  matTooltip="Frozen template — distributed copies exist. Click to manage distributions."
+  aria-label="Manage distributions"
+>
+  <mat-icon class="projects__share-badge-icon">ac_unit</mat-icon>
+</button>
+}
+@if (isProvidedByTeacher()) {
+<span
+  class="projects__share-badge projects__provided-badge"
+  matTooltip="Provided by the teacher — duplication, export and re-distribution are disabled."
+>
+  <mat-icon class="projects__share-badge-icon">school</mat-icon>
+</span>
+}

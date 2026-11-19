@@ -15,7 +15,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subscription } from 'rxjs';
 import { select } from 'd3-selection';
-import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
+import { ResizeEvent, ResizableDirective } from 'angular-resizable-element';
+import { FloatingWindowResizeHandlesComponent } from '../../floating-window/floating-window-resize-handles.component';
 
 import { MarkerReplayService } from '@services/marker-replay.service';
 import { MapScaleService } from '@services/mapScale.service';
@@ -73,7 +74,7 @@ interface Leader {
   selector: 'app-replay-detail-window',
   templateUrl: './replay-detail-window.component.html',
   styleUrl: './replay-detail-window.component.scss',
-  imports: [CommonModule, MatIconModule, MatTooltipModule, ReplayDetailPaneComponent, ResizableDirective, ResizeHandleDirective],
+  imports: [CommonModule, MatIconModule, MatTooltipModule, ReplayDetailPaneComponent, ResizableDirective, FloatingWindowResizeHandlesComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReplayDetailWindowComponent implements OnInit, OnDestroy {

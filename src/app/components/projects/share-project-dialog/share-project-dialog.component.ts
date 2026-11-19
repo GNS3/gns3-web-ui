@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,17 +6,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Project, ProjectShare } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
-import { UserService } from '@services/user.service';
 import { ToasterService } from '@services/toaster.service';
-
-type TargetMode = 'user' | 'users' | 'group';
+import {
+  RecipientPickerComponent,
+  RecipientSelection,
+  RecipientTargetMode,
+} from '../recipient-picker/recipient-picker.component';
 
 /**
  * Curated share roles (exact server role names). The full role list stays
@@ -27,6 +27,8 @@ const SHARE_ROLES: readonly { name: string; description: string }[] = [
   { name: 'Lab member', description: 'Recipients can open and use the project but cannot change its topology.' },
   { name: 'User', description: 'Recipients fully collaborate on the project, topology included.' },
 ];
+
+const EMPTY_SELECTION: RecipientSelection = { user: null, users: [], group: null };
 
 @Component({
   selector: 'app-share-project-dialog',
@@ -42,16 +44,14 @@ const SHARE_ROLES: readonly { name: string; description: string }[] = [
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatAutocompleteModule,
-    MatChipsModule,
     MatDividerModule,
     MatTooltipModule,
+    RecipientPickerComponent,
   ],
 })
 export class ShareProjectDialogComponent implements OnInit {
   private readonly dialogRef = inject(MatDialogRef<ShareProjectDialogComponent>);
   private readonly projectService = inject(ProjectService);
-  private readonly userService = inject(UserService);
   private readonly toasterService = inject(ToasterService);
   private readonly cd = inject(ChangeDetectorRef);
 
@@ -60,110 +60,43 @@ export class ShareProjectDialogComponent implements OnInit {
 
   readonly shareRoles = SHARE_ROLES;
 
-  readonly targetMode = signal<TargetMode>('user');
+  readonly targetMode = signal<RecipientTargetMode>('user');
   readonly role = signal(SHARE_ROLES[0].name);
-  /** Usernames suggested as recipients: the union of the caller's group members. */
-  readonly users = signal<string[]>([]);
-  /** Names of the caller's own groups (whole-group shares). */
-  readonly groups = signal<string[]>([]);
-  readonly isLoadingTargets = signal(true);
-  readonly targetsLoadError = signal('');
   readonly isSubmitting = signal(false);
+  /** The picker's current selection, mirrored on every change. */
+  readonly recipientSelection = signal<RecipientSelection>(EMPTY_SELECTION);
+  readonly recipientPicker = viewChild.required(RecipientPickerComponent);
 
   readonly shares = signal<ProjectShare[]>([]);
   readonly isLoadingShares = signal(true);
   readonly sharesLoadError = signal('');
   readonly removingAceId = signal<string | null>(null);
 
-  // Autocomplete filter text (free-typed, only picks from the panel count).
-  readonly userFilter = signal('');
-  readonly usersFilter = signal('');
-  readonly groupFilter = signal('');
-
-  // Effective selections (a selection only happens via optionSelected).
-  readonly selectedUser = signal<string | null>(null);
-  readonly selectedUsers = signal<string[]>([]);
-  readonly selectedGroup = signal<string | null>(null);
-
-  readonly filteredUsers = computed(() => this.filterUsers(this.userFilter()));
-  readonly filteredUsersToAdd = computed(() =>
-    this.filterUsers(this.usersFilter()).filter((username) => !this.selectedUsers().includes(username))
-  );
-  readonly filteredGroups = computed(() => {
-    const filter = this.groupFilter().toLowerCase();
-    return this.groups().filter((name) => name.toLowerCase().includes(filter));
-  });
-
-  /**
-   * A typed username outside the caller's groups. The API accepts any
-   * existing username (cross-group collaboration is allowed), so the picker
-   * offers the typed value as an explicit option instead of dropping it.
-   */
-  readonly customUser = computed(() => this.customName(this.userFilter(), this.filteredUsers()));
-  readonly customUserToAdd = computed(() => {
-    const typed = this.customName(this.usersFilter(), this.filteredUsersToAdd());
-    return typed !== null && !this.selectedUsers().includes(typed) ? typed : null;
-  });
-
   readonly roleDescription = computed(
-    () => SHARE_ROLES.find((candidate) => candidate.name === this.role())?.description ?? ''
+    () => SHARE_ROLES.find((candidate) => candidate.name === this.role())?.description ?? '',
   );
 
   readonly canSubmit = computed(() => {
     if (this.isSubmitting()) {
       return false;
     }
+    const selection = this.recipientSelection();
     switch (this.targetMode()) {
       case 'user':
-        return this.selectedUser() !== null;
+        return selection.user !== null;
       case 'users':
-        return this.selectedUsers().length > 0;
+        return selection.users.length > 0;
       case 'group':
-        return this.selectedGroup() !== null;
+        return selection.group !== null;
     }
   });
 
+  /** Group-target hint of the shared picker (share semantics). */
+  readonly groupHintFor = (group: string): string =>
+    `Everyone in "${group}" gains access — including people joining the group later.`;
+
   ngOnInit() {
     this.loadShares();
-    this.loadRecipients();
-  }
-
-  displayUsername = (username: string | null): string => username ?? '';
-  displayGroupName = (group: string | null): string => group ?? '';
-
-  onUserFilterInput(value: string): void {
-    this.userFilter.set(value);
-    if (this.selectedUser() !== null && value !== this.selectedUser()) {
-      this.selectedUser.set(null);
-    }
-  }
-
-  onGroupFilterInput(value: string): void {
-    this.groupFilter.set(value);
-    if (this.selectedGroup() !== null && value !== this.selectedGroup()) {
-      this.selectedGroup.set(null);
-    }
-  }
-
-  selectUser(username: string): void {
-    this.selectedUser.set(username);
-    this.userFilter.set(username);
-  }
-
-  addUser(username: string): void {
-    this.selectedUsers.update((previous) =>
-      previous.includes(username) ? previous : [...previous, username]
-    );
-    this.usersFilter.set('');
-  }
-
-  removeUser(username: string): void {
-    this.selectedUsers.update((previous) => previous.filter((selected) => selected !== username));
-  }
-
-  selectGroup(group: string): void {
-    this.selectedGroup.set(group);
-    this.groupFilter.set(group);
   }
 
   onCloseClick(): void {
@@ -177,12 +110,13 @@ export class ShareProjectDialogComponent implements OnInit {
     this.isSubmitting.set(true);
     this.cd.markForCheck();
 
+    const selection = this.recipientSelection();
     const targets =
       this.targetMode() === 'user'
-        ? { target_user: this.selectedUser() ?? undefined, role: this.role() }
+        ? { target_user: selection.user ?? undefined, role: this.role() }
         : this.targetMode() === 'users'
-          ? { target_users: this.selectedUsers(), role: this.role() }
-          : { target_group: this.selectedGroup() ?? undefined, role: this.role() };
+          ? { target_users: selection.users, role: this.role() }
+          : { target_group: selection.group ?? undefined, role: this.role() };
 
     this.projectService.share(this.controller, this.project.project_id, targets).subscribe({
       next: (shares) => {
@@ -192,7 +126,7 @@ export class ShareProjectDialogComponent implements OnInit {
         const summary = names.length === 1 ? names[0] : `${names.length} recipients`;
         this.toasterService.success(`Shared "${this.project.name}" with ${summary}`);
 
-        this.resetTargets();
+        this.recipientPicker().reset();
         this.isSubmitting.set(false);
         this.loadShares();
       },
@@ -240,65 +174,5 @@ export class ShareProjectDialogComponent implements OnInit {
         this.cd.markForCheck();
       },
     });
-  }
-
-  /**
-   * Recipient suggestions come from GET /access/users/me/group-members
-   * (User.GroupMembers): the members of the caller's own groups, usernames
-   * only. The project owner cannot be a share target (409: the share upsert
-   * would replace the owner ACE and its role), so they never appear among
-   * the pickable users. Group shares are unaffected — they write a group ACE
-   * that leaves the owner ACE alone.
-   */
-  private loadRecipients(): void {
-    this.isLoadingTargets.set(true);
-    this.targetsLoadError.set('');
-    this.userService.getGroupMembers(this.controller).subscribe({
-      next: ({ groups }) => {
-        const members = new Set<string>();
-        for (const group of groups) {
-          for (const username of group.members) {
-            members.add(username);
-          }
-        }
-        members.delete(this.project.created_by);
-        this.users.set([...members].sort());
-        this.groups.set(groups.map((group) => group.group_name).sort());
-        this.isLoadingTargets.set(false);
-        this.cd.markForCheck();
-      },
-      error: (err: unknown) => {
-        this.isLoadingTargets.set(false);
-        this.targetsLoadError.set(err instanceof Error ? err.message : 'Failed to load your group members');
-        this.cd.markForCheck();
-      },
-    });
-  }
-
-  private resetTargets(): void {
-    this.selectedUser.set(null);
-    this.selectedUsers.set([]);
-    this.selectedGroup.set(null);
-    this.userFilter.set('');
-    this.usersFilter.set('');
-    this.groupFilter.set('');
-  }
-
-  private filterUsers(filter: string): string[] {
-    const value = filter.toLowerCase();
-    return this.users().filter((username) => username.toLowerCase().includes(value));
-  }
-
-  /**
-   * The typed value when it is a username the suggestion list does not
-   * contain. The project owner stays out — the server refuses them as a
-   * share target (409), so hand-typing the name must not re-open it.
-   */
-  private customName(filter: string, candidates: string[]): string | null {
-    const typed = filter.trim();
-    if (typed.length === 0 || typed === this.project.created_by || candidates.includes(typed)) {
-      return null;
-    }
-    return typed;
   }
 }

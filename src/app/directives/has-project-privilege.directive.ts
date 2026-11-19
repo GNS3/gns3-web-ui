@@ -1,5 +1,6 @@
-import { Directive, TemplateRef, ViewContainerRef, computed, effect, inject, input } from '@angular/core';
+import { Directive, Signal, inject, input } from '@angular/core';
 import { ProjectPermissionService } from '@services/project-permission.service';
+import { PrivilegeGateDirective } from './privilege-gate.directive';
 
 /**
  * Structural directive rendering project-view chrome by privilege.
@@ -22,9 +23,7 @@ import { ProjectPermissionService } from '@services/project-permission.service';
   selector: '[appHasProjectPrivilege]',
   standalone: true,
 })
-export class HasProjectPrivilegeDirective {
-  private readonly templateRef = inject<TemplateRef<unknown>>(TemplateRef);
-  private readonly viewContainer = inject(ViewContainerRef);
+export class HasProjectPrivilegeDirective extends PrivilegeGateDirective {
   private readonly projectPermissionService = inject(ProjectPermissionService);
 
   /** A single privilege name, or a list combined per `match`. */
@@ -35,19 +34,11 @@ export class HasProjectPrivilegeDirective {
   /** How a privilege list is combined: 'all' (default) or 'any'. */
   readonly match = input<'all' | 'any'>('all');
 
-  private readonly allowed = computed(() => {
-    const value = this.appHasProjectPrivilege();
-    const required = Array.isArray(value) ? value : [value];
-    const privileges = this.projectPermissionService.privileges();
-    return this.match() === 'any' ? required.some((privilege) => privileges.has(privilege)) : required.every((privilege) => privileges.has(privilege));
-  });
+  protected readonly requiredPrivileges: Signal<string | string[]> = this.appHasProjectPrivilege;
+  protected readonly matchMode: Signal<'all' | 'any'> = this.match;
+  protected readonly privilegeSet: Signal<ReadonlySet<string>> = this.projectPermissionService.privileges;
 
   constructor() {
-    effect(() => {
-      this.viewContainer.clear();
-      if (this.allowed()) {
-        this.viewContainer.createEmbeddedView(this.templateRef);
-      }
-    });
+    super();
   }
 }

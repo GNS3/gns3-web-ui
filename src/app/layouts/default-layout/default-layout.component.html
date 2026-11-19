@@ -106,24 +106,21 @@
           <mat-icon matListItemIcon>dns</mat-icon>
           <span matListItemTitle>Server settings</span>
         </a>
-        <!-- Long form on purpose: the structural microsyntax would rewrite
-             `match: 'any'` into an unknown appHasPrivilegeMatch binding and
-             silently fall back to requiring all five privileges. -->
-        <ng-template
-          [appHasPrivilege]="['User.Audit', 'Group.Audit', 'Role.Audit', 'Pool.Audit', 'ACE.Audit']"
-          [match]="'any'"
+        <!-- Hidden when no management tab is openable: the entry's gate is
+             derived from the management child routes' privilege data, so the
+             sidebar and the route guard can never disagree. -->
+        @if (accessManagementRoute(); as managementTab) {
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
+          [routerLink]="['/controller', controllerId, 'management', managementTab]"
+          (click)="isSmallScreen() && sidenav.close()"
         >
-          <a
-            mat-list-item
-            class="sidebar__nav-item"
-            routerLinkActive="active"
-            [routerLink]="['/controller', controllerId, 'management', accessManagementRoute()]"
-            (click)="isSmallScreen() && sidenav.close()"
-          >
-            <mat-icon matListItemIcon>manage_accounts</mat-icon>
-            <span matListItemTitle>Access Management</span>
-          </a>
-        </ng-template>
+          <mat-icon matListItemIcon>manage_accounts</mat-icon>
+          <span matListItemTitle>Access Management</span>
+        </a>
+        }
         }
       </mat-nav-list>
 

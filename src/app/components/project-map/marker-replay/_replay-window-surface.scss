@@ -3,8 +3,8 @@
 // differs per window; position/size come from inline bindings.
 //
 // NO overflow:hidden: the resize handles live entirely OUTSIDE the border
-// box (see replay-window-handles) and would be clipped. The header/body
-// carry the corner radii instead so the rounded chrome survives.
+// box (see the shared resize-handles component) and would be clipped. The
+// header/body carry the corner radii instead so the rounded chrome survives.
 
 .gns3-replay__window {
   position: fixed;

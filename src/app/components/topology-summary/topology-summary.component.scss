@@ -1,4 +1,3 @@
-@use '../floating-window/floating-window-handles';
 
 :host {
   --topology-row-height: 46px;
@@ -434,9 +433,6 @@
     border-radius: 0;
   }
 
-  .gns3-window__resize-handle {
-    display: none;
-  }
 }
 
 :host-context(html[data-density='compact']) {

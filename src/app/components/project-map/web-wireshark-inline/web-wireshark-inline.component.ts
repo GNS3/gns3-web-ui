@@ -21,7 +21,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
+import { ResizableDirective } from 'angular-resizable-element';
+import { FloatingWindowResizeHandlesComponent } from '../../floating-window/floating-window-resize-handles.component';
 import { Link } from '@models/link';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -40,7 +41,7 @@ import { LinkService } from '@services/link.service';
     MatIconModule,
     MatButtonModule,
     ResizableDirective,
-    ResizeHandleDirective,
+    FloatingWindowResizeHandlesComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

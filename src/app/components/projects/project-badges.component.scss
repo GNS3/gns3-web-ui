@@ -1,0 +1,85 @@
+// Indicator badges of one project row/card (moved from
+// projects.component.scss when the markup became this shared component —
+// the projects page's encapsulated styles can no longer reach the badge
+// elements).
+
+.projects__share-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border: none;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  vertical-align: middle;
+  background-color: color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent);
+  color: var(--mat-sys-tertiary);
+  cursor: pointer;
+  transition: background-color var(--gns3-motion-duration-standard) var(--gns3-motion-easing-standard);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-tertiary) 20%, transparent);
+  }
+}
+
+.projects__share-badge-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+// Non-interactive variant for users without Project.Share: the count is
+// plain information, the recipient list and the manage dialog are not
+// served to them.
+.projects__share-badge--static {
+  cursor: default;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent);
+  }
+}
+
+// The distributed badge reuses the share-badge pill without a count: it
+// marks the project as distributed, the details live one click away.
+.projects__distributed-badge {
+  background-color: color-mix(in srgb, var(--mat-sys-secondary) 12%, transparent);
+  color: var(--mat-sys-secondary);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-secondary) 20%, transparent);
+  }
+}
+
+// A frozen template: copies exist and the server refuses modifications.
+// Clicking opens the distribution history, where the copies are managed.
+.projects__frozen-badge {
+  background-color: color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent);
+  color: var(--mat-sys-tertiary);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-tertiary) 20%, transparent);
+  }
+}
+
+// A distributed copy the current user received: informational only.
+.projects__provided-badge {
+  background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  color: var(--mat-sys-primary);
+  cursor: default;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  }
+}
+
+// Inside the card meta row the badge sits next to the status chip (context
+// override moved over from projects.component.scss — the card meta row is
+// rendered by the projects page, so match it through :host-context).
+:host-context(.projects__card-meta) .projects__share-badge {
+  margin-left: 0;
+  padding: 4px 10px;
+}
