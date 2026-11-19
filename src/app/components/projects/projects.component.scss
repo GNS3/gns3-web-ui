@@ -350,6 +350,17 @@ mat-cell {
   height: 14px;
 }
 
+// Non-interactive variant for users without Project.Share: the count is
+// plain information, the recipient list and the manage dialog are not
+// served to them.
+.projects__share-badge--static {
+  cursor: default;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent);
+  }
+}
+
 // The distributed badge reuses the share-badge pill without a count: it
 // marks the project as distributed, the details live one click away.
 .projects__distributed-badge {

@@ -69,8 +69,8 @@ scene_height, snap_to_grid, show_grid, show_interface_labels, show_layers, varia
 | Import project (.gns3 file) | Projects page → *Import project* dialog | `POST /projects/{project_id}/import?name={name}` | multipart file; `name` query param; `project_id` = client-side UUID path | `Project.Allocate` (import) | closes an already-open project with the same name first |
 | Save as / duplicate project | Project map → *Save project* dialog; also *Duplicate* on projects page | `POST /projects/{project_id}/duplicate` | `name` | `Project.Allocate` (duplicate) | only editable field is the new name |
 | Create snapshot | Snapshots dialog | `POST /projects/{project_id}/snapshots` | `name` | `Snapshot.Allocate` | borderline action, listed because the payload carries a user-chosen field |
-| Distribute project | Projects page → *Distribute Project* dialog | `POST /projects/{project_id}/distribute` | `name` (project name, re-sent), `target_user` / `target_users` / `target_group` (exactly one), `reset_mac_addresses`, `lock_topology` | `Project.Share` (target selection) + `Project.Distribution` (copy options) | 202 + background job; copies are per-recipient (`{name}-{username}`); `lock_topology` locks every node/drawing in each copy (advisory: UI hides actions, owner role enforces); `owner_role` exists in the service signature but is **not exposed** by the dialog |
-| Share project | Projects page → *Share Project* dialog | `POST /projects/{project_id}/share` | `target_user` / `target_users` / `target_group` (exactly one), `role` | `Project.Share` | no copies — one live ACE; re-sharing with the same target updates its role; `role` defaults server-side to the built-in *Lab member* role |
+| Distribute project | Projects page → *Distribute Project* dialog | `POST /projects/{project_id}/distribute` | `name` (project name, re-sent), `target_user` / `target_users` / `target_group` (exactly one), `reset_mac_addresses`, `lock_topology` | `Project.Distribute` | 202 + background job; copies are per-recipient (`{name}-{username}`); `lock_topology` locks every node/drawing in each copy (advisory: UI hides actions, owner role enforces); the caller cannot be a user target (409) and `owner_role` may not be wider than the caller's own privileges (403); `owner_role` exists in the service signature but is **not exposed** by the dialog; the recipient picker lists the caller's own group members (`GET /access/users/me/group-members`, `User.GroupMembers`) and also offers a hand-typed username (cross-group collaboration); the caller is excluded from both |
+| Share project | Projects page → *Share Project* dialog | `POST /projects/{project_id}/share` | `target_user` / `target_users` / `target_group` (exactly one), `role` | `Project.Share` | no copies — one live ACE; re-sharing with the same target updates its role; `role` defaults server-side to the built-in *Lab member* role; the project owner cannot be a target (409 — it would replace the owner ACE) and is excluded from the recipient picker, which otherwise lists the caller's own group members (`User.GroupMembers`) plus a hand-typed username |
 
 ### Projects findings
 
@@ -93,6 +93,13 @@ scene_height, snap_to_grid, show_grid, show_interface_labels, show_layers, varia
 6. The share dialog never sends `owner_role`; the distribute dialog never sends `role`. Each
    endpoint therefore sees a disjoint role-ish field, which makes per-endpoint operation
    validation (not a shared payload schema) the right shape.
+7. **Share/Distribute buttons on the projects page are gated per project**, not globally: for a
+   project the caller did not create (a project shared with them, or a distributed copy) the
+   page fetches `GET /projects/{project_id}/me/privileges` and reads `Project.Share` /
+   `Project.Distribute` from that path-evaluated list. The flattened global list
+   (`GET /access/users/me/privileges`) overestimates there: the project ACE (e.g. Lab member)
+   replaces the inherited global role, so every default account would otherwise see the actions
+   on a project merely shared with them.
 
 ---
 

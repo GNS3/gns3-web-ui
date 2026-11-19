@@ -14,13 +14,13 @@ All paths are relative to the controller API root (`/v3`).
 
 ## Summary
 
-- Controller endpoints: **241** (WebSocket: 6)
-- With a privilege declaration: **200**
+- Controller endpoints: **243** (WebSocket: 6)
+- With a privilege declaration: **202**
 - Login only (authenticated, no privilege): **34**
 - No privilege gate declared: **7** (may still be protected outside the decorator)
-- Distinct privilege names: **53**
-- Endpoints called by a Web UI service: **182**
-- Endpoints with a curated Web UI page/action: **218**
+- Distinct privilege names: **56**
+- Endpoints called by a Web UI service: **184**
+- Endpoints with a curated Web UI page/action: **220**
 
 ## Endpoints by module
 
@@ -56,6 +56,7 @@ All paths are relative to the controller API root (`/v3`).
 | POST | `/access/users/logout` | — (login only) | App shell | Sign out | — |
 | GET | `/access/users/me` | — (login only) | App shell | Load the signed-in user | `src/app/services/login.service.ts:getLoggedUser`<br>`src/app/services/user.service.ts:getInformationAboutLoggedUser` |
 | PUT | `/access/users/me` | — (login only) | Profile / Change password dialog | Edit own profile or password (self-service, no admin privilege) | `src/app/services/user.service.ts:update` |
+| GET | `/access/users/me/group-members` | User.GroupMembers | Projects page → Share / Distribute dialogs | Load the recipient picker: the members of the signed-in user's own groups, usernames only (= User.GroupMembers)<br>the share/distribute APIs accept any existing username (cross-group collaboration), so the dialog also offers the typed name; the full user list stays User.Audit | `src/app/services/user.service.ts:getGroupMembers` |
 | DELETE | `/access/users/me/preferences` | — (login only) | — | — | — |
 | GET | `/access/users/me/preferences` | — (login only) | — | — | — |
 | PUT | `/access/users/me/preferences` | — (login only) | — | — | — |
@@ -147,8 +148,8 @@ All paths are relative to the controller API root (`/v3`).
 
 | Method | Path | Privilege | Web UI page | Web UI action | Service |
 |--------|------|-----------|-------------|---------------|---------|
-| GET | `/distributions` | Project.Audit | — | (to be filled) | `src/app/services/project.service.ts:listAllDistributions` |
-| DELETE | `/distributions/{distribution_id}` | Project.Audit | — | — | — |
+| GET | `/distributions` | Project.Audit | Projects page → distribution badge | Feed the cross-project distribution badge in one request (the caller's own records; every record for a superadmin)<br>the badge is the only consumer: per-project history goes through /projects/{}/distributions, which also accepts the project owner | `src/app/services/project.service.ts:listAllDistributions` |
+| DELETE | `/distributions/{distribution_id}` | Project.Audit | — | —<br>no web UI caller (removal goes through the per-project endpoint) | — |
 | GET | `/projects` | — (login only) | Projects page | Load the project list (the server filters by ACE/resource pool) | `src/app/services/project.service.ts:list` |
 | POST | `/projects` | Project.Allocate | Projects page | New project (button = Project.Allocate) | `src/app/services/project.service.ts:add` |
 | POST | `/projects/load` | Server.Modify | Projects page | Reload the projects on the controller<br>only supported by the local service | — |
@@ -156,11 +157,11 @@ All paths are relative to the controller API root (`/v3`).
 | GET | `/projects/{project_id}` | Project.Audit | Project view | Load the project when it is opened | `src/app/services/project.service.ts:get` |
 | PUT | `/projects/{project_id}` | Project.Modify | Project view | Save project settings, Map settings PUT items (= Project.Modify) | `src/app/services/project.service.ts:update` |
 | POST | `/projects/{project_id}/close` | Project.Allocate | Project view toolbar | Close project (menu = Project.Allocate) | `src/app/services/project.service.ts:close` |
-| POST | `/projects/{project_id}/distribute` | Project.Audit | Projects page → Distribute Project dialog | Distribute copies to users or a group (= Project.Audit)<br>payload carries reset_mac_addresses and lock_topology (locks every node/drawing in each copy); copies are created by a background job; the first distribution freezes the source project as a template; a distributed copy answers 409 | `src/app/services/project.service.ts:distribute` |
-| GET | `/projects/{project_id}/distributions` | Project.Audit | Projects page → Distribution history dialog | Load the caller's recent distribution jobs | `src/app/services/project.service.ts:listDistributions` |
-| DELETE | `/projects/{project_id}/distributions/{distribution_id}` | Project.Audit | Distribution history dialog | Cancel a running distribution job (cooperative: the copy in flight completes), or delete the record of a finished one<br>409 while running, and on a finished record whose copies still exist (the message lists the usernames) | `src/app/services/project.service.ts:cancelDistribution`<br>`src/app/services/project.service.ts:deleteDistribution` |
-| GET | `/projects/{project_id}/distributions/{distribution_id}` | Project.Audit | Distribution tasks panel / Distribution history dialog | Poll a running distribution job until it leaves the running state | `src/app/services/project.service.ts:getDistribution` |
-| DELETE | `/projects/{project_id}/distributions/{distribution_id}/copies` | Project.Audit | Distribution history dialog | Delete every copy of a finished distribution that still exists (button = Project.Audit, job creator or superadmin)<br>the record is kept; the response refreshes the per-recipient project_exists flags; 409 while the job runs | `src/app/services/project.service.ts:deleteDistributionCopies` |
+| POST | `/projects/{project_id}/distribute` | Project.Distribute | Projects page → Distribute Project dialog | Distribute copies to users or a group (= Project.Distribute)<br>payload carries reset_mac_addresses and lock_topology (locks every node/drawing in each copy); copies are created by a background job; the first distribution freezes the source project as a template; a distributed copy answers 409; the caller cannot be a target (409 — duplicate the project instead) and the copy owner role may not be wider than what the caller holds (403) | `src/app/services/project.service.ts:distribute` |
+| GET | `/projects/{project_id}/distributions` | Project.Audit | Projects page → Distribution history dialog | Load the project's distribution jobs (the distributing user or the project owner) | `src/app/services/project.service.ts:listDistributions` |
+| DELETE | `/projects/{project_id}/distributions/{distribution_id}` | Project.Audit | Distribution history dialog | Cancel a running distribution job (cooperative: the copy in flight completes), or delete the record of a finished one (distributing user or project owner)<br>409 while running, and on a finished record whose copies still exist (the message lists the usernames) | `src/app/services/project.service.ts:cancelDistribution`<br>`src/app/services/project.service.ts:deleteDistribution` |
+| GET | `/projects/{project_id}/distributions/{distribution_id}` | Project.Audit | Distribution tasks panel / Distribution history dialog | Poll a running distribution job until it leaves the running state (distributing user or project owner) | `src/app/services/project.service.ts:getDistribution` |
+| DELETE | `/projects/{project_id}/distributions/{distribution_id}/copies` | Project.Audit | Distribution history dialog | Delete every copy of a finished distribution that still exists (distributing user or project owner)<br>the record is kept; the response refreshes the per-recipient project_exists flags; 409 while the job runs | `src/app/services/project.service.ts:deleteDistributionCopies` |
 | POST | `/projects/{project_id}/duplicate` | Project.Duplicate | Projects page | Duplicate project (button = Project.Duplicate)<br>a distributed copy answers 409; a frozen template can be duplicated (the copy is a normal project) | `src/app/services/project.service.ts:duplicate` |
 | GET | `/projects/{project_id}/export` | Project.Export | Projects page / Project view menu | Export project (button = Project.Export)<br>a distributed copy answers 409; the archive drops the frozen and copy markers | `src/app/services/project.service.ts:export` |
 | GET | `/projects/{project_id}/files/{file_path:path}` | Project.Audit | Project files | Read a project file | — |
@@ -179,14 +180,14 @@ All paths are relative to the controller API root (`/v3`).
 | GET | `/projects/{project_id}/markers/tags/{tag}/replay/frame/detail` | Project.Audit | Marker replay overlay | Load a single frame's detail | `src/app/services/marker-replay.service.ts:replayFrameDetail` |
 | GET | `/projects/{project_id}/markers/tags/{tag}/replay/frames` | Project.Audit | Marker replay overlay | Load the replay frame list | — |
 | GET | `/projects/{project_id}/markers/tags/{tag}/replay/range` | Project.Audit | Marker replay overlay | Load the replay frame range | — |
-| GET | `/projects/{project_id}/me/privileges` | Project.Audit | Project view (global) | Data source for privilege-based rendering inside the project | `src/app/services/project-permission.service.ts:load` |
+| GET | `/projects/{project_id}/me/privileges` | Project.Audit | Project view (global) / Projects page | Data source for privilege-based rendering inside the project, and for the Share/Distribute actions on projects shared with the caller<br>each privilege is evaluated on the project's resource path; the flattened global list overestimates on a shared project, where the project ACE (e.g. Lab member) replaces the inherited role | `src/app/services/project-permission.service.ts:load`<br>`src/app/services/project.service.ts:getMyPrivileges` |
 | GET | `/projects/{project_id}/notifications` | Project.Audit | Project view | Project notifications / events | — |
 | WEBSOCKET | `/projects/{project_id}/notifications/markers/ws` | Project.Audit | Marker manager / project view | Realtime marker notifications (= Project.Audit) | — |
 | WEBSOCKET | `/projects/{project_id}/notifications/ws` | Project.Audit | Project view | Project realtime events (= Project.Audit) | — |
 | POST | `/projects/{project_id}/open` | Project.Allocate | Projects page | Open project (button = Project.Allocate) | `src/app/services/project.service.ts:open` |
-| POST | `/projects/{project_id}/share` | Project.Audit | Projects page → Share Project dialog | Share the project with users or a group (instant, no copies)<br>re-sharing with the same target updates its role; role defaults to the built-in Lab member role | `src/app/services/project.service.ts:share` |
-| GET | `/projects/{project_id}/shares` | Project.Audit | Projects page → Share Project dialog | Load the current shares (the owner's own ACE is not included) | `src/app/services/project.service.ts:listShares` |
-| DELETE | `/projects/{project_id}/shares/{ace_id}` | Project.Audit | Projects page → Share Project dialog | Remove one share (revoke access) | `src/app/services/project.service.ts:removeShare` |
+| POST | `/projects/{project_id}/share` | Project.Share | Projects page → Share Project dialog | Share the project with users or a group (= Project.Share, instant, no copies)<br>re-sharing with the same target updates its role; role defaults to the built-in Lab member role; the project owner cannot be a target (409 — it would replace the owner ACE) | `src/app/services/project.service.ts:share` |
+| GET | `/projects/{project_id}/shares` | Project.Share | Projects page → Share Project dialog / share badge tooltip | Load the current shares (= Project.Share; the owner's own ACE is not included) | `src/app/services/project.service.ts:listShares` |
+| DELETE | `/projects/{project_id}/shares/{ace_id}` | Project.Share | Projects page → Share Project dialog | Remove one share (revoke access, = Project.Share) | `src/app/services/project.service.ts:removeShare` |
 | GET | `/projects/{project_id}/stats` | Project.Audit | Project view | Project statistics (node/link counts) | `src/app/services/project.service.ts:getStatistics` |
 | POST | `/projects/{project_id}/templates/{template_id}` | Node.Allocate | Add node palette | Create a node from a template (= Node.Allocate) | `src/app/services/node.service.ts:createFromTemplate` |
 | POST | `/projects/{project_id}/unfreeze` | Project.Modify | Project view → Distribution history dialog / project details | Unfreeze a distributed template once no copy exists (button = Project.Modify, owner or superadmin)<br>409 while any copy still exists; the message lists the usernames holding one | `src/app/services/project.service.ts:unfreeze` |
@@ -280,6 +281,7 @@ All paths are relative to the controller API root (`/v3`).
 | GET | `/projects/{project_id}/snapshots` | Snapshot.Audit | Snapshots dialog | Load the snapshot list | `src/app/services/snapshot.service.ts:list` |
 | POST | `/projects/{project_id}/snapshots` | Snapshot.Allocate | Snapshots dialog | Create snapshot (= Snapshot.Allocate) | `src/app/services/snapshot.service.ts:create` |
 | DELETE | `/projects/{project_id}/snapshots/{snapshot_id}` | Snapshot.Allocate | Snapshots dialog | Delete snapshot (= Snapshot.Allocate) | `src/app/services/snapshot.service.ts:delete` |
+| PUT | `/projects/{project_id}/snapshots/{snapshot_id}` | Snapshot.Allocate | — | (to be filled) | `src/app/services/snapshot.service.ts:update` |
 | POST | `/projects/{project_id}/snapshots/{snapshot_id}/restore` | Snapshot.Restore | Snapshots dialog | Restore snapshot (= Snapshot.Restore) | `src/app/services/snapshot.service.ts:restore` |
 
 ### Computes — `computes.py`

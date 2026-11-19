@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { MatSort } from '@angular/material/sort';
@@ -60,6 +60,12 @@ describe('ProjectsComponent', () => {
   let mockDialog: any;
   let mockRouter: any;
   let mockActivatedRoute: any;
+  /**
+   * Privilege set behind the PermissionService mock, as a real signal so
+   * privilege-gated rendering (directive + computed) re-evaluates when a
+   * test changes it, exactly like against the real service.
+   */
+  let mockPrivileges: ReturnType<typeof signal<Set<string>>>;
 
   const mockController: Controller = {
     id: 1,
@@ -102,6 +108,12 @@ describe('ProjectsComponent', () => {
       listAllDistributions: vi.fn().mockReturnValue(of([])),
       listDistributions: vi.fn(),
       unfreeze: vi.fn().mockReturnValue(of({})),
+      // Projects the caller did not create carry their own path-evaluated
+      // privilege list; mirror the global mock set so tests keep driving
+      // visibility through mockPrivileges.
+      getMyPrivileges: vi.fn(() =>
+        of({ is_superadmin: false, privileges: [...mockPrivileges()] })
+      ),
     };
 
     mockSettingsService = {
@@ -154,22 +166,29 @@ describe('ProjectsComponent', () => {
       },
     };
 
+    mockPrivileges = signal(
+      new Set<string>([
+        'Project.Allocate',
+        'Project.Audit',
+        'Project.Modify',
+        'Project.Duplicate',
+        'Project.Export',
+        // Sharing and distributing are dedicated privileges on the server:
+        // the base set grants them, tests opt out via mockPrivileges.set().
+        'Project.Share',
+        'Project.Distribute',
+      ])
+    );
+
     await TestBed.configureTestingModule({
       imports: [ProjectsComponent, MarkdownModule.forRoot()],
       providers: [
         {
           provide: PermissionService,
           useValue: {
-            has: (privilege: string) => true,
-            hasAny: (privileges: string[]) => true,
-            privileges: () =>
-            new Set<string>([
-              'Project.Allocate',
-              'Project.Audit',
-              'Project.Modify',
-              'Project.Duplicate',
-              'Project.Export',
-            ]),
+            has: (privilege: string) => mockPrivileges().has(privilege),
+            hasAny: (privileges: string[]) => privileges.some((privilege) => mockPrivileges().has(privilege)),
+            privileges: () => mockPrivileges(),
             isSuperadmin: () => false,
             loaded: () => true,
           },
@@ -496,9 +515,8 @@ describe('ProjectsComponent', () => {
 
     it('shows distribute, share and delete on a closed project card and opens their dialogs', () => {
       fixture.detectChanges();
-      // Neither mock controller username nor superadmin matches, so the share
-      // button only appears once ownership is granted.
-      vi.spyOn(TestBed.inject(PermissionService), 'isSuperadmin').mockReturnValue(true);
+      // The base mock privilege set carries Project.Share and
+      // Project.Distribute, so all three actions render.
       component.toggleView('grid');
       fixture.detectChanges();
 
@@ -533,7 +551,12 @@ describe('ProjectsComponent', () => {
       expect(cardActionButton(cards[1], 'Delete project')).toBeNull();
     });
 
-    it('hides the share action when the user cannot share the project', () => {
+    it('hides the share action when the user lacks Project.Share', () => {
+      mockPrivileges.update((privileges) => {
+        const without = new Set(privileges);
+        without.delete('Project.Share');
+        return without;
+      });
       fixture.detectChanges();
       component.toggleView('grid');
       fixture.detectChanges();

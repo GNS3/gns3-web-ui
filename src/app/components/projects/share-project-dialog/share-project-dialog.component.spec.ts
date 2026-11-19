@@ -5,11 +5,9 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ShareProjectDialogComponent } from './share-project-dialog.component';
 import { ProjectService } from '@services/project.service';
 import { UserService } from '@services/user.service';
-import { GroupService } from '@services/group.service';
 import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { Project, ProjectShare } from '@models/project';
-import { User } from '@models/users/user';
 
 describe('ShareProjectDialogComponent', () => {
   let fixture: ComponentFixture<ShareProjectDialogComponent>;
@@ -19,8 +17,6 @@ describe('ShareProjectDialogComponent', () => {
   let mockToasterService: any;
   let controller: Controller;
   let project: Project;
-
-  const createUser = (username: string): User => ({ user_id: username, username, full_name: '' } as unknown as User);
 
   const createShare = (overrides: Partial<ProjectShare> = {}): ProjectShare =>
     ({ ace_id: 'ace-1', username: 'student-01', group_name: null, role: 'Lab member', created_at: '', updated_at: '', ...overrides } as ProjectShare);
@@ -46,9 +42,16 @@ describe('ShareProjectDialogComponent', () => {
         { provide: ProjectService, useValue: mockProjectService },
         {
           provide: UserService,
-          useValue: { list: vi.fn().mockReturnValue(of([createUser('student-01'), createUser('student-02')])) },
+          useValue: {
+            getGroupMembers: vi.fn().mockReturnValue(
+              of({
+                groups: [
+                  { group_name: 'Class-1', members: ['student-01', 'student-02'] },
+                ],
+              })
+            ),
+          },
         },
-        { provide: GroupService, useValue: { getGroups: vi.fn().mockReturnValue(of([])) } },
         { provide: ToasterService, useValue: mockToasterService },
       ],
     }).compileComponents();
@@ -84,7 +87,7 @@ describe('ShareProjectDialogComponent', () => {
   it('disables submit until a target is picked', () => {
     expect(component.canSubmit()).toBe(false);
 
-    component.selectUser(createUser('student-01'));
+    component.selectUser('student-01');
 
     expect(component.canSubmit()).toBe(true);
   });
@@ -94,13 +97,13 @@ describe('ShareProjectDialogComponent', () => {
 
     expect(component.canSubmit()).toBe(false);
 
-    component.addUser(createUser('student-01'));
+    component.addUser('student-01');
 
     expect(component.canSubmit()).toBe(true);
   });
 
   it('submits a single-user share with the default role', () => {
-    component.selectUser(createUser('student-01'));
+    component.selectUser('student-01');
     component.onSubmitClick();
 
     expect(mockProjectService.share).toHaveBeenCalledWith(controller, 'proj-1', {
@@ -111,8 +114,8 @@ describe('ShareProjectDialogComponent', () => {
 
   it('submits every chip in multiple-users mode', () => {
     component.targetMode.set('users');
-    component.addUser(createUser('student-01'));
-    component.addUser(createUser('student-02'));
+    component.addUser('student-01');
+    component.addUser('student-02');
     component.onSubmitClick();
 
     expect(mockProjectService.share).toHaveBeenCalledWith(controller, 'proj-1', {
@@ -123,7 +126,7 @@ describe('ShareProjectDialogComponent', () => {
 
   it('submits a group share with the selected role', () => {
     component.targetMode.set('group');
-    component.selectGroup({ user_group_id: 'g1', name: 'Students' } as never);
+    component.selectGroup('Students');
     component.role.set('User');
     component.onSubmitClick();
 
@@ -134,7 +137,7 @@ describe('ShareProjectDialogComponent', () => {
   });
 
   it('toasts, reloads the list and resets the form on success — dialog stays open', () => {
-    component.selectUser(createUser('student-01'));
+    component.selectUser('student-01');
     mockProjectService.listShares.mockClear();
     component.onSubmitClick();
 
@@ -148,7 +151,7 @@ describe('ShareProjectDialogComponent', () => {
 
   it('toasts and keeps the form when sharing fails', () => {
     mockProjectService.share.mockReturnValue(throwError(() => new Error('empty group')));
-    component.selectUser(createUser('student-01'));
+    component.selectUser('student-01');
     component.onSubmitClick();
 
     expect(mockToasterService.error).toHaveBeenCalledWith('empty group');

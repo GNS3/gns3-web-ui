@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
 import { User } from '@models/users/user';
+import { UserGroupMembersResponse } from '@models/users/user-group-members';
 import { UserQuotaUsage } from '@models/users/user-quota-usage';
 import { Group } from '@models/groups/group';
 import { Image } from '@models/images';
@@ -18,6 +19,15 @@ export class UserService {
 
   getQuotas(controller: Controller) {
     return this.httpController.get<UserQuotaUsage>(controller, '/access/users/me/quotas');
+  }
+
+  /**
+   * Members of the signed-in user's own groups, as usernames only — the
+   * recipient source of the share and distribution dialogs (User.GroupMembers).
+   * The full user list still requires User.Audit.
+   */
+  getGroupMembers(controller: Controller) {
+    return this.httpController.get<UserGroupMembersResponse>(controller, '/access/users/me/group-members');
   }
 
   get(controller: Controller, user_id: string) {

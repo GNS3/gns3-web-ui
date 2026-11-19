@@ -52,6 +52,11 @@ UI_MAP: dict[str, dict[str, str]] = {
         "page": "App shell",
         "action": "Data source for privilege-based rendering of the sidebar and pages",
     },
+    "GET /access/users/me/group-members": {
+        "page": "Projects page → Share / Distribute dialogs",
+        "action": "Load the recipient picker: the members of the signed-in user's own groups, usernames only (= User.GroupMembers)",
+        "note": "the share/distribute APIs accept any existing username (cross-group collaboration), so the dialog also offers the typed name; the full user list stays User.Audit",
+    },
     "GET /access/privileges": {"page": "Role detail page", "action": "Load the assignable privilege catalog"},
 
     # ------------------------------------------------------------------
@@ -105,44 +110,50 @@ UI_MAP: dict[str, dict[str, str]] = {
     },
     "POST /projects/{}/distribute": {
         "page": "Projects page → Distribute Project dialog",
-        "action": "Distribute copies to users or a group (= Project.Audit)",
-        "note": "payload carries reset_mac_addresses and lock_topology (locks every node/drawing in each copy); copies are created by a background job; the first distribution freezes the source project as a template; a distributed copy answers 409",
+        "action": "Distribute copies to users or a group (= Project.Distribute)",
+        "note": "payload carries reset_mac_addresses and lock_topology (locks every node/drawing in each copy); copies are created by a background job; the first distribution freezes the source project as a template; a distributed copy answers 409; the caller cannot be a target (409 — duplicate the project instead) and the copy owner role may not be wider than what the caller holds (403)",
     },
     "POST /projects/{}/unfreeze": {
         "page": "Project view → Distribution history dialog / project details",
         "action": "Unfreeze a distributed template once no copy exists (button = Project.Modify, owner or superadmin)",
         "note": "409 while any copy still exists; the message lists the usernames holding one",
     },
+    "GET /distributions": {
+        "page": "Projects page → distribution badge",
+        "action": "Feed the cross-project distribution badge in one request (the caller's own records; every record for a superadmin)",
+        "note": "the badge is the only consumer: per-project history goes through /projects/{}/distributions, which also accepts the project owner",
+    },
+    "DELETE /distributions/{}": {"note": "no web UI caller (removal goes through the per-project endpoint)"},
     "GET /projects/{}/distributions": {
         "page": "Projects page → Distribution history dialog",
-        "action": "Load the caller's recent distribution jobs",
+        "action": "Load the project's distribution jobs (the distributing user or the project owner)",
     },
     "GET /projects/{}/distributions/{}": {
         "page": "Distribution tasks panel / Distribution history dialog",
-        "action": "Poll a running distribution job until it leaves the running state",
+        "action": "Poll a running distribution job until it leaves the running state (distributing user or project owner)",
     },
     "DELETE /projects/{}/distributions/{}": {
         "page": "Distribution history dialog",
-        "action": "Cancel a running distribution job (cooperative: the copy in flight completes), or delete the record of a finished one",
+        "action": "Cancel a running distribution job (cooperative: the copy in flight completes), or delete the record of a finished one (distributing user or project owner)",
         "note": "409 while running, and on a finished record whose copies still exist (the message lists the usernames)",
     },
     "DELETE /projects/{}/distributions/{}/copies": {
         "page": "Distribution history dialog",
-        "action": "Delete every copy of a finished distribution that still exists (button = Project.Audit, job creator or superadmin)",
+        "action": "Delete every copy of a finished distribution that still exists (distributing user or project owner)",
         "note": "the record is kept; the response refreshes the per-recipient project_exists flags; 409 while the job runs",
     },
     "POST /projects/{}/share": {
         "page": "Projects page → Share Project dialog",
-        "action": "Share the project with users or a group (instant, no copies)",
-        "note": "re-sharing with the same target updates its role; role defaults to the built-in Lab member role",
+        "action": "Share the project with users or a group (= Project.Share, instant, no copies)",
+        "note": "re-sharing with the same target updates its role; role defaults to the built-in Lab member role; the project owner cannot be a target (409 — it would replace the owner ACE)",
     },
     "GET /projects/{}/shares": {
-        "page": "Projects page → Share Project dialog",
-        "action": "Load the current shares (the owner's own ACE is not included)",
+        "page": "Projects page → Share Project dialog / share badge tooltip",
+        "action": "Load the current shares (= Project.Share; the owner's own ACE is not included)",
     },
     "DELETE /projects/{}/shares/{}": {
         "page": "Projects page → Share Project dialog",
-        "action": "Remove one share (revoke access)",
+        "action": "Remove one share (revoke access, = Project.Share)",
     },
     "GET /projects/{}/stats": {"page": "Project view", "action": "Project statistics (node/link counts)"},
     "GET /projects/{}/notifications": {"page": "Project view", "action": "Project notifications / events"},
@@ -151,8 +162,9 @@ UI_MAP: dict[str, dict[str, str]] = {
         "action": "Project realtime events (= Project.Audit)",
     },
     "GET /projects/{}/me/privileges": {
-        "page": "Project view (global)",
-        "action": "Data source for privilege-based rendering inside the project",
+        "page": "Project view (global) / Projects page",
+        "action": "Data source for privilege-based rendering inside the project, and for the Share/Distribute actions on projects shared with the caller",
+        "note": "each privilege is evaluated on the project's resource path; the flattened global list overestimates on a shared project, where the project ACE (e.g. Lab member) replaces the inherited role",
     },
     "POST /projects/{}/templates/{}": {
         "page": "Add node palette",

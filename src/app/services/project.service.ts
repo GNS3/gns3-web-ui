@@ -10,6 +10,7 @@ import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
 import { RecentlyOpenedProjectService } from './recentlyOpenedProject.service';
 import { SettingsService } from './settings.service';
+import { UserPrivilegesResponse } from './permission.service';
 
 @Injectable()
 export class ProjectService {
@@ -137,6 +138,16 @@ export class ProjectService {
     return this.httpController.get(controller, `/projects/${project_id}/stats`);
   }
 
+  /**
+   * Effective privileges of the caller on one project, each evaluated on the
+   * project's resource path (unlike the flattened global list, a project ACE
+   * such as Lab member replaces the inherited global role). Rendering hint:
+   * the server remains the authority for permission checks.
+   */
+  getMyPrivileges(controller: Controller, project_id: string): Observable<UserPrivilegesResponse> {
+    return this.httpController.get<UserPrivilegesResponse>(controller, `/projects/${project_id}/me/privileges`);
+  }
+
   duplicate(controller: Controller, project_id: string, project_name: string): Observable<Project> {
     return this.httpController.post(controller, `/projects/${project_id}/duplicate`, { name: project_name });
   }
@@ -152,8 +163,12 @@ export class ProjectService {
    *   (404) and an empty list is rejected (422).
    * - `target_group`: fan-out to the group members at call time (same naming
    *   as `target_users`); unknown group 404, empty group 409.
+   * The caller cannot be a user target (409 — duplicating the project is
+   * the supported way to get a copy for yourself).
    * `owner_role` assigns the role of the copy owners (defaults to the
-   * built-in "Lab member" role on the server).
+   * built-in "Lab member" role on the server) and may not grant privileges
+   * wider than what the caller holds on the project (403; superadmins are
+   * exempt).
    * `lock_topology` locks every node and drawing in each copy so
    * recipients cannot move or delete them (advisory hint: the client hides
    * the actions, the owner role stays the enforcement; defaults to true
@@ -194,13 +209,13 @@ export class ProjectService {
    *
    * Returns 200 with the job (status "cancelling"; idempotent when already
    * cancelling). 409 once the job reached a terminal state, 403 when the
-   * job was started by another user (or privileges are missing).
+   * caller is neither the distributing user nor the project owner.
    */
   cancelDistribution(controller: Controller, project_id: string, distribution_id: string): Observable<ProjectDistribution> {
     return this.httpController.delete(controller, `/projects/${project_id}/distributions/${distribution_id}`);
   }
 
-  /** Returns the caller's recent distribution jobs of a project (newest first). */
+  /** Returns a project's distribution jobs, newest first (the distributing user or the project owner). */
   listDistributions(controller: Controller, project_id: string): Observable<ProjectDistribution[]> {
     return this.httpController.get(controller, `/projects/${project_id}/distributions`);
   }
@@ -265,8 +280,9 @@ export class ProjectService {
    * given (422 otherwise; same target grammar as `distribute`, but a group
    * share is one live ACE — members joining the group later gain access
    * immediately). `role` defaults server-side to the built-in "Lab member"
-   * role; sharing again with the same target updates its role. Returns 201
-   * with the created/updated shares.
+   * role; sharing again with the same target updates its role. The project
+   * owner cannot be a target (409: the share would replace the owner ACE).
+   * Returns 201 with the created/updated shares.
    */
   share(
     controller: Controller,

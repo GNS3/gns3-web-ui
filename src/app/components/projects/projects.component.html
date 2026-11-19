@@ -147,6 +147,7 @@
                 {{ row.name }}
               </a>
               @if (row.share_count) {
+              @if (canManageShares(row)) {
               <button
                 type="button"
                 class="projects__share-badge"
@@ -159,6 +160,16 @@
                 <mat-icon class="projects__share-badge-icon">share</mat-icon>
                 {{ row.share_count }}
               </button>
+              } @else {
+              <span
+                class="projects__share-badge projects__share-badge--static"
+                [matTooltip]="shareTooltip(row)"
+                aria-label="Shared project"
+              >
+                <mat-icon class="projects__share-badge-icon">share</mat-icon>
+                {{ row.share_count }}
+              </span>
+              }
               }
               @if (isDistributed(row)) {
               <button
@@ -370,6 +381,7 @@
                 {{ project.status === 'opened' ? 'Running' : 'Stopped' }}
               </span>
               @if (project.share_count) {
+              @if (canManageShares(project)) {
               <button
                 type="button"
                 class="projects__share-badge"
@@ -382,6 +394,16 @@
                 <mat-icon class="projects__share-badge-icon">share</mat-icon>
                 {{ project.share_count }}
               </button>
+              } @else {
+              <span
+                class="projects__share-badge projects__share-badge--static"
+                [matTooltip]="shareTooltip(project)"
+                aria-label="Shared project"
+              >
+                <mat-icon class="projects__share-badge-icon">share</mat-icon>
+                {{ project.share_count }}
+              </span>
+              }
               }
               @if (isDistributed(project)) {
               <button
@@ -482,10 +504,10 @@
             >
               <mat-icon>content_copy</mat-icon>
             </button>
+            @if (canDistribute(project)) {
             <button
               mat-icon-button
               class="projects__action-button projects__action-button--distribute"
-              *appHasPrivilege="['Project.Audit', 'Project.Allocate']"
               (click)="$event.stopPropagation(); distribute(project)"
               matTooltip="Distribute project"
               aria-label="Distribute project"
@@ -493,7 +515,8 @@
               <mat-icon>people</mat-icon>
             </button>
             }
-            @if (canShare(project)) {
+            }
+            @if (canManageShares(project)) {
             <button
               mat-icon-button
               class="projects__action-button projects__action-button--share"
@@ -770,10 +793,10 @@
           >
             <mat-icon>content_copy</mat-icon>
           </button>
+          @if (canDistribute(project)) {
           <button
             mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--distribute"
-            *appHasPrivilege="['Project.Audit', 'Project.Allocate']"
             (click)="distribute(project)"
             matTooltip="Distribute project"
             aria-label="Distribute project"
@@ -781,7 +804,8 @@
             <mat-icon>people</mat-icon>
           </button>
           }
-          @if (canShare(project)) {
+          }
+          @if (canManageShares(project)) {
           <button
             mat-icon-button
             class="projects__details-action-btn projects__details-action-btn--share"

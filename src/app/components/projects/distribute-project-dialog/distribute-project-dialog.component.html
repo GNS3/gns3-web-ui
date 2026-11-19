@@ -40,13 +40,19 @@
     />
     <mat-autocomplete #userAuto="matAutocomplete" [displayWith]="displayUsername" (optionSelected)="selectUser($event.option.value)">
       @if (isLoadingTargets()) {
-      <mat-option disabled [disabled]="true">Loading users…</mat-option>
-      } @else if (filteredUsers().length === 0) {
+      <mat-option disabled [disabled]="true">Loading group members…</mat-option>
+      } @else if (filteredUsers().length === 0 && !customUser()) {
       <mat-option disabled [disabled]="true">{{ targetsLoadError() || 'No matching user' }}</mat-option>
-      } @for (user of filteredUsers(); track user.user_id) {
-      <mat-option [value]="user">{{ user.username }}{{ user.full_name ? ' - ' + user.full_name : '' }}</mat-option>
+      } @for (username of filteredUsers(); track username) {
+      <mat-option [value]="username">{{ username }}</mat-option>
+      }
+      @if (customUser(); as custom) {
+      <mat-option [value]="custom">Use "{{ custom }}"</mat-option>
       }
     </mat-autocomplete>
+    @if (selectedUser() === null) {
+    <mat-hint>Members of your groups are suggested; any existing username is accepted.</mat-hint>
+    }
   </mat-form-field>
   }
   @case ('users') {
@@ -62,23 +68,26 @@
     />
     <mat-autocomplete #usersAuto="matAutocomplete" (optionSelected)="addUser($event.option.value)">
       @if (isLoadingTargets()) {
-      <mat-option disabled [disabled]="true">Loading users…</mat-option>
-      } @else if (filteredUsersToAdd().length === 0) {
+      <mat-option disabled [disabled]="true">Loading group members…</mat-option>
+      } @else if (filteredUsersToAdd().length === 0 && !customUserToAdd()) {
       <mat-option disabled [disabled]="true">{{ targetsLoadError() || 'No matching user' }}</mat-option>
-      } @for (user of filteredUsersToAdd(); track user.user_id) {
-      <mat-option [value]="user">{{ user.username }}{{ user.full_name ? ' - ' + user.full_name : '' }}</mat-option>
+      } @for (username of filteredUsersToAdd(); track username) {
+      <mat-option [value]="username">{{ username }}</mat-option>
+      }
+      @if (customUserToAdd(); as custom) {
+      <mat-option [value]="custom">Add "{{ custom }}"</mat-option>
       }
     </mat-autocomplete>
     @if (selectedUsers().length === 0) {
-    <mat-hint>Pick users one by one; they appear as chips.</mat-hint>
+    <mat-hint>Pick users one by one; any existing username is accepted.</mat-hint>
     }
   </mat-form-field>
   @if (selectedUsers().length > 0) {
   <mat-chip-set aria-label="Selected users">
-    @for (user of selectedUsers(); track user.user_id) {
-    <mat-chip (removed)="removeUser(user)">
-      {{ user.username }}
-      <button matChipRemove [disabled]="isSubmitting()" aria-label="Remove {{ user.username }}">
+    @for (username of selectedUsers(); track username) {
+    <mat-chip (removed)="removeUser(username)">
+      {{ username }}
+      <button matChipRemove [disabled]="isSubmitting()" aria-label="Remove {{ username }}">
         <mat-icon>cancel</mat-icon>
       </button>
     </mat-chip>
@@ -101,13 +110,13 @@
       @if (isLoadingTargets()) {
       <mat-option disabled [disabled]="true">Loading groups…</mat-option>
       } @else if (filteredGroups().length === 0) {
-      <mat-option disabled [disabled]="true">No matching group</mat-option>
-      } @for (group of filteredGroups(); track group.user_group_id) {
-      <mat-option [value]="group">{{ group.name }}</mat-option>
+      <mat-option disabled [disabled]="true">{{ targetsLoadError() || 'No matching group' }}</mat-option>
+      } @for (group of filteredGroups(); track group) {
+      <mat-option [value]="group">{{ group }}</mat-option>
       }
     </mat-autocomplete>
     @if (selectedGroup(); as group) {
-    <mat-hint>Distributes to every member of "{{ group.name }}" at the time of distribution.</mat-hint>
+    <mat-hint>Distributes to every member of "{{ group }}" at the time of distribution.</mat-hint>
     }
   </mat-form-field>
   }

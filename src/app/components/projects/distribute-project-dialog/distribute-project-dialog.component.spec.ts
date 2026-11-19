@@ -6,11 +6,9 @@ import { DistributeProjectDialogComponent } from './distribute-project-dialog.co
 import { ProjectService } from '@services/project.service';
 import { ProjectDistributionService } from '@services/project-distribution.service';
 import { UserService } from '@services/user.service';
-import { GroupService } from '@services/group.service';
 import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { Project, ProjectDistribution } from '@models/project';
-import { User } from '@models/users/user';
 
 describe('DistributeProjectDialogComponent', () => {
   let fixture: ComponentFixture<DistributeProjectDialogComponent>;
@@ -21,8 +19,6 @@ describe('DistributeProjectDialogComponent', () => {
   let mockToasterService: any;
   let controller: Controller;
   let project: Project;
-
-  const createUser = (username: string): User => ({ user_id: username, username, full_name: '' } as unknown as User);
 
   const createJob = (overrides: Partial<ProjectDistribution> = {}): ProjectDistribution =>
     ({
@@ -47,9 +43,16 @@ describe('DistributeProjectDialogComponent', () => {
         { provide: ProjectDistributionService, useValue: mockDistributionService },
         {
           provide: UserService,
-          useValue: { list: vi.fn().mockReturnValue(of([createUser('student-01'), createUser('student-02')])) },
+          useValue: {
+            getGroupMembers: vi.fn().mockReturnValue(
+              of({
+                groups: [
+                  { group_name: 'Class-1', members: ['student-01', 'student-02'] },
+                ],
+              })
+            ),
+          },
         },
-        { provide: GroupService, useValue: { getGroups: vi.fn().mockReturnValue(of([])) } },
         { provide: ToasterService, useValue: mockToasterService },
       ],
     }).compileComponents();
@@ -99,14 +102,14 @@ describe('DistributeProjectDialogComponent', () => {
   });
 
   it('requires a copy name', () => {
-    component.selectUser(createUser('student-01'));
+    component.selectUser('student-01');
     component.copyName.set('   ');
 
     expect(component.canSubmit()).toBe(false);
   });
 
   it('submits a single-user distribution with MAC reset by default', () => {
-    component.selectUser(createUser('student-01'));
+    component.selectUser('student-01');
     component.onSubmitClick();
 
     expect(mockProjectService.distribute).toHaveBeenCalledWith(controller, 'proj-1', 'Lab', {
@@ -118,8 +121,8 @@ describe('DistributeProjectDialogComponent', () => {
 
   it('submits one target entry per chip in multiple-users mode', () => {
     component.targetMode.set('users');
-    component.addUser(createUser('student-01'));
-    component.addUser(createUser('student-02'));
+    component.addUser('student-01');
+    component.addUser('student-02');
     component.copyName.set('Homework');
     component.onSubmitClick();
 
@@ -132,7 +135,7 @@ describe('DistributeProjectDialogComponent', () => {
 
   it('submits a group distribution without a username suffix hint', () => {
     component.targetMode.set('group');
-    component.selectGroup({ user_group_id: 'g1', name: 'Students' } as never);
+    component.selectGroup('Students');
     component.onSubmitClick();
 
     expect(mockProjectService.distribute).toHaveBeenCalledWith(controller, 'proj-1', 'Lab', {
@@ -144,7 +147,7 @@ describe('DistributeProjectDialogComponent', () => {
   });
 
   it('keeps MAC addresses when the checkbox is cleared', () => {
-    component.selectUser(createUser('student-01'));
+    component.selectUser('student-01');
     component.resetMacAddresses.set(false);
     component.onSubmitClick();
 
@@ -156,7 +159,7 @@ describe('DistributeProjectDialogComponent', () => {
   });
 
   it('leaves the copy topology editable when the lock checkbox is cleared', () => {
-    component.selectUser(createUser('student-01'));
+    component.selectUser('student-01');
     component.lockTopology.set(false);
     component.onSubmitClick();
 
@@ -170,7 +173,7 @@ describe('DistributeProjectDialogComponent', () => {
   it('tracks the returned job and closes on 202', () => {
     const job = createJob({ total: 3 });
     mockProjectService.distribute.mockReturnValue(of(job));
-    component.selectUser(createUser('student-01'));
+    component.selectUser('student-01');
     component.onSubmitClick();
 
     expect(mockDistributionService.track).toHaveBeenCalledWith(controller, job);
@@ -179,7 +182,7 @@ describe('DistributeProjectDialogComponent', () => {
 
   it('toasts and stays open when distribution is rejected', () => {
     mockProjectService.distribute.mockReturnValue(throwError(() => new Error('target user missing')));
-    component.selectUser(createUser('student-01'));
+    component.selectUser('student-01');
     component.onSubmitClick();
 
     expect(mockToasterService.error).toHaveBeenCalledWith('target user missing');

@@ -152,7 +152,9 @@ export class ProjectsComponent implements OnInit {
 
   /** Fetch the recipient names the first time a share badge is hovered. */
   loadShareRecipients(project: Project): void {
-    if (!project.share_count || this._shareRecipients().has(project.project_id)) return;
+    // The shares list is served only to Project.Share holders; for everyone
+    // else the tooltip stays on the plain count.
+    if (!this.canManageShares(project) || !project.share_count || this._shareRecipients().has(project.project_id)) return;
     this.projectService.listShares(this.controller, project.project_id).subscribe({
       next: (shares) => {
         const names = shares.map((share) => share.username ?? share.group_name ?? '').filter(Boolean);
@@ -162,6 +164,70 @@ export class ProjectsComponent implements OnInit {
         this._shareRecipients.update((map) => new Map(map).set(project.project_id, []));
       },
     });
+  }
+
+  // ── Per-project privileges for shared-in projects ────────────
+  /**
+   * Privileges evaluated on a project's resource path
+   * (GET /projects/{id}/me/privileges), for the projects where the flattened
+   * global list is not exact: a project shared with the caller carries a
+   * project ACE (e.g. Lab member) that replaces the inherited global role,
+   * and a distributed copy carries the distribution's owner role. A project
+   * the caller created carries an owner ACE with the caller's own role, so
+   * the global list is exact there and no request is needed.
+   *
+   * One request per such project, cached for the page lifetime; the actions
+   * stay hidden until the answer lands, so a shared user never sees an action
+   * the project ACE does not grant.
+   */
+  private readonly _projectPrivileges = signal<ReadonlyMap<string, ReadonlySet<string>>>(new Map());
+  private readonly requestedProjectPrivileges = new Set<string>();
+
+  /** Whether the caller may manage the shares of this project. */
+  canManageShares(project: Project): boolean {
+    return this.hasProjectPrivilege(project, 'Project.Share');
+  }
+
+  /** Whether the caller may distribute this project. */
+  canDistribute(project: Project): boolean {
+    return this.hasProjectPrivilege(project, 'Project.Distribute');
+  }
+
+  private hasProjectPrivilege(project: Project, privilege: string): boolean {
+    if (this.permissionService.isSuperadmin()) {
+      return true;
+    }
+    if (!this.needsProjectPrivileges(project)) {
+      return this.permissionService.has(privilege);
+    }
+    return this._projectPrivileges().get(project.project_id)?.has(privilege) ?? false;
+  }
+
+  private needsProjectPrivileges(project: Project): boolean {
+    return project.created_by !== this.controller?.username || isDistributedCopy(project);
+  }
+
+  private ensureProjectPrivileges(projects: Project[]): void {
+    if (this.permissionService.isSuperadmin()) {
+      return;
+    }
+    for (const project of projects) {
+      if (!this.needsProjectPrivileges(project) || this.requestedProjectPrivileges.has(project.project_id)) {
+        continue;
+      }
+      const project_id = project.project_id;
+      this.requestedProjectPrivileges.add(project_id);
+      this.projectService.getMyPrivileges(this.controller, project_id).subscribe({
+        next: (response) => {
+          this._projectPrivileges.update((map) => new Map(map).set(project_id, new Set(response.privileges ?? [])));
+        },
+        error: () => {
+          // Unreadable privileges: keep the actions hidden (the server stays
+          // the authority).
+          this._projectPrivileges.update((map) => new Map(map).set(project_id, new Set<string>()));
+        },
+      });
+    }
   }
 
   // ── Distribution history badge ───────────────────────────────
@@ -652,6 +718,9 @@ export class ProjectsComponent implements OnInit {
         this._shareRecipients.set(new Map());
         // Same for the distribution badges.
         this.refreshDistributedProjects();
+        // Shared-in projects and copies need their own privilege list: the
+        // global one is flattened across paths (see _projectPrivileges).
+        this.ensureProjectPrivileges(projects);
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to list projects';
@@ -850,15 +919,6 @@ export class ProjectsComponent implements OnInit {
     // The first distribution freezes the source project: refresh so the new
     // state lands even when the notification stream is disconnected.
     dialogRef.afterClosed().subscribe(() => this.refresh());
-  }
-
-  /**
-   * Share management checks ownership, not a named project privilege (only
-   * the project owner or a superadmin can call the share endpoints), so the
-   * entry point mirrors that exact rule.
-   */
-  canShare(project: Project): boolean {
-    return this.permissionService.isSuperadmin() || project.created_by === this.controller?.username;
   }
 
   share(project: Project) {
