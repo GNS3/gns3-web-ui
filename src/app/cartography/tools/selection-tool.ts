@@ -31,6 +31,11 @@ export class SelectionTool {
           return;
         }
 
+        // A marquee drag must not also start a native browser text selection:
+        // the sweep would paint blue selection highlights across every canvas
+        // text it passes in DOM order, persisting after mouseup.
+        event.preventDefault();
+
         const subject = select(window);
         const start = self.transformation(pointer(event, svgNode));
         self.startSelection(start);
