@@ -563,10 +563,13 @@ describe('MarkerReplayOverlayComponent', () => {
     component.winTop.set(300);
     component.winWidth.set(560);
     component.winHeight.set(420);
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    Object.defineProperty(window, 'innerWidth', { value: 600, configurable: true });
-    Object.defineProperty(window, 'innerHeight', { value: 500, configurable: true });
+    // ng test runs with isolate:false, so several spec files share one jsdom
+    // window. Object.defineProperty({ value }) would leave innerWidth a
+    // read-only data property for every later spec in this process (their
+    // `window.innerWidth = ...` would throw); a getter spy keeps the property
+    // an accessor and restores the original one.
+    const innerWidthSpy = vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(600);
+    const innerHeightSpy = vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(500);
     try {
       window.dispatchEvent(new Event('resize'));
       fixture.detectChanges();
@@ -575,8 +578,8 @@ describe('MarkerReplayOverlayComponent', () => {
       expect(component.winLeft()).toBe(40); // clamped to 600 − 560
       expect(component.winTop()).toBe(80); // clamped to 500 − 420
     } finally {
-      Object.defineProperty(window, 'innerWidth', { value: vw, configurable: true });
-      Object.defineProperty(window, 'innerHeight', { value: vh, configurable: true });
+      innerWidthSpy.mockRestore();
+      innerHeightSpy.mockRestore();
     }
   });
 
