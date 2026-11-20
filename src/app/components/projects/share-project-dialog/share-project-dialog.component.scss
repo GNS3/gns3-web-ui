@@ -1,0 +1,98 @@
+.share-project-dialog__form-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  column-gap: 12px;
+}
+
+.share-project-dialog__section-title {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
+.share-project-dialog__hint {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 13px;
+  margin: 4px 0;
+}
+
+// Fit-by-design list: it grows naturally with its entries and never owns a
+// scrollbar — the dialog content area is the single scroll container. The
+// horizontal axis stays clipped (overflow-x computes to auto once overflow-y
+// is set) like other dialog lists in this repo.
+.share-project-dialog__shares {
+  margin: 0;
+  overflow: hidden;
+}
+
+.share-project-dialog__share-header,
+.share-project-dialog__share {
+  align-items: center;
+  column-gap: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px 36px;
+}
+
+.share-project-dialog__share-header {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  padding: 4px 0;
+  text-transform: uppercase;
+}
+
+.share-project-dialog__share-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.share-project-dialog__share {
+  padding: 2px 0;
+}
+
+.share-project-dialog__share-user {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.share-project-dialog__share-icon {
+  color: var(--mat-sys-on-surface-variant);
+  flex: 0 0 auto;
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+.share-project-dialog__share-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.share-project-dialog__share-role {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.share-project-dialog__share-remove {
+  --mat-icon-button-state-layer-size: 32px;
+  height: 32px;
+  justify-self: end;
+  width: 32px;
+}
+
+.share-project-dialog__divider {
+  margin: 12px 0;
+}

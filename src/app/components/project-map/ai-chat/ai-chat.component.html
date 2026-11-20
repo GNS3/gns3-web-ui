@@ -16,22 +16,14 @@
   (mousedown)="onWindowFocus()"
   mwlResizable
   [validateResize]="validate"
-  [enableGhostResize]="true"
+  [enableGhostResize]="false"
   (resizeStart)="toggleDragging(false)"
+  (resizing)="onResizing($event)"
   (resizeEnd)="onResizeEnd($event)"
 >
   @if (!isMinimized) {
   <!-- Edge handles -->
-  <div class="resize-handle resize-handle-top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
-  <div class="resize-handle resize-handle-right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
-  <div class="resize-handle resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
-  <div class="resize-handle resize-handle-left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
-
-  <!-- Corner handles -->
-  <div class="resize-handle resize-handle-top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
-  <div class="resize-handle resize-handle-top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
-  <div class="resize-handle resize-handle-bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
-  <div class="resize-handle resize-handle-bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+  <app-floating-window-resize-handles />
   }
 
   <!-- Minimized state - disabled, now using sidebar AI button instead -->
@@ -83,15 +75,19 @@
 
   <!-- Chat main area -->
   <div class="gns3-ai-chat__main">
-    <!-- Chat header -->
-    <div class="gns3-ai-chat__header" (mousedown)="!isMaximized && toggleDragging(true)">
-      <div class="gns3-ai-chat__title">
+    <!-- Chat header: two zones (floating-window standard) — the title strip is
+         the ONLY drag surface, the action zone on the right never drags. -->
+    <div class="gns3-ai-chat__header">
+      <div
+        class="gns3-ai-chat__title"
+        [class.gns3-ai-chat__title--draggable]="!isMaximized"
+        (mousedown)="!isMaximized && toggleDragging(true)"
+      >
         <span>{{ currentSessionTitle }}</span>
       </div>
       <div class="gns3-ai-chat__header-actions">
         <button
           mat-icon-button
-          (mousedown)="$event.stopPropagation()"
           (click)="$event.stopPropagation(); minimizeChat()"
           class="minimize-button"
         >
@@ -107,7 +103,6 @@
         </button>
         <button
           mat-icon-button
-          (mousedown)="$event.stopPropagation()"
           (click)="$event.stopPropagation(); maximizeChat()"
           class="maximize-button"
         >
@@ -127,7 +122,6 @@
         </button>
         <button
           mat-icon-button
-          (mousedown)="$event.stopPropagation()"
           (click)="$event.stopPropagation(); closeChat()"
           class="close-button"
         >

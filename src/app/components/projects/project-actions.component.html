@@ -1,0 +1,126 @@
+@if (project().status === 'closed') {
+<button
+  mat-icon-button
+  [class]="actionClass('start')"
+  *appHasPrivilege="'Project.Allocate'"
+  (click)="onAction(start, $event)"
+  matTooltip="Start project"
+  aria-label="Start project"
+>
+  <mat-icon>play_arrow</mat-icon>
+</button>
+} @if (project().status === 'opened') {
+<button
+  mat-icon-button
+  [class]="actionClass('stop')"
+  *appHasPrivilege="'Project.Allocate'"
+  (click)="onAction(stop, $event)"
+  matTooltip="Stop project"
+  aria-label="Stop project"
+  [disabled]="variant() === 'card' && isProjectLoading()"
+>
+  @if (variant() === 'card' && isProjectLoading()) {
+  <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+  } @else {
+  <mat-icon>pause</mat-icon>
+  }
+</button>
+}
+@if (variant() === 'card') {
+<button
+  mat-icon-button
+  [class]="actionClass('details')"
+  *appHasPrivilege="'Project.Audit'"
+  (click)="onAction(details, $event)"
+  matTooltip="View project details"
+  aria-label="View project details"
+>
+  <mat-icon>info</mat-icon>
+</button>
+}
+@if (!isFrozen()) {
+<button
+  mat-icon-button
+  [class]="actionClass('edit')"
+  *appHasPrivilege="'Project.Modify'"
+  (click)="onAction(edit, $event)"
+  matTooltip="Edit project"
+  aria-label="Edit project"
+>
+  <mat-icon>edit</mat-icon>
+</button>
+}
+@if (variant() === 'details' && canUnfreeze()) {
+<button
+  mat-icon-button
+  [class]="actionClass('unfreeze')"
+  (click)="onAction(unfreeze, $event)"
+  matTooltip="Unfreeze template"
+  aria-label="Unfreeze template"
+>
+  <mat-icon>lock_open</mat-icon>
+</button>
+}
+@if (project().status === 'closed' && !isProvidedByTeacher()) {
+<button
+  mat-icon-button
+  [class]="actionClass('duplicate')"
+  *appHasPrivilege="'Project.Duplicate'"
+  (click)="onAction(duplicate, $event)"
+  matTooltip="Duplicate project"
+  aria-label="Duplicate project"
+>
+  <mat-icon>content_copy</mat-icon>
+</button>
+@if (canDistribute()) {
+<button
+  mat-icon-button
+  [class]="actionClass('distribute')"
+  (click)="onAction(distribute, $event)"
+  matTooltip="Distribute project"
+  aria-label="Distribute project"
+>
+  <mat-icon>people</mat-icon>
+</button>
+}
+}
+@if (canManageShares()) {
+<button
+  mat-icon-button
+  [class]="actionClass('share')"
+  (click)="onAction(share, $event)"
+  matTooltip="Share project"
+  aria-label="Share project"
+>
+  <mat-icon>share</mat-icon>
+</button>
+}
+@if (!isProvidedByTeacher()) {
+<button
+  mat-icon-button
+  [class]="actionClass('export')"
+  *appHasPrivilege="'Project.Export'"
+  (click)="onAction(exportProject, $event)"
+  matTooltip="Export project"
+  aria-label="Export project"
+>
+  <mat-icon>file_download</mat-icon>
+</button>
+}
+@if (project().status === 'closed') {
+<button
+  mat-icon-button
+  [class]="actionClass('delete')"
+  *appHasPrivilege="'Project.Allocate'"
+  (click)="onAction(deleteProject, $event)"
+  matTooltip="Delete project"
+  aria-label="Delete project"
+  [disabled]="variant() === 'card' && isProjectLoading()"
+>
+  @if (variant() === 'card' && isProjectLoading()) {
+  <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+  } @else {
+  <mat-icon>delete</mat-icon>
+  }
+</button>
+}

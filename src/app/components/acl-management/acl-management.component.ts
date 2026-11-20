@@ -16,19 +16,15 @@ import {
   ChangeDetectorRef,
   Component,
   OnInit,
-  QueryList,
-  ViewChildren,
   inject,
   signal,
-  AfterViewInit,
+  computed,
   model,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,10 +32,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Controller } from '@models/controller';
-import { ACE } from '@models/api/ACE';
+import { ACE, AceType } from '@models/api/ACE';
 import { ActivatedRoute } from '@angular/router';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
@@ -50,7 +46,21 @@ import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-di
 import { Endpoint } from '@models/api/endpoint';
 import { ResourcePool } from '@models/resourcePools/ResourcePool';
 import { ResourcePoolsService } from '@services/resource-pools.service';
-import { AceFilterPipe } from '@filters/ace-filter.pipe';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
+
+/** ACE rules sharing one subject (a user or a group). */
+interface AceGroup {
+  key: string;
+  subjectType: AceType;
+  subjectId: string;
+  name: string;
+  aces: ACE[];
+}
+
+interface RulePageState {
+  pageIndex: number;
+  pageSize: number;
+}
 
 @Component({
   selector: 'app-acl-management',
@@ -60,9 +70,7 @@ import { AceFilterPipe } from '@filters/ace-filter.pipe';
     CommonModule,
     FormsModule,
     RouterModule,
-    MatTableModule,
-    MatPaginator,
-    MatSortModule,
+    MatPaginatorModule,
     MatCheckboxModule,
     MatButtonModule,
     MatIconModule,
@@ -70,12 +78,12 @@ import { AceFilterPipe } from '@filters/ace-filter.pipe';
     MatFormFieldModule,
     MatInputModule,
     MatDialogModule,
-    MatCardModule,
-    AceFilterPipe,
+    MatProgressSpinnerModule,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AclManagementComponent implements OnInit, AfterViewInit {
+export class AclManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private toasterService = inject(ToasterService);
@@ -84,19 +92,57 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
   public dialog = inject(MatDialog);
   private cdr = inject(ChangeDetectorRef);
 
-  @ViewChildren('acesPaginator') acesPaginator: QueryList<MatPaginator>;
-  @ViewChildren('acesSort') acesSort: QueryList<MatSort>;
   controller: Controller;
-  public displayedColumns = ['select', 'path', 'user/group', 'role', 'propagate', 'allowed', 'updated_at'];
   selection = new SelectionModel<ACE>(true, []);
-  aces: ACE[];
-  dataSource = new MatTableDataSource<ACE>();
   readonly isReady = signal(false);
   readonly searchText = model('');
   readonly endpoints = signal<Endpoint[]>([]);
   readonly resourcePools = signal<ResourcePool[]>([]);
+  readonly aces = signal<ACE[]>([]);
 
-  constructor() {}
+  // Grouping / expansion / pagination state
+  readonly expandedGroups = signal<ReadonlySet<string>>(new Set());
+  readonly rulePageSizeOptions = [10, 15, 20];
+  readonly rulePageByGroup = signal<Record<string, RulePageState>>({});
+
+  /** ACE rules grouped by subject (user/group), sorted by subject name. */
+  readonly aceGroups = computed<AceGroup[]>(() => {
+    const groups = new Map<string, AceGroup>();
+    for (const ace of this.aces()) {
+      const subjectId = (ace.ace_type === AceType.user ? ace.user_id : ace.group_id) ?? '';
+      const key = `${ace.ace_type}:${subjectId}`;
+      let group = groups.get(key);
+      if (!group) {
+        group = {
+          key,
+          subjectType: ace.ace_type,
+          subjectId,
+          name: this.getNameByUuidFromEndpoint(subjectId),
+          aces: [],
+        };
+        groups.set(key, group);
+      }
+      group.aces.push(ace);
+    }
+    return [...groups.values()]
+      .map((group) => ({ ...group, aces: this.sortAces(group.aces) }))
+      .sort(
+        (left, right) =>
+          left.name.localeCompare(right.name, undefined, { numeric: true, sensitivity: 'base' }) ||
+          left.subjectType.localeCompare(right.subjectType)
+      );
+  });
+
+  /** Groups narrowed to rules matching the search text (all rules when the search is empty). */
+  readonly filteredGroups = computed<AceGroup[]>(() => {
+    const search = this.searchText().trim().toLowerCase();
+    if (!search) {
+      return this.aceGroups();
+    }
+    return this.aceGroups()
+      .map((group) => ({ ...group, aces: group.aces.filter((ace) => this.aceMatchesSearch(ace, search)) }))
+      .filter((group) => group.aces.length > 0);
+  });
 
   ngOnInit(): void {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
@@ -126,33 +172,92 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
-    this.acesPaginator.changes.subscribe((comps: QueryList<MatPaginator>) => {
-      this.dataSource.paginator = comps.first;
-    });
+  // ------------------------------------------------------------------
+  // Expansion
+  // ------------------------------------------------------------------
 
-    this.acesSort.changes.subscribe((comps: QueryList<MatSort>) => {
-      this.dataSource.sort = comps.first;
-    });
+  isExpanded(group: AceGroup): boolean {
+    // Searching forces matched groups open so the matched rules are visible.
+    return this.searchText().trim().length > 0 || this.expandedGroups().has(group.key);
+  }
 
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      switch (property) {
-        case 'path':
-        case 'user/group':
-        case 'role':
-          return item[property] ? item[property].toLowerCase() : '';
-        default:
-          return item[property];
-      }
-    };
+  toggleGroup(group: AceGroup): void {
+    const expanded = new Set(this.expandedGroups());
+    if (expanded.has(group.key)) {
+      expanded.delete(group.key);
+    } else {
+      expanded.add(group.key);
+    }
+    this.expandedGroups.set(expanded);
+  }
+
+  // ------------------------------------------------------------------
+  // Pagination (groups and per-group rules)
+  // ------------------------------------------------------------------
+
+  rulePageOf(group: AceGroup): RulePageState {
+    const state = this.rulePageByGroup()[group.key] ?? { pageIndex: 0, pageSize: this.rulePageSizeOptions[0] };
+    const lastPage = Math.max(Math.ceil(group.aces.length / state.pageSize) - 1, 0);
+    return { pageIndex: Math.min(state.pageIndex, lastPage), pageSize: state.pageSize };
+  }
+
+  pagedAcesFor(group: AceGroup): ACE[] {
+    const { pageIndex, pageSize } = this.rulePageOf(group);
+    const start = pageIndex * pageSize;
+    return group.aces.slice(start, start + pageSize);
+  }
+
+  onRulePageChange(group: AceGroup, event: PageEvent): void {
+    this.rulePageByGroup.update((pages) => ({
+      ...pages,
+      [group.key]: { pageIndex: event.pageIndex, pageSize: event.pageSize },
+    }));
+  }
+
+  onSearchChange(value: string): void {
+    this.searchText.set(value);
+    this.rulePageByGroup.set({});
+  }
+
+  // ------------------------------------------------------------------
+  // Selection (per rule; group header checkbox toggles the group's visible rules)
+  // ------------------------------------------------------------------
+
+  isGroupAllSelected(group: AceGroup): boolean {
+    const visible = this.pagedAcesFor(group);
+    return visible.length > 0 && visible.every((ace) => this.selection.isSelected(ace));
+  }
+
+  isGroupPartiallySelected(group: AceGroup): boolean {
+    const visible = this.pagedAcesFor(group);
+    return !this.isGroupAllSelected(group) && visible.some((ace) => this.selection.isSelected(ace));
+  }
+
+  toggleGroupSelection(group: AceGroup): void {
+    // The header checkbox promises "Select all visible ACE rules": rules on
+    // the group's other pages must not enter the selection (Delete selected
+    // would remove rules the user never saw).
+    const visible = this.pagedAcesFor(group);
+    if (this.isGroupAllSelected(group)) {
+      visible.forEach((ace) => this.selection.deselect(ace));
+    } else {
+      visible.forEach((ace) => this.selection.select(ace));
+    }
+  }
+
+  trackGroup(_index: number, group: AceGroup): string {
+    return group.key;
+  }
+
+  trackAce(_index: number, ace: ACE): string {
+    return ace.ace_id;
   }
 
   refresh() {
     this.aclService.list(this.controller).subscribe({
       next: (aces: ACE[]) => {
         this.isReady.set(true);
-        this.aces = aces;
-        this.dataSource.data = aces;
+        this.aces.set(aces);
         this.selection.clear();
       },
       error: (err) => {
@@ -175,14 +280,26 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(() => this.refresh());
   }
 
+  onEdit(ace: ACE) {
+    const dialogRef = this.dialog.open(AddAceDialogComponent, {
+      panelClass: ['base-dialog-panel', 'add-ace-dialog-panel', 'dialog-extra-large-panel'],
+      autoFocus: false,
+      disableClose: true,
+      data: { endpoints: this.endpoints(), ace },
+    });
+    let instance = dialogRef.componentInstance;
+    instance.controller = this.controller;
+    dialogRef.afterClosed().subscribe(() => this.refresh());
+  }
+
   onDelete(ace: ACE) {
     this.dialog
       .open(ConfirmationDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
-          title: 'Delete access rule?',
-          message: `The access rule for "${ace.path}" will be permanently deleted.`,
+          title: 'Delete ACE rule?',
+          message: `The ACE rule for "${ace.path}" will be permanently deleted.`,
           confirmButtonText: 'Delete rule',
           tone: 'danger',
         },
@@ -192,7 +309,7 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
         if (isDeletedConfirm) {
           this.aclService.delete(this.controller, ace.ace_id).subscribe({
             next: () => {
-              this.toasterService.success('Access rule deleted.');
+              this.toasterService.success('ACE rule deleted.');
               this.refresh();
             },
             error: (err) => {
@@ -205,16 +322,6 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
       });
   }
 
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.aces.length;
-    return numSelected === numRows;
-  }
-
-  masterToggle() {
-    this.isAllSelected() ? this.selection.clear() : this.aces.forEach((row) => this.selection.select(row));
-  }
-
   deleteMultiple() {
     const selectedAces = [...this.selection.selected];
     this.dialog
@@ -222,8 +329,8 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'dialog-small-panel'],
         autoFocus: '.cancel-button',
         data: {
-          title: 'Delete access rules?',
-          message: `${selectedAces.length} selected access rules will be permanently deleted.`,
+          title: 'Delete ACE rules?',
+          message: `${selectedAces.length} selected ACE rules will be permanently deleted.`,
           details: selectedAces.map((ace) => ace.path),
           confirmButtonText: 'Delete rules',
           tone: 'danger',
@@ -234,7 +341,7 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
         if (isDeletedConfirm) {
           const completion = createActionCompletion(selectedAces.length, (count) => {
             if (count > 0) {
-              this.toasterService.success(`${count} access ${count === 1 ? 'rule' : 'rules'} deleted.`);
+              this.toasterService.success(`${count} ACE ${count === 1 ? 'rule' : 'rules'} deleted.`);
               this.refresh();
             }
           });
@@ -255,6 +362,10 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
   }
 
   getNameByUuidFromEndpoint(path: string): string {
+    if (!path) {
+      return '';
+    }
+
     // Check if the path is a resource pool path (/pools/{pool_id})
     const poolMatch = path.match(/^\/pools\/(.+)$/);
     if (poolMatch) {
@@ -275,5 +386,21 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
     }
 
     return path;
+  }
+
+  private sortAces(aces: ACE[]): ACE[] {
+    return [...aces].sort((left, right) =>
+      this.getNameByUuidFromEndpoint(left.path)
+        .localeCompare(this.getNameByUuidFromEndpoint(right.path), undefined, { numeric: true, sensitivity: 'base' })
+    );
+  }
+
+  private aceMatchesSearch(ace: ACE, search: string): boolean {
+    return [
+      this.getNameByUuidFromEndpoint(ace.path),
+      this.getNameByUuidFromEndpoint(ace.user_id ?? ''),
+      this.getNameByUuidFromEndpoint(ace.group_id ?? ''),
+      this.getNameByUuidFromEndpoint(ace.role_id),
+    ].some((value) => value.toLowerCase().includes(search));
   }
 }

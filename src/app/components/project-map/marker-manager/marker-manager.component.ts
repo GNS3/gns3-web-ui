@@ -5,7 +5,6 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  HostListener,
   OnDestroy,
   OnInit,
   Output,
@@ -16,6 +15,7 @@ import {
   input,
   signal,
   viewChild,
+  DestroyRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
@@ -32,9 +32,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { SafeColorValueAccessor } from '../../../directives/safe-color-value-accessor.directive';
-import { Subject, animationFrameScheduler, forkJoin, fromEvent } from 'rxjs';
-import { auditTime, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
+import { Subject, forkJoin } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { ResizableDirective } from 'angular-resizable-element';
+import { FloatingWindowResizeHandlesComponent } from '../../floating-window/floating-window-resize-handles.component';
 
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
@@ -52,8 +53,10 @@ import { MapLinksDataSource } from '../../../cartography/datasources/map-datasou
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { MarkerRegistryService } from '@services/marker-registry.service';
 import { ToasterService } from '@services/toaster.service';
-import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
+import { ProjectPermissionService } from '@services/project-permission.service';
+import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.directive';
 import { WindowManagementService } from '@services/window-management.service';
+import { FloatingWindowChrome } from '../../floating-window/floating-window-chrome';
 import { MarkerFormComponent, MARKER_CAPTURE_AUTO } from './marker-form.component';
 import { linkLabel } from '../helpers/link-label';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
@@ -131,17 +134,18 @@ function notGlobalName(control: AbstractControl): { notGlobalName: true } | null
     MatProgressSpinnerModule,
     CdkTextareaAutosize,
     ResizableDirective,
-    ResizeHandleDirective,
+    FloatingWindowResizeHandlesComponent,
     MarkerFormComponent,
     SafeColorValueAccessor,
+    HasProjectPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MarkerManagerComponent implements OnInit, OnDestroy {
   private readonly DEFAULT_WIDTH = 800;
   private readonly DEFAULT_HEIGHT = 600;
-  private readonly DEFAULT_LEFT = '120px';
-  private readonly DEFAULT_TOP = '80px';
+  private readonly DEFAULT_LEFT = 120;
+  private readonly DEFAULT_TOP = 80;
   private readonly MIN_WIDTH = 560;
   private readonly MIN_HEIGHT = 400;
   private readonly WINDOW_ID = 'marker-manager';
@@ -158,34 +162,64 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   /** Emitted when the user starts a tag replay (Replay tab) — opens the overlay. */
   @Output() startReplay = new EventEmitter<number>();
 
-  public style: WindowStyle = {
-    position: 'fixed',
-    left: this.DEFAULT_LEFT,
-    top: this.DEFAULT_TOP,
-    width: `${this.DEFAULT_WIDTH}px`,
-    height: `${this.DEFAULT_HEIGHT}px`,
-  };
+  // ---- floating-window chrome (the shared standard controller) ----
 
-  get renderedWindowStyle() {
-    return this.fitEmptyDefinitions()
-      ? { ...this.style, height: 'auto', maxHeight: `calc(100dvh - ${this.style.top})` }
-      : this.style;
-  }
-
-  public resizedWidth = this.DEFAULT_WIDTH;
-  public resizedHeight = this.DEFAULT_HEIGHT;
-
-  readonly manuallyResized = signal(false);
-  readonly fitEmptyDefinitions = computed(() =>
-    this.activeTabIndex() === 0 && !this.loading() && this.definitions().length === 0 && !this.manuallyResized()
+  readonly chrome = new FloatingWindowChrome(
+    {
+      minWidth: this.MIN_WIDTH,
+      minHeight: this.MIN_HEIGHT,
+      defaultRect: {
+        left: this.DEFAULT_LEFT,
+        top: this.DEFAULT_TOP,
+        width: this.DEFAULT_WIDTH,
+        height: this.DEFAULT_HEIGHT,
+      },
+      // Project-toolbar clearance; live-responsive (narrow viewports get the
+      // compact toolbar).
+      topOffset: () => (typeof window === 'undefined' ? 0 : window.innerWidth <= 768 ? 56 : 64),
+    },
+    inject(DestroyRef)
   );
 
-  private isDraggingSignal = signal(false);
-  private isResizingSignal = signal(false);
+  /** First user resize latches — the empty-definitions auto-height stops applying. */
+  readonly manuallyResized = this.chrome.userResized;
+
+  /**
+   * The empty definitions view should end below its message, not fill the
+   * default window height — until the user resizes (which latches
+   * {@link manuallyResized}) or is mid-resize (the live mirror must show).
+   */
+  readonly fitEmptyDefinitions = computed(
+    () =>
+      this.activeTabIndex() === 0 &&
+      !this.loading() &&
+      this.definitions().length === 0 &&
+      !this.manuallyResized() &&
+      !this.chrome.resizing()
+  );
+
+  /** Fit-mode height cap: never grow past the viewport under the toolbar. */
+  readonly fitMaxHeight = computed(() => `calc(100dvh - ${this.chrome.top()}px)`);
+
+  /**
+   * Resize-gesture start: the fitted empty view renders `height: auto`,
+   * which can be far shorter than {@link FloatingWindowChrome.height}. Fit
+   * mode yields to the signal the moment the gesture starts, so seed the
+   * signal from the RENDERED box first — otherwise the bare mousedown
+   * snaps the window to the 600 px default before the pointer moves.
+   */
+  onManagerResizeStart(): void {
+    const rendered = this.windowWrapper()?.nativeElement.getBoundingClientRect().height;
+    if (rendered && Math.abs(rendered - this.chrome.height()) >= 1) {
+      this.chrome.height.set(Math.round(rendered));
+    }
+    this.chrome.onResizeStart();
+  }
+
   private isMinimizedSignal = signal(false);
 
-  readonly isDragging = this.isDraggingSignal.asReadonly();
-  readonly isResizing = this.isResizingSignal.asReadonly();
+  readonly isDragging = this.chrome.dragging;
+  readonly isResizing = this.chrome.resizing;
   readonly isMinimized = this.isMinimizedSignal.asReadonly();
 
   // ---- data ----
@@ -361,7 +395,6 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     { label: 'ATM', value: 'DLT_ATM_RFC1483' },
   ];
 
-  private boundaryService = inject(WindowBoundaryService);
   private windowManagement = inject(WindowManagementService);
   private cdr = inject(ChangeDetectorRef);
   private markerService = inject(MarkerService);
@@ -371,12 +404,8 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   private nodesDataSource = inject(NodesDataSource);
   private markerRegistryService = inject(MarkerRegistryService);
   private toasterService = inject(ToasterService);
+  private projectPermissionService = inject(ProjectPermissionService);
   private dialog = inject(MatDialog);
-
-  private dragStartX = 0;
-  private dragStartY = 0;
-  private dragStartLeft = 0;
-  private dragStartTop = 0;
 
   readonly windowWrapper = viewChild<ElementRef>('windowWrapper');
 
@@ -394,12 +423,14 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     effect(() => {
       if (this.activeTabIndex() === 2) this.loadAggregate();
     });
+    // Suspend content pointer events while a window gesture is live so form
+    // controls never steal the mouse mid-drag/mid-resize.
+    effect(() => {
+      this.setContentPointerEvents(this.chrome.dragging() || this.chrome.resizing() ? 'none' : '');
+    });
   }
 
   ngOnInit() {
-    const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
-    this.boundaryService.setConfig({ topOffset: toolbarHeight });
-    this.setupDragHandling();
     this.buildNodeOptions();
     this.buildLinkOptions();
     this.loadDefinitions();
@@ -615,6 +646,21 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
   }
 
   // ---- tag replay (Replay tab) ----
+
+  /**
+   * Privileges the pause-panel's "Pause all & replay" needs for THIS tag row:
+   * pausing an inherited copy writes its project-level definition
+   * (Project.Marker) while pausing a private marker writes the link
+   * (Link.Marker) — collect exactly the kinds the row's still-enabled markers
+   * consist of (same mixed-selection treatment the context menu uses).
+   */
+  replayPausePrivileges(row: TagRow): string[] {
+    const privs = new Set<string>();
+    for (const m of row.enabled) {
+      privs.add(m.inherited_from ? 'Project.Marker' : 'Link.Marker');
+    }
+    return [...privs];
+  }
 
   /**
    * Replay button per tag. Tags with no capturing markers replay immediately;
@@ -1247,125 +1293,8 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     return d === 'tx' || d === 'rx' ? d : 'both';
   }
 
-  // ---- window chrome (cloned from node-file-manager-inline) ----
-
-  validate(event: ResizeEvent): boolean {
-    if (
-      event.rectangle.width &&
-      event.rectangle.height &&
-      (event.rectangle.width < this.MIN_WIDTH || event.rectangle.height < this.MIN_HEIGHT)
-    ) {
-      return false;
-    }
-    return true;
-  }
-
-  onResizeStart(): void {
-    // Resizing starts from the rendered content height, which can differ
-    // from the default height while the definitions list is empty.
-    this.resizedHeight = this.windowWrapper()?.nativeElement.getBoundingClientRect().height || this.resizedHeight;
-    this.isResizingSignal.set(true);
-    this.setContentPointerEvents('none');
-    this.cdr.markForCheck();
-  }
-
-  onResizeEnd(event: ResizeEvent): void {
-    this.manuallyResized.set(true);
-    const constrained = this.boundaryService.constrainResizeSize(
-      event.rectangle.width || this.resizedWidth,
-      event.rectangle.height || this.resizedHeight,
-      event.rectangle.left,
-      event.rectangle.top
-    );
-
-    this.style = {
-      position: 'fixed',
-      left: `${constrained.left}px`,
-      top: `${constrained.top}px`,
-      width: `${constrained.width}px`,
-      height: `${constrained.height}px`,
-    };
-
-    this.resizedWidth = constrained.width;
-    this.resizedHeight = constrained.height;
-
-    this.isResizingSignal.set(false);
-    this.setContentPointerEvents('');
-    this.cdr.markForCheck();
-  }
-
-  private setupDragHandling(): void {
-    const windowElement = this.windowWrapper()?.nativeElement;
-    if (!windowElement) return;
-
-    const headerElement = windowElement.querySelector('.marker-manager__header') as HTMLElement;
-    if (!headerElement) return;
-
-    const mouseDown$ = fromEvent<MouseEvent>(headerElement, 'mousedown');
-    const mouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
-    const mouseUp$ = fromEvent<MouseEvent>(document, 'mouseup');
-
-    mouseDown$
-      .pipe(
-        takeUntil(this.destroy$),
-        tap((e) => {
-          e.preventDefault();
-          this.isDraggingSignal.set(true);
-          this.cdr.markForCheck();
-
-          this.dragStartX = e.clientX;
-          this.dragStartY = e.clientY;
-          this.dragStartLeft = Number(this.style.left?.toString().split('px')[0]) || 0;
-          this.dragStartTop = Number(this.style.top?.toString().split('px')[0]) || 0;
-
-          this.setContentPointerEvents('none');
-        }),
-        switchMap(() =>
-          mouseMove$.pipe(
-            auditTime(0, animationFrameScheduler),
-            takeUntil(
-              mouseUp$.pipe(
-                tap(() => {
-                  this.onDragEnd();
-                })
-              )
-            )
-          )
-        )
-      )
-      .subscribe((mouseMoveEvent: MouseEvent) => {
-        const dx = mouseMoveEvent.clientX - this.dragStartX;
-        const dy = mouseMoveEvent.clientY - this.dragStartY;
-
-        let newLeft = this.dragStartLeft + dx;
-        let newTop = this.dragStartTop + dy;
-
-        // Constrain drag to viewport (mirrors web-console-inline)
-        const w = this.resizedWidth;
-        const h = windowElement.getBoundingClientRect().height || this.resizedHeight;
-        const maxLeft = window.innerWidth - w;
-        const topOffset = this.boundaryService.getConfigValue().topOffset || 0;
-        const maxTop = window.innerHeight - h - topOffset;
-        newLeft = Math.max(0, Math.min(maxLeft, newLeft));
-        newTop = Math.max(topOffset, Math.min(maxTop, newTop));
-
-        this.style = {
-          position: 'fixed',
-          left: `${newLeft}px`,
-          top: `${newTop}px`,
-          width: this.style.width,
-          height: this.style.height,
-        };
-
-        this.cdr.markForCheck();
-      });
-  }
-
-  private onDragEnd(): void {
-    this.isDraggingSignal.set(false);
-    this.setContentPointerEvents('');
-    this.cdr.markForCheck();
-  }
+  // ---- window chrome: everything drag/resize lives in `chrome`; the only
+  // local concern is suspending content pointer events during gestures ----
 
   private setContentPointerEvents(value: string): void {
     const windowElement = this.windowWrapper()?.nativeElement;
@@ -1374,10 +1303,5 @@ export class MarkerManagerComponent implements OnInit, OnDestroy {
     if (body) {
       body.style.pointerEvents = value;
     }
-  }
-
-  @HostListener('window:resize')
-  onWindowResize() {
-    this.style = this.boundaryService.constrainWindowPosition(this.style);
   }
 }

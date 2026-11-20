@@ -66,7 +66,7 @@ import { NodeWidget } from '../../cartography/widgets/node';
 import { ProgressService } from '../../common/progress/progress.service';
 import { ProjectWebServiceHandler } from '../../handlers/project-web-service-handler';
 import { Link } from '@models/link';
-import { Project } from '@models/project';
+import { Project, isDistributedCopy, isFrozenTemplate } from '@models/project';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
 import { DrawingService } from '@services/drawing.service';
@@ -75,9 +75,11 @@ import { MarkerFlashService } from '@services/marker-flash.service';
 import { MarkerRegistryService } from '@services/marker-registry.service';
 import { MapScaleService } from '@services/mapScale.service';
 import { MapSettingsService } from '@services/mapsettings.service';
+import { UserPreferencesService } from '@services/user-preferences.service';
 import { NodeService } from '@services/node.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { NotificationService } from '@services/notification.service';
+import { ProjectPermissionService } from '@services/project-permission.service';
 import { ProjectService } from '@services/project.service';
 import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
 import { ControllerService } from '@services/controller.service';
@@ -93,6 +95,10 @@ import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-di
 import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
 import { ImportProjectDialogComponent } from '../projects/import-project-dialog/import-project-dialog.component';
 import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
+import {
+  DistributionHistoryDialogComponent,
+  DistributionHistoryDialogData,
+} from '../projects/distribution-history-dialog/distribution-history-dialog.component';
 import { MissingImagesDialogService } from '../projects/missing-images-dialog/missing-images-dialog.service';
 import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
 import type { TopologySummaryComponent } from '../topology-summary/topology-summary.component';
@@ -124,13 +130,16 @@ import { NodeDraggedComponent } from '../drawings-listeners/node-dragged/node-dr
 import { NodeLabelDraggedComponent } from '../drawings-listeners/node-label-dragged/node-label-dragged.component';
 import { TextAddedComponent } from '../drawings-listeners/text-added/text-added.component';
 import { MarkerManagerComponent } from './marker-manager/marker-manager.component';
-import { MarkerReplayOverlayComponent } from './marker-replay/marker-replay-overlay.component';
+import { MarkerReplayOverlayComponent, REPLAY_WINDOW_Z_BAND } from './marker-replay/marker-replay-overlay.component';
 import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edited.component';
 import { createActionCompletion } from '@utils/action-completion.util';
 import { NotificationCenterComponent } from '@components/notification-center/notification-center.component';
+import { DistributionTasksComponent } from '@components/distribution-tasks/distribution-tasks.component';
 import { NotificationCenterService } from '@services/notification-center.service';
 import { describeTopologyItems } from '@utils/topology-delete-summary.util';
 import type { TopologyItemCounts } from '@utils/topology-delete-summary.util';
+import { planTopologyDeletion } from '@utils/topology-deletion.util';
+import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.directive';
 
 @Component({
   selector: 'app-project-map',
@@ -170,6 +179,8 @@ import type { TopologyItemCounts } from '@utils/topology-delete-summary.util';
     MarkerManagerComponent,
     MarkerReplayOverlayComponent,
     NotificationCenterComponent,
+    DistributionTasksComponent,
+    HasProjectPrivilegeDirective,
   ],
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
@@ -240,6 +251,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public fileManagerInlineZIndex = new Map<string, number>();
   // Counter for generating unique z-indices
   private zIndexCounter = 0;
+
+  /**
+   * Raise a window a whole Z BAND above the current top (base + n × band),
+   * not +1: the replay overlay runs a click-to-front focus fleet INSIDE its
+   * band (internal boosts < {@link REPLAY_WINDOW_Z_BAND}), so a window
+   * raised here is guaranteed above every internal boost of every other
+   * window — "whoever I click is frontmost" holds across ALL windows again.
+   */
+  private raiseZIndex(): number {
+    this.zIndexCounter++;
+    return this.baseZIndex + this.zIndexCounter * REPLAY_WINDOW_Z_BAND;
+  }
 
   // Z-index for console and AI chat windows
   public consoleZIndex: number = this.baseZIndex;
@@ -340,9 +363,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private mapDrawingsDataSource = inject(MapDrawingsDataSource);
   private mapSymbolsDataSource = inject(MapSymbolsDataSource);
   private mapSettingsService = inject(MapSettingsService);
+  private userPreferences = inject(UserPreferencesService);
   private ethernetLinkWidget = inject(EthernetLinkWidget);
   private serialLinkWidget = inject(SerialLinkWidget);
   private notificationService = inject(NotificationService);
+  private readonly projectPermissionService = inject(ProjectPermissionService);
   readonly notificationCenter = inject(NotificationCenterService);
   private title = inject(Title);
   private nodeConsoleService = inject(NodeConsoleService);
@@ -538,6 +563,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             this.projectService.open(this.controller, this.project.project_id);
             this.title.setTitle(this.project.name);
 
+            // Project-scoped privilege list: the exact judgement source for
+            // everything rendered inside the project view.
+            this.projectPermissionService.load(this.controller, this.project.project_id);
+
             // Initialize visibility settings from project or fallback to localStorage/defaults
             this.isInterfaceLabelVisible =
               this.project.show_interface_labels ?? this.mapSettingsService.showInterfaceLabels ?? true;
@@ -654,37 +683,54 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const selectedNodes = selected.filter((item) => item instanceof MapNode);
     const selectedLinks = selected.filter((item) => item instanceof MapLink);
     const selectedDrawings = selected.filter((item) => item instanceof MapDrawing);
-    const selectedCounts: TopologyItemCounts = {
-      nodes: selectedNodes.length,
-      links: selectedLinks.length,
-      drawings: selectedDrawings.length,
+    if (selectedNodes.length + selectedLinks.length + selectedDrawings.length === 0) return;
+    // Honest rendering gate for the keyboard path: the context-menu delete action is
+    // hidden by privilege, so the Del key must not offer the same operation either.
+    if (this.readonly) return;
+
+    // Same action table as the context menu's Delete: locked items are never
+    // deleted, links are left to the node cascade, and Node.Allocate is only
+    // required when an UNLOCKED node is actually going to be deleted.
+    const plan = planTopologyDeletion(selectedNodes, selectedDrawings, selectedLinks);
+    const deletableCount = plan.deletableNodes.length + plan.deletableDrawings.length + plan.deletableLinks.length;
+    const reportLockedRefusals = (): void => {
+      plan.lockedNodes.forEach((node) => this.toasterService.error('Cannot delete locked node: ' + node.name));
+      if (plan.lockedDrawings.length > 0) this.toasterService.error('Cannot delete locked drawing');
     };
-    const selectedCount = selectedNodes.length + selectedLinks.length + selectedDrawings.length;
-    if (selectedCount === 0) return;
+    if (deletableCount === 0) {
+      // Nothing may be deleted — say why instead of opening a dialog that
+      // cannot do anything.
+      reportLockedRefusals();
+      return;
+    }
+    if (!plan.requiredPrivileges.every((privilege) => this.projectPermissionService.has(privilege))) return;
+    const deletableCounts: TopologyItemCounts = {
+      nodes: plan.deletableNodes.length,
+      links: plan.deletableLinks.length,
+      drawings: plan.deletableDrawings.length,
+    };
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-danger-panel'],
       autoFocus: '.cancel-button',
       data: {
         title: 'Delete selected objects?',
-        message: `${describeTopologyItems(selectedCounts)} will be permanently deleted.`,
+        message: `${describeTopologyItems(deletableCounts)} will be permanently deleted.`,
         note: 'This action cannot be undone.',
-        confirmButtonText: selectedCount === 1 ? 'Delete object' : 'Delete objects',
+        confirmButtonText: deletableCount === 1 ? 'Delete object' : 'Delete objects',
         tone: 'danger',
       },
     });
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         const deletedCounts: TopologyItemCounts = { nodes: 0, links: 0, drawings: 0 };
-        const completion = createActionCompletion(
-          selectedNodes.length + selectedLinks.length + selectedDrawings.length,
-          (count) => {
-            if (count > 0) {
-              this.toasterService.success(`${describeTopologyItems(deletedCounts)} deleted.`);
-            }
+        const completion = createActionCompletion(deletableCount, (count) => {
+          if (count > 0) {
+            this.toasterService.success(`${describeTopologyItems(deletedCounts)} deleted.`);
           }
-        );
+        });
+        reportLockedRefusals();
 
-        selectedNodes.forEach((item: MapNode) => {
+        plan.deletableNodes.forEach((item: MapNode) => {
           const node = this.mapNodeToNode.convert(item);
           this.nodeService.delete(this.controller, node).subscribe({
             next: () => {
@@ -700,7 +746,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           });
         });
 
-        selectedLinks.forEach((item: MapLink) => {
+        plan.deletableLinks.forEach((item: MapLink) => {
           const link = this.mapLinkToLink.convert(item);
           this.linkService.deleteLink(this.controller, link).subscribe({
             next: () => {
@@ -716,7 +762,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           });
         });
 
-        selectedDrawings.forEach((item: MapDrawing) => {
+        plan.deletableDrawings.forEach((item: MapDrawing) => {
           const drawing = this.mapDrawingToDrawing.convert(item);
           this.drawingService.delete(this.controller, drawing).subscribe({
             next: () => {
@@ -1371,8 +1417,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }
 
     // Assign z-index for new window (increment counter)
-    this.zIndexCounter++;
-    const windowZIndex = this.baseZIndex + this.zIndexCounter;
+        const windowZIndex = this.raiseZIndex();
 
     // Add the link to our Map of open windows
     this.webWiresharkInlineWindows.set(data.link.link_id, data.link);
@@ -1398,8 +1443,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }
 
     // Increment counter and assign higher z-index
-    this.zIndexCounter++;
-    const newZIndex = this.baseZIndex + this.zIndexCounter;
+        const newZIndex = this.raiseZIndex();
     this.webWiresharkInlineZIndex.set(linkId, newZIndex);
     this.cd.markForCheck();
   }
@@ -1431,8 +1475,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }
 
     // Assign z-index for new window (increment counter)
-    this.zIndexCounter++;
-    const windowZIndex = this.baseZIndex + this.zIndexCounter;
+        const windowZIndex = this.raiseZIndex();
 
     // Add the node to our Map of open windows
     this.webConsoleInlineWindows.set(data.node.node_id, data.node);
@@ -1458,8 +1501,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }
 
     // Increment counter and assign higher z-index
-    this.zIndexCounter++;
-    const newZIndex = this.baseZIndex + this.zIndexCounter;
+        const newZIndex = this.raiseZIndex();
     this.webConsoleInlineZIndex.set(nodeId, newZIndex);
     this.cd.markForCheck();
   }
@@ -1482,8 +1524,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    * Bring console window to front
    */
   public bringConsoleToFront() {
-    this.zIndexCounter++;
-    this.consoleZIndex = this.baseZIndex + this.zIndexCounter;
+        this.consoleZIndex = this.raiseZIndex();
     this.cd.markForCheck();
   }
 
@@ -1491,8 +1532,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    * Bring AI chat window to front
    */
   public bringAIChatToFront() {
-    this.zIndexCounter++;
-    this.aiChatZIndex = this.baseZIndex + this.zIndexCounter;
+        this.aiChatZIndex = this.raiseZIndex();
     this.cd.markForCheck();
   }
 
@@ -1511,8 +1551,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       return;
     }
     this.isMarkerManagerVisible = true;
-    this.zIndexCounter++;
-    this.markerManagerZIndex = this.baseZIndex + this.zIndexCounter;
+        this.markerManagerZIndex = this.raiseZIndex();
     this.cd.markForCheck();
   }
 
@@ -1529,8 +1568,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    * Bring the Marker Manager window to front.
    */
   public bringMarkerManagerToFront() {
-    this.zIndexCounter++;
-    this.markerManagerZIndex = this.baseZIndex + this.zIndexCounter;
+        this.markerManagerZIndex = this.raiseZIndex();
     this.cd.markForCheck();
   }
 
@@ -1545,8 +1583,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     // A fresh session opens un-minimized (it may inherit the registry entry of
     // a previous, minimized one).
     this.windowManagement.restoreWindow('replay-main');
-    this.zIndexCounter++;
-    this.markerReplayZIndex = this.baseZIndex + this.zIndexCounter;
+        this.markerReplayZIndex = this.raiseZIndex();
     this.cd.markForCheck();
   }
 
@@ -1584,8 +1621,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   /** Bring the replay overlay to front. */
   public bringMarkerReplayToFront() {
-    this.zIndexCounter++;
-    this.markerReplayZIndex = this.baseZIndex + this.zIndexCounter;
+        this.markerReplayZIndex = this.raiseZIndex();
     this.cd.markForCheck();
   }
 
@@ -1749,9 +1785,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.mapSettingsService.toggleLayers(visible);
 
     if (visible) {
-      localStorage.setItem('layersVisibility', 'true');
+      this.userPreferences.setItem('layersVisibility', 'true');
     } else {
-      localStorage.removeItem('layersVisibility');
+      this.userPreferences.removeItem('layersVisibility');
     }
 
     this.mapChild().applyMapSettingsChanges();
@@ -1780,9 +1816,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     if (projectId != null) {
       const lockKey = `itemLockStatusVisibility_${projectId}`;
       if (visible) {
-        localStorage.setItem(lockKey, 'true');
+        this.userPreferences.setItem(lockKey, 'true');
       } else {
-        localStorage.removeItem(lockKey);
+        this.userPreferences.removeItem(lockKey);
       }
     }
     this.mapChild()?.applyMapSettingsChanges();
@@ -1794,9 +1830,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.gridVisibility = visible;
 
     if (visible) {
-      localStorage.setItem('gridVisibility', 'true');
+      this.userPreferences.setItem('gridVisibility', 'true');
     } else {
-      localStorage.removeItem('gridVisibility');
+      this.userPreferences.removeItem('gridVisibility');
     }
 
     this.mapChild().gridVisibility.set(visible ? 1 : 0);
@@ -1885,6 +1921,41 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
     instance.project = this.project;
+  }
+
+  /** The open project is a distributed template frozen for modification. */
+  get isFrozen(): boolean {
+    return isFrozenTemplate(this.project);
+  }
+
+  /** The open project is a copy provided by a distribution. */
+  get isProvidedByTeacher(): boolean {
+    return isDistributedCopy(this.project);
+  }
+
+  /**
+   * Open the distribution history of the open project. It is also where a
+   * frozen template is unfrozen: re-fetch the project afterwards so the
+   * read-only state and the banners follow without a page reload.
+   */
+  openDistributionHistory(): void {
+    this.dialog
+      .open(DistributionHistoryDialogComponent, {
+        panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'distribution-history-dialog-panel'],
+        data: { controller: this.controller, project: this.project } satisfies DistributionHistoryDialogData,
+      })
+      .afterClosed()
+      .subscribe((unfroze: boolean | undefined) => {
+        if (!unfroze) return;
+        this.projectService.get(this.controller, this.project.project_id).subscribe({
+          next: (project: Project) => {
+            this.project = project;
+            this.readonly = this.projectService.isReadOnly(project);
+            this.cd.markForCheck();
+          },
+          error: () => {}, // the notification stream updates the list anyway
+        });
+      });
   }
 
   editProject() {
@@ -2082,6 +2153,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.destroyed = true;
     this.notificationCenter.closePanel();
+    this.projectPermissionService.clear();
 
     // Close AI Chat when leaving project
     this.onLeaveProject();
@@ -2139,9 +2211,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.bringFileManagerToFront(data.node.node_id);
       return;
     }
-    this.zIndexCounter++;
     this.fileManagerInlineWindows.set(data.node.node_id, data.node);
-    this.fileManagerInlineZIndex.set(data.node.node_id, this.baseZIndex + this.zIndexCounter);
+    this.fileManagerInlineZIndex.set(data.node.node_id, this.raiseZIndex());
     this.cd.markForCheck();
   }
 
@@ -2153,8 +2224,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public bringFileManagerToFront(nodeId: string) {
     if (!this.fileManagerInlineWindows.has(nodeId)) return;
-    this.zIndexCounter++;
-    this.fileManagerInlineZIndex.set(nodeId, this.baseZIndex + this.zIndexCounter);
+    this.fileManagerInlineZIndex.set(nodeId, this.raiseZIndex());
     this.cd.markForCheck();
   }
 

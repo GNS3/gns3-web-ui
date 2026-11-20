@@ -16,3 +16,9 @@
   max-width: 200px;
   word-wrap: break-word;
 }
+
+// Multiline variant: preserves \n in the tooltip message (list of names etc.)
+.mat-tooltip.custom-tooltip--multiline {
+  white-space: pre-line;
+  max-width: 260px;
+}

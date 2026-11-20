@@ -5,11 +5,12 @@ import {
   HostListener,
   OnDestroy,
   OnInit,
+  computed,
   inject,
   signal,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Data, NavigationEnd, Route, Router } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { ProgressService } from '../../common/progress/progress.service';
@@ -20,7 +21,6 @@ import {
   ApiKeyManagementDialogData,
 } from '@components/api-key-management/api-key-management-dialog.component';
 import { Controller } from '@models/controller';
-import { User } from '@models/users/user';
 import { ControllerManagementService } from '@services/controller-management.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
@@ -37,7 +37,12 @@ import { MatListModule } from '@angular/material/list';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NotificationCenterComponent } from '@components/notification-center/notification-center.component';
+import { DistributionTasksComponent } from '@components/distribution-tasks/distribution-tasks.component';
 import { NotificationCenterService } from '@services/notification-center.service';
+import { PermissionService } from '@services/permission.service';
+import { SessionResetService } from '@services/session-reset.service';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
+import { routeDataAllows } from '../../guards/route-privileges';
 
 @Component({
   selector: 'app-default-layout',
@@ -55,6 +60,8 @@ import { NotificationCenterService } from '@services/notification-center.service
     MatListModule,
     ProgressComponent,
     NotificationCenterComponent,
+    DistributionTasksComponent,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -72,7 +79,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   readonly sidenavOpened = signal(true);
   readonly isSmallScreen = signal(false);
   readonly sidebarMode = signal<'side' | 'over'>('side');
-  readonly isAdministrator = signal(false);
 
   private controllerManagement = inject(ControllerManagementService);
   private toasterService = inject(ToasterService);
@@ -86,6 +92,55 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   private connectionManager = inject(ConnectionManagerService);
   private breakpointObserver = inject(BreakpointObserver);
   readonly notificationCenter = inject(NotificationCenterService);
+  private readonly permissionService = inject(PermissionService);
+  private readonly sessionReset = inject(SessionResetService);
+
+  /**
+   * Sidebar visibility mirrors the route guards: the privilege sets of the
+   * gated pages are read from this layout's route config (the same data
+   * PrivilegeGuard evaluates) instead of re-declared here, so the sidebar
+   * and the router can no longer disagree about who may open a page.
+   */
+  private readonly layoutChildren: readonly Route[] = this.route.routeConfig?.children ?? [];
+
+  private hasRoutePrivileges(data: Data | undefined): boolean {
+    return routeDataAllows(data, (privilege) => this.permissionService.has(privilege));
+  }
+
+  /**
+   * The Templates and Image manager pages are management surfaces: every
+   * action on them is a write (see the route data comments in
+   * app-routing.module.ts). Derived from the routes' privilege data.
+   */
+  readonly canManageImages = computed(() =>
+    this.hasRoutePrivileges(this.layoutChildren.find((child) => child.path === 'controller/:controller_id/image-manager')?.data),
+  );
+  readonly canManageTemplates = computed(() =>
+    this.hasRoutePrivileges(this.layoutChildren.find((child) => child.path === 'controller/:controller_id/preferences')?.data),
+  );
+  /**
+   * Computes is a management surface: Connect/Disconnect need Compute.Modify
+   * and Edit/Delete need Compute.Modify/Compute.Allocate, so a read-only
+   * visitor gets nothing out of the page (the in-project compute data comes
+   * from the polled cache, not from this page).
+   */
+  readonly canManageComputes = computed(() =>
+    this.hasRoutePrivileges(this.layoutChildren.find((child) => child.path === 'controller/:controller_id/computes')?.data),
+  );
+
+  /**
+   * The five management tabs are gated independently, so the sidebar's single
+   * Access Management entry must not always point at Users: a Group (or Role,
+   * Pool, ACE) auditor would be bounced to the system status page while the
+   * tab they may actually use stays unreachable. Target the first tab the user
+   * can open, in the config's tab order — and hide the entry entirely when
+   * none is openable (that is exactly the management route's own 'any' gate).
+   */
+  private readonly managementChildren: readonly Route[] =
+    this.layoutChildren.find((child) => child.path === 'controller/:controller_id/management')?.children ?? [];
+  readonly accessManagementRoute = computed(
+    () => this.managementChildren.find((child) => child.path && this.hasRoutePrivileges(child.data))?.path ?? null,
+  );
 
   ngOnInit() {
     this.notificationCenter.closePanel();
@@ -209,6 +264,12 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       // Clear refresh token
       localStorage.removeItem(`refresh_token_${controller.id}`);
 
+      // Privileges, server-synced preferences and distribution tracking
+      // are per-user: reset all user-scoped singletons. The session-expiry
+      // redirect in HttpController runs the same reset, so both logout
+      // paths tear down exactly the same state.
+      this.sessionReset.reset();
+
       controller.authToken = null;
       this.controllerService.update(controller).then((val) => {
         // Disconnect WebSocket connection on logout
@@ -235,13 +296,17 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   getData() {
     const requestedControllerId = this.controllerId;
     this.controller = undefined;
-    this.isAdministrator.set(false);
 
     const numericControllerId = Number(requestedControllerId);
     if (!Number.isInteger(numericControllerId) || numericControllerId <= 0) {
       this.cd.markForCheck();
       return;
     }
+
+    // Load the privilege list alongside the controller/user fetches: the
+    // sidebar renders from privileges (PermissionService) instead of the
+    // previous superadmin flag. Fetch failures degrade to zero privileges.
+    this.permissionService.activate(numericControllerId);
 
     this.controllerService.get(numericControllerId).then(
       (controller: Controller) => {
@@ -250,33 +315,13 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
         }
 
         this.controller = controller;
-        if (!controller) {
-          this.cd.markForCheck();
-          return;
-        }
-        this.userService.getInformationAboutLoggedUser(controller).subscribe({
-          next: (user: User) => {
-            if (this.controllerId !== requestedControllerId) {
-              return;
-            }
-            this.isAdministrator.set(Boolean(user.is_superadmin));
-            this.cd.markForCheck();
-          },
-          error: () => {
-            if (this.controllerId !== requestedControllerId) {
-              return;
-            }
-            this.isAdministrator.set(false);
-            this.cd.markForCheck();
-          },
-        });
+        this.cd.markForCheck();
       },
       () => {
         if (this.controllerId !== requestedControllerId) {
           return;
         }
         this.controller = undefined;
-        this.isAdministrator.set(false);
         this.cd.markForCheck();
       }
     );

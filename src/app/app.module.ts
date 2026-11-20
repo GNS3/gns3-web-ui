@@ -165,6 +165,8 @@ import { ScreenshotDialogComponent } from '@components/project-map/screenshot-di
 import { WebConsoleComponent } from '@components/project-map/web-console/web-console.component';
 import { AddBlankProjectDialogComponent } from '@components/projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { ChooseNameDialogComponent } from '@components/projects/choose-name-dialog/choose-name-dialog.component';
+import { DistributeProjectDialogComponent } from '@components/projects/distribute-project-dialog/distribute-project-dialog.component';
+import { ShareProjectDialogComponent } from '@components/projects/share-project-dialog/share-project-dialog.component';
 import { EditProjectDialogComponent } from '@components/projects/edit-project-dialog/edit-project-dialog.component';
 import { ReadmeEditorComponent } from '@components/projects/edit-project-dialog/readme-editor/readme-editor.component';
 import { ImportProjectDialogComponent } from '@components/projects/import-project-dialog/import-project-dialog.component';
@@ -189,7 +191,7 @@ import { SearchFilter } from '@filters/searchFilter.pipe';
 import { TemplateFilter } from '@filters/templateFilter.pipe';
 import { ConsoleGuard } from './guards/console-guard';
 import { LoginGuard } from './guards/login-guard';
-import { AdministratorGuard } from './guards/administrator-guard';
+import { PrivilegeGuard } from './guards/privilege-guard';
 import { ProjectWebServiceHandler } from './handlers/project-web-service-handler';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { MATERIAL_IMPORTS } from './material.imports';
@@ -289,7 +291,6 @@ import { ConfirmationDeleteAllProjectsComponent } from '@components/projects/con
 import { AclManagementComponent } from '@components/acl-management/acl-management.component';
 import { AddAceDialogComponent } from '@components/acl-management/add-ace-dialog/add-ace-dialog.component';
 import { AutocompleteComponent } from '@components/acl-management/add-ace-dialog/autocomplete/autocomplete.component';
-import { AceFilterPipe } from '@filters/ace-filter.pipe';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { CdkTreeModule } from '@angular/cdk/tree';
 
@@ -394,7 +395,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    AceFilterPipe,
     NameFilter,
     DateFilter,
     GroupFilterPipe,
@@ -461,6 +461,8 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     PageNotFoundComponent,
     TemplateListDialogComponent,
     ChooseNameDialogComponent,
+    DistributeProjectDialogComponent,
+    ShareProjectDialogComponent,
     CreateSnapshotDialogComponent,
     ApplianceInfoDialogComponent,
     BundledControllerFinderComponent,
@@ -649,7 +651,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     XpraConsoleService,
     ControllerResolve,
     LoginGuard,
-    AdministratorGuard,
+    PrivilegeGuard,
     ConsoleGuard,
     Title,
     ApplianceService,

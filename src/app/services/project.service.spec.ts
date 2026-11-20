@@ -661,6 +661,22 @@ describe('ProjectService', () => {
 
       expect(result).toBe(false);
     });
+
+    it('should return true when the project is a frozen distributed template', () => {
+      const frozenProject = { ...mockProject, readonly: false, frozen: true };
+
+      const result = service.isReadOnly(frozenProject);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false when frozen is undefined (older servers)', () => {
+      const projectWithoutFrozen = { ...mockProject, frozen: undefined };
+
+      const result = service.isReadOnly(projectWithoutFrozen);
+
+      expect(result).toBe(false);
+    });
   });
 
   describe('getCompression', () => {
@@ -792,6 +808,112 @@ describe('ProjectService', () => {
 
       await expect(firstValueFrom(service.getProjectStatus(mockController, 'project-123'))).rejects.toThrow(
         'Status check failed'
+      );
+    });
+  });
+
+  describe('listAllDistributions', () => {
+    it('should call httpController.get with the cross-project endpoint', () => {
+      mockHttpController.get.mockReturnValue(of([]));
+
+      service.listAllDistributions(mockController);
+
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/distributions');
+    });
+
+    it('should return Observable that emits the records across projects', async () => {
+      const records = [
+        { distribution_id: 'dist-1', project_id: 'project-123' },
+        { distribution_id: 'dist-2', project_id: 'project-456' },
+      ] as any[];
+      mockHttpController.get.mockReturnValue(of(records));
+
+      const result = await firstValueFrom(service.listAllDistributions(mockController));
+
+      expect(result).toHaveLength(2);
+      expect(result.map((record) => record.project_id)).toEqual(['project-123', 'project-456']);
+    });
+
+    it('should handle error when the endpoint is missing on older servers', async () => {
+      mockHttpController.get.mockReturnValue(throwError(() => new Error('Not Found')));
+
+      await expect(firstValueFrom(service.listAllDistributions(mockController))).rejects.toThrow('Not Found');
+    });
+  });
+
+  describe('deleteDistributionCopies', () => {
+    it('should call httpController.delete with the copies endpoint', () => {
+      mockHttpController.delete.mockReturnValue(of({}));
+
+      service.deleteDistributionCopies(mockController, 'project-123', 'dist-1');
+
+      expect(mockHttpController.delete).toHaveBeenCalledWith(
+        mockController,
+        '/projects/project-123/distributions/dist-1/copies'
+      );
+    });
+
+    it('should return Observable that emits the refreshed distribution', async () => {
+      const distribution = {
+        distribution_id: 'dist-1',
+        project_id: 'project-123',
+        results: [{ username: 'alice', project: null, error: null, project_exists: false }],
+      };
+      mockHttpController.delete.mockReturnValue(of(distribution));
+
+      const result = await firstValueFrom(service.deleteDistributionCopies(mockController, 'project-123', 'dist-1'));
+
+      expect(result).toEqual(distribution);
+    });
+
+    it('should handle error when the distribution is still running (409)', async () => {
+      mockHttpController.delete.mockReturnValue(throwError(() => new Error('The distribution is still running')));
+
+      await expect(
+        firstValueFrom(service.deleteDistributionCopies(mockController, 'project-123', 'dist-1'))
+      ).rejects.toThrow('The distribution is still running');
+    });
+  });
+
+  describe('unfreeze', () => {
+    it('should call httpController.post with the unfreeze endpoint', () => {
+      mockHttpController.post.mockReturnValue(of(mockProject));
+
+      service.unfreeze(mockController, 'project-123');
+
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/projects/project-123/unfreeze', {});
+    });
+
+    it('should return Observable that emits the unfrozen project', async () => {
+      const unfrozen = { ...mockProject, frozen: false };
+      mockHttpController.post.mockReturnValue(of(unfrozen));
+
+      const result = await firstValueFrom(service.unfreeze(mockController, 'project-123'));
+
+      expect(result).toEqual(unfrozen);
+    });
+
+    it('should handle error when copies still exist (409)', async () => {
+      mockHttpController.post.mockReturnValue(
+        throwError(() => new Error('This distributed template still has 1 existing copy/copies (users: alice)'))
+      );
+
+      await expect(firstValueFrom(service.unfreeze(mockController, 'project-123'))).rejects.toThrow(
+        'This distributed template still has 1 existing copy/copies (users: alice)'
+      );
+    });
+  });
+
+  describe('getDistribution', () => {
+    it('reads as a background probe: the global 403 toast stays off', () => {
+      mockHttpController.get.mockReturnValue(of({}));
+
+      service.getDistribution(mockController, 'project-123', 'dist-1');
+
+      expect(mockHttpController.get).toHaveBeenCalledWith(
+        mockController,
+        '/projects/project-123/distributions/dist-1',
+        { suppressForbiddenToast: true }
       );
     });
   });

@@ -1,6 +1,7 @@
 import { EventEmitter, Inject, Injectable, InjectionToken } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { UserPreferencesService } from './user-preferences.service';
 
 /**
  * Available theme keys (map to CSS classes in :root.theme-xxx)
@@ -165,7 +166,11 @@ export class ThemeService {
     },
   ];
 
-  constructor(@Inject(DOCUMENT) private document: Document, @Inject(DEFAULT_THEME_TOKEN) defaultTheme: PrebuiltTheme) {
+  constructor(
+    @Inject(DOCUMENT) private document: Document,
+    @Inject(DEFAULT_THEME_TOKEN) defaultTheme: PrebuiltTheme,
+    private userPreferences: UserPreferencesService,
+  ) {
     // Initialize theme from localStorage or use default
     const savedTheme = localStorage.getItem('theme') as PrebuiltTheme | null;
     this.currentTheme = savedTheme || defaultTheme;
@@ -178,6 +183,32 @@ export class ThemeService {
 
     // Apply theme on initialization
     this.applyTheme(this.currentTheme);
+
+    // Re-apply when a server-side preferences merge updates the stored values
+    this.userPreferences.onExternalUpdate(() => this.applyExternalPreferences());
+  }
+
+  /**
+   * Applies externally merged preferences (from the server-side preferences
+   * sync) without writing them back to storage — the local copy already
+   * holds the merged values at this point.
+   */
+  private applyExternalPreferences(): void {
+    const savedTheme = localStorage.getItem('theme') as PrebuiltTheme | null;
+    if (savedTheme && this.availableThemes.some((t) => t.key === savedTheme) && savedTheme !== this.currentTheme) {
+      this.currentTheme = savedTheme;
+      this.savedTheme = savedTheme;
+      this.applyTheme(savedTheme);
+      this.themeChanged.emit(savedTheme);
+      this._darkMode$.next(this.isDarkTheme(savedTheme));
+    }
+
+    const savedMapTheme = localStorage.getItem('mapTheme') as MapThemeType | null;
+    if (savedMapTheme && savedMapTheme !== this.currentMapTheme) {
+      this.currentMapTheme = savedMapTheme;
+      this.savedMapTheme = savedMapTheme;
+      this.mapThemeChanged.emit(this.getActualMapTheme());
+    }
   }
 
   /**
@@ -286,7 +317,7 @@ export class ThemeService {
   setMapTheme(theme: MapThemeType): void {
     this.currentMapTheme = theme;
     this.savedMapTheme = theme;
-    localStorage.setItem('mapTheme', theme);
+    this.userPreferences.setItem('mapTheme', theme);
 
     this.mapThemeChanged.emit(this.getActualMapTheme());
   }
@@ -329,7 +360,7 @@ export class ThemeService {
    * Save theme preference to localStorage
    */
   private saveThemePreference(theme: PrebuiltTheme): void {
-    localStorage.setItem('theme', theme);
+    this.userPreferences.setItem('theme', theme);
   }
 
   /**

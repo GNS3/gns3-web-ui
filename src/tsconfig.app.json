@@ -9,7 +9,8 @@
       "@resolvers/*": ["app/resolvers/*"],
       "@filters/*": ["app/filters/*"],
       "@models/*": ["app/models/*"],
-      "@utils/*": ["app/utils/*"]
+      "@utils/*": ["app/utils/*"],
+      "@directives/*": ["app/directives/*"]
     },
     "types": []
   },

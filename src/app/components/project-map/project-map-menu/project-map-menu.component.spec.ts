@@ -22,6 +22,7 @@ import { ScreenshotDialogComponent } from '../screenshot-dialog/screenshot-dialo
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DefaultDrawingsFactory } from '../../../cartography/helpers/default-drawings-factory';
+import { ProjectPermissionService } from '@services/project-permission.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ProjectMapMenuComponent', () => {
@@ -64,6 +65,7 @@ describe('ProjectMapMenuComponent', () => {
     mockProjectService = {
       projectLockIconSubject: projectLockIconSubject.asObservable(),
       getProjectStatus: vi.fn().mockReturnValue(of(false)),
+      isReadOnly: vi.fn().mockReturnValue(false),
       nodes: vi.fn().mockReturnValue(of([])),
       drawings: vi.fn().mockReturnValue(of([])),
       lockAllNodes: vi.fn().mockReturnValue(of({})),
@@ -182,6 +184,15 @@ describe('ProjectMapMenuComponent', () => {
       providers: [
         { provide: ThemeService, useValue: mockThemeService },
         { provide: ProjectService, useValue: mockProjectService },
+        {
+          provide: ProjectPermissionService,
+          useValue: {
+            privileges: () => new Set<string>(['Drawing.Allocate', 'Project.Modify']),
+            has: (privilege: string) => ['Drawing.Allocate', 'Project.Modify'].includes(privilege),
+            hasAny: () => true,
+            loaded: () => true,
+          },
+        },
         { provide: DrawingService, useValue: mockDrawingService },
         { provide: MapSettingsService, useValue: mockMapSettingsService },
         { provide: ToolsService, useValue: mockToolsService },

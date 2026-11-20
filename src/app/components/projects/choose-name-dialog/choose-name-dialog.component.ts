@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
@@ -16,7 +17,7 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './choose-name-dialog.component.html',
   styleUrls: ['./choose-name-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, MatDialogModule, MatButtonModule, MatInputModule, MatFormFieldModule],
+  imports: [CommonModule, FormsModule, MatDialogModule, MatButtonModule, MatInputModule, MatFormFieldModule, MatProgressSpinnerModule],
 })
 export class ChooseNameDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ChooseNameDialogComponent>);
@@ -27,6 +28,7 @@ export class ChooseNameDialogComponent implements OnInit {
   @Input() controller: Controller;
   @Input() project: Project;
   readonly name = model('');
+  readonly isSaving = signal(false);
 
   ngOnInit() {
     this.name.set(this.project.name);
@@ -38,12 +40,17 @@ export class ChooseNameDialogComponent implements OnInit {
   }
 
   onSaveClick() {
+    if (this.isSaving()) {
+      return;
+    }
+    this.isSaving.set(true);
     this.projectService.duplicate(this.controller, this.project.project_id, this.name()).subscribe({
       next: () => {
         this.toasterService.success(`Project duplicated as "${this.name()}".`);
         this.dialogRef.close();
       },
       error: (err) => {
+        this.isSaving.set(false);
         const message = err.error?.message || err.message || 'Failed to duplicate project';
         this.toasterService.error(message);
         this.cd.markForCheck();

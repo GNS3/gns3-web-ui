@@ -1,0 +1,18 @@
+// Shared snap-guide overlay for the replay floating windows: while a drag or
+// resize magnetically attaches, a hairline marks the contact line (a sibling
+// edge or a viewport rail) so snapping is SEEN, not just felt. Consumed via
+// `@use` from every host component's SCSS (each host renders the svg itself,
+// above the whole focus fleet — z-order: shared base + headroom).
+
+.gns3-replay__snap-guides {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.gns3-replay__snap-guide {
+  stroke: var(--mat-sys-primary);
+  stroke-width: 1;
+}

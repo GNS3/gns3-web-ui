@@ -20,6 +20,7 @@ import { ToasterService } from '@services/toaster.service';
 import { GroupFilterPipe } from '@filters/group-filter.pipe';
 import { Controller } from '@models/controller';
 import { Group } from '@models/groups/group';
+import { PermissionService } from '@services/permission.service';
 
 describe('GroupManagementComponent', () => {
   let component: GroupManagementComponent;
@@ -110,6 +111,15 @@ describe('GroupManagementComponent', () => {
         RouterModule,
       ],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['Group.Audit', 'Group.Allocate', 'Group.Modify']),
+            loaded: () => true,
+          },
+        },
         { provide: GroupService, useValue: mockGroupService },
         { provide: ControllerService, useValue: mockControllerService },
         { provide: ToasterService, useValue: mockToasterService },

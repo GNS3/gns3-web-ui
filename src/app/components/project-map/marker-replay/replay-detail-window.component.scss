@@ -1,5 +1,7 @@
-@use './replay-window-handles';
 @use './replay-window-surface';
+@use './replay-snap-guides';
+@use './replay-window-zoom';
+@use './replay-window-header';
 
 // The window surface itself (border, header, chrome) is the SHARED
 // _replay-window-surface partial — the peek window wears it too.

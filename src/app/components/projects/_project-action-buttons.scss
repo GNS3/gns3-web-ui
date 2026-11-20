@@ -1,0 +1,40 @@
+// Semantic action colours of the per-project icon buttons, shared by the
+// projects page (table action cell and delete column) and the extracted
+// ProjectActionsComponent (card overlay). Consumed via `@use` from both
+// stylesheets so the rules land inside each consumer's style encapsulation.
+
+.projects__action-button {
+  --projects-action-color: var(--mat-sys-on-surface-variant);
+  color: var(--projects-action-color);
+  --mdc-circular-progress-active-indicator-color: var(--projects-action-color);
+
+  &:not(:disabled) mat-icon {
+    color: var(--projects-action-color);
+  }
+
+  &:disabled {
+    color: var(--gns3-button-disabled-label-color);
+    --projects-action-color: var(--gns3-button-disabled-label-color);
+  }
+}
+
+.projects__action-button--start,
+.projects__action-button--edit {
+  --projects-action-color: var(--mat-sys-primary);
+}
+
+.projects__action-button--stop,
+.projects__action-button--export {
+  --projects-action-color: var(--mat-sys-tertiary);
+}
+
+.projects__action-button--details,
+.projects__action-button--duplicate,
+.projects__action-button--distribute,
+.projects__action-button--share {
+  --projects-action-color: var(--mat-sys-secondary);
+}
+
+.projects__action-button--delete {
+  --projects-action-color: var(--mat-sys-error);
+}

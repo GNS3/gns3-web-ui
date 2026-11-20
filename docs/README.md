@@ -94,9 +94,12 @@ docs/
 | [VNC Console](./features/console/vnc-console-implementation.md) | VNC console implementation |
 | [Custom Adapters](./features/custom-adapters/custom-adapters-implementation.md) | Custom adapters implementation |
 | [Markdown Viewer](./features/markdown-viewer/markdown-viewer-implementation.md) | ⭐ Shared markdown rendering: token API, post-render behavior |
+| [API × Privilege × Web UI Map](./features/rbac/api-privilege-map.md) | ⭐ Generated server endpoint → privilege → page/button map (CSV alongside for Excel) |
+| [UI Write Operations → API Field Map](./features/rbac/ui-write-operations-map.md) | ⭐ Field-level RBAC pre-survey: every UI write surface → payload field paths → candidate operations |
 | [Symbols Guide](./features/symbols/symbols-guide.md) | Node symbols support (SVG/PNG/JPG/GIF) |
 | [WebSocket Connection Management](./features/websocket/connection-management.md) | Simple controller connection management service |
 | [Web Wireshark Overview](./features/web-wireshark/overview.md) | ⭐ Browser-based packet capture and analysis |
+| [User Preferences Sync](./features/user-preferences-sync.md) | ⭐ Cross-browser preference mirroring to the controller's per-user document |
 | [Web Wireshark Business Flow](./features/web-wireshark/business-flow.md) | Detailed business flows and architecture |
 | [Web Wireshark Architecture](./features/web-wireshark/diagrams/architecture-overview.md) | System architecture diagrams |
 

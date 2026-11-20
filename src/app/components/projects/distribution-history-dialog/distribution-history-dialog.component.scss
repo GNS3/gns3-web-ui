@@ -1,0 +1,169 @@
+.distribution-history {
+  &__notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent);
+    color: var(--mat-sys-on-surface);
+
+    mat-icon {
+      color: var(--mat-sys-tertiary);
+      flex: 0 0 auto;
+    }
+  }
+
+  &__state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__record {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 8px;
+    background-color: var(--mat-sys-surface-container);
+  }
+
+  &__record-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  &__status {
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface-variant) 12%, transparent);
+    color: var(--mat-sys-on-surface-variant);
+
+    &--completed {
+      background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+      color: var(--mat-sys-primary);
+    }
+
+    &--running,
+    &--cancelling {
+      background-color: color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent);
+      color: var(--mat-sys-tertiary);
+    }
+
+    &--failed {
+      background-color: color-mix(in srgb, var(--mat-sys-error) 12%, transparent);
+      color: var(--mat-sys-error);
+    }
+  }
+
+  &__copies {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+
+  // Copies that still exist on the server: the cleanup target.
+  &__live {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    background-color: color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent);
+    color: var(--mat-sys-tertiary);
+  }
+
+  &__date {
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__record-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: auto;
+  }
+
+  &__record-action {
+    color: var(--mat-sys-on-surface-variant);
+
+    &--delete {
+      color: var(--mat-sys-error);
+    }
+  }
+
+  &__record-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__error {
+    color: var(--mat-sys-error);
+  }
+
+  &__recipients {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  &__recipient {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    background-color: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
+    color: var(--mat-sys-on-surface);
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: var(--mat-sys-primary);
+    }
+
+    &--failed {
+      background-color: color-mix(in srgb, var(--mat-sys-error) 10%, transparent);
+
+      mat-icon {
+        color: var(--mat-sys-error);
+      }
+    }
+
+    // The copy existed at distribution time but has been deleted since.
+    &--deleted {
+      opacity: 0.55;
+      text-decoration: line-through;
+    }
+  }
+}
+
+.distribution-history__unfreeze {
+  margin-right: 8px;
+}

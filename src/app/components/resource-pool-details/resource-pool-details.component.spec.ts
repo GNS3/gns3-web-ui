@@ -8,6 +8,7 @@ import { ResourcePoolsService } from '@services/resource-pools.service';
 import { ToasterService } from '@services/toaster.service';
 import { ActivatedRoute } from '@angular/router';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { PermissionService } from '@services/permission.service';
 
 describe('ResourcePoolDetailsComponent', () => {
   let component: ResourcePoolDetailsComponent;
@@ -92,6 +93,15 @@ describe('ResourcePoolDetailsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResourcePoolDetailsComponent],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['Pool.Audit', 'Pool.Modify']),
+            loaded: () => true,
+          },
+        },
         { provide: ResourcePoolsService, useValue: mockResourcePoolsService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },

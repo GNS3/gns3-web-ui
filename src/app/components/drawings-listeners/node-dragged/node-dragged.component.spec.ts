@@ -283,7 +283,7 @@ describe('NodeDraggedComponent', () => {
       expect(cdrSpy).toHaveBeenCalled();
     });
 
-    it('should not update data source when updatePosition fails', async () => {
+    it('should revert the node position when updatePosition fails', async () => {
       const error = new Error('Update failed');
       mockNodeService.updatePosition.mockReturnValue(throwError(() => error));
 
@@ -298,7 +298,7 @@ describe('NodeDraggedComponent', () => {
       // Advance fake timers for async error handling
       await vi.runAllTimersAsync();
 
-      expect(mockNodesDataSource.update).not.toHaveBeenCalled();
+      expect(mockNodesDataSource.update).toHaveBeenCalledWith(expect.objectContaining({ x: 100, y: 200 }));
     });
   });
 

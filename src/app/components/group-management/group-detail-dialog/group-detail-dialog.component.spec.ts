@@ -18,6 +18,7 @@ import { AddUserToGroupDialogComponent } from '@components/group-details/add-use
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { UserDetailDialogComponent } from '@components/user-management/user-detail-dialog/user-detail-dialog.component';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { PermissionService } from '@services/permission.service';
 
 describe('GroupDetailDialogComponent', () => {
   let component: GroupDetailDialogComponent;
@@ -162,6 +163,15 @@ describe('GroupDetailDialogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [GroupDetailDialogComponent, MatDialogModule],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['Group.Audit', 'Group.Modify']),
+            loaded: () => true,
+          },
+        },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: dialogData },
         { provide: MatDialog, useValue: mockDialog },
@@ -390,6 +400,90 @@ describe('GroupDetailDialogComponent', () => {
     });
   });
 
+  describe('quota fields', () => {
+    it('should seed unlimited mode when the group has no default', () => {
+      component.group = { ...mockGroup, default_max_nodes: undefined };
+      component.ngOnInit();
+      expect(component.editGroupForm.get('default_max_nodes_mode')?.value).toBe('unlimited');
+      expect(component.editGroupForm.get('default_max_nodes_value')?.value).toBeNull();
+    });
+
+    it('should seed unlimited mode for a -1 default', () => {
+      component.group = { ...mockGroup, default_max_nodes: -1 };
+      component.ngOnInit();
+      expect(component.editGroupForm.get('default_max_nodes_mode')?.value).toBe('unlimited');
+    });
+
+    it('should seed custom mode with the stored default', () => {
+      component.group = { ...mockGroup, default_max_nodes: 50 };
+      component.ngOnInit();
+      expect(component.editGroupForm.get('default_max_nodes_mode')?.value).toBe('custom');
+      expect(component.editGroupForm.get('default_max_nodes_value')?.value).toBe(50);
+    });
+
+    it('should send name and quotas for a custom group', async () => {
+      component.ngOnInit();
+      component.editGroupForm.get('groupname')?.setValue('NewName');
+
+      component.onUpdate();
+      await vi.runAllTimersAsync();
+
+      expect(mockGroupService.update).toHaveBeenCalledWith(mockController, mockGroup, {
+        name: 'NewName',
+        default_max_nodes: null,
+        default_max_running_nodes: null,
+      });
+    });
+
+    it('should omit the name key entirely for a built-in group', async () => {
+      component.group = { ...mockGroup, is_builtin: true };
+      component.ngOnInit();
+      component.editGroupForm.get('default_max_nodes_mode')?.setValue('custom');
+      component.editGroupForm.get('default_max_nodes_value')?.setValue(50);
+
+      component.onUpdate();
+      await vi.runAllTimersAsync();
+
+      const payload = mockGroupService.update.mock.calls[0][2];
+      expect(payload).not.toHaveProperty('name');
+      expect(payload.default_max_nodes).toBe(50);
+      expect(payload.default_max_running_nodes).toBeNull();
+    });
+
+    it('should lock the group name field for a built-in group', () => {
+      component.group = { ...mockGroup, is_builtin: true };
+      component.ngOnInit();
+      expect(component.editGroupForm.get('groupname')?.disabled).toBe(true);
+      expect(component.editGroupForm.valid).toBe(true);
+    });
+
+    it('should sync local quota state after a successful update', async () => {
+      component.ngOnInit();
+      component.editGroupForm.get('default_max_nodes_mode')?.setValue('custom');
+      component.editGroupForm.get('default_max_nodes_value')?.setValue(50);
+
+      component.onUpdate();
+      await vi.runAllTimersAsync();
+
+      expect(component.group.default_max_nodes).toBe(50);
+      expect(component.group.default_max_running_nodes).toBeNull();
+    });
+  });
+
+  describe('zoneless view refresh', () => {
+    it('marks the dialog for check after a successful rename so the title leaves the old name', async () => {
+      component.ngOnInit();
+      component.editGroupForm.get('groupname')?.setValue('RenamedGroup');
+      const markForCheck = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.onUpdate();
+      await vi.runAllTimersAsync();
+
+      expect(component.group.name).toBe('RenamedGroup');
+      expect(markForCheck).toHaveBeenCalled();
+    });
+  });
+
   describe('onUpdate', () => {
     it('should not update if form is invalid', () => {
       component.editGroupForm.get('groupname')?.setValue('');
@@ -406,9 +500,10 @@ describe('GroupDetailDialogComponent', () => {
 
       component.onUpdate();
 
-      expect(mockGroupService.update).toHaveBeenCalledWith(mockController, {
-        ...mockGroup,
+      expect(mockGroupService.update).toHaveBeenCalledWith(mockController, mockGroup, {
         name: newName,
+        default_max_nodes: null,
+        default_max_running_nodes: null,
       });
     });
 

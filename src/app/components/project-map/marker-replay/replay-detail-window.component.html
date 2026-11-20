@@ -3,6 +3,19 @@
      snapshot's line is primary (same family as its --snapshot border),
      keeping the window→hop association visible while the snapshots sit in the
      dock row. -->
+<!-- Snap guides: hairlines at the sibling edge / viewport rail a drag or
+     resize attached to — magnetic snapping you can SEE, not just feel. -->
+@if (snapGuides(); as g) {
+<svg class="gns3-replay__snap-guides" [style.z-index]="zIndex() + 5000">
+  @if (g.x !== null) {
+  <line class="gns3-replay__snap-guide" [attr.x1]="g.x" [attr.x2]="g.x" y1="0" y2="100%"></line>
+  }
+  @if (g.y !== null) {
+  <line class="gns3-replay__snap-guide" x1="0" x2="100%" [attr.y1]="g.y" [attr.y2]="g.y"></line>
+  }
+</svg>
+}
+
 @if (anchored() && leader(); as l) {
 <svg class="gns3-replay__leader" [style.z-index]="zVal()">
   <line class="gns3-replay__leader-line" [attr.x1]="l.x1" [attr.y1]="l.y1" [attr.x2]="l.x2" [attr.y2]="l.y2"></line>
@@ -25,43 +38,66 @@
   [validateResize]="validate"
   [enableGhostResize]="false"
   (resizeStart)="onResizeStart()"
+  (resizing)="onResizing($event)"
   (resizeEnd)="onResizeEnd($event)"
 >
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+  <app-floating-window-resize-handles prefix="gns3-replay" />
 
-  <div class="gns3-replay__window-header" (mousedown)="onHeaderMouseDown($event)">
-    <mat-icon class="gns3-replay__window-icon">push_pin</mat-icon>
-    <span class="gns3-replay__window-title">{{ pinned().frame.marker }}</span>
-    <span class="gns3-replay__window-frame">#{{ pinned().frame.frame_number }}</span>
-    @if (dragPinned()) {
+  <div class="gns3-replay__window-header">
+    <!-- Drag zone: the title strip IS the drag surface (mousedown here moves
+         the window); identity chips are info, not controls. -->
+    <div class="gns3-replay__header-drag" (mousedown)="onHeaderMouseDown($event)">
+      <mat-icon class="gns3-replay__window-icon">push_pin</mat-icon>
+      <span class="gns3-replay__window-title">{{ pinned().frame.marker }}</span>
+      <span class="gns3-replay__window-frame">#{{ pinned().frame.frame_number }}</span>
+      @if (!anchored()) {
+        <span class="gns3-replay__window-hint" matTooltip="This frame's link is not on the map">unanchored</span>
+      }
+    </div>
+    <!-- Action zone: never drags — not even in the gaps between buttons. -->
+    <div class="gns3-replay__window-actions">
+      @if (dragPinned()) {
+        <button
+          class="gns3-replay__window-reanchor"
+          matTooltip="Dragged — click to return to the comparison row"
+          (click)="reanchor()"
+        >
+          <mat-icon>anchor</mat-icon>
+        </button>
+      }
+      <div class="gns3-replay__zoom">
+        <button
+          class="gns3-replay__zoom-btn"
+          [disabled]="!zoomCtl.canStepDown()"
+          matTooltip="Zoom out"
+          (click)="zoomCtl.stepDown()"
+        >
+          <mat-icon>remove</mat-icon>
+        </button>
+        <button class="gns3-replay__zoom-level" matTooltip="Reset zoom" (click)="zoomCtl.reset()">
+          {{ zoomCtl.label() }}
+        </button>
+        <button
+          class="gns3-replay__zoom-btn"
+          [disabled]="!zoomCtl.canStepUp()"
+          matTooltip="Zoom in"
+          (click)="zoomCtl.stepUp()"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
       <button
-        class="gns3-replay__window-reanchor"
-        matTooltip="Dragged — click to return to the comparison row"
-        (click)="reanchor()"
+        class="gns3-replay__window-reanchor gns3-replay__window-close"
+        matTooltip="Close this comparison window"
+        (click)="unpinCurrent()"
       >
-        <mat-icon>anchor</mat-icon>
+        <mat-icon>close</mat-icon>
       </button>
-    }
-    <button
-      class="gns3-replay__window-reanchor gns3-replay__window-close"
-      matTooltip="Close this comparison window"
-      (click)="unpinCurrent()"
-    >
-      <mat-icon>close</mat-icon>
-    </button>
-    @if (!anchored()) {
-      <span class="gns3-replay__window-hint" matTooltip="This frame's link is not on the map">unanchored</span>
-    }
+    </div>
   </div>
 
   <app-replay-detail-pane
+    [style.zoom]="zoomCtl.css()"
     [frame]="pinned().frame"
     [state]="pinned().state"
     [changedPaths]="changedPaths()"

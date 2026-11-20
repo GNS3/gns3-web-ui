@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Injector } from '@angular/core';
 import { NotificationToastComponent } from '@components/notification-center/notification-toast.component';
 import { AppNotification, NotificationCenterService, NotificationKind } from './notification-center.service';
 import { ToasterService } from './toaster.service';
+import { UserPreferencesService } from './user-preferences.service';
 
 describe('ToasterService', () => {
   let service: ToasterService;
@@ -63,7 +65,8 @@ describe('ToasterService', () => {
 
   it('applies the persisted preference through the real notification center', () => {
     localStorage.removeItem('notificationsVisibility');
-    const center = new NotificationCenterService();
+    const userPreferences = new UserPreferencesService(Injector.create({ providers: [] }));
+    const center = new NotificationCenterService(userPreferences);
     const toaster = new ToasterService(snackbar as any, center);
     try {
       center.setToastsEnabled(false);

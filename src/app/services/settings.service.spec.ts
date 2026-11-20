@@ -1,8 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { Injector } from '@angular/core';
 import { SettingsService } from './settings.service';
+import { UserPreferencesService } from './user-preferences.service';
 
 describe('SettingsService', () => {
   let service: SettingsService;
+  let userPreferences: UserPreferencesService;
   let mockLocalStorage: Record<string, string>;
 
   const setupStorage = (values: Record<string, string> = {}) => {
@@ -22,7 +25,8 @@ describe('SettingsService', () => {
       },
     });
 
-    service = new SettingsService();
+    userPreferences = new UserPreferencesService(Injector.create({ providers: [] }));
+    service = new SettingsService(userPreferences);
   });
 
   afterEach(() => {
@@ -51,19 +55,19 @@ describe('SettingsService', () => {
 
     it('should load crash_reports from localStorage on init', () => {
       setupStorage({ crash_reports: 'false' });
-      const serviceWithStorage = new SettingsService();
+      const serviceWithStorage = new SettingsService(userPreferences);
       expect(serviceWithStorage.getReportsSettings()).toBe(false);
     });
 
     it('should load console_command from localStorage on init', () => {
       setupStorage({ console_command: 'putty.exe' });
-      const serviceWithStorage = new SettingsService();
+      const serviceWithStorage = new SettingsService(userPreferences);
       expect(serviceWithStorage.getConsoleSettings()).toBe('putty.exe');
     });
 
     it('should load anonymous_statistics from localStorage on init', () => {
       setupStorage({ statistics_command: 'false' });
-      const serviceWithStorage = new SettingsService();
+      const serviceWithStorage = new SettingsService(userPreferences);
       expect(serviceWithStorage.getStatisticsSettings()).toBe(false);
     });
   });
@@ -80,6 +84,9 @@ describe('SettingsService', () => {
     });
 
     it('should call removeItem before setItem', () => {
+      // A prior value must be cleared before the new one is written; an
+      // absent key is a no-op now (redundant writes are suppressed).
+      setupStorage({ crash_reports: 'false' });
       const removeSpy = vi.spyOn(localStorage, 'removeItem');
       service.setReportsSettings(true);
       expect(removeSpy).toHaveBeenCalledWith('crash_reports');
@@ -113,6 +120,7 @@ describe('SettingsService', () => {
     });
 
     it('should call removeItem before setItem', () => {
+      setupStorage({ statistics_command: 'false' });
       const removeSpy = vi.spyOn(localStorage, 'removeItem');
       service.setStatisticsSettings(true);
       expect(removeSpy).toHaveBeenCalledWith('statistics_command');
@@ -146,6 +154,7 @@ describe('SettingsService', () => {
     });
 
     it('should call removeItem before setItem', () => {
+      setupStorage({ console_command: 'putty.exe' });
       const removeSpy = vi.spyOn(localStorage, 'removeItem');
       service.setConsoleSettings('cmd.exe');
       expect(removeSpy).toHaveBeenCalledWith('console_command');
@@ -219,15 +228,18 @@ describe('SettingsService', () => {
         removeItem: vi.fn(),
       });
 
-      expect(() => new SettingsService()).toThrow('Quota exceeded');
+      expect(() => new SettingsService(userPreferences)).toThrow('Quota exceeded');
     });
 
-    it('should handle setItem throwing an error', () => {
+    it('should swallow setItem storage errors while keeping the in-memory value', () => {
       const setItemSpy = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
         throw new Error('Quota exceeded');
       });
 
-      expect(() => service.setReportsSettings(true)).toThrow('Quota exceeded');
+      // The preferences facade treats storage failures as best-effort: the
+      // write is dropped silently, the in-memory setting still updates.
+      expect(() => service.setReportsSettings(true)).not.toThrow();
+      expect(service.getAll().crash_reports).toBe(true);
       setItemSpy.mockRestore();
     });
   });

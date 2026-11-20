@@ -2,7 +2,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { HttpClient, HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { Injector } from '@angular/core';
 import { HttpController, ControllerError, ControllerErrorHandler, JsonOptions } from './http-controller.service';
+import { SessionResetService } from './session-reset.service';
 import { Controller, ControllerProtocol } from '@models/controller';
 import { environment } from '../../environments/environment';
 import { of, throwError } from 'rxjs';
@@ -13,6 +15,8 @@ describe('HttpController', () => {
   let mockHttp: HttpClient;
   let mockErrorHandler: ControllerErrorHandler;
   let mockRouter: Router;
+  let mockInjector: Injector;
+  let mockSessionReset: { reset: ReturnType<typeof vi.fn> };
   let mockController: Controller;
 
   beforeEach(() => {
@@ -37,7 +41,13 @@ describe('HttpController', () => {
 
     mockRouter = { navigate: vi.fn() } as any as Router;
 
-    service = new HttpController(mockHttp, mockErrorHandler, mockRouter);
+    // redirectToLogin resolves SessionResetService lazily: hand it a stub
+    // instead of the TestBed injector so the reset stays a no-op and does
+    // not drag the real singleton graph into this spec.
+    mockSessionReset = { reset: vi.fn() };
+    mockInjector = { get: vi.fn(() => mockSessionReset) } as any as Injector;
+
+    service = new HttpController(mockHttp, mockErrorHandler, mockRouter, mockInjector);
 
     mockController = {
       id: 1,
@@ -455,6 +465,22 @@ describe('HttpController', () => {
 
       expect(mockErrorHandler.handleError).toHaveBeenCalled();
     });
+
+    it('should forward the request options to the error handler', () => {
+      const errorResponse = new HttpErrorResponse({ status: 403, statusText: 'Forbidden' });
+      (mockHttp.get as any).mockReturnValue(throwError(() => errorResponse));
+      (mockErrorHandler.handleError as any).mockReturnValue(throwError(() => errorResponse));
+
+      service
+        .get(mockController, '/projects/p1/distributions/d1', { suppressForbiddenToast: true })
+        .subscribe({ error: () => undefined });
+
+      expect(mockErrorHandler.handleError).toHaveBeenCalledWith(
+        errorResponse,
+        '/projects/p1/distributions/d1',
+        expect.objectContaining({ suppressForbiddenToast: true })
+      );
+    });
   });
 
   describe('Token Expiry Redirect', () => {
@@ -465,6 +491,11 @@ describe('HttpController', () => {
       service.get(mockController, '/test').subscribe({ error: () => {} });
 
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'login']);
+      // The redirect also resets the per-user singletons (privileges,
+      // preferences mirror, distribution tracking) so the next login on
+      // this controller never inherits the previous user's state.
+      expect(mockInjector.get).toHaveBeenCalledWith(SessionResetService);
+      expect(mockSessionReset.reset).toHaveBeenCalled();
     });
   });
 
@@ -505,7 +536,11 @@ describe('HttpController', () => {
       let caught: any;
       service.postFile(mockController, '/images/load', file).subscribe({ error: (err) => (caught = err) });
 
-      expect(mockErrorHandler.handleError).toHaveBeenCalledWith(failure);
+      expect(mockErrorHandler.handleError).toHaveBeenCalledWith(
+        failure,
+        '/images/load',
+        expect.objectContaining({ responseType: 'text', reportProgress: true })
+      );
       expect(caught).toBe(failure);
     });
 
@@ -605,9 +640,11 @@ describe('ControllerError', () => {
 
 describe('ControllerErrorHandler', () => {
   let handler: ControllerErrorHandler;
+  let toasterMock: { error: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
-    handler = new ControllerErrorHandler();
+    toasterMock = { error: vi.fn() };
+    handler = new ControllerErrorHandler(toasterMock as any);
   });
 
   it('should be instance of ControllerErrorHandler', () => {
@@ -678,5 +715,23 @@ describe('ControllerErrorHandler', () => {
     });
 
     expect(result.status).toBe(500);
+  });
+
+  it('should toast a 403 on a regular action endpoint', () => {
+    const error = new HttpErrorResponse({ status: 403, error: { message: 'Permission denied' } });
+
+    handler.handleError(error, '/projects/p1/drawings').subscribe({ error: () => undefined });
+
+    expect(toasterMock.error).toHaveBeenCalledWith('Permission denied');
+  });
+
+  it('should stay silent on a 403 the caller marked as a background probe', () => {
+    const error = new HttpErrorResponse({ status: 403, error: { message: 'Permission denied' } });
+
+    handler
+      .handleError(error, '/projects/p1/distributions/d1', { suppressForbiddenToast: true })
+      .subscribe({ error: () => undefined });
+
+    expect(toasterMock.error).not.toHaveBeenCalled();
   });
 });

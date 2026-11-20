@@ -22,13 +22,15 @@
           class="gns3-replay__row"
           [attr.data-index]="row.index"
           [class.gns3-replay__row--selected]="row.index === svc.currentFrameIndex()"
+          [class.gns3-replay__row--colored]="!!(row.frame.bg || row.frame.fg)"
           [style.--pkt-bg]="row.frame.bg ? '#' + row.frame.bg : null"
           [style.--pkt-fg]="row.frame.fg ? '#' + row.frame.fg : null"
           role="row"
           tabindex="0"
           (click)="svc.setCurrentIndex(row.index)"
           (dblclick)="onRowDblClick($event, row.frame)"
-          (keydown)="onRowKey($event)"
+          (contextmenu)="onRowContextMenu($event, row)"
+          (keydown)="onRowKey($event, row.frame)"
           [title]="row.frame.info ?? ''"
         >
           <span class="gns3-replay__cell gns3-replay__cell--time">{{ row.time }}</span>

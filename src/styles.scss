@@ -264,6 +264,10 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.template-menu 
     border-bottom: 1px solid var(--mat-sys-outline-variant);
     cursor: grab;
     user-select: none;
+
+    &:active {
+      cursor: grabbing;
+    }
   }
 
   .mat-mdc-tab {

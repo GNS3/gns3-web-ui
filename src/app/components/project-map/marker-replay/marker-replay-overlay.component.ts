@@ -16,19 +16,23 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
+import { ResizeEvent, ResizableDirective } from 'angular-resizable-element';
+import { FloatingWindowResizeHandlesComponent } from '../../floating-window/floating-window-resize-handles.component';
 
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
-import { ProtocolTreeNode } from '@models/marker-replay';
+import { ProtocolTreeNode, ReplayFrame } from '@models/marker-replay';
 import { MarkerReplayService, sameReplayFrame } from '@services/marker-replay.service';
 import { WindowManagementService } from '@services/window-management.service';
+import { UserPreferencesService } from '@services/user-preferences.service';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { linkLabel as formatLinkLabel } from '../helpers/link-label';
-import { clampRect, clampWindowSize } from './replay-geometry';
+import { SnapGuides, clampRect, clampWindowSize, snapDraggedWindow, snapResizedWindow } from './replay-geometry';
+import { ReplayZoomController } from './replay-zoom';
+import { ReplayWindowStore } from './replay-window-state';
 import { diffTrees } from './replay-tree-diff';
-import { ReplayPacketListComponent } from './replay-packet-list.component';
+import { FrameContextMenuRequest, ReplayPacketListComponent } from './replay-packet-list.component';
 import { ReplayDetailPaneComponent } from './replay-detail-pane.component';
 import { ReplayDetailWindowComponent } from './replay-detail-window.component';
 import { ReplayPeekWindowComponent } from './replay-peek-window.component';
@@ -49,6 +53,15 @@ import { ReplayPeekWindowComponent } from './replay-peek-window.component';
  * after it in DOM order, so without the floor a never-clicked pin would sit
  * above the main window forever. Any click raises that window above everything.
  */
+/**
+ * The z band project-map grants each raised floating window: its raises step
+ * WHOLE bands (base + n × band), and this overlay's internal focus fleet
+ * keeps its boosts inside [0, band) — so a window raised at the project-map
+ * level is guaranteed above every internal boost of every other window,
+ * while the internal click-to-front still reorders freely within the band.
+ */
+export const REPLAY_WINDOW_Z_BAND = 100;
+
 @Component({
   selector: 'app-marker-replay-overlay',
   templateUrl: './marker-replay-overlay.component.html',
@@ -66,7 +79,7 @@ import { ReplayPeekWindowComponent } from './replay-peek-window.component';
     ReplayDetailWindowComponent,
     ReplayPeekWindowComponent,
     ResizableDirective,
-    ResizeHandleDirective,
+    FloatingWindowResizeHandlesComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -83,6 +96,12 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   private readonly windowManagement = inject(WindowManagementService);
   private readonly linksDataSource = inject(LinksDataSource);
   private readonly nodesDataSource = inject(NodesDataSource);
+  private readonly prefs = inject(UserPreferencesService);
+  /** Main-window geometry persistence (profile-synced via the prefs facade). */
+  private readonly windowStore = new ReplayWindowStore(
+    (key) => this.prefs.getItem(key),
+    (key, value) => this.prefs.setItem(key, value)
+  );
 
   /** Taskbar/minimize registry id (see {@link minimize}). */
   private readonly WINDOW_ID = 'replay-main';
@@ -117,6 +136,18 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   readonly dragging = signal(false);
   /** True while a resize gesture is in flight. */
   readonly resizing = signal(false);
+  /** The main window's content zoom (see replay-zoom.ts — per-kind default). */
+  readonly zoomCtl = new ReplayZoomController('main');
+  /** Live snap-guide lines while a drag/resize attaches; null when idle. */
+  readonly snapGuides = signal<SnapGuides | null>(null);
+
+  /**
+   * Packet-row context menu (right-click over a row, or Shift+F10 on a
+   * focused row). Anchored in VIEWPORT coordinates and rendered in the
+   * window chrome OUTSIDE the zoomed panes — the row's raw clientX/clientY
+   * must not be scaled by the content zoom.
+   */
+  readonly rowMenu = signal<{ frame: ReplayFrame; x: number; y: number } | null>(null);
 
   /** Focus fleet: 'main' + 'pin-<id>' → stacking boost; main is floored at 1. */
   private zSeq = 1;
@@ -196,6 +227,10 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
     effect(() => {
       const isMin = this.windowManagement.minimizedWindows().some((w) => w.id === this.WINDOW_ID);
       if (isMin !== this.minimized()) this.minimized.set(isMin);
+      // The snap fleet only tracks VISIBLE windows — a minimized window's
+      // rect would be a ghost nothing may magnetize against.
+      if (isMin) this.svc.clearWindowRect('main');
+      else this.reportMainRect();
     });
     // A peek is BORN over the window that spawned it — raise it in the focus
     // fleet on every birth. Keyed on seq: decode updates for the SAME peek
@@ -210,21 +245,36 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // First placement: centered horizontally, below the toolbar, clamped into
-    // the viewport (jsdom's default 1024×768 exercises the clamp).
     const vw = typeof window !== 'undefined' ? window.innerWidth : this.DEFAULT_W;
     const vh = typeof window !== 'undefined' ? window.innerHeight : this.DEFAULT_H;
-    const width = Math.min(this.DEFAULT_W, Math.max(this.OPEN_MIN_W, vw - 32));
-    const height = Math.min(this.DEFAULT_H, Math.max(this.MIN_H, vh - 96));
-    const r = clampRect(
-      { left: Math.round((vw - width) / 2), top: this.DEFAULT_TOP, width, height },
-      { width: vw, height: vh },
-      64
-    );
+    // Placement: the user's LAST arrangement when one is persisted
+    // (profile-synced — re-clamped against the CURRENT viewport/min sizes so
+    // a 4K-desktop layout degrades safely on a laptop), else the default:
+    // centered horizontally below the toolbar (jsdom's 1024×768 exercises
+    // the clamp).
+    const saved = this.windowStore.load().main;
+    let width: number;
+    let height: number;
+    let left: number;
+    let top: number;
+    if (saved) {
+      const size = clampWindowSize(saved.width, saved.height, { width: vw, height: vh }, this.currentMinW(), this.MIN_H);
+      width = size.width;
+      height = size.height;
+      left = saved.left;
+      top = saved.top;
+    } else {
+      width = Math.min(this.DEFAULT_W, Math.max(this.OPEN_MIN_W, vw - 32));
+      height = Math.min(this.DEFAULT_H, Math.max(this.MIN_H, vh - 96));
+      left = Math.round((vw - width) / 2);
+      top = this.DEFAULT_TOP;
+    }
+    const r = clampRect({ left, top, width, height }, { width: vw, height: vh }, 64);
     this.winWidth.set(r.width);
     this.winHeight.set(r.height);
     this.winLeft.set(r.left);
     this.winTop.set(r.top);
+    this.reportMainRect();
 
     if (typeof window !== 'undefined') window.addEventListener('resize', this.onViewportResize);
 
@@ -234,6 +284,7 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (typeof window !== 'undefined') window.removeEventListener('resize', this.onViewportResize);
     this.teardownDrag();
+    this.svc.clearWindowRect('main');
     this.svc.destroy();
   }
 
@@ -256,8 +307,18 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
     this.onWindowFocus();
     const current = this.zAssign();
     if ((current.get(id) ?? 0) === this.zSeq) return; // already topmost
+    // The fleet's boosts must stay inside [0, REPLAY_WINDOW_Z_BAND): an
+    // unbounded internal counter would eventually eat the next cross-window
+    // raise (project-map steps WHOLE bands), so on band exhaustion the fleet
+    // RENUMBERS 1..k preserving relative order — the classic z-array compaction.
+    let base = current;
+    if (this.zSeq >= REPLAY_WINDOW_Z_BAND - 1) {
+      const ordered = [...current.entries()].sort((a, b) => a[1] - b[1]);
+      base = new Map(ordered.map(([k], i) => [k, i + 1] as [string, number]));
+      this.zSeq = ordered.length;
+    }
     this.zSeq++;
-    const next = new Map(current);
+    const next = new Map(base);
     next.set(id, this.zSeq);
     this.zAssign.set(next);
   }
@@ -285,6 +346,40 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   /** A tree field's filter_expr (from either pane) — apply it to the list. */
   onPaneApplyFilter(expr: string): void {
     this.svc.applyFilter(expr);
+  }
+
+  // ---- packet-row context menu (pin / unpin) -------------------------------
+
+  /**
+   * Open the row menu at the pointer. Coordinates arrive in VIEWPORT space
+   * (the packet list reports raw clientX/clientY) and are clamped so the
+   * single-item menu never hangs off the right/bottom edge.
+   */
+  openRowMenu(req: FrameContextMenuRequest): void {
+    const vw = typeof window === 'undefined' ? req.x + 200 : window.innerWidth;
+    const vh = typeof window === 'undefined' ? req.y + 64 : window.innerHeight;
+    this.rowMenu.set({
+      frame: req.frame,
+      x: Math.max(8, Math.min(req.x, vw - 184)),
+      y: Math.max(8, Math.min(req.y, vh - 56)),
+    });
+  }
+
+  closeRowMenu(): void {
+    this.rowMenu.set(null);
+  }
+
+  /**
+   * The menu's single action: pin the target frame, or unpin it when it is
+   * already pinned (the row menu's label mirrors this). Closes afterwards.
+   */
+  toggleRowMenuPin(): void {
+    const menu = this.rowMenu();
+    if (!menu) return;
+    const id = this.svc.pinnedIdFor(menu.frame);
+    if (id !== null) this.svc.unpin(id);
+    else this.svc.pinFrame(menu.frame);
+    this.closeRowMenu();
   }
 
   /** Mode-dependent minimum width (both panes vs. list only). */
@@ -323,9 +418,33 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
     );
     this.winLeft.set(r.left);
     this.winTop.set(r.top);
+    this.reportMainRect();
+    // Persist only the OPEN (wide) shape — the transient list-only width is
+    // a per-session layout, not a preference.
+    if (this.detailOpen()) this.persistMainRect();
   }
 
   // ---- viewport tracking ----------------------------------------------------
+
+  /** Publish the settled rect — pins/peek magnetize against the main window. */
+  private reportMainRect(): void {
+    this.svc.reportWindowRect('main', {
+      left: this.winLeft(),
+      top: this.winTop(),
+      width: this.winWidth(),
+      height: this.winHeight(),
+    });
+  }
+
+  /** Persist the settled rect (profile-synced) — reopen restores it. */
+  private persistMainRect(): void {
+    this.windowStore.storeMain({
+      left: this.winLeft(),
+      top: this.winTop(),
+      width: this.winWidth(),
+      height: this.winHeight(),
+    });
+  }
 
   private readonly onViewportResize = (): void => this.clampIntoViewport();
 
@@ -353,6 +472,9 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
     this.winHeight.set(r.height);
     this.winLeft.set(r.left);
     this.winTop.set(r.top);
+    this.reportMainRect();
+    // The clamped shape is the durable truth — keep the stored rect valid.
+    this.persistMainRect();
   }
 
   // ---- window drag (header) + resize (mwlResizable) ----
@@ -370,22 +492,36 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
     const startTop = this.winTop();
 
     const onMove = (ev: MouseEvent): void => {
-      const r = clampRect(
+      const vw = typeof window !== 'undefined' ? window.innerWidth : this.winWidth();
+      const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
+      // Magnetize against the settled fleet (pins, the peek) and the viewport
+      // rails — the main window joins the same comparison-grid physics.
+      const snapped = snapDraggedWindow(
         {
           left: startLeft + (ev.clientX - startX),
           top: startTop + (ev.clientY - startY),
           width: this.winWidth(),
           height: this.winHeight(),
         },
-        { width: window.innerWidth, height: window.innerHeight },
+        this.svc.snapSiblingRects({ windowId: 'main' }),
+        { width: vw, height: vh },
         64
       );
+      const r = clampRect(snapped.rect, { width: vw, height: vh }, 64);
       this.winLeft.set(r.left);
       this.winTop.set(r.top);
+      // Only show engagements the clamp let stand (an overridden guide lies).
+      this.snapGuides.set({
+        x: r.left === snapped.rect.left ? snapped.guides.x : null,
+        y: r.top === snapped.rect.top ? snapped.guides.y : null,
+      });
     };
     const onUp = (): void => {
       this.teardownDrag();
       this.dragging.set(false);
+      this.snapGuides.set(null);
+      this.reportMainRect();
+      this.persistMainRect();
     };
 
     document.addEventListener('mousemove', onMove);
@@ -415,12 +551,48 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
     this.resizing.set(true);
   }
 
+  /**
+   * LIVE follow: non-ghost mode applies nothing by itself (the library only
+   * reports), so the validated rect is mirrored into the signals on every
+   * move — the window tracks the pointer instead of teleporting on release.
+   * The dragged edges magnetize against the fleet + viewport rails.
+   */
+  onResizing(event: ResizeEvent): void {
+    const r = event.rectangle;
+    const vw = typeof window !== 'undefined' ? window.innerWidth : this.winWidth();
+    const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
+    const snapped = snapResizedWindow(
+      {
+        left: r.left ?? this.winLeft(),
+        top: r.top ?? this.winTop(),
+        width: r.width ?? this.winWidth(),
+        height: r.height ?? this.winHeight(),
+      },
+      event.edges ?? {},
+      this.svc.snapSiblingRects({ windowId: 'main' }),
+      { width: vw, height: vh },
+      64,
+      this.currentMinW(),
+      this.MIN_H
+    );
+    this.winLeft.set(snapped.rect.left);
+    this.winTop.set(snapped.rect.top);
+    this.winWidth.set(snapped.rect.width);
+    this.winHeight.set(snapped.rect.height);
+    this.snapGuides.set(snapped.guides);
+  }
+
   onResizeEnd(event: ResizeEvent): void {
+    // Mirror the final rectangle through the SAME magnetic snap the live
+    // gesture applied — the library reports the RAW pointer rect here, so
+    // taking it verbatim would jump the window off the guide on release.
+    // (The full rectangle applies: a left/top-edge drag MOVES those edges.)
+    this.onResizing(event);
     const vw = typeof window !== 'undefined' ? window.innerWidth : this.winWidth();
     const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
     const { width, height } = clampWindowSize(
-      event.rectangle.width || this.winWidth(),
-      event.rectangle.height || this.winHeight(),
+      this.winWidth(),
+      this.winHeight(),
       { width: vw, height: vh },
       this.currentMinW(),
       this.MIN_H
@@ -428,13 +600,16 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
     this.winWidth.set(width);
     this.winHeight.set(height);
     this.resizing.set(false);
+    this.snapGuides.set(null);
     // Never let the grown window hang off the viewport.
-    const r = clampRect(
+    const rect = clampRect(
       { left: this.winLeft(), top: this.winTop(), width, height },
       { width: vw, height: vh },
       64
     );
-    this.winLeft.set(r.left);
-    this.winTop.set(r.top);
+    this.winLeft.set(rect.left);
+    this.winTop.set(rect.top);
+    this.reportMainRect();
+    this.persistMainRect();
   }
 }

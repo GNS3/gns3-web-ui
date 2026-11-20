@@ -1,7 +1,6 @@
 import { signal } from '@angular/core';
 import { describe, it, expect, vi } from 'vitest';
 import { ConsoleWrapperComponent } from './console-wrapper.component';
-import { DEFAULT_FONT_SIZE, MAX_FONT_SIZE, MIN_FONT_SIZE } from '@services/xterm.service';
 
 describe('ConsoleWrapperComponent', () => {
   describe('prototype methods', () => {
@@ -106,54 +105,31 @@ describe('ConsoleWrapperComponent', () => {
       expect(host.showSettingsPanelSignal()).toBe(false);
       expect(markForCheck).toHaveBeenCalledTimes(2);
     });
+  });
 
-    it('applySettings should refresh state from service settings', () => {
-      const markForCheck = vi.fn();
-      const updateSettings = vi.fn();
-      const serviceState = {
-        fontSize: MAX_FONT_SIZE,
-        fontFamily: 'Consolas',
-        foregroundColor: '#112233',
-        backgroundColor: '#aabbcc',
-      };
-      const xtermService = { updateSettings } as any;
-      Object.defineProperty(xtermService, 'settings', {
-        get: () => ({ ...serviceState }),
-      });
-
+  describe('browser resize while maximized', () => {
+    it('keeps the maximized style height instead of collapsing to the pre-maximize size', () => {
+      window.innerWidth = 1200;
+      window.innerHeight = 800;
+      // Maximized: style.height holds the maximized px; resizedHeight still
+      // carries the pre-maximize manual size (toggleMaximize never updates it).
       const host = {
-        xtermService,
-        settingsSignal: signal({
-          fontSize: DEFAULT_FONT_SIZE,
-          fontFamily: null,
-          foregroundColor: null,
-          backgroundColor: null,
-        }),
-        cdr: { markForCheck },
+        isMinimizedSignal: signal(false),
+        MIN_WIDTH: 500,
+        MIN_HEIGHT: 400,
+        toolbarTopOffset: () => 64,
+        resizedWidth: 600,
+        resizedHeight: 400,
+        style: { position: 'fixed', left: '100px', top: '164px', width: '600px', height: '600px' },
+        applyStyleToElement: vi.fn(),
+        applyResizedRect: (ConsoleWrapperComponent.prototype as any).applyResizedRect,
+        cdr: { markForCheck: vi.fn() },
       } as any;
 
-      (ConsoleWrapperComponent.prototype as any).applySettings.call(host, { fontSize: 999 });
+      (ConsoleWrapperComponent.prototype as any).onWindowResize.call(host);
 
-      expect(updateSettings).toHaveBeenCalledWith({ fontSize: 999 });
-      expect(host.settingsSignal()).toEqual(serviceState);
-      expect(markForCheck).toHaveBeenCalledTimes(1);
-    });
-
-    it('changeFontSize should clamp bounds before applying', () => {
-      const applySettings = vi.fn();
-      const host = {
-        minFontSize: MIN_FONT_SIZE,
-        maxFontSize: MAX_FONT_SIZE,
-        currentSettings: () => ({ fontSize: MIN_FONT_SIZE }),
-        applySettings,
-      } as any;
-
-      (ConsoleWrapperComponent.prototype as any).changeFontSize.call(host, -5);
-      expect(applySettings).toHaveBeenLastCalledWith({ fontSize: MIN_FONT_SIZE });
-
-      host.currentSettings = () => ({ fontSize: MAX_FONT_SIZE });
-      (ConsoleWrapperComponent.prototype as any).changeFontSize.call(host, 5);
-      expect(applySettings).toHaveBeenLastCalledWith({ fontSize: MAX_FONT_SIZE });
+      expect(host.style.height).toBe('600px'); // RED before the fix: '400px'
+      expect(host.applyStyleToElement).toHaveBeenCalledWith(host.style);
     });
   });
 });

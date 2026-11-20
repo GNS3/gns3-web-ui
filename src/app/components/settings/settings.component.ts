@@ -4,6 +4,7 @@ import {
   Component,
   HostListener,
   OnInit,
+  computed,
   inject,
   model,
   signal,
@@ -28,6 +29,7 @@ import { UpdatesService } from '@services/updates.service';
 import { ControllerService } from '@services/controller.service';
 import { AiChatService } from '@services/ai-chat.service';
 import { InterfaceDensity, InterfaceDensityService } from '@services/interface-density.service';
+import { PermissionService } from '@services/permission.service';
 
 type SettingsCategory = 'general' | 'appearance' | 'workspace' | 'console' | 'privacy' | 'updates' | 'ai';
 type SettingsField =
@@ -80,6 +82,7 @@ export class SettingsComponent implements OnInit {
   private controllerService = inject(ControllerService);
   private aiChatService = inject(AiChatService);
   private interfaceDensityService = inject(InterfaceDensityService);
+  private permissionService = inject(PermissionService);
 
   settings: Settings;
   readonly integrateLinksLabelsToLinks = model(false);
@@ -112,7 +115,7 @@ export class SettingsComponent implements OnInit {
   readonly fontWeights = MapSettingsService.FONT_WEIGHTS;
   readonly linkStyleNames = MapSettingsService.LINK_STYLE_NAMES;
   readonly linkTypes = MapSettingsService.LINK_TYPES;
-  readonly categories: { id: SettingsCategory; label: string; icon: string }[] = [
+  private readonly allCategories: { id: SettingsCategory; label: string; icon: string }[] = [
     { id: 'general', label: 'General', icon: 'tune' },
     { id: 'appearance', label: 'Appearance', icon: 'palette' },
     { id: 'workspace', label: 'Project workspace', icon: 'account_tree' },
@@ -121,6 +124,16 @@ export class SettingsComponent implements OnInit {
     { id: 'updates', label: 'Updates', icon: 'system_update' },
     { id: 'ai', label: 'AI', icon: 'auto_awesome' },
   ];
+
+  /**
+   * The AI category only hosts the "Reload skills" card, and
+   * POST /copilot/reload/skills checks is_superadmin directly (no named
+   * privilege), so the category is superadmin-only.
+   */
+  readonly canManageAiSkills = computed(() => this.permissionService.isSuperadmin());
+  readonly categories = computed(() =>
+    this.allCategories.filter((category) => category.id !== 'ai' || this.canManageAiSkills()),
+  );
   private readonly dirtyFields = new Set<SettingsField>();
   mapTheme: string;
   currentTheme: PrebuiltTheme;

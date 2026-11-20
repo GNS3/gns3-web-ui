@@ -1,5 +1,7 @@
-@use './replay-window-handles';
 @use './replay-window-surface';
+@use './replay-snap-guides';
+@use './replay-window-zoom';
+@use './replay-window-header';
 
 // The whole surface (border, header, chrome, handles) is shared — see the
 // two partials. The peek adds nothing beyond its birth behavior, which

@@ -4,6 +4,18 @@ import { MarkerReplayService } from './marker-replay.service';
 import { Controller } from '@models/controller';
 import { ReplayFrame, ReplayFrameDetail, ReplayRangeResponse } from '@models/marker-replay';
 import { ToasterService } from './toaster.service';
+import { UserPreferencesService } from './user-preferences.service';
+
+/** Prefs facade stub — a plain Map (no localStorage, no sync scheduling). */
+function prefsStub(): UserPreferencesService {
+  const store = new Map<string, string>();
+  return {
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => void store.set(key, value),
+    removeItem: (key: string) => void store.delete(key),
+    onExternalUpdate: () => () => {},
+  } as unknown as UserPreferencesService;
+}
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -67,7 +79,7 @@ describe('MarkerReplayService (HTTP)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockHttpController = { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() };
-    service = new MarkerReplayService(mockHttpController, { error: vi.fn() } as unknown as ToasterService);
+    service = new MarkerReplayService(mockHttpController, { error: vi.fn() } as unknown as ToasterService, prefsStub());
   });
 
   describe('replayRange', () => {
@@ -199,7 +211,7 @@ describe('MarkerReplayService state machine', () => {
       error: ReturnType<typeof vi.fn>;
       warning: ReturnType<typeof vi.fn>;
     } & ToasterService;
-    service = new MarkerReplayService(mockHttp, mockToaster);
+    service = new MarkerReplayService(mockHttp, mockToaster, prefsStub());
   });
 
   afterEach(() => {
@@ -270,7 +282,7 @@ describe('MarkerReplayService state machine', () => {
       service.start(ctrl, PROJECT_ID, TAG);
       expect(service.rangeErrorKind()).toBe('missing');
 
-      const svc2 = new MarkerReplayService(mockHttp, mockToaster);
+      const svc2 = new MarkerReplayService(mockHttp, mockToaster, prefsStub());
       mockHttp.get.mockImplementation(() => throwError(() => serverError(0, 'Controller is unreachable')));
       svc2.start(ctrl, PROJECT_ID, TAG);
       expect(svc2.rangeErrorKind()).toBe('network');

@@ -1,0 +1,40 @@
+// Shared header split for the replay floating windows: the header strip is
+// TWO zones with distinct jobs —
+//
+//   __header-drag    (left, fills the row)  icon + title + identity chips —
+//                                          the ONLY surface whose mousedown
+//                                          drags the window
+//   __window-actions (right, fixed)         zoom / anchor / pin / minimize /
+//                                          close — never drags, not even in
+//                                          the gaps between the buttons
+//
+// The hairline separator marks the boundary; cursors differ (grab over the
+// title strip, pointer over the buttons) so intent is legible BEFORE
+// pressing. Consumed via `@use` from every host component's SCSS.
+
+.gns3-replay__header-drag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0; // the title ellipsizes instead of pushing the actions off
+  cursor: grab;
+  user-select: none;
+}
+
+// Hand CLOSED while the gesture is live — the pressed state of the grab
+// (both root classes: the pin/peek surface and the main window).
+.gns3-replay__window--dragging .gns3-replay__header-drag,
+.gns3-replay__main--dragging .gns3-replay__header-drag {
+  cursor: grabbing;
+}
+
+.gns3-replay__window-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  // The visible boundary between "title bar" and "toolbar".
+  padding-left: 6px;
+  border-left: 1px solid var(--mat-sys-outline-variant);
+}

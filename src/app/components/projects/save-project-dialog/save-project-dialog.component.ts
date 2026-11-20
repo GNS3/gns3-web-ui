@@ -39,6 +39,7 @@ export class SaveProjectDialogComponent {
 
   readonly projectName = model('');
   readonly isCheckingName = signal(false);
+  readonly isSaving = signal(false);
   readonly nameExistsError = signal(false);
 
   readonly onAddProject = new EventEmitter<string>();
@@ -62,7 +63,7 @@ export class SaveProjectDialogComponent {
   });
 
   onAddClick(): void {
-    if (!this.isNameValid()) {
+    if (!this.isNameValid() || this.isCheckingName() || this.isSaving()) {
       return;
     }
     this.checkProjectNameExists();
@@ -105,6 +106,7 @@ export class SaveProjectDialogComponent {
   }
 
   private addProject(): void {
+    this.isSaving.set(true);
     this.projectService
       .duplicate(this.controller, this.project.project_id, this.projectName().trim())
       .subscribe({
@@ -114,6 +116,7 @@ export class SaveProjectDialogComponent {
           this.onAddProject.emit(project.project_id);
         },
         error: (err) => {
+          this.isSaving.set(false);
           const message = err.error?.message || err.message || 'Failed to save project';
           this.toasterService.error(message);
         },

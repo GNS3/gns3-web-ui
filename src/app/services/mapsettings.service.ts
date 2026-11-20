@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ThemeService } from './theme.service';
+import { UserPreferencesService } from './user-preferences.service';
 
 export interface WorkspaceTextStyle {
   fontFamily: string;
@@ -93,7 +94,10 @@ export class MapSettingsService {
   private static readonly NOTE_STYLE_KEY = 'defaultNoteStyle';
   private static readonly LINK_STYLE_KEY = 'defaultLinkStyle';
 
-  constructor(private themeService: ThemeService) {
+  constructor(
+    private themeService: ThemeService,
+    private userPreferences: UserPreferencesService,
+  ) {
     this.defaultLabelStyleFallback = {
       fontFamily: 'TypeWriter',
       fontSize: 10,
@@ -113,25 +117,45 @@ export class MapSettingsService {
       link_type: 'straight',
     };
 
+    this.loadFromStorage();
+
+    // Re-read when a server-side preferences merge updates the stored values
+    this.userPreferences.onExternalUpdate(() => this.loadFromStorage());
+  }
+
+  /** (Re)reads the persisted settings; also re-run after a server-side preferences merge. */
+  private loadFromStorage(): void {
     this.isLayerNumberVisible = localStorage.getItem('layersVisibility') === 'true' ? true : false;
-    if (localStorage.getItem('integrateLinkLabelsToLinks'))
+    // The else branches re-seed the built-in defaults when the key is gone
+    // (never set, or the previous user's mirror was wiped on logout): the
+    // in-memory field must not keep the previous user's value until someone
+    // toggles it.
+    if (localStorage.getItem('integrateLinkLabelsToLinks')) {
       this.integrateLinkLabelsToLinks = localStorage.getItem('integrateLinkLabelsToLinks') === 'true' ? true : false;
-    if (localStorage.getItem('openConsolesInWidget'))
+    } else {
+      this.integrateLinkLabelsToLinks = true;
+      this.userPreferences.setItem('integrateLinkLabelsToLinks', 'true');
+    }
+    if (localStorage.getItem('openConsolesInWidget')) {
       this.openConsolesInWidget = localStorage.getItem('openConsolesInWidget') === 'true' ? true : false;
+    } else {
+      this.openConsolesInWidget = false;
+      this.userPreferences.setItem('openConsolesInWidget', 'false');
+    }
     if (!localStorage.getItem('symbolScaling')) {
-      localStorage.setItem('symbolScaling', 'true');
+      this.userPreferences.setItem('symbolScaling', 'true');
     }
 
     if (localStorage.getItem('openReadme')) {
       this.openReadme = localStorage.getItem('openReadme') === 'true' ? true : false;
     } else {
-      localStorage.setItem('openReadme', 'false');
+      this.userPreferences.setItem('openReadme', 'false');
     }
 
     if (localStorage.getItem('showInterfaceLabels')) {
       this.showInterfaceLabels = localStorage.getItem('showInterfaceLabels') === 'true' ? true : false;
     } else {
-      localStorage.setItem('showInterfaceLabels', 'true');
+      this.userPreferences.setItem('showInterfaceLabels', 'true');
     }
 
     // Project-workspace defaults — read from localStorage, falling back to
@@ -244,9 +268,9 @@ export class MapSettingsService {
 
   public setSymbolScaling(value: boolean) {
     if (value) {
-      localStorage.setItem('symbolScaling', 'true');
+      this.userPreferences.setItem('symbolScaling', 'true');
     } else {
-      localStorage.setItem('symbolScaling', 'false');
+      this.userPreferences.setItem('symbolScaling', 'false');
     }
     this.symbolScalingSubject.next(value);
   }
@@ -256,7 +280,7 @@ export class MapSettingsService {
   }
 
   setConsoleContextMenuAction(action: string) {
-    localStorage.setItem('consoleContextMenu', action);
+    this.userPreferences.setItem('consoleContextMenu', action);
   }
 
   getConsoleContextMenuAction(): string {
@@ -281,41 +305,41 @@ export class MapSettingsService {
 
   toggleShowInterfaceLabels(value: boolean) {
     this.showInterfaceLabels = value;
-    localStorage.removeItem('showInterfaceLabels');
+    this.userPreferences.removeItem('showInterfaceLabels');
     if (value) {
-      localStorage.setItem('showInterfaceLabels', 'true');
+      this.userPreferences.setItem('showInterfaceLabels', 'true');
     } else {
-      localStorage.setItem('showInterfaceLabels', 'false');
+      this.userPreferences.setItem('showInterfaceLabels', 'false');
     }
   }
 
   toggleIntegrateInterfaceLabels(value: boolean) {
     this.integrateLinkLabelsToLinks = value;
-    localStorage.removeItem('integrateLinkLabelsToLinks');
+    this.userPreferences.removeItem('integrateLinkLabelsToLinks');
     if (value) {
-      localStorage.setItem('integrateLinkLabelsToLinks', 'true');
+      this.userPreferences.setItem('integrateLinkLabelsToLinks', 'true');
     } else {
-      localStorage.setItem('integrateLinkLabelsToLinks', 'false');
+      this.userPreferences.setItem('integrateLinkLabelsToLinks', 'false');
     }
   }
 
   toggleOpenReadme(value: boolean) {
     this.openReadme = value;
-    localStorage.removeItem('openReadme');
+    this.userPreferences.removeItem('openReadme');
     if (value) {
-      localStorage.setItem('openReadme', 'true');
+      this.userPreferences.setItem('openReadme', 'true');
     } else {
-      localStorage.setItem('openReadme', 'false');
+      this.userPreferences.setItem('openReadme', 'false');
     }
   }
 
   toggleOpenConsolesInWidget(value: boolean) {
     this.openConsolesInWidget = value;
-    localStorage.removeItem('openConsolesInWidget');
+    this.userPreferences.removeItem('openConsolesInWidget');
     if (value) {
-      localStorage.setItem('openConsolesInWidget', 'true');
+      this.userPreferences.setItem('openConsolesInWidget', 'true');
     } else {
-      localStorage.setItem('openConsolesInWidget', 'false');
+      this.userPreferences.setItem('openConsolesInWidget', 'false');
     }
   }
 
@@ -326,7 +350,7 @@ export class MapSettingsService {
   setDefaultSceneWidth(value: number) {
     const v = Number.isFinite(value) && value >= 0 ? Math.round(value) : MapSettingsService.DEFAULT_SCENE_WIDTH;
     this.defaultSceneWidth = v;
-    localStorage.setItem(MapSettingsService.SCENE_WIDTH_KEY, String(v));
+    this.userPreferences.setItem(MapSettingsService.SCENE_WIDTH_KEY, String(v));
   }
 
   getDefaultSceneHeight(): number {
@@ -336,7 +360,7 @@ export class MapSettingsService {
   setDefaultSceneHeight(value: number) {
     const v = Number.isFinite(value) && value >= 0 ? Math.round(value) : MapSettingsService.DEFAULT_SCENE_HEIGHT;
     this.defaultSceneHeight = v;
-    localStorage.setItem(MapSettingsService.SCENE_HEIGHT_KEY, String(v));
+    this.userPreferences.setItem(MapSettingsService.SCENE_HEIGHT_KEY, String(v));
   }
 
   getDefaultGridSize(): number {
@@ -346,7 +370,7 @@ export class MapSettingsService {
   setDefaultGridSize(value: number) {
     const v = Number.isFinite(value) && value >= 0 ? Math.round(value) : MapSettingsService.DEFAULT_GRID_SIZE;
     this.defaultGridSize = v;
-    localStorage.setItem(MapSettingsService.GRID_SIZE_KEY, String(v));
+    this.userPreferences.setItem(MapSettingsService.GRID_SIZE_KEY, String(v));
   }
 
   getDefaultDrawingGridSize(): number {
@@ -356,7 +380,7 @@ export class MapSettingsService {
   setDefaultDrawingGridSize(value: number) {
     const v = Number.isFinite(value) && value >= 0 ? Math.round(value) : MapSettingsService.DEFAULT_DRAWING_GRID_SIZE;
     this.defaultDrawingGridSize = v;
-    localStorage.setItem(MapSettingsService.DRAWING_GRID_SIZE_KEY, String(v));
+    this.userPreferences.setItem(MapSettingsService.DRAWING_GRID_SIZE_KEY, String(v));
   }
 
   getDefaultShowGrid(): boolean {
@@ -365,7 +389,7 @@ export class MapSettingsService {
 
   setDefaultShowGrid(value: boolean) {
     this.defaultShowGrid = value;
-    localStorage.setItem(MapSettingsService.SHOW_GRID_KEY, value ? 'true' : 'false');
+    this.userPreferences.setItem(MapSettingsService.SHOW_GRID_KEY, value ? 'true' : 'false');
   }
 
   getDefaultSnapToGrid(): boolean {
@@ -374,7 +398,7 @@ export class MapSettingsService {
 
   setDefaultSnapToGrid(value: boolean) {
     this.defaultSnapToGrid = value;
-    localStorage.setItem(MapSettingsService.SNAP_TO_GRID_KEY, value ? 'true' : 'false');
+    this.userPreferences.setItem(MapSettingsService.SNAP_TO_GRID_KEY, value ? 'true' : 'false');
   }
 
   getDefaultLabelStyle(): WorkspaceTextStyle {
@@ -390,7 +414,7 @@ export class MapSettingsService {
 
   setDefaultLabelStyle(value: WorkspaceTextStyle): void {
     this.defaultLabelStyle = this.normalizeTextStyle(value, this.defaultLabelStyleFallback);
-    localStorage.setItem(MapSettingsService.LABEL_STYLE_KEY, JSON.stringify(this.defaultLabelStyle));
+    this.userPreferences.setItem(MapSettingsService.LABEL_STYLE_KEY, JSON.stringify(this.defaultLabelStyle));
   }
 
   getDefaultNoteStyle(): WorkspaceTextStyle {
@@ -406,7 +430,7 @@ export class MapSettingsService {
 
   setDefaultNoteStyle(value: WorkspaceTextStyle): void {
     this.defaultNoteStyle = this.normalizeTextStyle(value, this.defaultNoteStyleFallback);
-    localStorage.setItem(MapSettingsService.NOTE_STYLE_KEY, JSON.stringify(this.defaultNoteStyle));
+    this.userPreferences.setItem(MapSettingsService.NOTE_STYLE_KEY, JSON.stringify(this.defaultNoteStyle));
   }
 
   getDefaultLinkStyle(): WorkspaceLinkStyle {
@@ -422,6 +446,6 @@ export class MapSettingsService {
 
   setDefaultLinkStyle(value: WorkspaceLinkStyle): void {
     this.defaultLinkStyle = this.normalizeLinkStyle(value, this.defaultLinkStyleFallback);
-    localStorage.setItem(MapSettingsService.LINK_STYLE_KEY, JSON.stringify(this.defaultLinkStyle));
+    this.userPreferences.setItem(MapSettingsService.LINK_STYLE_KEY, JSON.stringify(this.defaultLinkStyle));
   }
 }

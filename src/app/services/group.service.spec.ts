@@ -346,7 +346,7 @@ describe('GroupService', () => {
 
       mockHttpController.put.mockReturnValue(of(mockGroup));
 
-      service.update(mockController, mockGroup);
+      service.update(mockController, mockGroup, { name: 'Updated Group' });
 
       expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/access/groups/group-789', {
         name: 'Updated Group',
@@ -361,12 +361,12 @@ describe('GroupService', () => {
 
       mockHttpController.put.mockReturnValue(of(mockGroup));
 
-      const result = service.update(mockController, mockGroup);
+      const result = service.update(mockController, mockGroup, { name: 'Test' });
 
       expect(result).toBeInstanceOf(Observable);
     });
 
-    it('should pass group name in payload', () => {
+    it('should pass the payload through unchanged', () => {
       const mockGroup: Group = {
         user_group_id: 'group-xyz',
         name: 'Test Group Name',
@@ -374,7 +374,7 @@ describe('GroupService', () => {
 
       mockHttpController.put.mockReturnValue(of(mockGroup));
 
-      service.update(mockController, mockGroup);
+      service.update(mockController, mockGroup, { name: 'Test Group Name' });
 
       const putCall = mockHttpController.put.mock.calls[0];
       expect(putCall[2]).toEqual({ name: 'Test Group Name' });

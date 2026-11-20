@@ -17,7 +17,6 @@ import { Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { DrawingService } from '../../../../../services/drawing.service';
 import { LinkService } from '../../../../../services/link.service';
-import { LinkTypeCache } from '../../../../../services/link-type-cache';
 import { ToasterService } from '../../../../../services/toaster.service';
 
 describe('DeleteActionComponent', () => {
@@ -306,19 +305,6 @@ describe('DeleteActionComponent', () => {
 
       expect(mockLinksDataSource.remove).not.toHaveBeenCalled();
       expect(mockLinkService.deleteLink).not.toHaveBeenCalled();
-    });
-
-    it('should remove link from LinkTypeCache after deletion', () => {
-      const link = createMockLink({ project_id: 'proj-1', link_id: 'link-1' });
-      fixture.componentRef.setInput('nodes', []);
-      fixture.componentRef.setInput('drawings', []);
-      fixture.componentRef.setInput('links', [link]);
-      fixture.componentRef.setInput('controller', mockController);
-      const removeSpy = vi.spyOn(LinkTypeCache, 'remove');
-
-      component.delete();
-
-      expect(removeSpy).toHaveBeenCalledWith('proj-1', 'link-1');
     });
   });
 

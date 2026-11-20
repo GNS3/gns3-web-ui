@@ -530,6 +530,48 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
 }
 
 /* =============================================
+// Delete All Projects Result Panel
+// Bulk delete progress/result dialog. Section
+// headings and list rows mirror the confirmation
+// dialog's details list so both stages of the
+// delete flow share one visual language.
+// ============================================= */
+.delete-all-projects-dialog-panel {
+  .deletion-result__section-title {
+    margin: 0 0 var(--gns3-density-space-2);
+    font-size: var(--gns3-density-dialog-body-size);
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--mat-sys-on-surface);
+  }
+
+  .deletion-result__section-title--error {
+    color: var(--mat-sys-error);
+  }
+
+  .deletion-result__list + .deletion-result__section-title {
+    margin-top: var(--gns3-density-space-4);
+  }
+
+  .deletion-result__list {
+    max-height: 180px;
+    margin: 0;
+    padding: var(--gns3-density-space-2) var(--gns3-density-space-3);
+    list-style: none;
+    overflow-y: auto;
+    background: var(--mat-sys-surface-container);
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: var(--gns3-density-radius-sm);
+    color: var(--mat-sys-on-surface);
+  }
+
+  .deletion-result__error {
+    display: block;
+    color: var(--mat-sys-error);
+  }
+}
+
+/* =============================================
 // Project Management Dialogs
 // ============================================= */
 
@@ -1964,6 +2006,16 @@ html[data-density='compact'] .node-configurator-dialog-panel {
   }
 }
 
+// Share project dialog: content is fit by design. Once the content area grows
+// a vertical scrollbar its width loss would otherwise couple into a phantom
+// horizontal scrollbar on the Shared with section, so the horizontal axis is
+// clipped at the scroll container itself.
+.share-project-dialog-panel {
+  .mat-mdc-dialog-content {
+    overflow-x: hidden;
+  }
+}
+
 /* =============================================
 // Standard Dialog System
 // Four reusable categories for every conventional modal workflow.
@@ -2131,6 +2183,15 @@ html[data-density='compact'] .node-configurator-dialog-panel {
     min-height: 0;
     padding: 0;
     overflow: hidden;
+  }
+}
+
+// BPF rule library: the height tier fixes the dialog box, so the content must
+// absorb the remaining space for the Cancel / Use rule action bar to stay
+// pinned to the bottom while the rule list scrolls.
+.bpf-rule-library-dialog-panel {
+  .mat-mdc-dialog-content {
+    flex: 1 1 auto;
   }
 }
 

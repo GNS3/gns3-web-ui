@@ -12,6 +12,7 @@ import { LinkNode } from '@models/link-node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
+import { ProjectPermissionService } from '@services/project-permission.service';
 
 describe('ContextMenuComponent', () => {
   let component: ContextMenuComponent;
@@ -230,11 +231,34 @@ describe('ContextMenuComponent', () => {
       isReadOnly: vi.fn((project: Project) => project.readonly),
     };
 
+    const contextMenuPrivileges = [
+      'Node.Audit',
+      'Node.Modify',
+      'Node.PowerMgmt',
+      'Node.Console',
+      'Node.Allocate',
+      'Link.Modify',
+      'Link.Capture',
+      'Link.Audit',
+      'Link.Allocate',
+      'Drawing.Modify',
+      'Drawing.Allocate',
+    ];
+
     await TestBed.configureTestingModule({
       imports: [ContextMenuComponent, MatMenuModule],
       providers: [
         { provide: DomSanitizer, useValue: mockSanitizer },
         { provide: ProjectService, useValue: mockProjectService },
+        {
+          provide: ProjectPermissionService,
+          useValue: {
+            privileges: () => new Set<string>(contextMenuPrivileges),
+            has: (privilege: string) => contextMenuPrivileges.includes(privilege),
+            hasAny: () => true,
+            loaded: () => true,
+          },
+        },
       ],
     }).compileComponents();
 
@@ -513,6 +537,54 @@ describe('ContextMenuComponent', () => {
       expect(component.nodes).toHaveLength(0);
       expect(component.labels).toHaveLength(0);
       expect(component.links).toHaveLength(0);
+    });
+  });
+
+  describe('distribution lifecycle gating', () => {
+    it('should report a frozen template', () => {
+      component.project = { ...mockProject, frozen: true };
+
+      expect(component.isFrozen).toBe(true);
+    });
+
+    it('should report not frozen for a regular project (older servers included)', () => {
+      expect(component.isFrozen).toBe(false);
+    });
+
+    it('should exclude locked nodes from the duplicable selection', () => {
+      const unlocked = createMockNode({ node_id: 'node-free' });
+      const locked = createMockNode({ node_id: 'node-locked', locked: true });
+      component.nodes = [unlocked, locked];
+
+      expect(component.duplicableNodes).toEqual([unlocked]);
+    });
+
+    it('should keep requesting node privileges while a duplicable node remains', () => {
+      component.nodes = [createMockNode({ locked: true }), createMockNode()];
+      component.drawings = [];
+
+      expect(component.duplicatePrivileges).toEqual(['Node.Allocate']);
+    });
+
+    it('should drop the node privilege when every selected node is locked', () => {
+      component.nodes = [createMockNode({ locked: true })];
+      component.drawings = [createMockDrawing()];
+
+      expect(component.duplicatePrivileges).toEqual(['Drawing.Allocate']);
+    });
+
+    it('should request both privileges for a mixed selection', () => {
+      component.nodes = [createMockNode()];
+      component.drawings = [createMockDrawing()];
+
+      expect(component.duplicatePrivileges).toEqual(['Node.Allocate', 'Drawing.Allocate']);
+    });
+
+    it('should request no privilege when nothing is duplicable', () => {
+      component.nodes = [createMockNode({ locked: true })];
+      component.drawings = [];
+
+      expect(component.duplicatePrivileges).toEqual([]);
     });
   });
 

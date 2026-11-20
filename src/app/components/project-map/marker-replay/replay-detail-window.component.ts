@@ -15,13 +15,25 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subscription } from 'rxjs';
 import { select } from 'd3-selection';
-import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
+import { ResizeEvent, ResizableDirective } from 'angular-resizable-element';
+import { FloatingWindowResizeHandlesComponent } from '../../floating-window/floating-window-resize-handles.component';
 
 import { MarkerReplayService } from '@services/marker-replay.service';
 import { MapScaleService } from '@services/mapScale.service';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { PinnedDetail } from '@models/marker-replay';
-import { clampRect, clampWindowSize, clusterAppend, DOCK_TILE_H, DOCK_TILE_W, dockSlot, snapRect } from './replay-geometry';
+import {
+  SnapGuides,
+  clampRect,
+  clampWindowSize,
+  clusterAppend,
+  DOCK_TILE_H,
+  DOCK_TILE_W,
+  dockSlot,
+  snapDraggedWindow,
+  snapResizedWindow,
+} from './replay-geometry';
+import { ReplayZoomController } from './replay-zoom';
 import { ReplayDetailPaneComponent } from './replay-detail-pane.component';
 
 /** Leader-line endpoint pair in viewport px (window edge → link anchor). */
@@ -62,7 +74,7 @@ interface Leader {
   selector: 'app-replay-detail-window',
   templateUrl: './replay-detail-window.component.html',
   styleUrl: './replay-detail-window.component.scss',
-  imports: [CommonModule, MatIconModule, MatTooltipModule, ReplayDetailPaneComponent, ResizableDirective, ResizeHandleDirective],
+  imports: [CommonModule, MatIconModule, MatTooltipModule, ReplayDetailPaneComponent, ResizableDirective, FloatingWindowResizeHandlesComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
@@ -104,6 +116,13 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
   /** True while a resize gesture is in flight. */
   readonly resizing = signal(false);
   /**
+   * This window's content zoom — born at the pin kind's last-used level,
+   * then adjusted here without touching any sibling (see replay-zoom.ts).
+   */
+  readonly zoomCtl = new ReplayZoomController('pin');
+  /** Live snap-guide lines while a drag/resize attaches; null when idle. */
+  readonly snapGuides = signal<SnapGuides | null>(null);
+  /**
    * Whether this window has had its FIRST placement pass — the join-the-cluster
    * decision only applies to a brand-new window, never to reflows of an
    * already placed one.
@@ -116,6 +135,12 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
   private readonly subs: Subscription[] = [];
   private rafId: number | null = null;
   private rafPending = false;
+  /**
+   * Link viewport anchor resolved for the resize gesture in flight.
+   * `undefined` = no gesture (resolve on demand), `null` = the link is not
+   * on the map (the leader stays dropped for the whole gesture).
+   */
+  private resizeAnchor: { x: number; y: number } | null | undefined = undefined;
 
   constructor() {
     // The dock row REFLOWS when siblings are pinned/unpinned (index shifts)
@@ -162,6 +187,9 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
 
   /** Coalesce reposition requests into one animation-frame pass. */
   private requestReposition(): void {
+    // A reposition means the map may have moved, so a resize anchor cached
+    // for the gesture is no longer trustworthy.
+    this.resizeAnchor = undefined;
     if (this.rafPending) return;
     this.rafPending = true;
     if (typeof requestAnimationFrame === 'function') {
@@ -239,9 +267,10 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
    * sits — docked or freed. The window end attaches to the edge facing the
    * anchor.
    */
-  private updateLeader(): void {
-    const frame = this.pinned().frame;
-    const anchor = this.linkCenterScreen(frame.link_id);
+  private updateLeader(anchorOverride?: { x: number; y: number } | null): void {
+    // Resize gestures pass the anchor resolved once at gesture start; every
+    // other caller (initial placement, drag, reposition) resolves it fresh.
+    const anchor = anchorOverride !== undefined ? anchorOverride : this.currentLinkAnchor();
     if (!anchor) {
       // Link not on the map (deleted) — keep the last position, drop the leader.
       this.anchored.set(false);
@@ -258,6 +287,11 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
       x2: anchor.x,
       y2: anchor.y,
     });
+  }
+
+  /** Anchor of the pinned frame's source link, or null when it is not on the map. */
+  private currentLinkAnchor(): { x: number; y: number } | null {
+    return this.linkCenterScreen(this.pinned().frame.link_id);
   }
 
   /** Link path bounding-box center in viewport px (browser applies all transforms). */
@@ -289,17 +323,72 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
   };
 
   onResizeStart(): void {
+    // The link cannot move while the pointer is busy resizing this window:
+    // resolve its viewport anchor once for the whole gesture instead of
+    // re-querying the DOM on every pointer event (see updateLeader).
+    this.resizeAnchor = this.currentLinkAnchor();
     this.resizing.set(true);
   }
 
+  /**
+   * LIVE follow: non-ghost mode applies NOTHING by itself (the library only
+   * reports), so the validated rect is mirrored into the signals on every
+   * move — the window tracks the pointer instead of teleporting on release.
+   * The dragged edges magnetize against the fleet + viewport rails, and the
+   * leader/report stay live so siblings can already snap against the new
+   * shape.
+   */
+  onResizing(event: ResizeEvent): void {
+    this.applyResizeSnap(event); // signals already carry the result
+    // `onResizeStart` normally resolved the anchor; a caller that resizes
+    // without it (tests, programmatic gestures) gets one lazy lookup, then
+    // the same cached anchor for the rest of the gesture.
+    if (this.resizeAnchor === undefined) {
+      this.resizeAnchor = this.currentLinkAnchor();
+    }
+    this.updateLeader(this.resizeAnchor);
+    this.reportRect();
+  }
+
+  /** Mirror + magnetize one live resize rectangle into the signals. */
+  private applyResizeSnap(event: ResizeEvent): void {
+    const r = event.rectangle;
+    const vw = typeof window !== 'undefined' ? window.innerWidth : this.winWidth();
+    const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
+    const snapped = snapResizedWindow(
+      {
+        left: r.left ?? this.winLeft(),
+        top: r.top ?? this.winTop(),
+        width: r.width ?? this.winWidth(),
+        height: r.height ?? this.winHeight(),
+      },
+      event.edges ?? {},
+      this.svc.snapSiblingRects({ pinId: this.pinned().id }),
+      { width: vw, height: vh },
+      64, // project toolbar
+      this.MIN_W,
+      this.MIN_H
+    );
+    this.winLeft.set(snapped.rect.left);
+    this.winTop.set(snapped.rect.top);
+    this.winWidth.set(snapped.rect.width);
+    this.winHeight.set(snapped.rect.height);
+    this.snapGuides.set(snapped.guides);
+  }
+
   onResizeEnd(event: ResizeEvent): void {
+    // Mirror the final rectangle through the SAME magnetic snap the live
+    // gesture applied — the library reports the RAW pointer rect here, so
+    // taking it verbatim would jump the window off the guide on release.
+    // (The full rectangle applies: a left/top-edge drag MOVES those edges.)
+    this.applyResizeSnap(event);
     // Clamp locally — WindowBoundaryService's config is GLOBAL shared state
     // (its 500px minWidth suits marker-manager, not this window).
     const vw = typeof window !== 'undefined' ? window.innerWidth : this.winWidth();
     const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
     const { width, height } = clampWindowSize(
-      event.rectangle.width || this.winWidth(),
-      event.rectangle.height || this.winHeight(),
+      this.winWidth(),
+      this.winHeight(),
       { width: vw, height: vh },
       this.MIN_W,
       this.MIN_H
@@ -308,6 +397,10 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
     this.winWidth.set(width);
     this.winHeight.set(height);
     this.resizing.set(false);
+    // Release the gesture cache: the reposition below re-resolves the anchor
+    // and a later gesture must do the same against the map's current state.
+    this.resizeAnchor = undefined;
+    this.snapGuides.set(null);
     // Remember the chosen size for the session — later pins dock at it. A
     // docked snapshot owns its size, so resizing one frees it (the dock would
     // otherwise snap the size back).
@@ -344,20 +437,30 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
       moved = true;
       const vw = typeof window !== 'undefined' ? window.innerWidth : this.winWidth();
       const vh = typeof window !== 'undefined' ? window.innerHeight : this.winHeight();
-      // Magnetize against settled siblings — dragging several together builds
-      // flush comparison grids.
-      const snapped = snapRect(
+      // Magnetize against the whole settled fleet (other pins, the main
+      // window, the peek) AND the viewport rails — dragging several together
+      // builds flush comparison grids; the guides make the attach visible.
+      const snapped = snapDraggedWindow(
         { left: startLeft + dx, top: startTop + dy, width: this.winWidth(), height: this.winHeight() },
-        this.svc.pinSiblingRects(this.pinned().id)
+        this.svc.snapSiblingRects({ pinId: this.pinned().id }),
+        { width: vw, height: vh },
+        minTop
       );
-      const r = clampRect(snapped, { width: vw, height: vh }, minTop);
+      const r = clampRect(snapped.rect, { width: vw, height: vh }, minTop);
       this.winLeft.set(r.left);
       this.winTop.set(r.top);
+      // A guide that clampRect overrode would lie — only show engagements
+      // that survived into the final position.
+      this.snapGuides.set({
+        x: r.left === snapped.rect.left ? snapped.guides.x : null,
+        y: r.top === snapped.rect.top ? snapped.guides.y : null,
+      });
       this.updateLeader();
     };
     const onUp = (): void => {
       this.teardownDrag();
       this.dragging.set(false);
+      this.snapGuides.set(null);
       if (moved) this.dragPinned.set(true);
       // Full reposition pass — clamps the dropped spot AND republishes this
       // window's rect so siblings snap against where it LANDED, not where it

@@ -10,14 +10,16 @@
  *
  * Author: Sylvain MATHIEU, Elise LEBEAU
  */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Route, Router, RouterModule } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { PermissionService } from '@services/permission.service';
+import { routeDataAllows } from '../../guards/route-privileges';
 
 @Component({
   selector: 'app-management',
@@ -31,16 +33,28 @@ export class ManagementComponent implements OnInit {
   private router = inject(Router);
   private controllerService = inject(ControllerService);
   private toasterService = inject(ToasterService);
+  private permissionService = inject(PermissionService);
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
-  readonly links = signal([
-    { label: 'Users', icon: 'people', route: 'users' },
-    { label: 'Groups', icon: 'group', route: 'groups' },
-    { label: 'Roles', icon: 'badge', route: 'roles' },
-    { label: 'Pools', icon: 'folder_special', route: 'pools' },
-    { label: 'ACL', icon: 'security', route: 'ACL' },
-  ]);
+  /**
+   * The tab bar renders this component's child routes, so the privilege
+   * gates come straight from the route config (what PrivilegeGuard checks)
+   * instead of a parallel list here — the two can no longer drift apart.
+   */
+  private readonly tabRoutes: readonly Route[] = this.route.routeConfig?.children ?? [];
+  readonly links = computed(() =>
+    [
+      { label: 'Users', icon: 'people', route: 'users' },
+      { label: 'Groups', icon: 'group', route: 'groups' },
+      { label: 'Roles', icon: 'badge', route: 'roles' },
+      { label: 'Pools', icon: 'folder_special', route: 'pools' },
+      { label: 'ACL', icon: 'security', route: 'ACL' },
+    ].filter((link) => {
+      const child = this.tabRoutes.find((route) => route.path === link.route);
+      return routeDataAllows(child?.data, (privilege) => this.permissionService.has(privilege));
+    }),
+  );
 
   constructor() {}
 

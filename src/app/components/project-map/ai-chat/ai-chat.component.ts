@@ -16,7 +16,9 @@ import {
 import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
-import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
+import { ResizeEvent, ResizableDirective } from 'angular-resizable-element';
+import { FloatingWindowResizeHandlesComponent } from '../../floating-window/floating-window-resize-handles.component';
+import { clampRect, clampWindowSize } from '../../floating-window/floating-window-geometry';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { environment } from '../../../../environments/environment';
@@ -31,7 +33,6 @@ import { AiProfilesService } from '@services/ai-profiles.service';
 import { LoginService } from '@services/login.service';
 import { ToasterService } from '@services/toaster.service';
 import { AiChatStore } from '../../../stores/ai-chat.store';
-import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 import { getModelDisplayName, shortenModelName } from '@utils/ai-profile.util';
 import { ChatSessionListComponent } from './chat-session-list.component';
 import { ChatMessageListComponent } from './chat-message-list.component';
@@ -58,7 +59,7 @@ interface HttpErrorLike {
   imports: [
     CommonModule,
     ResizableDirective,
-    ResizeHandleDirective,
+    FloatingWindowResizeHandlesComponent,
     MatIconModule,
     MatButtonModule,
     ChatSessionListComponent,
@@ -89,8 +90,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   isMinimized = false;
 
   // Position and size state
-  public style: object = {};
-  private previousStyle: object = {}; // Save state before maximize
+  public style: Record<string, string> = {};
+  private previousStyle: Record<string, string> = {}; // Save state before maximize
   public resizedWidth: number = 0;
   public resizedHeight: number = 0;
 
@@ -122,7 +123,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   private aiChatStore = inject(AiChatStore);
   private toasterService = inject(ToasterService);
   private cdr = inject(ChangeDetectorRef);
-  private boundaryService = inject(WindowBoundaryService);
 
   constructor() {}
 
@@ -134,13 +134,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
-    // Set top offset to keep AI Chat below toolbar
-    const toolbarHeight =
-      window.innerWidth <= AiChatComponent.MOBILE_BREAKPOINT
-        ? AiChatComponent.TOOLBAR_HEIGHT_MOBILE
-        : AiChatComponent.TOOLBAR_HEIGHT_DESKTOP;
-    this.boundaryService.setConfig({ topOffset: toolbarHeight });
-
     this.initializeChat();
     this.subscribeToStateChanges();
   }
@@ -168,8 +161,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    // Re-constrain window position to stay within viewport
-    this.style = this.boundaryService.constrainWindowPosition(this.style as WindowStyle);
+    // Re-clamp into the (possibly changed) viewport via the shared helpers
+    this.style = this.clampPanelStyle(this.style);
     this.cdr.markForCheck();
   }
 
@@ -326,7 +319,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         if (wasMaximized && !panelState.isMaximized && !panelState.isMinimized) {
           // Restore previous style with boundary check
           if (Object.keys(this.previousStyle).length > 0) {
-            const constrainedStyle = this.boundaryService.constrainWindowPosition(this.previousStyle);
+            const constrainedStyle = this.clampPanelStyle(this.previousStyle);
             this.style = constrainedStyle;
             // Update resizedWidth and resizedHeight from previous style
             const width = constrainedStyle['width'] as string;
@@ -1171,12 +1164,57 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
     // Schedule update on next animation frame
     this.dragRafId = requestAnimationFrame(() => {
-      // Use boundary service to constrain position
-      this.style = this.boundaryService.constrainDragPosition(this.style, event.movementX, event.movementY);
+      // Clamp into the viewport via the shared helpers (anchor-preserving)
+      this.style = this.clampPanelStyle(this.style, event.movementX, event.movementY);
 
       // Trigger change detection manually
       this.cdr.markForCheck();
     });
+  }
+
+  /**
+   * Project-toolbar clearance: the panel must never rise under the toolbar,
+   * or its header cannot be grabbed (compact toolbar on narrow viewports).
+   */
+  private toolbarTopOffset(): number {
+    return typeof window === 'undefined' ? 0 : window.innerWidth <= 768 ? 56 : 64;
+  }
+
+  /**
+   * Clamp a panel style into the viewport through the shared floating-window
+   * helpers (replaces WindowBoundaryService's global-config clamps), applying
+   * optional drag deltas and preserving the left/right anchor.
+   */
+  private clampPanelStyle(
+    style: Record<string, string>,
+    deltaX = 0,
+    deltaY = 0
+  ): Record<string, string> {
+    const viewport = { width: window.innerWidth, height: window.innerHeight };
+    const width = Number(style['width']?.split('px')[0]) || this.resizedWidth;
+    const height = Number(style['height']?.split('px')[0]) || this.resizedHeight;
+    const hasLeft = style['left'] !== undefined;
+    const left =
+      (hasLeft
+        ? Number(style['left'].split('px')[0]) || 0
+        : viewport.width - (Number(style['right']?.split('px')[0]) || 0) - width) + deltaX;
+    const top = (Number(style['top']?.split('px')[0]) || 0) + deltaY;
+    const clamped = clampRect({ left, top, width, height }, viewport, this.toolbarTopOffset());
+    return hasLeft
+      ? {
+          position: 'fixed',
+          left: `${clamped.left}px`,
+          top: `${clamped.top}px`,
+          width: `${clamped.width}px`,
+          height: `${clamped.height}px`,
+        }
+      : {
+          position: 'fixed',
+          right: `${viewport.width - clamped.left - clamped.width}px`,
+          top: `${clamped.top}px`,
+          width: `${clamped.width}px`,
+          height: `${clamped.height}px`,
+        };
   }
 
   /**
@@ -1197,46 +1235,84 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
+   * LIVE follow (floating-window standard): non-ghost mode applies nothing by
+   * itself — the validated rect is mirrored into the panel style on every
+   * move, clamped through the shared kit helpers, so the panel tracks the
+   * pointer instead of a ghost teleporting on release. The original
+   * horizontal anchor (left or right) is preserved.
+   */
+  onResizing(event: ResizeEvent): void {
+    this.applyResizedRect(event.rectangle);
+  }
+
+  /**
    * Handle resize end event with debounced state save
    * @param event Resize event
    */
   onResizeEnd(event: ResizeEvent): void {
-    // Use boundary service to constrain size
-    const constrained = this.boundaryService.constrainResizeSize(
-      event.rectangle.width || this.resizedWidth,
-      event.rectangle.height || this.resizedHeight,
-      event.rectangle.left,
-      event.rectangle.top
-    );
-
-    // Determine if using left or right based on current style
-    const hasLeft = this.style['left'] !== undefined;
-
-    // Build position style based on original positioning
-    const positionStyle: any = {
-      position: 'fixed',
-      top: constrained.top !== undefined ? `${constrained.top}px` : this.style['top'],
-    };
-
-    // Preserve the original horizontal positioning (left or right)
-    if (hasLeft) {
-      positionStyle.left = constrained.left !== undefined ? `${constrained.left}px` : this.style['left'];
-    } else {
-      // Calculate right from left + width
-      const right = window.innerWidth - (constrained.left || 0) - constrained.width;
-      positionStyle.right = `${right}px`;
-    }
-
-    this.style = {
-      ...positionStyle,
-      width: `${constrained.width}px`,
-      height: `${constrained.height}px`,
-    };
+    // Consume the FULL rectangle — left/top included (the standard's
+    // jump-on-release guard) — preserving the panel's horizontal anchor.
+    const constrained = this.applyResizedRect(event.rectangle);
     this.resizedWidth = constrained.width;
     this.resizedHeight = constrained.height;
 
     // Debounced state save
     this.debouncedSavePanelState();
+  }
+
+  /**
+   * Clamp a resize gesture's rectangle through the shared floating-window
+   * helpers and write it into the panel style (live during the gesture,
+   * final on end), preserving the original horizontal anchor (left/right).
+   */
+  private applyResizedRect(rectangle: { left?: number; top?: number; width?: number; height?: number }): {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } {
+    const viewport = { width: window.innerWidth, height: window.innerHeight };
+    const currentWidth = rectangle.width ?? this.resizedWidth;
+    const hasLeft = this.style['left'] !== undefined;
+    const currentLeft =
+      rectangle.left ??
+      (hasLeft
+        ? Number(this.style['left'].split('px')[0]) || 0
+        : viewport.width - (Number(this.style['right']?.split('px')[0]) || 0) - currentWidth);
+    const { width, height } = clampWindowSize(
+      currentWidth,
+      rectangle.height ?? this.resizedHeight,
+      viewport,
+      AiChatComponent.MIN_PANEL_WIDTH,
+      AiChatComponent.MIN_PANEL_HEIGHT
+    );
+    const clamped = clampRect(
+      {
+        left: currentLeft,
+        top: rectangle.top ?? (Number(this.style['top']?.split('px')[0]) || 0),
+        width,
+        height,
+      },
+      viewport,
+      this.toolbarTopOffset()
+    );
+    this.style = hasLeft
+      ? {
+          position: 'fixed',
+          left: `${clamped.left}px`,
+          top: `${clamped.top}px`,
+          width: `${clamped.width}px`,
+          height: `${clamped.height}px`,
+        }
+      : {
+          position: 'fixed',
+          right: `${viewport.width - clamped.left - clamped.width}px`,
+          top: `${clamped.top}px`,
+          width: `${clamped.width}px`,
+          height: `${clamped.height}px`,
+        };
+    this.cdr.markForCheck();
+    return clamped;
   }
 
   /**

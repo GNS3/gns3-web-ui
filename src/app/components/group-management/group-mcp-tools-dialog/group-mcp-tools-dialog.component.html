@@ -1,0 +1,157 @@
+<h2 mat-dialog-title>MCP Tools - {{ data.group.name }}</h2>
+
+<mat-dialog-content>
+  @if (loading()) {
+  <div class="group-mcp-tools-dialog__spinner">
+    <mat-spinner diameter="32"></mat-spinner>
+  </div>
+  } @else {
+  <!-- Three-state banner: unconfigured / configured / deny-all -->
+  <div
+    class="group-mcp-tools-dialog__banner"
+    [class.group-mcp-tools-dialog__banner--unconfigured]="whitelistState() === 'unconfigured'"
+    [class.group-mcp-tools-dialog__banner--deny-all]="whitelistState() === 'deny-all'"
+  >
+    @switch (whitelistState()) {
+      @case ('unconfigured') {
+        Not configured — members see every MCP tool allowed by the group's permissions.
+      }
+      @case ('deny-all') {
+        All MCP tools are denied for this group.
+      }
+      @default {
+        {{ tools()!.length }} of {{ candidates().length }} candidate tools allowed.
+      }
+    }
+  </div>
+
+  <!-- Configured whitelist that cannot affect anyone (no regular member) -->
+  @if (bypass() && tools() !== null) {
+  <div class="group-mcp-tools-dialog__notice">
+    <mat-icon class="group-mcp-tools-dialog__notice-icon">info</mat-icon>
+    <span>
+      This whitelist currently affects nobody: the group has no regular member (empty or superadmin-only group).
+    </span>
+  </div>
+  }
+
+  <!-- Stale entries: stored whitelist names outside current candidates -->
+  @if (staleTools().length > 0) {
+  <div class="group-mcp-tools-dialog__notice">
+    <mat-icon class="group-mcp-tools-dialog__notice-icon">warning</mat-icon>
+    <span>
+      Configured but no longer available (removed when you save): {{ staleTools().join(', ') }}
+    </span>
+  </div>
+  }
+
+  @if (candidates().length === 0) {
+  <p class="group-mcp-tools-dialog__empty">
+    No MCP tool is available under this group's permissions. Members of this group cannot use MCP tools regardless of
+    the whitelist.
+  </p>
+  } @else {
+  <!-- Search box: filters by tool name or description -->
+  <mat-form-field appearance="outline" class="group-mcp-tools-dialog__filter" subscriptSizing="dynamic">
+    <mat-label>Filter tools</mat-label>
+    <input
+      matInput
+      type="text"
+      [value]="filterText()"
+      (input)="filterText.set($any($event.target).value)"
+      placeholder="Name or description"
+    />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <div class="group-mcp-tools-dialog__list">
+    @if (toolGroups().length === 0) {
+    <p class="group-mcp-tools-dialog__empty">No tool matches the filter.</p>
+    } @else {
+    <mat-accordion class="group-mcp-tools-dialog__accordion" [displayMode]="'flat'">
+      @for (group of toolGroups(); track group.category) {
+      <mat-expansion-panel [expanded]="isGroupExpanded(group.category)" (opened)="setGroupExpanded(group.category, true)" (closed)="setGroupExpanded(group.category, false)">
+        <mat-expansion-panel-header class="group-mcp-tools-dialog__group-header">
+          <mat-panel-title>
+            <span
+              class="group-mcp-tools-dialog__group-check"
+              (click)="$event.stopPropagation()"
+              (keydown)="$event.stopPropagation()"
+            >
+              <mat-checkbox
+                color="primary"
+                [checked]="isGroupFullySelected(group.tools)"
+                [indeterminate]="isGroupPartlySelected(group.tools)"
+                (change)="toggleGroup(group.tools, $event.checked)"
+              >
+              </mat-checkbox>
+            </span>
+            <mat-icon class="group-mcp-tools-dialog__group-icon">{{ categoryIcon(group.category) }}</mat-icon>
+            <span class="group-mcp-tools-dialog__group-title">{{ group.category }}</span>
+            <span
+              class="group-mcp-tools-dialog__group-badge"
+              [class.group-mcp-tools-dialog__group-badge--active]="selectedCountInGroup(group.tools) > 0"
+            >
+              {{ selectedCountInGroup(group.tools) }}/{{ group.tools.length }}
+            </span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="group-mcp-tools-dialog__table" role="table" [attr.aria-label]="group.category + ' tools'">
+          <div class="group-mcp-tools-dialog__row group-mcp-tools-dialog__row--header" role="row">
+            <span class="group-mcp-tools-dialog__cell group-mcp-tools-dialog__cell--check"></span>
+            <span class="group-mcp-tools-dialog__cell group-mcp-tools-dialog__cell--name">Tool</span>
+            <span class="group-mcp-tools-dialog__cell group-mcp-tools-dialog__cell--desc">Description</span>
+          </div>
+          @for (tool of group.tools; track tool.name) {
+          <div
+            class="group-mcp-tools-dialog__row"
+            [class.group-mcp-tools-dialog__row--selected]="isSelected(tool.name)"
+            role="row"
+          >
+            <span class="group-mcp-tools-dialog__cell group-mcp-tools-dialog__cell--check">
+              <mat-checkbox
+                [checked]="isSelected(tool.name)"
+                (change)="toggle(tool.name, $event.checked)"
+                [attr.aria-label]="tool.name"
+              >
+              </mat-checkbox>
+            </span>
+            <span class="group-mcp-tools-dialog__cell group-mcp-tools-dialog__cell--name">{{ tool.name }}</span>
+            <span class="group-mcp-tools-dialog__cell group-mcp-tools-dialog__cell--desc">{{ tool.description }}</span>
+          </div>
+          }
+        </div>
+      </mat-expansion-panel>
+      }
+    </mat-accordion>
+    }
+  </div>
+  }
+
+  <p class="group-mcp-tools-dialog__hint">
+    Members belonging to several groups are unrestricted while any of their groups has no whitelist configured.
+    Superadmins are never restricted. Changes take effect for online MCP sessions within a few seconds.
+  </p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (tools() !== null) {
+  <button mat-stroked-button (click)="removeRestriction()" [disabled]="saving()" *appHasPrivilege="'Group.Modify'">
+    Remove restriction
+  </button>
+  }
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="save()"
+    [disabled]="saving() || loading() || !isDirty()"
+    *appHasPrivilege="'Group.Modify'"
+  >
+    @if (saving()) {
+    <mat-spinner diameter="18" class="group-mcp-tools-dialog__button-spinner"></mat-spinner>
+    } Save
+  </button>
+  <button mat-button (click)="close()">Close</button>
+</mat-dialog-actions>

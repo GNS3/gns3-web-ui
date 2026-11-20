@@ -64,6 +64,16 @@
     gap: var(--gns3-density-card-gap);
   }
 
+  &__quota-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--gns3-density-card-gap);
+
+    @media (max-width: 600px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
   &__field {
     width: 100%;
     max-width: 400px;
