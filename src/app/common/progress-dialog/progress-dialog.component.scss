@@ -1,0 +1,22 @@
+.progress-dialog__body {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 8px 0 16px;
+}
+
+.progress-dialog__text {
+  min-width: 0;
+}
+
+.progress-dialog__message {
+  margin: 0;
+  color: var(--mat-sys-on-surface);
+}
+
+.progress-dialog__hint {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--mat-sys-on-surface-variant);
+}

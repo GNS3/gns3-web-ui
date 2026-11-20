@@ -389,6 +389,14 @@ describe('CreateSnapshotDialogComponent', () => {
       const textarea = fixture.nativeElement.querySelector('textarea[formControlName="snapshotDescription"]');
       expect(textarea).toBeTruthy();
     });
+
+    it('should warn that snapshot creation cannot be cancelled once started', () => {
+      const component = createComponent();
+      fixture.detectChanges();
+
+      const note = fixture.nativeElement.querySelector('.info-note');
+      expect(note?.textContent).toContain('cannot be cancelled');
+    });
   });
 
   describe('Zoneless Change Detection', () => {

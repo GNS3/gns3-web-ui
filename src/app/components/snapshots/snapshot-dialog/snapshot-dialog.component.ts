@@ -11,7 +11,6 @@ import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 import { Snapshot } from '@models/snapshot';
 import { SnapshotService } from '@services/snapshot.service';
-import { ProgressDialogComponent } from '../../../common/progress-dialog/progress-dialog.component';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { ToasterService } from '@services/toaster.service';
 import { ProjectPermissionService } from '@services/project-permission.service';
@@ -98,7 +97,14 @@ export class SnapshotDialogComponent {
 
     dialogRef.afterClosed().subscribe((snapshot: Snapshot) => {
       if (snapshot) {
-        const progress = this.progressDialogService.open();
+        // Snapshot creation runs server-side and cannot be cancelled, so the
+        // progress dialog only hides the wait: closing it leaves the request
+        // running and the result still arrives via toaster + list reload.
+        const progress = this.progressDialogService.open({
+          title: 'Creating snapshot',
+          message: `Creating snapshot '${snapshot.name}'. The server is saving the current project state.`,
+          backgroundHint: 'Snapshots cannot be cancelled once started.',
+        });
         this.snapshotService.create(this.controller, this.project.project_id, snapshot).subscribe({
           next: () => {
             progress.close();
@@ -150,6 +156,7 @@ export class SnapshotDialogComponent {
       data: {
         title: 'Restore snapshot?',
         message: `Restoring "${snapshot.name}" will replace the current topology.`,
+        note: 'A restore cannot be cancelled once started.',
         confirmButtonText: 'Restore snapshot',
         tone: 'warning',
         icon: 'restore',
@@ -159,8 +166,14 @@ export class SnapshotDialogComponent {
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (!result) return;
 
-      const progress = this.progressDialogService.open();
-      const subscription = this.snapshotService
+      // Like creation, a restore runs server-side and cannot be cancelled;
+      // closing the progress dialog just hides the wait.
+      const progress = this.progressDialogService.open({
+        title: 'Restoring snapshot',
+        message: `Restoring snapshot '${snapshot.name}'. The current topology will be replaced when it finishes.`,
+        backgroundHint: 'A restore cannot be cancelled once started.',
+      });
+      this.snapshotService
         .restore(this.controller, this.project.project_id, snapshot.snapshot_id)
         .subscribe({
           next: () => {
@@ -175,12 +188,6 @@ export class SnapshotDialogComponent {
             this.cd.markForCheck();
           },
         });
-
-      progress.afterClosed().subscribe((result) => {
-        if (result === ProgressDialogComponent.CANCELLED) {
-          subscription.unsubscribe();
-        }
-      });
     });
   }
 

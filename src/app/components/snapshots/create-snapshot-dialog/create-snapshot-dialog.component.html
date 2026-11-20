@@ -1,6 +1,9 @@
 <h1 mat-dialog-title>Create snapshot</h1>
 
 <div mat-dialog-content>
+  <p class="info-note">
+    Once started, snapshot creation cannot be cancelled — it runs on the server and may take a while on large projects.
+  </p>
   <form [formGroup]="inputForm" class="gns3-form-stack">
     <mat-form-field class="name-input" subscriptSizing="dynamic">
       <input matInput tabindex="1" formControlName="snapshotName" placeholder="Name" />

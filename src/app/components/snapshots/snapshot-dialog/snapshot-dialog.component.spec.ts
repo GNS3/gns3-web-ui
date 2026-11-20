@@ -645,4 +645,73 @@ describe('SnapshotDialogComponent', () => {
       expect(editButtons).toHaveLength(1);
     });
   });
+
+  describe('progress dialog integration', () => {
+    const openCreateWithResult = (result: any) => {
+      const dialogMock = { afterClosed: vi.fn().mockReturnValue(of(result)) };
+      vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+      component.openCreateDialog();
+    };
+
+    const openRestoreWithResult = (result: any) => {
+      const dialogMock = { afterClosed: vi.fn().mockReturnValue(of(result)) };
+      vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+      component.restoreSnapshot(createMockSnapshot('snap-1', 'Test Snapshot'));
+    };
+
+    it('should explain the running create operation in the progress dialog', () => {
+      openCreateWithResult(createMockSnapshot('snap-1', 'Test Snapshot'));
+
+      expect(mockProgressDialogService.open).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Creating snapshot',
+          message: expect.stringContaining("'Test Snapshot'"),
+          backgroundHint: expect.stringContaining('cannot be cancelled'),
+        })
+      );
+    });
+
+    it('should keep the create request running after the progress dialog is dismissed', () => {
+      // Snapshots run server-side and cannot be cancelled: dismissing the
+      // progress dialog must not unsubscribe from the HTTP response.
+      const serverResponse = new Subject<Snapshot>();
+      mockSnapshotService.create.mockReturnValue(serverResponse.asObservable());
+      const progressDismissed = new Subject<any>();
+      mockProgressDialogService.open.mockReturnValue({
+        close: vi.fn(),
+        afterClosed: () => progressDismissed.asObservable(),
+      });
+      openCreateWithResult(createMockSnapshot('snap-1', 'Test Snapshot'));
+
+      progressDismissed.next(null); // user clicks "Continue in background"
+      serverResponse.next({} as Snapshot); // the server finishes anyway
+
+      expect(mockToasterService.success).toHaveBeenCalledWith(
+        "Snapshot 'Test Snapshot' has been created."
+      );
+    });
+
+    it('should explain the running restore operation in the progress dialog', () => {
+      openRestoreWithResult(true);
+
+      expect(mockProgressDialogService.open).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Restoring snapshot',
+          message: expect.stringContaining("'Test Snapshot'"),
+          backgroundHint: expect.stringContaining('cannot be cancelled'),
+        })
+      );
+    });
+
+    it('should warn before restoring that a restore cannot be cancelled', () => {
+      openRestoreWithResult(true);
+
+      expect(component['dialog'].open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({ note: 'A restore cannot be cancelled once started.' }),
+        })
+      );
+    });
+  });
 });
