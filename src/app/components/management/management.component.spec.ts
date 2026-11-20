@@ -75,6 +75,7 @@ describe('ManagementComponent', () => {
       { label: 'Roles', icon: 'badge', route: 'roles' },
       { label: 'Pools', icon: 'folder_special', route: 'pools' },
       { label: 'ACL', icon: 'security', route: 'ACL' },
+      { label: 'Directory', icon: 'lan', route: 'directory' },
     ]);
   });
 

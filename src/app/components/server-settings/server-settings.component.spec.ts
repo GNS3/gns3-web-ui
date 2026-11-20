@@ -16,10 +16,10 @@ function baseSettings(): ServerSettings {
       section.name,
       Object.fromEntries(
         section.groups.flatMap((group) =>
-          group.fields.map((field) => [field.key, structuredClone(field.defaultValue ?? null)])
-        )
+          group.fields.map((field) => [field.key, structuredClone(field.defaultValue ?? null)]),
+        ),
       ),
-    ])
+    ]),
   );
   return {
     ...values,
@@ -183,7 +183,7 @@ describe('ServerSettingsComponent settings workspace', () => {
     expect(fixture.nativeElement.querySelector('.server-settings__empty').textContent).toContain('No settings match');
     expect(component.activeSectionMeta()).toBeUndefined();
     expect(fixture.nativeElement.querySelector('.server-settings__unsaved-status').textContent).toContain(
-      '1 unsaved change'
+      '1 unsaved change',
     );
     const clear = fixture.nativeElement.querySelector('.server-settings__empty button') as HTMLButtonElement;
     clear.click();
@@ -232,7 +232,7 @@ describe('ServerSettingsComponent settings workspace', () => {
     expect(component.groupChangeCount(section(), group('network'))).toBe(2);
     expect(component.sectionChangeCount(section())).toBe(4);
     expect(fixture.nativeElement.querySelector('.server-settings__restart-summary').textContent).toContain(
-      '2 require restart'
+      '2 require restart',
     );
   });
 
@@ -295,7 +295,7 @@ describe('ServerSettingsComponent settings workspace', () => {
     await type('compute_password', 'replacement');
     await search('jwt');
     const discard = fixture.nativeElement.querySelector(
-      '.server-settings__footer-actions button[mat-stroked-button]'
+      '.server-settings__footer-actions button[mat-stroked-button]',
     ) as HTMLButtonElement;
     expect(discard.disabled).toBe(false);
     discard.click();

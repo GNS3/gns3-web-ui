@@ -53,6 +53,7 @@ import { RoleManagementComponent } from '@components/role-management/role-manage
 import { RoleDetailComponent } from '@components/role-management/role-detail/role-detail.component';
 import { RoleDetailResolver } from '@resolvers/role-detail.resolver';
 import { AclManagementComponent } from '@components/acl-management/acl-management.component';
+import { DirectoryManagementComponent } from '@components/directory-management/directory-management.component';
 import { ResourcePoolsManagementComponent } from '@components/resource-pools-management/resource-pools-management.component';
 import { ResourcePoolDetailsComponent } from '@components/resource-pool-details/resource-pool-details.component';
 import { ResourcePoolsResolver } from '@resolvers/resource-pools.resolver';
@@ -241,6 +242,11 @@ const routes: Routes = [
         canActivate: [LoginGuard, AdministratorGuard],
         children: [
           {
+            path: '',
+            redirectTo: 'users',
+            pathMatch: 'full',
+          },
+          {
             path: 'users',
             component: UserManagementComponent,
           },
@@ -259,6 +265,10 @@ const routes: Routes = [
           {
             path: 'ACL',
             component: AclManagementComponent,
+          },
+          {
+            path: 'directory',
+            component: DirectoryManagementComponent,
           },
         ],
       },

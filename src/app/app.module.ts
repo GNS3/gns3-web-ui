@@ -287,6 +287,7 @@ import { UploadingProcessbarComponent } from './common/uploading-processbar/uplo
 import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
 import { ConfirmationDeleteAllProjectsComponent } from '@components/projects/confirmation-delete-all-projects/confirmation-delete-all-projects.component';
 import { AclManagementComponent } from '@components/acl-management/acl-management.component';
+import { DirectoryManagementComponent } from '@components/directory-management/directory-management.component';
 import { AddAceDialogComponent } from '@components/acl-management/add-ace-dialog/add-ace-dialog.component';
 import { AutocompleteComponent } from '@components/acl-management/add-ace-dialog/autocomplete/autocomplete.component';
 import { AceFilterPipe } from '@filters/ace-filter.pipe';
@@ -377,6 +378,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     ChatMessageListComponent,
     ChatInputAreaComponent,
     AclManagementComponent,
+    DirectoryManagementComponent,
     GroupManagementComponent,
     AiProfileTabComponent,
     AiProfileDialogComponent,

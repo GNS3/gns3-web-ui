@@ -40,6 +40,7 @@ export class ManagementComponent implements OnInit {
     { label: 'Roles', icon: 'badge', route: 'roles' },
     { label: 'Pools', icon: 'folder_special', route: 'pools' },
     { label: 'ACL', icon: 'security', route: 'ACL' },
+    { label: 'Directory', icon: 'lan', route: 'directory' },
   ]);
 
   constructor() {}
@@ -55,7 +56,7 @@ export class ManagementComponent implements OnInit {
         const message = err.error?.message || err.message || 'Failed to load controller';
         this.toasterService.error(message);
         this.cd.markForCheck();
-      }
+      },
     );
   }
 }

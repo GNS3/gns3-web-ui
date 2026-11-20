@@ -15,11 +15,13 @@
                 <mat-label>Username</mat-label>
                 <input matInput type="text" formControlName="username" />
                 @if (form.username?.touched && form.username?.errors && form.username?.errors.required) {
-                <mat-error>Username is required</mat-error>
-                } @if (form.username?.errors && form.username?.errors.pattern) {
-                <mat-error>Username is incorrect</mat-error>
-                } @if (form.username?.errors && form.username?.errors.userExists) {
-                <mat-error>User with this username exists</mat-error>
+                  <mat-error>Username is required</mat-error>
+                }
+                @if (form.username?.errors && form.username?.errors.pattern) {
+                  <mat-error>Username is incorrect</mat-error>
+                }
+                @if (form.username?.errors && form.username?.errors.userExists) {
+                  <mat-error>User with this username exists</mat-error>
                 }
               </mat-form-field>
 
@@ -34,11 +36,13 @@
                 <mat-label>Email</mat-label>
                 <input matInput type="text" formControlName="email" />
                 @if (form.email?.touched && form.email?.errors && form.email?.errors.required) {
-                <mat-error>Email is required</mat-error>
-                } @if (form.email?.errors && form.email?.errors.email) {
-                <mat-error>Email is invalid</mat-error>
-                } @if (form.email?.errors && form.email?.errors.emailExists) {
-                <mat-error>User with this email exists</mat-error>
+                  <mat-error>Email is required</mat-error>
+                }
+                @if (form.email?.errors && form.email?.errors.email) {
+                  <mat-error>Email is invalid</mat-error>
+                }
+                @if (form.email?.errors && form.email?.errors.emailExists) {
+                  <mat-error>User with this email exists</mat-error>
                 }
               </mat-form-field>
 
@@ -57,6 +61,12 @@
         </mat-card-header>
         <mat-card-content>
           <div class="user-detail-dialog__info-grid">
+            <div class="user-detail-dialog__info-item">
+              <span class="user-detail-dialog__info-label">Account type</span>
+              <span class="user-detail-dialog__info-value">{{
+                user.auth_source === 'ldap' ? 'Directory (LDAP)' : 'Local'
+              }}</span>
+            </div>
             <div class="user-detail-dialog__info-item">
               <span class="user-detail-dialog__info-label">Is Superadmin</span>
               <span class="user-detail-dialog__info-value">{{ user.is_superadmin ? 'YES' : 'NO' }}</span>
@@ -89,17 +99,17 @@
       <h3 class="user-detail-dialog__section-title">Groups</h3>
       <div class="user-detail-dialog__groups-list">
         @if (!groupsLoaded) {
-        <p class="user-detail-dialog__loading">Loading...</p>
+          <p class="user-detail-dialog__loading">Loading...</p>
         } @else if (groups.length === 0) {
-        <p class="user-detail-dialog__empty-message">User is not member of any group</p>
+          <p class="user-detail-dialog__empty-message">User is not member of any group</p>
         } @else {
-        <ul>
-          @for (group of groups; track group.user_group_id) {
-          <li>
-            <span class="user-detail-dialog__group-name">{{ group.name }}</span>
-          </li>
-          }
-        </ul>
+          <ul>
+            @for (group of groups; track group.user_group_id) {
+              <li>
+                <span class="user-detail-dialog__group-name">{{ group.name }}</span>
+              </li>
+            }
+          </ul>
         }
       </div>
     </section>
@@ -108,43 +118,52 @@
     <section class="user-detail-dialog__section">
       <h3 class="user-detail-dialog__section-title">ACEs</h3>
       @if (!acesLoaded) {
-      <p class="user-detail-dialog__loading">Loading...</p>
+        <p class="user-detail-dialog__loading">Loading...</p>
       } @else if (aces.length === 0) {
-      <p class="user-detail-dialog__empty-message">No ACEs found for this user</p>
+        <p class="user-detail-dialog__empty-message">No ACEs found for this user</p>
       } @else {
-      <table mat-table [dataSource]="aceDatasource" class="user-detail-dialog__ace-table">
-        <ng-container matColumnDef="endpoint">
-          <th mat-header-cell *matHeaderCellDef>Endpoint</th>
-          <td mat-cell *matCellDef="let element">{{ element.endpoint_name }}</td>
-        </ng-container>
+        <table mat-table [dataSource]="aceDatasource" class="user-detail-dialog__ace-table">
+          <ng-container matColumnDef="endpoint">
+            <th mat-header-cell *matHeaderCellDef>Endpoint</th>
+            <td mat-cell *matCellDef="let element">{{ element.endpoint_name }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="role">
-          <th mat-header-cell *matHeaderCellDef>Role</th>
-          <td mat-cell *matCellDef="let element">{{ element.role_name }}</td>
-        </ng-container>
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Role</th>
+            <td mat-cell *matCellDef="let element">{{ element.role_name }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="propagate">
-          <th mat-header-cell *matHeaderCellDef>Propagate</th>
-          <td mat-cell *matCellDef="let element">{{ element.propagate }}</td>
-        </ng-container>
+          <ng-container matColumnDef="propagate">
+            <th mat-header-cell *matHeaderCellDef>Propagate</th>
+            <td mat-cell *matCellDef="let element">{{ element.propagate }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="allowed">
-          <th mat-header-cell *matHeaderCellDef>Allowed</th>
-          <td mat-cell *matCellDef="let element">{{ element.allowed }}</td>
-        </ng-container>
+          <ng-container matColumnDef="allowed">
+            <th mat-header-cell *matHeaderCellDef>Allowed</th>
+            <td mat-cell *matCellDef="let element">{{ element.allowed }}</td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="aceDisplayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: aceDisplayedColumns"></tr>
-      </table>
+          <tr mat-header-row *matHeaderRowDef="aceDisplayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: aceDisplayedColumns"></tr>
+        </table>
       }
     </section>
   </div>
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button mat-button (click)="onChangePassword()">Change Password</button>
-  <button mat-button (click)="onCancel()">Cancel</button>
-  <button mat-raised-button color="primary" (click)="onSaveChanges()" [disabled]="!editUserForm.valid">
+  <span
+    [matTooltip]="
+      isPasswordChangeDisabled() ? 'Password is managed by your organization\'s directory (LDAP/Active Directory)' : ''
+    "
+    matTooltipPosition="above"
+  >
+    <button mat-button type="button" (click)="onChangePassword()" [disabled]="isPasswordChangeDisabled()">
+      Reset Password
+    </button>
+  </span>
+  <button mat-button type="button" (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" type="button" (click)="onSaveChanges()" [disabled]="!editUserForm.valid">
     Save changes
   </button>
 </mat-dialog-actions>

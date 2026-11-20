@@ -60,6 +60,26 @@ function baseSettings(): ServerSettings {
       default_admin_username: 'admin',
       default_admin_password: '**********',
     },
+    LDAP: {
+      enabled: false,
+      uri: 'ldap://localhost:389',
+      bind_dn: null,
+      bind_password: '**********',
+      base_dn: '',
+      user_search_filter: '(&(objectClass=person)(|(uid={username})(sAMAccountName={username})))',
+      user_attr_username: 'uid',
+      user_attr_email: 'mail',
+      user_attr_fullname: 'cn',
+      group_search_base: null,
+      group_search_filter: '(&(objectClass=groupOfNames)(member={user_dn}))',
+      group_mapping: {},
+      default_group: 'Users',
+      start_tls: false,
+      verify_cert: true,
+      ca_cert_file: null,
+      fallback_to_local: true,
+      timeout: 10,
+    },
     VPCS: { vpcs_path: 'vpcs' },
     Dynamips: {
       allocate_aux_console_ports: false,
@@ -114,13 +134,9 @@ describe('collectDirtyKeys', () => {
   it('should report changed values, pending removes and secret states', () => {
     const initial = baseSettings();
     const current = { ...initial, Server: { ...initial.Server, report_errors: false } };
-    const dirty = collectDirtyKeys(
-      SETTINGS_METADATA,
-      initial,
-      current,
-      new Set(['Dynamips.mmap_support']),
-      { 'Controller.default_admin_password': { state: 'clear' } }
-    );
+    const dirty = collectDirtyKeys(SETTINGS_METADATA, initial, current, new Set(['Dynamips.mmap_support']), {
+      'Controller.default_admin_password': { state: 'clear' },
+    });
     expect(dirty.has('Server.report_errors')).toBe(true);
     expect(dirty.has('Dynamips.mmap_support')).toBe(true);
     expect(dirty.has('Controller.default_admin_password')).toBe(true);
@@ -160,13 +176,7 @@ describe('buildSettingsUpdate', () => {
   it('should send null for pending removes (revert to default)', () => {
     const initial = { ...baseSettings(), Server: { ...baseSettings().Server, host: '127.0.0.1' } };
     const current = { ...initial, Server: { ...initial.Server, host: '0.0.0.0' } };
-    const update = buildSettingsUpdate(
-      SETTINGS_METADATA,
-      initial,
-      current,
-      new Set(['Server.host']),
-      {}
-    );
+    const update = buildSettingsUpdate(SETTINGS_METADATA, initial, current, new Set(['Server.host']), {});
     expect(update.Server?.host).toBeNull();
   });
 
@@ -199,7 +209,10 @@ describe('buildSettingsUpdate', () => {
 
   it('should coerce and clamp numeric values', () => {
     const initial = baseSettings();
-    const current = { ...initial, Server: { ...initial.Server, port: 99999 as number, marker_listen_port: -5 as number } };
+    const current = {
+      ...initial,
+      Server: { ...initial.Server, port: 99999 as number, marker_listen_port: -5 as number },
+    };
     const update = buildSettingsUpdate(SETTINGS_METADATA, initial, current, new Set(), {});
     expect(update.Server?.port).toBe(65535);
     expect(update.Server?.marker_listen_port).toBe(0);

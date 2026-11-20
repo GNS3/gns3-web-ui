@@ -28,89 +28,91 @@
           <span matListItemTitle>Controllers</span>
         </a>
         @if (controllerId) {
-        <a
-          mat-list-item
-          class="sidebar__nav-item"
-          routerLinkActive="active"
-          [routerLink]="['/controller', controllerId, 'computes']"
-          (click)="isSmallScreen() && sidenav.close()"
-        >
-          <mat-icon matListItemIcon>dns</mat-icon>
-          <span matListItemTitle>Computes</span>
-        </a>
-        <a
-          mat-list-item
-          class="sidebar__nav-item"
-          routerLinkActive="active"
-          [routerLink]="['/controller', controllerId, 'systemstatus']"
-          (click)="isSmallScreen() && sidenav.close()"
-        >
-          <mat-icon matListItemIcon>monitor_heart</mat-icon>
-          <span matListItemTitle>System status</span>
-        </a>
-        <a
-          mat-list-item
-          class="sidebar__nav-item"
-          routerLinkActive="active"
-          [routerLink]="['/controller', controllerId, 'projects']"
-          (click)="isSmallScreen() && sidenav.close()"
-        >
-          <mat-icon matListItemIcon>work</mat-icon>
-          <span matListItemTitle>Projects</span>
-        </a>
-        <a
-          mat-list-item
-          class="sidebar__nav-item"
-          routerLinkActive="active"
-          [routerLink]="['/controller', controllerId, 'image-manager']"
-          (click)="isSmallScreen() && sidenav.close()"
-        >
-          <mat-icon matListItemIcon>image</mat-icon>
-          <span matListItemTitle>Image manager</span>
-        </a>
-        <a
-          mat-list-item
-          class="sidebar__nav-item"
-          routerLinkActive="active"
-          [routerLink]="['/controller', controllerId, 'preferences']"
-          (click)="isSmallScreen() && sidenav.close()"
-        >
-          <mat-icon matListItemIcon>settings_applications</mat-icon>
-          <span matListItemTitle>Templates</span>
-        </a>
-        } @if (controllerId) {
-        <a
-          mat-list-item
-          class="sidebar__nav-item"
-          routerLinkActive="active"
-          [routerLink]="['/controller', controllerId, 'settings']"
-          (click)="isSmallScreen() && sidenav.close()"
-        >
-          <mat-icon matListItemIcon>settings</mat-icon>
-          <span matListItemTitle>Web settings</span>
-        </a>
-        @if (isAdministrator()) {
-        <a
-          mat-list-item
-          class="sidebar__nav-item"
-          routerLinkActive="active"
-          [routerLink]="['/controller', controllerId, 'server-settings']"
-          (click)="isSmallScreen() && sidenav.close()"
-        >
-          <mat-icon matListItemIcon>dns</mat-icon>
-          <span matListItemTitle>Server settings</span>
-        </a>
-        <a
-          mat-list-item
-          class="sidebar__nav-item"
-          routerLinkActive="active"
-          [routerLink]="['/controller', controllerId, 'management', 'users']"
-          (click)="isSmallScreen() && sidenav.close()"
-        >
-          <mat-icon matListItemIcon>manage_accounts</mat-icon>
-          <span matListItemTitle>Access Management</span>
-        </a>
-        } }
+          <a
+            mat-list-item
+            class="sidebar__nav-item"
+            routerLinkActive="active"
+            [routerLink]="['/controller', controllerId, 'computes']"
+            (click)="isSmallScreen() && sidenav.close()"
+          >
+            <mat-icon matListItemIcon>dns</mat-icon>
+            <span matListItemTitle>Computes</span>
+          </a>
+          <a
+            mat-list-item
+            class="sidebar__nav-item"
+            routerLinkActive="active"
+            [routerLink]="['/controller', controllerId, 'systemstatus']"
+            (click)="isSmallScreen() && sidenav.close()"
+          >
+            <mat-icon matListItemIcon>monitor_heart</mat-icon>
+            <span matListItemTitle>System status</span>
+          </a>
+          <a
+            mat-list-item
+            class="sidebar__nav-item"
+            routerLinkActive="active"
+            [routerLink]="['/controller', controllerId, 'projects']"
+            (click)="isSmallScreen() && sidenav.close()"
+          >
+            <mat-icon matListItemIcon>work</mat-icon>
+            <span matListItemTitle>Projects</span>
+          </a>
+          <a
+            mat-list-item
+            class="sidebar__nav-item"
+            routerLinkActive="active"
+            [routerLink]="['/controller', controllerId, 'image-manager']"
+            (click)="isSmallScreen() && sidenav.close()"
+          >
+            <mat-icon matListItemIcon>image</mat-icon>
+            <span matListItemTitle>Image manager</span>
+          </a>
+          <a
+            mat-list-item
+            class="sidebar__nav-item"
+            routerLinkActive="active"
+            [routerLink]="['/controller', controllerId, 'preferences']"
+            (click)="isSmallScreen() && sidenav.close()"
+          >
+            <mat-icon matListItemIcon>settings_applications</mat-icon>
+            <span matListItemTitle>Templates</span>
+          </a>
+        }
+        @if (controllerId) {
+          <a
+            mat-list-item
+            class="sidebar__nav-item"
+            routerLinkActive="active"
+            [routerLink]="['/controller', controllerId, 'settings']"
+            (click)="isSmallScreen() && sidenav.close()"
+          >
+            <mat-icon matListItemIcon>settings</mat-icon>
+            <span matListItemTitle>Web settings</span>
+          </a>
+          @if (isAdministrator()) {
+            <a
+              mat-list-item
+              class="sidebar__nav-item"
+              routerLinkActive="active"
+              [routerLink]="['/controller', controllerId, 'server-settings']"
+              (click)="isSmallScreen() && sidenav.close()"
+            >
+              <mat-icon matListItemIcon>dns</mat-icon>
+              <span matListItemTitle>Server settings</span>
+            </a>
+            <a
+              mat-list-item
+              class="sidebar__nav-item"
+              routerLinkActive="active"
+              [routerLink]="['/controller', controllerId, 'management']"
+              (click)="isSmallScreen() && sidenav.close()"
+            >
+              <mat-icon matListItemIcon>manage_accounts</mat-icon>
+              <span matListItemTitle>Access Management</span>
+            </a>
+          }
+        }
       </mat-nav-list>
 
       <!-- Support Section -->
@@ -138,10 +140,10 @@
           <span matListItemTitle>Community</span>
         </a>
         @if (controllerId) {
-        <button mat-list-item class="sidebar__nav-item" type="button" (click)="goToDocumentation()">
-          <mat-icon matListItemIcon>api</mat-icon>
-          <span matListItemTitle>API documentation</span>
-        </button>
+          <button mat-list-item class="sidebar__nav-item" type="button" (click)="goToDocumentation()">
+            <mat-icon matListItemIcon>api</mat-icon>
+            <span matListItemTitle>API documentation</span>
+          </button>
         }
         <a
           mat-list-item
@@ -171,10 +173,10 @@
 
         <!-- GNS3 brand -->
         @if (!sidenavOpened()) {
-        <span class="toolbar__brand">
-          <img src="./assets/gns3_icon.svg" class="toolbar__brand-icon" alt="" />
-          GNS3
-        </span>
+          <span class="toolbar__brand">
+            <img src="./assets/gns3_icon.svg" class="toolbar__brand-icon" alt="" />
+            GNS3
+          </span>
         }
 
         <span class="spacer"></span>
@@ -191,20 +193,25 @@
         >
           <mat-icon>{{ notificationCenter.panelOpen() ? 'notifications' : 'notifications_none' }}</mat-icon>
           @if (notificationCenter.unreadCount() > 0) {
-          <span class="toolbar__notification-badge">{{
-            notificationCenter.unreadCount() > 99 ? '99+' : notificationCenter.unreadCount()
-          }}</span>
+            <span class="toolbar__notification-badge">{{
+              notificationCenter.unreadCount() > 99 ? '99+' : notificationCenter.unreadCount()
+            }}</span>
           }
         </button>
 
         @if (controller && controllerId) {
-        <button mat-button class="toolbar__account" [matMenuTriggerFor]="userMenu" aria-label="Open user account menu">
-          <span class="toolbar__account-avatar">
-            <mat-icon>person</mat-icon>
-          </span>
-          <span class="toolbar__account-name">{{ controller.username || 'User' }}</span>
-          <mat-icon class="toolbar__account-arrow">arrow_drop_down</mat-icon>
-        </button>
+          <button
+            mat-button
+            class="toolbar__account"
+            [matMenuTriggerFor]="userMenu"
+            aria-label="Open user account menu"
+          >
+            <span class="toolbar__account-avatar">
+              <mat-icon>person</mat-icon>
+            </span>
+            <span class="toolbar__account-name">{{ controller.username || 'User' }}</span>
+            <mat-icon class="toolbar__account-arrow">arrow_drop_down</mat-icon>
+          </button>
         }
 
         <!-- Logged-in user account menu -->

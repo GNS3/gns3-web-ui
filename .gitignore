@@ -72,3 +72,7 @@ licenses.csv
 .claude/minimax-settings.json
 docs/angular.dev/
 
+# Virtualenv
+.venv
+*venv
+

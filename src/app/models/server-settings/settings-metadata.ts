@@ -81,7 +81,7 @@ function buildSection(
   name: ServerSettingsSectionName,
   label: string,
   icon: string,
-  groups: { id: string; label: string; summary?: string; fields: SettingsFieldDescriptor[] }[]
+  groups: { id: string; label: string; summary?: string; fields: SettingsFieldDescriptor[] }[],
 ): SettingsSectionMeta {
   return {
     name,

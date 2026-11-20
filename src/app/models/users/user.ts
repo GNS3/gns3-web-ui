@@ -8,4 +8,5 @@ export interface User {
   updated_at: string;
   user_id: string;
   username: string;
+  auth_source?: string;
 }

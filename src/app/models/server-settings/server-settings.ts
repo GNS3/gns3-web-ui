@@ -96,11 +96,35 @@ export interface WebWiresharkSection {
   pids_limit: number;
 }
 
-export type ServerSettingsSectionName = 'Server' | 'Controller' | 'VPCS' | 'Dynamips' | 'IOU' | 'Qemu' | 'WebWireshark';
+export interface LdapSection {
+  enabled: boolean;
+  uri: string;
+  bind_dn: string | null;
+  bind_password: string | null;
+  base_dn: string;
+  user_search_filter: string;
+  user_attr_username: string;
+  user_attr_email: string;
+  user_attr_fullname: string;
+  group_search_base: string | null;
+  group_search_filter: string;
+  group_mapping: Record<string, string>;
+  superadmin_groups?: string[];
+  default_group: string;
+  start_tls: boolean;
+  verify_cert: boolean;
+  ca_cert_file: string | null;
+  fallback_to_local: boolean;
+  timeout: number;
+}
+
+export type ServerSettingsSectionName =
+  'Server' | 'Controller' | 'LDAP' | 'VPCS' | 'Dynamips' | 'IOU' | 'Qemu' | 'WebWireshark';
 
 export interface ServerSettings {
   Server: ServerSection;
   Controller: ControllerSection;
+  LDAP: LdapSection;
   VPCS: VpcsSection;
   Dynamips: DynamipsSection;
   IOU: IouSection;
@@ -122,4 +146,13 @@ export interface ServerSettingsUpdateResponse extends ServerSettings {
 export interface SettingsUpdatedEvent {
   changed: string[];
   restart_required: string[];
+}
+
+export interface LdapTestResult {
+  status: 'success' | 'error';
+  bind_successful: boolean;
+  user_search_successful: boolean;
+  users_found: number;
+  latency_ms: number;
+  message: string;
 }
