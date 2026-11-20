@@ -1,0 +1,20 @@
+<h1 mat-dialog-title>Edit description</h1>
+
+<div mat-dialog-content class="gns3-form-stack">
+  <div class="edit-snapshot-dialog__name" [title]="data.snapshot.name">{{ data.snapshot.name }}</div>
+  <mat-form-field subscriptSizing="dynamic">
+    <textarea
+      matInput
+      placeholder="Description"
+      rows="4"
+      [value]="description()"
+      (input)="description.set($event.target.value)"
+    ></textarea>
+    <mat-hint>Leave empty to reset to the default description</mat-hint>
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button (click)="save()" mat-raised-button color="primary">Save</button>
+</div>

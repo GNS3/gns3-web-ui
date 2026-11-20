@@ -72,6 +72,24 @@ describe('PreferencesComponent', () => {
     },
   ];
 
+  /** Installed from an appliance: appliance_metadata.appliance_id is set at install time. */
+  const applianceTemplate: Template = {
+    template_id: 'qemu-appliance-1',
+    builtin: false,
+    category: 'router',
+    compute_id: 'local',
+    default_name_format: 'csr-{0}',
+    name: 'Cisco CSR 1000v',
+    node_type: 'qemu',
+    symbol: 'router.svg',
+    template_type: 'qemu',
+    appliance_metadata: {
+      appliance_id: 'cisco-csr1000v',
+      product_name: 'Cisco CSR 1000v',
+      vendor_name: 'Cisco',
+    },
+  };
+
   beforeEach(async () => {
     vi.clearAllMocks();
     Object.keys(routeQueryParams).forEach((key) => delete routeQueryParams[key]);
@@ -174,6 +192,89 @@ describe('PreferencesComponent', () => {
     component.setType('all');
     component.setScope('builtin');
     expect(component.filteredTemplates().map((template) => template.name)).toEqual(['Ethernet Switch']);
+  });
+
+  it('classifies template source as built-in, appliance, or custom', () => {
+    expect(component.templateSource(templates[2])).toBe('builtin');
+    expect(component.templateSource(applianceTemplate)).toBe('appliance');
+    // No appliance metadata — user-created template
+    expect(component.templateSource(templates[0])).toBe('custom');
+    // Built-in wins even if appliance metadata is present
+    expect(component.templateSource({ ...applianceTemplate, builtin: true })).toBe('builtin');
+    // Metadata without an appliance ID (e.g. credentials only) is not an appliance install
+    expect(component.templateSource({ ...applianceTemplate, appliance_metadata: { product_name: 'X' } })).toBe(
+      'custom'
+    );
+    expect(component.sourceLabel('builtin')).toBe('Built-in');
+    expect(component.sourceLabel('appliance')).toBe('Appliance');
+    expect(component.sourceLabel('custom')).toBe('Custom');
+  });
+
+  it('counts and filters templates per source scope, keeping appliance installs out of custom', () => {
+    component.templates.set([templates[0], templates[1], applianceTemplate, templates[2]]);
+    fixture.detectChanges();
+
+    expect(component.customTemplateCount()).toBe(2);
+    expect(component.applianceTemplateCount()).toBe(1);
+    expect(component.builtinTemplateCount()).toBe(1);
+
+    component.setScope('appliance');
+    fixture.detectChanges();
+    expect(component.filteredTemplates().map((template) => template.name)).toEqual(['Cisco CSR 1000v']);
+    const badges = fixture.nativeElement.querySelectorAll(
+      '.templates-page__source-badge'
+    ) as NodeListOf<HTMLElement>;
+    expect(Array.from(badges).map((badge) => badge.textContent?.trim())).toEqual(['Appliance']);
+
+    // Appliance installs used to be lumped into custom (!builtin)
+    component.setScope('custom');
+    expect(component.filteredTemplates().map((template) => template.name)).toEqual(['Edge Router', 'Web Server']);
+  });
+
+  it('restores the appliance scope from URL query params', async () => {
+    vi.useFakeTimers();
+    try {
+      Object.assign(routeQueryParams, { scope: 'appliance' });
+
+      component.ngOnInit();
+      await vi.runAllTimersAsync();
+      fixture.detectChanges();
+
+      expect(component.selectedScope()).toBe('appliance');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('shows the appliance name in the details panel for appliance-installed templates', () => {
+    const detailValue = (label: string): string | undefined => {
+      const rows = fixture.nativeElement.querySelectorAll(
+        '.templates-page__detail-row'
+      ) as NodeListOf<HTMLElement>;
+      const row = Array.from(rows).find((element) => element.querySelector('span')?.textContent?.trim() === label);
+      return row?.querySelector('strong')?.textContent?.trim();
+    };
+
+    component.selectTemplate(applianceTemplate);
+    fixture.detectChanges();
+    expect(detailValue('Source')).toBe('Appliance');
+    expect(detailValue('Appliance')).toBe('Cisco CSR 1000v');
+
+    // Snapshot without a product name — falls back to the appliance ID
+    component.selectTemplate({ ...applianceTemplate, appliance_metadata: { appliance_id: 'cisco-csr1000v' } });
+    fixture.detectChanges();
+    expect(detailValue('Appliance')).toBe('cisco-csr1000v');
+
+    // Custom templates show no appliance row
+    component.selectTemplate(templates[0]);
+    fixture.detectChanges();
+    expect(detailValue('Source')).toBe('Custom');
+    expect(detailValue('Appliance')).toBeUndefined();
+  });
+
+  it('keeps appliance-installed templates configurable and duplicatable', () => {
+    expect(component.canConfigure(applianceTemplate)).toBe(true);
+    expect(component.canDuplicate(applianceTemplate)).toBe(true);
   });
 
   it('restores the filter state from URL query params', async () => {

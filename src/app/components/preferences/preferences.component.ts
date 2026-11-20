@@ -37,7 +37,8 @@ import {
 import { DeleteTemplateComponent } from './common/delete-template-component/delete-template.component';
 
 type TemplateViewMode = 'list' | 'grid';
-type TemplateScope = 'all' | 'custom' | 'builtin';
+type TemplateScope = 'all' | 'custom' | 'builtin' | 'appliance';
+type TemplateSource = 'builtin' | 'appliance' | 'custom';
 type TemplateSortDirection = 'asc' | 'desc' | '';
 
 type TemplateListItem = Template &
@@ -120,9 +121,11 @@ export class PreferencesComponent implements OnInit, OnDestroy {
     let templates = this.templates();
 
     if (scope === 'custom') {
-      templates = templates.filter((template) => !template.builtin);
+      templates = templates.filter((template) => this.templateSource(template) === 'custom');
     } else if (scope === 'builtin') {
-      templates = templates.filter((template) => template.builtin);
+      templates = templates.filter((template) => this.templateSource(template) === 'builtin');
+    } else if (scope === 'appliance') {
+      templates = templates.filter((template) => this.templateSource(template) === 'appliance');
     }
 
     if (type !== 'all') {
@@ -162,8 +165,15 @@ export class PreferencesComponent implements OnInit, OnDestroy {
     return this.filteredTemplates().slice(start, start + this.pageSize());
   });
 
-  readonly customTemplateCount = computed(() => this.templates().filter((template) => !template.builtin).length);
-  readonly builtinTemplateCount = computed(() => this.templates().filter((template) => template.builtin).length);
+  readonly customTemplateCount = computed(
+    () => this.templates().filter((template) => this.templateSource(template) === 'custom').length
+  );
+  readonly builtinTemplateCount = computed(
+    () => this.templates().filter((template) => this.templateSource(template) === 'builtin').length
+  );
+  readonly applianceTemplateCount = computed(
+    () => this.templates().filter((template) => this.templateSource(template) === 'appliance').length
+  );
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -283,6 +293,40 @@ export class PreferencesComponent implements OnInit, OnDestroy {
 
   closeDetails(): void {
     this.selectedTemplate.set(null);
+  }
+
+  /**
+   * Resolves where a template comes from: server-provided built-in templates,
+   * templates installed from an appliance (identified by appliance_metadata.appliance_id,
+   * set at install time by both the server and the web UI), or user-created templates.
+   */
+  templateSource(template: TemplateListItem): TemplateSource {
+    if (template.builtin) {
+      return 'builtin';
+    }
+    if (template.appliance_metadata?.appliance_id) {
+      return 'appliance';
+    }
+    return 'custom';
+  }
+
+  sourceLabel(source: TemplateSource): string {
+    const labels: Record<TemplateSource, string> = {
+      builtin: 'Built-in',
+      appliance: 'Appliance',
+      custom: 'Custom',
+    };
+    return labels[source];
+  }
+
+  /**
+   * Display name of the appliance a template was installed from. The metadata
+   * is a snapshot taken at install time, so the product name (or the appliance
+   * ID as a fallback) is shown instead of looking the appliance up in the registry.
+   */
+  applianceDisplayName(template: TemplateListItem): string {
+    const metadata = template.appliance_metadata;
+    return metadata?.product_name || metadata?.appliance_id || '';
   }
 
   templateTypeLabel(type: string): string {
@@ -492,7 +536,9 @@ export class PreferencesComponent implements OnInit, OnDestroy {
     this.selectedType.set(params.get('type') ?? 'all');
 
     const scope = params.get('scope');
-    this.selectedScope.set(scope === 'custom' || scope === 'builtin' ? scope : 'all');
+    this.selectedScope.set(
+      scope === 'custom' || scope === 'builtin' || scope === 'appliance' ? scope : 'all'
+    );
 
     const view = params.get('view');
     this.viewMode.set(view === 'grid' ? 'grid' : 'list');
