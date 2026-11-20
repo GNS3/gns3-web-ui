@@ -72,19 +72,19 @@ UI_MAP: dict[str, dict[str, str]] = {
     "POST /projects/{}/import": {
         "page": "Projects page",
         "action": "Import project (button = Project.Allocate)",
-        "note": "409 when the target is a frozen template or a distributed copy",
+        "note": "409 when the target is a frozen template or a distributed copy; importing over an existing project is limited to its owner or a superadmin (403); non-superadmins are checked for Project.Allocate in the handler",
     },
     "DELETE /projects/{}": {
         "page": "Projects page",
         "action": "Delete project (button = Project.Allocate)",
-        "note": "a frozen template with existing copies answers 409 and lists the usernames",
+        "note": "a frozen template with existing copies answers 409 and lists the usernames; 409 while a distribution runs; only the project owner or a superadmin (403)",
     },
     "POST /projects/{}/open": {"page": "Projects page", "action": "Open project (button = Project.Allocate)"},
     "POST /projects/{}/close": {"page": "Project view toolbar", "action": "Close project (menu = Project.Allocate)"},
     "POST /projects/{}/duplicate": {
         "page": "Projects page",
         "action": "Duplicate project (button = Project.Duplicate)",
-        "note": "a distributed copy answers 409; a frozen template can be duplicated (the copy is a normal project)",
+        "note": "a distributed copy answers 409; a frozen template can be duplicated (the copy is a normal project); non-superadmins must hold Project.Allocate on /projects or on one of the project's pools (checked in the handler)",
     },
     "GET /projects/{}/export": {
         "page": "Projects page / Project view menu",
@@ -98,7 +98,11 @@ UI_MAP: dict[str, dict[str, str]] = {
     },
     "GET /projects/{}/gns3file": {"page": "Topology preview", "action": "Read the .gns3 file to render the static preview"},
     "GET /projects/{}/files/{}": {"page": "Project files", "action": "Read a project file"},
-    "POST /projects/{}/files/{}": {"page": "Project files", "action": "Write or upload a project file"},
+    "POST /projects/{}/files/{}": {
+        "page": "Project files",
+        "action": "Write or upload a project file",
+        "note": "409 while the project is a frozen distributed template",
+    },
     "GET /projects/{}/locked": {"page": "Project view", "action": "Read the lock state"},
     "POST /projects/{}/lock": {
         "page": "Project view menu / canvas context menu",
@@ -111,19 +115,21 @@ UI_MAP: dict[str, dict[str, str]] = {
     "POST /projects/{}/distribute": {
         "page": "Projects page → Distribute Project dialog",
         "action": "Distribute copies to users or a group (= Project.Distribute)",
-        "note": "payload carries reset_mac_addresses and lock_topology (locks every node/drawing in each copy); copies are created by a background job; the first distribution freezes the source project as a template; a distributed copy answers 409; the caller cannot be a target (409 — duplicate the project instead) and the copy owner role may not be wider than what the caller holds (403)",
+        "note": "payload carries reset_mac_addresses and lock_topology (locks every node/drawing in each copy); copies are created by a background job; the first distribution freezes the source project as a template; a distributed copy answers 409; the caller cannot be a target (409 — duplicate the project instead) and the copy owner role may not be wider than what the caller holds (403); like duplicate, non-superadmins need Project.Allocate on /projects or on one of the project's pools",
     },
     "POST /projects/{}/unfreeze": {
         "page": "Project view → Distribution history dialog / project details",
         "action": "Unfreeze a distributed template once no copy exists (button = Project.Modify, owner or superadmin)",
-        "note": "409 while any copy still exists; the message lists the usernames holding one",
+        "note": "409 while any copy still exists (the message lists the usernames holding one) or while a distribution runs; only the project owner or a superadmin (403)",
     },
     "GET /distributions": {
         "page": "Projects page → distribution badge",
         "action": "Feed the cross-project distribution badge in one request (the caller's own records; every record for a superadmin)",
         "note": "the badge is the only consumer: per-project history goes through /projects/{}/distributions, which also accepts the project owner",
     },
-    "DELETE /distributions/{}": {"note": "no web UI caller (removal goes through the per-project endpoint)"},
+    "DELETE /distributions/{}": {
+        "note": "no web UI caller (removal goes through the per-project endpoint); 403 when the distribution was started by another user; 409 while it runs or while copies still exist",
+    },
     "GET /projects/{}/distributions": {
         "page": "Projects page → Distribution history dialog",
         "action": "Load the project's distribution jobs (the distributing user or the project owner)",
@@ -131,21 +137,22 @@ UI_MAP: dict[str, dict[str, str]] = {
     "GET /projects/{}/distributions/{}": {
         "page": "Distribution tasks panel / Distribution history dialog",
         "action": "Poll a running distribution job until it leaves the running state (distributing user or project owner)",
+        "note": "403 when the caller is neither the distributing user nor the project owner",
     },
     "DELETE /projects/{}/distributions/{}": {
         "page": "Distribution history dialog",
         "action": "Cancel a running distribution job (cooperative: the copy in flight completes), or delete the record of a finished one (distributing user or project owner)",
-        "note": "409 while running, and on a finished record whose copies still exist (the message lists the usernames)",
+        "note": "409 while running, and on a finished record whose copies still exist (the message lists the usernames); 403 when the caller is neither the distributing user nor the project owner",
     },
     "DELETE /projects/{}/distributions/{}/copies": {
         "page": "Distribution history dialog",
         "action": "Delete every copy of a finished distribution that still exists (distributing user or project owner)",
-        "note": "the record is kept; the response refreshes the per-recipient project_exists flags; 409 while the job runs",
+        "note": "the record is kept; the response refreshes the per-recipient project_exists flags; 409 while the job runs; 403 when the caller is neither the distributing user nor the project owner",
     },
     "POST /projects/{}/share": {
         "page": "Projects page → Share Project dialog",
         "action": "Share the project with users or a group (= Project.Share, instant, no copies)",
-        "note": "re-sharing with the same target updates its role; role defaults to the built-in Lab member role; the project owner cannot be a target (409 — it would replace the owner ACE)",
+        "note": "re-sharing with the same target updates its role; role defaults to the built-in Lab member role; the project owner cannot be a target (409 — it would replace the owner ACE); the granted role may not be wider than what the sharer holds on the project (403, superadmins exempt)",
     },
     "GET /projects/{}/shares": {
         "page": "Projects page → Share Project dialog / share badge tooltip",
@@ -244,14 +251,17 @@ UI_MAP: dict[str, dict[str, str]] = {
     "POST /projects/{}/nodes/{}/qemu/disk_image/{}": {
         "page": "Node context menu",
         "action": "Create a disk image (= Node.Allocate)",
+        "note": "409 while the project is a frozen distributed template",
     },
     "PUT /projects/{}/nodes/{}/qemu/disk_image/{}": {
         "page": "Node context menu",
         "action": "Resize a disk image (= Node.Allocate)",
+        "note": "409 while the project is a frozen distributed template",
     },
     "DELETE /projects/{}/nodes/{}/qemu/disk_image/{}": {
         "page": "Node context menu",
         "action": "Delete a disk image (= Node.Allocate)",
+        "note": "409 while the project is a frozen distributed template",
     },
 
     # ------------------------------------------------------------------
@@ -265,10 +275,12 @@ UI_MAP: dict[str, dict[str, str]] = {
     "POST /projects/{}/nodes/{}/files/{}": {
         "page": "Node file manager",
         "action": "Save / Upload (= Node.Modify)",
+        "note": "409 while the project is a frozen distributed template",
     },
     "DELETE /projects/{}/nodes/{}/files/{}": {
         "page": "Node file manager",
         "action": "Delete a file (= Node.Modify)",
+        "note": "409 while the project is a frozen distributed template",
     },
 
     # ------------------------------------------------------------------
