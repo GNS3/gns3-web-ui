@@ -380,22 +380,6 @@ export class ProjectsComponent implements OnInit {
       });
   }
 
-  /**
-   * Nodes/Links/Drawings counts shown in the details panel. For closed
-   * projects getStatistics reports zeros — count them from the .gns3 file
-   * data instead. Snapshots are server-only and keep the stats value.
-   */
-  readonly displayStats = computed<ProjectStatistics | null>(() => {
-    const topology = this.previewTopology();
-    if (!topology) return this.projectStats();
-    return {
-      ...(this.projectStats() ?? ({} as ProjectStatistics)),
-      nodes: topology.nodes.length,
-      links: topology.links.length,
-      drawings: topology.drawings.length,
-    };
-  });
-
   // ── Status filter ─────────────────────────────────────────────
   readonly filterStatus = signal<string>('all');
 

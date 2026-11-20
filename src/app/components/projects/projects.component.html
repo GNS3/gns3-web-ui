@@ -488,10 +488,10 @@
           </div>
           }
 
-          <!-- Node / link / drawing counts come from the
-               .gns3 file when topology data is loaded (closed projects have zero
-               server stats) -->
-          @if (displayStats(); as stats) {
+          <!-- Node / link / drawing / snapshot counts come from the server
+               stats endpoint — it reads the .gns3 file for closed projects
+               (gns3-server issue 1836) -->
+          @if (projectStats(); as stats) {
 
           <div class="projects__detail-item">
             <span class="projects__detail-icon"><mat-icon>device_hub</mat-icon></span>

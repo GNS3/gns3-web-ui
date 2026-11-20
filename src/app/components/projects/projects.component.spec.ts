@@ -427,7 +427,7 @@ describe('ProjectsComponent', () => {
       expect(fixture.nativeElement.querySelector('.projects__preview-note').textContent).toContain(
         'Topology preview unavailable'
       );
-      expect(component.displayStats().nodes).toBe(2);
+      expect(component.projectStats()?.nodes).toBe(2);
     });
 
     it('enlarges the preview and restores the thumbnail after the dialog closes', () => {
@@ -438,7 +438,7 @@ describe('ProjectsComponent', () => {
       mockDialog.open.mockReturnValue({ afterClosed: () => closed });
       component.selectProject(mockProjects[0]);
       fixture.detectChanges();
-      expect(component.displayStats().nodes).toBe(1);
+      expect(component.projectStats()?.nodes).toBe(2);
       fixture.nativeElement.querySelector('.projects__preview-thumb').click();
       fixture.detectChanges();
       expect(mockDialog.open).toHaveBeenCalledWith(
