@@ -207,6 +207,28 @@ describe('LoginComponent', () => {
     expect(mockToasterService.error).toHaveBeenCalledWith('Please enter username and password');
   });
 
+  describe('stale session of a previous user', () => {
+    it('shows the login form instead of bouncing into the app when a stale auth token exists', async () => {
+      // localStorage on this browser still holds the previous user's token:
+      // navigating to the login page must present the form (the user is
+      // switching accounts), not silently resume the old session.
+      vi.mocked(mockControllerService.get).mockResolvedValue({ ...mockController, authToken: 'stale-admin-token' } as Controller);
+
+      const staleFixture = TestBed.createComponent(LoginComponent);
+      try {
+        // Let ngOnInit's controllerService.get() promise settle.
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(mockRouter.navigate).not.toHaveBeenCalled();
+        expect(staleFixture.nativeElement.querySelector('form')).toBeTruthy();
+      } finally {
+        staleFixture.destroy();
+      }
+    });
+  });
+
   it('should call loginService.login when form is valid', () => {
     component.loginForm.get('username')?.setValue('admin');
     component.loginForm.get('password')?.setValue('admin');

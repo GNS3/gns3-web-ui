@@ -98,9 +98,12 @@ export class LoginComponent implements OnInit {
       (controller: Controller) => {
         this.controller = controller;
 
-        if (controller.authToken) {
-          this.router.navigate(['/controller', this.controller.id, 'systemstatus']);
-        }
+        // Deliberately no auto-navigation away when a stale authToken is
+        // present: browser storage is shared by every user of this browser
+        // profile, and bouncing here would silently resume the previous
+        // user's session instead of letting the visitor authenticate as
+        // themselves. Route guards already resume authenticated sessions
+        // on every other route.
 
         this.versionService.get(this.controller).subscribe({
           next: (version: Version) => {
