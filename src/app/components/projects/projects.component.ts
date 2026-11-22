@@ -220,7 +220,10 @@ export class ProjectsComponent implements OnInit {
   }
 
   private needsProjectPrivileges(project: Project): boolean {
-    return project.created_by !== this.controller?.username || isDistributedCopy(project);
+    // Ownership follows the session identity (/me), never the username
+    // persisted on the controller entry — that string survives user
+    // switches on a shared browser.
+    return project.created_by !== this.permissionService.username() || isDistributedCopy(project);
   }
 
   private ensureProjectPrivileges(projects: Project[]): void {
@@ -319,7 +322,7 @@ export class ProjectsComponent implements OnInit {
 
   /** Unfreezing is reserved to the template owner and superadmins. */
   canUnfreeze(project: Project): boolean {
-    return this.isFrozen(project) && (this.permissionService.isSuperadmin() || project.created_by === this.controller?.username);
+    return this.isFrozen(project) && (this.permissionService.isSuperadmin() || project.created_by === this.permissionService.username());
   }
 
   /**

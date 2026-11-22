@@ -47,9 +47,21 @@ export class PermissionService {
    * privilege (e.g. POST /copilot/reload/skills).
    */
   readonly isSuperadmin = signal(false);
+  /**
+   * Username of the authenticated user on the active controller, from
+   * GET /access/users/me (null until loaded). This is the session
+   * identity: ownership checks (e.g. "created_by me") must compare
+   * against it, never against the username persisted on the controller
+   * entry — that string is the last one typed into the login form and
+   * survives user switches on a shared browser.
+   */
+  readonly username = signal<string | null>(null);
 
   private currentControllerId: number | null = null;
-  private readonly privilegeCache = new Map<number, { privileges: ReadonlySet<string>; isSuperadmin: boolean }>();
+  private readonly privilegeCache = new Map<
+    number,
+    { privileges: ReadonlySet<string>; isSuperadmin: boolean; username: string | null }
+  >();
   private readonly inflightRequests = new Map<number, Promise<ReadonlySet<string>>>();
   /**
    * Bumped by invalidate(): a fetch that started before an invalidation
@@ -87,16 +99,19 @@ export class PermissionService {
     if (cached) {
       this.privileges.set(cached.privileges);
       this.isSuperadmin.set(cached.isSuperadmin);
+      this.username.set(cached.username);
       return;
     }
     this.privileges.set(new Set());
     this.isSuperadmin.set(false);
+    this.username.set(null);
     void this.ready(controllerId).catch(() => {
       // Fetch failed: render as zero privileges. The server remains the
       // authority; gated chrome stays hidden instead of flashing in.
       if (this.currentControllerId === controllerId) {
         this.privileges.set(new Set());
         this.isSuperadmin.set(false);
+        this.username.set(null);
       }
     });
   }
@@ -137,14 +152,21 @@ export class PermissionService {
     this.currentControllerId = null;
     this.privileges.set(new Set());
     this.isSuperadmin.set(false);
+    this.username.set(null);
   }
 
   private async fetch(controllerId: number): Promise<ReadonlySet<string>> {
     const generation = this.generation;
     const controller: Controller = await this.controllerService.get(controllerId);
-    const response = await firstValueFrom(
-      this.httpController.get<UserPrivilegesResponse>(controller, '/access/users/me/privileges'),
-    );
+    const [response, username] = await Promise.all([
+      firstValueFrom(this.httpController.get<UserPrivilegesResponse>(controller, '/access/users/me/privileges')),
+      // Best-effort: identity-based rendering degrades to "no username"
+      // (fail-closed for ownership checks) when /me is unavailable.
+      firstValueFrom(this.httpController.get<{ username?: string }>(controller, '/access/users/me')).then(
+        (me) => me?.username ?? null,
+        () => null,
+      ),
+    ]);
 
     const privilegeSet = new Set<string>(response.privileges ?? []);
     if (generation !== this.generation) {
@@ -154,11 +176,12 @@ export class PermissionService {
       // them for the next session.
       return privilegeSet;
     }
-    const entry = { privileges: privilegeSet, isSuperadmin: response.is_superadmin ?? false };
+    const entry = { privileges: privilegeSet, isSuperadmin: response.is_superadmin ?? false, username };
     this.privilegeCache.set(controllerId, entry);
     if (this.currentControllerId === controllerId) {
       this.privileges.set(privilegeSet);
       this.isSuperadmin.set(entry.isSuperadmin);
+      this.username.set(username);
     }
     return privilegeSet;
   }

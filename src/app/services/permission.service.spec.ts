@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { Subject } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { PermissionService } from './permission.service';
 import { HttpController } from './http-controller.service';
 import { ControllerService } from './controller.service';
@@ -34,9 +34,15 @@ describe('PermissionService', () => {
 
   const pendingGet = () => {
     const subject = new Subject<{ privileges: string[]; is_superadmin: boolean }>();
-    mockHttpController.get.mockReturnValueOnce(subject);
+    mockHttpController.get.mockImplementation((_controller: Controller, url: string) =>
+      url === '/access/users/me' ? of({ username: 'admin' }) : subject,
+    );
     return subject;
   };
+
+  /** Calls issued against the privileges endpoint (the /me lookup excluded). */
+  const privilegeFetchCount = () =>
+    mockHttpController.get.mock.calls.filter((call) => call[1] === '/access/users/me/privileges').length;
 
   describe('ready', () => {
     it('caches a successful fetch and serves repeat reads from the cache', async () => {
@@ -47,8 +53,33 @@ describe('PermissionService', () => {
       await promise;
 
       expect(await service.ready(1)).toEqual(new Set(['Project.Audit']));
-      expect(mockHttpController.get).toHaveBeenCalledTimes(1);
+      expect(privilegeFetchCount()).toBe(1);
       expect(service.cachedPrivileges(1)).toEqual(new Set(['Project.Audit']));
+    });
+
+    it('exposes the username of the authenticated user as the session identity', async () => {
+      const subject = pendingGet();
+      service.activate(1);
+      await flushMicrotasks();
+      subject.next({ privileges: ['Project.Audit'], is_superadmin: false });
+      await flushMicrotasks();
+
+      expect(service.username()).toBe('admin');
+    });
+
+    it('degrades to a null username when /me is unavailable, keeping the privileges', async () => {
+      const subject = new Subject<{ privileges: string[]; is_superadmin: boolean }>();
+      mockHttpController.get.mockImplementation((_controller: Controller, url: string) =>
+        url === '/access/users/me' ? throwError(() => new Error('me unavailable')) : subject,
+      );
+      const promise = service.ready(1);
+      await flushMicrotasks();
+      subject.next({ privileges: ['Project.Audit'], is_superadmin: false });
+      await promise;
+
+      expect(privilegeFetchCount()).toBe(1);
+      expect(service.cachedPrivileges(1)).toEqual(new Set(['Project.Audit']));
+      expect(service.username()).toBeNull();
     });
   });
 
@@ -91,7 +122,21 @@ describe('PermissionService', () => {
       pendingGet();
       void service.ready(1);
       await flushMicrotasks();
-      expect(mockHttpController.get).toHaveBeenCalledTimes(2);
+      expect(privilegeFetchCount()).toBe(2);
+    });
+
+    it('clears the session identity alongside the privilege sets', async () => {
+      const subject = pendingGet();
+      service.activate(1);
+      await flushMicrotasks();
+      subject.next({ privileges: ['Project.Audit'], is_superadmin: false });
+      await flushMicrotasks();
+
+      expect(service.username()).toBe('admin');
+
+      service.invalidate();
+
+      expect(service.username()).toBeNull();
     });
   });
 });

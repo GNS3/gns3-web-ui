@@ -19,6 +19,7 @@ describe('DistributionHistoryDialogComponent', () => {
   let mockDialog: any;
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let isSuperadmin: boolean;
+  let sessionUsername: string | null;
   let controller: Controller;
   let project: Project;
 
@@ -47,6 +48,7 @@ describe('DistributionHistoryDialogComponent', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     isSuperadmin = false;
+    sessionUsername = 'teacher';
 
     controller = {
       id: 1,
@@ -105,6 +107,7 @@ describe('DistributionHistoryDialogComponent', () => {
           provide: PermissionService,
           useValue: {
             isSuperadmin: () => isSuperadmin,
+            username: () => sessionUsername,
           },
         },
       ],

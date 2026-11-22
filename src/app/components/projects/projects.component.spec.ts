@@ -66,6 +66,12 @@ describe('ProjectsComponent', () => {
    * test changes it, exactly like against the real service.
    */
   let mockPrivileges: ReturnType<typeof signal<Set<string>>>;
+  /**
+   * Session identity behind the PermissionService mock (/access/users/me
+   * of the authenticated user), as a real signal so identity-based
+   * decisions re-evaluate when a test changes it.
+   */
+  let mockSessionUsername: ReturnType<typeof signal<string | null>>;
 
   const mockController: Controller = {
     id: 1,
@@ -167,6 +173,8 @@ describe('ProjectsComponent', () => {
       },
     };
 
+    mockSessionUsername = signal<string | null>(null);
+
     mockPrivileges = signal(
       new Set<string>([
         'Project.Allocate',
@@ -192,6 +200,7 @@ describe('ProjectsComponent', () => {
             privileges: () => mockPrivileges(),
             isSuperadmin: () => false,
             loaded: () => true,
+            username: () => mockSessionUsername(),
           },
         },
         { provide: ProjectService, useValue: mockProjectService },
@@ -750,12 +759,51 @@ describe('ProjectsComponent', () => {
     });
 
     it('restricts unfreezing to the owner and superadmins', () => {
-      // The mock controller carries no username, so the user is neither the
-      // owner ('Alice') nor a superadmin.
+      // The session belongs to nobody in particular, so the user is neither
+      // the owner ('Alice') nor a superadmin.
       expect(component.canUnfreeze(frozenTemplate)).toBe(false);
 
       vi.spyOn(TestBed.inject(PermissionService), 'isSuperadmin').mockReturnValue(true);
       expect(component.canUnfreeze(frozenTemplate)).toBe(true);
+    });
+
+    it('never grants unfreeze from a stale persisted controller username', () => {
+      // A previous user's form login left controller.username = 'Alice' on
+      // the persisted controller entry while the session belongs to
+      // 'student-01': ownership must follow the session identity.
+      component.controller.username = 'Alice';
+      mockSessionUsername.set('student-01');
+      try {
+        expect(component.canUnfreeze(frozenTemplate)).toBe(false);
+      } finally {
+        component.controller.username = '';
+      }
+    });
+
+    it('grants unfreeze to the session owner regardless of the stored username', () => {
+      component.controller.username = 'someone-else';
+      mockSessionUsername.set('Alice');
+      try {
+        expect(component.canUnfreeze(frozenTemplate)).toBe(true);
+      } finally {
+        component.controller.username = '';
+      }
+    });
+
+    it('decides project-privilege lookups from the session identity, not the stored username', () => {
+      // 'Project A' was created by Alice: for the Alice session it is her own
+      // project (global privileges suffice), even when the stored controller
+      // username says 'Bob'. For anyone else, per-project privileges must be
+      // fetched.
+      component.controller.username = 'Bob';
+      mockSessionUsername.set('Alice');
+      try {
+        expect(component['needsProjectPrivileges'](mockProjects[0])).toBe(false);
+        mockSessionUsername.set('student-01');
+        expect(component['needsProjectPrivileges'](mockProjects[0])).toBe(true);
+      } finally {
+        component.controller.username = '';
+      }
     });
   });
 

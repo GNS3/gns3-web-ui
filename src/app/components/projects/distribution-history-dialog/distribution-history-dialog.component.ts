@@ -155,9 +155,12 @@ export class DistributionHistoryDialogComponent implements OnInit {
 
   /** Unfreezing is reserved to the template owner and superadmins. */
   get canUnfreeze(): boolean {
+    // Ownership follows the session identity (/me), never the username
+    // persisted on the controller entry — that string survives user
+    // switches on a shared browser.
     return (
       !!this.data.project.frozen &&
-      (this.permissionService.isSuperadmin() || this.data.project.created_by === this.data.controller?.username)
+      (this.permissionService.isSuperadmin() || this.data.project.created_by === this.permissionService.username())
     );
   }
 
