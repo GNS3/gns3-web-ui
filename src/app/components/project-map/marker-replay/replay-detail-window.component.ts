@@ -21,6 +21,7 @@ import { FloatingWindowResizeHandlesComponent } from '../../floating-window/floa
 import { MarkerReplayService } from '@services/marker-replay.service';
 import { MapScaleService } from '@services/mapScale.service';
 import { MapSettingsService } from '@services/mapsettings.service';
+import { UserPreferencesService } from '@services/user-preferences.service';
 import { PinnedDetail } from '@models/marker-replay';
 import {
   SnapGuides,
@@ -91,6 +92,8 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
   readonly svc = inject(MarkerReplayService);
   private readonly mapScale = inject(MapScaleService);
   private readonly mapSettings = inject(MapSettingsService);
+  /** Zoom-level persistence (profile-synced via the prefs facade). */
+  private readonly prefs = inject(UserPreferencesService);
 
   readonly MIN_W = 320;
   readonly MIN_H = 220;
@@ -117,9 +120,14 @@ export class ReplayDetailWindowComponent implements OnInit, OnDestroy {
   readonly resizing = signal(false);
   /**
    * This window's content zoom — born at the pin kind's last-used level,
-   * then adjusted here without touching any sibling (see replay-zoom.ts).
+   * then adjusted here without touching any sibling (see replay-zoom.ts;
+   * persisted through the prefs facade so it follows the account).
    */
-  readonly zoomCtl = new ReplayZoomController('pin');
+  readonly zoomCtl = new ReplayZoomController(
+    'pin',
+    (key) => this.prefs.getItem(key),
+    (key, value) => this.prefs.setItem(key, value)
+  );
   /** Live snap-guide lines while a drag/resize attaches; null when idle. */
   readonly snapGuides = signal<SnapGuides | null>(null);
   /**

@@ -136,8 +136,13 @@ export class MarkerReplayOverlayComponent implements OnInit, OnDestroy {
   readonly dragging = signal(false);
   /** True while a resize gesture is in flight. */
   readonly resizing = signal(false);
-  /** The main window's content zoom (see replay-zoom.ts — per-kind default). */
-  readonly zoomCtl = new ReplayZoomController('main');
+  /** The main window's content zoom (see replay-zoom.ts — per-kind default,
+   * persisted through the prefs facade so it follows the account). */
+  readonly zoomCtl = new ReplayZoomController(
+    'main',
+    (key) => this.prefs.getItem(key),
+    (key, value) => this.prefs.setItem(key, value)
+  );
   /** Live snap-guide lines while a drag/resize attaches; null when idle. */
   readonly snapGuides = signal<SnapGuides | null>(null);
 

@@ -85,7 +85,7 @@ flowchart LR
 
 ## Implementation Logic
 
-**Allowlist as the boundary.** `SYNCED_PREFERENCE_KEYS` is the single decision point for what leaves the browser. It is both the security boundary (session tokens, the controller registry, remember-me data, notification history and window geometry are never synced) and the size boundary. Values are stored as the exact localStorage strings, so the sync layer needs no per-setting schema and each consumer keeps its existing parsing.
+**Allowlist as the boundary.** `SYNCED_PREFERENCE_KEYS` is the single decision point for what leaves the browser. It is both the security boundary (session tokens, the controller registry, remember-me data and notification history are never synced) and the size boundary. Floating-window geometry may join the allowlist only behind a restore path that clamps to the current viewport, so a rect saved on a 4K desktop degrades safely on a laptop. Values are stored as the exact localStorage strings, so the sync layer needs no per-setting schema and each consumer keeps its existing parsing.
 
 **Document shape.** The server document is `{"version": 1, "webui": {key: value}}`. The whole document is replaced on PUT (server semantics), while merging is done per key on the client.
 
@@ -103,9 +103,16 @@ flowchart LR
 | Settings → Project workspace | `openReadme`, `openConsolesInWidget`, `defaultShowGrid`, `defaultSnapToGrid`, `defaultSceneWidth`, `defaultSceneHeight`, `defaultGridSize`, `defaultDrawingGridSize`, `defaultLabelStyle`, `defaultNoteStyle`, `defaultLinkStyle` |
 | Settings → Console | `console_command` |
 | Settings → Privacy | `crash_reports`, `statistics_command` |
-| Workspace console window settings panel | `gns3_console_appearance` |
+| Workspace console window | `gns3_console_appearance` (settings panel), `gns3_console_window_state` (window geometry) |
 | Project map toggles | `layersVisibility`, `gridVisibility`, `symbolScaling`, `showInterfaceLabels`, `integrateLinkLabelsToLinks`, `consoleContextMenu` |
 | Add-nodes dialog | `addNodesViewMode` |
 | Notification center | `notificationsVisibility` |
+| Floating widget geometry | `topPosition`, `leftPosition`, `rightPosition`, `widthOfWidget`, `heightOfWidget` |
+| AI chat panel | `ai-chat-panel-state` (geometry; volatile flags reset on load) |
+| Marker replay | `gns3_replay_window_state` (main rect + pin tile size), `gns3_replay_zoom_main`, `gns3_replay_zoom_pin`, `gns3_replay_zoom_peek` (content zoom per window kind) |
+| Active project distributions | `gns3-active-distributions` |
+| User-created BPF presets | `gns3.bpf-presets` |
 
-**Explicitly not synced.** Per-project data (e.g. per-link rendering style — persisted by the controller in each link's `link_style` and written to the `.gns3` topology file, not mirrored in localStorage), anything security- or session-scoped, transient caches, and screen-size-dependent window geometry. BPF presets are a planned second phase.
+Every geometry key in the table (`Floating widget geometry`, `AI chat panel`, the console window state, the replay window state) restores viewport-clamped at use time — that clamped restore is the precondition for syncing geometry at all.
+
+**Explicitly not synced.** Per-project data (e.g. per-link rendering style — persisted by the controller in each link's `link_style` and written to the `.gns3` topology file, not mirrored in localStorage; also the per-project item-lock visibility flags, which are wiped at session boundaries instead), anything security- or session-scoped, transient caches, and window state without a viewport-clamped restore path.

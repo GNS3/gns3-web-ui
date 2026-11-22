@@ -62,6 +62,16 @@ export const SYNCED_PREFERENCE_KEYS: readonly string[] = [
   // viewport-clamped at use time, so values from a larger screen degrade
   // safely on a smaller one — same contract as the widget geometry above)
   'gns3_replay_window_state',
+  // Replay content zoom, per window kind (main / pin / peek) — a pure
+  // reading-size preference with no screen-size dependency, same nature as
+  // the console appearance above: it follows the account across browsers
+  'gns3_replay_zoom_main',
+  'gns3_replay_zoom_pin',
+  'gns3_replay_zoom_peek',
+  // Console floating-window geometry (JSON: width/height/left/bottom/
+  // maximized; restored viewport-clamped, so values from a larger screen
+  // degrade safely on a smaller one — same contract as the widget geometry)
+  'gns3_console_window_state',
   // User-created BPF rules (JSON array of {name, expression, category};
   // shared by marker definitions, link markers and packet filters). User
   // scoped, so it follows the account across browsers.

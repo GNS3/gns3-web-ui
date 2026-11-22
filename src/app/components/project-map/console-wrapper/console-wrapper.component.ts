@@ -36,6 +36,7 @@ import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ThemeService } from '@services/theme.service';
 import { WindowStyle } from '@services/window-boundary.service';
 import { WindowManagementService } from '@services/window-management.service';
+import { UserPreferencesService } from '@services/user-preferences.service';
 import { clampRect, clampWindowSize } from '../../floating-window/floating-window-geometry';
 import { TerminalSettingsPanelComponent } from '../../terminal-settings-panel/terminal-settings-panel.component';
 import { ConsoleDevicesPanelComponent } from './console-devices-panel.component';
@@ -117,6 +118,8 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   private themeService = inject(ThemeService);
   private mapSettingsService = inject(MapSettingsService);
   private windowManagement = inject(WindowManagementService);
+  /** Window-state persistence (profile-synced via the prefs facade). */
+  private prefs = inject(UserPreferencesService);
   private cdr = inject(ChangeDetectorRef);
   private renderer = inject(Renderer2);
 
@@ -878,17 +881,49 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   /**
-   * Load window state from localStorage
+   * Parse a persisted geometry field — a number, or a legacy 'Npx' CSS string
+   * (older copies stored `left`/`bottom` as style strings). Non-numeric or
+   * negative values fall back to `fallback`.
+   */
+  private parsePx(value: unknown, fallback: number): number {
+    const num =
+      typeof value === 'number' ? value : typeof value === 'string' ? Number.parseFloat(value) : NaN;
+    return Number.isFinite(num) && num >= 0 ? num : fallback;
+  }
+
+  /**
+   * Load window state through the preferences facade (localStorage working
+   * copy + per-user profile sync). The saved rect is CLAMPED to the current
+   * viewport at restore — the contract every synced geometry key follows —
+   * so a state saved on a larger screen degrades safely on a smaller one.
    */
   private loadWindowState(): void {
     const STORAGE_KEY = 'gns3_console_window_state';
     try {
-      const savedState = localStorage.getItem(STORAGE_KEY);
+      const savedState = this.prefs.getItem(STORAGE_KEY);
       if (savedState) {
-        const state = JSON.parse(savedState);
-        this.resizedWidth = state.width || this.DEFAULT_WIDTH;
-        this.resizedHeight = state.height || this.DEFAULT_HEIGHT;
-        this.isMaximizedSignal.set(state.isMaximized || false);
+        const state = JSON.parse(savedState) as Record<string, unknown>;
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        // Clamp size to the viewport (never below the resize minimums).
+        this.resizedWidth = Math.max(
+          this.MIN_WIDTH,
+          Math.min(this.parsePx(state.width, this.DEFAULT_WIDTH), viewportWidth)
+        );
+        this.resizedHeight = Math.max(
+          this.MIN_HEIGHT,
+          Math.min(this.parsePx(state.height, this.DEFAULT_HEIGHT), viewportHeight)
+        );
+        // Clamp position so the window stays fully on-screen.
+        const left = Math.min(
+          Math.max(this.parsePx(state.left, this.parsePx(this.DEFAULT_LEFT, 80)), 0),
+          Math.max(0, viewportWidth - this.resizedWidth)
+        );
+        const bottom = Math.min(
+          Math.max(this.parsePx(state.bottom, this.parsePx(this.DEFAULT_BOTTOM, 100)), 0),
+          Math.max(0, viewportHeight - this.resizedHeight)
+        );
+        this.isMaximizedSignal.set(state.isMaximized === true);
 
         // Apply window state
         if (this.isMaximizedSignal()) {
@@ -898,15 +933,15 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
           const newHeight = windowHeight - toolbarHeight - 20;
           this.style = {
             bottom: '0px',
-            left: state.left || this.DEFAULT_LEFT,
+            left: `${left}px`,
             width: `${this.resizedWidth}px`,
             height: `${newHeight}px`,
           };
         } else {
           // Restore to normal state with saved position - default moved up to 100px
           this.style = {
-            bottom: state.bottom || this.DEFAULT_BOTTOM,
-            left: state.left || this.DEFAULT_LEFT,
+            bottom: `${bottom}px`,
+            left: `${left}px`,
             width: `${this.resizedWidth}px`,
             height: `${this.resizedHeight}px`,
           };
@@ -921,7 +956,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         };
       }
     } catch (e) {
-      // Error reading from localStorage, use defaults - moved up from 20px to 100px
+      // Error reading from storage, use defaults - moved up from 20px to 100px
       this.style = {
         bottom: this.DEFAULT_BOTTOM,
         left: this.DEFAULT_LEFT,
@@ -932,7 +967,8 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   /**
-   * Save window state to localStorage
+   * Save window state through the preferences facade, as numeric px (legacy
+   * copies stored CSS strings — the loader parses both).
    */
   private saveWindowState(): void {
     const STORAGE_KEY = 'gns3_console_window_state';
@@ -940,13 +976,13 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
       const state = {
         width: this.resizedWidth,
         height: this.resizedHeight,
-        bottom: this.style.bottom,
-        left: this.style.left,
+        bottom: this.parsePx(this.style.bottom, this.parsePx(this.DEFAULT_BOTTOM, 100)),
+        left: this.parsePx(this.style.left, this.parsePx(this.DEFAULT_LEFT, 80)),
         isMaximized: this.isMaximizedSignal(),
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      this.prefs.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (e) {
-      // Error saving to localStorage, ignore
+      // Error saving to storage, ignore
     }
   }
 }

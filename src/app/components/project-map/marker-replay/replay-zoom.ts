@@ -10,12 +10,13 @@
  * scrollports' ranges and the flex-stretched content boxes resize with it
  * instead of overflowing or leaving gaps.
  *
- * Levels live in localStorage per window KIND (`main` / `pin` / `peek`): a
- * new window is BORN at its kind's last-used level (every later pin matches
- * the pin the user last zoomed), then adjusts independently per window.
- * Session-scoped siblings of this state (window size) live in
- * {@link MarkerReplayService.rememberWindowSize}; zoom outlives the session
- * because a comfortable reading size is a preference, not a layout accident.
+ * Levels live per window KIND (`main` / `pin` / `peek`): a new window is
+ * BORN at its kind's last-used level (every later pin matches the pin the
+ * user last zoomed), then adjusts independently per window. Reads/writes go
+ * through the {@link UserPreferencesService} facade, so a level follows the
+ * user's account across browsers (and is cleared for the next user on a
+ * shared browser) — a comfortable reading size is a preference, not a
+ * layout accident and not a property of this particular browser.
  */
 
 import { WritableSignal, computed, signal } from '@angular/core';
@@ -27,6 +28,11 @@ export const REPLAY_ZOOM_STEP = 0.1;
 export const REPLAY_ZOOM_DEFAULT = 1;
 
 const STORAGE_PREFIX = 'gns3_replay_zoom_';
+
+/** Per-kind storage key (each kind is its own SYNCED_PREFERENCE_KEYS entry). */
+export function replayZoomKey(kind: 'main' | 'pin' | 'peek'): string {
+  return STORAGE_PREFIX + kind;
+}
 
 /** Clamp + de-drift a zoom value onto the 10%-step grid (integer per-cent). */
 export function clampReplayZoom(zoom: number): number {
@@ -55,12 +61,18 @@ export function replayZoomLabel(zoom: number): string {
 }
 
 /**
- * The kind's last-used level (localStorage; `defaultZoom` when absent,
- * unreadable or out of range). Guards: Safari private mode THROWS on access.
+ * The kind's last-used level, read through caller-supplied accessors (in
+ * production the {@link UserPreferencesService} facade — localStorage +
+ * profile sync; specs can pass plain Maps); `defaultZoom` when absent,
+ * unreadable or out of range. Guards: Safari private mode THROWS on access.
  */
-export function loadReplayZoom(kind: string, defaultZoom: number = REPLAY_ZOOM_DEFAULT): number {
+export function loadReplayZoom(
+  kind: 'main' | 'pin' | 'peek',
+  get: (key: string) => string | null,
+  defaultZoom: number = REPLAY_ZOOM_DEFAULT
+): number {
   try {
-    const raw = localStorage.getItem(STORAGE_PREFIX + kind);
+    const raw = get(replayZoomKey(kind));
     if (raw === null) return defaultZoom;
     const parsed = Number.parseFloat(raw);
     // Unparsable or stale (range-drift) entries fall back rather than clamp —
@@ -74,10 +86,14 @@ export function loadReplayZoom(kind: string, defaultZoom: number = REPLAY_ZOOM_D
   }
 }
 
-/** Persist the kind's level — best effort, never throws. */
-export function storeReplayZoom(kind: string, zoom: number): void {
+/** Persist the kind's level via the facade — best effort, never throws. */
+export function storeReplayZoom(
+  kind: 'main' | 'pin' | 'peek',
+  zoom: number,
+  set: (key: string, value: string) => void
+): void {
   try {
-    localStorage.setItem(STORAGE_PREFIX + kind, String(clampReplayZoom(zoom)));
+    set(replayZoomKey(kind), String(clampReplayZoom(zoom)));
   } catch {
     // Unavailable storage (private mode, disabled) — this-session-only zoom.
   }
@@ -85,10 +101,12 @@ export function storeReplayZoom(kind: string, zoom: number): void {
 
 /**
  * The per-window zoom state, one instance per host component:
- * `readonly zoomCtl = new ReplayZoomController('pin')` in the class body,
- * `[style.zoom]="zoomCtl.css()"` on the content region, the −/%/+ cluster in
- * the header. Every change also becomes the KIND's stored default, so later
- * windows of the same kind (new pins especially) are born at it.
+ * `readonly zoomCtl = new ReplayZoomController('pin', read, write)` in the
+ * class body (the accessors point at the prefs facade, the same wiring as
+ * {@link ReplayWindowStore}), `[style.zoom]="zoomCtl.css()"` on the content
+ * region, the −/%/+ cluster in the header. Every change also becomes the
+ * KIND's stored default, so later windows of the same kind (new pins
+ * especially) are born at it.
  */
 export class ReplayZoomController {
   /** Assigned in the ctor — `kind` (a parameter property) is not set yet at
@@ -103,8 +121,12 @@ export class ReplayZoomController {
   readonly canStepUp = computed(() => this.zoom() < REPLAY_ZOOM_MAX);
   readonly canStepDown = computed(() => this.zoom() > REPLAY_ZOOM_MIN);
 
-  constructor(private readonly kind: 'main' | 'pin' | 'peek') {
-    this.zoom = signal(loadReplayZoom(kind));
+  constructor(
+    private readonly kind: 'main' | 'pin' | 'peek',
+    private readonly get: (key: string) => string | null,
+    private readonly set: (key: string, value: string) => void
+  ) {
+    this.zoom = signal(loadReplayZoom(kind, get));
   }
 
   stepUp(): void {
@@ -122,6 +144,6 @@ export class ReplayZoomController {
 
   private apply(zoom: number): void {
     this.zoom.set(clampReplayZoom(zoom));
-    storeReplayZoom(this.kind, zoom);
+    storeReplayZoom(this.kind, zoom, this.set);
   }
 }

@@ -16,6 +16,7 @@ import { ResizeEvent, ResizableDirective } from 'angular-resizable-element';
 import { FloatingWindowResizeHandlesComponent } from '../../floating-window/floating-window-resize-handles.component';
 
 import { MarkerReplayService } from '@services/marker-replay.service';
+import { UserPreferencesService } from '@services/user-preferences.service';
 import { SnapGuides, clampRect, clampWindowSize, snapDraggedWindow, snapResizedWindow } from './replay-geometry';
 import { ReplayZoomController } from './replay-zoom';
 import { ReplayDetailPaneComponent } from './replay-detail-pane.component';
@@ -46,6 +47,8 @@ const MIN_TOP = 64;
 })
 export class ReplayPeekWindowComponent implements OnDestroy {
   readonly svc = inject(MarkerReplayService);
+  /** Zoom-level persistence (profile-synced via the prefs facade). */
+  private readonly prefs = inject(UserPreferencesService);
 
   /** Base stacking order + click-to-front boost (the overlay's focus fleet). */
   readonly zIndex = input(1000);
@@ -66,8 +69,14 @@ export class ReplayPeekWindowComponent implements OnDestroy {
   readonly dragging = signal(false);
   /** True while a resize gesture is in flight. */
   readonly resizing = signal(false);
-  /** This window's content zoom (see replay-zoom.ts — per-kind default, per-window state). */
-  readonly zoomCtl = new ReplayZoomController('peek');
+  /** This window's content zoom (see replay-zoom.ts — per-kind default,
+   * per-window state; persisted through the prefs facade so it follows the
+   * account). */
+  readonly zoomCtl = new ReplayZoomController(
+    'peek',
+    (key) => this.prefs.getItem(key),
+    (key, value) => this.prefs.setItem(key, value)
+  );
   /** Live snap-guide lines while a drag/resize attaches; null when idle. */
   readonly snapGuides = signal<SnapGuides | null>(null);
 
