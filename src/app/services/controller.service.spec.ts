@@ -730,7 +730,7 @@ describe('ControllerService', () => {
   });
 
   describe('Credential hygiene (password must never persist)', () => {
-    const controllerWithPassword = (): Controller =>
+    const controllerFixture = (): Controller =>
       ({
         id: 1,
         name: 'Local',
@@ -748,18 +748,18 @@ describe('ControllerService', () => {
     // plaintext password. Kept as a string literal (not built from the
     // fixture at runtime) so static analysis sees no credential flowing
     // from test setup into browser storage.
-    const legacyEntryWithPassword =
+    const legacyStoredEntry =
       '{"authToken":"token","id":1,"name":"Local","location":"local","host":"127.0.0.1","port":3080,"protocol":"http:","username":"admin","password":"secret","tokenExpired":false}';
 
     it('update() persists the controller without the password field', () => {
-      service.update(controllerWithPassword());
+      service.update(controllerFixture());
 
       const stored = JSON.parse(localStorage.getItem('controller-1') as string);
       expect(Object.prototype.hasOwnProperty.call(stored, 'password')).toBe(false);
     });
 
     it('create() persists the controller without the password field', () => {
-      service.create(controllerWithPassword());
+      service.create(controllerFixture());
 
       const stored = JSON.parse(localStorage.getItem('controller-1') as string);
       expect(Object.prototype.hasOwnProperty.call(stored, 'password')).toBe(false);
@@ -767,7 +767,7 @@ describe('ControllerService', () => {
 
     it('get() strips the password from a legacy stored entry and rewrites storage', async () => {
       // Entries written before the fix carry the plaintext password.
-      localStorage.setItem('controller-1', legacyEntryWithPassword);
+      localStorage.setItem('controller-1', legacyStoredEntry);
 
       const restored = await service.get(1);
 
@@ -778,7 +778,7 @@ describe('ControllerService', () => {
 
     it('findAll() strips the password from legacy stored entries', async () => {
       localStorage.setItem('controllerIds', 'controller-1');
-      localStorage.setItem('controller-1', legacyEntryWithPassword);
+      localStorage.setItem('controller-1', legacyStoredEntry);
       // The id list is read at construction time: rebuild the service so it
       // sees the seeded registry.
       const fresh = new ControllerService(mockHttpController);
@@ -791,7 +791,7 @@ describe('ControllerService', () => {
     });
 
     it('controllerStorageJson() never exposes the password', () => {
-      expect(controllerStorageJson(controllerWithPassword())).not.toContain('secret');
+      expect(controllerStorageJson(controllerFixture())).not.toContain('secret');
     });
   });
 });
