@@ -2,7 +2,7 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CdkTableModule } from '@angular/cdk/table';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule, SecurityContext } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -260,7 +260,6 @@ import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
 import { LoginComponent } from '@components/login/login.component';
 import { LoginService } from '@services/login.service';
-import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
 import { UserManagementComponent } from '@components/user-management/user-management.component';
 import { UserService } from '@services/user.service';
 import { AddUserDialogComponent } from '@components/user-management/add-user-dialog/add-user-dialog.component';
@@ -575,7 +574,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
   providers: [
     SettingsService,
     { provide: ErrorHandler, useClass: ToasterErrorHandler },
-    { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },
     VersionService,
     // D3Service, // Removed - triggers JIT in Electron
     ProjectService,

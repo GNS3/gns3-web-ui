@@ -176,7 +176,10 @@ export class LoginComponent implements OnInit {
         }
 
         controller.username = username;
-        controller.password = password;
+        // The password deliberately never lands on the controller object:
+        // the object is persisted to localStorage, which is shared by every
+        // user of this browser profile. Authentication renews through the
+        // refresh token instead.
         controller.tokenExpired = false;
         await this.controllerService.update(controller);
 

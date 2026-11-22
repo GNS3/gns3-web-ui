@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
-import { Controller, ControllerProtocol } from '@models/controller';
+import { Controller, ControllerProtocol, controllerStorageJson } from '@models/controller';
 import { AuthResponse } from '@models/authResponse';
 import { ToasterService } from '@services/toaster.service';
 import { SessionResetService } from '@services/session-reset.service';
@@ -430,7 +430,7 @@ export class HttpController {
       switchMap((response) => {
         // Update tokens
         controller.authToken = response.access_token;
-        localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
+        localStorage.setItem(`controller-${controller.id}`, controllerStorageJson(controller));
         if (response.refresh_token) {
           localStorage.setItem(`refresh_token_${controller.id}`, response.refresh_token);
         }
@@ -500,7 +500,7 @@ export class HttpController {
   private clearTokens(controller: Controller): void {
     localStorage.removeItem(`refresh_token_${controller.id}`);
     controller.authToken = null;
-    localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
+    localStorage.setItem(`controller-${controller.id}`, controllerStorageJson(controller));
   }
 
   private redirectToLogin(controller: Controller): void {
@@ -510,7 +510,7 @@ export class HttpController {
     // and navigates back to projects, causing a login loop.
     this.clearTokens(controller);
     controller.tokenExpired = true;
-    localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
+    localStorage.setItem(`controller-${controller.id}`, controllerStorageJson(controller));
     this.isRefreshing = false;
     this.processQueue(new Error('Session expired, redirecting to login'));
     // User-scoped singletons (privilege cache, preferences mirror,

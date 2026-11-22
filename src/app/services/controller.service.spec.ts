@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ControllerService } from './controller.service';
 import { HttpController } from './http-controller.service';
-import { Controller, ControllerProtocol } from '@models/controller';
+import { Controller, ControllerProtocol, controllerStorageJson } from '@models/controller';
 import { of } from 'rxjs';
 
 // Mock localStorage
@@ -726,6 +726,65 @@ describe('ControllerService', () => {
       const result = await service.delete(controller);
 
       expect(result).toBe(999);
+    });
+  });
+
+  describe('Credential hygiene (password must never persist)', () => {
+    const controllerWithPassword = (): Controller =>
+      ({
+        id: 1,
+        name: 'Local',
+        host: '127.0.0.1',
+        port: 3080,
+        protocol: 'http:' as ControllerProtocol,
+        location: 'local',
+        username: 'admin',
+        password: 'secret',
+        authToken: 'token',
+        tokenExpired: false,
+      }) as Controller;
+
+    it('update() persists the controller without the password field', () => {
+      service.update(controllerWithPassword());
+
+      const stored = JSON.parse(localStorage.getItem('controller-1') as string);
+      expect(Object.prototype.hasOwnProperty.call(stored, 'password')).toBe(false);
+    });
+
+    it('create() persists the controller without the password field', () => {
+      service.create(controllerWithPassword());
+
+      const stored = JSON.parse(localStorage.getItem('controller-1') as string);
+      expect(Object.prototype.hasOwnProperty.call(stored, 'password')).toBe(false);
+    });
+
+    it('get() strips the password from a legacy stored entry and rewrites storage', async () => {
+      // Entries written before the fix carry the plaintext password.
+      localStorage.setItem('controller-1', JSON.stringify({ ...controllerWithPassword() }));
+
+      const restored = await service.get(1);
+
+      expect(restored.password).toBeUndefined();
+      const stored = JSON.parse(localStorage.getItem('controller-1') as string);
+      expect(Object.prototype.hasOwnProperty.call(stored, 'password')).toBe(false);
+    });
+
+    it('findAll() strips the password from legacy stored entries', async () => {
+      localStorage.setItem('controllerIds', 'controller-1');
+      localStorage.setItem('controller-1', JSON.stringify({ ...controllerWithPassword() }));
+      // The id list is read at construction time: rebuild the service so it
+      // sees the seeded registry.
+      const fresh = new ControllerService(mockHttpController);
+
+      const controllers = await fresh.findAll();
+
+      expect(controllers[0].password).toBeUndefined();
+      const stored = JSON.parse(localStorage.getItem('controller-1') as string);
+      expect(Object.prototype.hasOwnProperty.call(stored, 'password')).toBe(false);
+    });
+
+    it('controllerStorageJson() never exposes the password', () => {
+      expect(controllerStorageJson(controllerWithPassword())).not.toContain('secret');
     });
   });
 });

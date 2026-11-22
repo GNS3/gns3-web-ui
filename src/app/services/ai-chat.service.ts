@@ -504,16 +504,12 @@ export class AiChatService {
   private getAuthHeaders(controller: Controller): HttpHeaders {
     const headers = new HttpHeaders();
 
-    // Prioritize Bearer token (JWT) over Basic auth
-    // The AI chat endpoint requires JWT authentication
+    // The AI chat endpoint authenticates with the session JWT. There is
+    // deliberately no basic-auth fallback: re-encoding stored credentials
+    // would resurrect the plaintext password the login form used to leave
+    // on the controller object.
     if (controller.authToken) {
       return headers.set('Authorization', `Bearer ${controller.authToken}`);
-    }
-
-    // Fallback to Basic auth if JWT token is not available
-    if (controller.username && controller.password) {
-      const auth = btoa(`${controller.username}:${controller.password}`);
-      return headers.set('Authorization', `Basic ${auth}`);
     }
 
     return headers;
