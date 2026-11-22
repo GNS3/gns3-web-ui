@@ -4,7 +4,14 @@ import { HttpController } from './http-controller.service';
 import { Controller, ControllerProtocol, controllerStorageJson } from '@models/controller';
 import { of } from 'rxjs';
 
-// Mock localStorage
+// Mock localStorage.
+//
+// Stubbed per test and restored afterwards, never replaced at module scope:
+// the Angular unit-test builder runs Vitest with isolate:false, so every spec
+// file in a worker shares one jsdom window and one global object. A module
+// scope replacement leaks into the files that run later in that worker (it
+// broke session-reset.service.spec.ts in CI), and a mock without the Storage
+// surface (length/key) silently breaks any code that enumerates keys.
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
 
@@ -19,19 +26,19 @@ const localStorageMock = (() => {
     clear: () => {
       store = {};
     },
+    key: (index: number) => Object.keys(store)[index] ?? null,
+    get length() {
+      return Object.keys(store).length;
+    },
   };
 })();
-
-Object.defineProperty(global, 'localStorage', {
-  value: localStorageMock,
-  writable: true,
-});
 
 describe('ControllerService', () => {
   let service: ControllerService;
   let mockHttpController: any;
 
   beforeEach(() => {
+    vi.stubGlobal('localStorage', localStorageMock);
     // Clear localStorage before each test
     localStorage.clear();
 
@@ -41,6 +48,11 @@ describe('ControllerService', () => {
     };
 
     service = new ControllerService(mockHttpController);
+  });
+
+  afterEach(() => {
+    // Hand the real jsdom storage back to the files that share this worker.
+    vi.unstubAllGlobals();
   });
 
   describe('Service Creation', () => {
