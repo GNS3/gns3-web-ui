@@ -75,6 +75,7 @@ import { MarkerFlashService } from '@services/marker-flash.service';
 import { MarkerRegistryService } from '@services/marker-registry.service';
 import { MapScaleService } from '@services/mapScale.service';
 import { MapSettingsService } from '@services/mapsettings.service';
+import { ITEM_LOCK_STATUS_KEY_PREFIX } from '@services/session-reset.service';
 import { UserPreferencesService } from '@services/user-preferences.service';
 import { NodeService } from '@services/node.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
@@ -574,7 +575,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             this.gridVisibility = this.project.show_grid ?? localStorage.getItem('gridVisibility') === 'true';
 
             this.toggleShowTopologySummary(this.mapSettingsService.isTopologySummaryVisible);
-            const lockKey = `itemLockStatusVisibility_${this.project.project_id}`;
+            const lockKey = `${ITEM_LOCK_STATUS_KEY_PREFIX}${this.project.project_id}`;
             this.itemLockStatusVisibility = localStorage.getItem(lockKey) === 'true';
             this.mapSettingsService.toggleItemLockStatus(this.itemLockStatusVisibility);
 
@@ -1814,7 +1815,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const projectId = this.project?.project_id;
     if (projectId != null) {
-      const lockKey = `itemLockStatusVisibility_${projectId}`;
+      const lockKey = `${ITEM_LOCK_STATUS_KEY_PREFIX}${projectId}`;
       if (visible) {
         this.userPreferences.setItem(lockKey, 'true');
       } else {

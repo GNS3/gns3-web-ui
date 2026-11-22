@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LoginService } from '@services/login.service';
+import { SessionResetService } from '@services/session-reset.service';
 import { ControllerService } from '@services/controller.service';
 import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
@@ -20,6 +21,13 @@ import { Controller } from '@models/controller';
 import { of, throwError } from 'rxjs';
 
 describe('LoginComponent', () => {
+  /** Lets the async login success handler (and its awaits) run to completion. */
+  const flushLoginPromiseChain = async () => {
+    for (let i = 0; i < 6; i++) {
+      await Promise.resolve();
+    }
+  };
+
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let mockLoginService: LoginService;
@@ -30,6 +38,7 @@ describe('LoginComponent', () => {
   let mockConnectionManagerService: ConnectionManagerService;
   let mockRouter: Router;
   let mockActivatedRoute: ActivatedRoute;
+  let mockSessionReset: SessionResetService;
 
   const mockController: Controller = {
     id: 1,
@@ -86,6 +95,10 @@ describe('LoginComponent', () => {
       },
     } as any as ActivatedRoute;
 
+    mockSessionReset = {
+      reset: vi.fn(),
+    } as any as SessionResetService;
+
     // Mock localStorage
     const storage: Record<string, string> = {};
     vi.stubGlobal('localStorage', {
@@ -118,6 +131,7 @@ describe('LoginComponent', () => {
       ],
       providers: [
         { provide: LoginService, useValue: mockLoginService },
+        { provide: SessionResetService, useValue: mockSessionReset },
         { provide: ControllerService, useValue: mockControllerService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: VersionService, useValue: mockVersionService },
@@ -225,6 +239,38 @@ describe('LoginComponent', () => {
         expect(staleFixture.nativeElement.querySelector('form')).toBeTruthy();
       } finally {
         staleFixture.destroy();
+      }
+    });
+
+    it('tears down the previous user local state when logging in as a different user', async () => {
+      mockController.username = 'admin';
+      try {
+        component.loginForm.controls.username.setValue('student-01');
+        component.loginForm.controls.password.setValue('student-pass');
+        mockLoginService.login = vi.fn().mockReturnValue(of({ access_token: 'student-token', token_type: 'Bearer' }));
+
+        component.login();
+        await flushLoginPromiseChain();
+
+        expect(mockSessionReset.reset).toHaveBeenCalledTimes(1);
+      } finally {
+        mockController.username = '';
+      }
+    });
+
+    it('keeps local state when re-logging in as the same user', async () => {
+      mockController.username = 'admin';
+      try {
+        component.loginForm.controls.username.setValue('admin');
+        component.loginForm.controls.password.setValue('admin-pass');
+        mockLoginService.login = vi.fn().mockReturnValue(of({ access_token: 'admin-token', token_type: 'Bearer' }));
+
+        component.login();
+        await flushLoginPromiseChain();
+
+        expect(mockSessionReset.reset).not.toHaveBeenCalled();
+      } finally {
+        mockController.username = '';
       }
     });
   });

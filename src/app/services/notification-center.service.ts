@@ -127,6 +127,23 @@ export class NotificationCenterService {
     }
   }
 
+  /**
+   * Forgets the notification history (logout / user switch / session
+   * expiry). The stored list belongs to the outgoing user: the next user
+   * on this browser must neither see their notifications in the panel nor
+   * read them from storage.
+   */
+  invalidate(): void {
+    this.notificationState.set([]);
+    this.sequence = 0;
+    this.toastPreferenceFallback = undefined;
+    try {
+      localStorage.removeItem(NOTIFICATION_STORAGE_KEY);
+    } catch {
+      // Best-effort: storage may be unavailable.
+    }
+  }
+
   private restore(): AppNotification[] {
     try {
       const stored = JSON.parse(localStorage.getItem(NOTIFICATION_STORAGE_KEY) || '[]');
