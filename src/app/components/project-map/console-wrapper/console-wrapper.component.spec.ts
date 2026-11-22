@@ -1,5 +1,5 @@
 import { signal } from '@angular/core';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ConsoleWrapperComponent } from './console-wrapper.component';
 
 describe('ConsoleWrapperComponent', () => {
@@ -130,6 +130,142 @@ describe('ConsoleWrapperComponent', () => {
 
       expect(host.style.height).toBe('600px'); // RED before the fix: '400px'
       expect(host.applyStyleToElement).toHaveBeenCalledWith(host.style);
+    });
+  });
+
+  describe('window state persistence (preferences facade)', () => {
+    const STORAGE_KEY = 'gns3_console_window_state';
+
+    let originalInnerWidth: number;
+    let originalInnerHeight: number;
+
+    beforeEach(() => {
+      originalInnerWidth = window.innerWidth;
+      originalInnerHeight = window.innerHeight;
+    });
+
+    afterEach(() => {
+      window.innerWidth = originalInnerWidth;
+      window.innerHeight = originalInnerHeight;
+    });
+
+    /**
+     * Host carrying the instance fields loadWindowState/saveWindowState
+     * touch. Built on the REAL prototype (loadWindowState calls
+     * this.parsePx, so a plain object literal would throw into the catch
+     * path), with the geometry constants mirroring the component's field
+     * initializers (they are instance state, not prototype members).
+     */
+    function makeHost(prefs: {
+      getItem: (key: string) => string | null;
+      setItem: (key: string, value: string) => void;
+    }) {
+      const host = Object.create(ConsoleWrapperComponent.prototype) as any;
+      Object.assign(host, {
+        DEFAULT_WIDTH: 848,
+        DEFAULT_HEIGHT: 600,
+        DEFAULT_LEFT: '80px',
+        DEFAULT_BOTTOM: '100px',
+        MIN_WIDTH: 500,
+        MIN_HEIGHT: 400,
+        resizedWidth: 848,
+        resizedHeight: 600,
+        isMaximizedSignal: signal(false),
+        style: {} as Record<string, string>,
+        prefs,
+      });
+      return host;
+    }
+
+    const load = (host: any) => (ConsoleWrapperComponent.prototype as any).loadWindowState.call(host);
+    const save = (host: any) => (ConsoleWrapperComponent.prototype as any).saveWindowState.call(host);
+
+    it('restores a normal on-screen state unclamped', () => {
+      window.innerWidth = 1920;
+      window.innerHeight = 1080;
+      const host = makeHost({
+        getItem: () => JSON.stringify({ width: 800, height: 500, left: 240, bottom: 160, isMaximized: false }),
+        setItem: () => {},
+      });
+      load(host);
+      expect(host.resizedWidth).toBe(800);
+      expect(host.resizedHeight).toBe(500);
+      expect(host.style).toEqual({ bottom: '160px', left: '240px', width: '800px', height: '500px' });
+      expect(host.isMaximizedSignal()).toBe(false);
+    });
+
+    it('clamps a state saved on a larger screen to the current viewport', () => {
+      window.innerWidth = 1024;
+      window.innerHeight = 768;
+      const host = makeHost({
+        getItem: () => JSON.stringify({ width: 1600, height: 1200, left: 1200, bottom: 900, isMaximized: false }),
+        setItem: () => {},
+      });
+      load(host);
+      expect(host.resizedWidth).toBe(1024);
+      expect(host.resizedHeight).toBe(768);
+      // Position clamped so the window stays fully on-screen.
+      expect(host.style.left).toBe('0px');
+      expect(host.style.bottom).toBe('0px');
+    });
+
+    it('parses legacy CSS-string positions (older copies stored "Npx")', () => {
+      window.innerWidth = 1920;
+      window.innerHeight = 1080;
+      const host = makeHost({
+        getItem: () => JSON.stringify({ width: 700, height: 500, left: '120px', bottom: '60px' }),
+        setItem: () => {},
+      });
+      load(host);
+      expect(host.style).toEqual({ bottom: '60px', left: '120px', width: '700px', height: '500px' });
+    });
+
+    it('falls back to the defaults when nothing is stored', () => {
+      const host = makeHost({ getItem: () => null, setItem: () => {} });
+      load(host);
+      expect(host.style).toEqual({ bottom: '100px', left: '80px', width: '848px', height: '600px' });
+    });
+
+    it('falls back to the defaults on corrupt JSON', () => {
+      const host = makeHost({ getItem: () => '{oops', setItem: () => {} });
+      load(host);
+      expect(host.style).toEqual({ bottom: '100px', left: '80px', width: '848px', height: '600px' });
+    });
+
+    it('restores the maximized state sized from the current viewport', () => {
+      window.innerWidth = 1200; // wide toolbar (64px header offset)
+      window.innerHeight = 800;
+      const host = makeHost({
+        getItem: () => JSON.stringify({ width: 900, height: 500, left: 200, bottom: 100, isMaximized: true }),
+        setItem: () => {},
+      });
+      load(host);
+      expect(host.isMaximizedSignal()).toBe(true);
+      expect(host.style.bottom).toBe('0px');
+      expect(host.style.height).toBe('716px'); // 800 - 64 - 20
+    });
+
+    it('saves the numeric-px shape through the facade', () => {
+      const setItem = vi.fn();
+      const host = makeHost({ getItem: () => null, setItem });
+      host.resizedWidth = 900;
+      host.resizedHeight = 520;
+      host.style = { bottom: '120px', left: '80px', width: '900px', height: '520px' };
+      save(host);
+      expect(setItem).toHaveBeenCalledWith(
+        STORAGE_KEY,
+        JSON.stringify({ width: 900, height: 520, bottom: 120, left: 80, isMaximized: false })
+      );
+    });
+
+    it('saves a maximized bottom/left of 0px as 0 (not the default fallback)', () => {
+      const setItem = vi.fn();
+      const host = makeHost({ getItem: () => null, setItem });
+      host.style = { bottom: '0px', left: '0px' };
+      save(host);
+      const saved = JSON.parse(setItem.mock.calls[0][1]);
+      expect(saved.bottom).toBe(0);
+      expect(saved.left).toBe(0);
     });
   });
 });

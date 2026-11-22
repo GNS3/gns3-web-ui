@@ -48,6 +48,16 @@ describe('UserPreferencesService', () => {
       expect(SYNCED_PREFERENCE_KEYS).toContain('ai-chat-panel-state');
     });
 
+    it('includes the replay content-zoom levels (one key per window kind)', () => {
+      for (const key of ['gns3_replay_zoom_main', 'gns3_replay_zoom_pin', 'gns3_replay_zoom_peek']) {
+        expect(SYNCED_PREFERENCE_KEYS).toContain(key);
+      }
+    });
+
+    it('includes the console floating-window geometry', () => {
+      expect(SYNCED_PREFERENCE_KEYS).toContain('gns3_console_window_state');
+    });
+
     it('keeps the sync baseline key out of the mirrored document', () => {
       // The baseline is local bookkeeping (which values were last pushed);
       // mirroring it would let one browser poison another's edit detection.
