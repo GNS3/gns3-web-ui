@@ -27,6 +27,23 @@ export class Controller {
  * never `JSON.stringify(controller)` directly.
  */
 export function controllerStorageJson(controller: Controller): string {
-  const { password, ...withoutPassword } = controller;
-  return JSON.stringify(withoutPassword);
+  // Built field by field (never via spread/destructuring) so the password
+  // has no path into the serialized payload. The explicit Omit<...>
+  // annotation turns a forgotten field into a compile error instead of a
+  // silent persistence drop.
+  const sanitized: Omit<Controller, 'password'> = {
+    authToken: controller.authToken,
+    id: controller.id,
+    name: controller.name,
+    location: controller.location,
+    host: controller.host,
+    port: controller.port,
+    path: controller.path,
+    ubridge_path: controller.ubridge_path,
+    status: controller.status,
+    protocol: controller.protocol,
+    username: controller.username,
+    tokenExpired: controller.tokenExpired,
+  };
+  return JSON.stringify(sanitized);
 }

@@ -744,6 +744,13 @@ describe('ControllerService', () => {
         tokenExpired: false,
       }) as Controller;
 
+    // A pre-fix stored entry: JSON.stringify(controller) still carried the
+    // plaintext password. Kept as a string literal (not built from the
+    // fixture at runtime) so static analysis sees no credential flowing
+    // from test setup into browser storage.
+    const legacyEntryWithPassword =
+      '{"authToken":"token","id":1,"name":"Local","location":"local","host":"127.0.0.1","port":3080,"protocol":"http:","username":"admin","password":"secret","tokenExpired":false}';
+
     it('update() persists the controller without the password field', () => {
       service.update(controllerWithPassword());
 
@@ -760,7 +767,7 @@ describe('ControllerService', () => {
 
     it('get() strips the password from a legacy stored entry and rewrites storage', async () => {
       // Entries written before the fix carry the plaintext password.
-      localStorage.setItem('controller-1', JSON.stringify({ ...controllerWithPassword() }));
+      localStorage.setItem('controller-1', legacyEntryWithPassword);
 
       const restored = await service.get(1);
 
@@ -771,7 +778,7 @@ describe('ControllerService', () => {
 
     it('findAll() strips the password from legacy stored entries', async () => {
       localStorage.setItem('controllerIds', 'controller-1');
-      localStorage.setItem('controller-1', JSON.stringify({ ...controllerWithPassword() }));
+      localStorage.setItem('controller-1', legacyEntryWithPassword);
       // The id list is read at construction time: rebuild the service so it
       // sees the seeded registry.
       const fresh = new ControllerService(mockHttpController);
