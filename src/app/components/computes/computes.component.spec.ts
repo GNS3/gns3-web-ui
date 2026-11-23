@@ -20,6 +20,7 @@ import { Controller } from '@models/controller';
 import { Compute } from '@models/compute';
 import { of, Subject, throwError } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
+import { PermissionService } from '@services/permission.service';
 
 describe('ComputesComponent', () => {
   let component: ComputesComponent;
@@ -132,6 +133,17 @@ describe('ComputesComponent', () => {
         ReactiveFormsModule,
       ],
       providers: [
+        // The privilege directive reads the signal; grant everything so the
+        // gated chrome renders exactly as before this wiring.
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['Compute.Audit', 'Compute.Allocate', 'Compute.Modify']),
+            loaded: () => true,
+          },
+        },
         { provide: ComputeService, useValue: mockComputeService },
         { provide: ControllerService, useValue: mockControllerService },
         { provide: NotificationService, useValue: mockNotificationService },
@@ -161,7 +173,15 @@ describe('ComputesComponent', () => {
   });
 
   it('should have correct displayedColumns', () => {
-    expect(component.displayedColumns).toEqual(['name', 'status', 'host', 'platform', 'resources', 'autoConnect', 'actions']);
+    expect(component.displayedColumns()).toEqual([
+      'name',
+      'status',
+      'host',
+      'platform',
+      'resources',
+      'autoConnect',
+      'actions',
+    ]);
   });
 
   it('should filter computes by search text and connection status', () => {

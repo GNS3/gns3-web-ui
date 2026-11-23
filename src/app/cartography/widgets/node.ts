@@ -127,7 +127,10 @@ export class NodeWidget implements Widget {
     }
 
     node_body_merge.select('.node_lock_status_badge').remove();
-    if (this.mapSettingsService.isItemLockStatusVisible) {
+    // The locked badge is always rendered so a locked item is instantly
+    // recognizable; the "Show item lock status" setting only controls the
+    // unlocked indicator.
+    {
       const lockStatusBadge = node_body_merge
         .append<SVGGElement>('g')
         .attr('class', 'node_lock_status_badge')
@@ -163,7 +166,9 @@ export class NodeWidget implements Widget {
         .attr('stroke-linejoin', 'round')
         .attr('paint-order', 'stroke fill');
 
-      const unlockedBadge = lockStatusBadge.filter((n: MapNode) => !n.locked);
+      const unlockedBadge = lockStatusBadge.filter(
+        (n: MapNode) => !n.locked && this.mapSettingsService.isItemLockStatusVisible
+      );
       const unlockedIconGroup = unlockedBadge
         .append<SVGGElement>('g')
         .attr('transform', 'translate(-7.68, -7.68) scale(0.64)');

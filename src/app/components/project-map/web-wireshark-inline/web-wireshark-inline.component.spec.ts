@@ -131,6 +131,10 @@ describe('WebWiresharkInlineComponent', () => {
       .overrideProvider(DomSanitizer, { useValue: mockSanitizer })
       .compileComponents();
 
+    // Generous viewport so the chrome's size clamping never bites in these tests.
+    window.innerWidth = 1920;
+    window.innerHeight = 1080;
+
     fixture = TestBed.createComponent(WebWiresharkInlineComponent);
     component = fixture.componentInstance;
 
@@ -206,19 +210,10 @@ describe('WebWiresharkInlineComponent', () => {
     });
   });
 
-  describe('Window Style', () => {
-    it('should have default style with fixed position', () => {
-      expect(component.style.position).toBe('fixed');
-    });
-
+  describe('Window geometry', () => {
     it('should have default dimensions', () => {
-      expect(component.style.width).toBe('800px');
-      expect(component.style.height).toBe('600px');
-    });
-
-    it('should track resizedWidth and resizedHeight', () => {
-      expect(component.resizedWidth).toBe(800);
-      expect(component.resizedHeight).toBe(600);
+      expect(component.chrome.width()).toBe(800);
+      expect(component.chrome.height()).toBe(600);
     });
   });
 
@@ -270,73 +265,26 @@ describe('WebWiresharkInlineComponent', () => {
     });
   });
 
-  describe('validate()', () => {
-    it('should return true for valid resize', () => {
-      const event = {
-        rectangle: { width: 1000, height: 800 },
-      } as ResizeEvent;
-      expect(component.validate(event)).toBe(true);
+  describe('chrome resize (floating-window standard)', () => {
+    it('validates against the window minimums and maximums', () => {
+      expect(component.chrome.validate({ rectangle: { width: 1920, height: 1080 } } as ResizeEvent)).toBe(true);
+      expect(component.chrome.validate({ rectangle: { width: 700, height: 800 } } as ResizeEvent)).toBe(false);
+      expect(component.chrome.validate({ rectangle: { width: 1000, height: 500 } } as ResizeEvent)).toBe(false);
+      expect(component.chrome.validate({ rectangle: { width: 2000, height: 800 } } as ResizeEvent)).toBe(false);
+      expect(component.chrome.validate({ rectangle: { width: 1000, height: 1200 } } as ResizeEvent)).toBe(false);
     });
 
-    it('should return true for resize at minimum dimensions', () => {
-      const event = {
-        rectangle: { width: 800, height: 600 },
-      } as ResizeEvent;
-      expect(component.validate(event)).toBe(true);
-    });
-
-    it('should return true for resize at maximum dimensions', () => {
-      const event = {
-        rectangle: { width: 1920, height: 1080 },
-      } as ResizeEvent;
-      expect(component.validate(event)).toBe(true);
-    });
-
-    it('should return false for width below minimum', () => {
-      const event = {
-        rectangle: { width: 700, height: 800 },
-      } as ResizeEvent;
-      expect(component.validate(event)).toBe(false);
-    });
-
-    it('should return false for height below minimum', () => {
-      const event = {
-        rectangle: { width: 1000, height: 500 },
-      } as ResizeEvent;
-      expect(component.validate(event)).toBe(false);
-    });
-
-    it('should return false for width above maximum', () => {
-      const event = {
-        rectangle: { width: 2000, height: 800 },
-      } as ResizeEvent;
-      expect(component.validate(event)).toBe(false);
-    });
-
-    it('should return false for height above maximum', () => {
-      const event = {
-        rectangle: { width: 1000, height: 1200 },
-      } as ResizeEvent;
-      expect(component.validate(event)).toBe(false);
-    });
-  });
-
-  describe('onResizeStart()', () => {
-    it('should set isResizing to true', () => {
-      component.onResizeStart();
+    it('marks resizing while a gesture is live and clears it on end', () => {
+      component.chrome.onResizeStart();
       expect(component.isResizing()).toBe(true);
-    });
-  });
-
-  describe('onResizeEnd()', () => {
-    it('should set isResizing to false', () => {
-      component.onResizeEnd({ rectangle: { width: 600, height: 500 } } as ResizeEvent);
+      component.chrome.onResizeEnd({ rectangle: { width: 1200, height: 800 } } as ResizeEvent);
       expect(component.isResizing()).toBe(false);
     });
 
-    it('should constrain resize dimensions', () => {
-      component.onResizeEnd({ rectangle: { width: 700, height: 500, left: 50, top: 50 } } as ResizeEvent);
-      expect(mockWindowBoundaryService.constrainResizeSize).toHaveBeenCalled();
+    it('consumes the full rectangle on resize end (left/top included)', () => {
+      component.chrome.onResizeEnd({ rectangle: { left: 40, top: 70, width: 1200, height: 800 } } as ResizeEvent);
+      expect(component.chrome.left()).toBe(40);
+      expect(component.chrome.top()).toBe(70);
     });
   });
 

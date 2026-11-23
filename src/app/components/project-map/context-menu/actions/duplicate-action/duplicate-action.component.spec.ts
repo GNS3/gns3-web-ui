@@ -97,6 +97,7 @@ describe('DuplicateActionComponent', () => {
     mockToasterService = {
       success: vi.fn(),
       error: vi.fn(),
+      warning: vi.fn(),
     };
 
     mockNodesDataSource = {
@@ -205,8 +206,11 @@ describe('DuplicateActionComponent', () => {
         expect(mockNodesDataSource.add).toHaveBeenCalledWith(duplicatedNode);
       });
 
-      it('should show shutdown error message on 409 conflict status', () => {
-        const error409 = { status: 409 };
+      it('should relay the server message on 409 (locked node or running node)', () => {
+        const error409 = {
+          status: 409,
+          error: { message: 'Node Test Node cannot be duplicated because it is locked' },
+        };
         mockNodeService.duplicate.mockReturnValue(throwError(() => error409));
         fixture.componentRef.setInput('controller', mockController);
         fixture.componentRef.setInput('nodes', [mockNode]);
@@ -214,7 +218,19 @@ describe('DuplicateActionComponent', () => {
 
         component.duplicate();
 
-        expect(mockToasterService.error).toHaveBeenCalledWith(`Shutdown ${mockNode.name} before duplicating`);
+        expect(mockToasterService.error).toHaveBeenCalledWith('Node Test Node cannot be duplicated because it is locked');
+      });
+
+      it('should relay the shutdown message the server sends for a running node', () => {
+        const error409 = { status: 409, error: { message: 'Node Test Node must be stopped before duplicating' } };
+        mockNodeService.duplicate.mockReturnValue(throwError(() => error409));
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('nodes', [mockNode]);
+        fixture.detectChanges();
+
+        component.duplicate();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Node Test Node must be stopped before duplicating');
       });
 
       it('should show generic error message on non-409 error', () => {
@@ -264,6 +280,77 @@ describe('DuplicateActionComponent', () => {
         await vi.runAllTimersAsync();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Failed to duplicate node');
+      });
+    });
+
+    describe('with locked nodes', () => {
+      it('should skip locked nodes and warn which ones were skipped', () => {
+        const lockedNode = createMockNode({ node_id: 'node-locked', name: 'Locked Node', locked: true });
+        mockNodeService.duplicate.mockReturnValue(of(mockNode));
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('nodes', [mockNode, lockedNode]);
+        fixture.detectChanges();
+
+        component.duplicate();
+
+        expect(mockNodeService.duplicate).toHaveBeenCalledTimes(1);
+        expect(mockNodeService.duplicate).toHaveBeenCalledWith(mockController, mockNode);
+        expect(mockToasterService.warning).toHaveBeenCalledWith(
+          'A locked node cannot be duplicated: Locked Node'
+        );
+      });
+
+      it('should pluralize the warning for several locked nodes', () => {
+        const locked1 = createMockNode({ node_id: 'node-locked-1', name: 'Locked A', locked: true });
+        const locked2 = createMockNode({ node_id: 'node-locked-2', name: 'Locked B', locked: true });
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('nodes', [locked1, locked2]);
+        fixture.detectChanges();
+
+        component.duplicate();
+
+        expect(mockNodeService.duplicate).not.toHaveBeenCalled();
+        expect(mockToasterService.warning).toHaveBeenCalledWith(
+          '2 locked nodes cannot be duplicated: Locked A, Locked B'
+        );
+      });
+
+      it('should not call any service when every node is locked and no drawing is selected', () => {
+        const lockedNode = createMockNode({ node_id: 'node-locked', name: 'Locked Node', locked: true });
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('nodes', [lockedNode]);
+        fixture.componentRef.setInput('drawings', []);
+        fixture.detectChanges();
+
+        component.duplicate();
+
+        expect(mockNodeService.duplicate).not.toHaveBeenCalled();
+        expect(mockDrawingService.duplicate).not.toHaveBeenCalled();
+      });
+
+      it('should still duplicate drawings when every node is locked', () => {
+        const lockedNode = createMockNode({ node_id: 'node-locked', name: 'Locked Node', locked: true });
+        mockDrawingService.duplicate.mockReturnValue(of(mockDrawing));
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('nodes', [lockedNode]);
+        fixture.componentRef.setInput('drawings', [mockDrawing]);
+        fixture.detectChanges();
+
+        component.duplicate();
+
+        expect(mockNodeService.duplicate).not.toHaveBeenCalled();
+        expect(mockDrawingService.duplicate).toHaveBeenCalledWith(mockController, mockDrawing.project_id, mockDrawing);
+      });
+
+      it('should not warn when no node is locked', () => {
+        mockNodeService.duplicate.mockReturnValue(of(mockNode));
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('nodes', [mockNode]);
+        fixture.detectChanges();
+
+        component.duplicate();
+
+        expect(mockToasterService.warning).not.toHaveBeenCalled();
       });
     });
 

@@ -10,38 +10,18 @@
 
 .bpf-presets__row {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: var(--gns3-density-space-3);
+  gap: var(--gns3-density-space-2);
 
   mat-form-field {
-    flex: 1 1 200px;
+    flex: 1 1 auto;
     min-width: 0;
-    width: 100%;
+    margin: 0;
   }
 }
 
-button {
-  @include buttons.geometry;
-  flex-shrink: 0;
-}
-
-.bpf-presets__hint {
-  @include forms.helper-text;
-  margin: var(--gns3-density-space-2) 0 0;
-}
-
-.bpf-presets__saved {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--gns3-density-space-1);
-  margin-top: var(--gns3-density-space-2);
-
-  button {
-    max-width: 100%;
-    height: auto;
-    min-height: var(--gns3-density-control-height);
-    overflow-wrap: anywhere;
-    white-space: normal;
-  }
+.bpf-presets__library {
+  --gns3-action-icon-size: 20px;
+  @include buttons.action-icon(32px);
+  color: var(--mat-sys-primary);
 }

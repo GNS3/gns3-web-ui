@@ -6,13 +6,16 @@
     lightTheme: isLightThemeEnabled(),
     'console-active': isConsoleActive(),
     'is-minimized': isMinimized(),
-    'is-dragging': isDragging()
+    'is-dragging': isDragging(),
+    'is-resizing': isResizing()
   }"
   [style.z-index]="zIndex()"
   (mousedown)="onWindowFocus()"
   mwlResizable
   [validateResize]="validate"
-  [enableGhostResize]="true"
+  [enableGhostResize]="false"
+  (resizeStart)="onResizingStart()"
+  (resizing)="onResizing($event)"
   (resizeEnd)="onResizeEnd($event)"
   tabindex="0"
   (click)="onConsoleActivate()"
@@ -20,16 +23,7 @@
 >
   @if (!isMinimized()) {
   <!-- Edge handles -->
-  <div class="resize-handle resize-handle-top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
-  <div class="resize-handle resize-handle-right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
-  <div class="resize-handle resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
-  <div class="resize-handle resize-handle-left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
-
-  <!-- Corner handles -->
-  <div class="resize-handle resize-handle-top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
-  <div class="resize-handle resize-handle-top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
-  <div class="resize-handle resize-handle-bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
-  <div class="resize-handle resize-handle-bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+  <app-floating-window-resize-handles />
   }
 
   <!-- Console Content -->
@@ -98,78 +92,13 @@
         </div>
       </div>
 
-      <!-- Settings panel backdrop -->
+      <!-- Settings panel (shared with the standalone console page) -->
       @if (showSettingsPanel()) {
-      <div class="settings-backdrop" (click)="closeSettingsPanel()"></div>
-
-      <!-- Settings panel -->
-      <div class="console-settings-panel" (mousedown)="$event.stopPropagation()" (click)="$event.stopPropagation()">
-        <div class="settings-panel__title">Terminal Settings</div>
-
-        <div class="settings-panel__row">
-          <span class="settings-panel__label">Background</span>
-          <div class="settings-panel__color-control">
-            <label class="color-swatch" [style.--swatch-color]="effectiveBgHex()" [class.color-swatch--custom]="currentSettings().backgroundColor" title="Pick background color">
-              <input type="color" [value]="effectiveBgHex()" (change)="onBgColorChange($event)" />
-            </label>
-            @if (currentSettings().backgroundColor) {
-            <button class="reset-btn" (click)="resetBgColor()" title="Reset to theme default" aria-label="Reset background color">
-              <mat-icon>restart_alt</mat-icon>
-            </button>
-            } @else {
-            <span class="settings-panel__auto-badge">auto</span>
-            }
-          </div>
-        </div>
-
-        <div class="settings-panel__row">
-          <span class="settings-panel__label">Text Color</span>
-          <div class="settings-panel__color-control">
-            <label class="color-swatch" [style.--swatch-color]="effectiveFgHex()" [class.color-swatch--custom]="currentSettings().foregroundColor" title="Pick text color">
-              <input type="color" [value]="effectiveFgHex()" (change)="onFgColorChange($event)" />
-            </label>
-            @if (currentSettings().foregroundColor) {
-            <button class="reset-btn" (click)="resetFgColor()" title="Reset to theme default" aria-label="Reset text color">
-              <mat-icon>restart_alt</mat-icon>
-            </button>
-            } @else {
-            <span class="settings-panel__auto-badge">auto</span>
-            }
-          </div>
-        </div>
-
-        <div class="settings-panel__row">
-          <span class="settings-panel__label">Font Size</span>
-          <div class="settings-panel__font-size-control">
-            <button class="font-size-step-btn" (click)="changeFontSize(-1)" [disabled]="currentSettings().fontSize <= minFontSize" aria-label="Decrease font size">
-              <mat-icon>remove</mat-icon>
-            </button>
-            <span class="settings-panel__font-size-value">{{ currentSettings().fontSize }}px</span>
-            <button class="font-size-step-btn" (click)="changeFontSize(1)" [disabled]="currentSettings().fontSize >= maxFontSize" aria-label="Increase font size">
-              <mat-icon>add</mat-icon>
-            </button>
-            @if (currentSettings().fontSize !== defaultFontSize) {
-            <button class="reset-btn" (click)="resetFontSize()" title="Reset to default size" aria-label="Reset font size">
-              <mat-icon>restart_alt</mat-icon>
-            </button>
-            }
-          </div>
-        </div>
-
-        <div class="settings-panel__row settings-panel__row--font">
-          <span class="settings-panel__label">Font</span>
-          <select
-            class="settings-panel__font-select"
-            [value]="currentSettings().fontFamily || ''"
-            (change)="onFontFamilyChange($any($event.target).value)"
-            aria-label="Select terminal font"
-          >
-            @for (font of terminalFonts; track font.name) {
-            <option [value]="font.value || ''">{{ font.name }}</option>
-            }
-          </select>
-        </div>
-      </div>
+      <app-terminal-settings-panel
+        [style.--gns3-terminal-settings-top]="'40px'"
+        [style.--gns3-terminal-settings-right]="'15px'"
+        (closed)="closeSettingsPanel()"
+      />
       }
 
       <app-log-console [hidden]="!(selected.value === nodes.length)" [controller]="controller()" [project]="project()">

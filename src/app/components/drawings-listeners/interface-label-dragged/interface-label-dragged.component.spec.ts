@@ -6,6 +6,7 @@ import { LinksDataSource } from '../../../cartography/datasources/links-datasour
 import { LinksEventSource } from '../../../cartography/events/links-event-source';
 import { LinkService } from '@services/link.service';
 import { ToasterService } from '@services/toaster.service';
+import { MapChangeDetectorRef } from '../../../cartography/services/map-change-detector-ref';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { MapLinkNode } from '../../../cartography/models/map/map-link-node';
 import { Link } from '@models/link';
@@ -124,6 +125,7 @@ describe('InterfaceLabelDraggedComponent', () => {
         { provide: LinkService, useValue: mockLinkService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
+        { provide: MapChangeDetectorRef, useValue: { detectChanges: vi.fn() } },
       ],
     }).compileComponents();
 
@@ -275,7 +277,7 @@ describe('InterfaceLabelDraggedComponent', () => {
       expect(cdrSpy).toHaveBeenCalled();
     });
 
-    it('should not update data source when updateNodes fails', async () => {
+    it('should restore the previous label positions when updateNodes fails', async () => {
       const error = new Error('Update failed');
       mockLinkService.updateNodes.mockReturnValue(throwError(() => error));
 
@@ -286,7 +288,14 @@ describe('InterfaceLabelDraggedComponent', () => {
       // Advance fake timers for async error handling
       await vi.runAllTimersAsync();
 
-      expect(mockLinksDataSource.update).not.toHaveBeenCalled();
+      expect(mockLinksDataSource.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          nodes: [
+            expect.objectContaining({ node_id: 'node-1', label: expect.objectContaining({ x: 100, y: 200 }) }),
+            expect.objectContaining({ node_id: 'node-2', label: expect.objectContaining({ x: 300, y: 400 }) }),
+          ],
+        })
+      );
     });
   });
 

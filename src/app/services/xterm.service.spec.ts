@@ -1,4 +1,4 @@
-import { ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FitAddon } from '@xterm/addon-fit';
 import { Terminal } from '@xterm/xterm';
@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { DEFAULT_FONT_SIZE, XtermService } from './xterm.service';
 import { ThemeService } from './theme.service';
+import { UserPreferencesService } from './user-preferences.service';
 
 const APPEARANCE_STORAGE_KEY = 'gns3_console_appearance';
 
@@ -24,6 +25,7 @@ const mockCssVariables: Record<string, string> = {
 describe('XtermService', () => {
   let service: XtermService;
   let mockThemeService: { getActualTheme: ReturnType<typeof vi.fn> };
+  let userPreferences: UserPreferencesService;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -37,6 +39,8 @@ describe('XtermService', () => {
     mockThemeService = {
       getActualTheme: vi.fn().mockReturnValue('light'),
     };
+
+    userPreferences = new UserPreferencesService(Injector.create({ providers: [] }));
 
     TestBed.configureTestingModule({
       providers: [XtermService, { provide: ThemeService, useValue: mockThemeService }],
@@ -81,7 +85,7 @@ describe('XtermService', () => {
       })
     );
 
-    const loaded = new XtermService(mockThemeService as any);
+    const loaded = new XtermService(mockThemeService as any, userPreferences);
 
     expect(loaded.settings).toEqual({
       fontSize: 28,
@@ -102,7 +106,7 @@ describe('XtermService', () => {
       })
     );
 
-    const loaded = new XtermService(mockThemeService as any);
+    const loaded = new XtermService(mockThemeService as any, userPreferences);
 
     expect(loaded.settings).toEqual({
       fontSize: DEFAULT_FONT_SIZE,
@@ -213,5 +217,30 @@ describe('XtermService', () => {
 
     expect(service.getEffectiveForegroundHex()).toBe('#111111');
     expect(service.getEffectiveBackgroundHex()).toBe('#eeeeee');
+  });
+
+  it('resets console appearance to defaults when the stored key is gone (logout wipe)', () => {
+    service.updateSettings({ fontSize: 28, fontFamily: 'Hack', foregroundColor: '#123456' });
+    const received: any[] = [];
+    service.settingsChanged$.subscribe((value) => received.push(value));
+
+    // Logout wipes the mirror (the storage key disappears) and fires the
+    // external-update callbacks; the service re-reads and re-broadcasts.
+    localStorage.removeItem(APPEARANCE_STORAGE_KEY);
+    const callbacks = (TestBed.inject(UserPreferencesService) as any).externalUpdateCallbacks as Set<() => void>;
+    for (const callback of callbacks) {
+      callback();
+    }
+
+    const expected = {
+      fontSize: DEFAULT_FONT_SIZE,
+      fontFamily: null,
+      foregroundColor: null,
+      backgroundColor: null,
+    };
+    // The previous user's appearance must not stay in memory…
+    expect(service.settings).toEqual(expected);
+    // …nor be broadcast to the terminals as the next user's.
+    expect(received[received.length - 1]).toEqual(expected);
   });
 });

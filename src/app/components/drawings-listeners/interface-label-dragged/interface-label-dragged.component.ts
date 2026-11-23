@@ -7,6 +7,7 @@ import { MapLinkNode } from '../../../cartography/models/map/map-link-node';
 import { Link } from '@models/link';
 import { Controller } from '@models/controller';
 import { LinkService } from '@services/link.service';
+import { MapChangeDetectorRef } from '../../../cartography/services/map-change-detector-ref';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
@@ -23,6 +24,7 @@ export class InterfaceLabelDraggedComponent implements OnInit, OnDestroy {
   private linkService = inject(LinkService);
   private linksDataSource = inject(LinksDataSource);
   private linksEventSource = inject(LinksEventSource);
+  private mapChangeDetectorRef = inject(MapChangeDetectorRef);
   private toasterService = inject(ToasterService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -34,6 +36,7 @@ export class InterfaceLabelDraggedComponent implements OnInit, OnDestroy {
 
   onInterfaceLabelDragged(draggedEvent: DraggedDataEvent<MapLinkNode>) {
     const link = this.linksDataSource.get(draggedEvent.datum.linkId);
+    const previousPositions = link.nodes.map((linkNode) => ({ x: linkNode.label.x, y: linkNode.label.y }));
     if (link.nodes[0].node_id === draggedEvent.datum.nodeId) {
       link.nodes[0].label.x += draggedEvent.dx;
       link.nodes[0].label.y += draggedEvent.dy;
@@ -50,6 +53,16 @@ export class InterfaceLabelDraggedComponent implements OnInit, OnDestroy {
           this.linksDataSource.update(controllerLink);
         },
         error: (err) => {
+          // The server rejected the label move (e.g. RBAC: no Link.Modify):
+          // restore the previous label positions and force an un-gated
+          // redraw — the restored signature equals the last rendered one, so
+          // the gated redraw would skip and leave the label at the cursor.
+          link.nodes.forEach((linkNode, i) => {
+            linkNode.label.x = previousPositions[i].x;
+            linkNode.label.y = previousPositions[i].y;
+          });
+          this.linksDataSource.update(link);
+          this.mapChangeDetectorRef.detectChanges();
           const message = err.error?.message || err.message || 'Failed to update interface label position';
           this.toasterService.error(message);
           this.cdr.markForCheck();

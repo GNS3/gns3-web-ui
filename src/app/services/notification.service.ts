@@ -5,6 +5,7 @@ import { Compute } from '@models/compute';
 import { Project } from '@models/project';
 import { SettingsUpdatedEvent } from '@models/server-settings/server-settings';
 import { ComputeService } from '@services/compute.service';
+import { PermissionService } from '@services/permission.service';
 import { DockerImageDeletedNotification, DockerImagePullNotification } from '@models/docker/docker-image';
 
 export interface ComputeNotification {
@@ -31,14 +32,24 @@ export class NotificationService {
   // reconnect path. Mirrors the project WS liveness check in project-map.
   private readonly WS_LIVENESS_TIMEOUT_MS = 15000;
   private readonly WS_LIVENESS_CHECK_MS = 5000;
+  /** Close code the server uses when the stream privilege is missing or revoked. */
+  private readonly WS_POLICY_VIOLATION_CLOSE_CODE = 1008;
+  /** The global stream requires this privilege (superadmins hold every privilege). */
+  private readonly NOTIFICATION_STREAM_PRIVILEGE = 'Notification.Audit';
+  /** The polling fallback reads GET /computes, which requires this privilege. */
+  private readonly COMPUTE_LIST_PRIVILEGE = 'Compute.Audit';
+  private readonly COMPUTE_POLL_INTERVAL_MS = 10000;
 
   private ws: WebSocket | null = null;
   private currentController: Controller | null = null;
+  /** Privileges the stream decision was based on (null when the lookup failed). */
+  private currentPrivileges: ReadonlySet<string> | null = null;
   private intentionalClose = false;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempt = 0;
   private livenessTimer: ReturnType<typeof setInterval> | null = null;
   private lastWsMessageAt = 0;
+  private pollTimer: ReturnType<typeof setInterval> | null = null;
 
   // Event emitters for compute notifications
   public computeNotificationEmitter = new EventEmitter<ComputeNotification>();
@@ -66,7 +77,10 @@ export class NotificationService {
   // EventEmitter for cache updates
   public computeCacheUpdated = new EventEmitter<Compute[]>();
 
-  constructor(private computeService: ComputeService) {}
+  constructor(
+    private computeService: ComputeService,
+    private permissionService: PermissionService,
+  ) {}
 
   notificationsPath(controller: Controller): string {
     let protocol: string = 'ws';
@@ -105,7 +119,132 @@ export class NotificationService {
     this.disconnect();
 
     this.currentController = controller;
-    this.openComputeNotificationsWs();
+    // The stream requires the Notification.Audit privilege and the server
+    // closes unauthorized sockets with code 1008. Decide from the cached
+    // privileges when they are already available (the common case once the
+    // layout has activated the controller); fetch them otherwise.
+    const cached = this.permissionService.cachedPrivileges(controller.id);
+    if (cached !== null) {
+      this.openStreamOrPoll(controller, cached);
+      return;
+    }
+    void this.permissionService
+      .ready(controller.id)
+      .then((privileges) => this.openStreamOrPoll(controller, privileges))
+      .catch(() => {
+        // Privilege lookup failed (e.g. transient network error): open the
+        // stream anyway and let the server decide — the 1008 close handler
+        // degrades to polling if it is denied. The server stays the authority.
+        if (this.currentController === controller) {
+          this.openComputeNotificationsWs();
+        }
+      });
+  }
+
+  /**
+   * Open the notification stream when the user holds the stream privilege,
+   * or fall back to polling the compute list otherwise (the list endpoint
+   * carries the runtime state — connected, last error, usage — and the local
+   * compute, so polling it replaces the stream for every cache consumer).
+   */
+  private openStreamOrPoll(controller: Controller, privileges: ReadonlySet<string>) {
+    if (this.currentController !== controller) {
+      return; // controller switched while the privileges were resolving
+    }
+    this.currentPrivileges = privileges;
+    if (privileges.has(this.NOTIFICATION_STREAM_PRIVILEGE)) {
+      this.openComputeNotificationsWs();
+    } else {
+      // A role without Notification.Audit may still lack Compute.Audit (the
+      // built-in Lab member has neither): polling would 403 — and toast —
+      // every interval. Only poll when the list is actually readable.
+      this.pollComputesWhenVisible(privileges);
+    }
+  }
+
+  /**
+   * Start the polling fallback only for users who can read the compute list.
+   * Without Compute.Audit the 403 is stable, so there is nothing to poll.
+   */
+  private pollComputesWhenVisible(privileges: ReadonlySet<string>): void {
+    if (privileges.has(this.COMPUTE_LIST_PRIVILEGE)) {
+      this.startComputePolling();
+    }
+  }
+
+  /**
+   * The server closed the stream with the policy-violation code (privilege
+   * missing or revoked). Degrade to polling only when Compute.Audit is held;
+   * otherwise stop trying silently. When the initial privilege lookup failed,
+   * resolve the set now instead of failing open into a 403 loop.
+   */
+  private handleStreamDenied(): void {
+    const controller = this.currentController;
+    if (!controller) {
+      return;
+    }
+    const privileges = this.currentPrivileges;
+    if (privileges !== null) {
+      this.pollComputesWhenVisible(privileges);
+      return;
+    }
+    void this.permissionService
+      .ready(controller.id)
+      .then((resolved) => {
+        if (this.currentController !== controller) {
+          return;
+        }
+        this.currentPrivileges = resolved;
+        this.pollComputesWhenVisible(resolved);
+      })
+      .catch(() => {
+        // Privileges unknown: stay silent rather than poll into a 403 storm.
+      });
+  }
+
+  /**
+   * Poll the compute list on an interval and push it through the cache, so
+   * consumers keep receiving updates when the notification stream cannot be
+   * opened (no Notification.Audit privilege, or the server closed the socket
+   * with the policy-violation code).
+   */
+  private startComputePolling() {
+    if (this.pollTimer || !this.currentController) {
+      return;
+    }
+    // Install the interval first: a synchronously failing first fetch (403
+    // on a stale privilege set) must find and clear it.
+    this.pollTimer = setInterval(() => this.fetchComputesIntoCache(), this.COMPUTE_POLL_INTERVAL_MS);
+    this.fetchComputesIntoCache();
+  }
+
+  private stopComputePolling() {
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer);
+      this.pollTimer = null;
+    }
+  }
+
+  private fetchComputesIntoCache() {
+    const controller = this.currentController;
+    if (!controller) {
+      return;
+    }
+    this.computeService.getComputes(controller).subscribe({
+      next: (computes) => this.setInitialComputes(computes),
+      error: (error) => {
+        const status = (error as { originalError?: { status?: number } } | null)?.originalError?.status;
+        if (status === 403) {
+          // The fallback requires Compute.Audit: a denial is stable, so stop
+          // the interval instead of producing a 403 (and its toast) every tick.
+          this.stopComputePolling();
+          return;
+        }
+        // Keep polling across transient failures: they must not silently
+        // freeze the compute state for users without the stream.
+        console.warn('Compute list polling failed', error);
+      },
+    });
   }
 
   /**
@@ -146,12 +285,21 @@ export class NotificationService {
       console.error('Compute notifications WebSocket error');
     };
 
-    this.ws.onclose = () => {
+    this.ws.onclose = (event: CloseEvent) => {
       this.ws = null;
       this.stopLivenessCheck();
       // Don't clear currentController - keep it for potential reconnection
       // currentController should only be cleared in disconnect() method
       if (this.intentionalClose) {
+        return;
+      }
+      if (event.code === this.WS_POLICY_VIOLATION_CLOSE_CODE) {
+        // The server denied the stream privilege — either at connect time or
+        // after a revocation while the stream was open (the server re-checks
+        // on every ping tick and closes with this code). Don't fight it with
+        // reconnects: degrade to polling only when the compute list is
+        // readable (Compute.Audit), never into a 403 loop.
+        this.handleStreamDenied();
         return;
       }
       this.scheduleReconnect();
@@ -211,12 +359,14 @@ export class NotificationService {
       this.reconnectTimer = null;
     }
     this.stopLivenessCheck();
+    this.stopComputePolling();
     this.reconnectAttempt = 0;
     if (this.ws) {
       this.ws.close();
       this.ws = null;
     }
     this.currentController = null;
+    this.currentPrivileges = null;
     this.computeCache.clear();
   }
 

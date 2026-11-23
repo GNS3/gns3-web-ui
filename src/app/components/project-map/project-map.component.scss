@@ -53,15 +53,6 @@
   }
 }
 
-/* Selection for SVG elements on map */
-.selection-svg-stroke {
-  stroke: var(--mat-sys-primary);
-}
-
-.selection-error {
-  stroke: var(--mat-sys-error);
-}
-
 .wrapper {
   height: 500px;
 }
@@ -469,29 +460,6 @@ mat-divider.divider {
   left: 50%;
 }
 
-line.selected {
-  @extend .selection-svg-stroke;
-}
-
-svg.map image:hover,
-svg.map image.chosen,
-g.node_body.selected > image {
-  filter: url('#grayscale');
-}
-
-path.serial_link.selected {
-  @extend .selection-error;
-}
-
-path.curve_element.selected {
-  @extend .selection-error;
-}
-
-.selected > .interface_label_border {
-  stroke: var(--mat-sys-on-surface);
-  fill: none;
-}
-
 /* Rotation handle — hidden by default, shown on selection */
 g.drawing_body .rotation-handle-stem,
 g.drawing_body .rotation-handle-knob {
@@ -513,16 +481,6 @@ g.drawing_body.drawing_selected .rotation-handle-knob {
   fill: var(--mat-sys-primary);
   stroke: var(--mat-sys-on-primary);
   stroke-width: 2;
-}
-
-g.node text,
-.noselect {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
 .project-toolbar button {
@@ -627,5 +585,63 @@ g.node text,
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+}
+
+/* =============================================
+// Distribution banner
+// A frozen template (copies exist) or a distributed copy (provided by the
+// teacher): a floating strip under the titlebar, above the canvas.
+// ============================================= */
+.project-banner {
+  position: fixed;
+  top: calc(var(--gns3-project-titlebar-height) + 8px);
+  left: 64px;
+  right: 16px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-tertiary) 40%, transparent);
+  background-color: color-mix(in srgb, var(--mat-sys-tertiary) 14%, var(--mat-sys-surface));
+  color: var(--mat-sys-on-surface);
+  @extend .shadow-subtle;
+
+  &--provided {
+    border-color: color-mix(in srgb, var(--mat-sys-primary) 40%, transparent);
+    background-color: color-mix(in srgb, var(--mat-sys-primary) 14%, var(--mat-sys-surface));
+  }
+
+  &__icon {
+    color: var(--mat-sys-tertiary);
+    flex-shrink: 0;
+
+    .project-banner--provided & {
+      color: var(--mat-sys-primary);
+    }
+  }
+
+  &__body {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  &__title {
+    font-weight: 600;
+  }
+
+  &__text {
+    font-size: 13px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__action {
+    margin-left: auto;
+    flex-shrink: 0;
   }
 }

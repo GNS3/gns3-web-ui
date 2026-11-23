@@ -7,19 +7,32 @@
 } @if (isUsedFiles()) {
 <div mat-dialog-content>
   @if (successfulDeletions().length > 0) {
-  <h2 mat-dialog-title>✓ {{ successfulDeletions().length }} {{ successfulDeletions().length === 1 ? 'Project' : 'Projects' }} deleted successfully</h2>
-  @for (project of successfulDeletions(); track project; let i = $index) {
-  <p>{{ i + 1 }}. {{ project?.filename || project?.project_id }}</p>
-  } }
+  <h3 class="deletion-result__section-title">
+    ✓ {{ successfulDeletions().length }}
+    {{ successfulDeletions().length === 1 ? 'Project' : 'Projects' }} deleted successfully
+  </h3>
+  <ul class="deletion-result__list">
+    @for (project of successfulDeletions(); track project; let i = $index) {
+    <li>{{ i + 1 }}. {{ project?.filename || project?.project_id }}</li>
+    }
+  </ul>
+  }
 
   @if (failedDeletions().length > 0) {
-  <h2 mat-dialog-title class="mat-error">✗ {{ failedDeletions().length }} {{ failedDeletions().length === 1 ? 'Project' : 'Projects' }} failed to delete</h2>
-  @for (failure of failedDeletions(); track $index; let i = $index) {
-  <p>
-    {{ i + 1 }}. <strong>{{ failure.project?.filename || failure.project?.project_id }}</strong><br>
-    <span class="mat-error">{{ failure.error?.error?.message || failure.error?.message || 'Unknown error' }}</span>
-  </p>
-  } }
+  <h3 class="deletion-result__section-title deletion-result__section-title--error">
+    ✗ {{ failedDeletions().length }} {{ failedDeletions().length === 1 ? 'Project' : 'Projects' }} failed to delete
+  </h3>
+  <ul class="deletion-result__list">
+    @for (failure of failedDeletions(); track $index; let i = $index) {
+    <li>
+      {{ i + 1 }}. <strong>{{ failure.project?.filename || failure.project?.project_id }}</strong>
+      <span class="deletion-result__error">{{
+        failure.error?.error?.message || failure.error?.message || 'Unknown error'
+      }}</span>
+    </li>
+    }
+  </ul>
+  }
 </div>
 <div mat-dialog-actions align="end">
   <button mat-raised-button color="primary" (click)="dialogRef.close(successfulDeletions().length > 0)">Close</button>

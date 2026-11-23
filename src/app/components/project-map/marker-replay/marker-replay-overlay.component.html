@@ -3,6 +3,17 @@
      contract that keeps 'main' above never-clicked pins. MINIMIZED: the window
      div unmounts but the component (session service, pins) stays alive. -->
 @if (!minimized()) {
+@if (snapGuides(); as g) {
+<svg class="gns3-replay__snap-guides" [style.z-index]="zIndex() + 5000">
+  @if (g.x !== null) {
+  <line class="gns3-replay__snap-guide" [attr.x1]="g.x" [attr.x2]="g.x" y1="0" y2="100%"></line>
+  }
+  @if (g.y !== null) {
+  <line class="gns3-replay__snap-guide" x1="0" x2="100%" [attr.y1]="g.y" [attr.y2]="g.y"></line>
+  }
+</svg>
+}
+
 <div
   class="gns3-replay__main"
   [class.gns3-replay__main--dragging]="dragging()"
@@ -17,69 +28,59 @@
   [validateResize]="validate"
   [enableGhostResize]="false"
   (resizeStart)="onResizeStart()"
+  (resizing)="onResizing($event)"
   (resizeEnd)="onResizeEnd($event)"
 >
-  <div
-    class="gns3-replay__resize-handle gns3-replay__resize-handle--top"
-    mwlResizeHandle
-    [resizeEdges]="{ top: true }"
-  ></div>
-  <div
-    class="gns3-replay__resize-handle gns3-replay__resize-handle--right"
-    mwlResizeHandle
-    [resizeEdges]="{ right: true }"
-  ></div>
-  <div
-    class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom"
-    mwlResizeHandle
-    [resizeEdges]="{ bottom: true }"
-  ></div>
-  <div
-    class="gns3-replay__resize-handle gns3-replay__resize-handle--left"
-    mwlResizeHandle
-    [resizeEdges]="{ left: true }"
-  ></div>
-  <div
-    class="gns3-replay__resize-handle gns3-replay__resize-handle--top-left"
-    mwlResizeHandle
-    [resizeEdges]="{ top: true, left: true }"
-  ></div>
-  <div
-    class="gns3-replay__resize-handle gns3-replay__resize-handle--top-right"
-    mwlResizeHandle
-    [resizeEdges]="{ top: true, right: true }"
-  ></div>
-  <div
-    class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom-left"
-    mwlResizeHandle
-    [resizeEdges]="{ bottom: true, left: true }"
-  ></div>
-  <div
-    class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom-right"
-    mwlResizeHandle
-    [resizeEdges]="{ bottom: true, right: true }"
-  ></div>
+  <app-floating-window-resize-handles prefix="gns3-replay" />
 
-  <div class="gns3-replay__header" (mousedown)="onHeaderMouseDown($event)">
-    <mat-icon class="gns3-replay__icon">history</mat-icon>
-    <span class="gns3-replay__title-text">Tag replay</span>
-    <span class="gns3-replay__tag">tag {{ tag() }}</span>
-    <span class="gns3-replay__count">{{ countLabel() }}</span>
-    <button
-      mat-icon-button
-      class="gns3-replay__pin"
-      [disabled]="!svc.currentFrame() || alreadyPinned()"
-      (click)="svc.pinCurrent()"
-      [matTooltip]="alreadyPinned() ? 'Already pinned' : 'Pin frame'"
-    >
-      <mat-icon>push_pin</mat-icon>
-    </button>
-    <button mat-icon-button class="gns3-replay__minimize" (click)="minimize()" matTooltip="Minimize">
-      <mat-icon>remove</mat-icon>
-    </button>
-    <button mat-icon-button class="gns3-replay__close" (click)="close()" matTooltip="Close">
-      <mat-icon>close</mat-icon>
-    </button>
+  <div class="gns3-replay__header">
+    <!-- Drag zone: the title strip IS the drag surface (mousedown here moves
+         the window); identity chips are info, not controls. -->
+    <div class="gns3-replay__header-drag" (mousedown)="onHeaderMouseDown($event)">
+      <mat-icon class="gns3-replay__icon">history</mat-icon>
+      <span class="gns3-replay__title-text">Tag replay</span>
+      <span class="gns3-replay__tag">tag {{ tag() }}</span>
+      <span class="gns3-replay__count">{{ countLabel() }}</span>
+    </div>
+    <!-- Action zone: never drags — not even in the gaps between buttons. -->
+    <div class="gns3-replay__window-actions">
+      <div class="gns3-replay__zoom">
+        <button
+          class="gns3-replay__zoom-btn"
+          [disabled]="!zoomCtl.canStepDown()"
+          matTooltip="Zoom out"
+          (click)="zoomCtl.stepDown()"
+        >
+          <mat-icon>remove</mat-icon>
+        </button>
+        <button class="gns3-replay__zoom-level" matTooltip="Reset zoom" (click)="zoomCtl.reset()">
+          {{ zoomCtl.label() }}
+        </button>
+        <button
+          class="gns3-replay__zoom-btn"
+          [disabled]="!zoomCtl.canStepUp()"
+          matTooltip="Zoom in"
+          (click)="zoomCtl.stepUp()"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+      <button
+        mat-icon-button
+        class="gns3-replay__pin"
+        [disabled]="!svc.currentFrame() || alreadyPinned()"
+        (click)="svc.pinCurrent()"
+        [matTooltip]="alreadyPinned() ? 'Already pinned' : 'Pin frame'"
+      >
+        <mat-icon>push_pin</mat-icon>
+      </button>
+      <button mat-icon-button class="gns3-replay__minimize" (click)="minimize()" matTooltip="Minimize">
+        <mat-icon>remove</mat-icon>
+      </button>
+      <button mat-icon-button class="gns3-replay__close" (click)="close()" matTooltip="Close">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
 
   <!-- Two independent narrowings, combined AND-style server-side: the display
@@ -158,8 +159,8 @@
       }
     </div>
     } @else {
-    <div class="gns3-replay__panes">
-      <app-replay-packet-list class="gns3-replay__left" />
+    <div class="gns3-replay__panes" [style.zoom]="zoomCtl.css()">
+      <app-replay-packet-list class="gns3-replay__left" (frameContextMenu)="openRowMenu($event)" />
       @if (detailOpen()) {
       <button class="gns3-replay__pane-toggle" (click)="toggleDetail()" matTooltip="Hide packet details">
         <mat-icon>chevron_right</mat-icon>
@@ -188,6 +189,33 @@
     </div>
     }
   </div>
+
+  <!-- Packet-row context menu (right-click over a row / Shift+F10 on a
+       focused row). Deliberately a LOCAL menu in the window chrome, not a
+       Material/CDK overlay: it must sit in this window's z band and OUTSIDE
+       the zoomed panes (raw clientX/clientY would be scaled otherwise).
+       The backdrop swallows the dismissing click so the action behind the
+       menu never fires. -->
+  @if (rowMenu(); as menu) {
+  <div
+    class="gns3-replay__row-menu-backdrop"
+    (mousedown)="closeRowMenu()"
+    (contextmenu)="$event.preventDefault(); closeRowMenu()"
+  ></div>
+  <div
+    class="gns3-replay__row-menu"
+    role="menu"
+    [style.left.px]="menu.x"
+    [style.top.px]="menu.y"
+    (document:keydown.escape)="closeRowMenu()"
+    (contextmenu)="$event.preventDefault()"
+  >
+    <button type="button" class="gns3-replay__row-menu-item" role="menuitem" (click)="toggleRowMenuPin()">
+      <mat-icon>push_pin</mat-icon>
+      <span>{{ svc.pinnedIdFor(menu.frame) !== null ? 'Unpin frame' : 'Pin frame' }}</span>
+    </button>
+  </div>
+  }
 </div>
 }
 

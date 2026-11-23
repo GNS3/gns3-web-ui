@@ -4,12 +4,13 @@ import { Observable, Subject } from 'rxjs';
 import { Drawing } from '../cartography/models/drawing';
 import { Node } from '../cartography/models/node';
 import { Link } from '@models/link';
-import { Project } from '@models/project';
+import { Project, ProjectDistribution, ProjectShare } from '@models/project';
 import { Gns3ProjectFile } from '@models/gns3-file';
 import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
 import { RecentlyOpenedProjectService } from './recentlyOpenedProject.service';
 import { SettingsService } from './settings.service';
+import { UserPrivilegesResponse } from './permission.service';
 
 @Injectable()
 export class ProjectService {
@@ -137,15 +138,196 @@ export class ProjectService {
     return this.httpController.get(controller, `/projects/${project_id}/stats`);
   }
 
-  duplicate(controller: Controller, project_id: string, project_name): Observable<any> {
+  /**
+   * Effective privileges of the caller on one project, each evaluated on the
+   * project's resource path (unlike the flattened global list, a project ACE
+   * such as Lab member replaces the inherited global role). Rendering hint:
+   * the server remains the authority for permission checks.
+   */
+  getMyPrivileges(controller: Controller, project_id: string): Observable<UserPrivilegesResponse> {
+    return this.httpController.get<UserPrivilegesResponse>(controller, `/projects/${project_id}/me/privileges`);
+  }
+
+  duplicate(controller: Controller, project_id: string, project_name: string): Observable<Project> {
     return this.httpController.post(controller, `/projects/${project_id}/duplicate`, { name: project_name });
+  }
+
+  /**
+   * Distributes a project as a per-recipient copy (classroom use case).
+   *
+   * Exactly one of `target_user`, `target_users` and `target_group` must be
+   * given (combined or missing targets are rejected with 422):
+   * - `target_user`: one recipient, the copy is named `name`.
+   * - `target_users`: several recipients, each copy is automatically named
+   *   `{name}-{username}`; any unknown username fails the whole request
+   *   (404) and an empty list is rejected (422).
+   * - `target_group`: fan-out to the group members at call time (same naming
+   *   as `target_users`); unknown group 404, empty group 409.
+   * The caller cannot be a user target (409 — duplicating the project is
+   * the supported way to get a copy for yourself).
+   * `owner_role` assigns the role of the copy owners (defaults to the
+   * built-in "Lab member" role on the server) and may not grant privileges
+   * wider than what the caller holds on the project (403; superadmins are
+   * exempt).
+   * `lock_topology` locks every node and drawing in each copy so
+   * recipients cannot move or delete them (advisory hint: the client hides
+   * the actions, the owner role stays the enforcement; defaults to true
+   * on the server).
+   *
+   * Returns 202 with the distribution job: copies are created in the
+   * background. Follow the progress with `getDistribution` until the job
+   * status leaves "running".
+   */
+  distribute(
+    controller: Controller,
+    project_id: string,
+    project_name: string,
+    targets: {
+      target_user?: string;
+      target_users?: string[];
+      target_group?: string;
+      owner_role?: string;
+      reset_mac_addresses?: boolean;
+      lock_topology?: boolean;
+    }
+  ): Observable<ProjectDistribution> {
+    return this.httpController.post(controller, `/projects/${project_id}/distribute`, {
+      name: project_name,
+      ...targets,
+    });
+  }
+
+  /**
+   * Returns the current state of one distribution job (404 once the server
+   * forgets it). Read as a background probe (login restore, 1 s polling,
+   * cancel follow-up): callers already handle 404/403 silently (expired or
+   * foreign leftover ref), so the global permission toast stays off.
+   */
+  getDistribution(controller: Controller, project_id: string, distribution_id: string): Observable<ProjectDistribution> {
+    return this.httpController.get(controller, `/projects/${project_id}/distributions/${distribution_id}`, {
+      suppressForbiddenToast: true,
+    });
+  }
+
+  /**
+   * Cancels a running distribution job. Cancellation is cooperative: the
+   * copy in flight completes, the job stops before the next recipient
+   * starts, and copies already made are kept.
+   *
+   * Returns 200 with the job (status "cancelling"; idempotent when already
+   * cancelling). A job that finished meanwhile cannot be cancelled: its
+   * terminal record is deleted instead and the call answers 204 → null,
+   * so branch on the emitted value. 403 when the caller is neither the
+   * distributing user nor the project owner.
+   */
+  cancelDistribution(
+    controller: Controller,
+    project_id: string,
+    distribution_id: string
+  ): Observable<ProjectDistribution | null> {
+    return this.httpController.delete(controller, `/projects/${project_id}/distributions/${distribution_id}`);
+  }
+
+  /** Returns a project's distribution jobs, newest first (the distributing user or the project owner). */
+  listDistributions(controller: Controller, project_id: string): Observable<ProjectDistribution[]> {
+    return this.httpController.get(controller, `/projects/${project_id}/distributions`);
+  }
+
+  /**
+   * Returns the caller's distribution records across every project in one
+   * request (every record for a superadmin). Absent on older servers (404):
+   * treat that as "no history" rather than falling back to per-project
+   * checks.
+   */
+  listAllDistributions(controller: Controller): Observable<ProjectDistribution[]> {
+    return this.httpController.get(controller, `/distributions`);
+  }
+
+  /**
+   * Deletes a terminal distribution record (204 → null). A still-running job
+   * is cancelled instead and its updated state is returned (200 → job), so
+   * branch on the emitted value.
+   */
+  deleteDistribution(
+    controller: Controller,
+    project_id: string,
+    distribution_id: string
+  ): Observable<ProjectDistribution | null> {
+    return this.httpController.delete(controller, `/projects/${project_id}/distributions/${distribution_id}`);
+  }
+
+  /**
+   * Deletes every copy of a finished distribution that still exists on the
+   * server (copies already deleted are skipped). The distribution record is
+   * kept: it still tells who received a copy and when. A running distribution
+   * answers 409 — cancel it first.
+   *
+   * Returns the distribution with its per-recipient `project_exists` flags
+   * refreshed.
+   */
+  deleteDistributionCopies(
+    controller: Controller,
+    project_id: string,
+    distribution_id: string
+  ): Observable<ProjectDistribution> {
+    return this.httpController.delete(
+      controller,
+      `/projects/${project_id}/distributions/${distribution_id}/copies`
+    );
+  }
+
+  /**
+   * Unfreezes a distributed template so it can be modified again. Only
+   * allowed once every copy made from it is gone, and only to the project
+   * owner or a superadmin (409 or 403 otherwise).
+   */
+  unfreeze(controller: Controller, project_id: string): Observable<Project> {
+    return this.httpController.post(controller, `/projects/${project_id}/unfreeze`, {});
+  }
+
+  /**
+   * Shares a project: the recipients gain access to the same project (no
+   * copies, instant).
+   *
+   * Exactly one of `target_user`, `target_users` and `target_group` must be
+   * given (422 otherwise; same target grammar as `distribute`, but a group
+   * share is one live ACE — members joining the group later gain access
+   * immediately). `role` defaults server-side to the built-in "Lab member"
+   * role; sharing again with the same target updates its role. The project
+   * owner cannot be a target (409: the share would replace the owner ACE).
+   * Returns 201 with the created/updated shares.
+   */
+  share(
+    controller: Controller,
+    project_id: string,
+    targets: {
+      target_user?: string;
+      target_users?: string[];
+      target_group?: string;
+      role?: string;
+    }
+  ): Observable<ProjectShare[]> {
+    return this.httpController.post(controller, `/projects/${project_id}/share`, targets);
+  }
+
+  /** Returns the shares of a project (its owner's own ACE is not included). */
+  listShares(controller: Controller, project_id: string): Observable<ProjectShare[]> {
+    return this.httpController.get(controller, `/projects/${project_id}/shares`);
+  }
+
+  /** Removes one share (204). */
+  removeShare(controller: Controller, project_id: string, ace_id: string): Observable<void> {
+    return this.httpController.delete(controller, `/projects/${project_id}/shares/${ace_id}`);
   }
 
   isReadOnly(project: Project) {
     if (project.readonly) {
       return project.readonly;
     }
-    return false;
+    // A distributed template is frozen: the server refuses every modification
+    // while copies exist, so the map hides the editing tools exactly like a
+    // read-only project. Reading, opening and snapshot creation stay allowed.
+    return !!project.frozen;
   }
 
   getCompression() {

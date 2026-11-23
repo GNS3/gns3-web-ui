@@ -1,22 +1,14 @@
+@use '../../floating-window/floating-window-surface';
+@use '../../floating-window/floating-window-header';
 @use '../../../../styles/buttons' as buttons;
 @use '../../../../styles/forms' as forms;
 
+// Surface chrome (box, border, shadow, silent gestures) and resize handles
+// come from the shared floating-window partials above — this file only keeps
+// what is specific to the marker manager's content.
+
 .marker-manager {
   @include forms.outlined;
-  position: fixed;
-  z-index: 1000;
-  background: var(--mat-sys-surface);
-  border: 2px solid var(--mat-sys-outline);
-  border-radius: 8px;
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent),
-    0 4px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
-  overflow: visible;
-  transition: box-shadow var(--gns3-motion-duration-standard) ease;
-
-  &:hover {
-    box-shadow: 0 12px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
-      0 6px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
-  }
 
   // The empty definitions view should end below its message, not fill the
   // default window height. An explicit user resize retains its chosen size.
@@ -25,14 +17,6 @@
       height: auto;
       max-height: inherit;
     }
-  }
-
-  &.is-dragging {
-    box-shadow: 0 16px 48px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
-      0 8px 16px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
-    opacity: 0.9;
-    cursor: grabbing;
-    will-change: left, top;
   }
 
   &.is-minimized {
@@ -48,27 +32,10 @@
     border-radius: 6px;
   }
 
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4px 8px;
-    background: var(--mat-sys-surface-container);
-    border-bottom: 1px solid var(--mat-sys-outline-variant);
-    cursor: grab;
-    user-select: none;
-    flex-shrink: 0;
-
-    // Closed hand while the drag gesture is live.
-    &:active {
-      cursor: grabbing;
-    }
-  }
-
+  // The header strip's layout, drag-zone split and cursors come from the
+  // floating-window partial (`gns3-window__header*` classes in the template);
+  // only the typography and the buttons below are window-specific.
   &__header-title {
-    display: flex;
-    align-items: center;
-    gap: 4px;
     font-size: 12px;
     font-weight: 500;
     color: var(--mat-sys-on-surface);
@@ -82,10 +49,6 @@
   }
 
   &__header-actions {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-
     .minimize-button,
     .close-button {
       --gns3-action-icon-size: 16px;
@@ -133,15 +96,17 @@
   &__definition-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     margin-top: var(--gns3-form-row-gap);
+    margin-bottom: var(--gns3-density-space-4);
   }
 
+  // Sits in the empty cell after Color on the three-column layout, so the
+  // create/save actions share a row with the fields instead of taking one.
   &__definition-actions {
-    grid-column: 1 / -1;
+    align-self: center;
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: var(--gns3-density-space-3);
-    margin-bottom: var(--gns3-density-space-4);
 
     button {
       @include buttons.geometry;
@@ -422,90 +387,6 @@
 @container marker-pane (max-width: 480px) {
   .marker-manager__definition-grid {
     grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-// ---- resize handles (cloned from node-file-manager-inline) ----
-.resize-handle {
-  position: absolute;
-  z-index: 100;
-  opacity: 0;
-  transition: opacity var(--gns3-motion-duration-standard) ease;
-
-  .marker-manager:hover & {
-    opacity: 1;
-  }
-
-  &.resize-handle-top {
-    top: -4px;
-    left: 12px;
-    right: 12px;
-    height: 12px;
-    cursor: ns-resize;
-    background: transparent;
-  }
-
-  &.resize-handle-right {
-    top: 12px;
-    right: -4px;
-    bottom: 12px;
-    width: 12px;
-    cursor: ew-resize;
-    background: transparent;
-  }
-
-  &.resize-handle-bottom {
-    bottom: 0;
-    left: 12px;
-    right: 12px;
-    height: 12px;
-    cursor: ns-resize;
-    background: transparent;
-  }
-
-  &.resize-handle-left {
-    top: 12px;
-    left: -4px;
-    bottom: 12px;
-    width: 12px;
-    cursor: ew-resize;
-    background: transparent;
-  }
-
-  &.resize-handle-top-left {
-    top: -6px;
-    left: -6px;
-    width: 20px;
-    height: 20px;
-    cursor: nwse-resize;
-    background: transparent;
-  }
-
-  &.resize-handle-top-right {
-    top: -6px;
-    right: -6px;
-    width: 20px;
-    height: 20px;
-    cursor: nesw-resize;
-    background: transparent;
-  }
-
-  &.resize-handle-bottom-left {
-    bottom: 0;
-    left: -6px;
-    width: 20px;
-    height: 20px;
-    cursor: nesw-resize;
-    background: transparent;
-  }
-
-  &.resize-handle-bottom-right {
-    bottom: 0;
-    right: -6px;
-    width: 20px;
-    height: 20px;
-    cursor: nwse-resize;
-    background: transparent;
   }
 }
 

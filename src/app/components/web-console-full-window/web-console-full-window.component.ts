@@ -7,10 +7,12 @@ import {
   inject,
   viewChild,
   ChangeDetectorRef,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 import { Subject, takeUntil } from 'rxjs';
 import { Terminal } from '@xterm/xterm';
 import { AttachAddon } from '@xterm/addon-attach';
@@ -24,12 +26,13 @@ import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
 import { XtermService } from '@services/xterm.service';
 import { ToasterService } from '@services/toaster.service';
+import { TerminalSettingsPanelComponent } from '../terminal-settings-panel/terminal-settings-panel.component';
 
 @Component({
   selector: 'app-web-console-full-window',
   templateUrl: './web-console-full-window.component.html',
   styleUrl: './web-console-full-window.component.scss',
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule, TerminalSettingsPanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
@@ -41,6 +44,11 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
   private node: GNS3Node;
   private contextMenuCleanup: (() => void) | null = null;
   private socket: WebSocket | null = null;
+  private resizeObserver: ResizeObserver | null = null;
+
+  // Settings panel state
+  private showSettingsPanelSignal = signal(false);
+  public readonly showSettingsPanel = this.showSettingsPanelSignal.asReadonly();
 
   // Inject services first
   private consoleService = inject(NodeConsoleService);
@@ -164,7 +172,53 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
 
       // Setup context menu for copy/paste
       this.contextMenuCleanup = this.contextMenuService.attachContextMenu(this.term, terminal.nativeElement);
+
+      // Watch the container so the terminal re-fits when the browser window resizes.
+      // Unlike the in-app console, this standalone page never receives
+      // consoleResized events from the console wrapper.
+      this.setupResizeObserver();
     }, 0);
+  }
+
+  /**
+   * Setup ResizeObserver to automatically resize terminal when the container
+   * (i.e. the browser window in this standalone page) changes size.
+   */
+  private setupResizeObserver(): void {
+    const terminal = this.terminal();
+    if (!terminal?.nativeElement) return;
+
+    this.resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+
+        // Skip if width or height is 0 (element is hidden)
+        if (width === 0 || height === 0) continue;
+
+        // Use requestAnimationFrame to ensure DOM is fully rendered
+        requestAnimationFrame(() => {
+          try {
+            this.fitAddon.fit();
+          } catch (e) {
+            // Ignore fit errors when element is not visible
+          }
+        });
+      }
+    });
+
+    this.resizeObserver.observe(terminal.nativeElement);
+  }
+
+  // ─── Terminal appearance settings ───────────────────────────────────────────
+
+  toggleSettingsPanel(): void {
+    this.showSettingsPanelSignal.update((v) => !v);
+    this.cdr.markForCheck();
+  }
+
+  closeSettingsPanel(): void {
+    this.showSettingsPanelSignal.set(false);
+    this.cdr.markForCheck();
   }
 
   /**
@@ -185,6 +239,12 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
     if (this.contextMenuCleanup) {
       this.contextMenuCleanup();
       this.contextMenuCleanup = null;
+    }
+
+    // Cleanup ResizeObserver to prevent memory leaks
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
     }
 
     // Dispose terminal

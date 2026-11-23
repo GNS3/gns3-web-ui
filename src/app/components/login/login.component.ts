@@ -23,6 +23,7 @@ import { AuthResponse } from '@models/authResponse';
 import { Controller } from '@models/controller';
 import { Version } from '@models/version';
 import { LoginService } from '@services/login.service';
+import { SessionResetService } from '@services/session-reset.service';
 import { ControllerService } from '@services/controller.service';
 import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
@@ -53,6 +54,7 @@ interface RememberMeData {
 })
 export class LoginComponent implements OnInit {
   private loginService = inject(LoginService);
+  private sessionReset = inject(SessionResetService);
   private controllerService = inject(ControllerService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -98,9 +100,12 @@ export class LoginComponent implements OnInit {
       (controller: Controller) => {
         this.controller = controller;
 
-        if (controller.authToken) {
-          this.router.navigate(['/controller', this.controller.id, 'systemstatus']);
-        }
+        // Deliberately no auto-navigation away when a stale authToken is
+        // present: browser storage is shared by every user of this browser
+        // profile, and bouncing here would silently resume the previous
+        // user's session instead of letting the visitor authenticate as
+        // themselves. Route guards already resume authenticated sessions
+        // on every other route.
 
         this.versionService.get(this.controller).subscribe({
           next: (version: Version) => {
@@ -175,8 +180,19 @@ export class LoginComponent implements OnInit {
           localStorage.setItem(`refresh_token_${controller.id}`, response.refresh_token);
         }
 
+        // A different user is taking over this controller entry: tear down
+        // the previous user's local state (privilege cache, preferences
+        // mirror, notification history, per-project flags) so nothing of
+        // their session leaks into this one. Same-user re-login keeps it.
+        if (controller.username && controller.username !== username) {
+          this.sessionReset.reset();
+        }
+
         controller.username = username;
-        controller.password = password;
+        // The password deliberately never lands on the controller object:
+        // the object is persisted to localStorage, which is shared by every
+        // user of this browser profile. Authentication renews through the
+        // refresh token instead.
         controller.tokenExpired = false;
         await this.controllerService.update(controller);
 

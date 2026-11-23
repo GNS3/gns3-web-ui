@@ -7,7 +7,7 @@
 
   <div class="settings__layout">
     <nav class="settings__categories" aria-label="Web settings categories">
-      @for (category of categories; track category.id) {
+      @for (category of categories(); track category.id) {
       <button
         type="button"
         class="settings__category"
@@ -535,6 +535,7 @@
         <div class="settings__panel-header">
           <h2 id="ai-settings-title">AI</h2>
         </div>
+        @if (canManageAiSkills()) {
         <div class="settings__action-card">
           <div>
             <mat-icon>auto_awesome</mat-icon>
@@ -558,6 +559,7 @@
             }
           </button>
         </div>
+        }
       </section>
       } }
     </main>

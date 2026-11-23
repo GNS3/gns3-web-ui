@@ -1,0 +1,129 @@
+// Resize-handle hit zones of the floating-window standard, emitted once for
+// both window-family prefixes (the kit's `gns3-window` and the replay
+// fleet's `gns3-replay`) — the ten host windows share this component, so
+// they no longer carry a per-family copy of these rules.
+
+// The host element must not create a box: the handle divs position
+// themselves against the window element (the nearest positioned ancestor)
+// and live outside its border box.
+:host {
+  display: contents;
+}
+
+// ---- resize handles: straddling the border, invisible ----
+
+// EDGES: zero inward reach, on purpose. A handle overlapping INTO the window
+// would sit right across the content scrollbar's thumb zone (the cursor would
+// flip to ew-resize over it and drags would resize instead of scroll). Edge
+// strips therefore span the FULL side but stay entirely outside the border
+// box — no 12px corner inset, so the cursor never vanishes near a corner.
+//
+// CORNERS: the one allowed inward reach (~6px). An outside-only corner box
+// reads as "far from the corner": the edge strips stop, and aiming anywhere
+// near the visible corner hits nothing. No scrollbar thumb lives at a corner,
+// so a corner may straddle it. Trade-offs accepted: a window clamped hard
+// against a viewport edge loses that side's handle (grab another edge), and
+// snapped neighbours share the seam gutter.
+//
+// AFFORDANCE: the hit zones are FUNCTIONAL but fully INVISIBLE by design
+// (settled user preference): grabbing works, the cursor morphs on hover — but
+// no background tint ever renders, at rest, on hover or mid-gesture. The only
+// allowed visual feedback of a resize is the cursor itself.
+@mixin floating-window-resize-handles($prefix) {
+  .#{$prefix}__resize-handle {
+    position: absolute;
+    z-index: 100;
+    background: transparent;
+
+    &--top {
+      top: -10px;
+      left: 0;
+      right: 0;
+      height: 10px;
+      cursor: ns-resize;
+    }
+
+    &--right {
+      top: 0;
+      right: -10px;
+      bottom: 0;
+      width: 10px;
+      cursor: ew-resize;
+    }
+
+    &--bottom {
+      bottom: -10px;
+      left: 0;
+      right: 0;
+      height: 10px;
+      cursor: ns-resize;
+    }
+
+    &--left {
+      top: 0;
+      left: -10px;
+      bottom: 0;
+      width: 10px;
+      cursor: ew-resize;
+    }
+
+    // 16×16 straddling the corner: ~6px inside the padding box, the rest out.
+    &--top-left {
+      top: -10px;
+      left: -10px;
+      width: 16px;
+      height: 16px;
+      cursor: nwse-resize;
+    }
+
+    &--top-right {
+      top: -10px;
+      right: -10px;
+      width: 16px;
+      height: 16px;
+      cursor: nesw-resize;
+    }
+
+    &--bottom-left {
+      bottom: -10px;
+      left: -10px;
+      width: 16px;
+      height: 16px;
+      cursor: nesw-resize;
+    }
+
+    &--bottom-right {
+      bottom: -10px;
+      right: -10px;
+      width: 16px;
+      height: 16px;
+      cursor: nwse-resize;
+    }
+  }
+}
+
+@include floating-window-resize-handles(gns3-window);
+@include floating-window-resize-handles(gns3-replay);
+
+// Silent gesture, defense-in-depth: handles must stay colorless even while a
+// resize is in flight (the cursor rides the grabbed edge, so any hover tint
+// would stay lit through the whole gesture). The --resizing class lives on
+// the HOST WINDOW element — outside this component — so match it through
+// :host-context and pin transparent AFTER any future tint rule (equal
+// specificity, later wins).
+:host-context(.gns3-window--resizing) .gns3-window__resize-handle,
+:host-context(.gns3-replay__window--resizing) .gns3-replay__resize-handle,
+:host-context(.gns3-replay__main--resizing) .gns3-replay__resize-handle {
+  background: transparent;
+}
+
+// Topology summary collapses to a fixed, viewport-fitting panel on narrow
+// screens and hides its handles there. The rule used to live in that
+// window's own SCSS, but the handle elements moved into this component and
+// a host's encapsulated styles can no longer reach them — so the one
+// window-specific override lives here, keyed on its root class.
+@media (max-width: 720px) {
+  :host-context(.topology-inspector) .gns3-window__resize-handle {
+    display: none;
+  }
+}

@@ -20,6 +20,7 @@
         matTooltip="Create snapshot"
         matTooltipClass="custom-tooltip"
         (click)="openCreateDialog()"
+        *appHasProjectPrivilege="'Snapshot.Allocate'"
       >
         <mat-icon>add</mat-icon>
         Create snapshot
@@ -57,23 +58,28 @@
               matTooltip="Edit description"
               matTooltipClass="custom-tooltip"
               (click)="editSnapshot(row)"
+              *appHasProjectPrivilege="'Snapshot.Allocate'"
             >
               <mat-icon>edit</mat-icon>
             </button>
+            @if (!project.frozen) {
             <button
               mat-icon-button
               matTooltip="Restore snapshot"
               matTooltipClass="custom-tooltip"
               (click)="restoreSnapshot(row)"
+              *appHasProjectPrivilege="'Snapshot.Restore'"
             >
               <mat-icon>restore</mat-icon>
             </button>
+            }
             <button
               mat-icon-button
               class="destructive-icon-button"
               matTooltip="Delete snapshot"
               matTooltipClass="custom-tooltip"
               (click)="deleteSnapshot(row)"
+              *appHasProjectPrivilege="'Snapshot.Allocate'"
             >
               <mat-icon>delete</mat-icon>
             </button>
@@ -81,8 +87,8 @@
         </mat-cell>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      <mat-header-row *matHeaderRowDef="displayedColumns()"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns()"></mat-row>
     </mat-table>
 
     @if (snapshots().length === 0) {

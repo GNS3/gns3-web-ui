@@ -21,10 +21,13 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProgressService } from '../../common/progress/progress.service';
-import { Project } from '@models/project';
+import { Project, isDistributedCopy, isFrozenTemplate, isTerminalDistributionStatus } from '@models/project';
 import { ProjectStatistics } from '@models/project-statistics';
 import { Controller } from '@models/controller';
+import { ProjectBadgesComponent } from './project-badges.component';
+import { ProjectActionsComponent } from './project-actions.component';
 import { ProjectService } from '@services/project.service';
+import { PermissionService } from '@services/permission.service';
 import { NotificationService, ProjectNotification } from '@services/notification.service';
 import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
 import { Settings, SettingsService } from '@services/settings.service';
@@ -33,6 +36,12 @@ import { ToasterService } from '@services/toaster.service';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
+import { DistributeProjectDialogComponent } from './distribute-project-dialog/distribute-project-dialog.component';
+import {
+  DistributionHistoryDialogComponent,
+  DistributionHistoryDialogData,
+} from './distribution-history-dialog/distribution-history-dialog.component';
+import { ShareProjectDialogComponent } from './share-project-dialog/share-project-dialog.component';
 import { ConfirmationDeleteAllProjectsComponent } from './confirmation-delete-all-projects/confirmation-delete-all-projects.component';
 import { EditProjectDialogComponent } from './edit-project-dialog/edit-project-dialog.component';
 import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
@@ -52,7 +61,9 @@ import {
   TopologyPreviewDialogData,
 } from './topology-preview/topology-preview-dialog.component';
 import { TopologyPreviewService } from '@services/topology-preview.service';
+import { ProjectDistributionService } from '@services/project-distribution.service';
 import { TopologyPreviewData } from '@services/gns3-file.mapper';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 @Component({
   selector: 'app-projects',
@@ -76,6 +87,9 @@ import { TopologyPreviewData } from '@services/gns3-file.mapper';
     MatPaginatorModule,
     MatTooltipModule,
     TopologyPreviewComponent,
+    HasPrivilegeDirective,
+    ProjectBadgesComponent,
+    ProjectActionsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -86,7 +100,14 @@ export class ProjectsComponent implements OnInit {
   displayedColumns = ['select', 'name', 'created_by', 'status', 'actions', 'delete'];
   public readonly version = version;
   public readonly currentYear = new Date().getFullYear();
-  selection = new SelectionModel<Project>(true, []);
+  /**
+   * Compare selections by project id, not object identity: refreshes and WS
+   * notifications swap the list to new Project objects, and identity
+   * comparison would leave the checkboxes out of sync with
+   * `selection.selected` (stale entries invisible on screen but still fed
+   * to bulk actions like delete).
+   */
+  selection = new SelectionModel<Project>(true, [], true, (a, b) => a.project_id === b.project_id);
 
   readonly sort = viewChild<MatSort>(MatSort);
   readonly paginator = viewChild<MatPaginator>(MatPaginator);
@@ -113,24 +134,290 @@ export class ProjectsComponent implements OnInit {
   // only one <app-d3-map> exists at a time (its state managers are singletons).
   readonly previewEnlarged = signal(false);
 
+  // ── Share badge recipients (hover tooltip) ────────────────────
   /**
-   * Nodes/Links/Drawings counts shown in the details panel. For closed
-   * projects getStatistics reports zeros — count them from the .gns3 file
-   * data instead. Snapshots are server-only and keep the stats value.
+   * Recipient names per project id, fetched lazily on the first share-badge
+   * hover. Cleared on every list refresh: the share dialog (the only writer)
+   * triggers a refresh on close, so the cache never outlives its data.
+   * An empty array marks "fetch failed" — the tooltip then keeps the plain
+   * count text instead of retrying on every hover.
    */
-  readonly displayStats = computed<ProjectStatistics | null>(() => {
-    const topology = this.previewTopology();
-    if (!topology) return this.projectStats();
-    return {
-      ...(this.projectStats() ?? ({} as ProjectStatistics)),
-      nodes: topology.nodes.length,
-      links: topology.links.length,
-      drawings: topology.drawings.length,
-    };
+  private readonly _shareRecipients = signal<ReadonlyMap<string, readonly string[]>>(new Map());
+  /**
+   * Project ids with a recipients request in flight. The row badge and the
+   * details badge can both fire `mouseenter` for the same project; the
+   * response cache only fills when the request resolves, so without this
+   * guard the second hover would send a duplicate GET.
+   */
+  private readonly shareRecipientsInFlight = new Set<string>();
+
+  /** Tooltip text of a share badge: recipient names once loaded, count otherwise. */
+  shareTooltip(project: Project): string {
+    const names = this._shareRecipients().get(project.project_id);
+    if (names && names.length > 0) {
+      return `Shared with:\n${names.join('\n')}`;
+    }
+    const label = project.share_count === 1 ? 'user or group' : 'users or groups';
+    return `Shared with ${project.share_count} ${label}`;
+  }
+
+  /** Fetch the recipient names the first time a share badge is hovered. */
+  loadShareRecipients(project: Project): void {
+    // The shares list is served only to Project.Share holders; for everyone
+    // else the tooltip stays on the plain count.
+    if (!this.canManageShares(project) || !project.share_count || this._shareRecipients().has(project.project_id)) return;
+    const projectId = project.project_id;
+    if (this.shareRecipientsInFlight.has(projectId)) return;
+    this.shareRecipientsInFlight.add(projectId);
+    this.projectService.listShares(this.controller, projectId).subscribe({
+      next: (shares) => {
+        this.shareRecipientsInFlight.delete(projectId);
+        const names = shares.map((share) => share.username ?? share.group_name ?? '').filter(Boolean);
+        this._shareRecipients.update((map) => new Map(map).set(projectId, names));
+      },
+      error: () => {
+        this.shareRecipientsInFlight.delete(projectId);
+        this._shareRecipients.update((map) => new Map(map).set(projectId, []));
+      },
+    });
+  }
+
+  // ── Per-project privileges for shared-in projects ────────────
+  /**
+   * Privileges evaluated on a project's resource path
+   * (GET /projects/{id}/me/privileges), for the projects where the flattened
+   * global list is not exact: a project shared with the caller carries a
+   * project ACE (e.g. Lab member) that replaces the inherited global role,
+   * and a distributed copy carries the distribution's owner role. A project
+   * the caller created carries an owner ACE with the caller's own role, so
+   * the global list is exact there and no request is needed.
+   *
+   * One request per such project, cached for the page lifetime; the actions
+   * stay hidden until the answer lands, so a shared user never sees an action
+   * the project ACE does not grant.
+   */
+  private readonly _projectPrivileges = signal<ReadonlyMap<string, ReadonlySet<string>>>(new Map());
+  private readonly requestedProjectPrivileges = new Set<string>();
+
+  /** Whether the caller may manage the shares of this project. */
+  canManageShares(project: Project): boolean {
+    return this.hasProjectPrivilege(project, 'Project.Share');
+  }
+
+  /** Whether the caller may distribute this project. */
+  canDistribute(project: Project): boolean {
+    return this.hasProjectPrivilege(project, 'Project.Distribute');
+  }
+
+  private hasProjectPrivilege(project: Project, privilege: string): boolean {
+    if (this.permissionService.isSuperadmin()) {
+      return true;
+    }
+    if (!this.needsProjectPrivileges(project)) {
+      return this.permissionService.has(privilege);
+    }
+    return this._projectPrivileges().get(project.project_id)?.has(privilege) ?? false;
+  }
+
+  private needsProjectPrivileges(project: Project): boolean {
+    // Ownership follows the session identity (/me), never the username
+    // persisted on the controller entry — that string survives user
+    // switches on a shared browser.
+    return project.created_by !== this.permissionService.username() || isDistributedCopy(project);
+  }
+
+  private ensureProjectPrivileges(projects: Project[]): void {
+    if (this.permissionService.isSuperadmin()) {
+      return;
+    }
+    for (const project of projects) {
+      if (!this.needsProjectPrivileges(project) || this.requestedProjectPrivileges.has(project.project_id)) {
+        continue;
+      }
+      const project_id = project.project_id;
+      this.requestedProjectPrivileges.add(project_id);
+      this.projectService.getMyPrivileges(this.controller, project_id).subscribe({
+        next: (response) => {
+          this._projectPrivileges.update((map) => new Map(map).set(project_id, new Set(response.privileges ?? [])));
+        },
+        error: () => {
+          // Unreadable privileges: keep the actions hidden (the server stays
+          // the authority).
+          this._projectPrivileges.update((map) => new Map(map).set(project_id, new Set<string>()));
+        },
+      });
+    }
+  }
+
+  // ── Distribution history badge ───────────────────────────────
+  /**
+   * Project ids with at least one persisted distribution record, fed by the
+   * cross-project `/distributions` endpoint in a single request (it returns
+   * only records the caller started themselves — every record for a
+   * superadmin — so no per-project filtering is needed here). Errors keep
+   * the previous set until the next refresh.
+   */
+  private readonly _distributedProjects = signal<ReadonlySet<string>>(new Set());
+
+  private _checkDistributedProjects = effect(() => {
+    // Distributions tracked in this session (corner widget) flip the badge
+    // on immediately: the global fetch below only lands on the next refresh.
+    // Only non-terminal jobs force the badge: a terminal job's record is
+    // already persisted (or was deleted on purpose), so from then on the
+    // fetched data alone decides.
+    const tracked = this.distributionService.tracked();
+    if (tracked.length > 0) {
+      this._distributedProjects.update((ids) => {
+        let next = ids;
+        for (const entry of tracked) {
+          if (!isTerminalDistributionStatus(entry.job.status) && !next.has(entry.job.project_id)) {
+            next = new Set(next).add(entry.job.project_id);
+          }
+        }
+        return next;
+      });
+    }
   });
+
+  /**
+   * Re-fetches the distribution history across all projects in one request.
+   * Called on every list refresh and whenever a distribution dialog closes:
+   * deleting the last record in the dialog must drop the badge without a
+   * page refresh (the dialog lives inside this page instance, so no route
+   * change would re-run the fetch on its own).
+   */
+  private refreshDistributedProjects(): void {
+    this.projectService.listAllDistributions(this.controller).subscribe({
+      next: (records) => {
+        const ids = new Set(records.map((record) => record.project_id));
+        // Session-tracked jobs stay badged even before their record lands
+        // in the fetched list — but only while they still run: once a job
+        // is terminal its record is persisted, and deleting that record
+        // must drop the badge without a page refresh.
+        for (const entry of this.distributionService.tracked()) {
+          if (!isTerminalDistributionStatus(entry.job.status)) {
+            ids.add(entry.job.project_id);
+          }
+        }
+        this._distributedProjects.set(ids);
+      },
+      error: () => {}, // keep the previous set until the next refresh
+    });
+  }
+
+  /** Whether the project has a persisted distribution history. */
+  isDistributed(project: Project): boolean {
+    return this._distributedProjects().has(project.project_id);
+  }
+
+  /** Whether the project is a frozen distributed template. */
+  isFrozen(project: Project): boolean {
+    return isFrozenTemplate(project);
+  }
+
+  /** Whether the project is a copy provided by a distribution. */
+  isProvidedByTeacher(project: Project): boolean {
+    return isDistributedCopy(project);
+  }
+
+  /** Unfreezing is reserved to the template owner and superadmins. */
+  canUnfreeze(project: Project): boolean {
+    return this.isFrozen(project) && (this.permissionService.isSuperadmin() || project.created_by === this.permissionService.username());
+  }
+
+  /**
+   * Unfreeze a distributed template so it can be modified again. The server
+   * only allows it once every copy made from it is gone, and answers 409 with
+   * the usernames still holding one otherwise.
+   */
+  unfreeze(project: Project): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      panelClass: ['base-confirmation-dialog-panel', 'dialog-small-panel', 'confirmation-warning-panel'],
+      autoFocus: '.cancel-button',
+      data: {
+        title: 'Unfreeze template?',
+        message: `"${project.name}" becomes editable again. New copies will match any later changes.`,
+        note: 'This is only possible once every distributed copy has been deleted.',
+        confirmButtonText: 'Unfreeze template',
+        tone: 'warning',
+        icon: 'lock_open',
+      },
+    });
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (!result) return;
+      this.projectService.unfreeze(this.controller, project.project_id).subscribe({
+        next: (updated: Project) => {
+          this.toasterService.success(`Project "${project.name}" unfrozen.`);
+          if (this.selectedProject()?.project_id === updated.project_id) {
+            this.selectedProject.set({ ...updated, share_count: this.selectedProject()?.share_count });
+          }
+          this.refresh();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to unfreeze project';
+          this.toasterService.error(message);
+        },
+      });
+    });
+  }
+
+  /**
+   * Open the distribution history of a project. The grid-view badge lives
+   * inside the card's router-link anchor, so the default navigation has to
+   * be suppressed alongside the event bubbling.
+   */
+  openDistributionHistory(event: Event, project: Project): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dialog
+      .open(DistributionHistoryDialogComponent, {
+        panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'distribution-history-dialog-panel'],
+        data: { controller: this.controller, project } satisfies DistributionHistoryDialogData,
+      })
+      .afterClosed()
+      .subscribe((unfroze: boolean | undefined) => {
+        this.refreshDistributedProjects();
+        // Unfreezing emits project.updated, but a dropped notification stream
+        // must not leave the frozen badge behind.
+        if (unfroze) this.refresh();
+      });
+  }
 
   // ── Status filter ─────────────────────────────────────────────
   readonly filterStatus = signal<string>('all');
+
+  // ── Created-by filter ─────────────────────────────────────────
+  readonly filterCreatedBy = signal<string>('all');
+
+  // ── Sharing filter ────────────────────────────────────────────
+  /**
+   * "shared" shows the projects the current user manages shares for (their
+   * own, or every project for a superadmin) with at least one share.
+   * "not-shared" shows the rest: projects without shares and projects whose
+   * share count is unknown (the server only sends it to the owner, so
+   * projects shared *with* the current user land here too).
+   */
+  readonly filterSharing = signal<'all' | 'shared' | 'not-shared'>('all');
+  /**
+   * Username this Web UI authenticates with on the active controller
+   * (empty when the controller record carries no credentials — the
+   * "My projects" option is simply omitted then).
+   */
+  readonly currentUsername = signal<string>('');
+  /**
+   * Distinct project creators on the active controller, sorted. The
+   * current user is excluded: they are offered as "My projects" above
+   * this list instead of appearing twice.
+   */
+  readonly creators = computed<string[]>(() => {
+    const me = this.currentUsername();
+    const names = new Set<string>();
+    for (const project of this._projects()) {
+      const creator = project.created_by?.trim();
+      if (creator && creator !== me) names.add(creator);
+    }
+    return [...names].sort((a, b) => a.localeCompare(b));
+  });
 
   // ── Pagination ───────────────────────────────────────────────
   readonly pageSizeOptions = [5, 10, 25, 50, 100];
@@ -154,6 +441,8 @@ export class ProjectsComponent implements OnInit {
   private _resetPageOnFilter = effect(() => {
     this.searchText();
     this.filterStatus();
+    this.filterCreatedBy();
+    this.filterSharing();
     this.sortActive();
     this._sortDirection();
     // Keep the grid-view pagination signal in sync and reset the
@@ -169,7 +458,40 @@ export class ProjectsComponent implements OnInit {
   private _clearSelectionOnFilter = effect(() => {
     this.searchText();
     this.filterStatus();
+    this.filterCreatedBy();
+    this.filterSharing();
     this.selection.clear();
+  });
+
+  /**
+   * Keep the selection anchored to live rows: projects can vanish while
+   * selected (deleted elsewhere) and every list update swaps in new objects.
+   * Selected entries are re-anchored to their current object and entries
+   * whose project no longer exists are dropped, so bulk actions never
+   * operate on stale or on-screen-invisible selections.
+   */
+  private _syncSelectionWithProjects = effect(() => {
+    const liveById = new Map(this._projects().map((project) => [project.project_id, project]));
+    for (const selected of [...this.selection.selected]) {
+      const current = liveById.get(selected.project_id);
+      if (!current) {
+        this.selection.deselect(selected);
+      } else if (current !== selected) {
+        this.selection.deselect(selected);
+        this.selection.select(current);
+      }
+    }
+  });
+
+  /**
+   * Snap the creator filter back to "All" when the selected creator no
+   * longer has any visible project (all deleted / notifications removed
+   * them), so the dropdown never points at a vanished option.
+   */
+  private _resetVanishedCreator = effect(() => {
+    const selected = this.filterCreatedBy();
+    if (selected === 'all' || selected === this.currentUsername()) return;
+    if (!this.creators().includes(selected)) this.filterCreatedBy.set('all');
   });
 
   // ── Derived: sorted + filtered display data ───────────────────
@@ -188,6 +510,21 @@ export class ProjectsComponent implements OnInit {
     // Filter by status
     if (statusFilter !== 'all') {
       projects = projects.filter((p) => p.status === statusFilter);
+    }
+
+    // Filter by creator ("all" or a username, "My projects" passes the
+    // logged-in username here)
+    const creatorFilter = this.filterCreatedBy();
+    if (creatorFilter !== 'all') {
+      projects = projects.filter((p) => p.created_by === creatorFilter);
+    }
+
+    // Filter by sharing (only projects with a known share count can be
+    // "shared"; an absent count means the current user is not the owner)
+    const sharingFilter = this.filterSharing();
+    if (sharingFilter !== 'all') {
+      const isShared = (p: Project) => !!p.share_count;
+      projects = projects.filter(sharingFilter === 'shared' ? isShared : (p) => !isShared(p));
     }
 
     // Sort
@@ -245,10 +582,13 @@ export class ProjectsComponent implements OnInit {
   private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
   private themeService = inject(ThemeService);
   private topologyPreviewService = inject(TopologyPreviewService);
+  private permissionService = inject(PermissionService);
+  private readonly distributionService = inject(ProjectDistributionService);
 
   ngOnInit() {
     this.controller = this.route.snapshot.data['controller'];
     if (!this.controller) this.router.navigate(['/controllers']);
+    this.currentUsername.set(this.controller.username ?? '');
     this.recentlyOpenedProjectService.setcontrollerIdProjectList(this.controller.id.toString());
 
     // Handle error queryParam from redirect after project not found (404)
@@ -377,6 +717,13 @@ export class ProjectsComponent implements OnInit {
     this.projectService.list(this.controller).subscribe({
       next: (projects: Project[]) => {
         this._projects.set(projects);
+        // Share counts came in fresh; drop the hover cache with them.
+        this._shareRecipients.set(new Map());
+        // Same for the distribution badges.
+        this.refreshDistributedProjects();
+        // Shared-in projects and copies need their own privilege list: the
+        // global one is flattened across paths (see _projectPrivileges).
+        this.ensureProjectPrivileges(projects);
       },
       error: (err) => {
         const message = err.error?.message || err.message || 'Failed to list projects';
@@ -407,7 +754,11 @@ export class ProjectsComponent implements OnInit {
         case 'project.opened':
         case 'project.closed':
         case 'project.updated':
-          if (index >= 0) list[index] = notification.event;
+          // The notification payload carries no share_count (shares are a
+          // separate sub-resource and the WS event is only the project's own
+          // asdict) and share endpoints emit no project notification at all —
+          // keep the count from the list response instead of dropping it.
+          if (index >= 0) list[index] = { ...notification.event, share_count: list[index].share_count };
           break;
         case 'project.deleted':
           if (index >= 0) list.splice(index, 1);
@@ -415,6 +766,14 @@ export class ProjectsComponent implements OnInit {
       }
       return list;
     });
+
+    // The details panel holds its own reference: freeze/unfreeze (and any
+    // other project update) must refresh it too, or it keeps rendering the
+    // previous lifecycle state.
+    const selected = this.selectedProject();
+    if (selected && selected.project_id === notification.event.project_id && notification.action !== 'project.deleted') {
+      this.selectedProject.set({ ...notification.event, share_count: selected.share_count });
+    }
   }
 
   // ── Loading state ─────────────────────────────────────────────
@@ -549,6 +908,45 @@ export class ProjectsComponent implements OnInit {
         this.loadProjectDescription(project);
       }
     });
+  }
+
+  distribute(project: Project) {
+    const dialogRef = this.dialog.open(DistributeProjectDialogComponent, {
+      panelClass: ['base-dialog-panel', 'dialog-small-panel', 'distribute-project-dialog-panel'],
+      autoFocus: false,
+      disableClose: true,
+    });
+    let instance = dialogRef.componentInstance;
+    instance.controller = this.controller;
+    instance.project = project;
+    // The first distribution freezes the source project: refresh so the new
+    // state lands even when the notification stream is disconnected.
+    dialogRef.afterClosed().subscribe(() => this.refresh());
+  }
+
+  share(project: Project) {
+    const dialogRef = this.dialog.open(ShareProjectDialogComponent, {
+      panelClass: ['base-dialog-panel', 'dialog-medium-panel', 'share-project-dialog-panel'],
+      autoFocus: false,
+      disableClose: true,
+    });
+    let instance = dialogRef.componentInstance;
+    instance.controller = this.controller;
+    instance.project = project;
+    // Share changes emit no project notification, so the list (and its share
+    // badges) only learns about them through a refresh.
+    dialogRef.afterClosed().subscribe(() => this.refresh());
+  }
+
+  /**
+   * Open the share dialog from a share badge. The grid-view badge lives
+   * inside the card's router-link anchor, so the default navigation has to
+   * be suppressed alongside the event bubbling.
+   */
+  openShares(event: Event, project: Project) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.share(project);
   }
 
   editProject(project: Project) {

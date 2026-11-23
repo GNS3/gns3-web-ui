@@ -196,6 +196,16 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleCommand() {
+    // A frozen distributed template refuses power operations server-side:
+    // report it here instead of sending a request that can only fail.
+    if (this.project()?.frozen && /^(start|stop|suspend|reload)\b/.test(this.command())) {
+      this.showCommand(
+        'This project is a frozen template: node power operations are disabled until every distributed copy is deleted.'
+      );
+      this.command.set('');
+      this.cd.detectChanges();
+      return;
+    }
     if (this.command() === 'help' || this.command() === '') {
       this.showCommand(
         'Available commands: help, version, console {node name}, start all, start {node name}, stop all, stop {node name}, suspend all, suspend {node name}, reload all, reload {node name}, show {node name}.'

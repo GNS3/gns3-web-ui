@@ -1,0 +1,168 @@
+<h2 mat-dialog-title>BPF rule library</h2>
+
+<div mat-dialog-content class="rule-library">
+  <div class="rule-library__toolbar">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="rule-library__search">
+      <mat-label>Search rules</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        [value]="searchText()"
+        (input)="searchText.set($event.target.value)"
+        placeholder="Name, expression or category"
+      />
+    </mat-form-field>
+    <button mat-stroked-button type="button" class="rule-library__new" (click)="startNew()">
+      <mat-icon>add</mat-icon>
+      New rule
+    </button>
+  </div>
+
+  <mat-chip-listbox
+    class="rule-library__categories"
+    [value]="activeCategory()"
+    (change)="activeCategory.set($event.value)"
+  >
+    @for (category of categories(); track category) {
+      <mat-chip-option [value]="category">{{ category }}</mat-chip-option>
+    }
+  </mat-chip-listbox>
+
+  @if (editorOpen()) {
+    <div class="rule-library__editor">
+      <div class="rule-library__editor-title">
+        @if (editingName()) {
+          Edit rule
+        } @else if (basedOn()) {
+          New rule (based on {{ basedOn() }})
+        } @else {
+          New rule
+        }
+      </div>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="rule-library__field">
+        <mat-label>Name</mat-label>
+        <input
+          matInput
+          [value]="editorName()"
+          (input)="editorName.set($event.target.value)"
+          placeholder="e.g. BGP to lab router"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="rule-library__field">
+        <mat-label>BPF expression</mat-label>
+        <textarea
+          matInput
+          rows="2"
+          cdkTextareaAutosize
+          cdkAutosizeMinRows="2"
+          cdkAutosizeMaxRows="6"
+          [value]="editorExpression()"
+          (input)="editorExpression.set($event.target.value)"
+          placeholder="tcp port 179"
+        ></textarea>
+      </mat-form-field>
+      <p class="rule-library__editor-hint">
+        @if (basedOn()) {
+          Built-in rules are read-only — saving creates your own copy.
+        } @else {
+          Saving under an existing name updates that rule.
+        }
+      </p>
+      <div class="rule-library__editor-actions">
+        <button mat-button type="button" (click)="cancelEditor()">Cancel</button>
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="!editorName().trim() || !editorExpression().trim()"
+          (click)="saveEditor(false)"
+        >
+          Save
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          [disabled]="!editorName().trim() || !editorExpression().trim()"
+          (click)="saveEditor(true)"
+        >
+          Save &amp; use
+        </button>
+      </div>
+    </div>
+  }
+
+  <div class="rule-library__list" role="listbox" aria-label="BPF rules">
+    @if (groups().length === 0) {
+      <div class="rule-library__empty">No rules match your search.</div>
+    }
+    @for (group of groups(); track group.label) {
+      <div class="rule-library__group-label">
+        {{ group.label }}
+        <span class="rule-library__count">{{ group.rules.length }}</span>
+      </div>
+      @for (rule of group.rules; track rule.source + '/' + rule.name) {
+        <div
+          class="rule-library__row"
+          role="option"
+          tabindex="0"
+          [attr.aria-selected]="isSelected(rule)"
+          [class.rule-library__row--selected]="isSelected(rule)"
+          (click)="selectRule(rule)"
+          (dblclick)="useRule(rule)"
+          (keydown.enter)="selectRule(rule)"
+          (keydown.space)="$event.preventDefault(); selectRule(rule)"
+        >
+          <mat-icon class="rule-library__state">{{
+            isSelected(rule) ? 'radio_button_checked' : 'radio_button_unchecked'
+          }}</mat-icon>
+          <div class="rule-library__text">
+            <span class="rule-library__name">{{ rule.name }}</span>
+            <span class="rule-library__expression">{{ rule.expression }}</span>
+          </div>
+          <div class="rule-library__actions" (dblclick)="$event.stopPropagation()">
+            <button
+              mat-icon-button
+              type="button"
+              class="rule-library__use"
+              matTooltip="Use rule"
+              aria-label="Use rule"
+              (click)="$event.stopPropagation(); useRule(rule)"
+            >
+              <mat-icon>check</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              type="button"
+              [matTooltip]="rule.source === 'custom' ? 'Edit rule' : 'Edit (creates your own copy)'"
+              (click)="$event.stopPropagation(); startEdit(rule)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            @if (rule.source === 'custom') {
+              <button
+                mat-icon-button
+                type="button"
+                matTooltip="Delete rule"
+                (click)="$event.stopPropagation(); deleteRule(rule)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <p class="rule-library__hint">
+    Double-click a rule to use it right away. My rules are saved per user and sync across browsers when the controller
+    supports it.
+  </p>
+</div>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="close()">Cancel</button>
+  <button mat-flat-button color="primary" type="button" [disabled]="!selected()" (click)="useSelected()">
+    Use rule
+  </button>
+</mat-dialog-actions>

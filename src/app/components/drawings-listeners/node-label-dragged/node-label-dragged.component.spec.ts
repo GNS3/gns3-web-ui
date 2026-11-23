@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChangeDetectorRef } from '@angular/core';
+import { MapChangeDetectorRef } from '../../../cartography/services/map-change-detector-ref';
 import { Subject, of, throwError } from 'rxjs';
 import { NodeLabelDraggedComponent } from './node-label-dragged.component';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
@@ -163,6 +164,7 @@ describe('NodeLabelDraggedComponent', () => {
         { provide: MapLabelToLabelConverter, useValue: mockMapLabelToLabel },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
+        { provide: MapChangeDetectorRef, useValue: { detectChanges: vi.fn() } },
       ],
     }).compileComponents();
 
@@ -335,11 +337,12 @@ describe('NodeLabelDraggedComponent', () => {
       expect(cdrSpy).toHaveBeenCalled();
     });
 
-    it('should not update data source when updateLabel fails', async () => {
+    it('should restore the previous node label when updateLabel fails', async () => {
       const error = new Error('Update failed');
       mockNodeService.updateLabel.mockReturnValue(throwError(() => error));
 
       const mockNode = createMockNode();
+      const previousLabel = mockNode.label;
       mockNodesDataSource.get.mockReturnValue(mockNode);
 
       const mapLabel = createMockMapLabel();
@@ -350,7 +353,9 @@ describe('NodeLabelDraggedComponent', () => {
       // Advance fake timers for async error handling
       await vi.runAllTimersAsync();
 
-      expect(mockNodesDataSource.update).not.toHaveBeenCalled();
+      expect(mockNodesDataSource.update).toHaveBeenCalledWith(
+        expect.objectContaining({ node_id: 'node1', label: previousLabel })
+      );
     });
   });
 

@@ -1,3 +1,4 @@
+
 :host {
   --topology-row-height: 46px;
   --topology-row-action-size: 32px;
@@ -15,7 +16,9 @@
   max-height: calc(100vh - 84px);
   box-sizing: border-box;
   flex-direction: column;
-  overflow: hidden;
+  // NO overflow:hidden here (floating-window standard): the resize handles sit
+  // entirely OUTSIDE the border box and would be clipped. The tab group below
+  // carries the corner rounding instead.
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: var(--gns3-density-radius-sm);
   color: var(--mat-sys-on-surface);
@@ -23,82 +26,6 @@
   box-shadow: 0 16px 40px color-mix(in srgb, var(--mat-sys-shadow) 22%, transparent);
   container-name: topology-panel;
   container-type: inline-size;
-}
-
-.resize-handle {
-  position: absolute;
-  z-index: 10;
-  background: transparent;
-
-  &.resize-handle-top,
-  &.resize-handle-bottom {
-    left: 12px;
-    right: 12px;
-    height: 10px;
-    cursor: ns-resize;
-  }
-
-  &.resize-handle-top {
-    top: -4px;
-  }
-
-  &.resize-handle-bottom {
-    bottom: -4px;
-  }
-
-  &.resize-handle-left,
-  &.resize-handle-right {
-    top: 12px;
-    bottom: 12px;
-    width: 10px;
-    cursor: ew-resize;
-  }
-
-  &.resize-handle-left {
-    left: -4px;
-  }
-
-  &.resize-handle-right {
-    right: -4px;
-  }
-
-  &.resize-handle-top-left,
-  &.resize-handle-top-right,
-  &.resize-handle-bottom-left,
-  &.resize-handle-bottom-right {
-    width: 18px;
-    height: 18px;
-  }
-
-  &.resize-handle-top-left,
-  &.resize-handle-bottom-right {
-    cursor: nwse-resize;
-  }
-
-  &.resize-handle-top-right,
-  &.resize-handle-bottom-left {
-    cursor: nesw-resize;
-  }
-
-  &.resize-handle-top-left {
-    top: -5px;
-    left: -5px;
-  }
-
-  &.resize-handle-top-right {
-    top: -5px;
-    right: -5px;
-  }
-
-  &.resize-handle-bottom-left {
-    bottom: -5px;
-    left: -5px;
-  }
-
-  &.resize-handle-bottom-right {
-    right: -5px;
-    bottom: -5px;
-  }
 }
 
 .node-cell,
@@ -111,6 +38,9 @@
 .inspector-tabs {
   min-height: 0;
   flex: 1 1 auto;
+  // Inner radius (outer − 1px border); the window root no longer clips.
+  overflow: hidden;
+  border-radius: calc(var(--gns3-density-radius-sm) - 1px);
 }
 
 .tab-content {
@@ -503,9 +433,6 @@
     border-radius: 0;
   }
 
-  .resize-handle {
-    display: none;
-  }
 }
 
 :host-context(html[data-density='compact']) {

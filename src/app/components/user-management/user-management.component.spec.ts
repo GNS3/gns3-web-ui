@@ -11,6 +11,7 @@ import { ToasterService } from '@services/toaster.service';
 import { UserService } from '@services/user.service';
 import { ProgressService } from '../../common/progress/progress.service';
 import { UserManagementComponent } from './user-management.component';
+import { PermissionService } from '@services/permission.service';
 
 describe('UserManagementComponent', () => {
   let component: UserManagementComponent;
@@ -87,6 +88,15 @@ describe('UserManagementComponent', () => {
     await TestBed.configureTestingModule({
       imports: [UserManagementComponent],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['User.Audit', 'User.Allocate', 'User.Modify', 'LLMConfig.Modify']),
+            loaded: () => true,
+          },
+        },
         { provide: UserService, useValue: userService },
         { provide: ControllerService, useValue: controllerService },
         { provide: ToasterService, useValue: toasterService },

@@ -1,45 +1,37 @@
 <div
   #windowWrapper
-  class="marker-manager"
-  [class.is-dragging]="isDragging()"
-  [class.is-resizing]="isResizing()"
+  class="marker-manager gns3-window"
+  [class.gns3-window--dragging]="isDragging()"
+  [class.gns3-window--resizing]="isResizing()"
   [class.is-minimized]="isMinimized()"
-  [ngStyle]="renderedWindowStyle"
   [class.fit-empty-definitions]="fitEmptyDefinitions()"
+  [style.left.px]="chrome.left()"
+  [style.top.px]="chrome.top()"
+  [style.width.px]="chrome.width()"
+  [style.height]="fitEmptyDefinitions() ? 'auto' : chrome.height() + 'px'"
+  [style.max-height]="fitEmptyDefinitions() ? fitMaxHeight() : null"
   [style.z-index]="zIndex()"
   (mousedown)="onWindowFocus()"
   mwlResizable
-  [validateResize]="validate"
+  [validateResize]="chrome.validate"
   [enableGhostResize]="false"
-  (resizeStart)="onResizeStart()"
-  (resizeEnd)="onResizeEnd($event)"
+  (resizeStart)="onManagerResizeStart()"
+  (resizing)="chrome.onResizing($event)"
+  (resizeEnd)="chrome.onResizeEnd($event)"
 >
   @if (!isMinimized()) {
-  <div class="resize-handle resize-handle-top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
-  <div class="resize-handle resize-handle-right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
-  <div class="resize-handle resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
-  <div class="resize-handle resize-handle-left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
-  <div class="resize-handle resize-handle-top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
-  <div class="resize-handle resize-handle-top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
-  <div
-    class="resize-handle resize-handle-bottom-left"
-    mwlResizeHandle
-    [resizeEdges]="{ bottom: true, left: true }"
-  ></div>
-  <div
-    class="resize-handle resize-handle-bottom-right"
-    mwlResizeHandle
-    [resizeEdges]="{ bottom: true, right: true }"
-  ></div>
+  <app-floating-window-resize-handles />
   }
 
   <div class="marker-manager__content">
-    <div class="marker-manager__header">
-      <div class="marker-manager__header-title">
+    <div class="marker-manager__header gns3-window__header">
+      <!-- Drag zone: the title strip IS the drag surface — the action
+           toolbar on the right never starts a drag. -->
+      <div class="marker-manager__header-title gns3-window__header-drag" (mousedown)="chrome.beginDrag($event)">
         <mat-icon class="header-icon">insights</mat-icon>
         <span>Marker Manager</span>
       </div>
-      <div class="marker-manager__header-actions">
+      <div class="marker-manager__header-actions gns3-window__actions">
         <button mat-icon-button class="minimize-button" (click)="toggleMinimize()" title="Minimize">
           <mat-icon>remove</mat-icon>
         </button>
@@ -55,8 +47,8 @@
         <mat-tab label="Definitions">
           @if (activeTabIndex() === 0) {
           <div class="marker-manager__panel">
-            <!-- Create / edit form -->
-            <form [formGroup]="definitionForm" (ngSubmit)="submitDefinition()">
+            <!-- Create / edit form (Project.Marker: create/update definition) -->
+            <form [formGroup]="definitionForm" (ngSubmit)="submitDefinition()" *appHasProjectPrivilege="'Project.Marker'">
               <div class="marker-manager__form-title">
                 {{ editingDefinition() ? 'Edit definition' : 'New definition' }}
               </div>
@@ -136,7 +128,7 @@
               </div>
             </form>
 
-            <mat-divider></mat-divider>
+            <mat-divider *appHasProjectPrivilege="'Project.Marker'"></mat-divider>
 
             @if (defError()) {
             <div class="marker-manager__error">{{ defError() }}</div>
@@ -182,16 +174,27 @@
                   mat-icon-button
                   (click)="toggleDefinitionPaused(row)"
                   [matTooltip]="row.paused ? 'Resume rule (all copies)' : 'Pause rule (disables all copies)'"
+                  *appHasProjectPrivilege="'Project.Marker'"
                 >
                   <ng-container
                     [ngTemplateOutlet]="onOffIcon"
                     [ngTemplateOutletContext]="{ $implicit: isTogglingDefinition(row.name), off: row.paused }"
                   />
                 </button>
-                <button mat-icon-button (click)="startEditDefinition(row)" matTooltip="Edit">
+                <button
+                  mat-icon-button
+                  (click)="startEditDefinition(row)"
+                  matTooltip="Edit"
+                  *appHasProjectPrivilege="'Project.Marker'"
+                >
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button (click)="deleteDefinition(row)" matTooltip="Delete (clears all copies)">
+                <button
+                  mat-icon-button
+                  (click)="deleteDefinition(row)"
+                  matTooltip="Delete (clears all copies)"
+                  *appHasProjectPrivilege="'Project.Marker'"
+                >
                   @if (isDeletingDefinition(row.name)) {
                   <mat-spinner class="marker-manager__toggle-spinner" [diameter]="18" />
                   } @else {
@@ -272,6 +275,7 @@
                   class="add-button"
                   (click)="toggleAddMarker(group.linkId)"
                   [class.add-button--active]="addingToLink() === group.linkId"
+                  *appHasProjectPrivilege="'Link.Marker'"
                 >
                   <mat-icon>add</mat-icon>
                   Marker
@@ -335,6 +339,7 @@
                     class="add-button"
                     (click)="$event.stopPropagation(); toggleAddMarker(group.linkId)"
                     [class.add-button--active]="addingToLink() === group.linkId"
+                    *appHasProjectPrivilege="'Link.Marker'"
                   >
                     <mat-icon>add</mat-icon>
                     Marker
@@ -395,7 +400,13 @@
               </span>
               }
               <span class="marker-manager__row-spacer"></span>
-              <button mat-flat-button color="primary" class="gns3-replay-tags__action" (click)="startReplayFor(row)">
+              <button
+                mat-flat-button
+                color="primary"
+                class="gns3-replay-tags__action"
+                (click)="startReplayFor(row)"
+                *appHasProjectPrivilege="'Project.Audit'"
+              >
                 @if (pausingTag() === row.tag) { Pausing… } @else if (row.enabled.length > 0) { Pause &amp; replay }
                 @else { Replay }
               </button>
@@ -432,6 +443,7 @@
                   color="primary"
                   [disabled]="pausingTag() !== null"
                   (click)="pauseAllAndReplay(row)"
+                  *appHasProjectPrivilege="replayPausePrivileges(row)"
                 >
                   @if (pausingTag() === row.tag) { Pausing… } @else { Pause all &amp; replay }
                 </button>
@@ -502,16 +514,27 @@
       mat-icon-button
       (click)="toggleMarkerEnabled(linkId, m)"
       [matTooltip]="m.enabled === false ? 'Enable (signal + capture)' : 'Disable (signal + capture)'"
+      *appHasProjectPrivilege="'Link.Marker'"
     >
       <ng-container
         [ngTemplateOutlet]="onOffIcon"
         [ngTemplateOutletContext]="{ $implicit: isTogglingMarker(linkId, m.name), off: m.enabled === false }"
       />
     </button>
-    <button mat-icon-button (click)="startEditMarker(linkId, m)" matTooltip="Edit">
+    <button
+      mat-icon-button
+      (click)="startEditMarker(linkId, m)"
+      matTooltip="Edit"
+      *appHasProjectPrivilege="'Link.Marker'"
+    >
       <mat-icon>edit</mat-icon>
     </button>
-    <button mat-icon-button (click)="deleteMarker(linkId, m.name)" matTooltip="Delete">
+    <button
+      mat-icon-button
+      (click)="deleteMarker(linkId, m.name)"
+      matTooltip="Delete"
+      *appHasProjectPrivilege="'Link.Marker'"
+    >
       @if (isDeletingMarker(linkId, m.name)) {
       <mat-spinner class="marker-manager__toggle-spinner" [diameter]="18" />
       } @else {

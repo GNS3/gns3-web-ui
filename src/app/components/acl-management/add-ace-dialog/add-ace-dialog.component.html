@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Create new ACE</h1>
+<h1 mat-dialog-title>{{ editingAce ? 'Edit ACE rule' : 'Create new ACE' }}</h1>
 <form [formGroup]="addAceForm" class="ace-form">
   <div class="ace-form__tree-panel">
     <!-- Toggle button for endpoints/resource pools -->
@@ -171,19 +171,19 @@
         </button>
       </div>
     </div>
-
-    <div mat-dialog-actions class="ace-form__actions">
-      <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-      <button
-        mat-button
-        (click)="onAddClick()"
-        tabindex="2"
-        mat-raised-button
-        color="primary"
-        [disabled]="!addAceForm.valid"
-      >
-        Add ACE
-      </button>
-    </div>
   </div>
 </form>
+
+<div mat-dialog-actions align="end" class="ace-form__actions">
+  <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
+  <button
+    mat-button
+    (click)="onSaveClick()"
+    tabindex="2"
+    mat-raised-button
+    color="primary"
+    [disabled]="!addAceForm.valid"
+  >
+    {{ editingAce ? 'Save changes' : 'Add ACE' }}
+  </button>
+</div>

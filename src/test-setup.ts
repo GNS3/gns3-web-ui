@@ -14,6 +14,13 @@ if (!TestBed.platform) {
   });
 }
 
+// jsdom's initial viewport, captured before any spec resizes the window.
+// ng test runs vitest with isolate:false, so spec files share one jsdom
+// window: a spec that sets window.innerWidth/innerHeight for a test must
+// not leak the size into co-located files (geometry specs assume the
+// default viewport).
+const initialViewport = { width: window.innerWidth, height: window.innerHeight };
+
 // Global fake timers to prevent RxJS timer pollution between tests
 beforeEach(() => {
   vi.useFakeTimers();
@@ -29,4 +36,8 @@ afterEach(() => {
 
   // Clean DOM to prevent DOM element accumulation
   document.body.innerHTML = '';
+
+  // Restore the viewport a test may have resized (see initialViewport above)
+  window.innerWidth = initialViewport.width;
+  window.innerHeight = initialViewport.height;
 });

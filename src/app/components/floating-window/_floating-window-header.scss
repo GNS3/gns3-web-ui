@@ -1,0 +1,51 @@
+// Shared header split for floating windows conforming to the floating-window
+// standard: the header strip is TWO zones with distinct jobs —
+//
+//   __header-drag (left, fills the row)   icon + title + identity chips —
+//                                         the ONLY surface whose mousedown
+//                                         drags the window
+//   __actions     (right, fixed)          toolbar buttons — never drags, not
+//                                         even in the gaps between buttons
+//
+// The hairline separator marks the boundary; cursors differ (grab over the
+// title strip, pointer over the buttons) so intent is legible BEFORE
+// pressing. Consumed via `@use` from each host component's SCSS.
+
+.gns3-window__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--mat-sys-surface-container);
+  // Inner radius (outer 8px − 2px border) — the header paints the top
+  // corners now that the window itself no longer clips (no overflow:hidden).
+  border-radius: 6px 6px 0 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.gns3-window__header-drag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0; // the title ellipsizes instead of pushing the actions off
+  cursor: grab;
+  user-select: none;
+}
+
+// Hand CLOSED while the gesture is live — the pressed state of the grab.
+.gns3-window--dragging .gns3-window__header-drag {
+  cursor: grabbing;
+}
+
+.gns3-window__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  // The visible boundary between "title bar" and "toolbar".
+  padding-left: 6px;
+  border-left: 1px solid var(--mat-sys-outline-variant);
+}

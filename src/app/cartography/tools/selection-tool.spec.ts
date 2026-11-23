@@ -45,6 +45,28 @@ describe('SelectionTool context menu', () => {
     expect(event.defaultPrevented).toBe(true);
   });
 
+  it('should prevent default on left-button mousedown so the marquee drag cannot start a native text selection', () => {
+    tool.setEnabled(true);
+    tool.draw(svg, null);
+    const event = new MouseEvent('mousedown', { button: 0, cancelable: true });
+
+    svg.node().dispatchEvent(event);
+    // Unbind the window listeners the drag gesture attached.
+    window.dispatchEvent(new MouseEvent('mouseup'));
+
+    expect(event.defaultPrevented).toBe(true);
+  });
+
+  it('should not prevent default on right-button mousedown (context-menu branch returns early)', () => {
+    tool.setEnabled(true);
+    tool.draw(svg, null);
+    const event = new MouseEvent('mousedown', { button: 2, cancelable: true });
+
+    svg.node().dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(false);
+  });
+
   it('should remove its mouse handlers when disabled', () => {
     const listener = vi.fn();
     tool.contextMenuOpened.subscribe(listener);

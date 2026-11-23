@@ -58,6 +58,11 @@ import {
   GroupAiProfileDialogComponent,
   GroupAiProfileDialogData,
 } from '@components/group-management/group-detail-dialog/group-ai-profile-dialog/group-ai-profile-dialog.component';
+import {
+  GroupMcpToolsDialogComponent,
+  GroupMcpToolsDialogData,
+} from '@components/group-management/group-mcp-tools-dialog/group-mcp-tools-dialog.component';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 
 @Component({
   selector: 'app-group-management',
@@ -78,6 +83,7 @@ import {
     MatInputModule,
     MatCardModule,
     GroupFilterPipe,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -228,6 +234,13 @@ export class GroupManagementComponent implements OnInit, AfterViewInit {
     this.dialog.open(GroupAiProfileDialogComponent, {
       panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-extra-large-panel'],
       data: { group, controller: this.controller } as GroupAiProfileDialogData,
+    });
+  }
+
+  openGroupMcpToolsDialog(group: Group) {
+    this.dialog.open(GroupMcpToolsDialogComponent, {
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'dialog-large-panel'],
+      data: { group, controller: this.controller } as GroupMcpToolsDialogData,
     });
   }
 }

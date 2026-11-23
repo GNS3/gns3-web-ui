@@ -138,6 +138,71 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
     });
   });
 
+  describe('results view', () => {
+    it('should render successful deletions as uniform list rows', () => {
+      mockProjectService.delete.mockReturnValue(of(null));
+      fixture.componentInstance.deleteFile();
+      fixture.detectChanges();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      expect(compiled.querySelector('.deletion-result__section-title')?.textContent).toContain(
+        '2 Projects deleted successfully'
+      );
+
+      const rows = compiled.querySelectorAll('.deletion-result__list li');
+      expect(rows.length).toBe(2);
+      expect(rows[0].textContent).toContain('1. project1.gns3');
+      expect(rows[1].textContent).toContain('2. project2.gns3');
+    });
+
+    it('should render failed deletions with their error messages', () => {
+      mockProjectService.delete.mockReturnValue(
+        throwError(() => ({ error: { message: 'Forbidden' } }))
+      );
+      fixture.componentInstance.deleteFile();
+      fixture.detectChanges();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      const errorTitle = compiled.querySelector('.deletion-result__section-title--error');
+      expect(errorTitle?.textContent).toContain('2 Projects failed to delete');
+
+      const rows = compiled.querySelectorAll('.deletion-result__list li');
+      expect(rows.length).toBe(2);
+      expect(rows[0].querySelector('strong')?.textContent).toContain('project1.gns3');
+      expect(rows[0].querySelector('.deletion-result__error')?.textContent).toContain('Forbidden');
+    });
+
+    it('should render both sections for mixed outcomes', () => {
+      let callCount = 0;
+      mockProjectService.delete.mockImplementation(() => {
+        callCount++;
+        return callCount === 1 ? of(null) : throwError(() => ({ error: { message: 'Forbidden' } }));
+      });
+      fixture.componentInstance.deleteFile();
+      fixture.detectChanges();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      const titles = compiled.querySelectorAll('.deletion-result__section-title');
+      expect(titles.length).toBe(2);
+      expect(titles[0].textContent).toContain('1 Project deleted successfully');
+      expect(titles[1].textContent).toContain('1 Project failed to delete');
+    });
+
+    it('should not apply the dialog-title directive inside the results content', () => {
+      mockProjectService.delete.mockReturnValue(of(null));
+      fixture.componentInstance.deleteFile();
+      fixture.detectChanges();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      const content = compiled.querySelector('div[mat-dialog-content]');
+      expect(content).toBeTruthy();
+      // Regression guard: a mat-dialog-title element nested in the content
+      // inflates the list spacing via Material's title pseudo-element styles.
+      expect(content?.querySelector('[mat-dialog-title]')).toBeNull();
+      expect(compiled.querySelectorAll('.deletion-result__list p').length).toBe(0);
+    });
+  });
+
   describe('error handling', () => {
     beforeEach(() => {
       vi.clearAllMocks();

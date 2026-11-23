@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ResizeEvent } from 'angular-resizable-element';
 import { of, throwError, Subject } from 'rxjs';
 import { MarkerReplayOverlayComponent } from './marker-replay-overlay.component';
+import { REPLAY_WINDOW_STATE_KEY } from './replay-window-state';
 import { MarkerReplayService } from '@services/marker-replay.service';
 import { WindowManagementService } from '@services/window-management.service';
 import { HttpController } from '@services/http-controller.service';
@@ -48,6 +50,9 @@ describe('MarkerReplayOverlayComponent', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    // Gesture tests persist the main rect — drop it so every fixture starts
+    // at the default placement instead of restoring the previous test's.
+    localStorage.removeItem(REPLAY_WINDOW_STATE_KEY);
     mockHttp = { get: vi.fn() };
     await TestBed.configureTestingModule({
       imports: [MarkerReplayOverlayComponent],
@@ -111,6 +116,32 @@ describe('MarkerReplayOverlayComponent', () => {
     expect(component.winWidth()).toBe(Math.min(1100, window.innerWidth - 32));
     expect(component.winHeight()).toBe(Math.min(640, window.innerHeight - 96));
     expect(component.winTop()).toBe(80);
+  });
+
+  it('resize end keeps the magnetically snapped edge (no jump on release)', () => {
+    mockHttp.get.mockReturnValue(of(range));
+    fixture.detectChanges();
+    // A settled sibling to magnetize against (the peek window's rect).
+    svc.reportWindowRect('peek', { left: 980, top: 100, width: 300, height: 200 });
+    component.winLeft.set(40);
+    component.winTop.set(100);
+    component.winWidth.set(800);
+    component.winHeight.set(500);
+
+    // Right edge dragged to 960 raw — within threshold of the seam one gap
+    // before the peek window (968 = 980 − 12).
+    const ev = {
+      rectangle: { left: 40, top: 100, width: 920, height: 500 },
+      edges: { right: true },
+    } as ResizeEvent;
+    component.onResizing(ev);
+    expect(component.winWidth()).toBe(928); // snapped live
+
+    // The library's resizeEnd rectangle is the RAW pointer rect — the snap
+    // must survive the release instead of the window jumping back to 920.
+    component.onResizeEnd(ev);
+    expect(component.winWidth()).toBe(928);
+    expect(component.winLeft()).toBe(40);
   });
 
   it('shows the loading state while the range is in flight', () => {
@@ -532,10 +563,13 @@ describe('MarkerReplayOverlayComponent', () => {
     component.winTop.set(300);
     component.winWidth.set(560);
     component.winHeight.set(420);
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    Object.defineProperty(window, 'innerWidth', { value: 600, configurable: true });
-    Object.defineProperty(window, 'innerHeight', { value: 500, configurable: true });
+    // ng test runs with isolate:false, so several spec files share one jsdom
+    // window. Object.defineProperty({ value }) would leave innerWidth a
+    // read-only data property for every later spec in this process (their
+    // `window.innerWidth = ...` would throw); a getter spy keeps the property
+    // an accessor and restores the original one.
+    const innerWidthSpy = vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(600);
+    const innerHeightSpy = vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(500);
     try {
       window.dispatchEvent(new Event('resize'));
       fixture.detectChanges();
@@ -544,8 +578,8 @@ describe('MarkerReplayOverlayComponent', () => {
       expect(component.winLeft()).toBe(40); // clamped to 600 − 560
       expect(component.winTop()).toBe(80); // clamped to 500 − 420
     } finally {
-      Object.defineProperty(window, 'innerWidth', { value: vw, configurable: true });
-      Object.defineProperty(window, 'innerHeight', { value: vh, configurable: true });
+      innerWidthSpy.mockRestore();
+      innerHeightSpy.mockRestore();
     }
   });
 

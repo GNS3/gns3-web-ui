@@ -96,7 +96,10 @@ export class DrawingWidget implements Widget {
     }
 
     drawing_body_merge.select('.drawing_lock_status_badge').remove();
-    if (this.mapSettingsService.isItemLockStatusVisible) {
+    // The locked badge is always rendered so a locked drawing is instantly
+    // recognizable; the "Show item lock status" setting only controls the
+    // unlocked indicator.
+    {
       const lockStatusBadge = drawing_body_merge
         .filter((d: MapDrawing) => d.element instanceof RectElement || d.element instanceof EllipseElement || d.element instanceof ImageElement)
         .append<SVGGElement>('g')
@@ -125,7 +128,9 @@ export class DrawingWidget implements Widget {
         .attr('stroke-linejoin', 'round')
         .attr('paint-order', 'stroke fill');
 
-      const unlockedBadge = lockStatusBadge.filter((d: MapDrawing) => !d.locked);
+      const unlockedBadge = lockStatusBadge.filter(
+        (d: MapDrawing) => !d.locked && this.mapSettingsService.isItemLockStatusVisible
+      );
       const unlockedIconGroup = unlockedBadge
         .append<SVGGElement>('g')
         .attr('transform', 'translate(-7.68, -7.68) scale(0.64)');

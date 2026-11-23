@@ -17,15 +17,23 @@
     </mat-form-field>
   </form>
   <div class="resource-pools-management__actions">
+    <!-- POST/DELETE /pools = Pool.Allocate -->
     <button
       mat-flat-button
       class="resource-pools-management__button resource-pools-management__button--destructive"
       [disabled]="selection.selected.length === 0"
       (click)="onDelete(selection.selected)"
+      *appHasPrivilege="'Pool.Allocate'"
     >
       Delete selected
     </button>
-    <button mat-raised-button color="primary" class="resource-pools-management__button" (click)="addResourcePool()">
+    <button
+      mat-raised-button
+      color="primary"
+      class="resource-pools-management__button"
+      (click)="addResourcePool()"
+      *appHasPrivilege="'Pool.Allocate'"
+    >
       Add resource pool
     </button>
   </div>

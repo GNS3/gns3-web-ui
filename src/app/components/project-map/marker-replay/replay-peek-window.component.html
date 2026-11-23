@@ -1,5 +1,16 @@
 <!-- The transient double-click detail window: pinned-window look, born at the
      mouse, owned by no comparison set (see the component docblock). -->
+@if (snapGuides(); as g) {
+<svg class="gns3-replay__snap-guides" [style.z-index]="zIndex() + 5000">
+  @if (g.x !== null) {
+  <line class="gns3-replay__snap-guide" [attr.x1]="g.x" [attr.x2]="g.x" y1="0" y2="100%"></line>
+  }
+  @if (g.y !== null) {
+  <line class="gns3-replay__snap-guide" x1="0" x2="100%" [attr.y1]="g.y" [attr.y2]="g.y"></line>
+  }
+</svg>
+}
+
 <div
   class="gns3-replay__window gns3-replay__window--snapshot gns3-replay__window--peek"
   [class.gns3-replay__window--dragging]="dragging()"
@@ -15,36 +26,59 @@
   [validateResize]="validate"
   [enableGhostResize]="false"
   (resizeStart)="onResizeStart()"
+  (resizing)="onResizing($event)"
   (resizeEnd)="onResizeEnd($event)"
 >
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
-  <div class="gns3-replay__resize-handle gns3-replay__resize-handle--bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+  <app-floating-window-resize-handles prefix="gns3-replay" />
 
-  <div
-    class="gns3-replay__window-header"
-    (mousedown)="onHeaderMouseDown($event)"
-    (contextmenu)="onHeaderContextMenu($event)"
-  >
-    <mat-icon class="gns3-replay__window-icon">search</mat-icon>
-    <span class="gns3-replay__window-title">{{ svc.peek()?.frame.marker }}</span>
-    <span class="gns3-replay__window-frame">#{{ svc.peek()?.frame.frame_number }}</span>
-    <button
-      class="gns3-replay__window-reanchor gns3-replay__window-close"
-      matTooltip="Close"
-      (click)="svc.closePeek()"
+  <div class="gns3-replay__window-header">
+    <!-- Drag zone: the title strip IS the drag surface (and the right-click
+         fast-dismiss strip — "this window", not its controls). -->
+    <div
+      class="gns3-replay__header-drag"
+      (mousedown)="onHeaderMouseDown($event)"
+      (contextmenu)="onHeaderContextMenu($event)"
     >
-      <mat-icon>close</mat-icon>
-    </button>
+      <mat-icon class="gns3-replay__window-icon">search</mat-icon>
+      <span class="gns3-replay__window-title">{{ svc.peek()?.frame.marker }}</span>
+      <span class="gns3-replay__window-frame">#{{ svc.peek()?.frame.frame_number }}</span>
+    </div>
+    <!-- Action zone: never drags — not even in the gaps between buttons. -->
+    <div class="gns3-replay__window-actions">
+      <div class="gns3-replay__zoom">
+        <button
+          class="gns3-replay__zoom-btn"
+          [disabled]="!zoomCtl.canStepDown()"
+          matTooltip="Zoom out"
+          (click)="zoomCtl.stepDown()"
+        >
+          <mat-icon>remove</mat-icon>
+        </button>
+        <button class="gns3-replay__zoom-level" matTooltip="Reset zoom" (click)="zoomCtl.reset()">
+          {{ zoomCtl.label() }}
+        </button>
+        <button
+          class="gns3-replay__zoom-btn"
+          [disabled]="!zoomCtl.canStepUp()"
+          matTooltip="Zoom in"
+          (click)="zoomCtl.stepUp()"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+      <button
+        class="gns3-replay__window-reanchor gns3-replay__window-close"
+        matTooltip="Close"
+        (click)="svc.closePeek()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
 
   @if (svc.peek(); as p) {
     <app-replay-detail-pane
+      [style.zoom]="zoomCtl.css()"
       [frame]="p.frame"
       [state]="p.detail"
       [autoExpand]="true"

@@ -379,6 +379,52 @@ describe('LogConsoleComponent', () => {
     });
   });
 
+  describe('handleCommand on a frozen distributed template', () => {
+    beforeEach(() => {
+      fixture.componentRef.setInput('project', { ...mockProject, frozen: true } as Project);
+      mockNodesDataSource.getItems.mockReturnValue([mockNode]);
+    });
+
+    it.each(['start all', 'stop all', 'suspend all', 'reload all'])(
+      'should refuse "%s" without sending a request',
+      (command) => {
+        component.command.set(command);
+        component.handleCommand();
+
+        expect(mockNodeService.startAll).not.toHaveBeenCalled();
+        expect(mockNodeService.stopAll).not.toHaveBeenCalled();
+        expect(mockNodeService.suspendAll).not.toHaveBeenCalled();
+        expect(mockNodeService.reloadAll).not.toHaveBeenCalled();
+        expect(component.command()).toBe('');
+      }
+    );
+
+    it('should refuse a power command for a single node', () => {
+      component.command.set('start TestNode');
+      component.handleCommand();
+
+      expect(mockNodeService.start).not.toHaveBeenCalled();
+      expect(component.command()).toBe('');
+    });
+
+    it('should explain why in the console output', () => {
+      const showCommandSpy = vi.spyOn(component, 'showCommand');
+      component.command.set('start all');
+      component.handleCommand();
+
+      expect(showCommandSpy).toHaveBeenCalledWith(
+        'This project is a frozen template: node power operations are disabled until every distributed copy is deleted.'
+      );
+    });
+
+    it('should keep read-only commands working', () => {
+      component.command.set('show TestNode');
+      component.handleCommand();
+
+      expect(component.filteredEvents.some((event) => event.type === 'command')).toBe(true);
+    });
+  });
+
   describe('showMessage', () => {
     it('should add event to logEventsDataSource', () => {
       const event: LogEvent = { type: 'info', message: 'test message' };

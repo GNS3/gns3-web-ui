@@ -17,6 +17,50 @@
     </div>
   </div>
   }
+
+  @if (quotas(); as q) {
+  <div class="logged-user__quotas">
+    <span class="logged-user__quotas-title">Node quotas</span>
+
+    <div class="logged-user__quota">
+      <div class="logged-user__quota-figures">
+        <span class="logged-user__info-label">Nodes</span>
+        <span
+          class="logged-user__info-value"
+          [class.logged-user__info-value--over]="isOverQuota(q.current_nodes, q.max_nodes)"
+        >
+          {{ quotaText(q.current_nodes, q.max_nodes) }}
+        </span>
+      </div>
+      @if (q.max_nodes !== null) {
+      <mat-progress-bar
+        mode="determinate"
+        [value]="quotaPercent(q.current_nodes, q.max_nodes)"
+        [ngStyle]="isOverQuota(q.current_nodes, q.max_nodes) ? { '--mdc-linear-progress-active-indicator-color': 'var(--mat-sys-error)' } : null"
+      ></mat-progress-bar>
+      }
+    </div>
+
+    <div class="logged-user__quota">
+      <div class="logged-user__quota-figures">
+        <span class="logged-user__info-label">Running nodes</span>
+        <span
+          class="logged-user__info-value"
+          [class.logged-user__info-value--over]="isOverQuota(q.current_running_nodes, q.max_running_nodes)"
+        >
+          {{ quotaText(q.current_running_nodes, q.max_running_nodes) }}
+        </span>
+      </div>
+      @if (q.max_running_nodes !== null) {
+      <mat-progress-bar
+        mode="determinate"
+        [value]="quotaPercent(q.current_running_nodes, q.max_running_nodes)"
+        [ngStyle]="isOverQuota(q.current_running_nodes, q.max_running_nodes) ? { '--mdc-linear-progress-active-indicator-color': 'var(--mat-sys-error)' } : null"
+      ></mat-progress-bar>
+      }
+    </div>
+  </div>
+  }
 </mat-dialog-content>
 
 <mat-dialog-actions class="logged-user__actions" align="end">

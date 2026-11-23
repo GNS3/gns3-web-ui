@@ -1,0 +1,230 @@
+/**
+ * GNS3 Terminal Settings Panel (shared)
+ * Using MD3 CSS variables
+ *
+ * Anchor offsets are host-tunable:
+ *   --gns3-terminal-settings-top  (default 8px)
+ *   --gns3-terminal-settings-right (default 8px)
+ */
+
+.terminal-settings-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 199;
+}
+
+.terminal-settings-panel {
+  position: absolute;
+  top: var(--gns3-terminal-settings-top, 8px);
+  right: var(--gns3-terminal-settings-right, 8px);
+  z-index: 200;
+  background: var(--mat-sys-surface-container-high);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 12px 10px 12px 14px;
+  min-width: 280px;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) 28%, transparent);
+}
+
+.terminal-settings-panel__title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+  margin-bottom: 10px;
+}
+
+.terminal-settings-panel__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 30px;
+  gap: 8px;
+
+  & + & {
+    margin-top: 4px;
+  }
+}
+
+.terminal-settings-panel__label {
+  font-size: 12px;
+  color: var(--mat-sys-on-surface);
+  flex: 1;
+}
+
+.terminal-settings-panel__color-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* Color swatch — wraps input[type=color] */
+.color-swatch {
+  display: flex;
+  width: 28px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background-color: var(--swatch-color);
+  // inset shadow renders on top of fill so the visible colored area is always the full 28×22px,
+  // regardless of whether the fill is light or dark (unlike border which reduces layout area)
+  box-shadow: inset 0 0 0 1px var(--mat-sys-outline-variant), 0 0 0 1px transparent;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  transition: box-shadow var(--gns3-motion-duration-standard) ease;
+
+  &:hover {
+    box-shadow: inset 0 0 0 1px var(--mat-sys-outline), 0 0 0 1px transparent;
+  }
+
+  &--custom {
+    box-shadow: inset 0 0 0 1px var(--mat-sys-primary), 0 0 0 1px var(--mat-sys-primary);
+  }
+
+  input[type='color'] {
+    position: absolute;
+    inset: -4px;
+    width: calc(100% + 8px);
+    height: calc(100% + 8px);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    background: none;
+    // Visually hidden — the label's background-color shows the color;
+    // the native picker still opens on click
+    opacity: 0.01;
+  }
+}
+
+.terminal-settings-panel__auto-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+  background: color-mix(in srgb, var(--mat-sys-on-surface-variant) 12%, transparent);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+// Plain icon button — no MDC touch-target overhead, always inline with color swatch
+.reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 0;
+  flex-shrink: 0;
+  transition: background-color var(--gns3-motion-duration-standard) ease,
+    color var(--gns3-motion-duration-standard) ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--mat-sys-on-surface-variant) 12%, transparent);
+    color: var(--mat-sys-on-surface);
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+}
+
+/* =============================================
+// Font Size Control — plain buttons so there's no 40px touch-target overhead
+// ============================================= */
+.terminal-settings-panel__font-size-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* =============================================
+// Font Family Row — inline: label left, select takes remaining space
+// ============================================= */
+.terminal-settings-panel__row--font {
+  align-items: center;
+}
+
+.terminal-settings-panel__font-select {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  padding: 0 6px;
+  font-size: 12px;
+  color: var(--mat-sys-on-surface);
+  background: var(--mat-sys-surface-container);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 4px;
+  cursor: pointer;
+  appearance: auto;
+  transition: border-color var(--gns3-motion-duration-standard) ease;
+
+  &:hover {
+    border-color: var(--mat-sys-outline);
+  }
+
+  &:focus {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 1px;
+  }
+
+  option {
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+.terminal-settings-panel__font-size-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  min-width: 36px;
+  text-align: center;
+}
+
+.font-size-step-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--mat-sys-on-surface);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color var(--gns3-motion-duration-standard) ease,
+    border-color var(--gns3-motion-duration-standard) ease;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--mat-sys-on-surface) 10%, transparent);
+    border-color: var(--mat-sys-outline);
+  }
+
+  &:disabled {
+    opacity: 0.38;
+    cursor: default;
+  }
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}

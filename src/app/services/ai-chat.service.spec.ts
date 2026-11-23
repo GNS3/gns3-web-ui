@@ -124,7 +124,7 @@ describe('AiChatService', () => {
       expect(headers.get('Authorization')).toBe('Bearer test-token');
     });
 
-    it('should return Basic auth header when no token', () => {
+    it('should never fall back to basic auth from stored credentials', () => {
       const controllerWithoutToken = {
         ...mockController,
         authToken: '',
@@ -133,7 +133,9 @@ describe('AiChatService', () => {
       };
       const headers = (service as any).getAuthHeaders(controllerWithoutToken);
 
-      expect(headers.get('Authorization')).toBe(`Basic ${btoa('user:pass')}`);
+      // Credentials must not be re-encoded into an Authorization header:
+      // the AI chat endpoint authenticates with the session JWT only.
+      expect(headers.get('Authorization')).toBeNull();
     });
 
     it('should return empty headers when no auth', () => {

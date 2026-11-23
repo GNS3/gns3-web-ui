@@ -107,6 +107,21 @@ svg#map g.node_body.missing-image > image {
   opacity: 0.6;
 }
 
+/* Canvas texts must not be natively selectable. They are created by D3 at
+   runtime and carry no Angular encapsulation attribute, so the `.noselect`
+   rules in project-map.component.scss (encapsulated since the Angular 21
+   migration removed ViewEncapsulation.None) never match them. Without this
+   rule, dragging the marquee selection tool also starts a native browser
+   text selection that paints highlights across every text it sweeps in
+   DOM order. */
+svg#map text {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 /* Drag selection rectangle */
 svg#map g.selection-line-tool path.selection {
   fill: var(--mat-sys-primary);
@@ -170,5 +185,17 @@ svg#map line.line_element:hover {
 
 /* Drawing curves */
 svg#map path.curve_element:hover {
+  stroke: var(--mat-sys-error);
+}
+
+/* Selected serial links and curve drawings: error-color stroke. Re-homed
+   from project-map.component.scss, where Angular encapsulation kept these
+   rules from ever matching D3-created elements (silently inert since the
+   Angular 21 migration removed ViewEncapsulation.None).
+   Serial links key off g.link_body.selected — the class actually maintained
+   at selection time by GraphLayout.updateSelectionHighlights; the
+   path-level class from link.ts only updates on full redraws. */
+svg#map g.link_body.selected path.serial_link,
+svg#map path.curve_element.selected {
   stroke: var(--mat-sys-error);
 }

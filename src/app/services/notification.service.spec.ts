@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { NotificationService, ComputeNotification } from './notification.service';
 import { Controller } from '@models/controller';
 import { Compute } from '@models/compute';
@@ -18,9 +18,11 @@ class MockWebSocket {
   onopen: (() => void) | null = null;
   onmessage: ((event: { data: string }) => void) | null = null;
   onerror: (() => void) | null = null;
-  onclose: (() => void) | null = null;
+  onclose: ((event: { code: number }) => void) | null = null;
+  // Default to the abnormal-closure code so tests exercising the reconnect
+  // path keep the pre-1008-handling behavior.
   close = vi.fn(() => {
-    this.onclose?.();
+    this.onclose?.({ code: 1006 });
   });
 
   constructor(url: string) {
@@ -34,6 +36,7 @@ vi.stubGlobal('WebSocket', MockWebSocket);
 describe('NotificationService', () => {
   let service: NotificationService;
   let mockComputeService: { getComputes: ReturnType<typeof vi.fn> };
+  let mockPermissionService: { cachedPrivileges: ReturnType<typeof vi.fn>; ready: ReturnType<typeof vi.fn> };
   let mockController: Controller;
 
   beforeEach(() => {
@@ -47,7 +50,14 @@ describe('NotificationService', () => {
       getComputes: vi.fn().mockReturnValue(of([])),
     };
 
-    service = new NotificationService(mockComputeService as any);
+    // Grant the stream privilege by default so existing tests exercise the
+    // WebSocket path; the cache hit keeps the connect decision synchronous.
+    mockPermissionService = {
+      cachedPrivileges: vi.fn().mockReturnValue(new Set(['Notification.Audit'])),
+      ready: vi.fn().mockResolvedValue(new Set(['Notification.Audit'])),
+    };
+
+    service = new NotificationService(mockComputeService as any, mockPermissionService as any);
 
     mockController = {
       id: 1,
@@ -312,7 +322,7 @@ describe('NotificationService', () => {
       service.connectToComputeNotifications(mockController);
       const ws = MockWebSocket.instances[0];
 
-      ws.onclose?.();
+      ws.onclose?.({ code: 1006 });
 
       // ws is cleared but currentController is kept for potential reconnection
       expect(service['ws']).toBeNull();
@@ -331,6 +341,71 @@ describe('NotificationService', () => {
     });
   });
 
+  describe('compute polling privilege gate', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('does not poll the compute list without Compute.Audit', () => {
+      // The built-in Lab member role has neither Notification.Audit nor
+      // Compute.Audit: polling GET /computes would 403 (and toast) forever.
+      mockPermissionService.cachedPrivileges.mockReturnValue(new Set<string>());
+
+      service.connectToComputeNotifications(mockController);
+      vi.advanceTimersByTime(30000);
+
+      expect(MockWebSocket.instances).toHaveLength(0);
+      expect(mockComputeService.getComputes).not.toHaveBeenCalled();
+    });
+
+    it('polls the compute list for users with Compute.Audit but no stream privilege', () => {
+      mockPermissionService.cachedPrivileges.mockReturnValue(new Set(['Compute.Audit']));
+
+      service.connectToComputeNotifications(mockController);
+
+      expect(MockWebSocket.instances).toHaveLength(0);
+      expect(mockComputeService.getComputes).toHaveBeenCalledTimes(1);
+
+      vi.advanceTimersByTime(10000);
+      expect(mockComputeService.getComputes).toHaveBeenCalledTimes(2);
+    });
+
+    it('starts polling after a 1008 close when Compute.Audit is held', () => {
+      mockPermissionService.cachedPrivileges.mockReturnValue(new Set(['Notification.Audit', 'Compute.Audit']));
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
+
+      ws.onclose?.({ code: 1008 });
+
+      expect(mockComputeService.getComputes).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not fall back to polling after a 1008 close without Compute.Audit', () => {
+      mockPermissionService.cachedPrivileges.mockReturnValue(new Set(['Notification.Audit']));
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
+
+      ws.onclose?.({ code: 1008 });
+      vi.advanceTimersByTime(30000);
+
+      expect(mockComputeService.getComputes).not.toHaveBeenCalled();
+    });
+
+    it('stops polling after a 403 answer instead of retrying every 10 s', () => {
+      mockPermissionService.cachedPrivileges.mockReturnValue(new Set(['Compute.Audit']));
+      mockComputeService.getComputes.mockReturnValue(throwError(() => ({ originalError: { status: 403 } })));
+
+      service.connectToComputeNotifications(mockController);
+      vi.advanceTimersByTime(30000);
+
+      expect(mockComputeService.getComputes).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('auto-reconnect', () => {
     beforeEach(() => {
       vi.useFakeTimers();
@@ -344,7 +419,7 @@ describe('NotificationService', () => {
       service.connectToComputeNotifications(mockController);
       const ws = MockWebSocket.instances[0];
 
-      ws.onclose?.();
+      ws.onclose?.({ code: 1006 });
 
       // Not reconnected immediately — first backoff is 1s..1.25s (+jitter).
       expect(MockWebSocket.instances).toHaveLength(1);
@@ -371,7 +446,7 @@ describe('NotificationService', () => {
       first.onopen?.(); // initial connect: consumers own the initial fetch
       expect(mockComputeService.getComputes).not.toHaveBeenCalled();
 
-      first.onclose?.(); // unexpected close → reconnect
+      first.onclose?.({ code: 1006 }); // unexpected close → reconnect
       vi.advanceTimersByTime(1300);
       const second = MockWebSocket.instances[1];
       second.onopen?.(); // reconnect: service resyncs the cache

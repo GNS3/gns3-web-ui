@@ -1,20 +1,24 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Injector } from '@angular/core';
 import { NotificationCenterService } from './notification-center.service';
+import { UserPreferencesService } from './user-preferences.service';
 
 describe('NotificationCenterService', () => {
   let service: NotificationCenterService;
+  let userPreferences: UserPreferencesService;
 
   beforeEach(() => {
     localStorage.clear();
-    service = new NotificationCenterService();
+    userPreferences = new UserPreferencesService(Injector.create({ providers: [] }));
+    service = new NotificationCenterService(userPreferences);
   });
 
   it('defaults to visible toasts and restores both saved preferences', () => {
     expect(service.toastsEnabled).toBe(true);
     service.setToastsEnabled(false);
-    expect(new NotificationCenterService().toastsEnabled).toBe(false);
+    expect(new NotificationCenterService(userPreferences).toastsEnabled).toBe(false);
     service.setToastsEnabled(true);
-    expect(new NotificationCenterService().toastsEnabled).toBe(true);
+    expect(new NotificationCenterService(userPreferences).toastsEnabled).toBe(true);
   });
 
   it('keeps the toast preference in memory when storage writes fail', () => {
@@ -75,14 +79,14 @@ describe('NotificationCenterService', () => {
     }
 
     expect(service.notifications()).toHaveLength(100);
-    const restored = new NotificationCenterService();
+    const restored = new NotificationCenterService(userPreferences);
     expect(restored.notifications()).toHaveLength(100);
     expect(restored.notifications()[0].message).toBe('Activity 104');
   });
 
   it('creates unique IDs across service instances', () => {
     const first = service.add('info', 'First');
-    const secondService = new NotificationCenterService();
+    const secondService = new NotificationCenterService(userPreferences);
     const second = secondService.add('info', 'Second');
 
     expect(second.id).not.toBe(first.id);
@@ -99,7 +103,7 @@ describe('NotificationCenterService', () => {
       ])
     );
 
-    const restored = new NotificationCenterService();
+    const restored = new NotificationCenterService(userPreferences);
 
     expect(restored.notifications().map((notification) => notification.id)).toEqual(['valid']);
   });

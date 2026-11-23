@@ -12,7 +12,9 @@
   position: fixed;
   background-color: var(--mat-sys-surface-container-low);
   border-radius: 16px;
-  overflow: hidden;
+  // NO overflow:hidden here (floating-window standard): the resize handles sit
+  // entirely OUTSIDE the border box and would be clipped. The corner rounding
+  // is carried by the sidebar/main children instead.
   display: flex;
   z-index: 1000;
   color: var(--mat-sys-on-surface);
@@ -66,6 +68,12 @@
   &--maximized {
     border-radius: 0;
 
+    // Square inner corners too — the children carry the rounding.
+    .gns3-ai-chat__sidebar,
+    .gns3-ai-chat__main {
+      border-radius: 0;
+    }
+
     .gns3-ai-chat__sidebar {
       height: 100vh;
     }
@@ -104,6 +112,9 @@
   flex-direction: column;
   transition: width var(--gns3-motion-duration-standard) ease;
   flex-shrink: 0;
+  // Inner radius (16px outer − 1px border); the window root no longer clips.
+  overflow: hidden;
+  border-radius: 15px 0 0 15px;
 
   &--collapsed {
     width: 60px;
@@ -115,14 +126,11 @@
   align-items: center;
   justify-content: center;
   padding: var(--gns3-density-space-4);
-  cursor: grab;
+  // NOT a drag surface — no grab cursor (the header split's drag zone is the
+  // chat title strip).
   user-select: none;
   height: 56px;
   box-sizing: border-box;
-
-  &:active {
-    cursor: grabbing;
-  }
 }
 
 // =============================================
@@ -265,6 +273,10 @@
   flex-direction: column;
   background-color: color-mix(in srgb, var(--mat-sys-surface) 60%, transparent);
   min-width: 0;
+  // The other half of the corner rounding carried by the children (the root
+  // must stay unclipped for the outside resize handles).
+  overflow: hidden;
+  border-radius: 0 15px 15px 0;
 }
 
 .gns3-ai-chat__header {
@@ -273,25 +285,34 @@
   justify-content: space-between;
   padding: var(--gns3-density-space-4);
   flex-shrink: 0;
-  cursor: grab;
-  user-select: none;
   transition: background var(--gns3-motion-duration-standard) ease;
   position: relative;
   height: 56px;
   box-sizing: border-box;
-
-  &:active {
-    cursor: grabbing;
-  }
+  // Layout only — the drag affordance lives on the title strip below, so the
+  // action zone never advertises a drag it will not start.
 }
 
+// Drag zone: the title strip is the ONLY surface that starts a drag
+// (floating-window standard header split).
 .gns3-ai-chat__title {
   display: flex;
   align-items: center;
   gap: var(--gns3-density-space-2);
+  flex: 1;
+  min-width: 0;
   font-size: 14px;
   font-weight: 500;
   color: var(--mat-sys-on-surface);
+
+  &--draggable {
+    cursor: grab;
+    user-select: none;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
 }
 
 .gns3-ai-chat__messages {
@@ -316,10 +337,15 @@
 // =============================================
 // Header Actions Button Group
 // =============================================
+// Action zone: never drags. Hairline separator marks the boundary (same
+// values as the shared `.gns3-window__actions` partial).
 .gns3-ai-chat__header-actions {
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-shrink: 0;
+  padding-left: 6px;
+  border-left: 1px solid var(--mat-sys-outline-variant);
 
   .mat-icon-button {
     color: var(--mat-sys-on-surface);
@@ -463,87 +489,3 @@
 // =============================================
 // Resize Handles
 // =============================================
-.resize-handle {
-  position: absolute;
-  z-index: 100;
-  opacity: 0;
-  transition: opacity var(--gns3-motion-duration-standard) ease;
-
-  .gns3-ai-chat:hover & {
-    opacity: 1;
-  }
-
-  // Edge handles - transparent
-  &.resize-handle-top {
-    top: -4px;
-    left: 12px;
-    right: 12px;
-    height: 12px;
-    cursor: ns-resize;
-    background: transparent;
-  }
-
-  &.resize-handle-right {
-    top: 12px;
-    right: -4px;
-    bottom: 12px;
-    width: 12px;
-    cursor: ew-resize;
-    background: transparent;
-  }
-
-  &.resize-handle-bottom {
-    bottom: -4px;
-    left: 12px;
-    right: 12px;
-    height: 12px;
-    cursor: ns-resize;
-    background: transparent;
-  }
-
-  &.resize-handle-left {
-    top: 12px;
-    left: -4px;
-    bottom: 12px;
-    width: 12px;
-    cursor: ew-resize;
-    background: transparent;
-  }
-
-  // Corner handles - transparent
-  &.resize-handle-top-left {
-    top: -6px;
-    left: -6px;
-    width: 20px;
-    height: 20px;
-    cursor: nwse-resize;
-    background: transparent;
-  }
-
-  &.resize-handle-top-right {
-    top: -6px;
-    right: -6px;
-    width: 20px;
-    height: 20px;
-    cursor: nesw-resize;
-    background: transparent;
-  }
-
-  &.resize-handle-bottom-left {
-    bottom: -6px;
-    left: -6px;
-    width: 20px;
-    height: 20px;
-    cursor: nesw-resize;
-    background: transparent;
-  }
-
-  &.resize-handle-bottom-right {
-    bottom: -6px;
-    right: -6px;
-    width: 20px;
-    height: 20px;
-    cursor: nwse-resize;
-    background: transparent;
-  }
-}

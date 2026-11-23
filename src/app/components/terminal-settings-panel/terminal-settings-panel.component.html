@@ -1,0 +1,94 @@
+<!-- Backdrop — click closes the panel (the host owns visibility) -->
+<div class="terminal-settings-backdrop" (click)="closed.emit()"></div>
+
+<div
+  class="terminal-settings-panel"
+  (mousedown)="$event.stopPropagation()"
+  (click)="$event.stopPropagation()"
+>
+  <div class="terminal-settings-panel__title">Terminal Settings</div>
+
+  <div class="terminal-settings-panel__row">
+    <span class="terminal-settings-panel__label">Background</span>
+    <div class="terminal-settings-panel__color-control">
+      <label
+        class="color-swatch"
+        [style.--swatch-color]="effectiveBgHex()"
+        [class.color-swatch--custom]="currentSettings().backgroundColor"
+        title="Pick background color"
+      >
+        <input type="color" [value]="effectiveBgHex()" (change)="onBgColorChange($event)" />
+      </label>
+      @if (currentSettings().backgroundColor) {
+      <button class="reset-btn" (click)="resetBgColor()" title="Reset to theme default" aria-label="Reset background color">
+        <mat-icon>restart_alt</mat-icon>
+      </button>
+      } @else {
+      <span class="terminal-settings-panel__auto-badge">auto</span>
+      }
+    </div>
+  </div>
+
+  <div class="terminal-settings-panel__row">
+    <span class="terminal-settings-panel__label">Text Color</span>
+    <div class="terminal-settings-panel__color-control">
+      <label
+        class="color-swatch"
+        [style.--swatch-color]="effectiveFgHex()"
+        [class.color-swatch--custom]="currentSettings().foregroundColor"
+        title="Pick text color"
+      >
+        <input type="color" [value]="effectiveFgHex()" (change)="onFgColorChange($event)" />
+      </label>
+      @if (currentSettings().foregroundColor) {
+      <button class="reset-btn" (click)="resetFgColor()" title="Reset to theme default" aria-label="Reset text color">
+        <mat-icon>restart_alt</mat-icon>
+      </button>
+      } @else {
+      <span class="terminal-settings-panel__auto-badge">auto</span>
+      }
+    </div>
+  </div>
+
+  <div class="terminal-settings-panel__row">
+    <span class="terminal-settings-panel__label">Font Size</span>
+    <div class="terminal-settings-panel__font-size-control">
+      <button
+        class="font-size-step-btn"
+        (click)="changeFontSize(-1)"
+        [disabled]="currentSettings().fontSize <= minFontSize"
+        aria-label="Decrease font size"
+      >
+        <mat-icon>remove</mat-icon>
+      </button>
+      <span class="terminal-settings-panel__font-size-value">{{ currentSettings().fontSize }}px</span>
+      <button
+        class="font-size-step-btn"
+        (click)="changeFontSize(1)"
+        [disabled]="currentSettings().fontSize >= maxFontSize"
+        aria-label="Increase font size"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+      @if (currentSettings().fontSize !== defaultFontSize) {
+      <button class="reset-btn" (click)="resetFontSize()" title="Reset to default size" aria-label="Reset font size">
+        <mat-icon>restart_alt</mat-icon>
+      </button>
+      }
+    </div>
+  </div>
+
+  <div class="terminal-settings-panel__row terminal-settings-panel__row--font">
+    <span class="terminal-settings-panel__label">Font</span>
+    <select
+      class="terminal-settings-panel__font-select"
+      [value]="currentSettings().fontFamily || ''"
+      (change)="onFontFamilyChange($any($event.target).value)"
+      aria-label="Select terminal font"
+    >
+      @for (font of terminalFonts; track font.name) {
+      <option [value]="font.value || ''">{{ font.name }}</option>
+      }
+    </select>
+  </div>
+</div>

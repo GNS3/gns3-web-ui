@@ -1,0 +1,83 @@
+@if (tracked().length > 0) {
+<div class="distribution-tasks">
+  @for (entry of tracked(); track entry.job.distribution_id) {
+  <div class="distribution-tasks__card">
+    <div class="distribution-tasks__header" (click)="toggleExpanded(entry.job.distribution_id)">
+      <mat-icon
+        [class.distribution-tasks__icon--spin]="isActive(entry)"
+        [class.distribution-tasks__icon--ok]="iconFor(entry) === 'check_circle'"
+        [class.distribution-tasks__icon--failed]="iconFor(entry) === 'error' || iconFor(entry) === 'warning'"
+        [class.distribution-tasks__icon--cancelled]="iconFor(entry) === 'cancel'"
+        >{{ iconFor(entry) }}</mat-icon
+      >
+      <span class="distribution-tasks__name" [title]="entry.job.name">{{ entry.job.name }}</span>
+      @if (!entry.expired) {
+      <span class="distribution-tasks__count">{{ entry.job.completed }} of {{ entry.job.total }}</span>
+      }
+      @if (isActive(entry)) {
+      <button
+        type="button"
+        class="distribution-tasks__cancel"
+        [disabled]="isCancelling(entry) || entry.cancelPending"
+        (click)="cancel(entry.job.distribution_id); $event.stopPropagation()"
+      >
+        Cancel
+      </button>
+      }
+      <button
+        mat-icon-button
+        type="button"
+        class="distribution-tasks__dismiss"
+        (click)="dismiss(entry.job.distribution_id); $event.stopPropagation()"
+        aria-label="Dismiss distribution progress"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    @if (entry.job.status === 'failed' && entry.job.error) {
+    <div class="distribution-tasks__job-error">{{ entry.job.error.message }}</div>
+    }
+
+    @if (entry.expired) {
+    <div class="distribution-tasks__expired">
+      The server no longer remembers this distribution (restart or cleanup). Copies already created are unaffected.
+    </div>
+    } @else {
+    <mat-progress-bar mode="determinate" [value]="progress(entry.job)" />
+    }
+
+    @if (isCancelling(entry)) {
+    <div class="distribution-tasks__cancelling">
+      Cancelling — the current copy is still finishing, this can take a while on large labs.
+    </div>
+    }
+
+    @if (isExpanded(entry.job.distribution_id)) {
+    <div class="distribution-tasks__results">
+      @for (result of entry.job.results; track result.username) {
+      @if (result.project) {
+      <div class="distribution-tasks__result distribution-tasks__result--ok">
+        <mat-icon>check</mat-icon>
+        <span class="distribution-tasks__username">{{ result.username }}</span>
+        <span class="distribution-tasks__detail">{{ result.project.name }}</span>
+      </div>
+      } @else {
+      <div class="distribution-tasks__result distribution-tasks__result--failed">
+        <mat-icon>close</mat-icon>
+        <span class="distribution-tasks__username">{{ result.username }}</span>
+        <span class="distribution-tasks__detail">{{ result.error?.message || 'failed' }}</span>
+      </div>
+      }
+      }
+      @if (isRunning(entry) && remaining(entry.job) > 0) {
+      <div class="distribution-tasks__remaining">{{ remaining(entry.job) }} remaining</div>
+      } @else if (entry.job.status === 'cancelled' && remaining(entry.job) > 0) {
+      <div class="distribution-tasks__remaining">{{ remaining(entry.job) }} skipped</div>
+      }
+    </div>
+    }
+  </div>
+  }
+</div>
+}

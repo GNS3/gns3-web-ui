@@ -5,8 +5,9 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { UserService } from '@services/user.service';
 import { LoggedUserComponent } from './logged-user.component';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { User } from '@models/users/user';
+import { UserQuotaUsage } from '@models/users/user-quota-usage';
 import { Controller } from '@models/controller';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -74,7 +75,10 @@ describe('LoggedUserComponent', () => {
         },
         {
           provide: UserService,
-          useValue: { getInformationAboutLoggedUser: vi.fn().mockReturnValue(of(mockUser)) },
+          useValue: {
+            getInformationAboutLoggedUser: vi.fn().mockReturnValue(of(mockUser)),
+            getQuotas: vi.fn(),
+          },
         },
         {
           provide: ToasterService,
@@ -189,4 +193,67 @@ describe('LoggedUserComponent', () => {
   // These behaviors would be better tested in an integration test.
   // Reference: template.component.spec.ts also skips dialog tests for similar reasons.
   describe.skip('changePassword', () => {});
+
+  describe('node quotas', () => {
+    const mockQuotas: UserQuotaUsage = {
+      max_nodes: 50,
+      max_running_nodes: null,
+      current_nodes: 12,
+      current_running_nodes: 3,
+    };
+
+    const mockGetQuotas = () => TestBed.inject(UserService).getQuotas as ReturnType<typeof vi.fn>;
+
+    it('should format quota text for limited and unlimited metrics', () => {
+      expect(component.quotaText(12, 50)).toBe('12 / 50');
+      expect(component.quotaText(7, null)).toBe('7 · no limit');
+    });
+
+    it('should cap the progress percentage at 100', () => {
+      expect(component.quotaPercent(12, 50)).toBe(24);
+      expect(component.quotaPercent(60, 50)).toBe(100);
+      expect(component.quotaPercent(5, 0)).toBe(100);
+      expect(component.quotaPercent(0, null)).toBe(0);
+    });
+
+    it('should detect over-limit usage', () => {
+      expect(component.isOverQuota(55, 50)).toBe(true);
+      expect(component.isOverQuota(50, 50)).toBe(false);
+      expect(component.isOverQuota(999, null)).toBe(false);
+    });
+
+    it('should fetch quotas on init and render the section', async () => {
+      mockGetQuotas().mockReturnValue(of(mockQuotas));
+      fixture.detectChanges();
+      await Promise.resolve(); // flush the controller promise, then the sync subscriptions
+      fixture.detectChanges();
+
+      expect(component.quotas()).toEqual(mockQuotas);
+      const section: HTMLElement = fixture.nativeElement.querySelector('.logged-user__quotas');
+      expect(section).toBeTruthy();
+      expect(section.textContent).toContain('12 / 50');
+      expect(section.textContent).toContain('no limit');
+      // Only the limited metric renders a progress bar
+      expect(fixture.nativeElement.querySelectorAll('mat-progress-bar').length).toBe(1);
+    });
+
+    it('should mark over-limit usage', async () => {
+      mockGetQuotas().mockReturnValue(of({ ...mockQuotas, current_nodes: 55 }));
+      fixture.detectChanges();
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.logged-user__info-value--over')).toBeTruthy();
+    });
+
+    it('should keep the section hidden when the endpoint is unavailable', async () => {
+      mockGetQuotas().mockReturnValue(throwError(() => new Error('not found')));
+      fixture.detectChanges();
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      expect(component.quotas()).toBeUndefined();
+      expect(fixture.nativeElement.querySelector('.logged-user__quotas')).toBeNull();
+    });
+  });
 });

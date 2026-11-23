@@ -142,61 +142,6 @@ describe('LoginService', () => {
     });
   });
 
-  describe('getLoggedUserRefToken', () => {
-    it('should call httpController.post with correct endpoint', async () => {
-      const mockResponse: AuthResponse = {
-        access_token: 'test-token-123',
-        token_type: 'Bearer',
-      };
-
-      mockHttpController.post.mockReturnValue(of(mockResponse));
-
-      const currentUser = { username: 'testuser', password: 'testpass' };
-
-      await service.getLoggedUserRefToken(mockController, currentUser);
-
-      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/access/users/authenticate', currentUser);
-    });
-
-    it('should return Promise that resolves to AuthResponse', async () => {
-      const mockResponse: AuthResponse = {
-        access_token: 'test-token-123',
-        token_type: 'Bearer',
-      };
-
-      mockHttpController.post.mockReturnValue(of(mockResponse));
-
-      const currentUser = { username: 'testuser', password: 'testpass' };
-
-      const result = await service.getLoggedUserRefToken(mockController, currentUser);
-
-      expect(result).toEqual(mockResponse);
-    });
-
-    it('should include current_user credentials in request', async () => {
-      const mockResponse: AuthResponse = {
-        access_token: 'admin-token',
-        token_type: 'Bearer',
-      };
-
-      mockHttpController.post.mockReturnValue(of(mockResponse));
-
-      const currentUser = { username: 'admin', password: 'admin123' };
-
-      await service.getLoggedUserRefToken(mockController, currentUser);
-
-      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/access/users/authenticate', currentUser);
-    });
-
-    it('should handle authentication errors', async () => {
-      mockHttpController.post.mockReturnValue(throwError(() => new Error('Invalid credentials')));
-
-      const currentUser = { username: 'test', password: 'wrong' };
-
-      await expect(service.getLoggedUserRefToken(mockController, currentUser)).rejects.toThrow('Invalid credentials');
-    });
-  });
-
   describe('Edge Cases', () => {
     it.each([
       { username: '', password: 'testpass', desc: 'empty username' },
