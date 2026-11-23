@@ -1,0 +1,183 @@
+/**
+ * GNS3 Distribution Tasks Component Styles
+ *
+ * Fixed corner stack (bottom right); an empty stack renders no DOM and the
+ * host itself never intercepts pointer events — only the cards do.
+ */
+
+:host {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.distribution-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.distribution-tasks__card {
+  pointer-events: auto;
+  box-sizing: border-box;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  padding: 8px 12px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--gns3-density-radius-sm);
+  background-color: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+
+  mat-progress-bar {
+    margin-top: 8px;
+  }
+}
+
+.distribution-tasks__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.distribution-tasks__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.distribution-tasks__count {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: var(--gns3-helper-text-size);
+}
+
+.distribution-tasks__cancel {
+  flex: 0 0 auto;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--gns3-density-radius-sm);
+  background-color: transparent;
+  color: var(--mat-sys-on-surface-variant);
+  font-family: inherit;
+  font-size: var(--gns3-helper-text-size);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background-color: var(--mat-sys-surface-container-highest);
+    color: var(--mat-sys-on-surface);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 1px;
+  }
+}
+
+.distribution-tasks__dismiss {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.distribution-tasks__icon--spin {
+  animation: distribution-tasks-spin 1.5s linear infinite;
+}
+
+.distribution-tasks__icon--ok {
+  color: var(--mat-sys-primary);
+}
+
+.distribution-tasks__icon--failed {
+  color: var(--mat-sys-error);
+}
+
+.distribution-tasks__icon--cancelled {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.distribution-tasks__job-error {
+  margin-top: 8px;
+  color: var(--mat-sys-error);
+}
+
+.distribution-tasks__expired {
+  margin-top: 8px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.distribution-tasks__cancelling {
+  margin-top: 8px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.distribution-tasks__results {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.distribution-tasks__result {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+
+  mat-icon {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    line-height: 16px;
+    align-self: center;
+  }
+
+  &--ok mat-icon {
+    color: var(--mat-sys-primary);
+  }
+
+  &--failed mat-icon {
+    color: var(--mat-sys-error);
+  }
+}
+
+.distribution-tasks__username {
+  flex: 0 0 auto;
+}
+
+.distribution-tasks__detail {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.distribution-tasks__remaining {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+@keyframes distribution-tasks-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

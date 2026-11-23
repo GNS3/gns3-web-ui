@@ -5,6 +5,7 @@
 
 :host {
   display: block;
+  position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -14,6 +15,45 @@
 .terminal {
   width: 100%;
   height: 100%;
+}
+
+/* Floating settings toggle — sits above the terminal, top-right */
+.settings-toggle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 210;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 32px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--mat-sys-surface-container-high) 92%, transparent);
+  color: var(--mat-sys-on-surface-variant);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color var(--gns3-motion-duration-standard) ease,
+    color var(--gns3-motion-duration-standard) ease,
+    border-color var(--gns3-motion-duration-standard) ease;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface);
+    border-color: var(--mat-sys-outline);
+  }
+
+  &--active {
+    color: var(--mat-sys-primary);
+    border-color: var(--mat-sys-primary);
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
 }
 
 /* Context menu styles moved to src/styles/_xterm-context-menu.scss */

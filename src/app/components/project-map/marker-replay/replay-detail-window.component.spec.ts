@@ -15,6 +15,7 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
 import { Controller } from '@models/controller';
 import { PinnedDetail, ReplayFrame, ReplayFrameDetail, ReplayRangeResponse } from '@models/marker-replay';
 import { dockSlot, DOCK_GAP } from './replay-geometry';
+import { REPLAY_WINDOW_STATE_KEY } from './replay-window-state';
 
 describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
   let fixture: ComponentFixture<ReplayDetailWindowComponent>;
@@ -91,6 +92,9 @@ describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    // Resize tests persist the pin tile size — drop it so every service
+    // instance starts from the default tile instead of the previous test's.
+    localStorage.removeItem(REPLAY_WINDOW_STATE_KEY);
     mockHttp = { get: vi.fn().mockReturnValue(of(range)) };
 
     await TestBed.configureTestingModule({
@@ -333,6 +337,32 @@ describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
       expect(component.validate(ev(undefined, 300))).toBe(true);
     });
 
+    it('resolves the link anchor once per resize gesture while the leader still follows', async () => {
+      await load();
+      const path = document.querySelector('svg#map g.link[link_id="l1"] path') as SVGPathElement;
+      const rectSpy = path.getBoundingClientRect as unknown as ReturnType<typeof vi.fn>;
+      rectSpy.mockClear();
+
+      component.onResizeStart();
+      component.onResizing({
+        rectangle: { left: 60, top: 80, width: 500, height: 300 },
+        edges: { right: true },
+      } as ResizeEvent);
+      const firstLeader = component.leader();
+      component.onResizing({
+        rectangle: { left: 60, top: 80, width: 540, height: 300 },
+        edges: { right: true },
+      } as ResizeEvent);
+      const secondLeader = component.leader();
+
+      // The leader keeps following the dragged edge on every move…
+      expect(firstLeader).not.toBeNull();
+      expect(secondLeader).not.toBeNull();
+      expect(secondLeader!.x1).not.toBe(firstLeader!.x1);
+      // …while the link's viewport rect is read at most once per gesture.
+      expect(rectSpy.mock.calls.length).toBeLessThanOrEqual(1);
+    });
+
     it('clamps an under-minimum end event and FREES a docked snapshot', async () => {
       await load();
       expect(component.dragPinned()).toBe(false); // docked
@@ -354,13 +384,39 @@ describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
       expect(component.winHeight()).toBe(300);
       expect(svc.userWindowSize()).toEqual({ width: 500, height: 300 });
     });
+
+    it('keeps the magnetically snapped edge on release (no jump)', async () => {
+      await load();
+      // A settled sibling to magnetize against (the main window's rect).
+      svc.reportWindowRect('main', { left: 600, top: 64, width: 300, height: 200 });
+      component.winLeft.set(60);
+      component.winTop.set(80);
+      component.winWidth.set(400);
+      component.winHeight.set(300);
+
+      // Right edge dragged to 580 raw — within threshold of the seam one
+      // gap before the main window (588 = 600 − 12).
+      const snapEv = {
+        rectangle: { left: 60, top: 80, width: 520, height: 300 },
+        edges: { right: true },
+      } as ResizeEvent;
+      component.onResizing(snapEv);
+      expect(component.winWidth()).toBe(528); // snapped live
+
+      // The library's resizeEnd rectangle is the RAW pointer rect — the
+      // snap must survive the release instead of the window jumping back.
+      component.onResizeEnd(snapEv);
+      await flushFrames();
+      expect(component.winWidth()).toBe(528);
+      expect(component.winLeft()).toBe(60);
+    });
   });
 
   describe('position (dock / freed / cluster)', () => {
     /** Dispatch a header drag gesture: down at (100,100), move by (dx,dy), up. */
     async function dragBy(dx: number, dy: number) {
       const header = (fixture.nativeElement as HTMLElement).querySelector(
-        '.gns3-replay__window-header'
+        '.gns3-replay__header-drag'
       ) as HTMLElement;
       header.dispatchEvent(new MouseEvent('mousedown', { clientX: 100, clientY: 100 }));
       if (dx || dy) document.dispatchEvent(new MouseEvent('mousemove', { clientX: 100 + dx, clientY: 100 + dy }));
@@ -477,7 +533,7 @@ describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
 
       // Drag toward it: raw (start + 294, start − 229) = (310, ~top-229) —
       // within the 12px snap threshold of the sibling's (300, 200).
-      const header = (fixture.nativeElement as HTMLElement).querySelector('.gns3-replay__window-header') as HTMLElement;
+      const header = (fixture.nativeElement as HTMLElement).querySelector('.gns3-replay__header-drag') as HTMLElement;
       header.dispatchEvent(new MouseEvent('mousedown', { clientX: 100, clientY: 100 }));
       document.dispatchEvent(new MouseEvent('mousemove', { clientX: 100 + 294, clientY: 100 + (200 - startTop) + 3 }));
       document.dispatchEvent(new MouseEvent('mouseup'));
@@ -508,7 +564,7 @@ describe('ReplayDetailWindowComponent (pinned comparison window)', () => {
       await flushFrames();
 
       // Pin #1 docks, then the user drags it out to (100, 200) — hand-arranged.
-      const header = (fixture.nativeElement as HTMLElement).querySelector('.gns3-replay__window-header') as HTMLElement;
+      const header = (fixture.nativeElement as HTMLElement).querySelector('.gns3-replay__header-drag') as HTMLElement;
       header.dispatchEvent(new MouseEvent('mousedown', { clientX: 100, clientY: 100 }));
       document.dispatchEvent(new MouseEvent('mousemove', { clientX: 100 + 84, clientY: 100 - 232 }));
       document.dispatchEvent(new MouseEvent('mouseup'));

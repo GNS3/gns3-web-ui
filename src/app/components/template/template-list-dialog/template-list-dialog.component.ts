@@ -40,7 +40,9 @@ import { Compute } from '@models/compute';
 import { TemplateService } from '@services/template.service';
 import { ComputeService } from '@services/compute.service';
 import { ToasterService } from '@services/toaster.service';
+import { UserPreferencesService } from '@services/user-preferences.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 export interface TemplateListDialogData {
   controller: Controller;
   project: Project;
@@ -85,6 +87,7 @@ export const COMPUTE_ASK_ON_DROP = '__ask__';
     MatExpansionModule,
     MatTooltipModule,
     DragDropModule,
+    HasPrivilegeDirective,
   ],
 })
 export class TemplateListDialogComponent implements OnInit {
@@ -96,6 +99,7 @@ export class TemplateListDialogComponent implements OnInit {
   private nonNegativeValidator = inject(NonNegativeValidator);
   private cd = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
+  private userPreferences = inject(UserPreferencesService);
 
   @Output() nodeAddRequested = new EventEmitter<NodeAddedEvent>();
   @Output() templateDragStarted = new EventEmitter<TemplateDragStartRequest>();
@@ -134,7 +138,7 @@ export class TemplateListDialogComponent implements OnInit {
   toggleViewMode(): void {
     const next: TemplateViewMode = this.viewMode() === 'grid' ? 'list' : 'grid';
     this.viewMode.set(next);
-    localStorage.setItem(VIEW_MODE_STORAGE_KEY, next);
+    this.userPreferences.setItem(VIEW_MODE_STORAGE_KEY, next);
   }
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: TemplateListDialogData) {

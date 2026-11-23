@@ -1,6 +1,7 @@
 @use '../../../styles/buttons' as buttons;
 @use '../../../styles/page-layout' as page;
 @use '../../../styles/toolbar' as toolbar;
+@use './project-action-buttons';
 
 /**
  * GNS3 Projects Component Styles
@@ -329,50 +330,7 @@ mat-cell {
 }
 
 // Icon buttons - Material Design 3 style
-.projects__actions-cell button[mat-icon-button],
-.projects__card-actions button[mat-icon-button] {
-  @include buttons.action-icon;
-  --mat-icon-button-state-layer-color: var(--projects-action-color);
-}
-
-// Semantic action colors are theme-token based and shared by list/grid view.
-.projects__action-button {
-  --projects-action-color: var(--mat-sys-on-surface-variant);
-  color: var(--projects-action-color);
-  --mdc-circular-progress-active-indicator-color: var(--projects-action-color);
-
-  &:not(:disabled) mat-icon {
-    color: var(--projects-action-color);
-  }
-
-  &:disabled {
-    color: var(--gns3-button-disabled-label-color);
-    --projects-action-color: var(--gns3-button-disabled-label-color);
-  }
-}
-
-.projects__action-button--start,
-.projects__action-button--edit {
-  --projects-action-color: var(--mat-sys-primary);
-}
-
-.projects__action-button--stop,
-.projects__action-button--export {
-  --projects-action-color: var(--mat-sys-tertiary);
-}
-
-.projects__action-button--details,
-.projects__action-button--duplicate {
-  --projects-action-color: var(--mat-sys-secondary);
-}
-
-.projects__action-button--delete {
-  --projects-action-color: var(--mat-sys-error);
-}
-
-// Loading state - spinner inside icon button
-.projects__actions-cell button[mat-icon-button],
-.projects__card-actions button[mat-icon-button] {
+.projects__actions-cell button[mat-icon-button] {
   mat-progress-spinner {
     display: inline-flex;
     align-items: center;
@@ -385,6 +343,14 @@ mat-cell {
     cursor: default;
   }
 }
+
+// Semantic action colors are theme-token based and shared by list/grid view.
+
+.projects__actions-cell button[mat-icon-button] {
+  @include buttons.action-icon;
+  --mat-icon-button-state-layer-color: var(--projects-action-color);
+}
+// Loading state - spinner inside icon button
 
 /* =============================================
 // Table and grid pagination
@@ -460,6 +426,15 @@ mat-cell {
   justify-content: space-between;
 }
 
+/* Row holding the status chip and the share badge on a card */
+.projects__card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
 .projects__card-status {
   display: inline-flex;
   align-items: center;
@@ -469,7 +444,6 @@ mat-cell {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.3px;
-  margin-top: 8px;
 }
 
 .projects__card-status--opened {
@@ -805,38 +779,6 @@ mat-cell {
   align-items: center;
   justify-content: center;
   gap: var(--gns3-density-space-2);
-}
-
-.projects__details-action-btn {
-  @include buttons.action-icon;
-  --projects-details-action-color: var(--mat-sys-on-surface-variant);
-  --mat-icon-button-state-layer-color: var(--projects-details-action-color);
-
-  &:not(:disabled) mat-icon {
-    color: var(--projects-details-action-color);
-  }
-
-  &:disabled mat-icon {
-    color: var(--gns3-button-disabled-label-color);
-  }
-}
-
-.projects__details-action-btn--start,
-.projects__details-action-btn--edit {
-  --projects-details-action-color: var(--mat-sys-primary);
-}
-
-.projects__details-action-btn--stop,
-.projects__details-action-btn--export {
-  --projects-details-action-color: var(--mat-sys-tertiary);
-}
-
-.projects__details-action-btn--duplicate {
-  --projects-details-action-color: var(--mat-sys-secondary);
-}
-
-.projects__details-action-btn--delete {
-  --projects-details-action-color: var(--mat-sys-error);
 }
 
 /* =============================================

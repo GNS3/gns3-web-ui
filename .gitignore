@@ -76,3 +76,6 @@ docs/angular.dev/
 .venv
 *venv
 
+# Python tooling (scripts/)
+__pycache__/
+*.pyc

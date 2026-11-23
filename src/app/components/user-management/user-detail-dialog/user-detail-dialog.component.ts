@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Group } from '@models/groups/group';
@@ -25,6 +26,7 @@ import { Role } from '@models/api/role';
 import { userEmailAsyncValidator } from '@components/user-management/add-user-dialog/userEmailAsyncValidator';
 import { userNameAsyncValidator } from '@components/user-management/add-user-dialog/userNameAsyncValidator';
 import { ChangeUserPasswordComponent } from '@components/user-management/user-detail/change-user-password/change-user-password.component';
+import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
 import { forkJoin } from 'rxjs';
 
 export interface UserDetailDialogData {
@@ -49,12 +51,21 @@ export interface UserDetailDialogData {
     MatFormFieldModule,
     MatInputModule,
     MatCheckboxModule,
+    MatSelectModule,
     MatCardModule,
     MatTooltipModule,
+    HasPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserDetailDialogComponent implements OnInit {
+  // Quota tri-state modes exposed for the template's mat-option values.
+  readonly quotaModeInherit = 'inherit';
+  readonly quotaModeUnlimited = 'unlimited';
+  readonly quotaModeCustom = 'custom';
+
+  private static readonly QUOTA_FIELDS = ['max_nodes', 'max_running_nodes'] as const;
+
   private dialogRef = inject(MatDialogRef<UserDetailDialogComponent>);
   private userService = inject(UserService);
   private toasterService = inject(ToasterService);
@@ -85,6 +96,10 @@ export class UserDetailDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    for (const field of UserDetailDialogComponent.QUOTA_FIELDS) {
+      this.syncQuotaValidators(field);
+      this.editUserForm.get(`${field}_mode`)?.valueChanges.subscribe(() => this.syncQuotaValidators(field));
+    }
     this.loadGroupsData();
     this.loadAceData();
     this.loadLdapStatus();
@@ -117,7 +132,42 @@ export class UserDetailDialogComponent implements OnInit {
         [userEmailAsyncValidator(this.controller, this.userService, this.user.email)],
       ),
       is_active: new UntypedFormControl(this.user.is_active),
+      max_nodes_mode: new UntypedFormControl(this.quotaMode(this.user.max_nodes)),
+      max_nodes_value: new UntypedFormControl(this.quotaSeed(this.user.max_nodes)),
+      max_running_nodes_mode: new UntypedFormControl(this.quotaMode(this.user.max_running_nodes)),
+      max_running_nodes_value: new UntypedFormControl(this.quotaSeed(this.user.max_running_nodes)),
     });
+  }
+
+  // Maps the stored quota value to the tri-state select mode: null = inherit
+  // the group default, -1 = explicitly unlimited, a number = custom limit.
+  private quotaMode(value: number | null | undefined): string {
+    if (value === null || value === undefined) {
+      return this.quotaModeInherit;
+    }
+    if (value === -1) {
+      return this.quotaModeUnlimited;
+    }
+    return this.quotaModeCustom;
+  }
+
+  // The limit input is only seeded with a meaningful number (custom limits);
+  // it stays empty for inherit/unlimited so switching to "Custom limit"
+  // forces the admin to type a value.
+  private quotaSeed(value: number | null | undefined): number | null {
+    return value !== null && value !== undefined && value >= 0 ? value : null;
+  }
+
+  // The limit input is validated only while the "Custom limit" mode is
+  // selected; hidden modes must not make the whole form invalid.
+  private syncQuotaValidators(field: 'max_nodes' | 'max_running_nodes'): void {
+    const mode = this.editUserForm.get(`${field}_mode`);
+    const value = this.editUserForm.get(`${field}_value`);
+    if (!mode || !value) {
+      return;
+    }
+    value.setValidators(mode.value === this.quotaModeCustom ? [Validators.required, Validators.min(0)] : null);
+    value.updateValueAndValidity();
   }
 
   get form() {
@@ -174,6 +224,9 @@ export class UserDetailDialogComponent implements OnInit {
 
     const updatedUser = this.getUpdatedValues();
     updatedUser['user_id'] = this.user.user_id;
+    for (const field of UserDetailDialogComponent.QUOTA_FIELDS) {
+      this.addQuotaToPayload(updatedUser, field);
+    }
 
     this.userService.update(this.controller, updatedUser, false).subscribe({
       next: (user: User) => {
@@ -192,6 +245,11 @@ export class UserDetailDialogComponent implements OnInit {
     const dirtyValues: Record<string, unknown> = {};
 
     Object.keys(this.editUserForm.controls).forEach((key) => {
+      // The quota mode/value helper controls are serialized explicitly by
+      // addQuotaToPayload, never as raw form keys.
+      if (key.endsWith('_mode') || key.endsWith('_value')) {
+        return;
+      }
       const currentControl = this.editUserForm.get(key);
 
       if (currentControl.dirty && currentControl.value !== this.user[key]) {
@@ -204,6 +262,24 @@ export class UserDetailDialogComponent implements OnInit {
 
   isPasswordChangeDisabled(): boolean {
     return this.user.auth_source === 'ldap' && this.ldapEnabled();
+  }
+
+  // Serializes a quota tri-state into the API value when the admin touched
+  // either the mode select or the limit input: inherit -> null (the group
+  // default applies), unlimited -> -1, custom -> the typed limit.
+  private addQuotaToPayload(payload: Record<string, unknown>, field: 'max_nodes' | 'max_running_nodes'): void {
+    const mode = this.editUserForm.get(`${field}_mode`);
+    const value = this.editUserForm.get(`${field}_value`);
+    if (!mode || !value || (!mode.dirty && !value.dirty)) {
+      return;
+    }
+    if (mode.value === this.quotaModeInherit) {
+      payload[field] = null;
+    } else if (mode.value === this.quotaModeUnlimited) {
+      payload[field] = -1;
+    } else {
+      payload[field] = value.value;
+    }
   }
 
   onChangePassword() {

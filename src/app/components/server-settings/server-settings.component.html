@@ -440,7 +440,6 @@
             </section>
           }
         </div>
-
         <footer class="server-settings__footer">
           <div class="server-settings__change-status" role="status">
             <span class="server-settings__unsaved-status"
@@ -457,12 +456,14 @@
             <button mat-stroked-button type="button" (click)="discardChanges()" [disabled]="!isDirty() || isSaving()">
               Discard
             </button>
+            <!-- PUT /settings = Server.Modify -->
             <button
               mat-flat-button
               color="primary"
               type="button"
               (click)="save()"
               [disabled]="!isDirty() || isSaving()"
+              *appHasPrivilege="'Server.Modify'"
             >
               @if (isSaving()) {
                 <mat-progress-spinner [diameter]="18" mode="indeterminate"></mat-progress-spinner>

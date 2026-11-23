@@ -1,0 +1,29 @@
+// Shared floating-window surface — the chrome EVERY window conforming to the
+// floating-window standard wears. Only the BODY differs per window; geometry
+// comes from the host's chrome bindings (left/top/width/height/z-index).
+//
+// Consumed via `@use` from each host component's SCSS so the rules land inside
+// that component's style encapsulation — this file is not global on purpose.
+//
+// NO overflow:hidden on the window: its resize handles live entirely OUTSIDE
+// the border box (see the shared resize-handles component) and would be
+// header/body carry the corner radii instead.
+
+.gns3-window {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  background: var(--mat-sys-surface);
+  border: 2px solid var(--mat-sys-outline);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent),
+    0 4px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+
+  // Gesture states are SILENT by design (settled user decision): no ring, no
+  // tint, no any-colored boundary while dragging/resizing — the cursor
+  // already says what the gesture is. Only user isolation remains.
+  &--dragging,
+  &--resizing {
+    user-select: none;
+  }
+}

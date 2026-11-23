@@ -33,13 +33,28 @@ export class DuplicateActionComponent {
   readonly nodes = input<Node[]>([]);
 
   duplicate() {
-    const completion = createActionCompletion(this.nodes().length + this.drawings().length, (count) => {
+    // A locked node cannot be cloned (the server refuses it): clone the
+    // unlocked ones and say which were skipped.
+    const locked = this.nodes().filter((node) => node.locked);
+    const duplicable = this.nodes().filter((node) => !node.locked);
+    if (locked.length > 0) {
+      this.toasterService.warning(
+        `${locked.length === 1 ? 'A locked node' : `${locked.length} locked nodes`} cannot be duplicated: ${locked
+          .map((node) => node.name)
+          .join(', ')}`
+      );
+    }
+    if (duplicable.length === 0 && this.drawings().length === 0) {
+      return;
+    }
+
+    const completion = createActionCompletion(duplicable.length + this.drawings().length, (count) => {
       if (count > 0) {
         this.toasterService.success(`${count} selected ${count === 1 ? 'object' : 'objects'} duplicated.`);
       }
     });
 
-    for (let node of this.nodes()) {
+    for (let node of duplicable) {
       this.nodeService.duplicate(this.controller(), node).subscribe({
         next: (node: Node) => {
           this.nodesDataSource.add(node);
@@ -47,12 +62,10 @@ export class DuplicateActionComponent {
         },
         error: (err) => {
           completion.fail();
-          if (err.status === 409) {
-            this.toasterService.error(`Shutdown ${node.name} before duplicating`);
-          } else {
-            const message = err.error?.message || err.message || 'Failed to duplicate node';
-            this.toasterService.error(message);
-          }
+          // 409 is either "node must be stopped" or "node is locked": the
+          // server message says which, so relay it instead of guessing.
+          const message = err.error?.message || err.message || 'Failed to duplicate node';
+          this.toasterService.error(message);
           this.cdr.markForCheck();
         },
       });

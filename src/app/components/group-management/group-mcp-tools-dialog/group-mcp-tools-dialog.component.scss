@@ -1,0 +1,220 @@
+/**
+ * Group MCP Tools Dialog Styles
+ * Uses base-dialog-panel + configurator-dialog-panel + dialog-medium-panel from _dialogs.scss
+ */
+
+.group-mcp-tools-dialog {
+  &__spinner {
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+  }
+
+  &__banner {
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    background-color: var(--mat-sys-surface-container);
+    color: var(--mat-sys-on-surface);
+
+    &--unconfigured {
+      background-color: var(--mat-sys-surface-container-high);
+    }
+
+    &--deny-all {
+      background-color: var(--mat-sys-error-container);
+      color: var(--mat-sys-on-error-container);
+    }
+  }
+
+  &__notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    background-color: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface-variant);
+
+    &-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+  }
+
+  &__filter {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  &__list {
+    max-height: 460px;
+    overflow-y: auto;
+    padding: 4px 0;
+  }
+
+  &__accordion {
+    .mat-expansion-panel {
+      box-shadow: none;
+      background-color: transparent;
+    }
+  }
+
+  &__group {
+    &-header {
+      background-color: var(--mat-sys-surface-container);
+      border-radius: 8px;
+      margin-bottom: 4px;
+      font-size: 14px;
+
+      &:hover {
+        background-color: var(--mat-sys-surface-container-high);
+      }
+
+      &.mat-expanded {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+
+    &-check {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    &-icon {
+      margin-right: 8px;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: var(--mat-sys-primary);
+    }
+
+    &-title {
+      align-self: center;
+      margin-right: 10px;
+      font-weight: 600;
+      color: var(--mat-sys-on-surface);
+    }
+
+    &-badge {
+      align-self: center;
+      padding: 1px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--mat-sys-on-surface-variant);
+      background-color: var(--mat-sys-surface-container-highest);
+      border: 1px solid var(--mat-sys-outline-variant);
+
+      &--active {
+        color: var(--mat-sys-on-primary-container);
+        background-color: var(--mat-sys-primary-container);
+        border-color: transparent;
+      }
+    }
+  }
+
+  &__table {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 40px 220px 1fr;
+    column-gap: 8px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    // Zebra striping + hover feedback (same recipe as the projects list)
+    &:nth-child(even) {
+      background-color: color-mix(in srgb, var(--mat-sys-on-surface) 1%, transparent);
+    }
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+    }
+
+    &:nth-child(even):hover {
+      background-color: color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent);
+    }
+
+    // Checked tools keep a persistent selected tint
+    &--selected,
+    &--selected:nth-child(even) {
+      background-color: color-mix(in srgb, var(--mat-sys-primary-container) 35%, transparent);
+
+      &:hover {
+        background-color: color-mix(in srgb, var(--mat-sys-primary-container) 45%, transparent);
+      }
+    }
+
+    &--header {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--mat-sys-on-surface-variant);
+      background-color: var(--mat-sys-surface-container);
+      position: sticky;
+      top: 0;
+
+      &:hover {
+        background-color: var(--mat-sys-surface-container);
+      }
+    }
+  }
+
+  &__cell {
+    min-width: 0;
+
+    &--check {
+      display: flex;
+      align-items: flex-start;
+      padding-top: 9px;
+    }
+
+    &--name {
+      font-family: var(--gns3-font-code);
+      font-size: 13px;
+      color: var(--mat-sys-on-surface);
+      overflow-wrap: anywhere;
+      padding-top: 10px;
+    }
+
+    // Docstrings use significant indentation (aligned continuation lines);
+    // pre-wrap keeps the author's layout while still wrapping long lines.
+    &--desc {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--mat-sys-on-surface-variant);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__empty {
+    color: var(--mat-sys-on-surface-variant);
+    margin: 8px 0;
+  }
+
+  &__hint {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__button-spinner {
+    margin-right: 8px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+}

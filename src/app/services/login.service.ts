@@ -22,12 +22,4 @@ export class LoginService {
   getLoggedUser(controller: Controller) {
     return this.httpController.get(controller, '/access/users/me').toPromise();
   }
-  async getLoggedUserRefToken(controller: Controller, current_user): Promise<any> {
-    return await this.httpController
-      .post<AuthResponse>(controller, '/access/users/authenticate', {
-        username: current_user.username,
-        password: current_user.password,
-      })
-      .toPromise();
-  }
 }

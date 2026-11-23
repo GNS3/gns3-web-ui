@@ -242,5 +242,22 @@ describe('ReplayPacketListComponent', () => {
       drag(4, -500); // Len: floor is 34
       expect(colsVar()).toContain('34px minmax(110px, 2fr)');
     });
+
+    it('tracks the pointer while the list is CSS-zoomed (viewport px → layout px)', () => {
+      const grips = (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('.gns3-replay__col-grip');
+      const cell = grips[0].parentElement!;
+      // A 2× content zoom: the cell measures 400 px on screen, 200 px in
+      // layout. mousemove deltas arrive in viewport px — the grip must
+      // convert them or it crawls at half the pointer's speed.
+      cell.getBoundingClientRect = () => ({ width: 400 }) as DOMRect;
+      Object.defineProperty(cell, 'offsetWidth', { configurable: true, value: 200 });
+
+      grips[0].dispatchEvent(new MouseEvent('mousedown', { clientX: 100, bubbles: true }));
+      document.dispatchEvent(new MouseEvent('mousemove', { clientX: 150 }));
+      document.dispatchEvent(new MouseEvent('mouseup'));
+
+      // The 50 viewport-px delta halves into 25 layout px: Time 104 → 129.
+      expect(colsVar()).toBe('129px minmax(100px, 1fr) minmax(100px, 1fr) 58px 42px minmax(110px, 2fr)');
+    });
   });
 });

@@ -21,6 +21,7 @@ import { Endpoint } from '@models/api/endpoint';
 import { Role } from '@models/api/role';
 import { of, throwError } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
+import { PermissionService } from '@services/permission.service';
 
 describe('UserDetailDialogComponent', () => {
   let component: UserDetailDialogComponent;
@@ -156,6 +157,15 @@ describe('UserDetailDialogComponent', () => {
         ReactiveFormsModule,
       ],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () => new Set<string>(['User.Audit', 'User.Modify']),
+            loaded: () => true,
+          },
+        },
         { provide: MAT_DIALOG_DATA, useValue: dialogData },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MatDialog, useValue: mockDialog },
@@ -233,6 +243,99 @@ describe('UserDetailDialogComponent', () => {
       expect(form.email).toBeDefined();
       expect(form.full_name).toBeDefined();
       expect(form.is_active).toBeDefined();
+    });
+  });
+
+  describe('quota fields', () => {
+    const prepareValidForm = () => {
+      component.ngOnInit();
+      component.editUserForm.get('username')?.clearAsyncValidators();
+      component.editUserForm.get('email')?.clearAsyncValidators();
+      component.editUserForm.get('username')?.updateValueAndValidity();
+      component.editUserForm.get('email')?.updateValueAndValidity();
+    };
+
+    const lastUpdatePayload = () => (mockUserService.update as ReturnType<typeof vi.fn>).mock.calls[0][1];
+
+    it('should seed inherit mode when the user has no quota override', () => {
+      component.user = { ...mockUser, max_nodes: null, max_running_nodes: undefined };
+      component.initForm();
+      expect(component.editUserForm.get('max_nodes_mode')?.value).toBe('inherit');
+      expect(component.editUserForm.get('max_running_nodes_mode')?.value).toBe('inherit');
+      expect(component.editUserForm.get('max_nodes_value')?.value).toBeNull();
+    });
+
+    it('should seed unlimited mode when the quota is -1', () => {
+      component.user = { ...mockUser, max_nodes: -1 };
+      component.initForm();
+      expect(component.editUserForm.get('max_nodes_mode')?.value).toBe('unlimited');
+      expect(component.editUserForm.get('max_nodes_value')?.value).toBeNull();
+    });
+
+    it('should seed custom mode with the stored limit', () => {
+      component.user = { ...mockUser, max_nodes: 50 };
+      component.initForm();
+      expect(component.editUserForm.get('max_nodes_mode')?.value).toBe('custom');
+      expect(component.editUserForm.get('max_nodes_value')?.value).toBe(50);
+    });
+
+    it('should not leak the helper controls into getUpdatedValues', () => {
+      prepareValidForm();
+      component.editUserForm.get('max_nodes_mode')?.setValue('unlimited');
+      component.editUserForm.get('max_nodes_mode')?.markAsDirty();
+
+      const result = component.getUpdatedValues();
+      expect(Object.keys(result)).not.toContain('max_nodes_mode');
+      expect(Object.keys(result)).not.toContain('max_nodes_value');
+    });
+
+    it('should omit untouched quotas from the update payload', async () => {
+      component.user = { ...mockUser, max_nodes: 50 };
+      prepareValidForm();
+
+      component.onSaveChanges();
+      await vi.runAllTimersAsync();
+
+      expect(lastUpdatePayload()).not.toHaveProperty('max_nodes');
+      expect(lastUpdatePayload()).not.toHaveProperty('max_running_nodes');
+    });
+
+    it('should serialize inherit as null and unlimited as -1', async () => {
+      component.user = { ...mockUser, max_nodes: 50 };
+      prepareValidForm();
+      component.editUserForm.get('max_nodes_mode')?.setValue('inherit');
+      component.editUserForm.get('max_nodes_mode')?.markAsDirty();
+      component.editUserForm.get('max_running_nodes_mode')?.setValue('unlimited');
+      component.editUserForm.get('max_running_nodes_mode')?.markAsDirty();
+
+      component.onSaveChanges();
+      await vi.runAllTimersAsync();
+
+      expect(lastUpdatePayload().max_nodes).toBeNull();
+      expect(lastUpdatePayload().max_running_nodes).toBe(-1);
+    });
+
+    it('should serialize custom mode as the typed limit', async () => {
+      prepareValidForm();
+      component.editUserForm.get('max_nodes_mode')?.setValue('custom');
+      component.editUserForm.get('max_nodes_value')?.setValue(25);
+      component.editUserForm.get('max_nodes_value')?.markAsDirty();
+
+      component.onSaveChanges();
+      await vi.runAllTimersAsync();
+
+      expect(lastUpdatePayload().max_nodes).toBe(25);
+    });
+
+    it('should require a limit only while custom mode is selected', () => {
+      component.user = { ...mockUser, max_nodes: 50 };
+      prepareValidForm();
+
+      component.editUserForm.get('max_nodes_value')?.setValue(null);
+      expect(component.editUserForm.get('max_nodes_value')?.invalid).toBe(true);
+
+      component.editUserForm.get('max_nodes_mode')?.setValue('unlimited');
+      expect(component.editUserForm.get('max_nodes_value')?.valid).toBe(true);
     });
   });
 

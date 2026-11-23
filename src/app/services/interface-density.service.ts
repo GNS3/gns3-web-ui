@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { UserPreferencesService } from './user-preferences.service';
 
 export type InterfaceDensity = 'normal' | 'compact';
 
@@ -25,11 +26,14 @@ export class InterfaceDensityService {
    */
   static readonly DENSITY_ATTR = 'data-density';
 
-  constructor() {
+  constructor(private userPreferences: UserPreferencesService) {
     // Apply the persisted preference immediately at construction so the
     // attribute is correct before component render. `applyToDocument` is
     // a no-op when `document` is unavailable (SSR / private mode).
     this.applyToDocument(this.getDensity());
+
+    // Re-apply when a server-side preferences merge updates the stored value
+    this.userPreferences.onExternalUpdate(() => this.applyToDocument(this.getDensity()));
   }
 
   getDensity(): InterfaceDensity {
@@ -56,7 +60,7 @@ export class InterfaceDensityService {
 
   private writeStorage(density: InterfaceDensity): void {
     try {
-      localStorage.setItem(this.storageKey, density);
+      this.userPreferences.setItem(this.storageKey, density);
     } catch {
       // Ignore write errors — settings are best-effort.
     }

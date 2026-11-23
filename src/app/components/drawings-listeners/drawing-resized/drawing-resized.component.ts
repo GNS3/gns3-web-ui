@@ -8,6 +8,7 @@ import { Drawing } from '../../../cartography/models/drawing';
 import { MapDrawing } from '../../../cartography/models/map/map-drawing';
 import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
+import { MapChangeDetectorRef } from '../../../cartography/services/map-change-detector-ref';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
@@ -25,6 +26,7 @@ export class DrawingResizedComponent implements OnInit, OnDestroy {
   private drawingsDataSource = inject(DrawingsDataSource);
   private drawingsEventSource = inject(DrawingsEventSource);
   private mapDrawingToSvgConverter = inject(MapDrawingToSvgConverter);
+  private mapChangeDetectorRef = inject(MapChangeDetectorRef);
   private toasterService = inject(ToasterService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -40,6 +42,8 @@ export class DrawingResizedComponent implements OnInit, OnDestroy {
 
     if (isRotation) {
       // Rotation: use update() method which includes rotation
+      const previousRotation = drawing.rotation;
+      const previousSvg = drawing.svg;
       drawing.rotation = resizedEvent.rotation;
       let svgString = this.mapDrawingToSvgConverter.convert(resizedEvent.datum);
       drawing.svg = svgString;
@@ -51,6 +55,14 @@ export class DrawingResizedComponent implements OnInit, OnDestroy {
             this.drawingsDataSource.update(controllerDrawing);
           },
           error: (err) => {
+            // The server rejected the rotation (e.g. RBAC: no Drawing.Modify):
+            // revert the optimistic rotation/svg and force an un-gated redraw —
+            // the restored signature equals the last rendered one, so the
+            // gated redraw would skip and keep the rotated DOM.
+            drawing.rotation = previousRotation;
+            drawing.svg = previousSvg;
+            this.drawingsDataSource.update(drawing);
+            this.mapChangeDetectorRef.detectChanges();
             const message = err.error?.message || err.message || 'Failed to update drawing rotation';
             this.toasterService.error(message);
             this.cdr.markForCheck();
@@ -67,6 +79,10 @@ export class DrawingResizedComponent implements OnInit, OnDestroy {
             this.drawingsDataSource.update(controllerDrawing);
           },
           error: (err) => {
+            // The datasource still holds the accepted geometry (only the DOM
+            // was resized during the gesture), so reverting is just an
+            // un-gated redraw from the datasource.
+            this.mapChangeDetectorRef.detectChanges();
             const message = err.error?.message || err.message || 'Failed to update drawing size';
             this.toasterService.error(message);
             this.cdr.markForCheck();

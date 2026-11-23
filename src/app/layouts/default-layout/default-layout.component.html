@@ -28,91 +28,99 @@
           <span matListItemTitle>Controllers</span>
         </a>
         @if (controllerId) {
-          <a
-            mat-list-item
-            class="sidebar__nav-item"
-            routerLinkActive="active"
-            [routerLink]="['/controller', controllerId, 'computes']"
-            (click)="isSmallScreen() && sidenav.close()"
-          >
-            <mat-icon matListItemIcon>dns</mat-icon>
-            <span matListItemTitle>Computes</span>
-          </a>
-          <a
-            mat-list-item
-            class="sidebar__nav-item"
-            routerLinkActive="active"
-            [routerLink]="['/controller', controllerId, 'systemstatus']"
-            (click)="isSmallScreen() && sidenav.close()"
-          >
-            <mat-icon matListItemIcon>monitor_heart</mat-icon>
-            <span matListItemTitle>System status</span>
-          </a>
-          <a
-            mat-list-item
-            class="sidebar__nav-item"
-            routerLinkActive="active"
-            [routerLink]="['/controller', controllerId, 'projects']"
-            (click)="isSmallScreen() && sidenav.close()"
-          >
-            <mat-icon matListItemIcon>work</mat-icon>
-            <span matListItemTitle>Projects</span>
-          </a>
-          <a
-            mat-list-item
-            class="sidebar__nav-item"
-            routerLinkActive="active"
-            [routerLink]="['/controller', controllerId, 'image-manager']"
-            (click)="isSmallScreen() && sidenav.close()"
-          >
-            <mat-icon matListItemIcon>image</mat-icon>
-            <span matListItemTitle>Image manager</span>
-          </a>
-          <a
-            mat-list-item
-            class="sidebar__nav-item"
-            routerLinkActive="active"
-            [routerLink]="['/controller', controllerId, 'preferences']"
-            (click)="isSmallScreen() && sidenav.close()"
-          >
-            <mat-icon matListItemIcon>settings_applications</mat-icon>
-            <span matListItemTitle>Templates</span>
-          </a>
+        @if (canManageComputes()) {
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
+          [routerLink]="['/controller', controllerId, 'computes']"
+          (click)="isSmallScreen() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>dns</mat-icon>
+          <span matListItemTitle>Computes</span>
+        </a>
         }
-        @if (controllerId) {
-          <a
-            mat-list-item
-            class="sidebar__nav-item"
-            routerLinkActive="active"
-            [routerLink]="['/controller', controllerId, 'settings']"
-            (click)="isSmallScreen() && sidenav.close()"
-          >
-            <mat-icon matListItemIcon>settings</mat-icon>
-            <span matListItemTitle>Web settings</span>
-          </a>
-          @if (isAdministrator()) {
-            <a
-              mat-list-item
-              class="sidebar__nav-item"
-              routerLinkActive="active"
-              [routerLink]="['/controller', controllerId, 'server-settings']"
-              (click)="isSmallScreen() && sidenav.close()"
-            >
-              <mat-icon matListItemIcon>dns</mat-icon>
-              <span matListItemTitle>Server settings</span>
-            </a>
-            <a
-              mat-list-item
-              class="sidebar__nav-item"
-              routerLinkActive="active"
-              [routerLink]="['/controller', controllerId, 'management']"
-              (click)="isSmallScreen() && sidenav.close()"
-            >
-              <mat-icon matListItemIcon>manage_accounts</mat-icon>
-              <span matListItemTitle>Access Management</span>
-            </a>
-          }
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
+          *appHasPrivilege="'Server.Audit'"
+          [routerLink]="['/controller', controllerId, 'systemstatus']"
+          (click)="isSmallScreen() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>monitor_heart</mat-icon>
+          <span matListItemTitle>System status</span>
+        </a>
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
+          [routerLink]="['/controller', controllerId, 'projects']"
+          (click)="isSmallScreen() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>work</mat-icon>
+          <span matListItemTitle>Projects</span>
+        </a>
+        @if (canManageImages()) {
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
+          [routerLink]="['/controller', controllerId, 'image-manager']"
+          (click)="isSmallScreen() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>image</mat-icon>
+          <span matListItemTitle>Image manager</span>
+        </a>
+        } @if (canManageTemplates()) {
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
+          [routerLink]="['/controller', controllerId, 'preferences']"
+          (click)="isSmallScreen() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>settings_applications</mat-icon>
+          <span matListItemTitle>Templates</span>
+        </a>
         }
+        } @if (controllerId) {
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
+          [routerLink]="['/controller', controllerId, 'settings']"
+          (click)="isSmallScreen() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>settings</mat-icon>
+          <span matListItemTitle>Web settings</span>
+        </a>
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
+          *appHasPrivilege="'Server.Audit'"
+          [routerLink]="['/controller', controllerId, 'server-settings']"
+          (click)="isSmallScreen() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>dns</mat-icon>
+          <span matListItemTitle>Server settings</span>
+        </a>
+        <!-- Hidden when no management tab is openable: the entry's gate is
+             derived from the management child routes' privilege data, so the
+             sidebar and the route guard can never disagree. -->
+        @if (accessManagementRoute(); as managementTab) {
+        <a
+          mat-list-item
+          class="sidebar__nav-item"
+          routerLinkActive="active"
+          [routerLink]="['/controller', controllerId, 'management', managementTab]"
+          (click)="isSmallScreen() && sidenav.close()"
+        >
+          <mat-icon matListItemIcon>manage_accounts</mat-icon>
+          <span matListItemTitle>Access Management</span>
+        </a>
+        }        }
       </mat-nav-list>
 
       <!-- Support Section -->
@@ -247,4 +255,5 @@
 </mat-drawer-container>
 
 <app-notification-center></app-notification-center>
+<app-distribution-tasks></app-distribution-tasks>
 <app-progress></app-progress>

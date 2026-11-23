@@ -17,6 +17,7 @@ import { Group } from '@models/groups/group';
 import { User } from '@models/users/user';
 import { Observable } from 'rxjs';
 import { Role } from '@models/api/role';
+import { GroupMcpToolsResponse } from '@models/groups/group-mcp-tools';
 
 @Injectable({
   providedIn: 'root',
@@ -52,8 +53,8 @@ export class GroupService {
     return this.httpController.delete(controller, `/access/groups/${group.user_group_id}/members/${user.user_id}`);
   }
 
-  update(controller: Controller, group: Group) {
-    return this.httpController.put(controller, `/access/groups/${group.user_group_id}`, { name: group.name });
+  update(controller: Controller, group: Group, payload: Partial<Group>) {
+    return this.httpController.put(controller, `/access/groups/${group.user_group_id}`, payload);
   }
 
   getGroupRole(controller: Controller, groupId: string) {
@@ -66,5 +67,17 @@ export class GroupService {
 
   addRoleToGroup(controller: Controller, group: Group, role: Role) {
     return this.httpController.put(controller, `/access/groups/${group.user_group_id}/roles/${role.role_id}`, {});
+  }
+
+  getMcpTools(controller: Controller, groupId: string): Observable<GroupMcpToolsResponse> {
+    return this.httpController.get<GroupMcpToolsResponse>(controller, `/access/groups/${groupId}/mcp_tools`);
+  }
+
+  updateMcpTools(controller: Controller, groupId: string, tools: string[]): Observable<GroupMcpToolsResponse> {
+    return this.httpController.put<GroupMcpToolsResponse>(controller, `/access/groups/${groupId}/mcp_tools`, { tools });
+  }
+
+  clearMcpTools(controller: Controller, groupId: string) {
+    return this.httpController.delete(controller, `/access/groups/${groupId}/mcp_tools`);
   }
 }

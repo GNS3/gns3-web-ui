@@ -26,6 +26,8 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { ProjectPermissionService } from '@services/project-permission.service';
+import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.directive';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangeDetectorRef } from '@angular/core';
@@ -63,6 +65,7 @@ export interface NodeFile {
     ClipboardModule,
     MatMenuModule,
     MatDividerModule,
+    HasProjectPrivilegeDirective,
   ],
 })
 export class NodeFileManagerPageComponent implements OnInit {
@@ -73,6 +76,7 @@ export class NodeFileManagerPageComponent implements OnInit {
   private toaster = inject(ToasterService);
   private clipboard = inject(Clipboard);
   private cd = inject(ChangeDetectorRef);
+  private projectPermissionService = inject(ProjectPermissionService);
 
   // ── Inputs (for inline mode) ──
   readonly inputNode = input<Node | undefined>(undefined);
@@ -241,6 +245,9 @@ export class NodeFileManagerPageComponent implements OnInit {
       this.nodeId = inNode.node_id;
       this.nodeName.set(inNode.name);
       this.controller.set(inCtrl);
+      // Idempotent when the project view already loaded this project's
+      // privileges; a no-op for the inline window embedded in it.
+      this.projectPermissionService.load(inCtrl, this.projectId);
       this.loadFiles();
     } else {
       this.controllerId = this.route.snapshot.paramMap.get('controller_id')!;
@@ -251,6 +258,10 @@ export class NodeFileManagerPageComponent implements OnInit {
       this.controllerService.get(+this.controllerId).then(
         (c) => {
           this.controller.set(c);
+          // Standalone route (file manager opened in a new tab): the project
+          // view never mounts here, so this page loads the project privileges
+          // itself — without them every gated action would render as absent.
+          this.projectPermissionService.load(c, this.projectId);
           this.loadFiles();
         },
         () => {
@@ -352,7 +363,18 @@ export class NodeFileManagerPageComponent implements OnInit {
   }
 
   // ── Edit ──
+  /**
+   * Entering the editor reads the file content from the server, so it is
+   * gated on Node.Audit like every other read. The keyboard-style entry
+   * (double-click on a row) has no button to hide, hence the guard here —
+   * the same treatment the Del key got in the project map.
+   */
+  get canReadFiles(): boolean {
+    return this.projectPermissionService.has('Node.Audit');
+  }
+
   editFile(file: NodeFile) {
+    if (!this.canReadFiles) return;
     this.editingFile.set(file);
     this.editContent.set('');
     this.loadingContent.set(true);

@@ -6,6 +6,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { PermissionService } from '@services/permission.service';
 import { Controller } from '@models/controller';
 
 describe('ManagementComponent', () => {
@@ -39,6 +40,18 @@ describe('ManagementComponent', () => {
           get: vi.fn().mockReturnValue('1'),
         },
       },
+      // The tab bar reads its child routes' privilege data from the route
+      // config — mirror the app-routing structure (the privilege sets live
+      // only there, which is the point of the derivation).
+      routeConfig: {
+        children: [
+          { path: 'users', data: { privileges: ['User.Audit'] } },
+          { path: 'groups', data: { privileges: ['Group.Audit'] } },
+          { path: 'roles', data: { privileges: ['Role.Audit'] } },
+          { path: 'pools', data: { privileges: ['Pool.Audit'] } },
+          { path: 'ACL', data: { privileges: ['ACE.Audit'] } },
+        ],
+      },
     } as any as ActivatedRoute;
 
     mockToasterService = {
@@ -52,6 +65,16 @@ describe('ManagementComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ManagementComponent, RouterModule, MatTabsModule],
       providers: [
+        {
+          provide: PermissionService,
+          useValue: {
+            has: () => true,
+            hasAny: () => true,
+            privileges: () =>
+              new Set<string>(['User.Audit', 'Group.Audit', 'Role.Audit', 'Pool.Audit', 'ACE.Audit']),
+            loaded: () => true,
+          },
+        },
         { provide: ControllerService, useValue: mockControllerService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: ToasterService, useValue: mockToasterService },

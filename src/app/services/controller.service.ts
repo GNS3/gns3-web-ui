@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, throwError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
-import { Controller, ControllerProtocol } from '@models/controller';
+import { Controller, ControllerProtocol, controllerStorageJson } from '@models/controller';
 import { HttpController } from './http-controller.service';
 
 @Injectable()
@@ -31,8 +31,28 @@ export class ControllerService {
     localStorage.setItem('controllerIds', this.controllerIds.toString());
   }
 
+  /**
+   * Deserializes a stored controller entry. Entries written before the
+   * password stopped being persisted still carry the plaintext credential:
+   * strip it from memory and rewrite storage without it (one-time
+   * self-heal, so the leak disappears even if the user never logs in
+   * again on this controller entry).
+   */
+  private fromStorage(key: string): Controller | null {
+    const raw = localStorage.getItem(key);
+    if (!raw) {
+      return null;
+    }
+    const controller = JSON.parse(raw) as Controller;
+    if (controller && Object.prototype.hasOwnProperty.call(controller, 'password')) {
+      delete controller.password;
+      localStorage.setItem(key, controllerStorageJson(controller));
+    }
+    return controller;
+  }
+
   public get(id: number): Promise<Controller> {
-    let controller: Controller = JSON.parse(localStorage.getItem(`controller-${id}`));
+    let controller: Controller | null = this.fromStorage(`controller-${id}`);
     let promise = new Promise<Controller>((resolve) => {
       resolve(controller);
     });
@@ -53,7 +73,7 @@ export class ControllerService {
     const maxId = existingIds.length > 0 ? Math.max(...existingIds) : 0;
     controller.id = maxId + 1;
 
-    localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
+    localStorage.setItem(`controller-${controller.id}`, controllerStorageJson(controller));
 
     this.controllerIds.push(`controller-${controller.id}`);
     this.updatecontrollerIds();
@@ -67,9 +87,9 @@ export class ControllerService {
   private findAllSync(): Controller[] {
     const controllers: Controller[] = [];
     this.controllerIds.forEach((n) => {
-      const data = localStorage.getItem(n);
-      if (data) {
-        controllers.push(JSON.parse(data));
+      const controller = this.fromStorage(n);
+      if (controller) {
+        controllers.push(controller);
       }
     });
     return controllers;
@@ -82,7 +102,7 @@ export class ControllerService {
 
   public update(controller: Controller) {
     localStorage.removeItem(`controller-${controller.id}`);
-    localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
+    localStorage.setItem(`controller-${controller.id}`, controllerStorageJson(controller));
 
     let promise = new Promise<Controller>((resolve) => {
       resolve(controller);
@@ -94,9 +114,8 @@ export class ControllerService {
     let promise = new Promise<Controller[]>((resolve) => {
       let controllers: Controller[] = [];
       this.controllerIds.forEach((n) => {
-        const data = localStorage.getItem(n);
-        if (data) {
-          const controller: Controller = JSON.parse(data);
+        const controller = this.fromStorage(n);
+        if (controller) {
           controllers.push(controller);
         }
       });

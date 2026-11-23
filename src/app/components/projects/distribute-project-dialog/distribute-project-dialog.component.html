@@ -1,0 +1,53 @@
+<h1 mat-dialog-title>Distribute project</h1>
+
+<div mat-dialog-content>
+  <p class="distribute-project__note">
+    @if (project.frozen) {
+    This project is a frozen template. New copies match the copies already distributed.
+    } @else {
+    The first distribution freezes this project: it stays read-only until every copy is deleted.
+    }
+  </p>
+  <form class="gns3-form-stack">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Copy name</mat-label>
+    <input matInput [value]="copyName()" (input)="copyName.set($event.target.value)" type="text" [disabled]="isSubmitting()" />
+    @if (nameGetsSuffix()) {
+    <mat-hint>Each copy is named "{{ copyName() || project.name }}-{{ '{' }}username{{ '}' }}"</mat-hint>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Distribute to</mat-label>
+    <mat-select [value]="targetMode()" (selectionChange)="targetMode.set($event.value)" [disabled]="isSubmitting()">
+      <mat-option value="user">Single user</mat-option>
+      <mat-option value="users">Multiple users</mat-option>
+      <mat-option value="group">User group</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <app-recipient-picker
+    [controller]="controller"
+    [excludedUser]="controller.username"
+    [disabled]="isSubmitting()"
+    [groupHint]="groupHintFor"
+    [(targetMode)]="targetMode"
+    (selectionChange)="recipientSelection.set($event)"
+  />
+
+  <mat-checkbox [checked]="resetMacAddresses()" (change)="resetMacAddresses.set($event.checked)" [disabled]="isSubmitting()">
+    Reset MAC addresses
+  </mat-checkbox>
+
+  <mat-checkbox [checked]="lockTopology()" (change)="lockTopology.set($event.checked)" [disabled]="isSubmitting()">
+    Lock topology in copies
+  </mat-checkbox>
+  </form>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCloseClick()" color="accent" [disabled]="isSubmitting()">Cancel</button>
+  <button mat-button (click)="onSubmitClick()" tabindex="2" mat-raised-button color="primary" [disabled]="!canSubmit()">
+    {{ isSubmitting() ? 'Distributing…' : 'Distribute' }}
+  </button>
+</div>

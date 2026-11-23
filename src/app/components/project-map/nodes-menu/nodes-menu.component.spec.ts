@@ -10,6 +10,8 @@ import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeService } from '@services/node.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ControllerService } from '@services/controller.service';
+import { ProjectService } from '@services/project.service';
+import { ProjectPermissionService } from '@services/project-permission.service';
 import { SettingsService } from '@services/settings.service';
 import { ToasterService } from '@services/toaster.service';
 import { of } from 'rxjs';
@@ -108,6 +110,19 @@ describe('NodesMenuComponent', () => {
         { provide: ControllerService, useValue: {} },
         { provide: SettingsService, useValue: {} },
         { provide: MapSettingsService, useValue: mockMapSettingsService },
+        {
+          provide: ProjectService,
+          useValue: { isReadOnly: vi.fn().mockReturnValue(false) },
+        },
+        {
+          provide: ProjectPermissionService,
+          useValue: {
+            privileges: () => new Set<string>(['Node.Console', 'Node.PowerMgmt']),
+            has: (privilege: string) => ['Node.Console', 'Node.PowerMgmt'].includes(privilege),
+            hasAny: () => true,
+            loaded: () => true,
+          },
+        },
         { provide: MatDialog, useValue: mockDialog },
       ],
     }).compileComponents();

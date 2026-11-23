@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ResizeEvent } from 'angular-resizable-element';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError, Subject } from 'rxjs';
 import { MarkerManagerComponent } from './marker-manager.component';
@@ -9,8 +10,8 @@ import { MapLinksDataSource } from '../../../cartography/datasources/map-datasou
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { MarkerRegistryService } from '@services/marker-registry.service';
 import { ToasterService } from '@services/toaster.service';
-import { WindowBoundaryService } from '@services/window-boundary.service';
 import { WindowManagementService } from '@services/window-management.service';
+import { ProjectPermissionService } from '@services/project-permission.service';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 
@@ -32,6 +33,8 @@ describe('MarkerManagerComponent', () => {
   let mapLinksDataSource: any;
 
   beforeEach(async () => {
+    // Every privilege the template gates on (the directive reads the signal).
+    const privileges = ['Project.Audit', 'Project.Marker', 'Link.Marker'];
     markerService = {
       listDefinitions: vi.fn(),
       createDefinition: vi.fn(),
@@ -60,8 +63,13 @@ describe('MarkerManagerComponent', () => {
         { provide: MarkerRegistryService, useValue: registry },
         { provide: ToasterService, useValue: { success: vi.fn(), error: vi.fn() } },
         {
-          provide: WindowBoundaryService,
-          useValue: { setConfig: vi.fn(), constrainResizeSize: vi.fn() },
+          provide: ProjectPermissionService,
+          useValue: {
+            privileges: () => new Set<string>(privileges),
+            has: (privilege: string) => privileges.includes(privilege),
+            hasAny: (names: string[]) => names.some((n) => privileges.includes(n)),
+            loaded: () => true,
+          },
         },
         {
           provide: WindowManagementService,
@@ -94,14 +102,56 @@ describe('MarkerManagerComponent', () => {
     expect(component.fitEmptyDefinitions()).toBe(false);
   });
 
-  it('starts resizing from the actual content height of an empty window', () => {
+  it('mirrors a live resize into the window and suspends fit mode while resizing', () => {
     markerService.listDefinitions.mockReturnValue(of({}));
     markerService.aggregateList.mockReturnValue(of({}));
     fixture.detectChanges();
+    expect(component.fitEmptyDefinitions()).toBe(true);
+    component.chrome.onResizeStart();
+    component.chrome.onResizing({
+      rectangle: { left: 120, top: 80, width: 700, height: 460 },
+    } as ResizeEvent);
+    fixture.detectChanges();
     const element = fixture.nativeElement.querySelector('.marker-manager');
-    vi.spyOn(element, 'getBoundingClientRect').mockReturnValue({ height: 460 } as DOMRect);
-    component.onResizeStart();
-    expect(component.resizedHeight).toBe(460);
+    expect(element.style.width).toBe('700px');
+    // The fit-mode `height: auto` override yields to the live mirror.
+    expect(element.style.height).toBe('460px');
+    component.chrome.onResizeEnd({
+      rectangle: { left: 120, top: 80, width: 700, height: 460 },
+    } as ResizeEvent);
+    expect(component.manuallyResized()).toBe(true);
+    expect(component.fitEmptyDefinitions()).toBe(false);
+  });
+
+  it('a bare handle click on the fitted window neither jumps it nor kills auto-height', () => {
+    // The fitted empty view renders height:auto (shorter than the 600 px
+    // signal). A mousedown on a handle suspends fit mode — the gesture must
+    // start from the RENDERED height, and ending it without a move must
+    // leave the auto-height latch alone. Driven through the real
+    // mwlResizeHandle wiring (mousedown → library → template handler).
+    markerService.listDefinitions.mockReturnValue(of({}));
+    markerService.aggregateList.mockReturnValue(of({}));
+    fixture.detectChanges();
+    const element: HTMLElement = fixture.nativeElement.querySelector('.marker-manager');
+    expect(element.style.height).toBe('auto');
+    // The fitted window is 240 px tall on screen while the signal says 600.
+    element.getBoundingClientRect = () => DOMRect.fromRect({ x: 120, y: 80, width: 800, height: 240 });
+
+    const handle: HTMLElement = element.querySelector('.gns3-window__resize-handle--bottom')!;
+    handle.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 500, clientY: 320 }));
+    fixture.detectChanges();
+
+    // Fit mode yields to the signal for the gesture: seeded, not the 600 px default.
+    expect(component.chrome.height()).toBe(240);
+    expect(element.style.height).toBe('240px');
+
+    // A mousedown-without-move still ends the gesture on mouseup: the
+    // rectangle equals the starting one, so nothing latches.
+    document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+    fixture.detectChanges();
+    expect(component.manuallyResized()).toBe(false);
+    expect(component.fitEmptyDefinitions()).toBe(true);
+    expect(element.style.height).toBe('auto');
   });
 
   it('loads definitions and aggregate on init', () => {

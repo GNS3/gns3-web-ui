@@ -50,6 +50,46 @@
                 <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
               </div>
             </div>
+
+            <div class="user-detail-dialog__form-row">
+              <mat-form-field appearance="outline" class="user-detail-dialog__field">
+                <mat-label>Max nodes</mat-label>
+                <mat-select formControlName="max_nodes_mode">
+                  <mat-option [value]="quotaModeInherit">Inherit from group</mat-option>
+                  <mat-option [value]="quotaModeUnlimited">Unlimited</mat-option>
+                  <mat-option [value]="quotaModeCustom">Custom limit</mat-option>
+                </mat-select>
+              </mat-form-field>
+              @if (form.max_nodes_mode?.value === quotaModeCustom) {
+              <mat-form-field appearance="outline" class="user-detail-dialog__field">
+                <mat-label>Node limit</mat-label>
+                <input matInput type="number" formControlName="max_nodes_value" min="0" step="1" />
+                @if (form.max_nodes_value?.touched && form.max_nodes_value?.errors) {
+                <mat-error>Enter a number of 0 or more</mat-error>
+                }
+              </mat-form-field>
+              }
+            </div>
+
+            <div class="user-detail-dialog__form-row">
+              <mat-form-field appearance="outline" class="user-detail-dialog__field">
+                <mat-label>Max running nodes</mat-label>
+                <mat-select formControlName="max_running_nodes_mode">
+                  <mat-option [value]="quotaModeInherit">Inherit from group</mat-option>
+                  <mat-option [value]="quotaModeUnlimited">Unlimited</mat-option>
+                  <mat-option [value]="quotaModeCustom">Custom limit</mat-option>
+                </mat-select>
+              </mat-form-field>
+              @if (form.max_running_nodes_mode?.value === quotaModeCustom) {
+              <mat-form-field appearance="outline" class="user-detail-dialog__field">
+                <mat-label>Running node limit</mat-label>
+                <input matInput type="number" formControlName="max_running_nodes_value" min="0" step="1" />
+                @if (form.max_running_nodes_value?.touched && form.max_running_nodes_value?.errors) {
+                <mat-error>Enter a number of 0 or more</mat-error>
+                }
+              </mat-form-field>
+              }
+            </div>
           </form>
         </mat-card-content>
       </mat-card>
@@ -152,18 +192,28 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
+  <!-- Admin-side writes on another user (PUT /access/users/{id}) = User.Modify.
+       The dialog itself stays reachable for User.Audit readers. -->
   <span
+    *appHasPrivilege="'User.Modify'"
     [matTooltip]="
       isPasswordChangeDisabled() ? 'Password is managed by your organization\'s directory (LDAP/Active Directory)' : ''
     "
     matTooltipPosition="above"
   >
     <button mat-button type="button" (click)="onChangePassword()" [disabled]="isPasswordChangeDisabled()">
-      Reset Password
+      Change Password
     </button>
   </span>
   <button mat-button type="button" (click)="onCancel()">Cancel</button>
-  <button mat-raised-button color="primary" type="button" (click)="onSaveChanges()" [disabled]="!editUserForm.valid">
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    (click)="onSaveChanges()"
+    [disabled]="!editUserForm.valid"
+    *appHasPrivilege="'User.Modify'"
+  >
     Save changes
   </button>
 </mat-dialog-actions>

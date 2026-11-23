@@ -1,0 +1,145 @@
+<h2 mat-dialog-title>Distribution history — {{ data.project.name }}</h2>
+
+<mat-dialog-content>
+  @if (data.project.frozen) {
+  <div class="distribution-history__notice">
+    <mat-icon>ac_unit</mat-icon>
+    <div>
+      <strong>This project is a frozen template.</strong>
+      Modifications are disabled until every distributed copy is deleted. Use the Unfreeze action once no copy remains.
+    </div>
+  </div>
+  }
+  <!-- Distribution records are an event log: the numbers describe what
+       happened at distribution time, not how many copies still exist. -->
+  @if (loadFailed()) {
+    <div class="distribution-history__state">
+      <p>Could not load the distribution history.</p>
+      <button mat-stroked-button (click)="load()">
+        <mat-icon>refresh</mat-icon>
+        Retry
+      </button>
+    </div>
+  } @else if (records() === null) {
+    <div class="distribution-history__state">
+      <mat-spinner diameter="24"></mat-spinner>
+    </div>
+  } @else if (records()!.length === 0) {
+    <div class="distribution-history__state">
+      <p>This project has no distribution history.</p>
+    </div>
+  } @else {
+    <ul class="distribution-history__list">
+      @for (job of records(); track job.distribution_id) {
+      <li class="distribution-history__record">
+        <div class="distribution-history__record-header">
+          <span class="distribution-history__status" [class]="'distribution-history__status distribution-history__status--' + job.status">
+            {{ statusLabel(job.status) }}
+          </span>
+          <span class="distribution-history__copies">
+            {{ successfulCopies(job) }}/{{ job.total }} copies
+          </span>
+          @if (canDeleteCopies(job)) {
+          <span class="distribution-history__live">{{ liveCopies(job).length }} live</span>
+          }
+          @if (job.created_at) {
+            <span class="distribution-history__date">{{ job.created_at | date: 'medium' }}</span>
+          }
+          <!-- Same endpoint either way: a running job is cancelled (the
+               response carries its updated state), a finished one has its
+               record deleted. -->
+          <div class="distribution-history__record-actions">
+            @if (canDeleteCopies(job)) {
+            <button
+              mat-icon-button
+              class="distribution-history__record-action distribution-history__record-action--delete"
+              (click)="deleteCopies(job)"
+              matTooltip="Delete the copies that still exist"
+              aria-label="Delete distributed copies"
+            >
+              <mat-icon>delete_sweep</mat-icon>
+            </button>
+            }
+            @if (job.status === 'running' || job.status === 'cancelling') {
+            <button
+              mat-icon-button
+              class="distribution-history__record-action"
+              (click)="removeJob(job)"
+              matTooltip="Cancel distribution"
+              aria-label="Cancel distribution"
+            >
+              <mat-icon>stop</mat-icon>
+            </button>
+            } @else {
+            <button
+              mat-icon-button
+              class="distribution-history__record-action distribution-history__record-action--delete"
+              (click)="removeJob(job)"
+              [matTooltip]="recordDeleteTooltip(job)"
+              aria-label="Delete record"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+            }
+          </div>
+        </div>
+        <div class="distribution-history__record-meta">
+          <span class="distribution-history__created-by">by {{ job.created_by }}</span>
+          @if (job.error?.message) {
+          <span class="distribution-history__error">{{ job.error!.message }}</span>
+          }
+        </div>
+        @if (job.results.length > 0) {
+        <div class="distribution-history__recipients">
+          @for (result of job.results; track result.username) {
+          <!-- Copies that still exist link to the project; deleted ones are
+               greyed out, failures keep their error tooltip. -->
+          @if (result.project && !copyDeleted(result)) {
+          <a
+            class="distribution-history__recipient"
+            [routerLink]="['/controller', data.controller.id, 'project', result.project.project_id]"
+            (click)="close()"
+            [matTooltip]="recipientTooltip(result)"
+          >
+            <mat-icon>check_circle</mat-icon>
+            {{ result.username }}
+          </a>
+          } @else {
+          <span
+            class="distribution-history__recipient"
+            [class.distribution-history__recipient--failed]="!result.project"
+            [class.distribution-history__recipient--deleted]="copyDeleted(result)"
+            [matTooltip]="recipientTooltip(result)"
+          >
+            <mat-icon>{{ result.project ? 'check_circle' : 'cancel' }}</mat-icon>
+            {{ result.username }}
+          </span>
+          }
+          }
+        </div>
+        }
+      </li>
+      }
+    </ul>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (canUnfreeze) {
+  <button
+    mat-stroked-button
+    class="distribution-history__unfreeze"
+    (click)="unfreeze()"
+    [disabled]="hasAnyLiveCopy"
+    [matTooltip]="
+      hasAnyLiveCopy
+        ? 'Delete every distributed copy before unfreezing the template'
+        : 'Make the template editable again'
+    "
+  >
+    <mat-icon>lock_open</mat-icon>
+    Unfreeze template
+  </button>
+  }
+  <button mat-button (click)="close()">Close</button>
+</mat-dialog-actions>

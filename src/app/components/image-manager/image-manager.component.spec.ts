@@ -13,6 +13,7 @@ import { ToasterService } from '@services/toaster.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Controller } from '@models/controller';
 import { DockerImage } from '@models/docker/docker-image';
+import { PermissionService } from '@services/permission.service';
 
 describe('ImageManagerComponent', () => {
   it('keeps completed uploads until their exact nested path is in the catalog', () => {
@@ -194,6 +195,15 @@ describe('ImageManagerComponent', () => {
       await TestBed.configureTestingModule({
         imports: [ImageManagerComponent],
         providers: [
+          {
+            provide: PermissionService,
+            useValue: {
+              has: () => true,
+              hasAny: () => true,
+              privileges: () => new Set<string>(['Image.Audit', 'Image.Allocate', 'Compute.Modify']),
+              loaded: () => true,
+            },
+          },
           {
             provide: ActivatedRoute,
             useValue: {

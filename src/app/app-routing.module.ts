@@ -42,7 +42,7 @@ import { WebConsoleFullWindowComponent } from '@components/web-console-full-wind
 import { NodeFileManagerPageComponent } from '@components/project-map/node-file-manager-page/node-file-manager-page.component';
 import { ConsoleGuard } from './guards/console-guard';
 import { LoginGuard } from './guards/login-guard';
-import { AdministratorGuard } from './guards/administrator-guard';
+import { PrivilegeGuard } from './guards/privilege-guard';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ControllerResolve } from '@resolvers/controller-resolve';
 import { UserManagementComponent } from '@components/user-management/user-management.component';
@@ -70,7 +70,21 @@ const routes: Routes = [
       { path: 'controllers', component: ControllersComponent },
       { path: '', redirectTo: 'controllers', pathMatch: 'full' },
       { path: 'bundled', component: BundledControllerFinderComponent },
-      { path: 'controller/:controller_id/image-manager', component: ImageManagerComponent },
+      {
+        // Management page: readable with Image.Audit, but it only exists to
+        // act on the library (Image.Allocate) or the Docker daemon
+        // (Compute.Modify). Read-only visitors don't see it at all.
+        path: 'controller/:controller_id/image-manager',
+        component: ImageManagerComponent,
+        // LoginGuard must run first: PrivilegeGuard fetches privileges with
+        // whatever token exists, and an unauthenticated deep link would
+        // otherwise lose its returnUrl to the deny redirect.
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: {
+          privileges: ['Image.Audit'],
+          privilegesAny: ['Image.Allocate', 'Compute.Modify'],
+        },
+      },
       {
         path: 'controller/:controller_id/dashboard',
         redirectTo: 'controller/:controller_id/systemstatus',
@@ -88,12 +102,14 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/server-settings',
         component: ServerSettingsComponent,
-        canActivate: [LoginGuard, AdministratorGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Server.Audit'] },
       },
       {
         path: 'controller/:controller_id/management/pools/:pool_id',
         component: ResourcePoolDetailsComponent,
-        canActivate: [LoginGuard, AdministratorGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Pool.Audit'] },
         resolve: {
           pool: ResourcePoolsResolver,
           controller: ControllerResolve,
@@ -103,7 +119,8 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/systemstatus',
         component: SystemStatusComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Server.Audit'] },
       },
 
       {
@@ -111,83 +128,109 @@ const routes: Routes = [
         component: DirectLinkComponent,
         canActivate: [LoginGuard],
       },
-      { path: 'controller/:controller_id/preferences', component: PreferencesComponent, canActivate: [LoginGuard] },
+      {
+        // Management page: readable with Template.Audit, but it only exists
+        // to create/install (Template.Allocate) or configure (Template.Modify)
+        // templates. Read-only visitors use the Add node palette instead.
+        path: 'controller/:controller_id/preferences',
+        component: PreferencesComponent,
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: {
+          privileges: ['Template.Audit'],
+          privilegesAny: ['Template.Allocate', 'Template.Modify'],
+        },
+      },
       {
         // New template wizard: install from the registry or import an appliance.
         // Opened as its own page (like the manual template creation pages).
+        // Creating a template (whatever the source) POSTs /templates.
         path: 'controller/:controller_id/preferences/new-template',
         component: NewTemplateDialogComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/computes',
         component: ComputesComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Compute.Audit'], privilegesAny: ['Compute.Allocate', 'Compute.Modify'] },
       },
       {
         path: 'controller/:controller_id/preferences/builtin/ethernet-hubs/addtemplate',
         component: EthernetHubsAddTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/preferences/builtin/ethernet-hubs/:template_id',
         component: EthernetHubsTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
 
       {
         path: 'controller/:controller_id/preferences/builtin/ethernet-switches/addtemplate',
         component: EthernetSwitchesAddTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/preferences/builtin/ethernet-switches/:template_id',
         component: EthernetSwitchesTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
 
       {
         path: 'controller/:controller_id/preferences/builtin/cloud-nodes/addtemplate',
         component: CloudNodesAddTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/preferences/builtin/cloud-nodes/:template_id',
         component: CloudNodesTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
 
       {
         path: 'controller/:controller_id/preferences/dynamips/templates/addtemplate',
         component: AddIosTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/preferences/dynamips/templates/:template_id',
         component: IosTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
 
       {
         path: 'controller/:controller_id/preferences/qemu/templates/:template_id',
         component: QemuVmTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
       {
         path: 'controller/:controller_id/preferences/qemu/addtemplate',
         component: AddQemuVmTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
 
       {
         path: 'controller/:controller_id/preferences/vpcs/templates/:template_id',
         component: VpcsTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
       {
         path: 'controller/:controller_id/preferences/vpcs/addtemplate',
         component: AddVpcsTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
 
       // VirtualBox support deprecated since 3.1.0 - routes removed
@@ -219,27 +262,35 @@ const routes: Routes = [
       {
         path: 'controller/:controller_id/preferences/docker/templates/:template_id',
         component: DockerTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
       {
         path: 'controller/:controller_id/preferences/docker/addtemplate',
         component: AddDockerTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/preferences/iou/templates/:template_id',
         component: IouTemplateDetailsComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Audit', 'Template.Modify'] },
       },
       {
         path: 'controller/:controller_id/preferences/iou/addtemplate',
         component: AddIouTemplateComponent,
-        canActivate: [LoginGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Template.Allocate'] },
       },
       {
         path: 'controller/:controller_id/management',
         component: ManagementComponent,
-        canActivate: [LoginGuard, AdministratorGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: {
+          privileges: ['User.Audit', 'Group.Audit', 'Role.Audit', 'Pool.Audit', 'ACE.Audit'],
+          privilegeMatch: 'any',
+        },
         children: [
           {
             path: '',
@@ -249,33 +300,46 @@ const routes: Routes = [
           {
             path: 'users',
             component: UserManagementComponent,
+            canActivate: [PrivilegeGuard],
+            data: { privileges: ['User.Audit'] },
           },
           {
             path: 'groups',
             component: GroupManagementComponent,
+            canActivate: [PrivilegeGuard],
+            data: { privileges: ['Group.Audit'] },
           },
           {
             path: 'roles',
             component: RoleManagementComponent,
+            canActivate: [PrivilegeGuard],
+            data: { privileges: ['Role.Audit'] },
           },
           {
             path: 'pools',
             component: ResourcePoolsManagementComponent,
+            canActivate: [PrivilegeGuard],
+            data: { privileges: ['Pool.Audit'] },
           },
           {
             path: 'ACL',
             component: AclManagementComponent,
+            canActivate: [PrivilegeGuard],
+            data: { privileges: ['ACE.Audit'] },
           },
           {
             path: 'directory',
             component: DirectoryManagementComponent,
+            canActivate: [PrivilegeGuard],
+            data: { privileges: ['Server.Audit'] },
           },
         ],
       },
       {
         path: 'controller/:controller_id/management/roles/:role_id',
         component: RoleDetailComponent,
-        canActivate: [LoginGuard, AdministratorGuard],
+        canActivate: [LoginGuard, PrivilegeGuard],
+        data: { privileges: ['Role.Audit'] },
         resolve: {
           role: RoleDetailResolver,
           controller: ControllerResolve,

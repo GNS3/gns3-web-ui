@@ -120,6 +120,10 @@ describe('WebConsoleInlineComponent', () => {
       .overrideProvider(DomSanitizer, { useValue: mockSanitizer })
       .compileComponents();
 
+    // Generous viewport so the chrome's size clamping never bites in these tests.
+    window.innerWidth = 1920;
+    window.innerHeight = 1080;
+
     fixture = TestBed.createComponent(WebConsoleInlineComponent);
     component = fixture.componentInstance;
 
@@ -194,19 +198,10 @@ describe('WebConsoleInlineComponent', () => {
     });
   });
 
-  describe('Window Style', () => {
-    it('should have default style with fixed position', () => {
-      expect(component.style.position).toBe('fixed');
-    });
-
+  describe('Window geometry', () => {
     it('should have default dimensions of 1024x768', () => {
-      expect(component.style.width).toBe('1024px');
-      expect(component.style.height).toBe('768px');
-    });
-
-    it('should track resizedWidth and resizedHeight', () => {
-      expect(component.resizedWidth).toBe(1024);
-      expect(component.resizedHeight).toBe(768);
+      expect(component.chrome.width()).toBe(1024);
+      expect(component.chrome.height()).toBe(768);
     });
   });
 
@@ -255,8 +250,8 @@ describe('WebConsoleInlineComponent', () => {
     it('should use default size when no console_resolution', () => {
       component.ngOnInit();
 
-      expect(component.resizedWidth).toBe(1024);
-      expect(component.resizedHeight).toBe(768);
+      expect(component.chrome.width()).toBe(1024);
+      expect(component.chrome.height()).toBe(768);
     });
 
     it('should adjust window size based on console_resolution', () => {
@@ -268,8 +263,8 @@ describe('WebConsoleInlineComponent', () => {
 
       component.ngOnInit();
 
-      expect(component.resizedWidth).toBe(1290); // 1280 + 10
-      expect(component.resizedHeight).toBe(730); // 720 + 10
+      expect(component.chrome.width()).toBe(1290); // 1280 + 10
+      expect(component.chrome.height()).toBe(730); // 720 + 10
     });
 
     it('should handle invalid resolution format', () => {
@@ -282,8 +277,8 @@ describe('WebConsoleInlineComponent', () => {
       component.ngOnInit();
 
       // Should use default size when resolution is invalid
-      expect(component.resizedWidth).toBe(1024);
-      expect(component.resizedHeight).toBe(768);
+      expect(component.chrome.width()).toBe(1024);
+      expect(component.chrome.height()).toBe(768);
     });
   });
 
@@ -346,50 +341,35 @@ describe('WebConsoleInlineComponent', () => {
     });
   });
 
-  describe('validate()', () => {
-    it('should return true for valid resize', () => {
-      const event = {
-        rectangle: { width: 500, height: 400 },
-      } as ResizeEvent;
-      expect(component.validate(event)).toBe(true);
+  describe('chrome resize (floating-window standard)', () => {
+    it('validates against the window minimums', () => {
+      expect(component.chrome.validate({ rectangle: { width: 500, height: 400 } } as ResizeEvent)).toBe(true);
+      expect(component.chrome.validate({ rectangle: { width: 300, height: 400 } } as ResizeEvent)).toBe(false);
+      expect(component.chrome.validate({ rectangle: { width: 500, height: 200 } } as ResizeEvent)).toBe(false);
     });
 
-    it('should return false for width below minimum', () => {
-      const event = {
-        rectangle: { width: 300, height: 400 },
-      } as ResizeEvent;
-      expect(component.validate(event)).toBe(false);
-    });
-
-    it('should return false for height below minimum', () => {
-      const event = {
-        rectangle: { width: 500, height: 200 },
-      } as ResizeEvent;
-      expect(component.validate(event)).toBe(false);
-    });
-  });
-
-  describe('onResizeStart()', () => {
-    it('should set isResizing to true', () => {
-      component.onResizeStart();
+    it('marks resizing while a gesture is live and clears it on end', () => {
+      component.chrome.onResizeStart();
       expect(component.isResizing()).toBe(true);
-    });
-
-    it('should call markForCheck', () => {
-      component.onResizeStart();
-      expect(mockChangeDetector.markForCheck).toHaveBeenCalled();
-    });
-  });
-
-  describe('onResizeEnd()', () => {
-    it('should set isResizing to false', () => {
-      component.onResizeEnd({ rectangle: { width: 600, height: 500 } } as ResizeEvent);
+      component.chrome.onResizeEnd({ rectangle: { width: 600, height: 500 } } as ResizeEvent);
       expect(component.isResizing()).toBe(false);
     });
 
-    it('should constrain resize dimensions', () => {
-      component.onResizeEnd({ rectangle: { width: 700, height: 500, left: 50, top: 50 } } as ResizeEvent);
-      expect(mockWindowBoundaryService.constrainResizeSize).toHaveBeenCalled();
+    it('mirrors a live resize into the window element', () => {
+      // telnet → consoleUrl stays empty, keeping the iframe (and its resource-URL
+      // sanitization) out of these geometry assertions.
+      fixture.componentRef.setInput('node', { ...mockNode, console_type: 'telnet' } as Node);
+      component.chrome.onResizing({ rectangle: { left: 50, top: 50, width: 700, height: 500 } } as ResizeEvent);
+      fixture.detectChanges();
+      const element = fixture.nativeElement.querySelector('.web-console-inline');
+      expect(element.style.width).toBe('700px');
+      expect(element.style.height).toBe('500px');
+    });
+
+    it('consumes the full rectangle on resize end (left/top included)', () => {
+      component.chrome.onResizeEnd({ rectangle: { left: 40, top: 70, width: 700, height: 500 } } as ResizeEvent);
+      expect(component.chrome.left()).toBe(40);
+      expect(component.chrome.top()).toBe(70);
     });
   });
 

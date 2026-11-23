@@ -1,0 +1,92 @@
+<h1 mat-dialog-title>Share project</h1>
+
+<div mat-dialog-content>
+  <div class="share-project-dialog__section-title">Add people</div>
+  <form class="gns3-form-stack">
+  <div class="share-project-dialog__form-row">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Share with</mat-label>
+    <mat-select [value]="targetMode()" (selectionChange)="targetMode.set($event.value)" [disabled]="isSubmitting()">
+      <mat-option value="user">Single user</mat-option>
+      <mat-option value="users">Multiple users</mat-option>
+      <mat-option value="group">User group</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Role</mat-label>
+    <mat-select [value]="role()" (selectionChange)="role.set($event.value)" [disabled]="isSubmitting()">
+      @for (option of shareRoles; track option.name) {
+      <mat-option [value]="option.name">{{ option.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  </div>
+
+  <app-recipient-picker
+    [controller]="controller"
+    [excludedUser]="project.created_by"
+    [disabled]="isSubmitting()"
+    [groupHint]="groupHintFor"
+    [(targetMode)]="targetMode"
+    (selectionChange)="recipientSelection.set($event)"
+  />
+  </form>
+  <div class="share-project-dialog__hint">{{ roleDescription() }}</div>
+  <div class="share-project-dialog__hint">Everyone works on the same project — no copies are created.</div>
+
+  <mat-divider class="share-project-dialog__divider" />
+
+  <div class="share-project-dialog__section-title">Shared with</div>
+  @if (isLoadingShares()) {
+  <div class="share-project-dialog__hint">Loading shares…</div>
+  } @else if (sharesLoadError()) {
+  <div class="share-project-dialog__hint">{{ sharesLoadError() }}</div>
+  } @else if (shares().length === 0) {
+  <div class="share-project-dialog__hint">Not shared with anyone yet.</div>
+  } @else {
+  <div class="share-project-dialog__shares">
+    <div class="share-project-dialog__share-header">
+      <span>User</span>
+      <span>Role</span>
+    </div>
+    <ul class="share-project-dialog__share-list">
+      @for (share of shares(); track share.ace_id) {
+      <li class="share-project-dialog__share">
+        <span class="share-project-dialog__share-user">
+          <mat-icon class="share-project-dialog__share-icon">{{ share.username ? 'person' : 'group' }}</mat-icon>
+          <span
+            class="share-project-dialog__share-name"
+            [matTooltip]="
+              share.username ? '' : 'Group share: members joining the group later gain access immediately.'
+            "
+            [matTooltipDisabled]="!!share.username"
+          >
+            {{ share.username || share.group_name }}
+          </span>
+        </span>
+        <span class="share-project-dialog__share-role">{{ share.role }}</span>
+        <button
+          mat-icon-button
+          type="button"
+          class="share-project-dialog__share-remove"
+          [disabled]="removingAceId() === share.ace_id"
+          (click)="removeShare(share)"
+          matTooltip="Remove share"
+          aria-label="Remove share"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </li>
+      }
+    </ul>
+  </div>
+  }
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCloseClick()" color="accent" [disabled]="isSubmitting()">Cancel</button>
+  <button mat-button (click)="onSubmitClick()" tabindex="2" mat-raised-button color="primary" [disabled]="!canSubmit()">
+    {{ isSubmitting() ? 'Sharing…' : 'Share' }}
+  </button>
+</div>

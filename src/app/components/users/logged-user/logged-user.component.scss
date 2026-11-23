@@ -22,6 +22,40 @@
 .logged-user__info-value {
   font-size: 14px;
   color: var(--mat-sys-on-surface);
+
+  &--over {
+    color: var(--mat-sys-error);
+    font-weight: 600;
+  }
+}
+
+.logged-user__quotas {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.logged-user__quotas-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.logged-user__quota {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.logged-user__quota-figures {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .logged-user__actions {

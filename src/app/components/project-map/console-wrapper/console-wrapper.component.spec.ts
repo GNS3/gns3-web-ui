@@ -1,7 +1,6 @@
 import { signal } from '@angular/core';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ConsoleWrapperComponent } from './console-wrapper.component';
-import { DEFAULT_FONT_SIZE, MAX_FONT_SIZE, MIN_FONT_SIZE } from '@services/xterm.service';
 
 describe('ConsoleWrapperComponent', () => {
   describe('prototype methods', () => {
@@ -106,54 +105,167 @@ describe('ConsoleWrapperComponent', () => {
       expect(host.showSettingsPanelSignal()).toBe(false);
       expect(markForCheck).toHaveBeenCalledTimes(2);
     });
+  });
 
-    it('applySettings should refresh state from service settings', () => {
-      const markForCheck = vi.fn();
-      const updateSettings = vi.fn();
-      const serviceState = {
-        fontSize: MAX_FONT_SIZE,
-        fontFamily: 'Consolas',
-        foregroundColor: '#112233',
-        backgroundColor: '#aabbcc',
-      };
-      const xtermService = { updateSettings } as any;
-      Object.defineProperty(xtermService, 'settings', {
-        get: () => ({ ...serviceState }),
-      });
-
+  describe('browser resize while maximized', () => {
+    it('keeps the maximized style height instead of collapsing to the pre-maximize size', () => {
+      window.innerWidth = 1200;
+      window.innerHeight = 800;
+      // Maximized: style.height holds the maximized px; resizedHeight still
+      // carries the pre-maximize manual size (toggleMaximize never updates it).
       const host = {
-        xtermService,
-        settingsSignal: signal({
-          fontSize: DEFAULT_FONT_SIZE,
-          fontFamily: null,
-          foregroundColor: null,
-          backgroundColor: null,
-        }),
-        cdr: { markForCheck },
+        isMinimizedSignal: signal(false),
+        MIN_WIDTH: 500,
+        MIN_HEIGHT: 400,
+        toolbarTopOffset: () => 64,
+        resizedWidth: 600,
+        resizedHeight: 400,
+        style: { position: 'fixed', left: '100px', top: '164px', width: '600px', height: '600px' },
+        applyStyleToElement: vi.fn(),
+        applyResizedRect: (ConsoleWrapperComponent.prototype as any).applyResizedRect,
+        cdr: { markForCheck: vi.fn() },
       } as any;
 
-      (ConsoleWrapperComponent.prototype as any).applySettings.call(host, { fontSize: 999 });
+      (ConsoleWrapperComponent.prototype as any).onWindowResize.call(host);
 
-      expect(updateSettings).toHaveBeenCalledWith({ fontSize: 999 });
-      expect(host.settingsSignal()).toEqual(serviceState);
-      expect(markForCheck).toHaveBeenCalledTimes(1);
+      expect(host.style.height).toBe('600px'); // RED before the fix: '400px'
+      expect(host.applyStyleToElement).toHaveBeenCalledWith(host.style);
+    });
+  });
+
+  describe('window state persistence (preferences facade)', () => {
+    const STORAGE_KEY = 'gns3_console_window_state';
+
+    let originalInnerWidth: number;
+    let originalInnerHeight: number;
+
+    beforeEach(() => {
+      originalInnerWidth = window.innerWidth;
+      originalInnerHeight = window.innerHeight;
     });
 
-    it('changeFontSize should clamp bounds before applying', () => {
-      const applySettings = vi.fn();
-      const host = {
-        minFontSize: MIN_FONT_SIZE,
-        maxFontSize: MAX_FONT_SIZE,
-        currentSettings: () => ({ fontSize: MIN_FONT_SIZE }),
-        applySettings,
-      } as any;
+    afterEach(() => {
+      window.innerWidth = originalInnerWidth;
+      window.innerHeight = originalInnerHeight;
+    });
 
-      (ConsoleWrapperComponent.prototype as any).changeFontSize.call(host, -5);
-      expect(applySettings).toHaveBeenLastCalledWith({ fontSize: MIN_FONT_SIZE });
+    /**
+     * Host carrying the instance fields loadWindowState/saveWindowState
+     * touch. Built on the REAL prototype (loadWindowState calls
+     * this.parsePx, so a plain object literal would throw into the catch
+     * path), with the geometry constants mirroring the component's field
+     * initializers (they are instance state, not prototype members).
+     */
+    function makeHost(prefs: {
+      getItem: (key: string) => string | null;
+      setItem: (key: string, value: string) => void;
+    }) {
+      const host = Object.create(ConsoleWrapperComponent.prototype) as any;
+      Object.assign(host, {
+        DEFAULT_WIDTH: 848,
+        DEFAULT_HEIGHT: 600,
+        DEFAULT_LEFT: '80px',
+        DEFAULT_BOTTOM: '100px',
+        MIN_WIDTH: 500,
+        MIN_HEIGHT: 400,
+        resizedWidth: 848,
+        resizedHeight: 600,
+        isMaximizedSignal: signal(false),
+        style: {} as Record<string, string>,
+        prefs,
+      });
+      return host;
+    }
 
-      host.currentSettings = () => ({ fontSize: MAX_FONT_SIZE });
-      (ConsoleWrapperComponent.prototype as any).changeFontSize.call(host, 5);
-      expect(applySettings).toHaveBeenLastCalledWith({ fontSize: MAX_FONT_SIZE });
+    const load = (host: any) => (ConsoleWrapperComponent.prototype as any).loadWindowState.call(host);
+    const save = (host: any) => (ConsoleWrapperComponent.prototype as any).saveWindowState.call(host);
+
+    it('restores a normal on-screen state unclamped', () => {
+      window.innerWidth = 1920;
+      window.innerHeight = 1080;
+      const host = makeHost({
+        getItem: () => JSON.stringify({ width: 800, height: 500, left: 240, bottom: 160, isMaximized: false }),
+        setItem: () => {},
+      });
+      load(host);
+      expect(host.resizedWidth).toBe(800);
+      expect(host.resizedHeight).toBe(500);
+      expect(host.style).toEqual({ bottom: '160px', left: '240px', width: '800px', height: '500px' });
+      expect(host.isMaximizedSignal()).toBe(false);
+    });
+
+    it('clamps a state saved on a larger screen to the current viewport', () => {
+      window.innerWidth = 1024;
+      window.innerHeight = 768;
+      const host = makeHost({
+        getItem: () => JSON.stringify({ width: 1600, height: 1200, left: 1200, bottom: 900, isMaximized: false }),
+        setItem: () => {},
+      });
+      load(host);
+      expect(host.resizedWidth).toBe(1024);
+      expect(host.resizedHeight).toBe(768);
+      // Position clamped so the window stays fully on-screen.
+      expect(host.style.left).toBe('0px');
+      expect(host.style.bottom).toBe('0px');
+    });
+
+    it('parses legacy CSS-string positions (older copies stored "Npx")', () => {
+      window.innerWidth = 1920;
+      window.innerHeight = 1080;
+      const host = makeHost({
+        getItem: () => JSON.stringify({ width: 700, height: 500, left: '120px', bottom: '60px' }),
+        setItem: () => {},
+      });
+      load(host);
+      expect(host.style).toEqual({ bottom: '60px', left: '120px', width: '700px', height: '500px' });
+    });
+
+    it('falls back to the defaults when nothing is stored', () => {
+      const host = makeHost({ getItem: () => null, setItem: () => {} });
+      load(host);
+      expect(host.style).toEqual({ bottom: '100px', left: '80px', width: '848px', height: '600px' });
+    });
+
+    it('falls back to the defaults on corrupt JSON', () => {
+      const host = makeHost({ getItem: () => '{oops', setItem: () => {} });
+      load(host);
+      expect(host.style).toEqual({ bottom: '100px', left: '80px', width: '848px', height: '600px' });
+    });
+
+    it('restores the maximized state sized from the current viewport', () => {
+      window.innerWidth = 1200; // wide toolbar (64px header offset)
+      window.innerHeight = 800;
+      const host = makeHost({
+        getItem: () => JSON.stringify({ width: 900, height: 500, left: 200, bottom: 100, isMaximized: true }),
+        setItem: () => {},
+      });
+      load(host);
+      expect(host.isMaximizedSignal()).toBe(true);
+      expect(host.style.bottom).toBe('0px');
+      expect(host.style.height).toBe('716px'); // 800 - 64 - 20
+    });
+
+    it('saves the numeric-px shape through the facade', () => {
+      const setItem = vi.fn();
+      const host = makeHost({ getItem: () => null, setItem });
+      host.resizedWidth = 900;
+      host.resizedHeight = 520;
+      host.style = { bottom: '120px', left: '80px', width: '900px', height: '520px' };
+      save(host);
+      expect(setItem).toHaveBeenCalledWith(
+        STORAGE_KEY,
+        JSON.stringify({ width: 900, height: 520, bottom: 120, left: 80, isMaximized: false })
+      );
+    });
+
+    it('saves a maximized bottom/left of 0px as 0 (not the default fallback)', () => {
+      const setItem = vi.fn();
+      const host = makeHost({ getItem: () => null, setItem });
+      host.style = { bottom: '0px', left: '0px' };
+      save(host);
+      const saved = JSON.parse(setItem.mock.calls[0][1]);
+      expect(saved.bottom).toBe(0);
+      expect(saved.left).toBe(0);
     });
   });
 });

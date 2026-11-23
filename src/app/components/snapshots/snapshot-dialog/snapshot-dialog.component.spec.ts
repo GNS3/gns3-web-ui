@@ -6,6 +6,7 @@ import { SnapshotDialogComponent } from './snapshot-dialog.component';
 import { SnapshotService } from '@services/snapshot.service';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { ToasterService } from '@services/toaster.service';
+import { ProjectPermissionService } from '@services/project-permission.service';
 import { Snapshot } from '@models/snapshot';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
@@ -22,6 +23,7 @@ describe('SnapshotDialogComponent', () => {
   let mockProgressDialogService: any;
   let mockController: Controller;
   let mockProject: Project;
+  let mockProjectPermissionService: any;
 
   const createMockSnapshot = (id: string, name: string, description?: string): Snapshot =>
     ({
@@ -107,6 +109,14 @@ describe('SnapshotDialogComponent', () => {
       readonly: false,
     } as Project;
 
+    mockProjectPermissionService = {
+      privileges: () => new Set<string>(['Snapshot.Audit', 'Snapshot.Allocate', 'Snapshot.Restore']),
+      has: (privilege: string) => ['Snapshot.Audit', 'Snapshot.Allocate', 'Snapshot.Restore'].includes(privilege),
+      hasAny: (names: string[]) =>
+        ['Snapshot.Audit', 'Snapshot.Allocate', 'Snapshot.Restore'].some((p) => names.includes(p)),
+      loaded: () => true,
+    };
+
     await TestBed.configureTestingModule({
       imports: [SnapshotDialogComponent, MatDialogModule],
       providers: [
@@ -115,6 +125,7 @@ describe('SnapshotDialogComponent', () => {
         { provide: SnapshotService, useValue: mockSnapshotService },
         { provide: ProgressDialogService, useValue: mockProgressDialogService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ProjectPermissionService, useValue: mockProjectPermissionService },
         { provide: MatDialog, useValue: mockDialog },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
@@ -143,7 +154,26 @@ describe('SnapshotDialogComponent', () => {
     });
 
     it('should have correct displayed columns', () => {
-      expect(component.displayedColumns).toEqual(['name', 'created_at', 'actions']);
+      expect(component.displayedColumns()).toEqual(['name', 'created_at', 'actions']);
+    });
+  });
+
+  describe('displayed columns on a frozen distributed template', () => {
+    // A frozen template only allows creating and deleting snapshots: restore
+    // is refused by the server, so the actions column renders only when
+    // Snapshot.Allocate is held.
+    it('should keep the actions column when Snapshot.Allocate is held', () => {
+      component.project = { ...mockProject, frozen: true } as Project;
+
+      expect(component.displayedColumns()).toEqual(['name', 'created_at', 'actions']);
+    });
+
+    it('should drop the actions column when only Snapshot.Restore is held', () => {
+      mockProjectPermissionService.has = (privilege: string) => privilege === 'Snapshot.Restore';
+      mockProjectPermissionService.hasAny = (names: string[]) => names.includes('Snapshot.Restore');
+      component.project = { ...mockProject, frozen: true } as Project;
+
+      expect(component.displayedColumns()).toEqual(['name', 'created_at']);
     });
   });
 
@@ -613,6 +643,75 @@ describe('SnapshotDialogComponent', () => {
         (b: HTMLButtonElement) => b.querySelector('mat-icon')?.textContent?.trim() === 'edit'
       );
       expect(editButtons).toHaveLength(1);
+    });
+  });
+
+  describe('progress dialog integration', () => {
+    const openCreateWithResult = (result: any) => {
+      const dialogMock = { afterClosed: vi.fn().mockReturnValue(of(result)) };
+      vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+      component.openCreateDialog();
+    };
+
+    const openRestoreWithResult = (result: any) => {
+      const dialogMock = { afterClosed: vi.fn().mockReturnValue(of(result)) };
+      vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+      component.restoreSnapshot(createMockSnapshot('snap-1', 'Test Snapshot'));
+    };
+
+    it('should explain the running create operation in the progress dialog', () => {
+      openCreateWithResult(createMockSnapshot('snap-1', 'Test Snapshot'));
+
+      expect(mockProgressDialogService.open).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Creating snapshot',
+          message: expect.stringContaining("'Test Snapshot'"),
+          backgroundHint: expect.stringContaining('cannot be cancelled'),
+        })
+      );
+    });
+
+    it('should keep the create request running after the progress dialog is dismissed', () => {
+      // Snapshots run server-side and cannot be cancelled: dismissing the
+      // progress dialog must not unsubscribe from the HTTP response.
+      const serverResponse = new Subject<Snapshot>();
+      mockSnapshotService.create.mockReturnValue(serverResponse.asObservable());
+      const progressDismissed = new Subject<any>();
+      mockProgressDialogService.open.mockReturnValue({
+        close: vi.fn(),
+        afterClosed: () => progressDismissed.asObservable(),
+      });
+      openCreateWithResult(createMockSnapshot('snap-1', 'Test Snapshot'));
+
+      progressDismissed.next(null); // user clicks "Continue in background"
+      serverResponse.next({} as Snapshot); // the server finishes anyway
+
+      expect(mockToasterService.success).toHaveBeenCalledWith(
+        "Snapshot 'Test Snapshot' has been created."
+      );
+    });
+
+    it('should explain the running restore operation in the progress dialog', () => {
+      openRestoreWithResult(true);
+
+      expect(mockProgressDialogService.open).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Restoring snapshot',
+          message: expect.stringContaining("'Test Snapshot'"),
+          backgroundHint: expect.stringContaining('cannot be cancelled'),
+        })
+      );
+    });
+
+    it('should warn before restoring that a restore cannot be cancelled', () => {
+      openRestoreWithResult(true);
+
+      expect(component['dialog'].open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({ note: 'A restore cannot be cancelled once started.' }),
+        })
+      );
     });
   });
 });

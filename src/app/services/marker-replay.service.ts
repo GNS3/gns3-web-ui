@@ -14,6 +14,8 @@ import {
 } from '@models/marker-replay';
 import { HttpController } from './http-controller.service';
 import { ToasterService } from './toaster.service';
+import { UserPreferencesService } from './user-preferences.service';
+import { ReplayWindowStore } from '../components/project-map/marker-replay/replay-window-state';
 
 /** Full-identity tuple equality — ts alone is NOT unique (two links, same µs). */
 export function sameReplayFrame(a: ReplayFrame, b: ReplayFrame): boolean {
@@ -72,8 +74,21 @@ export type RangeErrorKind = 'gate' | 'missing' | 'network' | 'unavailable' | 'f
 export class MarkerReplayService {
   constructor(
     private httpController: HttpController,
-    private toaster: ToasterService
-  ) {}
+    private toaster: ToasterService,
+    userPreferences: UserPreferencesService
+  ) {
+    // The session's dock-tile size starts from the user's persisted one (the
+    // profile-synced blob) instead of the built-in default — a user who once
+    // resized their pins to something comfortable never re-adjusts.
+    this.windowStore = new ReplayWindowStore(
+      (key) => userPreferences.getItem(key),
+      (key, value) => userPreferences.setItem(key, value)
+    );
+    this.lastUserSize = this.windowStore.load().pin;
+  }
+
+  /** Geometry persistence (main rect + pin tile size) via the prefs facade. */
+  private readonly windowStore: ReplayWindowStore;
 
   // ---- HTTP --------------------------------------------------------------
 
@@ -405,6 +420,15 @@ export class MarkerReplayService {
   pinCurrent(): void {
     const frame = this.currentFrame();
     if (!frame) return;
+    this.pinFrame(frame);
+  }
+
+  /**
+   * Freeze a SPECIFIC frame (the packet list's right-click path — the row
+   * under the cursor need not be the current one). No-op when the frame is
+   * already pinned (tuple identity); otherwise exactly the pinCurrent flow.
+   */
+  pinFrame(frame: ReplayFrame): void {
     const list = this.pinnedDetails();
     if (list.some((p) => sameReplayFrame(p.frame, frame))) return;
     const entry: PinnedDetail = {
@@ -422,6 +446,11 @@ export class MarkerReplayService {
     this.fetchDetail(frame)
       .pipe(takeUntil(this.destroy$))
       .subscribe((state) => this.updatePinState(entry.id, state));
+  }
+
+  /** The pinned-entry id for a frame (tuple identity), or null when unpinned. */
+  pinnedIdFor(frame: ReplayFrame): number | null {
+    return this.pinnedDetails().find((p) => sameReplayFrame(p.frame, frame))?.id ?? null;
   }
 
   /** Drop a pinned window. */
@@ -503,6 +532,47 @@ export class MarkerReplayService {
     return out;
   }
 
+  // ---- non-pin window rect registry (main + peek join the snap fleet) -------
+
+  /** Settled rects of the main/peek windows — same plain-Map contract as pins. */
+  private readonly windowRects = new Map<string, { left: number; top: number; width: number; height: number }>();
+
+  /**
+   * The main/peek windows report their SETTLED rects (placement, drag end,
+   * resize end, viewport re-clamp) — never mid-gesture: while a window is
+   * being dragged, IT is the snapper and its siblings are at rest, so the
+   * registry only ever needs to hold where everyone else settled.
+   */
+  reportWindowRect(
+    id: 'main' | 'peek',
+    rect: { left: number; top: number; width: number; height: number }
+  ): void {
+    this.windowRects.set(id, { ...rect });
+  }
+
+  /** Drop a window from the registry (minimized/closed — nothing snaps to a ghost). */
+  clearWindowRect(id: 'main' | 'peek'): void {
+    this.windowRects.delete(id);
+  }
+
+  /**
+   * Every SETTLED replay window's rect except the caller's own — pins, the
+   * main window and the peek window form ONE snap fleet, so any window can
+   * magnetize against any other while dragged or resized.
+   */
+  snapSiblingRects(exclude?: { pinId?: number; windowId?: 'main' | 'peek' }): {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  }[] {
+    const out = this.pinSiblingRects(exclude?.pinId ?? -1);
+    for (const [id, r] of this.windowRects) {
+      if (id !== exclude?.windowId) out.push({ left: r.left, top: r.top, width: r.width, height: r.height });
+    }
+    return out;
+  }
+
   /** Hand-arranged (freed) rects in pin order — a NEW pin joins beside them. */
   freedPinRects(): { left: number; top: number; width: number; height: number }[] {
     return this.pinnedDetails()
@@ -518,16 +588,19 @@ export class MarkerReplayService {
       .map((p) => p.id);
   }
 
-  /** The user's preferred window size from their last manual resize (session-only). */
+  /** The user's preferred window size from their last manual resize. */
   private lastUserSize: { width: number; height: number } | null = null;
 
   /**
    * Any manual resize updates the session's preferred size: subsequently
    * pinned windows dock at that size instead of the default tile — resize
-   * once to something comfortable, every later 📌 matches.
+   * once to something comfortable, every later 📌 matches. The size is also
+   * PERSISTED (profile-synced), so the preference survives reopen and
+   * follows the user across browsers.
    */
   rememberWindowSize(width: number, height: number): void {
     this.lastUserSize = { width, height };
+    this.windowStore.storePinSize(this.lastUserSize);
   }
 
   /** Preferred dock tile size, or null while no manual resize happened. */

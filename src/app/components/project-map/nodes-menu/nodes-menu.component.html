@@ -1,5 +1,7 @@
 <div class="menu-button-group">
+  @if (!readonly) {
   <button
+    *appHasProjectPrivilege="'Node.Console'"
     matTooltip="Console connect to all nodes"
     matTooltipClass="custom-tooltip"
     mat-icon-button
@@ -9,6 +11,7 @@
     <mat-icon>web_asset</mat-icon>
   </button>
   <button
+    *appHasProjectPrivilege="'Node.PowerMgmt'"
     matTooltip="Start/Resume all nodes"
     matTooltipClass="custom-tooltip"
     mat-icon-button
@@ -18,6 +21,7 @@
     <mat-icon>play_arrow</mat-icon>
   </button>
   <button
+    *appHasProjectPrivilege="'Node.PowerMgmt'"
     matTooltip="Suspend all nodes"
     matTooltipClass="custom-tooltip"
     mat-icon-button
@@ -27,6 +31,7 @@
     <mat-icon>pause</mat-icon>
   </button>
   <button
+    *appHasProjectPrivilege="'Node.PowerMgmt'"
     matTooltip="Stop all nodes"
     matTooltipClass="custom-tooltip"
     mat-icon-button
@@ -36,6 +41,7 @@
     <mat-icon>stop</mat-icon>
   </button>
   <button
+    *appHasProjectPrivilege="'Node.PowerMgmt'"
     matTooltip="Reload all nodes"
     matTooltipClass="custom-tooltip"
     mat-icon-button
@@ -46,6 +52,7 @@
   </button>
 
   <button
+    *appHasProjectPrivilege="'Node.Console'"
     matTooltip="Reset all console connections"
     matTooltipClass="custom-tooltip"
     mat-icon-button
@@ -54,4 +61,5 @@
   >
     <mat-icon>compare_arrows</mat-icon>
   </button>
+  }
 </div>

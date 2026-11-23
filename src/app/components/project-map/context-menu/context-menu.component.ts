@@ -10,6 +10,7 @@ import { Link } from '@models/link';
 import { LinkNode } from '@models/link-node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
+import { planTopologyDeletion } from '@utils/topology-deletion.util';
 import { ProjectService } from '@services/project.service';
 import { ShowNodeActionComponent } from './actions/show-node-action/show-node-action.component';
 import { ConfigActionComponent } from './actions/config-action/config-action.component';
@@ -52,6 +53,7 @@ import { AlignHorizontallyActionComponent } from './actions/align-horizontally/a
 import { AlignVerticallyActionComponent } from './actions/align_vertically/align-vertically.component';
 import { ShowInFileManagerActionComponent } from './actions/show-in-file-manager-action/show-in-file-manager-action.component';
 import { FixMissingImageActionComponent } from './actions/fix-missing-image-action/fix-missing-image-action.component';
+import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.directive';
 
 @Component({
   selector: 'app-context-menu',
@@ -101,6 +103,7 @@ import { FixMissingImageActionComponent } from './actions/fix-missing-image-acti
     AlignVerticallyActionComponent,
     ShowInFileManagerActionComponent,
     FixMissingImageActionComponent,
+    HasProjectPrivilegeDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -207,6 +210,47 @@ export class ContextMenuComponent implements OnInit {
    */
   isCloudLikeNode(nodeType: string): boolean {
     return nodeType === 'cloud' || nodeType === 'ethernet_switch' || nodeType === 'ethernet_hub' || nodeType === 'nat';
+  }
+
+  /** The project is a frozen distributed template: edits are refused server-side. */
+  get isFrozen(): boolean {
+    return !!this.project?.frozen;
+  }
+
+  /** Selected nodes duplication may act on: a locked node cannot be cloned. */
+  get duplicableNodes(): Node[] {
+    return this.nodes.filter((node) => !node.locked);
+  }
+
+  /**
+   * Privileges required to duplicate the current selection — one entry per
+   * selected element kind, all of them required (the directive matches 'all').
+   */
+  get duplicatePrivileges(): string[] {
+    const privileges: string[] = [];
+    if (this.duplicableNodes.length) privileges.push('Node.Allocate');
+    if (this.drawings.length) privileges.push('Drawing.Allocate');
+    return privileges;
+  }
+
+  /** Privileges required to delete the current selection (nodes, drawings and/or links). */
+  get deletePrivileges(): string[] {
+    return planTopologyDeletion(this.nodes, this.drawings, this.links).requiredPrivileges;
+  }
+
+  /** Privileges required to change the layer or lock state of the current selection. */
+  get layerPrivileges(): string[] {
+    const privileges: string[] = [];
+    if (this.nodes.length) privileges.push('Node.Modify');
+    if (this.drawings.length) privileges.push('Drawing.Modify');
+    return privileges;
+  }
+
+  /** Privilege required to edit the selected text: drawing text, link text or node/label text. */
+  get editTextPrivileges(): string[] {
+    if (this.drawings.length) return ['Drawing.Modify'];
+    if (this.linkNodes.length) return ['Link.Modify'];
+    return ['Node.Modify'];
   }
 
   private resetCapabilities() {

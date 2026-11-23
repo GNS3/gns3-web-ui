@@ -1,5 +1,15 @@
-<h1 mat-dialog-title>Operation in progress</h1>
+<h1 mat-dialog-title>{{ title }}</h1>
 <div mat-dialog-content>
-  <mat-progress-bar color="primary" mode="determinate" [value]="value()"> </mat-progress-bar>
+  <div class="progress-dialog__body">
+    <mat-spinner diameter="36" />
+    <div class="progress-dialog__text">
+      <p class="progress-dialog__message">{{ message }}</p>
+      @if (backgroundHint) {
+      <p class="progress-dialog__hint">{{ backgroundHint }}</p>
+      }
+    </div>
+  </div>
 </div>
-<div mat-dialog-actions><button mat-button (click)="onCancelClick()" tabindex="-1" color="accent">Cancel</button></div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onDismissClick()" tabindex="-1">Continue in background</button>
+</div>

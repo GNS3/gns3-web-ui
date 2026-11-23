@@ -1,11 +1,13 @@
 import { HttpClient, HttpErrorResponse, HttpEvent, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
-import { Controller, ControllerProtocol } from '@models/controller';
+import { Controller, ControllerProtocol, controllerStorageJson } from '@models/controller';
 import { AuthResponse } from '@models/authResponse';
+import { ToasterService } from '@services/toaster.service';
+import { SessionResetService } from '@services/session-reset.service';
 
 /* tslint:disable:interface-over-type-literal */
 export type JsonOptions = {
@@ -23,6 +25,12 @@ export type JsonOptions = {
   reportProgress?: boolean;
   responseType?: 'json';
   withCredentials?: boolean;
+  /**
+   * Skip the global permission-denied toast. For background probes whose
+   * 404/403 the caller already handles silently (e.g. restoring distribution
+   * refs: 403 means a foreign leftover ref and is pruned without a word).
+   */
+  suppressForbiddenToast?: boolean;
 };
 
 export type TextOptions = {
@@ -84,7 +92,15 @@ export class ControllerError extends Error {
 
 @Injectable()
 export class ControllerErrorHandler {
-  handleError(error: HttpErrorResponse) {
+  // 403 toast throttling: batch operations (e.g. "start all" denied for
+  // every node) trigger one 403 per request — show a single toast.
+  private static readonly FORBIDDEN_TOAST_THROTTLE_MS = 3000;
+  private lastForbiddenMessage: string | null = null;
+  private lastForbiddenToastAt = 0;
+
+  constructor(private toaster: ToasterService) {}
+
+  handleError(error: HttpErrorResponse, url?: string, options?: JsonOptions) {
     let err: Error = error;
 
     if (error.name === 'HttpErrorResponse' && error.status === 0) {
@@ -97,7 +113,38 @@ export class ControllerErrorHandler {
     //  window.location.reload();
     //}
 
+    // The flattened privilege list can overestimate (a privilege granted
+    // on one resource path does not grant it everywhere): whenever the
+    // server denies an action the UI offered, report it uniformly — unless
+    // the caller marked the request as a background probe that handles its
+    // own denials silently.
+    if (error.status === 403 && !options?.suppressForbiddenToast && !this.isAuthEndpoint(url)) {
+      this.notifyForbidden(error);
+    }
+
     return throwError(() => err);
+  }
+
+  private isAuthEndpoint(url?: string): boolean {
+    if (!url) {
+      return false;
+    }
+    return (
+      url.endsWith('/access/users/login') ||
+      url.endsWith('/access/users/authenticate') ||
+      url.endsWith('/access/users/refresh')
+    );
+  }
+
+  private notifyForbidden(error: HttpErrorResponse): void {
+    const message = error.error?.message || 'Permission denied';
+    const now = Date.now();
+    if (message === this.lastForbiddenMessage && now - this.lastForbiddenToastAt < ControllerErrorHandler.FORBIDDEN_TOAST_THROTTLE_MS) {
+      return;
+    }
+    this.lastForbiddenMessage = message;
+    this.lastForbiddenToastAt = now;
+    this.toaster.error(message);
   }
 }
 
@@ -113,6 +160,7 @@ export class HttpController {
     private http: HttpClient,
     private errorHandler: ControllerErrorHandler,
     private router: Router,
+    private injector: Injector,
   ) {}
 
   get<T>(controller: Controller, url: string, options?: JsonOptions): Observable<T> {
@@ -326,14 +374,14 @@ export class HttpController {
       catchError((error: HttpErrorResponse) => {
         // Only intercept 401; skip auth endpoints to avoid loops
         if (error.status !== 401) {
-          return this.errorHandler.handleError(error);
+          return this.errorHandler.handleError(error, url, options as JsonOptions | undefined);
         }
         if (
           url.endsWith('/access/users/login') ||
           url.endsWith('/access/users/authenticate') ||
           url.endsWith('/access/users/refresh')
         ) {
-          return this.errorHandler.handleError(error);
+          return this.errorHandler.handleError(error, url);
         }
 
         const refreshToken = localStorage.getItem(`refresh_token_${controller.id}`);
@@ -382,7 +430,7 @@ export class HttpController {
       switchMap((response) => {
         // Update tokens
         controller.authToken = response.access_token;
-        localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
+        localStorage.setItem(`controller-${controller.id}`, controllerStorageJson(controller));
         if (response.refresh_token) {
           localStorage.setItem(`refresh_token_${controller.id}`, response.refresh_token);
         }
@@ -452,7 +500,7 @@ export class HttpController {
   private clearTokens(controller: Controller): void {
     localStorage.removeItem(`refresh_token_${controller.id}`);
     controller.authToken = null;
-    localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
+    localStorage.setItem(`controller-${controller.id}`, controllerStorageJson(controller));
   }
 
   private redirectToLogin(controller: Controller): void {
@@ -462,9 +510,15 @@ export class HttpController {
     // and navigates back to projects, causing a login loop.
     this.clearTokens(controller);
     controller.tokenExpired = true;
-    localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
+    localStorage.setItem(`controller-${controller.id}`, controllerStorageJson(controller));
     this.isRefreshing = false;
     this.processQueue(new Error('Session expired, redirecting to login'));
+    // User-scoped singletons (privilege cache, preferences mirror,
+    // distribution tracking) must not survive the session either: the
+    // next login on this controller may be a different user. Resolved
+    // lazily because constructor-injecting the reset service would close
+    // an instantiation cycle (it reaches services that inject this one).
+    this.injector.get(SessionResetService).reset();
     this.router.navigate(['/controller', controller.id, 'login']);
   }
 }

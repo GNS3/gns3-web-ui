@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { UserPreferencesService } from '@services/user-preferences.service';
 import {
   ChatSession,
   ChatMessage,
@@ -17,6 +18,7 @@ import {
   providedIn: 'root',
 })
 export class AiChatStore {
+  private userPreferences = inject(UserPreferencesService);
   // Current project ID
   private currentProjectId$ = new BehaviorSubject<string | null>(null);
 
@@ -40,17 +42,7 @@ export class AiChatStore {
   private error$ = new BehaviorSubject<string | null>(null);
 
   // Panel state
-  private panelState$ = new BehaviorSubject<ChatPanelState>({
-    isOpen: false,
-    width: 800,
-    height: 900,
-    isMaximized: false,
-    isMinimized: false,
-    position: {
-      top: 80,
-      right: 20,
-    },
-  });
+  private panelState$ = new BehaviorSubject<ChatPanelState>(AiChatStore.defaultPanelState());
 
   // Session UI state (Map: sessionId -> uiState)
   private sessionUIStateMap = new Map<string, SessionUIState>();
@@ -59,6 +51,25 @@ export class AiChatStore {
   constructor() {
     // Restore panel state from localStorage
     this.loadPanelState();
+    // The stored state can change after construction (server merge at
+    // login, mirror wipe at logout): re-read it so the store never keeps
+    // — and re-saves on the next openPanel() — the previous user's
+    // geometry into the new user's preferences document.
+    this.userPreferences.onExternalUpdate(() => this.loadPanelState());
+  }
+
+  private static defaultPanelState(): ChatPanelState {
+    return {
+      isOpen: false,
+      width: 800,
+      height: 900,
+      isMaximized: false,
+      isMinimized: false,
+      position: {
+        top: 80,
+        right: 20,
+      },
+    };
   }
 
   /* ==================== Project & Session State ==================== */
@@ -493,7 +504,7 @@ export class AiChatStore {
    */
   private savePanelState(state: ChatPanelState): void {
     try {
-      localStorage.setItem('ai-chat-panel-state', JSON.stringify(state));
+      this.userPreferences.setItem('ai-chat-panel-state', JSON.stringify(state));
     } catch (e) {
       console.error('Failed to save panel state:', e);
     }
@@ -504,7 +515,7 @@ export class AiChatStore {
    */
   private loadPanelState(): void {
     try {
-      const saved = localStorage.getItem('ai-chat-panel-state');
+      const saved = this.userPreferences.getItem('ai-chat-panel-state');
       if (saved) {
         const state: ChatPanelState = JSON.parse(saved);
         // Reset isOpen to false on page load since the panel is not actually visible
@@ -512,6 +523,10 @@ export class AiChatStore {
         state.isMaximized = false;
         state.isMinimized = false;
         this.panelState$.next(state);
+      } else {
+        // Key absent (logout wiped the mirror): fall back to the defaults
+        // instead of keeping the previous user's geometry in memory.
+        this.panelState$.next(AiChatStore.defaultPanelState());
       }
     } catch (e) {
       console.error('Failed to load panel state:', e);

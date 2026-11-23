@@ -287,7 +287,7 @@ describe('DrawingDraggedComponent', () => {
       expect(cdrSpy).toHaveBeenCalled();
     });
 
-    it('should not update data source when updatePosition fails', async () => {
+    it('should revert the drawing position when updatePosition fails', async () => {
       const mockDrawing = createMockDrawing();
       drawingsDataSource.add(mockDrawing);
       fixture.componentRef.setInput('controller', mockController);
@@ -305,7 +305,7 @@ describe('DrawingDraggedComponent', () => {
       // Advance fake timers for async error handling
       await vi.runAllTimersAsync();
 
-      expect(updateSpy).not.toHaveBeenCalled();
+      expect(updateSpy).toHaveBeenCalledWith(expect.objectContaining({ drawing_id: 'drawing-1', x: 100, y: 200 }));
     });
   });
 

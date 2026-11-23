@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { AiChatStore } from './ai-chat.store';
+import { UserPreferencesService } from '@services/user-preferences.service';
+import { HttpController } from '@services/http-controller.service';
+import { Controller } from '@models/controller';
 import { ChatSession, ChatMessage, ToolCall, ChatPanelState, MessageRole } from '@models/ai-chat.interface';
 
 describe('AiChatStore', () => {
@@ -63,14 +68,24 @@ describe('AiChatStore', () => {
   })();
 
   beforeEach(() => {
-    // Mock localStorage
+    // Mock localStorage — must be stubbed before TestBed.inject: the store's
+    // UserPreferencesService dependency reads its sync baseline from
+    // localStorage at construction time.
     vi.stubGlobal('localStorage', localStorageMock);
     localStorageMock.clear();
-    store = new AiChatStore();
+    TestBed.configureTestingModule({
+      providers: [
+        // The real UserPreferencesService resolves HttpController lazily;
+        // the mock keeps preference sync hermetic for the tests below.
+        { provide: HttpController, useValue: { get: vi.fn(), put: vi.fn(() => of({})) } },
+      ],
+    });
+    store = TestBed.inject(AiChatStore);
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    TestBed.resetTestingModule();
   });
 
   /* ==================== Project & Session State ==================== */
@@ -515,6 +530,17 @@ describe('AiChatStore', () => {
       expect(state.width).toBe(1000);
     });
 
+    it('should persist panel state through the preferences facade', () => {
+      const prefs = TestBed.inject(UserPreferencesService);
+      const setItemSpy = vi.spyOn(prefs, 'setItem');
+
+      store.updatePanelSize(1024, 768);
+
+      expect(setItemSpy).toHaveBeenCalledWith('ai-chat-panel-state', expect.stringContaining('"width":1024'));
+      // The write still lands in localStorage — it is the working copy.
+      expect(localStorageMock.getItem('ai-chat-panel-state')).toContain('"height":768');
+    });
+
     it('should load panel state from localStorage', () => {
       const savedState: ChatPanelState = {
         isOpen: true,
@@ -527,7 +553,9 @@ describe('AiChatStore', () => {
 
       localStorageMock.setItem('ai-chat-panel-state', JSON.stringify(savedState));
 
-      const newStore = new AiChatStore();
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({});
+      const newStore = TestBed.inject(AiChatStore);
       const state = newStore.getPanelStateValue();
 
       // isOpen should be reset to false on load
@@ -538,12 +566,78 @@ describe('AiChatStore', () => {
     });
 
     it('should handle localStorage errors gracefully', () => {
-      vi.spyOn(localStorageMock, 'setItem').mockImplementation(() => {
+      const setItemSpy = vi.spyOn(localStorageMock, 'setItem');
+      setItemSpy.mockImplementation(() => {
         throw new Error('Storage quota exceeded');
       });
 
       // Should not throw error
       expect(() => store.setPanelState({ isOpen: true })).not.toThrow();
+
+      // Restore the real setter: the spy would otherwise leak into every
+      // later test in this file and silently swallow their writes.
+      setItemSpy.mockRestore();
+    });
+
+    describe('preferences-driven updates', () => {
+      const controller = { id: 1 } as unknown as Controller;
+      let mockHttpController: { get: ReturnType<typeof vi.fn>; put: ReturnType<typeof vi.fn> };
+
+      beforeEach(() => {
+        mockHttpController = TestBed.inject(HttpController) as unknown as {
+          get: ReturnType<typeof vi.fn>;
+          put: ReturnType<typeof vi.fn>;
+        };
+      });
+
+      it('re-reads the stored geometry when a server merge changes it', () => {
+        store.updatePanelSize(640, 480); // local geometry, sync not enabled yet
+        expect(store.getPanelStateValue().width).toBe(640);
+
+        mockHttpController.get.mockReturnValue(
+          of({
+            preferences: {
+              version: 1,
+              webui: {
+                'ai-chat-panel-state': JSON.stringify({
+                  isOpen: true,
+                  isMaximized: true,
+                  isMinimized: false,
+                  width: 999,
+                  height: 888,
+                  position: { top: 5, right: 5 },
+                }),
+              },
+            },
+          }),
+        );
+        TestBed.inject(UserPreferencesService).sync(controller);
+
+        const state = store.getPanelStateValue();
+        expect(state.width).toBe(999);
+        expect(state.height).toBe(888);
+        expect(state.position).toEqual({ top: 5, right: 5 });
+        // Volatile flags reset on re-read: the panel is not actually open.
+        expect(state.isOpen).toBe(false);
+        expect(state.isMaximized).toBe(false);
+      });
+
+      it('resets to the default geometry when logout wipes the mirror', () => {
+        store.updatePanelSize(1200, 1000);
+
+        // A successful sync arms the mirror; logging out then wipes it and
+        // the store must fall back to the defaults instead of re-saving the
+        // previous user's geometry.
+        mockHttpController.get.mockReturnValue(of({ preferences: { version: 1, webui: {} } }));
+        const prefs = TestBed.inject(UserPreferencesService);
+        prefs.sync(controller);
+        prefs.invalidate();
+
+        const state = store.getPanelStateValue();
+        expect(state.width).toBe(800);
+        expect(state.height).toBe(900);
+        expect(state.position).toEqual({ top: 80, right: 20 });
+      });
     });
   });
 
@@ -659,7 +753,9 @@ describe('AiChatStore', () => {
     });
 
     it('should handle multiple rapid state updates', () => {
-      const rapidStore = new AiChatStore(); // Isolated instance
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({});
+      const rapidStore = TestBed.inject(AiChatStore); // Isolated instance
       for (let i = 0; i < 100; i++) {
         rapidStore.setStreamingState(i % 2 === 0);
       }

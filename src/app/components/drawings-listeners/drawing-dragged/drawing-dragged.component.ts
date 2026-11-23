@@ -36,6 +36,8 @@ export class DrawingDraggedComponent implements OnInit, OnDestroy {
 
   onDrawingDragged(draggedEvent: DraggedDataEvent<MapDrawing>) {
     const drawing = this.drawingsDataSource.get(draggedEvent.datum.id);
+    const previousX = drawing.x;
+    const previousY = drawing.y;
     drawing.x += draggedEvent.dx;
     drawing.y += draggedEvent.dy;
 
@@ -52,6 +54,14 @@ export class DrawingDraggedComponent implements OnInit, OnDestroy {
           this.mapChangeDetectorRef.detectChanges();
         },
         error: (err) => {
+          // The server rejected the move (e.g. RBAC: no Drawing.Modify):
+          // revert the optimistic position, then force an un-gated redraw —
+          // the restored signature equals the last rendered one, so the
+          // gated redraw would skip and leave the DOM at the cursor.
+          drawing.x = previousX;
+          drawing.y = previousY;
+          this.drawingsDataSource.update(drawing);
+          this.mapChangeDetectorRef.detectChanges();
           const message = err.error?.message || err.message || 'Failed to update drawing position';
           this.toasterService.error(message);
           this.cdr.markForCheck();

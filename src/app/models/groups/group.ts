@@ -16,4 +16,7 @@ export interface Group {
   updated_at: string;
   user_group_id: string;
   is_builtin: boolean;
+  // Default node quotas for the group members: null = unlimited (-1 also means unlimited).
+  default_max_nodes?: number | null;
+  default_max_running_nodes?: number | null;
 }

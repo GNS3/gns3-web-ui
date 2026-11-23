@@ -9,4 +9,7 @@ export interface User {
   user_id: string;
   username: string;
   auth_source?: string;
+  // Node quotas: null = inherit the group defaults, -1 = explicitly unlimited.
+  max_nodes?: number | null;
+  max_running_nodes?: number | null;
 }

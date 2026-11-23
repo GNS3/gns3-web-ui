@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChangeDetectorRef } from '@angular/core';
+import { MapChangeDetectorRef } from '../../../cartography/services/map-change-detector-ref';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import { DrawingResizedComponent } from './drawing-resized.component';
 import { DrawingService } from '@services/drawing.service';
@@ -137,6 +138,7 @@ describe('DrawingResizedComponent', () => {
         { provide: MapDrawingToSvgConverter, useValue: mockMapDrawingToSvgConverter },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
+        { provide: MapChangeDetectorRef, useValue: { detectChanges: vi.fn() } },
       ],
     }).compileComponents();
 

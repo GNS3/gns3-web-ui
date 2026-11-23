@@ -1,0 +1,182 @@
+@use '../../../../styles/forms' as forms;
+@use '../../../../styles/buttons' as buttons;
+
+:host {
+  @include forms.outlined;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.rule-library {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gns3-density-space-3);
+}
+
+.rule-library__toolbar {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gns3-density-space-2);
+}
+
+.rule-library__search {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+}
+
+.rule-library__new {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.rule-library__categories {
+  flex-shrink: 0;
+}
+
+.rule-library__editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gns3-density-space-2);
+  padding: var(--gns3-density-space-3);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--gns3-density-radius-lg);
+  background: var(--mat-sys-surface-container);
+}
+
+.rule-library__editor-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+
+.rule-library__field {
+  width: 100%;
+  margin: 0;
+}
+
+.rule-library__editor-hint {
+  @include forms.helper-text;
+  margin: 0;
+}
+
+.rule-library__editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--gns3-density-space-2);
+}
+
+.rule-library__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rule-library__empty {
+  padding: var(--gns3-density-space-4) 0;
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.rule-library__group-label {
+  display: flex;
+  align-items: center;
+  gap: var(--gns3-density-space-2);
+  margin: var(--gns3-density-space-2) 0 var(--gns3-density-space-1);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.rule-library__count {
+  padding: 0 6px;
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container-highest);
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.rule-library__row {
+  display: flex;
+  align-items: center;
+  gap: var(--gns3-density-space-2);
+  padding: 4px 6px;
+  border: 1px solid transparent;
+  border-radius: var(--gns3-density-radius-lg);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--mat-sys-surface-container);
+  }
+
+  &--selected {
+    background: var(--mat-sys-primary-container);
+    border-color: var(--mat-sys-primary);
+
+    .rule-library__name,
+    .rule-library__expression {
+      color: var(--mat-sys-on-primary-container);
+    }
+
+    .rule-library__state {
+      color: var(--mat-sys-on-primary-container);
+    }
+  }
+}
+
+.rule-library__state {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: var(--mat-sys-primary);
+}
+
+.rule-library__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.rule-library__name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rule-library__expression {
+  font-family: var(--mat-sys-label-large-font, monospace);
+  font-size: 11px;
+  color: var(--mat-sys-on-surface-variant);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rule-library__actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  button.mat-mdc-icon-button {
+    --gns3-action-icon-size: 16px;
+    @include buttons.action-icon(28px);
+  }
+}
+
+// The row's primary action stands out from edit/delete.
+.rule-library__use {
+  color: var(--mat-sys-primary);
+}
+
+.rule-library__hint {
+  @include forms.helper-text;
+  margin: 0;
+}

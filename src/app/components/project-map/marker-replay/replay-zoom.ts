@@ -1,0 +1,149 @@
+/**
+ * Per-window CONTENT zoom for the replay floating windows (main window,
+ * pinned comparison windows, peek window).
+ *
+ * Each window owns an independent zoom level, applied as CSS `zoom` on the
+ * window's CONTENT region only — the chrome (header, borders, resize
+ * handles) stays 1:1, so every px-based geometry system (drag, resize,
+ * snapping, dock slots, leader lines) is untouched by zooming. CSS `zoom`
+ * (not `transform: scale()`) on purpose: it is a LAYOUT scaling, so the
+ * scrollports' ranges and the flex-stretched content boxes resize with it
+ * instead of overflowing or leaving gaps.
+ *
+ * Levels live per window KIND (`main` / `pin` / `peek`): a new window is
+ * BORN at its kind's last-used level (every later pin matches the pin the
+ * user last zoomed), then adjusts independently per window. Reads/writes go
+ * through the {@link UserPreferencesService} facade, so a level follows the
+ * user's account across browsers (and is cleared for the next user on a
+ * shared browser) — a comfortable reading size is a preference, not a
+ * layout accident and not a property of this particular browser.
+ */
+
+import { WritableSignal, computed, signal } from '@angular/core';
+
+/** Zoom range and step — 70%…200% in 10% steps (Wireshark-like font zoom). */
+export const REPLAY_ZOOM_MIN = 0.7;
+export const REPLAY_ZOOM_MAX = 2;
+export const REPLAY_ZOOM_STEP = 0.1;
+export const REPLAY_ZOOM_DEFAULT = 1;
+
+const STORAGE_PREFIX = 'gns3_replay_zoom_';
+
+/** Per-kind storage key (each kind is its own SYNCED_PREFERENCE_KEYS entry). */
+export function replayZoomKey(kind: 'main' | 'pin' | 'peek'): string {
+  return STORAGE_PREFIX + kind;
+}
+
+/** Clamp + de-drift a zoom value onto the 10%-step grid (integer per-cent). */
+export function clampReplayZoom(zoom: number): number {
+  const pct = Math.round(zoom * 100);
+  const stepped = Math.round(pct / (REPLAY_ZOOM_STEP * 100)) * (REPLAY_ZOOM_STEP * 100);
+  return Math.min(REPLAY_ZOOM_MAX * 100, Math.max(REPLAY_ZOOM_MIN * 100, stepped)) / 100;
+}
+
+/** One step in/out, clamped at the range ends (returns the NEW level). */
+export function replayZoomIn(zoom: number): number {
+  return clampReplayZoom(zoom + REPLAY_ZOOM_STEP);
+}
+
+export function replayZoomOut(zoom: number): number {
+  return clampReplayZoom(zoom - REPLAY_ZOOM_STEP);
+}
+
+/** The value for `[style.zoom]` — a plain number string, sanitizer-safe. */
+export function replayZoomCss(zoom: number): string {
+  return clampReplayZoom(zoom).toFixed(2);
+}
+
+/** Header caption — "125%". */
+export function replayZoomLabel(zoom: number): string {
+  return `${Math.round(clampReplayZoom(zoom) * 100)}%`;
+}
+
+/**
+ * The kind's last-used level, read through caller-supplied accessors (in
+ * production the {@link UserPreferencesService} facade — localStorage +
+ * profile sync; specs can pass plain Maps); `defaultZoom` when absent,
+ * unreadable or out of range. Guards: Safari private mode THROWS on access.
+ */
+export function loadReplayZoom(
+  kind: 'main' | 'pin' | 'peek',
+  get: (key: string) => string | null,
+  defaultZoom: number = REPLAY_ZOOM_DEFAULT
+): number {
+  try {
+    const raw = get(replayZoomKey(kind));
+    if (raw === null) return defaultZoom;
+    const parsed = Number.parseFloat(raw);
+    // Unparsable or stale (range-drift) entries fall back rather than clamp —
+    // a stored 5.7 from an older range must not pin the window at the max.
+    if (!Number.isFinite(parsed) || parsed < REPLAY_ZOOM_MIN || parsed > REPLAY_ZOOM_MAX) {
+      return defaultZoom;
+    }
+    return clampReplayZoom(parsed);
+  } catch {
+    return defaultZoom;
+  }
+}
+
+/** Persist the kind's level via the facade — best effort, never throws. */
+export function storeReplayZoom(
+  kind: 'main' | 'pin' | 'peek',
+  zoom: number,
+  set: (key: string, value: string) => void
+): void {
+  try {
+    set(replayZoomKey(kind), String(clampReplayZoom(zoom)));
+  } catch {
+    // Unavailable storage (private mode, disabled) — this-session-only zoom.
+  }
+}
+
+/**
+ * The per-window zoom state, one instance per host component:
+ * `readonly zoomCtl = new ReplayZoomController('pin', read, write)` in the
+ * class body (the accessors point at the prefs facade, the same wiring as
+ * {@link ReplayWindowStore}), `[style.zoom]="zoomCtl.css()"` on the content
+ * region, the −/%/+ cluster in the header. Every change also becomes the
+ * KIND's stored default, so later windows of the same kind (new pins
+ * especially) are born at it.
+ */
+export class ReplayZoomController {
+  /** Assigned in the ctor — `kind` (a parameter property) is not set yet at
+   * field-initializer time. The computeds below read it lazily, so their
+   * field position is safe. */
+  readonly zoom: WritableSignal<number>;
+
+  /** `[style.zoom]` value for the content region. */
+  readonly css = computed(() => replayZoomCss(this.zoom()));
+  /** Header caption — "125%". */
+  readonly label = computed(() => replayZoomLabel(this.zoom()));
+  readonly canStepUp = computed(() => this.zoom() < REPLAY_ZOOM_MAX);
+  readonly canStepDown = computed(() => this.zoom() > REPLAY_ZOOM_MIN);
+
+  constructor(
+    private readonly kind: 'main' | 'pin' | 'peek',
+    private readonly get: (key: string) => string | null,
+    private readonly set: (key: string, value: string) => void
+  ) {
+    this.zoom = signal(loadReplayZoom(kind, get));
+  }
+
+  stepUp(): void {
+    this.apply(replayZoomIn(this.zoom()));
+  }
+
+  stepDown(): void {
+    this.apply(replayZoomOut(this.zoom()));
+  }
+
+  /** The level readout's click — back to 100%. */
+  reset(): void {
+    this.apply(REPLAY_ZOOM_DEFAULT);
+  }
+
+  private apply(zoom: number): void {
+    this.zoom.set(clampReplayZoom(zoom));
+    storeReplayZoom(this.kind, zoom, this.set);
+  }
+}

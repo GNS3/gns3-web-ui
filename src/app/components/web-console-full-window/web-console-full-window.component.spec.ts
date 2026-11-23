@@ -128,6 +128,16 @@ describe('WebConsoleFullWindowComponent', () => {
     initTerminal: vi.fn(),
     settingsChanged$: new Subject<void>(),
     applySettingsToTerminal: vi.fn(),
+    settings: {
+      fontSize: 16,
+      fontFamily: null,
+      foregroundColor: null,
+      backgroundColor: null,
+    },
+    getInstalledFonts: vi.fn().mockReturnValue([{ name: 'Auto (system monospace)', value: null }]),
+    getEffectiveBackgroundHex: vi.fn().mockReturnValue('#121212'),
+    getEffectiveForegroundHex: vi.fn().mockReturnValue('#eeeeee'),
+    updateSettings: vi.fn(),
   };
 
   const mockToasterService = {
@@ -183,6 +193,19 @@ describe('WebConsoleFullWindowComponent', () => {
       'WebSocket',
       vi.fn().mockImplementation(function () {
         return mockWebSocketInstance;
+      })
+    );
+
+    // Mock ResizeObserver (JSDOM doesn't implement it)
+    vi.stubGlobal(
+      'ResizeObserver',
+      vi.fn().mockImplementation(function (callback: ResizeObserverCallback) {
+        return {
+          observe: vi.fn(),
+          unobserve: vi.fn(),
+          disconnect: vi.fn(),
+          callback,
+        };
       })
     );
 
@@ -536,6 +559,82 @@ describe('WebConsoleFullWindowComponent', () => {
       await vi.runAllTimersAsync();
 
       expect(component).toBeTruthy();
+    });
+  });
+
+  describe('ResizeObserver', () => {
+    it('should observe the terminal container after opening', async () => {
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+
+      const observer = (component as any).resizeObserver;
+      expect(observer).toBeTruthy();
+      expect(observer.observe).toHaveBeenCalled();
+    });
+
+    it('should re-fit the terminal when the container resizes', async () => {
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+
+      mockFitAddonInstance.fit.mockClear();
+      const resizeObserverCtor = globalThis.ResizeObserver as any;
+      const instance = resizeObserverCtor.mock.results[resizeObserverCtor.mock.results.length - 1].value;
+      instance.callback([{ contentRect: { width: 800, height: 600 } }]);
+      // The fit runs inside requestAnimationFrame, which fake timers also control
+      await vi.runAllTimersAsync();
+
+      expect(mockFitAddonInstance.fit).toHaveBeenCalled();
+    });
+
+    it('should ignore resize entries with zero dimensions', async () => {
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+
+      mockFitAddonInstance.fit.mockClear();
+      const resizeObserverCtor = globalThis.ResizeObserver as any;
+      const instance = resizeObserverCtor.mock.results[resizeObserverCtor.mock.results.length - 1].value;
+      instance.callback([{ contentRect: { width: 0, height: 0 } }]);
+      await vi.runAllTimersAsync();
+
+      expect(mockFitAddonInstance.fit).not.toHaveBeenCalled();
+    });
+
+    it('should disconnect the ResizeObserver on destroy', async () => {
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+
+      const observer = (component as any).resizeObserver;
+      component.ngOnDestroy();
+      expect(observer.disconnect).toHaveBeenCalled();
+      expect((component as any).resizeObserver).toBeNull();
+    });
+  });
+
+  describe('settings panel', () => {
+    it('should be hidden by default', () => {
+      fixture.detectChanges();
+      expect(component.showSettingsPanel()).toBe(false);
+    });
+
+    it('toggleSettingsPanel should flip visibility', () => {
+      component.toggleSettingsPanel();
+      expect(component.showSettingsPanel()).toBe(true);
+      component.toggleSettingsPanel();
+      expect(component.showSettingsPanel()).toBe(false);
+    });
+
+    it('closeSettingsPanel should hide the panel', () => {
+      component.toggleSettingsPanel();
+      component.closeSettingsPanel();
+      expect(component.showSettingsPanel()).toBe(false);
+    });
+
+    it('should render the shared settings panel when toggled on', () => {
+      component.toggleSettingsPanel();
+      fixture.detectChanges();
+
+      const panel = fixture.nativeElement.querySelector('app-terminal-settings-panel');
+      expect(panel).toBeTruthy();
     });
   });
 });

@@ -1,0 +1,63 @@
+// Shared header zoom cluster for the replay floating windows (main, pinned
+// comparison, peek): − / level% / +, each step 10% within 70%…200% (see
+// replay-zoom.ts). Consumed via `@use` from every host component's SCSS so
+// the rules land inside each component's style encapsulation. Compact on
+// purpose — the same 20px hit-area chrome as the header's other actions.
+
+.gns3-replay__zoom {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+.gns3-replay__zoom-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--mat-sys-tertiary);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  &:disabled {
+    color: var(--mat-sys-outline);
+    cursor: default;
+  }
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// The level readout doubles as the reset-to-100% action — Wireshark muscle
+// memory (click the percentage, get the default size back).
+.gns3-replay__zoom-level {
+  min-width: 34px;
+  height: 20px;
+  padding: 0 4px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface);
+  }
+}

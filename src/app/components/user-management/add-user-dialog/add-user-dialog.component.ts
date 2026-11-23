@@ -95,11 +95,11 @@ export class AddUserDialogComponent implements OnInit {
         ),
         password: new UntypedFormControl(null, [
           Validators.required,
-          Validators.minLength(6),
+          Validators.minLength(8),
           Validators.maxLength(100),
         ]),
         confirmPassword: new UntypedFormControl(null, [
-          Validators.minLength(6),
+          Validators.minLength(8),
           Validators.maxLength(100),
           Validators.required,
         ]),
@@ -144,12 +144,19 @@ export class AddUserDialogComponent implements OnInit {
     if (!this.addUserForm.valid) {
       return;
     }
-    const newUser = this.addUserForm.value;
-    const toAdd = Array.from(this.groupsToAdd.values());
+    if (this.groupsToAdd.size === 0) {
+      this.toasterService.error('Please select at least one user group');
+      return;
+    }
+    // The server requires the user to belong to a group at creation time:
+    // the first selected group is sent as user_group_id, the remaining groups
+    // are added as memberships once the user exists.
+    const [primaryGroup, ...additionalGroups] = Array.from(this.groupsToAdd.values());
+    const newUser = { ...this.addUserForm.value, user_group_id: primaryGroup.user_group_id };
     this.userService.add(this.controller, newUser).subscribe({
       next: (user: User) => {
         this.toasterService.success(`User ${user.username} added`);
-        toAdd.forEach((group: Group) => {
+        additionalGroups.forEach((group: Group) => {
           this.groupService.addMemberToGroup(this.controller, group, user).subscribe({
             next: () => {
               this.toasterService.success(`user ${user.username} was added to group ${group.name}`);

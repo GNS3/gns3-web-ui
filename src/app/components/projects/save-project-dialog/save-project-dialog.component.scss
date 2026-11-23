@@ -9,6 +9,14 @@
   width: 100%;
 }
 
+.saving-btn-spinner {
+  display: inline-flex;
+  vertical-align: middle;
+  margin-right: 8px;
+  // Inside the primary raised button the arc must match the on-primary label color.
+  --mdc-circular-progress-active-indicator-color: var(--mat-sys-on-primary);
+}
+
 .project-snackbar {
   background: var(--mat-app-primary-color);
 }

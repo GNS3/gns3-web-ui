@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ProgressDialogComponent } from './progress-dialog.component';
+import { ProgressDialogComponent, ProgressDialogOptions } from './progress-dialog.component';
 
 @Injectable()
 export class ProgressDialogService {
   constructor(private dialog: MatDialog) {}
 
-  public open() {
-    const ref = this.dialog.open(ProgressDialogComponent, {
-      width: '250px',
+  public open(options?: ProgressDialogOptions) {
+    return this.dialog.open(ProgressDialogComponent, {
+      panelClass: ['base-dialog-panel', 'dialog-small-panel'],
+      data: options ?? {},
       autoFocus: false,
-      disableClose: true,
+      // Deliberately closable: the operation runs on the server and cannot be
+      // cancelled, so closing the dialog only hides it ("continue in
+      // background"), it never aborts anything.
     });
-    return ref;
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { UserPreferencesService } from './user-preferences.service';
 
 export interface Settings {
   crash_reports: boolean;
@@ -21,7 +22,13 @@ export class SettingsService {
   private readonly consoleSettings: string = 'console_command';
   private readonly statisticsSettings: string = 'statistics_command';
 
-  constructor() {
+  constructor(private userPreferences: UserPreferencesService) {
+    this.loadFromStorage();
+    this.userPreferences.onExternalUpdate(() => this.loadFromStorage());
+  }
+
+  /** Reads the persisted settings; also re-run after a server-side preferences merge. */
+  private loadFromStorage() {
     if (this.getItem(this.reportsSettings))
       this.settings.crash_reports = this.getItem(this.reportsSettings) === 'true' ? true : false;
 
@@ -70,11 +77,11 @@ export class SettingsService {
   }
 
   removeItem(key: string) {
-    localStorage.removeItem(key);
+    this.userPreferences.removeItem(key);
   }
 
   setItem(key: string, item: string) {
-    localStorage.setItem(key, item);
+    this.userPreferences.setItem(key, item);
   }
 
   getItem(item: string) {

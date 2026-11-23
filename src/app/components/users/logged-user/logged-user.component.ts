@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ControllerService } from '@services/controller.service';
 import { UserService } from '@services/user.service';
 import { ToasterService } from '@services/toaster.service';
 import { User } from '@models/users/user';
+import { UserQuotaUsage } from '@models/users/user-quota-usage';
 import { Controller } from '@models/controller';
 import { ChangeUserPasswordComponent } from '@components/user-management/user-detail/change-user-password/change-user-password.component';
 
@@ -19,11 +21,12 @@ export interface LoggedUserDialogData {
   selector: 'app-logged-user',
   templateUrl: './logged-user.component.html',
   styleUrl: './logged-user.component.scss',
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatTooltipModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoggedUserComponent implements OnInit {
   readonly user = signal<User | undefined>(undefined);
+  readonly quotas = signal<UserQuotaUsage | undefined>(undefined);
   controller: Controller;
 
   constructor(
@@ -41,7 +44,29 @@ export class LoggedUserComponent implements OnInit {
       this.userService.getInformationAboutLoggedUser(controller).subscribe((response: any) => {
         this.user.set(response);
       });
+      this.userService.getQuotas(controller).subscribe({
+        next: (quotas: UserQuotaUsage) => {
+          this.quotas.set(quotas);
+        },
+        // Pre-quota servers have no /me/quotas endpoint; the section stays hidden.
+        error: () => {},
+      });
     });
+  }
+
+  quotaText(current: number, limit: number | null): string {
+    return limit === null ? `${current} · no limit` : `${current} / ${limit}`;
+  }
+
+  quotaPercent(current: number, limit: number | null): number {
+    if (limit === null || limit <= 0) {
+      return current > 0 ? 100 : 0;
+    }
+    return Math.min(100, Math.round((current / limit) * 100));
+  }
+
+  isOverQuota(current: number, limit: number | null): boolean {
+    return limit !== null && current > limit;
   }
 
   close(): void {

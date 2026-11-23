@@ -36,6 +36,8 @@ export class NodeDraggedComponent implements OnInit, OnDestroy {
 
   onNodeDragged(draggedEvent: DraggedDataEvent<MapNode>) {
     const node = this.nodesDataSource.get(draggedEvent.datum.id);
+    const previousX = node.x;
+    const previousY = node.y;
     node.x += draggedEvent.dx;
     node.y += draggedEvent.dy;
 
@@ -51,6 +53,15 @@ export class NodeDraggedComponent implements OnInit, OnDestroy {
           this.mapChangeDetectorRef.detectChanges();
         },
         error: (err) => {
+          // The server rejected the move (e.g. RBAC: no Node.Modify): revert
+          // the optimistic position so the canvas keeps showing the accepted
+          // state instead of a ghost change that vanishes on refresh.
+          node.x = previousX;
+          node.y = previousY;
+          this.nodesDataSource.update(node);
+          // Un-gated redraw: the restored signature equals the last rendered
+          // one, so the gated redraw would skip and leave the DOM at the cursor.
+          this.mapChangeDetectorRef.detectChanges();
           const message = err.error?.message || err.message || 'Failed to update node position';
           this.toasterService.error(message);
           this.cdr.markForCheck();

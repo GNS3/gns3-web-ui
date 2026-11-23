@@ -21,6 +21,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ResizableModule, ResizeEvent } from 'angular-resizable-element';
+import { FloatingWindowResizeHandlesComponent } from '../floating-window/floating-window-resize-handles.component';
+import { clampRect, clampWindowSize } from '../floating-window/floating-window-geometry';
 import { Subscription } from 'rxjs';
 import { LinksDataSource } from '../../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
@@ -33,6 +35,7 @@ import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { MapSettingsService } from '@services/mapsettings.service';
+import { UserPreferencesService } from '@services/user-preferences.service';
 import { MarkerLegendComponent } from '../project-map/marker-legend/marker-legend.component';
 
 @Component({
@@ -56,6 +59,7 @@ import { MarkerLegendComponent } from '../project-map/marker-legend/marker-legen
     MatMenuModule,
     MatCheckboxModule,
     ResizableModule,
+    FloatingWindowResizeHandlesComponent,
     MarkerLegendComponent,
   ],
 })
@@ -67,6 +71,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   private toasterService = inject(ToasterService);
   private nodeConsoleService = inject(NodeConsoleService);
   private mapSettingsService = inject(MapSettingsService);
+  private userPreferences = inject(UserPreferencesService);
   private cd = inject(ChangeDetectorRef);
   private document = inject(DOCUMENT);
 
@@ -169,11 +174,11 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const leftPosition = localStorage.getItem('leftPosition');
-    const rightPosition = localStorage.getItem('rightPosition');
-    const topPosition = localStorage.getItem('topPosition');
-    const widthOfWidget = localStorage.getItem('widthOfWidget');
-    const heightOfWidget = localStorage.getItem('heightOfWidget');
+    const leftPosition = this.userPreferences.getItem('leftPosition');
+    const rightPosition = this.userPreferences.getItem('rightPosition');
+    const topPosition = this.userPreferences.getItem('topPosition');
+    const widthOfWidget = this.userPreferences.getItem('widthOfWidget');
+    const heightOfWidget = this.userPreferences.getItem('heightOfWidget');
 
     if (!topPosition) {
       const compactDensity = this.document.documentElement.dataset['density'] === 'compact';
@@ -237,11 +242,11 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         height: `${height}px`,
       };
 
-      localStorage.setItem('leftPosition', left.toString());
-      localStorage.removeItem('rightPosition');
-      localStorage.setItem('topPosition', top.toString());
-      localStorage.setItem('widthOfWidget', width.toString());
-      localStorage.setItem('heightOfWidget', height.toString());
+      this.userPreferences.setItem('leftPosition', left.toString());
+      this.userPreferences.removeItem('rightPosition');
+      this.userPreferences.setItem('topPosition', top.toString());
+      this.userPreferences.setItem('widthOfWidget', width.toString());
+      this.userPreferences.setItem('heightOfWidget', height.toString());
     } else {
       const right = this.clamp(Number(this.style['right'].split('px')[0]) - x, 0, viewportWidth - width);
       this.style = {
@@ -252,11 +257,11 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         height: `${height}px`,
       };
 
-      localStorage.setItem('rightPosition', right.toString());
-      localStorage.removeItem('leftPosition');
-      localStorage.setItem('topPosition', top.toString());
-      localStorage.setItem('widthOfWidget', width.toString());
-      localStorage.setItem('heightOfWidget', height.toString());
+      this.userPreferences.setItem('rightPosition', right.toString());
+      this.userPreferences.removeItem('leftPosition');
+      this.userPreferences.setItem('topPosition', top.toString());
+      this.userPreferences.setItem('widthOfWidget', width.toString());
+      this.userPreferences.setItem('heightOfWidget', height.toString());
     }
   }
 
@@ -264,31 +269,78 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     return Math.min(Math.max(value, minimum), Math.max(minimum, maximum));
   }
 
+  private static readonly MIN_WIDTH = 400;
+  private static readonly MIN_HEIGHT = 420;
+
   validate(event: ResizeEvent): boolean {
     if (
       event.rectangle.width &&
       event.rectangle.height &&
-      (event.rectangle.width < 400 || event.rectangle.height < 420)
+      (event.rectangle.width < TopologySummaryComponent.MIN_WIDTH ||
+        event.rectangle.height < TopologySummaryComponent.MIN_HEIGHT)
     ) {
       return false;
     }
     return true;
   }
 
+  /**
+   * LIVE follow (floating-window standard): non-ghost mode applies nothing by
+   * itself — the validated rect is mirrored into the widget style on every
+   * move, clamped through the shared kit helpers, so the widget tracks the
+   * pointer instead of a ghost teleporting on release.
+   */
+  onResizing(event: ResizeEvent): void {
+    this.applyResizedRect(event.rectangle);
+    this.cd.markForCheck();
+  }
+
   onResizeEnd(event: ResizeEvent): void {
+    // Consume the FULL rectangle — left/top included (the standard's
+    // jump-on-release guard).
+    const rect = this.applyResizedRect(event.rectangle);
+
+    this.userPreferences.setItem('leftPosition', rect.left.toString());
+    this.userPreferences.removeItem('rightPosition');
+    this.userPreferences.setItem('topPosition', rect.top.toString());
+    this.userPreferences.setItem('widthOfWidget', rect.width.toString());
+    this.userPreferences.setItem('heightOfWidget', rect.height.toString());
+    this.cd.markForCheck();
+  }
+
+  /** Clamp a resize gesture's rectangle and write it into the widget style. */
+  private applyResizedRect(rectangle: { left?: number; top?: number; width?: number; height?: number }): {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } {
+    const viewport = { width: window.innerWidth, height: window.innerHeight };
+    const { width, height } = clampWindowSize(
+      rectangle.width ?? Number(this.style['width']?.split('px')[0]) ?? TopologySummaryComponent.MIN_WIDTH,
+      rectangle.height ?? Number(this.style['height']?.split('px')[0]) ?? TopologySummaryComponent.MIN_HEIGHT,
+      viewport,
+      TopologySummaryComponent.MIN_WIDTH,
+      TopologySummaryComponent.MIN_HEIGHT
+    );
+    const clamped = clampRect(
+      {
+        left: rectangle.left ?? (Number(this.style['left']?.split('px')[0]) || 0),
+        top: rectangle.top ?? (Number(this.style['top']?.split('px')[0]) || 0),
+        width,
+        height,
+      },
+      viewport,
+      0
+    );
     this.style = {
       position: 'fixed',
-      left: `${event.rectangle.left}px`,
-      top: `${event.rectangle.top}px`,
-      width: `${event.rectangle.width}px`,
-      height: `${event.rectangle.height}px`,
+      left: `${clamped.left}px`,
+      top: `${clamped.top}px`,
+      width: `${clamped.width}px`,
+      height: `${clamped.height}px`,
     };
-
-    localStorage.setItem('leftPosition', event.rectangle.left.toString());
-    localStorage.removeItem('rightPosition');
-    localStorage.setItem('topPosition', event.rectangle.top.toString());
-    localStorage.setItem('widthOfWidget', event.rectangle.width.toString());
-    localStorage.setItem('heightOfWidget', event.rectangle.height.toString());
+    return clamped;
   }
 
   onTabSelectionChange(index: number) {

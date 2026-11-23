@@ -103,15 +103,32 @@
   cursor: default;
   outline: none;
 
-  &:hover {
+  // Uncolored rows keep the standard elevation hover.
+  // `:not(--selected)` keeps selection's primary-container intact under the
+  // cursor (the rule below no longer has to out-rank :hover).
+  &:hover:not(.gns3-replay__row--selected) {
     background: var(--mat-sys-surface-container);
+  }
+
+  // Rows carrying their own Wireshark colors KEEP that background on hover: a
+  // theme-surface replacement turned dark packets (black bg / near-white
+  // text) into unreadable ink. The feedback is a same-hue scrim instead —
+  // `currentColor` makes it work for dark AND light packets alike.
+  &--colored:hover:not(.gns3-replay__row--selected) {
+    background: var(--pkt-bg, transparent);
+    background-image: linear-gradient(
+      color-mix(in srgb, currentColor 12%, transparent),
+      color-mix(in srgb, currentColor 12%, transparent)
+    );
   }
 
   &:focus-visible {
     box-shadow: inset 0 0 0 1px var(--mat-sys-primary);
   }
 
-  // Declared AFTER :hover on purpose — selection wins the tie.
+  // Selection owns the row colors outright — the hover rule above is scoped
+  // with :not(...--selected), so a colored packet under the cursor keeps its
+  // selected contrast while a hovered unselected one keeps its own colors.
   &--selected {
     background: var(--mat-sys-primary-container);
     color: var(--mat-sys-on-primary-container);
