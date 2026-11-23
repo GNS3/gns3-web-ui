@@ -45,7 +45,6 @@ export type DirectoryType = 'active_directory' | 'openldap' | 'custom';
 export interface GroupMappingRow {
   directoryGroup: string;
   targetGroup: string;
-  isSuperadmin?: boolean;
 }
 
 export function isValidHostOrIp(value: string | null | undefined): boolean {
@@ -123,7 +122,6 @@ export const DEFAULT_LDAP_SETTINGS: LdapSection = {
   group_search_base: null,
   group_search_filter: '(&(objectClass=group)(member={user_dn}))',
   group_mapping: {},
-  superadmin_groups: [],
   default_group: 'Users',
   start_tls: false,
   verify_cert: true,
@@ -178,7 +176,7 @@ export class DirectoryManagementComponent implements OnInit {
   controller: Controller | undefined;
   availableGroups: Group[] = [];
   groupMappings: GroupMappingRow[] = [];
-  displayedMappingColumns: string[] = ['directoryGroup', 'targetGroup', 'isSuperadmin', 'actions'];
+  displayedMappingColumns: string[] = ['directoryGroup', 'targetGroup', 'actions'];
 
   // Host and port separation for protocol toggle
   serverHost = 'localhost';
@@ -319,11 +317,9 @@ export class DirectoryManagementComponent implements OnInit {
     this.bindPassword = '';
     this.passwordChanged = false;
 
-    const superadminSet = new Set((this.ldapSettings.superadmin_groups || []).map((s) => s.trim().toLowerCase()));
     this.groupMappings = Object.entries(this.ldapSettings.group_mapping || {}).map(([directoryGroup, targetGroup]) => ({
       directoryGroup,
       targetGroup,
-      isSuperadmin: superadminSet.has(directoryGroup.trim().toLowerCase()),
     }));
 
     if (!this.ldapSettings.default_group) {
@@ -476,7 +472,6 @@ export class DirectoryManagementComponent implements OnInit {
       {
         directoryGroup: '',
         targetGroup: defaultTarget,
-        isSuperadmin: false,
       },
     ];
     this.cd.markForCheck();
@@ -587,14 +582,10 @@ export class DirectoryManagementComponent implements OnInit {
 
   buildLdapPayload(): Partial<LdapSection> {
     const mapping: Record<string, string> = {};
-    const superadminGroups: string[] = [];
     for (const row of this.groupMappings) {
       const key = row.directoryGroup.trim();
       if (key && row.targetGroup) {
         mapping[key] = row.targetGroup;
-        if (row.isSuperadmin) {
-          superadminGroups.push(key);
-        }
       }
     }
 
@@ -613,7 +604,6 @@ export class DirectoryManagementComponent implements OnInit {
       group_search_base: this.ldapSettings.base_dn.trim(),
       group_search_filter: this.ldapSettings.group_search_filter,
       group_mapping: mapping,
-      superadmin_groups: superadminGroups,
       default_group: this.ldapSettings.default_group || 'Users',
       start_tls: this.ldapSettings.start_tls,
       verify_cert: this.ldapSettings.verify_cert,

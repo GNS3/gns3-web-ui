@@ -91,7 +91,6 @@ describe('DirectoryManagementComponent', () => {
       'Domain Admins': 'Administrators',
       'Domain Users': 'Users',
     },
-    superadmin_groups: ['Domain Admins'],
     default_group: 'Users',
     start_tls: false,
     verify_cert: true,
@@ -353,8 +352,8 @@ describe('DirectoryManagementComponent', () => {
   describe('Group Mapping Table', () => {
     it('should parse loaded group_mapping into table rows', () => {
       expect(component.groupMappings).toEqual([
-        { directoryGroup: 'Domain Admins', targetGroup: 'Administrators', isSuperadmin: true },
-        { directoryGroup: 'Domain Users', targetGroup: 'Users', isSuperadmin: false },
+        { directoryGroup: 'Domain Admins', targetGroup: 'Administrators' },
+        { directoryGroup: 'Domain Users', targetGroup: 'Users' },
       ]);
     });
 
@@ -364,7 +363,6 @@ describe('DirectoryManagementComponent', () => {
       expect(component.groupMappings[2]).toEqual({
         directoryGroup: '',
         targetGroup: 'Administrators',
-        isSuperadmin: false,
       });
     });
 
@@ -376,9 +374,9 @@ describe('DirectoryManagementComponent', () => {
 
     it('should package group mappings into JSON object map on buildLdapPayload', () => {
       component.groupMappings = [
-        { directoryGroup: 'Domain Admins', targetGroup: 'Administrators', isSuperadmin: true },
-        { directoryGroup: '  ', targetGroup: 'Users', isSuperadmin: false },
-        { directoryGroup: 'CN=Domain Users,CN=Users,DC=example,DC=com', targetGroup: 'Users', isSuperadmin: false },
+        { directoryGroup: 'Domain Admins', targetGroup: 'Administrators' },
+        { directoryGroup: '  ', targetGroup: 'Users' },
+        { directoryGroup: 'CN=Domain Users,CN=Users,DC=example,DC=com', targetGroup: 'Users' },
       ];
 
       const payload = component.buildLdapPayload();
@@ -386,7 +384,6 @@ describe('DirectoryManagementComponent', () => {
         'Domain Admins': 'Administrators',
         'CN=Domain Users,CN=Users,DC=example,DC=com': 'Users',
       });
-      expect(payload.superadmin_groups).toEqual(['Domain Admins']);
     });
   });
 

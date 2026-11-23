@@ -109,7 +109,6 @@ export interface LdapSection {
   group_search_base: string | null;
   group_search_filter: string;
   group_mapping: Record<string, string>;
-  superadmin_groups?: string[];
   default_group: string;
   start_tls: boolean;
   verify_cert: boolean;
