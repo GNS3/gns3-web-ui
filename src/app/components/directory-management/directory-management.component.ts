@@ -357,22 +357,6 @@ export class DirectoryManagementComponent implements OnInit {
     return this.isHostValid() && this.isPortValid() && this.isTimeoutValid();
   }
 
-  onToggleEnabled(): void {
-    this.save(true);
-  }
-
-  onFieldBlur(): void {
-    if (this.isFormValid() && !this.isLoading() && !this.isSaving()) {
-      this.save(true);
-    }
-  }
-
-  onFieldChange(): void {
-    if (this.isFormValid() && !this.isLoading() && !this.isSaving()) {
-      this.save(true);
-    }
-  }
-
   detectDirectoryType(settings: LdapSection): DirectoryType {
     const filter = settings.user_search_filter || '';
     const userAttr = settings.user_attr_username || '';
@@ -645,7 +629,7 @@ export class DirectoryManagementComponent implements OnInit {
     return payload;
   }
 
-  save(isAutoSave = false): void {
+  save(): void {
     if (!this.controller || !this.isServerSupported() || !this.isFormValid() || this.isSaving()) {
       return;
     }
@@ -655,14 +639,7 @@ export class DirectoryManagementComponent implements OnInit {
       next: (res) => {
         this.isSaving.set(false);
         this.toasterService.success('Directory settings saved successfully');
-        if (!isAutoSave) {
-          this.initForm(res.LDAP);
-        } else {
-          // Keep current in-memory fields intact during auto-save; update initialSettings to track saved state
-          if (res.LDAP) {
-            this.initialSettings = JSON.parse(JSON.stringify(res.LDAP));
-          }
-        }
+        this.initForm(res.LDAP);
         this.cd.markForCheck();
       },
       error: (err) => {

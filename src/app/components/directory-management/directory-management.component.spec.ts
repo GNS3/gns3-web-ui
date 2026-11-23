@@ -493,14 +493,11 @@ describe('DirectoryManagementComponent', () => {
       expect(mockToasterService.info).toHaveBeenCalledWith('Changes discarded');
     });
 
-    it('should keep typed password and passwordChanged flag intact on auto-save', () => {
-      component.bindPassword = 'uncommitted_typed_password';
-      component.passwordChanged = true;
+    it('should save settings and display success toast on save()', () => {
+      component.serverHost = 'dc.example.com';
+      component.save();
 
-      component.save(true);
-
-      expect(component.bindPassword).toBe('uncommitted_typed_password');
-      expect(component.passwordChanged).toBe(true);
+      expect(mockServerSettingsService.updateServerSettings).toHaveBeenCalled();
       expect(mockToasterService.success).toHaveBeenCalledWith('Directory settings saved successfully');
     });
   });
@@ -654,23 +651,20 @@ describe('DirectoryManagementComponent', () => {
     });
   });
 
-  describe('Auto-Save & Fallback Flexibility', () => {
-    it('should auto-save on onFieldBlur when form is valid', () => {
-      const saveSpy = vi.spyOn(component, 'save');
-      component.serverHost = 'dc.example.com';
-      component.serverPort = 636;
-      component.ldapSettings.timeout = 10;
-      component.onFieldBlur();
-      expect(saveSpy).toHaveBeenCalledWith(true);
-    });
+  describe('Manual Save & Fallback Flexibility', () => {
+    it('should only persist changes when save() is explicitly called', () => {
+      const saveSpy = vi.spyOn(mockServerSettingsService, 'updateServerSettings');
+      saveSpy.mockClear();
 
-    it('should auto-save on onFieldChange when form is valid', () => {
-      const saveSpy = vi.spyOn(component, 'save');
       component.serverHost = 'dc.example.com';
       component.serverPort = 636;
       component.ldapSettings.timeout = 10;
-      component.onFieldChange();
-      expect(saveSpy).toHaveBeenCalledWith(true);
+
+      // Modifying fields without calling save() does not trigger API updates
+      expect(saveSpy).not.toHaveBeenCalled();
+
+      component.save();
+      expect(saveSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should default default_group to Users when not configured or empty', () => {
@@ -685,13 +679,6 @@ describe('DirectoryManagementComponent', () => {
       expect(component.ldapSettings.default_group).toBe('Administrators');
       const payload = component.buildLdapPayload();
       expect(payload.default_group).toBe('Administrators');
-    });
-
-    it('should auto-save when onToggleEnabled is called', () => {
-      const saveSpy = vi.spyOn(component, 'save');
-      component.ldapSettings.enabled = false;
-      component.onToggleEnabled();
-      expect(saveSpy).toHaveBeenCalledWith(true);
     });
 
     it('should allow saving when ldapSettings.enabled is false even if host is invalid', () => {

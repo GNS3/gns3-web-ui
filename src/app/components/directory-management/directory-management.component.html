@@ -15,7 +15,7 @@
       </div>
       @if (isServerSupported()) {
         <div class="directory-management__header-actions">
-          <mat-slide-toggle [(ngModel)]="ldapSettings.enabled" (change)="onToggleEnabled()">
+          <mat-slide-toggle [(ngModel)]="ldapSettings.enabled">
             Enable Directory Authentication
           </mat-slide-toggle>
           <button
@@ -132,7 +132,7 @@
         </div>
 
         <div class="directory-management__protocol-row">
-          <mat-slide-toggle [(ngModel)]="useLdaps" (change)="onProtocolToggle(); onFieldChange()">
+          <mat-slide-toggle [(ngModel)]="useLdaps" (change)="onProtocolToggle()">
             Use LDAPS (SSL/TLS)
           </mat-slide-toggle>
           <mat-icon
@@ -152,7 +152,6 @@
               matInput
               [(ngModel)]="serverHost"
               [errorStateMatcher]="hostErrorStateMatcher"
-              (blur)="onFieldBlur()"
               placeholder="dc1.example.com"
               required
             />
@@ -170,7 +169,6 @@
               min="1"
               max="65535"
               [(ngModel)]="serverPort"
-              (blur)="onFieldBlur()"
               placeholder="636"
               required
             />
@@ -185,7 +183,6 @@
             <input
               matInput
               [(ngModel)]="ldapSettings.bind_dn"
-              (blur)="onFieldBlur()"
               placeholder="svc-gns3@example.com"
             />
             <mat-hint
@@ -200,7 +197,6 @@
               [type]="hidePassword ? 'password' : 'text'"
               [(ngModel)]="bindPassword"
               (ngModelChange)="onPasswordInput()"
-              (blur)="onFieldBlur()"
               placeholder="••••••••"
             />
             <button
@@ -219,7 +215,7 @@
         <div class="directory-management__checkbox-group">
           <label class="directory-management__section-label">Security &amp; Fallback</label>
           <div class="directory-management__checkbox-item">
-            <mat-checkbox [(ngModel)]="ldapSettings.verify_cert" (change)="onFieldChange()">
+            <mat-checkbox [(ngModel)]="ldapSettings.verify_cert">
               Verify Certificate
             </mat-checkbox>
             <mat-icon
@@ -232,7 +228,7 @@
             >
           </div>
           <div class="directory-management__checkbox-item">
-            <mat-checkbox [(ngModel)]="ldapSettings.fallback_to_local" (change)="onFieldChange()">
+            <mat-checkbox [(ngModel)]="ldapSettings.fallback_to_local">
               Fallback to Local Database
             </mat-checkbox>
             <mat-icon
@@ -245,7 +241,7 @@
             >
           </div>
           <div class="directory-management__checkbox-item">
-            <mat-checkbox [(ngModel)]="ldapSettings.start_tls" (change)="onFieldChange()">
+            <mat-checkbox [(ngModel)]="ldapSettings.start_tls">
               Use StartTLS (for standard port 389)
             </mat-checkbox>
             <mat-icon
@@ -274,7 +270,7 @@
           <label class="directory-management__preset-label">Directory Type</label>
           <mat-radio-group
             [(ngModel)]="directoryType"
-            (change)="onDirectoryTypeChange(); onFieldChange()"
+            (change)="onDirectoryTypeChange()"
             class="directory-management__preset-group"
           >
             <mat-radio-button value="active_directory">Active Directory</mat-radio-button>
@@ -286,7 +282,7 @@
         <div class="directory-management__form-grid">
           <mat-form-field appearance="outline" class="directory-management__full-width" subscriptSizing="dynamic">
             <mat-label>Base DN</mat-label>
-            <input matInput [(ngModel)]="ldapSettings.base_dn" (blur)="onFieldBlur()" placeholder="DC=example,DC=com" />
+            <input matInput [(ngModel)]="ldapSettings.base_dn" placeholder="DC=example,DC=com" />
             <mat-hint>Base Distinguished Name for user and group searches (e.g. DC=example,DC=com)</mat-hint>
           </mat-form-field>
         </div>
@@ -295,10 +291,7 @@
           <div class="directory-management__form-grid">
             <mat-form-field appearance="outline" class="directory-management__full-width" subscriptSizing="dynamic">
               <mat-label>Canonical Username Format</mat-label>
-              <mat-select
-                [(ngModel)]="ldapSettings.user_attr_username"
-                (selectionChange)="onFieldChange()"
-              >
+              <mat-select [(ngModel)]="ldapSettings.user_attr_username">
                 @if (directoryType === 'active_directory') {
                   <mat-option value="sAMAccountName">sAMAccountName (Short username, e.g. user)</mat-option>
                   <mat-option value="userPrincipalName">userPrincipalName (UPN, e.g. user@domain.com)</mat-option>
@@ -318,7 +311,7 @@
           <div class="directory-management__checkbox-group">
             <label class="directory-management__section-label">Allowed Login Formats</label>
             <div class="directory-management__checkbox-item">
-              <mat-checkbox [(ngModel)]="allowShortUsername" (change)="onFieldChange()">
+              <mat-checkbox [(ngModel)]="allowShortUsername">
                 Allow short username ({{ directoryType === 'active_directory' ? 'sAMAccountName' : 'uid' }})
               </mat-checkbox>
               <mat-icon
@@ -332,7 +325,7 @@
             </div>
             @if (directoryType === 'active_directory') {
               <div class="directory-management__checkbox-item">
-                <mat-checkbox [(ngModel)]="allowUpn" (change)="onFieldChange()">
+                <mat-checkbox [(ngModel)]="allowUpn">
                   Allow User Principal Name (UPN, e.g. user&#64;domain.com)
                 </mat-checkbox>
                 <mat-icon
@@ -346,7 +339,7 @@
               </div>
             }
             <div class="directory-management__checkbox-item">
-              <mat-checkbox [(ngModel)]="allowEmail" (change)="onFieldChange()">
+              <mat-checkbox [(ngModel)]="allowEmail">
                 Allow Email address (e.g. user&#64;company.com)
               </mat-checkbox>
               <mat-icon
@@ -389,7 +382,6 @@
                     min="1"
                     max="120"
                     [(ngModel)]="ldapSettings.timeout"
-                    (blur)="onFieldBlur()"
                   />
                   <mat-hint>Timeout in seconds for queries (1-120s)</mat-hint>
                   @if (!isTimeoutValid()) {
@@ -402,7 +394,6 @@
                   <input
                     matInput
                     [(ngModel)]="ldapSettings.ca_cert_file"
-                    (blur)="onFieldBlur()"
                     placeholder="/etc/ssl/certs/custom-ca.pem"
                   />
                   <mat-hint>Path on server to custom CA certificate for TLS verification</mat-hint>
@@ -416,7 +407,6 @@
                     <input
                       matInput
                       [(ngModel)]="ldapSettings.user_search_filter"
-                      (blur)="onFieldBlur()"
                       placeholder="(&(objectClass=person)(|(uid={username})(sAMAccountName={username})))"
                     />
                     <mat-hint
@@ -429,7 +419,6 @@
                     <input
                       matInput
                       [(ngModel)]="ldapSettings.user_attr_username"
-                      (blur)="onFieldBlur()"
                       placeholder="sAMAccountName"
                     />
                   </mat-form-field>
@@ -439,7 +428,6 @@
                     <input
                       matInput
                       [(ngModel)]="ldapSettings.user_attr_email"
-                      (blur)="onFieldBlur()"
                       placeholder="mail"
                     />
                   </mat-form-field>
@@ -449,7 +437,6 @@
                     <input
                       matInput
                       [(ngModel)]="ldapSettings.user_attr_fullname"
-                      (blur)="onFieldBlur()"
                       placeholder="displayName"
                     />
                   </mat-form-field>
@@ -459,7 +446,6 @@
                     <input
                       matInput
                       [(ngModel)]="ldapSettings.group_search_filter"
-                      (blur)="onFieldBlur()"
                       placeholder="(&(objectClass=group)(member={user_dn}))"
                     />
                     <mat-hint
@@ -495,7 +481,7 @@
             <mat-label>Default Fallback Group</mat-label>
             <mat-select
               [value]="ldapSettings.default_group || 'Users'"
-              (selectionChange)="onDefaultGroupSelect($event); onFieldChange()"
+              (selectionChange)="onDefaultGroupSelect($event)"
             >
               @for (grp of availableGroups; track grp.user_group_id || grp.name) {
                 <mat-option [value]="grp.name">{{ grp.name }}</mat-option>
@@ -522,7 +508,6 @@
                   <input
                     matInput
                     [(ngModel)]="element.directoryGroup"
-                    (blur)="onFieldBlur()"
                     placeholder="e.g. Domain Admins or CN=Domain Users,CN=Users,DC=example,DC=com"
                     required
                   />
@@ -537,7 +522,7 @@
                 <mat-form-field appearance="outline" class="directory-management__table-input" subscriptSizing="dynamic">
                   <mat-select
                     [value]="element.targetGroup"
-                    (selectionChange)="onTargetGroupSelect($event, element); onFieldChange()"
+                    (selectionChange)="onTargetGroupSelect($event, element)"
                   >
                     @for (grp of availableGroups; track grp.user_group_id || grp.name) {
                       <mat-option [value]="grp.name">{{ grp.name }}</mat-option>
@@ -558,7 +543,6 @@
               <td mat-cell *matCellDef="let element" class="directory-management__table-superadmin-col">
                 <mat-checkbox
                   [(ngModel)]="element.isSuperadmin"
-                  (change)="onFieldChange()"
                   matTooltip="Grants full controller superadministrator privileges to members of this group"
                   aria-label="Super Administrator privilege"
                 >
@@ -574,7 +558,7 @@
                   mat-icon-button
                   color="warn"
                   type="button"
-                  (click)="removeGroupMapping(i); onFieldChange()"
+                  (click)="removeGroupMapping(i)"
                   aria-label="Remove mapping"
                 >
                   <mat-icon>delete</mat-icon>
