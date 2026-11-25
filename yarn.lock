@@ -154,12 +154,20 @@
     "@angular-devkit/core" "21.2.19"
     rxjs "7.8.2"
 
-"@angular-devkit/architect@0.2102.27", "@angular-devkit/architect@>= 0.2100.0 < 0.2200.0":
+"@angular-devkit/architect@0.2102.27":
   version "0.2102.27"
   resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.2102.27.tgz#c3d97e3ce5c3e1e043c1350827229dad217abb08"
   integrity sha512-nMxXG8j9Pb+wYdn4WuNdf1xC04Nk8EfRaA1CH9PAvbmk3S07tvymrWpoGjUf+8V0pMQk5vubGQLG4pYhsxxLNQ==
   dependencies:
     "@angular-devkit/core" "21.2.27"
+    rxjs "7.8.2"
+
+"@angular-devkit/architect@>= 0.2200.0 < 0.2300.0":
+  version "0.2202.7"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.2202.7.tgz#f314bcf12f31f9475053dd34f74b70f0d2c8f5a2"
+  integrity sha512-l8apKEojW8WB5pqhK+BkO7+DZSCLNpvP+JBdBzDYagrtkKbtr1AKPuAE/2sVvlBE8SXyNCp3CX9gTtkk2q40mw==
+  dependencies:
+    "@angular-devkit/core" "22.2.7"
     rxjs "7.8.2"
 
 "@angular-devkit/build-angular@^21.0.0":
@@ -244,7 +252,7 @@
     rxjs "7.8.2"
     source-map "0.7.6"
 
-"@angular-devkit/core@21.2.27", "@angular-devkit/core@>= 21.0.0 < 22.0.0":
+"@angular-devkit/core@21.2.27":
   version "21.2.27"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-21.2.27.tgz#191ca549c844f576d842a7a0b2bc4ab16093255a"
   integrity sha512-phny+RUMoyntTPW/F0Mx9vUlftptyePX1aPsd4s53h227qs/m66NMPO+0MzQpi2YGyHfgqv905cB6X4h096y7w==
@@ -256,10 +264,22 @@
     rxjs "7.8.2"
     source-map "0.7.6"
 
-"@angular-devkit/core@22.2.6", "@angular-devkit/core@>= 22.0.0 < 23.0.0":
+"@angular-devkit/core@22.2.6":
   version "22.2.6"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-22.2.6.tgz#ca6342bf505001033f3c2f2bfcd47bf0829a734d"
   integrity sha512-OtFUe9fLXpHsqO6gCSbTWIaTO64MCrESRVigs9SAW4EzIagCAhgB0Y8GflTjmKGLvJjilBFJFd0JSIzNxLyifA==
+  dependencies:
+    ajv "8.20.0"
+    ajv-formats "3.0.1"
+    jsonc-parser "3.3.1"
+    picomatch "4.0.7"
+    rxjs "7.8.2"
+    source-map "0.8.0"
+
+"@angular-devkit/core@22.2.7", "@angular-devkit/core@>= 22.0.0 < 23.0.0":
+  version "22.2.7"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-22.2.7.tgz#a3a0388b083a660ed0b2f46ced10f803fcc4c4e3"
+  integrity sha512-cchZAMsV4d76RDZBlWzPhYxM/Hb6bmq71oUngdrwehMbBbdQu3W9C2tGlvxuPxbRKru9ZlUa14YVXQ0+QnhFtw==
   dependencies:
     ajv "8.20.0"
     ajv-formats "3.0.1"
@@ -290,13 +310,13 @@
     ora "9.4.1"
     rxjs "7.8.2"
 
-"@angular-eslint/builder@^21.3.1":
-  version "21.4.0"
-  resolved "https://registry.yarnpkg.com/@angular-eslint/builder/-/builder-21.4.0.tgz#56eb8f44b46555c0d27c17156fe311d206bb13de"
-  integrity sha512-3kgGmrVaCYbLtDjC8g4BmMBbdz4thsOB8/NYly8JtXM8EuDZEk5Pz6VTRpJR02ARprwayraTTmhyvq6OGBlQ9w==
+"@angular-eslint/builder@^22.6.0":
+  version "22.6.0"
+  resolved "https://registry.yarnpkg.com/@angular-eslint/builder/-/builder-22.6.0.tgz#7e37ad6de4f993b8cd552a315dabb04a596d3ca4"
+  integrity sha512-Zn9yjLtUYKd9HF5UZXKqLKuvdYFejVuTJHQ0gFt4pjWDRvb16Lgc8EzeGyYTsc9MNnyFAmHeDTs2dtlFITSDBg==
   dependencies:
-    "@angular-devkit/architect" ">= 0.2100.0 < 0.2200.0"
-    "@angular-devkit/core" ">= 21.0.0 < 22.0.0"
+    "@angular-devkit/architect" ">= 0.2200.0 < 0.2300.0"
+    "@angular-devkit/core" ">= 22.0.0 < 23.0.0"
 
 "@angular-eslint/bundled-angular-compiler@21.4.0":
   version "21.4.0"
