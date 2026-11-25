@@ -347,6 +347,34 @@ describe('DirectoryManagementComponent', () => {
       component.ldapSettings.user_search_filter = '(&(customClass=account)(customUser={username}))';
       expect(component.generatedFilter).toBe('(&(customClass=account)(customUser={username}))');
     });
+
+    it('should preserve custom directoryType across save() and not revert to active_directory', () => {
+      component.directoryType = 'custom';
+      component.ldapSettings.user_search_filter = '(&(objectClass=posixAccount)(uid={username}))';
+
+      component.save();
+
+      expect(mockServerSettingsService.updateServerSettings).toHaveBeenCalled();
+      expect(component.directoryType).toBe('custom');
+    });
+
+    it('should preserve openldap directoryType across save() and not revert to active_directory', () => {
+      component.directoryType = 'openldap';
+      component.onDirectoryTypeChange();
+
+      component.save();
+
+      expect(mockServerSettingsService.updateServerSettings).toHaveBeenCalled();
+      expect(component.directoryType).toBe('openldap');
+    });
+
+    it('should detect custom mode when user_search_filter does not match standard presets', () => {
+      const customSettings = {
+        ...mockLdapSettings,
+        user_search_filter: '(&(objectClass=customAccount)(sAMAccountName={username}))',
+      };
+      expect(component.detectDirectoryType(customSettings)).toBe('custom');
+    });
   });
 
   describe('Group Mapping Table', () => {

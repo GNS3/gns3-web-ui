@@ -300,7 +300,7 @@ export class DirectoryManagementComponent implements OnInit {
     this.cd.markForCheck();
   }
 
-  initForm(ldap: LdapSection | undefined): void {
+  initForm(ldap: LdapSection | undefined, preservedType?: DirectoryType): void {
     const raw = ldap ? { ...ldap } : { ...DEFAULT_LDAP_SETTINGS };
     this.ldapSettings = {
       ...DEFAULT_LDAP_SETTINGS,
@@ -311,7 +311,7 @@ export class DirectoryManagementComponent implements OnInit {
 
     this.parseUri(this.ldapSettings.uri);
 
-    this.directoryType = this.detectDirectoryType(this.ldapSettings);
+    this.directoryType = preservedType ?? this.detectDirectoryType(this.ldapSettings);
     this.initFormatFlags(this.ldapSettings, this.directoryType);
 
     this.bindPassword = '';
@@ -354,27 +354,37 @@ export class DirectoryManagementComponent implements OnInit {
   }
 
   detectDirectoryType(settings: LdapSection): DirectoryType {
-    const filter = settings.user_search_filter || '';
+    const filter = (settings.user_search_filter || '').trim();
     const userAttr = settings.user_attr_username || '';
-
-    if (
-      userAttr === 'sAMAccountName' ||
-      filter.includes('sAMAccountName') ||
-      filter.includes('userPrincipalName') ||
-      filter.includes('objectClass=user')
-    ) {
-      return 'active_directory';
-    }
-
-    if (
-      (userAttr === 'uid' || filter.includes('uid=')) &&
-      (filter.includes('objectClass=person') || filter.includes('objectClass=inetOrgPerson'))
-    ) {
-      return 'openldap';
-    }
+    const groupFilter = (settings.group_search_filter || '').trim();
 
     if (!filter) {
       return 'active_directory';
+    }
+
+    // Strict Active Directory preset matching
+    const isAdUserAttr = userAttr === 'sAMAccountName';
+    const isAdGroupFilter = !groupFilter || groupFilter === '(&(objectClass=group)(member={user_dn}))';
+    const isAdFilter =
+      filter === '(&(objectClass=user)(sAMAccountName={username}))' ||
+      filter === '(&(objectClass=user)(userPrincipalName={username}))' ||
+      filter === '(&(objectClass=user)(mail={username}))' ||
+      (filter.startsWith('(&(objectClass=user)(|') && filter.endsWith(')))'));
+
+    if (isAdUserAttr && isAdGroupFilter && isAdFilter) {
+      return 'active_directory';
+    }
+
+    // Strict OpenLDAP preset matching
+    const isOpenLdapUserAttr = userAttr === 'uid';
+    const isOpenLdapGroupFilter = !groupFilter || groupFilter === '(&(objectClass=groupOfNames)(member={user_dn}))';
+    const isOpenLdapFilter =
+      filter === '(&(objectClass=person)(uid={username}))' ||
+      filter === '(&(objectClass=person)(mail={username}))' ||
+      (filter.startsWith('(&(objectClass=person)(|') && filter.endsWith(')))'));
+
+    if (isOpenLdapUserAttr && isOpenLdapGroupFilter && isOpenLdapFilter) {
+      return 'openldap';
     }
 
     return 'custom';
@@ -450,12 +460,17 @@ export class DirectoryManagementComponent implements OnInit {
       this.ldapSettings.user_attr_email = 'mail';
       this.ldapSettings.user_attr_fullname = 'displayName';
       this.ldapSettings.group_search_filter = '(&(objectClass=group)(member={user_dn}))';
+      this.initFormatFlags(this.ldapSettings, 'active_directory');
     } else if (this.directoryType === 'openldap') {
       this.ldapSettings.user_attr_username = 'uid';
       this.ldapSettings.user_attr_email = 'mail';
       this.ldapSettings.user_attr_fullname = 'cn';
       this.ldapSettings.group_search_filter = '(&(objectClass=groupOfNames)(member={user_dn}))';
+      this.initFormatFlags(this.ldapSettings, 'openldap');
     } else if (this.directoryType === 'custom') {
+      if (!this.ldapSettings.user_search_filter) {
+        this.ldapSettings.user_search_filter = this.generatedFilter;
+      }
       this.isAdvancedExpanded.set(true);
     }
     this.cd.markForCheck();
@@ -624,12 +639,13 @@ export class DirectoryManagementComponent implements OnInit {
       return;
     }
     this.isSaving.set(true);
+    const currentType = this.directoryType;
     const payload = this.buildLdapPayload();
     this.serverSettingsService.updateServerSettings(this.controller, { LDAP: payload }).subscribe({
       next: (res) => {
         this.isSaving.set(false);
         this.toasterService.success('Directory settings saved successfully');
-        this.initForm(res.LDAP);
+        this.initForm(res.LDAP, currentType);
         this.cd.markForCheck();
       },
       error: (err) => {
