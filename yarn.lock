@@ -7095,12 +7095,12 @@ ng2-file-upload@^12.0.0:
   dependencies:
     tslib "^2.3.0"
 
-ngx-device-detector@4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/ngx-device-detector/-/ngx-device-detector-4.0.1.tgz#50cd5c88f805d78aac473be1fdae49186ada13bf"
-  integrity sha512-n0c9nOs7900r0pL/m4L0vaDvyf72xhKIC6bpr4BZYazWeRxankO1SqJZijqoMGxiUZnZAQqXkyhRkBIErgoKVg==
+ngx-device-detector@12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/ngx-device-detector/-/ngx-device-detector-12.0.0.tgz#0fa18fe98065e896df121d5a24aeba3b9a5c7c76"
+  integrity sha512-n9mlKvClPP3El+pj7+v6/C+ywm4iq+xz2Jh5GRV3TH9dEc1yycvzh6lRCjd/d1ymLmGRHAD5cBlDIo5jfs1F7w==
   dependencies:
-    tslib "^2.0.0"
+    tslib "^2.8.1"
 
 ngx-json-viewer@^3.2.1:
   version "3.2.1"
