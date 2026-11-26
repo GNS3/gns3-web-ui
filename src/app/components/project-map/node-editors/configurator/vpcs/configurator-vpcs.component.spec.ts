@@ -1,3 +1,4 @@
+import { expectApplyToWaitForTheConfigurationTab } from '../configuration-editor.stub';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -68,7 +69,10 @@ describe('ConfiguratorDialogVpcsComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: TemplateService, useValue: { list: () => of([]) } },
         { provide: ToasterService, useValue: mockToasterService },
-        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
+        {
+          provide: NetmikoDeviceTypesService,
+          useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) },
+        },
         { provide: VpcsConfigurationService, useValue: mockVpcsConfigurationService },
         { provide: ValidationService, useValue: mockValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
@@ -165,6 +169,10 @@ describe('ConfiguratorDialogVpcsComponent', () => {
     });
   });
 
+  it('routes Apply through the configuration tab before updating the node', () => {
+    expectApplyToWaitForTheConfigurationTab(component, mockNodeService.updateNode);
+  });
+
   describe('onSaveClick', () => {
     it('should show error toast when name is empty', () => {
       mockValidationService.required.mockReturnValue({
@@ -199,12 +207,7 @@ describe('ConfiguratorDialogVpcsComponent', () => {
       component.consoleType.set('telnet');
       component.consoleAutoStart.set(false);
 
-      (mockNodeService.updateNode as ReturnType<typeof vi.fn>).mockReturnValue({
-        subscribe: vi.fn((observer) => {
-          if (observer.next) observer.next();
-          return { unsubscribe: vi.fn() };
-        }),
-      });
+      mockNodeService.updateNode.mockReturnValue(of({}));
 
       component.onSaveClick();
 

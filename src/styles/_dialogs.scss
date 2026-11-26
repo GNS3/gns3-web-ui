@@ -927,6 +927,7 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
       app-configurator-iou,
       app-configurator-virtualbox,
       app-configurator-vmware,
+      app-configurator-vpcs,
       app-configurator-cloud
     ):has(mat-tab-group) {
     height: 100%;

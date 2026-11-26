@@ -21,7 +21,7 @@
     <div class="default-content">
       <mat-card class="matCard">
         @if (name) {
-        <mat-tab-group>
+        <mat-tab-group [preserveContent]="true">
           <mat-tab>
             <ng-template mat-tab-label>
               <span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span>
@@ -131,6 +131,14 @@
               </mat-form-field>
               }
             </div>
+          </mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>description</mat-icon>Configuration</span>
+            </ng-template>
+            <ng-template matTabContent>
+              <app-node-configuration [controller]="controller" [node]="node" [disabled]="isApplying()" />
+            </ng-template>
           </mat-tab>
 
           <mat-tab>

@@ -1,3 +1,4 @@
+import { expectApplyToWaitForTheConfigurationTab } from '../configuration-editor.stub';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
 import { of, Subject, throwError } from 'rxjs';
@@ -213,7 +214,10 @@ describe('ConfiguratorDialogIosComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: TemplateService, useValue: { list: () => of([]) } },
         { provide: ToasterService, useValue: mockToasterService },
-        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
+        {
+          provide: NetmikoDeviceTypesService,
+          useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) },
+        },
         { provide: IosConfigurationService, useValue: mockConfigurationService },
         { provide: IosValidationService, useValue: mockValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
@@ -405,6 +409,10 @@ describe('ConfiguratorDialogIosComponent', () => {
 
       expect(() => component.removeTag('router')).not.toThrow();
     });
+  });
+
+  it('routes Apply through the configuration tab before updating the node', () => {
+    expectApplyToWaitForTheConfigurationTab(component, mockNodeService.updateNode);
   });
 
   describe('onSaveClick', () => {

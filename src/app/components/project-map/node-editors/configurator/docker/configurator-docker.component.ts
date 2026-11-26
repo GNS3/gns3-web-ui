@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  inject,
+  model,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -25,6 +34,8 @@ import { DockerValidationService } from '@services/validation';
 import { ConfigureCustomAdaptersDialogComponent } from './configure-custom-adapters/configure-custom-adapters.component';
 import { EditNetworkConfigurationDialogComponent } from './edit-network-configuration/edit-network-configuration.component';
 import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
+import { NodeConfigurationComponent } from '../../node-configuration/node-configuration.component';
+import { configurationAllowsLeaving, saveConfigurationThenUpdate } from '../configurator-configuration-tab';
 
 @Component({
   standalone: true,
@@ -33,6 +44,7 @@ import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-typ
   // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    NodeConfigurationComponent,
     CommonModule,
     FormsModule,
     MatDialogModule,
@@ -60,6 +72,8 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   private dialog = inject(MatDialog);
   private cd = inject(ChangeDetectorRef);
   private validationService = inject(DockerValidationService);
+
+  readonly configurationEditor = viewChild(NodeConfigurationComponent);
 
   controller: Controller;
   node: Node;
@@ -336,12 +350,17 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     this.node.default_username = this.defaultUsername().trim() || null;
     this.node.default_password = this.defaultPassword().trim() || null;
 
-    this.isApplying.set(true);
-    this.dialogReference.disableClose = true;
-    const update = this.node.custom_adapters
-      ? this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node)
-      : this.nodeService.updateNode(this.controller, this.node);
-    update.subscribe({
+    const host = {
+      editor: this.configurationEditor(),
+      isApplying: this.isApplying,
+      dialogRef: this.dialogReference,
+      toaster: this.toasterService,
+    };
+    saveConfigurationThenUpdate(host, () =>
+      this.node.custom_adapters
+        ? this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node)
+        : this.nodeService.updateNode(this.controller, this.node),
+    ).subscribe({
       next: () => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.dialogReference.close();
@@ -349,14 +368,13 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
       error: (error: unknown) => {
         const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
         this.toasterService.error(errorMessage);
-        this.isApplying.set(false);
-        this.dialogReference.disableClose = false;
         this.cd.markForCheck();
       },
     });
   }
 
   onCancelClick() {
+    if (!configurationAllowsLeaving(this.configurationEditor())) return;
     if (this.isApplying() || this.networkEditor()?.saving()) return;
     this.dialogReference.close();
   }

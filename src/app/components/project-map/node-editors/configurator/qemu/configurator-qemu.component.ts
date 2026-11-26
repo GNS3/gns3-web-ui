@@ -1,5 +1,14 @@
 import { QemuCdromInterface } from '@models/qemu/qemu-cdrom';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  inject,
+  model,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -34,7 +43,10 @@ import {
 } from '@components/preferences/common/custom-adapters/custom-adapters.component';
 import { computeDefaultPortName } from '@components/preferences/common/custom-adapters/port-name-format';
 import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creator.component';
+import { startupMediaProfileToSave } from '@models/startup-media-profile';
 import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
+import { NodeConfigurationComponent } from '../../node-configuration/node-configuration.component';
+import { configurationAllowsLeaving, saveConfigurationThenUpdate } from '../configurator-configuration-tab';
 
 @Component({
   standalone: true,
@@ -43,6 +55,7 @@ import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-typ
   // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    NodeConfigurationComponent,
     CommonModule,
     FormsModule,
     MatDialogModule,
@@ -71,6 +84,8 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   private cd = inject(ChangeDetectorRef);
   private imageManagerService = inject(ImageManagerService);
   private validationService = inject(ValidationService);
+
+  readonly configurationEditor = viewChild(NodeConfigurationComponent);
 
   controller: Controller;
   node: Node;
@@ -144,6 +159,8 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   readonly uefi = model(false);
   readonly usage = model('');
   readonly netmikoDeviceType = model('');
+  /** Boot media profile id; '' = console restore. */
+  readonly startupMediaProfile = model('');
   readonly defaultUsername = model('');
   readonly defaultPassword = model('');
   // inherited values shown as placeholders when the node fields are empty
@@ -198,6 +215,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         this.uefi.set(node.properties.uefi || false);
         this.usage.set(node.properties.usage || '');
         this.netmikoDeviceType.set(node.netmiko_device_type || '');
+        this.startupMediaProfile.set(node.properties.startup_media_profile || '');
         this.defaultUsername.set(node.default_username || '');
         this.defaultPassword.set(node.default_password || '');
         // empty node credentials: show the template appliance metadata as placeholder
@@ -544,54 +562,67 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
       return;
     }
 
-    // Merge signal values back into node
-    this.node.name = this.nodeName();
-    this.node.properties.ram = parseInt(this.ram(), 10) || 0;
-    this.node.properties.platform = this.platform();
-    this.node.properties.cpus = parseFloat(this.cpus()) || 0;
-    this.node.properties.boot_priority = this.bootPriority();
-    this.node.properties.on_close = this.onClose();
-    this.node.console_type = this.consoleType();
-    this.node.aux_type = this.auxType();
-    this.node.console_auto_start = this.consoleAutoStart();
-    this.node.properties.hda_disk_image = this.hdaDiskImage();
-    this.node.properties.hda_disk_interface = this.hdaDiskInterface();
-    this.node.properties.hdb_disk_image = this.hdbDiskImage();
-    this.node.properties.hdb_disk_interface = this.hdbDiskInterface();
-    this.node.properties.hdc_disk_image = this.hdcDiskImage();
-    this.node.properties.hdc_disk_interface = this.hdcDiskInterface();
-    this.node.properties.hdd_disk_image = this.hddDiskImage();
-    this.node.properties.hdd_disk_interface = this.hddDiskInterface();
-    this.node.properties.cdrom_image = this.cdromImage();
-    this.node.properties.cdrom2_image = this.cdrom2Image();
-    this.node.properties.cdrom_interface = this.cdromInterfaces[0]();
-    this.node.properties.cdrom2_interface = this.cdromInterfaces[1]();
-    this.node.properties.initrd = this.initrd();
-    this.node.properties.kernel_image = this.kernelImage();
-    this.node.properties.kernel_command_line = this.kernelCommandLine();
-    this.node.properties.bios_image = this.biosImage();
-    this.node.properties.cpu_throttling = parseInt(this.cpuThrottling(), 10) || null;
-    this.node.properties.process_priority = this.processPriority();
-    this.node.properties.qemu_path = this.qemuPath();
-    this.node.properties.options = this.options();
-    this.node.properties.tpm = this.tpm();
-    this.node.properties.uefi = this.uefi();
-    this.node.properties.usage = this.usage();
-    this.node.netmiko_device_type = this.netmikoDeviceType().trim() || null;
-    this.node.default_username = this.defaultUsername().trim() || null;
-    this.node.default_password = this.defaultPassword().trim() || null;
-    this.node.properties.linked_clone = this.linkedClone();
-    this.node.properties.maxcpus = parseInt(this.maxcpus(), 10) || undefined;
-    this.node.properties.create_config_disk = this.createConfigDisk();
-    this.node.properties.adapters = parseInt(this.adapters(), 10) || 0;
-    this.node.properties.mac_address = this.macAddress();
-    this.node.properties.adapter_type = this.adapterType();
-    this.node.properties.replicate_network_connection_state = this.replicateNetworkState();
+    const updatedNode = { ...this.node, properties: { ...this.node.properties } };
+    updatedNode.name = this.nodeName();
+    updatedNode.properties.ram = parseInt(this.ram(), 10) || 0;
+    updatedNode.properties.platform = this.platform();
+    updatedNode.properties.cpus = parseFloat(this.cpus()) || 0;
+    updatedNode.properties.boot_priority = this.bootPriority();
+    updatedNode.properties.on_close = this.onClose();
+    updatedNode.console_type = this.consoleType();
+    updatedNode.aux_type = this.auxType();
+    updatedNode.console_auto_start = this.consoleAutoStart();
+    updatedNode.properties.hda_disk_image = this.hdaDiskImage();
+    updatedNode.properties.hda_disk_interface = this.hdaDiskInterface();
+    updatedNode.properties.hdb_disk_image = this.hdbDiskImage();
+    updatedNode.properties.hdb_disk_interface = this.hdbDiskInterface();
+    updatedNode.properties.hdc_disk_image = this.hdcDiskImage();
+    updatedNode.properties.hdc_disk_interface = this.hdcDiskInterface();
+    updatedNode.properties.hdd_disk_image = this.hddDiskImage();
+    updatedNode.properties.hdd_disk_interface = this.hddDiskInterface();
+    updatedNode.properties.cdrom_image = this.cdromImage();
+    updatedNode.properties.cdrom2_image = this.cdrom2Image();
+    updatedNode.properties.cdrom_interface = this.cdromInterfaces[0]();
+    updatedNode.properties.cdrom2_interface = this.cdromInterfaces[1]();
+    updatedNode.properties.initrd = this.initrd();
+    updatedNode.properties.kernel_image = this.kernelImage();
+    updatedNode.properties.kernel_command_line = this.kernelCommandLine();
+    updatedNode.properties.bios_image = this.biosImage();
+    updatedNode.properties.cpu_throttling = parseInt(this.cpuThrottling(), 10) || null;
+    updatedNode.properties.process_priority = this.processPriority();
+    updatedNode.properties.qemu_path = this.qemuPath();
+    updatedNode.properties.options = this.options();
+    updatedNode.properties.tpm = this.tpm();
+    updatedNode.properties.uefi = this.uefi();
+    updatedNode.properties.usage = this.usage();
+    updatedNode.netmiko_device_type = this.netmikoDeviceType().trim() || null;
+    const startupMediaProfile = startupMediaProfileToSave(
+      this.startupMediaProfile(),
+      updatedNode.properties.startup_media_profile,
+    );
+    if (startupMediaProfile !== undefined) {
+      updatedNode.properties.startup_media_profile = startupMediaProfile;
+    }
+    updatedNode.default_username = this.defaultUsername().trim() || null;
+    updatedNode.default_password = this.defaultPassword().trim() || null;
+    updatedNode.properties.linked_clone = this.linkedClone();
+    updatedNode.properties.maxcpus = parseInt(this.maxcpus(), 10) || undefined;
+    updatedNode.properties.create_config_disk = this.createConfigDisk();
+    updatedNode.properties.adapters = parseInt(this.adapters(), 10) || 0;
+    updatedNode.properties.mac_address = this.macAddress();
+    updatedNode.properties.adapter_type = this.adapterType();
+    updatedNode.properties.replicate_network_connection_state = this.replicateNetworkState();
 
     const requestedInterfaces = this.cdromInterfaces.map((interfaceSignal) => interfaceSignal());
-    this.isApplying.set(true);
-    this.dialogRef.disableClose = true;
-    this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe({
+    const host = {
+      editor: this.configurationEditor(),
+      isApplying: this.isApplying,
+      dialogRef: this.dialogRef,
+      toaster: this.toasterService,
+    };
+    saveConfigurationThenUpdate(host, () =>
+      this.nodeService.updateNodeWithCustomAdapters(this.controller, updatedNode),
+    ).subscribe({
       next: (savedNode) => {
         const savedProperties = savedNode.properties;
         if (!savedProperties || (
@@ -599,23 +630,21 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
           (savedProperties.cdrom2_interface || 'ide') !== requestedInterfaces[1]
         )) {
           this.toasterService.error('The server did not save the CD-ROM interfaces. Check that the compute server is updated and the node is stopped.');
-          this.isApplying.set(false);
-          this.dialogRef.disableClose = false;
           return;
         }
+        Object.assign(this.node, savedNode);
         this.toasterService.success(`Node ${this.node.name} updated.`);
-        this.onCancelClick();
+        this.dialogRef.close();
       },
       error: (error) => {
         const errorMessage = error.error?.message || error.message || 'Failed to update node';
         this.toasterService.error(errorMessage);
-        this.isApplying.set(false);
-        this.dialogRef.disableClose = false;
       },
     });
   }
 
   onCancelClick() {
+    if (this.isApplying() || !configurationAllowsLeaving(this.configurationEditor())) return;
     this.dialogRef.close();
   }
 

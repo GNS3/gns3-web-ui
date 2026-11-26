@@ -1,0 +1,89 @@
+<div class="editor-toolbar" role="group" aria-label="Configuration editor tools">
+  <label class="search-field">
+    <mat-icon aria-hidden="true">search</mat-icon>
+    <input
+      #searchInput
+      type="search"
+      aria-label="Search configuration"
+      placeholder="Search configuration…"
+      [value]="query()"
+      (input)="search(searchInput.value)"
+      (keydown)="searchKey($event)"
+    />
+  </label>
+  <span class="match-count" role="status" aria-live="polite">{{
+    query() ? (matches().length ? activeIndex() + 1 + ' / ' + matches().length : 'No matches') : ''
+  }}</span>
+  <button
+    mat-icon-button
+    type="button"
+    aria-label="Previous match"
+    matTooltip="Previous match (Shift+Enter)"
+    [disabled]="!matches().length"
+    (click)="navigate(-1)"
+  >
+    <mat-icon>keyboard_arrow_up</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    type="button"
+    aria-label="Next match"
+    matTooltip="Next match (Enter)"
+    [disabled]="!matches().length"
+    (click)="navigate(1)"
+  >
+    <mat-icon>keyboard_arrow_down</mat-icon>
+  </button>
+  <div class="font-tools" role="group" aria-label="Editor font size">
+    <button
+      mat-icon-button
+      type="button"
+      aria-label="Decrease font size"
+      matTooltip="Decrease font size"
+      [disabled]="fontSize() <= 11"
+      (click)="resizeFont(-1)"
+    >
+      <mat-icon>text_decrease</mat-icon>
+    </button>
+    <span class="font-size" aria-live="polite">{{ fontSize() }}px</span>
+    <button
+      mat-icon-button
+      type="button"
+      aria-label="Increase font size"
+      matTooltip="Increase font size"
+      [disabled]="fontSize() >= 24"
+      (click)="resizeFont(1)"
+    >
+      <mat-icon>text_increase</mat-icon>
+    </button>
+  </div>
+</div>
+<div class="editor-surface" [style.font-size.px]="fontSize()">
+  <div class="line-gutter" aria-hidden="true" [style.width.ch]="lines().toString().length + 2">
+    <pre [style.transform]="'translateY(' + -scrollTop() + 'px)'">{{ lineNumbers() }}</pre>
+  </div>
+  <div class="text-surface">
+    @if (query()) {
+      <div class="highlight-viewport" aria-hidden="true">
+        <pre
+          class="highlights"
+          [style.transform]="'translate(' + -scrollLeft() + 'px, ' + -scrollTop() + 'px)'"
+        >@for (segment of highlights(); track $index) {@if (segment.match) {<mark [class.active]="segment.active">{{ segment.text }}</mark>} @else {<span>{{ segment.text }}</span>}}</pre>
+      </div>
+    }
+    <textarea
+      #textarea
+      [attr.aria-label]="label()"
+      spellcheck="false"
+      autocapitalize="off"
+      autocomplete="off"
+      wrap="off"
+      [value]="value()"
+      [readOnly]="disabled()"
+      [attr.aria-readonly]="disabled()"
+      (input)="edit($event)"
+      (scroll)="syncScroll()"
+      (keydown)="editorKey($event, searchInput)"
+    ></textarea>
+  </div>
+</div>

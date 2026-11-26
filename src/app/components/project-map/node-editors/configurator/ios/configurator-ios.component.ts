@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  inject,
+  model,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -21,6 +30,8 @@ import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
 import { IosValidationService } from '@services/validation';
 import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
+import { NodeConfigurationComponent } from '../../node-configuration/node-configuration.component';
+import { configurationAllowsLeaving, saveConfigurationThenUpdate } from '../configurator-configuration-tab';
 
 @Component({
   standalone: true,
@@ -29,6 +40,7 @@ import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-typ
   styleUrls: ['../configurator.component.scss', './configurator-ios.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    NodeConfigurationComponent,
     CommonModule,
     FormsModule,
     MatDialogModule,
@@ -53,6 +65,8 @@ export class ConfiguratorDialogIosComponent implements OnInit {
   private configurationService = inject(IosConfigurationService);
   private cd = inject(ChangeDetectorRef);
   private validationService = inject(IosValidationService);
+
+  readonly configurationEditor = viewChild(NodeConfigurationComponent);
 
   controller: Controller;
   node: Node;
@@ -298,24 +312,27 @@ export class ConfiguratorDialogIosComponent implements OnInit {
     this.node.default_password = this.defaultPassword().trim() || null;
 
     this.saveSlotsData();
-    this.isApplying.set(true);
-    this.dialogRef.disableClose = true;
-    this.nodeService.updateNode(this.controller, this.node).subscribe({
+    const host = {
+      editor: this.configurationEditor(),
+      isApplying: this.isApplying,
+      dialogRef: this.dialogRef,
+      toaster: this.toasterService,
+    };
+    saveConfigurationThenUpdate(host, () => this.nodeService.updateNode(this.controller, this.node)).subscribe({
       next: () => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
-        this.onCancelClick();
+        this.dialogRef.close();
       },
       error: (error: unknown) => {
         const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
         this.toasterService.error(errorMessage);
-        this.isApplying.set(false);
-        this.dialogRef.disableClose = false;
         this.cd.markForCheck();
       },
     });
   }
 
   onCancelClick() {
+    if (this.isApplying() || !configurationAllowsLeaving(this.configurationEditor())) return;
     this.dialogRef.close();
   }
 

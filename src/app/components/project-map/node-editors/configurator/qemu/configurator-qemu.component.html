@@ -22,7 +22,7 @@
       <mat-card class="matCard">
         @if (name) {
         <div>
-          <mat-tab-group class="qemu-configurator-tabs">
+          <mat-tab-group [preserveContent]="true" class="qemu-configurator-tabs">
             <mat-tab>
               <ng-template mat-tab-label>
                 <span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span>
@@ -167,6 +167,21 @@
               <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)">
                 Auto start console
               </mat-checkbox>
+            </mat-tab>
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <span class="node-config__tab-label"><mat-icon>description</mat-icon>Configuration</span>
+              </ng-template>
+              <ng-template matTabContent>
+                <app-node-configuration
+                  [controller]="controller"
+                  [node]="node"
+                  [disabled]="isApplying()"
+                  [(mediaProfile)]="startupMediaProfile"
+                  [netmikoDeviceType]="netmikoDeviceType()"
+                >
+                </app-node-configuration>
+              </ng-template>
             </mat-tab>
             <mat-tab>
               <ng-template mat-tab-label>

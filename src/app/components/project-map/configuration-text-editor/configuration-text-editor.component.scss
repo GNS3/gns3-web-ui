@@ -1,0 +1,174 @@
+:host {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 200px;
+  overflow: hidden;
+  border: 1px solid var(--mat-sys-outline);
+  border-radius: var(--gns3-density-radius-sm);
+  color: var(--mat-sys-on-surface);
+  background: var(--mat-sys-surface);
+}
+.editor-toolbar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-low);
+  font-size: 12px;
+  button {
+    --mat-icon-button-state-layer-size: 32px;
+    --mat-icon-button-icon-size: 20px;
+    --mat-icon-button-touch-target-size: 32px;
+    display: inline-flex;
+    flex: 0 0 32px;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    line-height: 1;
+  }
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    line-height: 20px;
+    flex-shrink: 0;
+  }
+}
+.search-field {
+  display: flex;
+  align-items: center;
+  flex: 1 1 140px;
+  gap: 6px;
+  min-width: 100px;
+  color: var(--mat-sys-on-surface-variant);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 25%, var(--mat-sys-outline-variant));
+  border-radius: var(--gns3-density-radius-sm);
+  background: color-mix(in srgb, var(--mat-sys-primary) 6%, var(--mat-sys-surface));
+  padding-inline: 6px;
+  &:focus-within {
+    border-color: var(--mat-sys-primary);
+    background: color-mix(in srgb, var(--mat-sys-primary) 10%, var(--mat-sys-surface));
+  }
+  input {
+    min-width: 0;
+    width: 100%;
+    padding: 6px 4px;
+    border: 0;
+    border-radius: 3px;
+    color: var(--mat-sys-on-surface);
+    background: transparent;
+    font: inherit;
+    &:focus-visible {
+      outline: 2px solid var(--mat-sys-primary);
+    }
+  }
+}
+.font-tools {
+  display: flex;
+  align-items: center;
+  margin-inline-start: auto;
+  padding-inline-start: 6px;
+  border-inline-start: 1px solid var(--mat-sys-outline-variant);
+  gap: 4px;
+  button {
+    border-radius: var(--gns3-density-radius-sm);
+    background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+    &:hover:not(:disabled),
+    &:focus-visible {
+      background: color-mix(in srgb, var(--mat-sys-primary) 14%, transparent);
+    }
+    &:disabled {
+      background: color-mix(in srgb, var(--mat-sys-primary) 3%, transparent);
+    }
+  }
+}
+.font-size,
+.match-count {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--mat-sys-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+.editor-surface {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  font-family: var(--gns3-font-code);
+  line-height: 1.5;
+  &:focus-within {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: -2px;
+  }
+}
+pre,
+textarea {
+  box-sizing: border-box;
+  margin: 0;
+  border: 0;
+  padding: 10px 12px;
+  font: inherit;
+  letter-spacing: normal;
+  white-space: pre;
+  tab-size: 4;
+}
+.line-gutter {
+  flex: 0 0 auto;
+  box-sizing: content-box;
+  padding-inline: 6px;
+  overflow: hidden;
+  border-inline-end: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-low);
+  color: var(--mat-sys-on-surface-variant);
+  text-align: right;
+  user-select: none;
+  pre {
+    padding-inline: 0;
+  }
+}
+.text-surface {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.highlight-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.highlights {
+  width: max-content;
+  min-width: 100%;
+  color: transparent;
+  mark {
+    color: transparent;
+    background: color-mix(in srgb, var(--mat-sys-tertiary) 25%, transparent);
+    border-radius: 2px;
+    &.active {
+      background: color-mix(in srgb, var(--mat-sys-tertiary) 45%, transparent);
+      outline: 1px solid var(--mat-sys-tertiary);
+    }
+  }
+}
+textarea {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  resize: none;
+  overflow: auto;
+  outline: none;
+  color: inherit;
+  background: transparent;
+}

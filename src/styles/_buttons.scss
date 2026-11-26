@@ -95,3 +95,32 @@
   box-sizing: border-box;
   padding-inline: var(--gns3-density-space-4);
 }
+
+// Configuration actions use the same density-aware geometry as other icon actions.
+@mixin tonal-action-icon {
+  @include action-icon;
+  --action-color: var(--mat-sys-primary);
+  border: 1px solid transparent;
+  transition:
+    background-color var(--gns3-motion-duration-standard),
+    border-color var(--gns3-motion-duration-standard);
+
+  &:not(:disabled) {
+    color: var(--action-color);
+    background: color-mix(in srgb, var(--action-color) 9%, transparent);
+    border-color: color-mix(in srgb, var(--action-color) 22%, transparent);
+  }
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--action-color) 17%, transparent);
+    border-color: color-mix(in srgb, var(--action-color) 45%, transparent);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--action-color);
+    outline-offset: 2px;
+  }
+  &:disabled {
+    color: var(--gns3-button-disabled-label-color);
+    background: var(--mat-sys-surface-container-high);
+    border-color: var(--mat-sys-outline-variant);
+  }
+}

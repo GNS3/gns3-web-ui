@@ -1,3 +1,4 @@
+import { expectApplyToWaitForTheConfigurationTab } from '../configuration-editor.stub';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
@@ -114,7 +115,7 @@ describe('ConfiguratorDialogIouComponent', () => {
       },
       tags: [],
       ...overrides,
-    } as unknown as Node);
+    }) as unknown as Node;
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -165,7 +166,10 @@ describe('ConfiguratorDialogIouComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: TemplateService, useValue: { list: () => of([]) } },
         { provide: ToasterService, useValue: mockToasterService },
-        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
+        {
+          provide: NetmikoDeviceTypesService,
+          useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) },
+        },
         { provide: IouConfigurationService, useValue: mockConfigurationService },
         { provide: IouValidationService, useValue: mockValidationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
@@ -207,7 +211,7 @@ describe('ConfiguratorDialogIouComponent', () => {
       await TestBed.configureTestingModule({
         imports: [
           ConfiguratorDialogIouComponent,
-          
+
           MatDialogModule,
           MatChipsModule,
           MatIconModule,
@@ -219,9 +223,11 @@ describe('ConfiguratorDialogIouComponent', () => {
           { provide: NodeService, useValue: mockNodeService },
           { provide: TemplateService, useValue: { list: () => of([]) } },
           { provide: ToasterService, useValue: mockToasterService },
-          { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
+          {
+            provide: NetmikoDeviceTypesService,
+            useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) },
+          },
           { provide: IouConfigurationService, useValue: mockConfigurationService },
-          
         ],
       }).compileComponents();
 
@@ -242,7 +248,7 @@ describe('ConfiguratorDialogIouComponent', () => {
       await TestBed.configureTestingModule({
         imports: [
           ConfiguratorDialogIouComponent,
-          
+
           MatDialogModule,
           MatChipsModule,
           MatIconModule,
@@ -254,9 +260,11 @@ describe('ConfiguratorDialogIouComponent', () => {
           { provide: NodeService, useValue: mockNodeService },
           { provide: TemplateService, useValue: { list: () => of([]) } },
           { provide: ToasterService, useValue: mockToasterService },
-          { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
+          {
+            provide: NetmikoDeviceTypesService,
+            useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) },
+          },
           { provide: IouConfigurationService, useValue: mockConfigurationService },
-          
         ],
       }).compileComponents();
 
@@ -286,6 +294,10 @@ describe('ConfiguratorDialogIouComponent', () => {
     });
   });
 
+  it('routes Apply through the configuration tab before updating the node', () => {
+    expectApplyToWaitForTheConfigurationTab(component, mockNodeService.updateNode);
+  });
+
   describe('onSaveClick', () => {
     it('should update node and close dialog when forms are valid', async () => {
       const updatedNode = createMockNode({ name: 'UpdatedIOU' });
@@ -295,7 +307,7 @@ describe('ConfiguratorDialogIouComponent', () => {
       await TestBed.configureTestingModule({
         imports: [
           ConfiguratorDialogIouComponent,
-          
+
           MatDialogModule,
           MatChipsModule,
           MatIconModule,
@@ -307,9 +319,11 @@ describe('ConfiguratorDialogIouComponent', () => {
           { provide: NodeService, useValue: mockNodeService },
           { provide: TemplateService, useValue: { list: () => of([]) } },
           { provide: ToasterService, useValue: mockToasterService },
-          { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
+          {
+            provide: NetmikoDeviceTypesService,
+            useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) },
+          },
           { provide: IouConfigurationService, useValue: mockConfigurationService },
-          
         ],
       }).compileComponents();
 
@@ -356,7 +370,7 @@ describe('ConfiguratorDialogIouComponent', () => {
       await TestBed.configureTestingModule({
         imports: [
           ConfiguratorDialogIouComponent,
-          
+
           MatDialogModule,
           MatChipsModule,
           MatIconModule,
@@ -368,9 +382,11 @@ describe('ConfiguratorDialogIouComponent', () => {
           { provide: NodeService, useValue: mockNodeService },
           { provide: TemplateService, useValue: { list: () => of([]) } },
           { provide: ToasterService, useValue: mockToasterService },
-          { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
+          {
+            provide: NetmikoDeviceTypesService,
+            useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) },
+          },
           { provide: IouConfigurationService, useValue: mockConfigurationService },
-          
         ],
       }).compileComponents();
 
@@ -483,7 +499,10 @@ describe('ConfiguratorDialogIouComponent', () => {
     it('should validate ethernet adapters', () => {
       mockValidationService.validateName.mockReturnValueOnce({ isValid: true });
       mockValidationService.validatePath.mockReturnValueOnce({ isValid: true });
-      mockValidationService.validateEthernetAdapters.mockReturnValueOnce({ isValid: false, errorMessage: 'Ethernet adapters is required' });
+      mockValidationService.validateEthernetAdapters.mockReturnValueOnce({
+        isValid: false,
+        errorMessage: 'Ethernet adapters is required',
+      });
 
       component.onSaveClick();
 
