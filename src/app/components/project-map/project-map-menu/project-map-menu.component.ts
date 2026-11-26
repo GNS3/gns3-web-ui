@@ -723,4 +723,14 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       });
     });
   }
+
+  public openStartupConfigurations() {
+    import('../startup-configurations/startup-configurations.component').then(({ StartupConfigurationsComponent }) => {
+      this.dialog.open(StartupConfigurationsComponent, {
+        panelClass: ['base-dialog-panel', 'startup-configurations-dialog-panel', 'dialog-extra-large-panel'],
+        autoFocus: false, disableClose: true,
+        data: { controller: this.controller(), project: this.project() },
+      });
+    });
+  }
 }

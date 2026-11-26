@@ -1,0 +1,249 @@
+@use '../../../../styles/buttons' as buttons;
+@use '../../../../styles/forms' as forms;
+
+mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+.set-toolbar,
+.intro,
+.node-toolbar,
+.node-config-actions,
+.status {
+  flex-shrink: 0;
+}
+[mat-dialog-title],
+mat-dialog-actions {
+  flex: 0 0 auto;
+}
+// Title, content padding and footer geometry come from the shared dialog shell.
+mat-dialog-content button:not(.node-select):not([mat-icon-button]) {
+  @include buttons.geometry;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gns3-density-space-2);
+}
+.set-toolbar {
+  gap: var(--gns3-density-space-3);
+  padding-bottom: var(--gns3-density-space-4);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+.set-toolbar mat-form-field {
+  flex: 0 1 var(--configuration-set-picker-width);
+  width: var(--configuration-set-picker-width);
+  min-width: 0;
+  max-width: 100%;
+}
+.set-operations {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gns3-density-space-2);
+}
+.set-operations [mat-icon-button],
+.node-config-actions [mat-icon-button] {
+  @include buttons.tonal-action-icon;
+  &.create-set,
+  &.apply-set,
+  &.import-node {
+    --action-color: var(--custom-mat-sys-success);
+  }
+  &.rename-set {
+    --action-color: var(--mat-sys-tertiary);
+  }
+  &.upload-config {
+    --action-color: var(--mat-sys-secondary);
+  }
+  &.delete-set,
+  &.reset-startup {
+    --action-color: var(--mat-sys-error);
+  }
+}
+.node-config-actions {
+  flex-wrap: nowrap;
+  gap: var(--gns3-density-space-2);
+  overflow-x: auto;
+}
+.import-node-tooltip {
+  display: inline-flex;
+}
+.operation-divider {
+  height: var(--gns3-action-icon-size);
+  border-inline-start: 1px solid var(--mat-sys-outline-variant);
+  margin-inline: var(--gns3-density-space-2);
+}
+.intro {
+  @include forms.helper-text;
+  margin-block: var(--gns3-density-space-4);
+}
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+  gap: var(--gns3-density-space-5);
+  align-items: stretch;
+  flex: 1 0 calc(var(--gns3-density-form-field-height) * 4);
+  min-height: calc(var(--gns3-density-form-field-height) * 4);
+}
+nav {
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--gns3-density-radius-sm);
+}
+.node {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  box-sizing: border-box;
+  height: var(--mat-table-row-item-container-height);
+  min-height: var(--mat-table-row-item-container-height);
+  padding-inline-end: var(--gns3-density-space-3);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+.node-select {
+  display: grid;
+  grid-template-columns: var(--gns3-density-dialog-icon-size) minmax(0, 1fr) var(--gns3-status-indicator-size);
+  align-items: center;
+  gap: var(--gns3-density-space-2);
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  text-align: start;
+  padding: var(--gns3-density-space-1) var(--gns3-density-space-4);
+  border: 0;
+  background: transparent;
+  color: var(--mat-sys-on-surface);
+  cursor: pointer;
+  font: inherit;
+}
+.node:last-child {
+  border-bottom: 0;
+}
+.node.selected {
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}
+.node-select:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: -2px;
+}
+.node-identity,
+.node-name {
+  display: block;
+}
+.node-identity {
+  min-width: 0;
+}
+.node-name {
+  font-size: var(--gns3-density-dialog-body-size);
+  line-height: var(--gns3-button-label-line-height);
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.node-startup-set {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--gns3-helper-text-size);
+  line-height: var(--gns3-helper-text-line-height);
+  color: var(--mat-sys-on-surface-variant);
+}
+.node-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--gns3-density-dialog-icon-size);
+  height: var(--gns3-density-dialog-icon-size);
+}
+.node-icon img,
+.node-icon mat-icon {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  font-size: var(--gns3-density-dialog-icon-size);
+}
+.node-status {
+  width: var(--gns3-status-indicator-size);
+  height: var(--gns3-status-indicator-size);
+  border-radius: 50%;
+  background: var(--mat-sys-outline);
+
+  &[data-status='started'] {
+    background: var(--custom-mat-sys-success);
+  }
+  &[data-status='stopped'] {
+    background: var(--mat-sys-error);
+  }
+  &[data-status='suspended'] {
+    background: var(--mat-sys-secondary);
+  }
+}
+.editor {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.node-toolbar {
+  margin-bottom: var(--gns3-density-space-4);
+}
+.node-toolbar strong {
+  overflow-wrap: anywhere;
+}
+.node[data-startup-state='unavailable'] {
+  .node-icon {
+    filter: grayscale(1);
+    opacity: 0.5;
+  }
+  .node-name {
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+.node-select:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.status,
+.load-error p {
+  margin-block: var(--gns3-density-space-3);
+}
+.load-error {
+  color: var(--mat-sys-error);
+}
+@media (max-width: 750px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(calc(var(--gns3-density-control-height-sm) * 2), 25%) minmax(0, 1fr);
+    flex-basis: calc(var(--gns3-density-form-field-height) * 6);
+    min-height: calc(var(--gns3-density-form-field-height) * 6);
+  }
+}
+
+.node-config-actions {
+  margin-top: var(--gns3-density-space-3);
+}
+
+.failure-detail {
+  display: flex;
+  align-items: center;
+  gap: var(--gns3-density-space-3);
+}
+.failure-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
