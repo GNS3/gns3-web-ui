@@ -58,6 +58,7 @@ export class Properties {
   cdrom2_image?: string;
   cdrom_interface?: QemuCdromInterface;
   cdrom2_interface?: QemuCdromInterface;
+  startup_media_profile?: string | null;
   cdrom_image_md5sum?: string | null;
   cdrom2_image_md5sum?: string | null;
   cpu_throttling: number;
