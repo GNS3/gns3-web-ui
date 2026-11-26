@@ -513,6 +513,11 @@ body .cdk-overlay-container .mat-mdc-dialog-title::before {
   }
 }
 
+// Wipe dialog: the warning below the message is centered.
+.wipe-confirmation-panel .confirmation-dialog .confirmation-dialog__content .confirmation-dialog__note {
+  text-align: center;
+}
+
 /* =============================================
 // Confirmation Warning Panel
 // For warning operations (unlock, etc.)
@@ -2197,6 +2202,20 @@ html[data-density='compact'] .node-configurator-dialog-panel {
 
   mat-form-field {
     width: 100%;
+  }
+}
+
+// Configuration set actions on the selected nodes.
+.startup-selection-dialog-panel {
+  .startup-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .startup-selection__modes {
+    display: flex;
+    flex-direction: column;
   }
 }
 

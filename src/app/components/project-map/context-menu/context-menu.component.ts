@@ -11,6 +11,7 @@ import { LinkNode } from '@models/link-node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { planTopologyDeletion } from '@utils/topology-deletion.util';
+import { exportReadsConsole, nodeConfigCapabilities } from '@services/configuration-capabilities';
 import { ProjectService } from '@services/project.service';
 import { ShowNodeActionComponent } from './actions/show-node-action/show-node-action.component';
 import { ConfigActionComponent } from './actions/config-action/config-action.component';
@@ -30,6 +31,8 @@ import { EditStyleActionComponent } from './actions/edit-style-action/edit-style
 import { EditTextActionComponent } from './actions/edit-text-action/edit-text-action.component';
 import { EditConfigActionComponent } from './actions/edit-config/edit-config-action.component';
 import { ExportConfigActionComponent } from './actions/export-config/export-config-action.component';
+import { StartupSelectionActionComponent } from './actions/startup-selection-action/startup-selection-action.component';
+import { WipeNodeActionComponent } from './actions/wipe-node-action/wipe-node-action.component';
 import { ImportConfigActionComponent } from './actions/import-config/import-config-action.component';
 import { IdlePcActionComponent } from './actions/idle-pc-action/idle-pc-action.component';
 import { AutoIdlePcActionComponent } from './actions/auto-idle-pc-action/auto-idle-pc-action.component';
@@ -80,6 +83,8 @@ import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.
     EditTextActionComponent,
     EditConfigActionComponent,
     ExportConfigActionComponent,
+    WipeNodeActionComponent,
+    StartupSelectionActionComponent,
     ImportConfigActionComponent,
     IdlePcActionComponent,
     AutoIdlePcActionComponent,
@@ -251,6 +256,21 @@ export class ContextMenuComponent implements OnInit {
     if (this.drawings.length) return ['Drawing.Modify'];
     if (this.linkNodes.length) return ['Link.Modify'];
     return ['Node.Modify'];
+  }
+
+  /** Offline export stays available to users who may only audit the node. */
+  exportPrivileges(node: Node): string[] {
+    return exportReadsConsole(node) ? ['Node.Audit', 'Node.Console'] : ['Node.Audit'];
+  }
+
+  /** A started IOU or Dynamips router can also be read from its console. */
+  offersRunningExport(node: Node): boolean {
+    return ['dynamips', 'iou'].includes(node.node_type) && node.status === 'started';
+  }
+
+  /** Import writes the node's own startup file, which only some engines expose. */
+  canImportConfig(node: Node): boolean {
+    return nodeConfigCapabilities(node).canImport;
   }
 
   private resetCapabilities() {

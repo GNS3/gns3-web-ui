@@ -61,5 +61,30 @@
   >
     <mat-icon>compare_arrows</mat-icon>
   </button>
+  <span class="configuration-separator" aria-hidden="true"></span>
+  <button
+    *appHasProjectPrivilege="['Project.Modify', 'Node.Modify', 'Node.Console']"
+    matTooltip="Export all configurations"
+    matTooltipClass="custom-tooltip"
+    aria-label="Export all configurations"
+    mat-icon-button
+    class="menu-button"
+    (click)="exportAllConfigurations()"
+    [disabled]="configurationBusy()"
+  >
+    <mat-icon>save_alt</mat-icon>
+  </button>
+  <button
+    *appHasProjectPrivilege="['Project.Modify', 'Node.Modify', 'Node.Console']"
+    matTooltip="Wipe all nodes"
+    matTooltipClass="custom-tooltip"
+    aria-label="Wipe all nodes"
+    mat-icon-button
+    class="menu-button"
+    (click)="wipeAllNodes()"
+    [disabled]="configurationBusy()"
+  >
+    <mat-icon>delete_sweep</mat-icon>
+  </button>
   }
 </div>

@@ -37,6 +37,7 @@ export class NodeToMapNodeConverter implements Converter<Node, MapNode> {
     mapNode.name = node.name;
     mapNode.nodeDirectory = node.node_directory;
     mapNode.nodeType = node.node_type;
+    mapNode.netmikoDeviceType = node.netmiko_device_type;
     mapNode.portNameFormat = node.port_name_format;
     mapNode.portSegmentSize = node.port_segment_size;
     mapNode.ports = node.ports ? node.ports.map((port) => this.portToMapPort.convert(port)) : [];

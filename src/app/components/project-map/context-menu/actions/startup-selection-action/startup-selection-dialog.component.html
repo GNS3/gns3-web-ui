@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>Configuration sets for {{ data.nodes.length }} nodes</h2>
+
+<mat-dialog-content>
+  <div class="startup-selection">
+    @if (busy()) {
+      <mat-progress-bar mode="indeterminate" aria-label="Working"></mat-progress-bar>
+    }
+    @if (loadError()) {
+      <p role="alert">{{ loadError() }}</p>
+    }
+
+    <mat-radio-group
+      class="startup-selection__modes"
+      aria-label="Action"
+      [value]="mode()"
+      (change)="setMode($event.value)"
+    >
+      <mat-radio-button value="capture">Capture selected nodes running configuration into a set</mat-radio-button>
+      <mat-radio-button value="assign">Start selected nodes from a configuration set</mat-radio-button>
+      <mat-radio-button value="clear">Clear startup configuration of selected nodes</mat-radio-button>
+    </mat-radio-group>
+
+    @if (mode() !== 'clear') {
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Configuration set</mat-label>
+        <mat-select [value]="setId()" (selectionChange)="setId.set($event.value)" aria-label="Configuration set">
+          @for (set of document()?.sets ?? []; track set.id) {
+            <mat-option [value]="set.id">{{ set.name }}</mat-option>
+          }
+          @if (mode() === 'capture') {
+            <mat-option [value]="newSet">New set…</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+    @if (mode() === 'capture' && setId() === newSet) {
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Name of the new set</mat-label>
+        <input matInput maxlength="80" [value]="newName()" (input)="newName.set($any($event.target).value)" />
+      </mat-form-field>
+    }
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="busy()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="apply()" [disabled]="!canApply()">Apply</button>
+</mat-dialog-actions>

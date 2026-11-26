@@ -45,6 +45,8 @@ import { InRectangleHelper } from '../../cartography/helpers/in-rectangle-helper
 import { ControllerService } from '@services/controller.service';
 import { ProjectService } from '@services/project.service';
 import { NodeService } from '@services/node.service';
+import { NodeWipeService } from '@services/node-wipe.service';
+import { StartupConfigurationsService } from '@services/startup-configurations.service';
 import { LinkService } from '@services/link.service';
 import { MarkerRegistryService } from '@services/marker-registry.service';
 import { MarkerFlashService } from '@services/marker-flash.service';
@@ -746,6 +748,11 @@ describe('ProjectMapComponent', () => {
         { provide: ProjectPermissionService, useValue: mockProjectPermissionService },
         { provide: ProjectService, useValue: mockProjectService },
         { provide: NodeService, useValue: mockNodeService },
+        { provide: NodeWipeService, useValue: { wipe: vi.fn(() => of({ nodes: {} })) } },
+        {
+          provide: StartupConfigurationsService,
+          useValue: { get: vi.fn(() => of({ selected: 'default', sets: [] })) },
+        },
         { provide: LinkService, useValue: mockLinkService },
         { provide: DrawingService, useValue: mockDrawingService },
         { provide: ProgressService, useValue: mockProgressService },
