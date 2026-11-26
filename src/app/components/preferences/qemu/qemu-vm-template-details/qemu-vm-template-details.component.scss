@@ -83,9 +83,9 @@
     gap: var(--gns3-density-card-gap);
   }
 
-  .three-column-grid {
+  .startup-config-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     align-items: start;
   }

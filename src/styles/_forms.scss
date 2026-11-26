@@ -96,7 +96,7 @@
       margin-block: 0;
     }
 
-    :is(mat-form-field, app-netmiko-device-type-select) {
+    :is(mat-form-field, app-netmiko-device-type-select, app-startup-media-profile-select) {
       --mat-form-field-subscript-text-line-height: 16px;
     }
 

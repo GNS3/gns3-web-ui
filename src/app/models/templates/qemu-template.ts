@@ -55,5 +55,6 @@ export class QemuTemplate {
   uefi: boolean;
   tags: string[];
   netmiko_device_type?: string | null;
+  startup_media_profile?: string | null;
   appliance_metadata?: ApplianceMetadata | null;
 }

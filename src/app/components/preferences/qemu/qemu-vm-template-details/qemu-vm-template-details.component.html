@@ -197,7 +197,14 @@
           </mat-form-field>
         </div>
 
-        <div class="three-column-grid">
+        <div class="startup-config-grid">
+          <app-startup-media-profile-select
+            subscriptSizing="fixed"
+            [(value)]="startupMediaProfile"
+            [deviceType]="netmikoDeviceType()"
+            [controller]="controller"
+            class="qemu-template-details__field"
+          />
           <app-netmiko-device-type-select
             subscriptSizing="fixed"
             [(value)]="netmikoDeviceType"

@@ -1,0 +1,28 @@
+@if (state() === 'unavailable') {
+  <mat-form-field
+    appearance="outline"
+    [subscriptSizing]="subscriptSizing()"
+    class="startup-media-profile-select__field"
+  >
+    <mat-label>Startup configuration profile</mat-label>
+    <input matInput type="text" readonly [value]="readOnlyText()" />
+    <mat-hint role="note">The profile list could not be loaded. The current value is kept.</mat-hint>
+  </mat-form-field>
+} @else {
+  <mat-form-field
+    appearance="outline"
+    [subscriptSizing]="subscriptSizing()"
+    class="startup-media-profile-select__field"
+  >
+    <mat-label>Startup configuration profile</mat-label>
+    <mat-select [value]="value()" (valueChange)="choose($event)" [disabled]="disabled() || state() === 'loading'">
+      <mat-option value="">{{ consoleLabel }}</mat-option>
+      @if (unlisted(); as id) {
+        <mat-option [value]="id">{{ id }}</mat-option>
+      }
+      @for (profile of available(); track profile.id) {
+        <mat-option [value]="profile.id">{{ profile.title }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+}
