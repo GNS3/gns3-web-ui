@@ -76,6 +76,11 @@ export const SYNCED_PREFERENCE_KEYS: readonly string[] = [
   // shared by marker definitions, link markers and packet filters). User
   // scoped, so it follows the account across browsers.
   'gns3.bpf-presets',
+  // Projects page details panel width in px (drag the panel's left edge;
+  // double-click resets). Restored clamped against the current viewport, so
+  // values from a larger screen degrade safely on a smaller one — same
+  // contract as the widget geometry above.
+  'projectsDetailsWidth',
 ];
 
 interface UserPreferencesDoc {
