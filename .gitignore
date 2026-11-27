@@ -72,6 +72,9 @@ licenses.csv
 .claude/minimax-settings.json
 docs/angular.dev/
 
+# Virtualenv
+.venv
+*venv
 
 # Python tooling (scripts/)
 __pycache__/

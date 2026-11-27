@@ -188,11 +188,30 @@ describe('LoggedUserComponent', () => {
     });
   });
 
-  // Skip dialog tests - MatDialog.open() creates actual DOM elements
-  // and requires full Angular testing module with all dialog dependencies.
-  // These behaviors would be better tested in an integration test.
-  // Reference: template.component.spec.ts also skips dialog tests for similar reasons.
-  describe.skip('changePassword', () => {});
+  describe('changePassword', () => {
+    it('should not open dialog and show error toast when user has auth_source ldap', () => {
+      const dialogSpy = vi.spyOn(component['dialog'], 'open');
+      (component as any).controller = mockController;
+      component.user.set({ ...mockUser, auth_source: 'ldap' });
+
+      component.changePassword();
+
+      expect(dialogSpy).not.toHaveBeenCalled();
+      expect(mockToasterService.error).toHaveBeenCalledWith(
+        'Password cannot be changed for directory-authenticated accounts.',
+      );
+    });
+
+    it('should open dialog when user has auth_source local', () => {
+      const dialogSpy = vi.spyOn(component['dialog'], 'open').mockReturnValue({} as any);
+      (component as any).controller = mockController;
+      component.user.set({ ...mockUser, auth_source: 'local' });
+
+      component.changePassword();
+
+      expect(dialogSpy).toHaveBeenCalled();
+    });
+  });
 
   describe('node quotas', () => {
     const mockQuotas: UserQuotaUsage = {
