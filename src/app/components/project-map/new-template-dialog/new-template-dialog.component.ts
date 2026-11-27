@@ -756,7 +756,10 @@ export class NewTemplateDialogComponent implements OnInit, OnDestroy {
   private findMatchingControllerImage(images: Image[], definition: Image): Image | undefined {
     // In custom mode the explicitly named file takes precedence over a
     // published checksum match that may be a different appliance version.
-    if (this.allowCustomFiles()) {
+    // Images of versions created through this wizard have no published
+    // checksum, so the filename the user typed is the only possible match
+    // key — matching by it needs no "Allow custom files" opt-in.
+    if (this.allowCustomFiles() || this.customImageFilenames.has(definition.filename)) {
       const custom = images.find((image) => image.filename === definition.filename);
       if (custom) return custom;
     }
