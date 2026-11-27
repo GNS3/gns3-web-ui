@@ -37,24 +37,25 @@ export class ManagementComponent implements OnInit {
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
-  /**
-   * The tab bar renders this component's child routes, so the privilege
-   * gates come straight from the route config (what PrivilegeGuard checks)
-   * instead of a parallel list here — the two can no longer drift apart.
-   */
-  private readonly tabRoutes: readonly Route[] = this.route.routeConfig?.children ?? [];
-  readonly links = computed(() =>
-    [
-      { label: 'Users', icon: 'people', route: 'users' },
-      { label: 'Groups', icon: 'group', route: 'groups' },
-      { label: 'Roles', icon: 'badge', route: 'roles' },
-      { label: 'Pools', icon: 'folder_special', route: 'pools' },
-      { label: 'ACL', icon: 'security', route: 'ACL' },
-    ].filter((link) => {
-      const child = this.tabRoutes.find((route) => route.path === link.route);
-      return routeDataAllows(child?.data, (privilege) => this.permissionService.has(privilege));
-    }),
-  );
+/**
+ * The tab bar renders this component's child routes, so the privilege
+ * gates come straight from the route config (what PrivilegeGuard checks)
+ * instead of a parallel list here — the two can no longer drift apart.
+ */
+private readonly tabRoutes: readonly Route[] = this.route.routeConfig?.children ?? [];
+readonly links = computed(() =>
+  [
+    { label: 'Users', icon: 'people', route: 'users' },
+    { label: 'Groups', icon: 'group', route: 'groups' },
+    { label: 'Roles', icon: 'badge', route: 'roles' },
+    { label: 'Pools', icon: 'folder_special', route: 'pools' },
+    { label: 'ACL', icon: 'security', route: 'ACL' },
+    { label: 'Directory', icon: 'lan', route: 'directory' },
+  ].filter((link) => {
+    const child = this.tabRoutes.find((route) => route.path === link.route);
+    return routeDataAllows(child?.data, (privilege) => this.permissionService.has(privilege));
+  }),
+);
 
   constructor() {}
 
@@ -69,7 +70,7 @@ export class ManagementComponent implements OnInit {
         const message = err.error?.message || err.message || 'Failed to load controller';
         this.toasterService.error(message);
         this.cd.markForCheck();
-      }
+      },
     );
   }
 }
