@@ -64,6 +64,8 @@ import { TopologyPreviewService } from '@services/topology-preview.service';
 import { ProjectDistributionService } from '@services/project-distribution.service';
 import { TopologyPreviewData } from '@services/gns3-file.mapper';
 import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
+import { ResizableModule, ResizeEvent } from 'angular-resizable-element';
+import { UserPreferencesService } from '@services/user-preferences.service';
 
 @Component({
   selector: 'app-projects',
@@ -90,6 +92,7 @@ import { HasPrivilegeDirective } from '@directives/has-privilege.directive';
     HasPrivilegeDirective,
     ProjectBadgesComponent,
     ProjectActionsComponent,
+    ResizableModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -584,8 +587,85 @@ export class ProjectsComponent implements OnInit {
   private topologyPreviewService = inject(TopologyPreviewService);
   private permissionService = inject(PermissionService);
   private readonly distributionService = inject(ProjectDistributionService);
+  private readonly userPreferences = inject(UserPreferencesService);
+
+  // ── Details panel width (drag-resizable, preference-synced) ───
+  /**
+   * Width of the details panel, driven by dragging its left edge
+   * (angular-resizable-element, silent-gesture floating-window contract).
+   * Persisted through the UserPreferencesService facade under
+   * `projectsDetailsWidth` (listed in SYNCED_PREFERENCE_KEYS), so the width
+   * follows the account across browsers. Stored raw px, clamped at use
+   * time; the default equals the minimum (a settled product decision).
+   */
+  static readonly DETAILS_MIN_WIDTH_PX = 320;
+  static readonly DETAILS_DEFAULT_WIDTH_PX = ProjectsComponent.DETAILS_MIN_WIDTH_PX;
+  /** Max share of the viewport the panel may claim. */
+  private static readonly DETAILS_MAX_VIEWPORT_RATIO = 0.5;
+
+  readonly detailsWidth = signal(ProjectsComponent.DETAILS_DEFAULT_WIDTH_PX);
+  /** True while a resize gesture is live (carries user-select: none). */
+  readonly detailsResizing = signal(false);
+
+  private readonly removeExternalWidthHook = this.userPreferences.onExternalUpdate(() => {
+    // The server merge changed the stored width (another browser pushed it).
+    this.detailsWidth.set(this.readStoredDetailsWidth());
+  });
+
+  /** Restore the stored width, clamped against the CURRENT viewport. */
+  private readStoredDetailsWidth(): number {
+    const raw = this.userPreferences.getItem('projectsDetailsWidth');
+    const parsed = raw === null ? Number.NaN : Math.round(Number(raw));
+    return this.clampDetailsWidth(Number.isFinite(parsed) ? parsed : ProjectsComponent.DETAILS_DEFAULT_WIDTH_PX);
+  }
+
+  private clampDetailsWidth(width: number): number {
+    const max = Math.max(
+      ProjectsComponent.DETAILS_MIN_WIDTH_PX,
+      Math.floor(window.innerWidth * ProjectsComponent.DETAILS_MAX_VIEWPORT_RATIO),
+    );
+    return Math.min(Math.max(Math.round(width), ProjectsComponent.DETAILS_MIN_WIDTH_PX), max);
+  }
+
+  /** Reject gesture rects below the panel's own minimum or beyond the max. */
+  readonly validateDetailsResize = (event: ResizeEvent): boolean => {
+    const width = event.rectangle.width;
+    if (width === undefined) {
+      return true;
+    }
+    return Math.round(width) === this.clampDetailsWidth(width);
+  };
+
+  onDetailsResizeStart(): void {
+    this.detailsResizing.set(true);
+  }
+
+  /**
+   * LIVE follow (floating-window standard): non-ghost mode applies nothing
+   * by itself — the clamped width is mirrored into the style binding on
+   * every move so the panel tracks the pointer. Math.round keeps fractional
+   * px widths out of the layout (phantom-scrollbar guard).
+   */
+  onDetailsResizing(event: ResizeEvent): void {
+    const width = event.rectangle.width ?? this.detailsWidth();
+    this.detailsWidth.set(this.clampDetailsWidth(width));
+  }
+
+  onDetailsResizeEnd(event: ResizeEvent): void {
+    const width = this.clampDetailsWidth(event.rectangle.width ?? this.detailsWidth());
+    this.detailsWidth.set(width);
+    this.detailsResizing.set(false);
+    this.userPreferences.setItem('projectsDetailsWidth', String(width));
+  }
+
+  /** Double-click on the handle: back to the default width. */
+  resetDetailsWidth(): void {
+    this.userPreferences.removeItem('projectsDetailsWidth');
+    this.detailsWidth.set(ProjectsComponent.DETAILS_DEFAULT_WIDTH_PX);
+  }
 
   ngOnInit() {
+    this.destroyRef.onDestroy(() => this.removeExternalWidthHook());
     this.controller = this.route.snapshot.data['controller'];
     if (!this.controller) this.router.navigate(['/controllers']);
     this.currentUsername.set(this.controller.username ?? '');
