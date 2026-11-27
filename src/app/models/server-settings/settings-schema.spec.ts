@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  OpenApiDocument,
-  extractSettingsSchemas,
-  enrichSettingsMetadata,
-} from './settings-schema';
+import { OpenApiDocument, extractSettingsSchemas, enrichSettingsMetadata } from './settings-schema';
 import { SETTINGS_METADATA } from './settings-metadata';
 
 // Shapes copied from a live /openapi.json: SettingsResponse points at section
@@ -62,7 +58,12 @@ describe('enrichSettingsMetadata', () => {
   it('adopts the schema description as the field hint', () => {
     const doc = openApiDoc({
       Server: {
-        port: { type: 'integer', maximum: 65535, exclusiveMinimum: 0, description: 'HTTP port used to control the server' },
+        port: {
+          type: 'integer',
+          maximum: 65535,
+          exclusiveMinimum: 0,
+          description: 'HTTP port used to control the server',
+        },
       },
     });
 

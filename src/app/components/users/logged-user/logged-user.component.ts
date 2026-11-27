@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ControllerService } from '@services/controller.service';
 import { UserService } from '@services/user.service';
 import { ToasterService } from '@services/toaster.service';
@@ -20,7 +21,7 @@ export interface LoggedUserDialogData {
   selector: 'app-logged-user',
   templateUrl: './logged-user.component.html',
   styleUrl: './logged-user.component.scss',
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatProgressBarModule],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatTooltipModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoggedUserComponent implements OnInit {
@@ -34,7 +35,7 @@ export class LoggedUserComponent implements OnInit {
     private controllerService: ControllerService,
     private userService: UserService,
     private toasterService: ToasterService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
   ) {}
 
   ngOnInit() {
@@ -73,6 +74,10 @@ export class LoggedUserComponent implements OnInit {
   }
 
   changePassword(): void {
+    if (this.user()?.auth_source === 'ldap') {
+      this.toasterService.error('Password cannot be changed for directory-authenticated accounts.');
+      return;
+    }
     this.dialog.open<ChangeUserPasswordComponent>(ChangeUserPasswordComponent, {
       panelClass: ['base-dialog-panel', 'change-user-password-dialog-panel', 'dialog-small-panel'],
       data: { user: this.user(), controller: this.controller, self_update: true },

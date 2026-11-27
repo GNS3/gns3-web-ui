@@ -584,3 +584,24 @@
     grid-column: 1 / -1;
   }
 }
+
+.server-settings__actions-banner {
+  margin-bottom: var(--gns3-density-space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--gns3-density-space-3) var(--gns3-density-space-4);
+  border-radius: var(--gns3-density-radius-medium);
+  background: var(--mat-sys-surface-container-high);
+}
+
+.server-settings__actions-banner-desc {
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.server-settings__actions-spinner {
+  display: inline-block;
+  margin-right: var(--gns3-density-space-2);
+  vertical-align: middle;
+}

@@ -20,10 +20,7 @@ describe('ServerSettingsService', () => {
     };
 
     TestBed.configureTestingModule({
-      providers: [
-        ServerSettingsService,
-        { provide: HttpController, useValue: mockHttpController },
-      ],
+      providers: [ServerSettingsService, { provide: HttpController, useValue: mockHttpController }],
     });
     service = TestBed.inject(ServerSettingsService);
 
@@ -85,6 +82,25 @@ describe('ServerSettingsService', () => {
       const result = service.updateServerSettings(mockController, {});
 
       expect(result).toBeInstanceOf(Observable);
+    });
+  });
+
+  describe('testLdapConnection', () => {
+    it('should send a POST to /settings/ldap/test', () => {
+      mockHttpController.post = vi.fn().mockReturnValue(of({ status: 'success' }));
+      const payload = { enabled: true, uri: 'ldaps://ldap.example.com:636' };
+
+      service.testLdapConnection(mockController, payload as any);
+
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/settings/ldap/test', payload);
+    });
+
+    it('should send empty object if settingsUpdate is undefined', () => {
+      mockHttpController.post = vi.fn().mockReturnValue(of({ status: 'success' }));
+
+      service.testLdapConnection(mockController);
+
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/settings/ldap/test', {});
     });
   });
 });

@@ -20,7 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthResponse } from '@models/authResponse';
-import { Controller } from '@models/controller';
+import { Controller, ControllerProtocol } from '@models/controller';
 import { Version } from '@models/version';
 import { LoginService } from '@services/login.service';
 import { SessionResetService } from '@services/session-reset.service';
@@ -94,10 +94,20 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    const id = parseInt(controller_id, 10);
     this.returnUrl.set(this.route.snapshot.queryParams['returnUrl'] || '/');
 
-    this.controllerService.get(parseInt(controller_id, 10)).then(
-      (controller: Controller) => {
+    this.controllerService.get(id).then(
+      async (controller: Controller) => {
+        if (!controller) {
+          controller = this.createFallbackController(id);
+          try {
+            await this.controllerService.create(controller);
+          } catch {
+            await this.controllerService.update(controller);
+          }
+        }
+
         this.controller = controller;
 
         // Deliberately no auto-navigation away when a stale authToken is
@@ -118,9 +128,8 @@ export class LoginComponent implements OnInit {
           },
         });
       },
-      (err) => {
-        const message = err.error?.message || err.message || 'Failed to load controller';
-        this.toasterService.error(message);
+      () => {
+        this.controller = this.createFallbackController(id);
         this.cd.markForCheck();
       }
     );
@@ -134,6 +143,18 @@ export class LoginComponent implements OnInit {
         this.usernameInput.nativeElement.focus();
       }
     }, 100);
+  }
+
+  private createFallbackController(id?: number): Controller {
+    const port = parseInt(window.location.port, 10) || (window.location.protocol === 'https:' ? 443 : 80);
+    const controller = new Controller();
+    controller.id = id && !isNaN(id) && id > 0 ? id : 1;
+    controller.name = 'local';
+    controller.host = window.location.hostname || 'localhost';
+    controller.port = port;
+    controller.location = 'bundled';
+    controller.protocol = (window.location.protocol as ControllerProtocol) || 'http:';
+    return controller;
   }
 
   private loadRememberMeData() {
@@ -165,6 +186,10 @@ export class LoginComponent implements OnInit {
       return;
     }
 
+    if (!this.controller) {
+      this.controller = this.createFallbackController();
+    }
+
     const username = this.loginForm.value.username;
     const password = this.loginForm.value.password;
 
@@ -172,43 +197,67 @@ export class LoginComponent implements OnInit {
 
     this.loginService.login(this.controller, username, password).subscribe({
       next: async (response: AuthResponse) => {
-        let controller = this.controller;
-        controller.authToken = response.access_token;
+        try {
+          const controller = this.controller;
+          if (!controller) {
+            throw new Error('Controller configuration is missing');
+          }
 
-        // Save refresh_token for silent token refresh
-        if (response.refresh_token) {
-          localStorage.setItem(`refresh_token_${controller.id}`, response.refresh_token);
-        }
+          controller.authToken = response.access_token;
 
-        // A different user is taking over this controller entry: tear down
-        // the previous user's local state (privilege cache, preferences
-        // mirror, notification history, per-project flags) so nothing of
-        // their session leaks into this one. Same-user re-login keeps it.
-        if (controller.username && controller.username !== username) {
-          this.sessionReset.reset();
-        }
+          // Save refresh_token for silent token refresh
+          if (response.refresh_token) {
+            try {
+              localStorage.setItem(`refresh_token_${controller.id}`, response.refresh_token);
+            } catch (storageErr) {
+              console.warn('Failed to store refresh token in localStorage:', storageErr);
+            }
+          }
 
-        controller.username = username;
-        // The password deliberately never lands on the controller object:
-        // the object is persisted to localStorage, which is shared by every
-        // user of this browser profile. Authentication renews through the
-        // refresh token instead.
-        controller.tokenExpired = false;
-        await this.controllerService.update(controller);
+          // A different user is taking over this controller entry: tear down
+          // the previous user's local state (privilege cache, preferences
+          // mirror, notification history, per-project flags) so nothing of
+          // their session leaks into this one. Same-user re-login keeps it.
+          if (controller.username && controller.username !== username) {
+            this.sessionReset.reset();
+          }
 
-        // Establish global WebSocket connection
-        this.connectionManager.establishConnection(controller);
+          controller.username = response.username || username;
+          // The password deliberately never lands on the controller object:
+          // the object is persisted to localStorage, which is shared by every
+          // user of this browser profile. Authentication renews through the
+          // refresh token instead.
+          controller.tokenExpired = false;
+          await this.controllerService.update(controller);
 
-        // Handle remember me
-        this.handleRememberMe(username);
+          // Establish global WebSocket connection defensively
+          try {
+            this.connectionManager.establishConnection(controller);
+          } catch (wsErr) {
+            console.warn('Deferred WebSocket connection after login:', wsErr);
+          }
 
-        this.isLoading.set(false);
-        this.cd.markForCheck();
+          // Handle remember me
+          try {
+            this.handleRememberMe(username);
+          } catch (rmErr) {
+            console.warn('Failed to save remember-me state:', rmErr);
+          }
 
-        if (this.returnUrl().length <= 1) {
-          this.router.navigate(['/controller', this.controller.id, 'systemstatus']);
-        } else {
-          this.router.navigateByUrl(this.returnUrl());
+          this.isLoading.set(false);
+          this.cd.markForCheck();
+
+          if (this.returnUrl().length <= 1) {
+            await this.router.navigate(['/controller', controller.id, 'systemstatus']);
+          } else {
+            await this.router.navigateByUrl(this.returnUrl());
+          }
+        } catch (err: any) {
+          console.error('Login post-processing failed:', err);
+          this.isLoading.set(false);
+          const message = err?.error?.message || err?.message || 'Authentication error';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
         }
       },
       error: (err) => {

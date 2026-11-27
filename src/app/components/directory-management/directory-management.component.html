@@ -1,0 +1,617 @@
+@if (isLoading()) {
+  <div class="directory-management__loading">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <span>Loading directory configuration...</span>
+  </div>
+} @else {
+  <div class="directory-management">
+    <!-- Header -->
+    <header class="directory-management__header">
+      <div>
+        <h1 class="directory-management__title">Directory Authentication</h1>
+        <p class="directory-management__subtitle">
+          Configure Active Directory / LDAP identity federation and security group mapping
+        </p>
+      </div>
+      @if (isServerSupported()) {
+        <div class="directory-management__header-actions">
+          <mat-slide-toggle [(ngModel)]="ldapSettings.enabled">
+            Enable Directory Authentication
+          </mat-slide-toggle>
+          <button
+            mat-stroked-button
+            type="button"
+            class="directory-management__button directory-management__button--secondary"
+            [disabled]="isSaving() || isTesting()"
+            (mousedown)="$event.preventDefault()"
+            (click)="discardChanges()"
+          >
+            <span>Discard</span>
+          </button>
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            class="directory-management__button directory-management__button--primary"
+            [disabled]="isSaving() || isTesting() || (ldapSettings.enabled && !isFormValid())"
+            (mousedown)="$event.preventDefault()"
+            (click)="save()"
+          >
+            @if (isSaving()) {
+              <mat-progress-spinner
+                diameter="16"
+                mode="indeterminate"
+                class="directory-management__spinner"
+              ></mat-progress-spinner>
+              <span>Saving...</span>
+            } @else {
+              <mat-icon>save</mat-icon>
+              <span>Save Changes</span>
+            }
+          </button>
+        </div>
+      }
+    </header>
+
+    @if (!isServerSupported()) {
+      <div class="directory-management__unsupported-card">
+        <mat-icon class="directory-management__unsupported-icon">info</mat-icon>
+        <div class="directory-management__unsupported-content">
+          <h2 class="directory-management__unsupported-title">Directory Management Unsupported</h2>
+          <p class="directory-management__unsupported-text">
+            The connected controller
+            @if (serverVersion()) {
+              (running GNS3 server <strong>v{{ serverVersion() }}</strong>)
+            }
+            does not support Directory Management (LDAP / Active Directory).
+          </p>
+          <p class="directory-management__unsupported-subtext">
+            To configure directory authentication and group mapping, upgrade the controller to a GNS3 v3.1 server build with LDAP support.
+          </p>
+        </div>
+      </div>
+    } @else {
+      @if (ldapSettings.enabled && isPlainHttp()) {
+        <div class="directory-management__security-warning" role="alert">
+          <mat-icon class="directory-management__security-warning-icon">warning</mat-icon>
+          <div class="directory-management__security-warning-content">
+            <h2 class="directory-management__security-warning-title">Insecure HTTP Connection Detected</h2>
+            <p class="directory-management__security-warning-text">
+              Directory authentication is enabled, but GNS3 is currently being accessed over an unencrypted HTTP connection.
+              User credentials will be transmitted in plaintext across the network during login.
+            </p>
+            <p class="directory-management__security-warning-subtext">
+              To secure credentials and enable encrypted WebSockets (WSS), configure an HTTPS reverse proxy (e.g. Nginx, Caddy) or enable native SSL on the GNS3 server.
+            </p>
+          </div>
+        </div>
+      }
+
+      <div class="directory-management__content" [class.directory-management__content--disabled]="!ldapSettings.enabled">
+      <!-- Card D: Live Diagnostic Test Banner -->
+      <section class="directory-management__banner">
+        <div class="directory-management__banner-content">
+          <span class="directory-management__banner-title">Directory Connection Diagnostic</span>
+          <span class="directory-management__banner-desc">
+            Test connectivity, bind credentials, and user search against current or edited settings.
+          </span>
+        </div>
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          class="directory-management__button directory-management__button--primary"
+          [disabled]="isTesting() || (ldapSettings.enabled && !isFormValid())"
+          (mousedown)="$event.preventDefault()"
+          (click)="testConnection()"
+        >
+          @if (isTesting()) {
+            <mat-progress-spinner
+              diameter="16"
+              mode="indeterminate"
+              class="directory-management__spinner"
+            ></mat-progress-spinner>
+            <span>Testing...</span>
+          } @else {
+            <mat-icon>network_check</mat-icon>
+            <span>Test Connection</span>
+          }
+        </button>
+      </section>
+
+      <!-- Card A: Connection & Credentials -->
+      <section class="directory-management__card">
+        <div class="directory-management__card-header">
+          <h2 class="directory-management__card-title">
+            <mat-icon>dns</mat-icon>
+            Connection &amp; Credentials
+          </h2>
+          <p class="directory-management__card-desc">
+            Configure the directory server endpoint, service account credentials, and transport security.
+          </p>
+        </div>
+
+        <div class="directory-management__protocol-row">
+          <mat-slide-toggle [(ngModel)]="useLdaps" (change)="onProtocolToggle()">
+            Use LDAPS (SSL/TLS)
+          </mat-slide-toggle>
+          <mat-icon
+            class="directory-management__info-icon"
+            matTooltip="Encrypt all communication with the directory server using SSL/TLS (default port 636)."
+            matTooltipPosition="above"
+            tabindex="0"
+            aria-label="Information about LDAPS"
+            >info_outline</mat-icon
+          >
+        </div>
+
+        <div class="directory-management__form-grid">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Server Host / IP</mat-label>
+            <input
+              matInput
+              [(ngModel)]="serverHost"
+              [errorStateMatcher]="hostErrorStateMatcher"
+              placeholder="dc1.example.com"
+              required
+            />
+            <mat-hint>Hostname, FQDN, IPv4, or IPv6 address</mat-hint>
+            @if (!isHostValid()) {
+              <mat-error>Enter a valid hostname, FQDN, IPv4, or IPv6 address</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Port</mat-label>
+            <input
+              matInput
+              type="number"
+              min="1"
+              max="65535"
+              [(ngModel)]="serverPort"
+              placeholder="636"
+              required
+            />
+            <mat-hint>Port between 1 and 65535</mat-hint>
+            @if (!isPortValid()) {
+              <mat-error>Port must be between 1 and 65535</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="directory-management__full-width" subscriptSizing="dynamic">
+            <mat-label>Service Account (Email, UPN, Username, or DN)</mat-label>
+            <input
+              matInput
+              [(ngModel)]="ldapSettings.bind_dn"
+              placeholder="svc-gns3@example.com"
+            />
+            <mat-hint
+              >Service account email, UPN (user@domain.com), username, or full DN used to query directory</mat-hint
+            >
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="directory-management__full-width" subscriptSizing="dynamic">
+            <mat-label>Bind Password</mat-label>
+            <input
+              matInput
+              [type]="hidePassword ? 'password' : 'text'"
+              [(ngModel)]="bindPassword"
+              (ngModelChange)="onPasswordInput()"
+              placeholder="••••••••"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="hidePassword = !hidePassword"
+              [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'"
+            >
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-hint>Password for the service account (leave blank to keep existing)</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="directory-management__checkbox-group">
+          <label class="directory-management__section-label">Security &amp; Fallback</label>
+          <div class="directory-management__checkbox-item">
+            <mat-checkbox [(ngModel)]="ldapSettings.verify_cert">
+              Verify Certificate
+            </mat-checkbox>
+            <mat-icon
+              class="directory-management__info-icon"
+              matTooltip="Validate the server TLS certificate against trusted root certificates. Disable only for self-signed certificates in test environments."
+              matTooltipPosition="above"
+              tabindex="0"
+              aria-label="Information about certificate verification"
+              >info_outline</mat-icon
+            >
+          </div>
+          <div class="directory-management__checkbox-item">
+            <mat-checkbox [(ngModel)]="ldapSettings.fallback_to_local">
+              Fallback to Local Database
+            </mat-checkbox>
+            <mat-icon
+              class="directory-management__info-icon"
+              matTooltip="Allow local GNS3 accounts (such as admin) to authenticate if the directory server is unreachable."
+              matTooltipPosition="above"
+              tabindex="0"
+              aria-label="Information about local database fallback"
+              >info_outline</mat-icon
+            >
+          </div>
+          <div class="directory-management__checkbox-item">
+            <mat-checkbox [(ngModel)]="ldapSettings.start_tls">
+              Use StartTLS (for standard port 389)
+            </mat-checkbox>
+            <mat-icon
+              class="directory-management__info-icon"
+              matTooltip="Upgrade an unencrypted LDAP connection on standard port 389 to TLS after connecting."
+              matTooltipPosition="above"
+              tabindex="0"
+              aria-label="Information about StartTLS"
+              >info_outline</mat-icon
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- Card B: Directory Type & Search Scope -->
+      <section class="directory-management__card">
+        <div class="directory-management__card-header">
+          <h2 class="directory-management__card-title">
+            <mat-icon>tune</mat-icon>
+            Directory Type &amp; Search Scope
+          </h2>
+          <p class="directory-management__card-desc">Select your directory service type and allowed login formats.</p>
+        </div>
+
+        <div class="directory-management__preset-selector">
+          <label class="directory-management__preset-label">Directory Type</label>
+          <mat-radio-group
+            [(ngModel)]="directoryType"
+            (change)="onDirectoryTypeChange()"
+            class="directory-management__preset-group"
+          >
+            <mat-radio-button value="active_directory">Active Directory</mat-radio-button>
+            <mat-radio-button value="openldap">OpenLDAP / FreeIPA</mat-radio-button>
+            <mat-radio-button value="custom">Custom</mat-radio-button>
+          </mat-radio-group>
+        </div>
+
+        <div class="directory-management__form-grid">
+          <mat-form-field appearance="outline" class="directory-management__full-width" subscriptSizing="dynamic">
+            <mat-label>Base DN</mat-label>
+            <input matInput [(ngModel)]="ldapSettings.base_dn" placeholder="DC=example,DC=com" />
+            <mat-hint>Base Distinguished Name for user and group searches (e.g. DC=example,DC=com)</mat-hint>
+          </mat-form-field>
+        </div>
+
+        @if (directoryType !== 'custom') {
+          <div class="directory-management__form-grid">
+            <mat-form-field appearance="outline" class="directory-management__full-width" subscriptSizing="dynamic">
+              <mat-label>Canonical Username Format</mat-label>
+              <mat-select [(ngModel)]="ldapSettings.user_attr_username">
+                @if (directoryType === 'active_directory') {
+                  <mat-option value="sAMAccountName">sAMAccountName (Short username, e.g. user)</mat-option>
+                  <mat-option value="userPrincipalName">userPrincipalName (UPN, e.g. user@domain.com)</mat-option>
+                  <mat-option value="mail">mail (Email address, e.g. user@company.com)</mat-option>
+                } @else {
+                  <mat-option value="uid">uid (Short username, e.g. user)</mat-option>
+                  <mat-option value="mail">mail (Email address, e.g. user@company.com)</mat-option>
+                  <mat-option value="cn">cn (Common name, e.g. First Last)</mat-option>
+                }
+              </mat-select>
+              <mat-hint>
+                Official account format stored and displayed in GNS3 regardless of which login credential is used
+              </mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="directory-management__checkbox-group">
+            <label class="directory-management__section-label">Allowed Login Formats</label>
+            <div class="directory-management__checkbox-item">
+              <mat-checkbox [(ngModel)]="allowShortUsername">
+                Allow short username ({{ directoryType === 'active_directory' ? 'sAMAccountName' : 'uid' }})
+              </mat-checkbox>
+              <mat-icon
+                class="directory-management__info-icon"
+                matTooltip="Allow authentication using the short username attribute (e.g. sAMAccountName or uid)."
+                matTooltipPosition="above"
+                tabindex="0"
+                aria-label="Information about short username format"
+                >info_outline</mat-icon
+              >
+            </div>
+            @if (directoryType === 'active_directory') {
+              <div class="directory-management__checkbox-item">
+                <mat-checkbox [(ngModel)]="allowUpn">
+                  Allow User Principal Name (UPN, e.g. user&#64;domain.com)
+                </mat-checkbox>
+                <mat-icon
+                  class="directory-management__info-icon"
+                  matTooltip="Allow authentication using the full User Principal Name (e.g. user@domain.com)."
+                  matTooltipPosition="above"
+                  tabindex="0"
+                  aria-label="Information about UPN format"
+                  >info_outline</mat-icon
+                >
+              </div>
+            }
+            <div class="directory-management__checkbox-item">
+              <mat-checkbox [(ngModel)]="allowEmail">
+                Allow Email address (e.g. user&#64;company.com)
+              </mat-checkbox>
+              <mat-icon
+                class="directory-management__info-icon"
+                matTooltip="Allow authentication using the directory account's email attribute."
+                matTooltipPosition="above"
+                tabindex="0"
+                aria-label="Information about email format"
+                >info_outline</mat-icon
+              >
+            </div>
+          </div>
+        }
+
+        <!-- Collapsible Advanced Directory Settings & Custom Filters -->
+        <mat-accordion class="directory-management__accordion">
+          <mat-expansion-panel
+            [expanded]="isAdvancedExpanded() || directoryType === 'custom'"
+            (opened)="isAdvancedExpanded.set(true)"
+            (closed)="isAdvancedExpanded.set(false)"
+            class="directory-management__expansion-panel"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title class="directory-management__panel-title">
+                <mat-icon>settings</mat-icon>
+                <span>Advanced Settings &amp; Filters</span>
+              </mat-panel-title>
+              <mat-panel-description class="directory-management__panel-desc">
+                Network timeout, CA certificate file, and query filters
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="directory-management__panel-content">
+              <div class="directory-management__form-grid directory-management__form-grid--panel">
+                <mat-form-field appearance="outline" class="directory-management__half-width" subscriptSizing="dynamic">
+                  <mat-label>Network Timeout (seconds)</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    min="1"
+                    max="120"
+                    [(ngModel)]="ldapSettings.timeout"
+                  />
+                  <mat-hint>Timeout in seconds for queries (1-120s)</mat-hint>
+                  @if (!isTimeoutValid()) {
+                    <mat-error>Timeout must be between 1 and 120s</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="directory-management__full-width" subscriptSizing="dynamic">
+                  <mat-label>CA Certificate File (Optional)</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="ldapSettings.ca_cert_file"
+                    placeholder="/etc/ssl/certs/custom-ca.pem"
+                  />
+                  <mat-hint>Path on server to custom CA certificate for TLS verification</mat-hint>
+                </mat-form-field>
+              </div>
+
+              @if (directoryType === 'custom') {
+                <div class="directory-management__form-grid directory-management__form-grid--panel">
+                  <mat-form-field appearance="outline" class="directory-management__full-width" subscriptSizing="dynamic">
+                    <mat-label>User Search Filter</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="ldapSettings.user_search_filter"
+                      placeholder="(&(objectClass=person)(|(uid={username})(sAMAccountName={username})))"
+                    />
+                    <mat-hint
+                      >Filter to locate user. {{ '{username}' }} is replaced with the entered login name.</mat-hint
+                    >
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                    <mat-label>Username Attribute</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="ldapSettings.user_attr_username"
+                      placeholder="sAMAccountName"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                    <mat-label>Email Attribute</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="ldapSettings.user_attr_email"
+                      placeholder="mail"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                    <mat-label>Full Name Attribute</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="ldapSettings.user_attr_fullname"
+                      placeholder="displayName"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="directory-management__full-width" subscriptSizing="dynamic">
+                    <mat-label>Group Search Filter</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="ldapSettings.group_search_filter"
+                      placeholder="(&(objectClass=group)(member={user_dn}))"
+                    />
+                    <mat-hint
+                      >Filter to locate user groups. {{ '{user_dn}' }} and {{ '{username}' }} are replaced.</mat-hint
+                    >
+                  </mat-form-field>
+                </div>
+              }
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </section>
+
+      <!-- Card C: Interactive Proxmox-Style Group Mapping Table -->
+      <section class="directory-management__card">
+        <div class="directory-management__card-header">
+          <h2 class="directory-management__card-title">
+            <mat-icon>group_work</mat-icon>
+            Group Mapping
+          </h2>
+          <p class="directory-management__card-desc">
+            Map Active Directory / LDAP security groups directly to GNS3 user groups. The GNS3 ACL engine automatically
+            applies permissions based on the target group.
+          </p>
+        </div>
+
+        <div class="directory-management__fallback-group-row">
+          <mat-form-field
+            appearance="outline"
+            class="directory-management__fallback-group-field"
+            subscriptSizing="dynamic"
+          >
+            <mat-label>Default Fallback Group</mat-label>
+            <mat-select
+              [value]="ldapSettings.default_group || 'Users'"
+              (selectionChange)="onDefaultGroupSelect($event)"
+            >
+              @for (grp of availableGroups; track grp.user_group_id || grp.name) {
+                <mat-option [value]="grp.name">{{ grp.name }}</mat-option>
+              }
+              <mat-divider></mat-divider>
+              <mat-option value="__ADD_NEW_GROUP__" class="directory-management__select-add-option">
+                <mat-icon>add</mat-icon>
+                <span>Add Group...</span>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <span class="directory-management__fallback-group-desc">
+            Assigned to directory users who do not match any mapped security groups.
+          </span>
+        </div>
+
+        <div class="directory-management__table-container">
+          <table mat-table [dataSource]="groupMappings" class="directory-management__table">
+            <!-- Directory Security Group Column -->
+            <ng-container matColumnDef="directoryGroup">
+              <th mat-header-cell *matHeaderCellDef>Directory Security Group</th>
+              <td mat-cell *matCellDef="let element">
+                <mat-form-field appearance="outline" class="directory-management__table-input" subscriptSizing="dynamic">
+                  <input
+                    matInput
+                    [(ngModel)]="element.directoryGroup"
+                    placeholder="e.g. Domain Admins or CN=Domain Users,CN=Users,DC=example,DC=com"
+                    required
+                  />
+                </mat-form-field>
+              </td>
+            </ng-container>
+
+            <!-- GNS3 Target Group Column -->
+            <ng-container matColumnDef="targetGroup">
+              <th mat-header-cell *matHeaderCellDef>GNS3 Target Group</th>
+              <td mat-cell *matCellDef="let element">
+                <mat-form-field appearance="outline" class="directory-management__table-input" subscriptSizing="dynamic">
+                  <mat-select
+                    [value]="element.targetGroup"
+                    (selectionChange)="onTargetGroupSelect($event, element)"
+                  >
+                    @for (grp of availableGroups; track grp.user_group_id || grp.name) {
+                      <mat-option [value]="grp.name">{{ grp.name }}</mat-option>
+                    }
+                    <mat-divider></mat-divider>
+                    <mat-option value="__ADD_NEW_GROUP__" class="directory-management__select-add-option">
+                      <mat-icon>add</mat-icon>
+                      <span>Add Group...</span>
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </td>
+            </ng-container>
+
+            <!-- Action Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="directory-management__table-action-col">Action</th>
+              <td mat-cell *matCellDef="let element; let i = index" class="directory-management__table-action-col">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  type="button"
+                  (click)="removeGroupMapping(i)"
+                  aria-label="Remove mapping"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedMappingColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedMappingColumns"></tr>
+          </table>
+
+          @if (groupMappings.length === 0) {
+            <div class="directory-management__empty-table">
+              No group mappings configured. Directory users will be assigned to the default group.
+            </div>
+          }
+        </div>
+
+        <div class="directory-management__table-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            class="directory-management__button directory-management__button--secondary"
+            (click)="addGroupMapping()"
+          >
+            <mat-icon>add</mat-icon>
+            <span>Add Group Mapping</span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="directory-management__footer-actions">
+      <button
+        mat-stroked-button
+        type="button"
+        class="directory-management__button directory-management__button--secondary"
+        [disabled]="isSaving() || isTesting()"
+        (mousedown)="$event.preventDefault()"
+        (click)="discardChanges()"
+      >
+        <span>Discard Changes</span>
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        class="directory-management__button directory-management__button--primary"
+        [disabled]="isSaving() || isTesting() || (ldapSettings.enabled && !isFormValid())"
+        (mousedown)="$event.preventDefault()"
+        (click)="save()"
+      >
+        @if (isSaving()) {
+          <mat-progress-spinner
+            diameter="16"
+            mode="indeterminate"
+            class="directory-management__spinner"
+          ></mat-progress-spinner>
+          <span>Saving...</span>
+        } @else {
+          <mat-icon>save</mat-icon>
+          <span>Save Changes</span>
+        }
+      </button>
+    </div>
+  }
+  </div>
+}

@@ -120,8 +120,7 @@
           <mat-icon matListItemIcon>manage_accounts</mat-icon>
           <span matListItemTitle>Access Management</span>
         </a>
-        }
-        }
+        }        }
       </mat-nav-list>
 
       <!-- Support Section -->
@@ -149,10 +148,10 @@
           <span matListItemTitle>Community</span>
         </a>
         @if (controllerId) {
-        <button mat-list-item class="sidebar__nav-item" type="button" (click)="goToDocumentation()">
-          <mat-icon matListItemIcon>api</mat-icon>
-          <span matListItemTitle>API documentation</span>
-        </button>
+          <button mat-list-item class="sidebar__nav-item" type="button" (click)="goToDocumentation()">
+            <mat-icon matListItemIcon>api</mat-icon>
+            <span matListItemTitle>API documentation</span>
+          </button>
         }
         <a
           mat-list-item
@@ -182,10 +181,10 @@
 
         <!-- GNS3 brand -->
         @if (!sidenavOpened()) {
-        <span class="toolbar__brand">
-          <img src="./assets/gns3_icon.svg" class="toolbar__brand-icon" alt="" />
-          GNS3
-        </span>
+          <span class="toolbar__brand">
+            <img src="./assets/gns3_icon.svg" class="toolbar__brand-icon" alt="" />
+            GNS3
+          </span>
         }
 
         <span class="spacer"></span>
@@ -202,20 +201,25 @@
         >
           <mat-icon>{{ notificationCenter.panelOpen() ? 'notifications' : 'notifications_none' }}</mat-icon>
           @if (notificationCenter.unreadCount() > 0) {
-          <span class="toolbar__notification-badge">{{
-            notificationCenter.unreadCount() > 99 ? '99+' : notificationCenter.unreadCount()
-          }}</span>
+            <span class="toolbar__notification-badge">{{
+              notificationCenter.unreadCount() > 99 ? '99+' : notificationCenter.unreadCount()
+            }}</span>
           }
         </button>
 
         @if (controller && controllerId) {
-        <button mat-button class="toolbar__account" [matMenuTriggerFor]="userMenu" aria-label="Open user account menu">
-          <span class="toolbar__account-avatar">
-            <mat-icon>person</mat-icon>
-          </span>
-          <span class="toolbar__account-name">{{ controller.username || 'User' }}</span>
-          <mat-icon class="toolbar__account-arrow">arrow_drop_down</mat-icon>
-        </button>
+          <button
+            mat-button
+            class="toolbar__account"
+            [matMenuTriggerFor]="userMenu"
+            aria-label="Open user account menu"
+          >
+            <span class="toolbar__account-avatar">
+              <mat-icon>person</mat-icon>
+            </span>
+            <span class="toolbar__account-name">{{ controller.username || 'User' }}</span>
+            <mat-icon class="toolbar__account-arrow">arrow_drop_down</mat-icon>
+          </button>
         }
 
         <!-- Logged-in user account menu -->

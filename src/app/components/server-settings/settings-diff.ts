@@ -4,15 +4,8 @@
 // (unchanged / set / clear) because the API treats the GET mask and an empty
 // string as "leave unchanged" and null as "remove the option".
 
-import {
-  ServerSettings,
-  ServerSettingsUpdate,
-} from '@models/server-settings/server-settings';
-import {
-  SettingsFieldMeta,
-  SettingsFieldValue,
-  SettingsSectionMeta,
-} from '@models/server-settings/settings-metadata';
+import { ServerSettings, ServerSettingsUpdate } from '@models/server-settings/server-settings';
+import { SettingsFieldMeta, SettingsFieldValue, SettingsSectionMeta } from '@models/server-settings/settings-metadata';
 
 export type SecretState = { state: 'unchanged' } | { state: 'set'; value: string } | { state: 'clear' };
 
