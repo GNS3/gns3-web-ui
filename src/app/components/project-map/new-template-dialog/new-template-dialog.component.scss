@@ -723,7 +723,7 @@ button.new-template-wizard__method-option--selected {
 .new-template-wizard__file-options {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 16px;
 
   button {

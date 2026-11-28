@@ -513,8 +513,13 @@
               }
               <div class="new-template-wizard__files-footer">
                 <div class="new-template-wizard__file-options">
-                  <mat-checkbox [checked]="allowCustomFiles()" (change)="onAllowCustomFilesChange($event)">
-                    Allow custom files
+                  <mat-checkbox
+                    [checked]="allowCustomFiles()"
+                    (change)="onAllowCustomFilesChange($event)"
+                    matTooltip="Allow images whose MD5 checksum differs from the appliance definition, and match them by filename. Files created through 'Create new version' always match by filename."
+                    matTooltipClass="custom-tooltip"
+                  >
+                    Allow files with different checksums
                   </mat-checkbox>
                   @if (applianceToInstall().qemu) {
                   <button

@@ -480,11 +480,12 @@ describe('NewTemplateDialogComponent', () => {
         images: { hda_disk_image: 'new.img', cdrom_image: 'install.iso' },
       });
       expect(component.filesReady()).toBe(false);
-      component.allowCustomFiles.set(true);
       component.qemuImages.set([{ filename: 'new.img' }, { filename: 'install.iso' }] as Image[]);
+      // Custom version images have no published checksum, so they match by
+      // the filename the user typed — no "Allow custom files" opt-in needed.
       expect(component.filesReady()).toBe(true);
-      component.allowCustomFiles.set(false);
-      expect(component.filesReady()).toBe(false);
+      component.allowCustomFiles.set(true);
+      expect(component.filesReady()).toBe(true);
     });
 
     it('rejects duplicate names and paths without partially adding images', () => {
@@ -501,7 +502,7 @@ describe('NewTemplateDialogComponent', () => {
       expect(mockToasterService.error).toHaveBeenCalledTimes(2);
     });
 
-    it('matches custom files by filename only when explicitly enabled', () => {
+    it('matches published appliance files by filename only when explicitly enabled', () => {
       component.applianceToInstall.set(createMockAppliance());
       component.qemuImages.set([{ filename: 'test-image.img', checksum: 'different' }] as Image[]);
       expect(component.checkImageFromVersion('test-image.img')).toBe(false);
