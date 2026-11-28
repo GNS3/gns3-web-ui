@@ -11,6 +11,7 @@ import { ToasterService } from '@services/toaster.service';
 import { QemuValidationService } from '@services/validation';
 import { DialogConfigService } from '@services/dialog-config.service';
 import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
+import { StartupMediaProfilesService } from '@services/startup-media-profiles.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -210,7 +211,18 @@ describe('QemuVmTemplateDetailsComponent', () => {
         { provide: DialogConfigService, useValue: mockDialogConfigService },
         { provide: ImageManagerService, useValue: mockImageManagerService },
         { provide: QemuValidationService, useValue: mockValidationService },
-        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
+        {
+          provide: StartupMediaProfilesService,
+          useValue: {
+            list: vi.fn(() =>
+              of([{ id: 'cisco-viptela', title: 'Cisco Viptela', device_type: 'cisco_viptela', description: '' }]),
+            ),
+          },
+        },
+        {
+          provide: NetmikoDeviceTypesService,
+          useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) },
+        },
       ],
     }).compileComponents();
 
@@ -225,17 +237,24 @@ describe('QemuVmTemplateDetailsComponent', () => {
   it('removes deleted ISOs from the dropdown when inventory is refreshed', () => {
     const component = fixture.componentInstance;
     component.cdromImage.set('deleted.iso');
-    mockImageManagerService.getImages.mockReturnValue(of([
-      { filename: 'deleted.iso', path: '/images/QEMU/deleted.iso', availability: 'available' },
-    ]));
+    mockImageManagerService.getImages.mockReturnValue(
+      of([{ filename: 'deleted.iso', path: '/images/QEMU/deleted.iso', availability: 'available' }]),
+    );
     component.refreshGlobalImages();
     expect(component.filteredGlobalImages.map((image) => image.filename)).toEqual(['deleted.iso']);
 
-    mockImageManagerService.getImages.mockReturnValue(of([
-      { filename: 'deleted.iso', path: '/images/QEMU/deleted.iso', availability: 'missing' },
-      { filename: 'installer.ISO', path: '/images/QEMU/installers/installer.ISO', reference: 'installers/installer.ISO', availability: 'available' },
-      { filename: 'invalid.iso', availability: 'invalid' },
-    ]));
+    mockImageManagerService.getImages.mockReturnValue(
+      of([
+        { filename: 'deleted.iso', path: '/images/QEMU/deleted.iso', availability: 'missing' },
+        {
+          filename: 'installer.ISO',
+          path: '/images/QEMU/installers/installer.ISO',
+          reference: 'installers/installer.ISO',
+          availability: 'available',
+        },
+        { filename: 'invalid.iso', availability: 'invalid' },
+      ]),
+    );
     component.refreshGlobalImages();
     expect(component.filteredGlobalImages.map((image) => image.path)).toEqual(['installers/installer.ISO']);
     expect(component.cdromImage()).toBe('deleted.iso');
@@ -323,15 +342,14 @@ describe('QemuVmTemplateDetailsComponent', () => {
 
   it('should navigate back when goBack is called', () => {
     fixture.componentInstance.goBack();
-    expect(mockRouter.navigate).toHaveBeenCalledWith([
-      '/controller',
-      mockController.id,
-      'preferences',
-    ]);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', mockController.id, 'preferences']);
   });
 
   it('should show error when saving with missing template name', () => {
-    mockValidationService.validateName.mockReturnValue({ isValid: false, errorMessage: 'Missing required fields: Template name' });
+    mockValidationService.validateName.mockReturnValue({
+      isValid: false,
+      errorMessage: 'Missing required fields: Template name',
+    });
 
     fixture.componentInstance.onSave();
 
@@ -341,7 +359,10 @@ describe('QemuVmTemplateDetailsComponent', () => {
 
   it('should show error when saving with missing default name format', () => {
     mockValidationService.validateName.mockReturnValue({ isValid: true, errorMessage: '' });
-    mockValidationService.validatePortNameFormat.mockReturnValue({ isValid: false, errorMessage: 'Invalid port name format' });
+    mockValidationService.validatePortNameFormat.mockReturnValue({
+      isValid: false,
+      errorMessage: 'Invalid port name format',
+    });
 
     fixture.componentInstance.onSave();
 
@@ -352,7 +373,10 @@ describe('QemuVmTemplateDetailsComponent', () => {
   it('should show error when saving with missing symbol', () => {
     mockValidationService.validateName.mockReturnValue({ isValid: true, errorMessage: '' });
     mockValidationService.validatePortNameFormat.mockReturnValue({ isValid: true, errorMessage: '' });
-    mockValidationService.validateFirstPortName.mockReturnValue({ isValid: false, errorMessage: 'First port name is required' });
+    mockValidationService.validateFirstPortName.mockReturnValue({
+      isValid: false,
+      errorMessage: 'First port name is required',
+    });
 
     fixture.componentInstance.onSave();
 
@@ -365,6 +389,28 @@ describe('QemuVmTemplateDetailsComponent', () => {
 
     expect(mockQemuService.saveTemplate).toHaveBeenCalled();
     expect(mockToasterService.success).toHaveBeenCalledWith('Changes saved');
+  });
+
+  it('should offer the startup configuration profile select with no profile selected by default', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('app-startup-media-profile-select')).not.toBeNull();
+    expect(fixture.componentInstance.startupMediaProfile()).toBe('');
+  });
+
+  it('should save the selected startup configuration profile', () => {
+    fixture.componentInstance.startupMediaProfile.set('cisco-viptela');
+    fixture.componentInstance.onSave();
+    expect(mockQemuService.saveTemplate.mock.calls.at(-1)[1].startup_media_profile).toBe('cisco-viptela');
+  });
+
+  it('should save null when the profile is cleared', () => {
+    fixture.componentInstance.startupMediaProfile.set('cisco-viptela');
+    fixture.componentInstance.onSave();
+    fixture.componentInstance.startupMediaProfile.set('');
+    fixture.componentInstance.onSave();
+    expect(mockQemuService.saveTemplate.mock.calls.at(-1)[1].startup_media_profile).toBeNull();
   });
 
   it('should handle save error', () => {
@@ -436,7 +482,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
       expect.objectContaining({
         autoFocus: false,
         disableClose: false,
-      })
+      }),
     );
     expect(mockMatDialog.open).toHaveBeenCalled();
   });
@@ -487,7 +533,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
     expect(fixture.componentInstance.macAddress()).toBe(mockQemuTemplate.mac_address);
     expect(fixture.componentInstance.networkType()).toBe(mockQemuTemplate.adapter_type);
     expect(fixture.componentInstance.replicateNetworkConnectionState()).toBe(
-      mockQemuTemplate.replicate_network_connection_state
+      mockQemuTemplate.replicate_network_connection_state,
     );
   });
 

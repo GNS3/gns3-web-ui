@@ -1,0 +1,249 @@
+<h2 mat-dialog-title>{{ running() ? 'Exporting configurations…' : 'Startup configurations' }}</h2>
+<mat-dialog-content>
+  @if (loadError()) {
+    <div class="load-error" role="alert">
+      <p>{{ loadError() }}</p>
+      <button mat-flat-button (click)="load()" [disabled]="loading()">{{ loading() ? 'Retrying…' : 'Retry' }}</button>
+    </div>
+  } @else if (document(); as document) {
+    @if (statusError()) {
+      <p class="status" role="status">Status updates unavailable: {{ statusError() }}</p>
+    }
+    <div class="toolbar set-toolbar">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Configuration set</mat-label>
+        <mat-select [value]="viewing()" (selectionChange)="selectSet($event.value)" [disabled]="blocked()">
+          @for (set of document.sets; track set.id) {
+            <mat-option [value]="set.id"
+              >{{ set.name }}{{ set.id === document.selected ? ' (project default)' : '' }}</mat-option
+            >
+          }
+        </mat-select>
+      </mat-form-field>
+      <div class="set-operations" role="group" aria-label="Configuration set operations">
+        <button
+          mat-icon-button
+          class="create-set"
+          aria-label="Create set"
+          matTooltip="Create configuration set"
+          (click)="nameSet('create')"
+          [disabled]="readOnly || blocked() || document.sets.length >= maxSets"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          aria-label="Copy set"
+          matTooltip="Copy configuration set"
+          (click)="nameSet('copy')"
+          [disabled]="readOnly || blocked() || document.sets.length >= maxSets"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          class="rename-set"
+          aria-label="Rename set"
+          matTooltip="Rename configuration set"
+          (click)="nameSet('rename')"
+          [disabled]="readOnly || blocked() || viewing() === defaultSetId"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          class="delete-set"
+          aria-label="Delete set"
+          matTooltip="Delete configuration set"
+          (click)="deleteSet()"
+          [disabled]="readOnly || blocked() || document.sets.length < 2 || viewing() === defaultSetId"
+        >
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+        <input
+          type="file"
+          accept=".zip,application/zip,application/x-zip-compressed"
+          #setsFile
+          hidden
+          (change)="importSet($event)"
+        />
+        <button
+          mat-icon-button
+          class="import-set"
+          aria-label="Import set from archive"
+          matTooltip="Import a configuration set from a ZIP archive as a new set"
+          (click)="setsFile.click()"
+          [disabled]="readOnly || dirty() || blocked() || document.sets.length >= maxSets"
+        >
+          <mat-icon>file_upload</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          class="export-set"
+          aria-label="Export set as archive"
+          matTooltip="Export this configuration set as a ZIP archive (may contain secrets)"
+          (click)="exportSet()"
+          [disabled]="dirty() || blocked()"
+        >
+          <mat-icon>file_download</mat-icon>
+        </button>
+        <span class="operation-divider" aria-hidden="true"></span>
+        <button
+          mat-icon-button
+          class="apply-set"
+          aria-label="Apply Config Set"
+          matTooltip="Assign this configuration set to all nodes, replacing individual startup choices."
+          (click)="setStartupForAll(true)"
+          [disabled]="readOnly || blocked() || !canApplySet()"
+        >
+          <mat-icon>flash_on</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          class="reset-startup"
+          aria-label="Disable all saved configurations"
+          matTooltip="Disable saved startup configurations. Wipe and start nodes to return to base-image defaults."
+          (click)="setStartupForAll(false)"
+          [disabled]="readOnly || blocked()"
+        >
+          <mat-icon>flash_off</mat-icon>
+        </button>
+      </div>
+    </div>
+    <p class="intro">
+      Uploads save and enable startup use for that node. Apply Config Set assigns the viewed set to all nodes. Use Wipe
+      node, then Start to boot with the assigned startup configuration. Wipe again after changing the configuration or
+      startup set. Saved files and sets are kept; ordinary restarts preserve the device's saved configuration.
+    </p>
+    <div class="workspace">
+      <nav aria-label="Node configurations">
+        @for (node of nodes(); track node.node_id) {
+          <div
+            class="node"
+            [class.selected]="node.node_id === nodeId()"
+            [attr.data-startup-state]="startupState(node.node_id)"
+          >
+            <button
+              type="button"
+              class="node-select"
+              [attr.aria-current]="node.node_id === nodeId() ? 'true' : null"
+              (click)="selectNode(node.node_id)"
+              [disabled]="blocked()"
+            >
+              <span class="node-icon" aria-hidden="true">
+                @if (node.symbol_url) {
+                  <img [src]="node.symbol_url" alt="" (error)="node.symbol_url = undefined" />
+                } @else {
+                  <mat-icon>dns</mat-icon>
+                }
+              </span>
+              <span class="node-identity">
+                <span class="node-name" [title]="node.name">{{ node.name }}</span>
+                <span class="node-startup-set" [title]="'Startup set: ' + assignedSetName(node.node_id)"
+                  >Startup: {{ assignedSetName(node.node_id) }}</span
+                >
+              </span>
+              <span
+                class="node-status"
+                role="img"
+                [attr.data-status]="node.status"
+                [attr.aria-label]="node.status"
+                [title]="node.status"
+              ></span>
+            </button>
+            <app-startup-toggle
+              [state]="startupState(node.node_id)"
+              [label]="'Apply startup configuration for ' + node.name"
+              [description]="startupDescription(node.node_id)"
+              [disabled]="readOnly || blocked() || !canToggleStartup(node.node_id)"
+              (toggled)="toggleStartup(node.node_id)"
+            />
+          </div>
+        }
+      </nav>
+      <section class="editor">
+        @if (currentNode(); as node) {
+          <div class="toolbar node-toolbar">
+            <strong>{{ node.name }}</strong>
+          </div>
+          <app-configuration-text-editor
+            label="Startup configuration"
+            [value]="draft().content"
+            (valueChange)="editContent($event)"
+            [disabled]="readOnly || blocked() || !!editBlockedHint()"
+          ></app-configuration-text-editor>
+          @if (editBlockedHint(); as hint) {
+            <p class="status" role="note">{{ hint }}</p>
+          }
+          @if (restoreWarning(); as warning) {
+            <p class="status" role="note">{{ warning }}</p>
+          }
+          <div class="toolbar node-config-actions" role="group" aria-label="Node configuration operations">
+            <span class="import-node-tooltip" matTooltip="Fetch from device and save to this set">
+              <button
+                mat-icon-button
+                class="import-node"
+                aria-label="Fetch from device"
+                (click)="capture()"
+                [disabled]="readOnly || blocked() || !canCapture()"
+              >
+                <mat-icon>sync</mat-icon>
+              </button>
+            </span>
+            <input type="file" #configFile hidden (change)="upload($event)" />
+            <button
+              mat-icon-button
+              class="upload-config"
+              aria-label="Upload configuration"
+              matTooltip="Upload node configuration"
+              (click)="configFile.click()"
+              [disabled]="readOnly || blocked() || !!editBlockedHint()"
+            >
+              <mat-icon>file_upload</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              aria-label="Download configuration"
+              matTooltip="Download node configuration"
+              (click)="download()"
+              [disabled]="!draft().content"
+            >
+              <mat-icon>file_download</mat-icon>
+            </button>
+          </div>
+          @if (nodeStatus(node.node_id); as status) {
+            <p class="status" role="status">{{ status }}</p>
+            @if (waitingHint(node.node_id); as hint) {
+              <p class="status hint">{{ hint }}</p>
+            }
+            @if (failureDetail(node.node_id); as detail) {
+              <p class="status failure-detail" role="note">
+                <span class="failure-text" [attr.title]="detail">{{ detail }}</span>
+                <button
+                  mat-icon-button
+                  type="button"
+                  aria-label="Copy failure details"
+                  matTooltip="Copy failure details"
+                  [cdkCopyToClipboard]="detail"
+                >
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </p>
+            }
+          }
+        } @else {
+          <p>This project has no nodes that support startup configurations.</p>
+        }
+      </section>
+    </div>
+  } @else {
+    <p>Loading startup configurations…</p>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" (click)="save()" [disabled]="readOnly || !dirty() || blocked()">Save</button>
+  @if (dirty()) {
+    <button mat-stroked-button (click)="cancel()" [disabled]="blocked()">Cancel changes</button>
+  }
+  <button mat-stroked-button (click)="close()" [disabled]="dirty() || busy()">Close</button>
+</mat-dialog-actions>

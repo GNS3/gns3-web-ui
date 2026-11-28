@@ -163,6 +163,16 @@
   <mat-icon>bug_report</mat-icon>
 </button>
 }
+<button
+  *appHasProjectPrivilege="['Project.Audit', 'Node.Audit']"
+  mat-icon-button
+  class="menu-button"
+  matTooltip="Startup configurations"
+  matTooltipPosition="left"
+  (click)="openStartupConfigurations()"
+>
+  <mat-icon>description</mat-icon>
+</button>
 <app-drawing-added
   [controller]="controller()"
   [project]="project()"

@@ -29,6 +29,8 @@ import { Image } from '@models/images';
 import { Controller } from '@models/controller';
 import { QemuTemplate } from '@models/templates/qemu-template';
 import { ApplianceMetadata } from '@models/appliance-metadata';
+import { startupMediaProfileToSave } from '@models/startup-media-profile';
+import { StartupMediaProfileSelectComponent } from '@components/startup-media-profile-select/startup-media-profile-select.component';
 import { NetmikoDeviceTypeSelectComponent } from '@components/netmiko-device-type-select/netmiko-device-type-select.component';
 import {
   applianceCredentialValue,
@@ -73,6 +75,7 @@ import { DialogConfigService } from '@services/dialog-config.service';
     MatChipsModule,
     MatCheckboxModule,
     NetmikoDeviceTypeSelectComponent,
+    StartupMediaProfileSelectComponent,
     MatAutocompleteModule,
     TemplateMetadataSectionComponent,
   ],
@@ -176,6 +179,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   // Usage & Tags
   usage = model('');
   netmikoDeviceType = model('');
+  /** Boot media profile id; '' = console restore. */
+  startupMediaProfile = model('');
   readonly applianceMetadata = signal<ApplianceMetadata | null>(null);
   readonly defaultUsername = computed(() => applianceCredentialValue(this.applianceMetadata(), 'default_username'));
   readonly defaultPassword = computed(() => applianceCredentialValue(this.applianceMetadata(), 'default_password'));
@@ -286,6 +291,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
     this.usage.set(this.qemuTemplate.usage || '');
     this.netmikoDeviceType.set(this.qemuTemplate.netmiko_device_type || '');
+    this.startupMediaProfile.set(this.qemuTemplate.startup_media_profile || '');
     this.applianceMetadata.set(this.qemuTemplate.appliance_metadata ?? null);
     this.tags.set(this.qemuTemplate.tags || []);
   }
@@ -557,6 +563,10 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
     this.qemuTemplate.usage = this.usage();
     this.qemuTemplate.netmiko_device_type = this.netmikoDeviceType().trim() || null;
+    const startupMediaProfile = startupMediaProfileToSave(this.startupMediaProfile(), this.qemuTemplate.startup_media_profile);
+    if (startupMediaProfile !== undefined) {
+      this.qemuTemplate.startup_media_profile = startupMediaProfile;
+    }
     this.qemuTemplate.appliance_metadata = this.applianceMetadata();
     this.qemuTemplate.tags = this.tags();
 

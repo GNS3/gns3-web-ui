@@ -129,6 +129,8 @@ export class GraphDataManager {
       } else {
         const oldSigs = this.nodeSig.get(n.node_id);
         const changed = changedGroups(oldSigs?.groups, sigs.groups);
+        // Not drawn, so not in the signature, but the context menu reads it from the MapNode.
+        existing.netmikoDeviceType = n.netmiko_device_type;
         // Re-apply the server value even when the signature is unchanged: the
         // live datum may have been mutated by a drag (DraggableSelectionComponent
         // writes cursor positions into the MapNode while dragging), and a drag

@@ -1,0 +1,65 @@
+@use '../../../../../styles/buttons' as buttons;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  gap: var(--gns3-density-space-3);
+}
+.configuration-heading,
+.configuration-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--gns3-density-space-3);
+}
+mat-form-field {
+  width: min(100%, 340px);
+}
+.configuration-heading > mat-form-field,
+.configuration-heading > app-startup-media-profile-select {
+  flex: 1 1 260px;
+  min-width: 0;
+  max-width: 340px;
+}
+.startup-state {
+  display: flex;
+  align-items: center;
+  gap: var(--gns3-density-space-2);
+}
+.startup-state,
+p {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: var(--gns3-density-dialog-body-size);
+  margin: 0;
+}
+.configuration-actions button {
+  @include buttons.tonal-action-icon;
+  &.fetch,
+  &.save {
+    --action-color: var(--custom-mat-sys-success);
+  }
+  &.apply {
+    --action-color: var(--mat-sys-tertiary);
+  }
+  &.discard {
+    --action-color: var(--mat-sys-error);
+  }
+}
+.startup-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gns3-density-space-2);
+  padding: var(--gns3-density-space-3);
+  border-radius: var(--gns3-density-radius-sm);
+  background: var(--mat-sys-surface-container-high);
+
+  mat-icon {
+    flex: 0 0 var(--gns3-density-dialog-icon-size);
+    width: var(--gns3-density-dialog-icon-size);
+    height: var(--gns3-density-dialog-icon-size);
+    font-size: var(--gns3-density-dialog-icon-size);
+    color: var(--mat-sys-primary);
+  }
+}

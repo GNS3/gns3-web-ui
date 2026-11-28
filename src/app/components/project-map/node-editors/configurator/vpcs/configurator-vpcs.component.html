@@ -17,14 +17,12 @@
     <mat-spinner diameter="40"></mat-spinner>
   </div>
   } @else {
-  <div class="node-config__single-tab" role="tablist" aria-label="Node configuration sections">
-    <div role="tab" aria-selected="true">
-      <span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span>
-    </div>
-  </div>
   <div class="content">
     <div class="default-content">
       <mat-card class="matCard">
+        <mat-tab-group [preserveContent]="true">
+        <mat-tab>
+          <ng-template mat-tab-label><span class="node-config__tab-label"><mat-icon>tune</mat-icon>General</span></ng-template>
         <h2 class="node-config__section-heading">General settings</h2>
         <div class="form-container">
           <!-- Name field - full width -->
@@ -113,6 +111,16 @@
             Auto start console
           </mat-checkbox>
         </div>
+      </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <span class="node-config__tab-label"><mat-icon>description</mat-icon>Configuration</span>
+          </ng-template>
+          <ng-template matTabContent>
+            <app-node-configuration [controller]="controller" [node]="node" [disabled]="isApplying()" />
+          </ng-template>
+        </mat-tab>
+        </mat-tab-group>
       </mat-card>
     </div>
   </div>

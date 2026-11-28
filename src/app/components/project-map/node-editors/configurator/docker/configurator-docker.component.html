@@ -202,6 +202,14 @@
               </div>
             </div>
           </mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="node-config__tab-label"><mat-icon>description</mat-icon>Configuration</span>
+            </ng-template>
+            <ng-template matTabContent>
+              <app-node-configuration [controller]="controller" [node]="node" [disabled]="isApplying()" />
+            </ng-template>
+          </mat-tab>
 
           <mat-tab>
             <ng-template mat-tab-label>

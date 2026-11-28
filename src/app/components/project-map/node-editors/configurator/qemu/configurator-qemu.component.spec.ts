@@ -1,7 +1,10 @@
+import { MatTabGroup } from '@angular/material/tabs';
+import { NodeConfigurationComponent } from '../../node-configuration/node-configuration.component';
+import { StartupConfigurationsService } from '@services/startup-configurations.service';
 import { By } from '@angular/platform-browser';
 import { MatSelect } from '@angular/material/select';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 import { ChangeDetectorRef } from '@angular/core';
 import { of, throwError, Subject } from 'rxjs';
 import { ConfiguratorDialogQemuComponent } from './configurator-qemu.component';
@@ -11,12 +14,22 @@ import { NodeService } from '@services/node.service';
 import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
 import { NetmikoDeviceTypesService } from '@services/netmiko-device-types.service';
+import { StartupMediaProfilesService } from '@services/startup-media-profiles.service';
 import { ValidationService } from '@services/validation';
 import { ImageManagerService } from '@services/image-manager.service';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { QemuImage } from '@models/qemu/qemu-image';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
+const MEDIA_PROFILES = [
+  {
+    id: 'cisco-viptela',
+    title: 'Cisco Viptela',
+    device_type: 'cisco_viptela',
+    description: 'Cloud-init NoCloud CD-ROM',
+  },
+];
 
 describe('ConfiguratorDialogQemuComponent', () => {
   let component: ConfiguratorDialogQemuComponent;
@@ -41,6 +54,7 @@ describe('ConfiguratorDialogQemuComponent', () => {
       status: 'started',
       console_host: '0.0.0.0',
       node_type: 'qemu',
+      netmiko_device_type: 'cisco_ios',
       project_id: 'proj-1',
       command_line: '',
       compute_id: 'local',
@@ -172,7 +186,7 @@ describe('ConfiguratorDialogQemuComponent', () => {
     mockNodeService = {
       getNode: vi.fn().mockReturnValue(of(createMockNode())),
       getNodeFiles: vi.fn().mockReturnValue(of([])),
-      updateNodeWithCustomAdapters: vi.fn().mockImplementation(() => of(component.node)),
+      updateNodeWithCustomAdapters: vi.fn().mockImplementation((_, node) => of(node)),
     };
 
     mockQemuService = {
@@ -231,12 +245,34 @@ describe('ConfiguratorDialogQemuComponent', () => {
       imports: [ConfiguratorDialogQemuComponent],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
+        {
+          provide: StartupConfigurationsService,
+          useValue: {
+            save: vi.fn((_controller, _project, document) => of({ ...document, revision: document.revision + 1 })),
+            apply: vi.fn(),
+            get: vi.fn(() =>
+              of({
+                version: 1,
+                revision: 0,
+                selected: 'default',
+                sets: [{ id: 'default', name: 'Default', nodes: {} }],
+              }),
+            ),
+          },
+        },
         { provide: NodeService, useValue: mockNodeService },
-        { provide: TemplateService, useValue: { list: () => of([]) } },
+        { provide: TemplateService, useValue: { list: () => of([]), deviceType: () => undefined } },
         { provide: QemuService, useValue: mockQemuService },
         { provide: QemuConfigurationService, useValue: mockQemuConfigurationService },
         { provide: ToasterService, useValue: mockToasterService },
-        { provide: NetmikoDeviceTypesService, useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) } },
+        {
+          provide: NetmikoDeviceTypesService,
+          useValue: { getDeviceTypes: vi.fn().mockReturnValue(of({ deviceTypes: null, netmikoVersion: null })) },
+        },
+        {
+          provide: StartupMediaProfilesService,
+          useValue: { list: vi.fn(() => of(MEDIA_PROFILES)), deviceType: () => undefined },
+        },
         { provide: ValidationService, useValue: mockValidationService },
         { provide: ImageManagerService, useValue: mockImageManagerService },
         { provide: ChangeDetectorRef, useValue: mockCd },
@@ -265,6 +301,78 @@ describe('ConfiguratorDialogQemuComponent', () => {
     component.node = createMockNode();
 
     fixture.detectChanges();
+  });
+
+  it('retains configuration edits across tabs and automatically saves them on Apply', async () => {
+    const tabs = fixture.debugElement.query(By.directive(MatTabGroup)).componentInstance as MatTabGroup;
+    expect(
+      [...fixture.nativeElement.querySelectorAll('.mdc-tab__text-label')]
+        .slice(0, 2)
+        .map((label: HTMLElement) => label.textContent.trim()),
+    ).toEqual(['tuneGeneral', 'descriptionConfiguration']);
+    tabs.selectedIndex = 1;
+    fixture.detectChanges();
+    await vi.advanceTimersByTimeAsync(1000);
+    fixture.detectChanges();
+    const configuration = fixture.debugElement.query(By.directive(NodeConfigurationComponent))
+      .componentInstance as NodeConfigurationComponent;
+    expect(
+      [...fixture.nativeElement.querySelectorAll('.configuration-heading mat-label')].map((label: HTMLElement) =>
+        label.textContent.trim(),
+      ),
+    ).toEqual(['Startup configuration set', 'Startup configuration profile']);
+    const document = structuredClone(configuration.document());
+    document.sets[0].nodes[component.node.node_id] = { device_type: 'cisco_ios_telnet', content: '', enabled: false };
+    configuration.document.set(document);
+    const configurations = TestBed.inject(StartupConfigurationsService);
+    const pending = new Subject<any>();
+    vi.mocked(configurations.save).mockReturnValue(pending);
+    configuration.content.set('hostname unsaved\n');
+    fixture.detectChanges();
+    component.onCancelClick();
+    expect(mockDialogRef.close).not.toHaveBeenCalled();
+    tabs.selectedIndex = 0;
+    fixture.detectChanges();
+    await vi.advanceTimersByTimeAsync(1000);
+    fixture.detectChanges();
+    expect(component.configurationEditor()).toBe(configuration);
+    expect(configuration.content()).toBe('hostname unsaved\n');
+    component.onSaveClick();
+    expect(mockNodeService.updateNodeWithCustomAdapters).not.toHaveBeenCalled();
+    expect(component.isApplying()).toBe(true);
+    expect(configuration.busy()).toBe(true);
+    component.onSaveClick();
+    component.onCancelClick();
+    expect(configurations.save).toHaveBeenCalledTimes(1);
+    expect(mockDialogRef.close).not.toHaveBeenCalled();
+    pending.next(vi.mocked(configurations.save).mock.calls[0][2]);
+    pending.complete();
+    expect(mockNodeService.updateNodeWithCustomAdapters).toHaveBeenCalledTimes(1);
+    expect(configurations.apply).not.toHaveBeenCalled();
+    expect(mockDialogRef.close).toHaveBeenCalled();
+  });
+
+  it('keeps the startup configuration profile select only on the Configuration tab, bound to the saved value', async () => {
+    const tabs = fixture.debugElement.query(By.directive(MatTabGroup)).componentInstance as MatTabGroup;
+    tabs.selectedIndex = 1;
+    fixture.detectChanges();
+    await vi.advanceTimersByTimeAsync(1000);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('app-startup-media-profile-select').length).toBe(1);
+    expect(
+      fixture.nativeElement.querySelector('.configuration-heading app-startup-media-profile-select'),
+    ).not.toBeNull();
+    const configuration = fixture.debugElement.query(By.directive(NodeConfigurationComponent))
+      .componentInstance as NodeConfigurationComponent;
+    component.netmikoDeviceType.set('');
+    component.startupMediaProfile.set('cisco-viptela');
+    fixture.detectChanges();
+    expect(configuration.mediaProfile()).toBe('cisco-viptela');
+    configuration.mediaProfile.set('');
+    expect(component.startupMediaProfile()).toBe('');
+    configuration.mediaProfile.set('cisco-c8000v-autonomous');
+    component.onSaveClick();
+    expect(component.node.properties.startup_media_profile).toBe('cisco-c8000v-autonomous');
   });
 
   it('replaces stale ISO dropdown options after an asynchronous inventory refresh', () => {
@@ -301,6 +409,10 @@ describe('ConfiguratorDialogQemuComponent', () => {
       expect(component.platform()).toBe('x86_64');
       expect(component.hdaDiskImage()).toBe('hda.img');
       expect(component.hdaDiskInterface()).toBe('ide');
+    });
+
+    it('should load the startup configuration profile, empty when the node has none', () => {
+      expect(component.startupMediaProfile()).toBe('');
     });
 
     it('should show the backing image instead of the linked-clone overlay', () => {
@@ -422,7 +534,7 @@ describe('ConfiguratorDialogQemuComponent', () => {
       await vi.advanceTimersByTimeAsync(500);
       fixture.detectChanges();
       const tabs = fixture.nativeElement.querySelectorAll('[role="tab"]');
-      tabs[2].click();
+      [...tabs].find((tab: HTMLElement) => tab.textContent.includes('CD/DVD')).click();
       fixture.detectChanges();
       await vi.advanceTimersByTimeAsync(500);
       fixture.detectChanges();
@@ -493,6 +605,38 @@ describe('ConfiguratorDialogQemuComponent', () => {
       expect(component.node.properties.hda_disk_interface).toBe('virtio');
       expect(component.node.properties.hdb_disk_image).toBe('new_hdb.img');
       expect(component.node.properties.hdb_disk_interface).toBe('sata');
+    });
+
+    it('should save the selected startup configuration profile in the node properties', () => {
+      component.startupMediaProfile.set('cisco-viptela');
+      component.onSaveClick();
+      expect(component.node.properties.startup_media_profile).toBe('cisco-viptela');
+    });
+
+    it('keeps the live recipe and profile when the settings update fails', () => {
+      const original = component.node.netmiko_device_type;
+      const profile = component.node.properties.startup_media_profile;
+      component.netmikoDeviceType.set('cisco_viptela');
+      component.startupMediaProfile.set('cisco-viptela');
+      mockNodeService.updateNodeWithCustomAdapters.mockReturnValueOnce(throwError(() => new Error('update failed')));
+      component.onSaveClick();
+      const requested = mockNodeService.updateNodeWithCustomAdapters.mock.calls.at(-1)[1];
+      expect(requested.netmiko_device_type).toBe('cisco_viptela');
+      expect(requested.properties.startup_media_profile).toBe('cisco-viptela');
+      expect(component.node.netmiko_device_type).toBe(original);
+      expect(component.node.properties.startup_media_profile).toBe(profile);
+    });
+
+    it('should save none (null) when a profile is cleared', () => {
+      component.node.properties.startup_media_profile = 'cisco-viptela';
+      component.startupMediaProfile.set('');
+      component.onSaveClick();
+      expect(component.node.properties.startup_media_profile).toBeNull();
+    });
+
+    it('should not send the field for a node that never had a profile', () => {
+      component.onSaveClick();
+      expect('startup_media_profile' in component.node.properties).toBe(false);
     });
 
     it('should save advanced settings', () => {

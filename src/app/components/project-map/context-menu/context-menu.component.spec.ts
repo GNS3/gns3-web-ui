@@ -12,7 +12,21 @@ import { LinkNode } from '@models/link-node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
+import { HasProjectPrivilegeDirective } from '@directives/has-project-privilege.directive';
 import { ProjectPermissionService } from '@services/project-permission.service';
+import { CUSTOM_ELEMENTS_SCHEMA, getDebugNode, signal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { NodeWipeService } from '@services/node-wipe.service';
+import { StartupConfigurationsService } from '@services/startup-configurations.service';
+import { ToasterService } from '@services/toaster.service';
+import { of, Subject } from 'rxjs';
+import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
+import { NodeToMapNodeConverter } from '../../../cartography/converters/map/node-to-map-node-converter';
+import { ExportConfigActionComponent } from './actions/export-config/export-config-action.component';
+import { StartupSelectionActionComponent } from './actions/startup-selection-action/startup-selection-action.component';
+import { StartupSelectionDialogComponent } from './actions/startup-selection-action/startup-selection-dialog.component';
+import { NodeService } from '@services/node.service';
+import { WipeNodeActionComponent } from './actions/wipe-node-action/wipe-node-action.component';
 
 describe('ContextMenuComponent', () => {
   let component: ContextMenuComponent;
@@ -232,6 +246,7 @@ describe('ContextMenuComponent', () => {
     };
 
     const contextMenuPrivileges = [
+      'Project.Modify',
       'Node.Audit',
       'Node.Modify',
       'Node.PowerMgmt',
@@ -614,5 +629,259 @@ describe('ContextMenuComponent', () => {
       expect(component.nodes[0].node_id).toBe('node-2');
       expect(mockMenuTrigger.openMenu).toHaveBeenCalledTimes(2);
     });
+  });
+});
+
+describe('ContextMenuComponent configuration actions', () => {
+  let fixture: ComponentFixture<ContextMenuComponent>;
+  let exportConfiguration: ReturnType<typeof vi.fn>;
+  let wipe: ReturnType<typeof vi.fn>;
+  let openDialog: ReturnType<typeof vi.fn>;
+  const allPrivileges = ['Project.Modify', 'Node.Audit', 'Node.Modify', 'Node.Console'];
+  const privileges = signal<ReadonlySet<string>>(new Set());
+  const controller = { location: 'local' } as Controller;
+  const node = (node_type: string) =>
+    ({
+      node_type,
+      node_id: 'node-1',
+      project_id: 'project-1',
+      netmiko_device_type: node_type === 'qemu' ? 'cisco_ios_telnet' : undefined,
+    }) as Node;
+
+  beforeEach(async () => {
+    privileges.set(new Set(allPrivileges));
+    exportConfiguration = vi.fn().mockReturnValue(new Subject<Blob>());
+    openDialog = vi.fn();
+    wipe = vi.fn(() => of({ nodes: {} }));
+    await TestBed.configureTestingModule({
+      imports: [ContextMenuComponent],
+      providers: [
+        { provide: ProjectService, useValue: { isReadOnly: (project: Project) => !!project?.readonly } },
+        { provide: StartupConfigurationsService, useValue: { exportConfiguration } },
+        { provide: NodeWipeService, useValue: { wipe } },
+        { provide: MatDialog, useValue: { open: openDialog } },
+        { provide: ToasterService, useValue: { error: vi.fn(), success: vi.fn() } },
+        { provide: NodeService, useValue: {} },
+        {
+          provide: ProjectPermissionService,
+          useValue: {
+            privileges,
+            has: (privilege: string) => privileges().has(privilege),
+            hasAny: () => true,
+            loaded: () => true,
+          },
+        },
+      ],
+    })
+      .overrideComponent(ContextMenuComponent, {
+        // Keep the real Material overlay and configuration actions.
+        // Unrelated actions do not participate in this workflow.
+        set: {
+          imports: [
+            MatMenuModule,
+            HasProjectPrivilegeDirective,
+            ExportConfigActionComponent,
+            WipeNodeActionComponent,
+            StartupSelectionActionComponent,
+          ],
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        },
+      })
+      .compileComponents();
+    fixture = TestBed.createComponent(ContextMenuComponent);
+    fixture.componentRef.setInput('controller', controller);
+    fixture.componentRef.setInput('project', { readonly: false } as Project);
+    fixture.detectChanges();
+  });
+
+  afterEach(() => fixture.destroy());
+
+  function exportButton(): HTMLButtonElement | null {
+    return document.querySelector('.cdk-overlay-container app-export-config-action button');
+  }
+
+  function wipeButton(): HTMLButtonElement | null {
+    return document.querySelector('.cdk-overlay-container app-wipe-node-action button');
+  }
+
+  function openSelection(...nodes: Node[]) {
+    fixture.componentInstance.openMenuForListOfElements([], nodes, [], [], 0, 0);
+    fixture.detectChanges();
+  }
+
+  function startupAction() {
+    return document.querySelector('.cdk-overlay-container app-startup-selection-action');
+  }
+
+  function throughCanvas(selected: Node): Node {
+    const toMap = new NodeToMapNodeConverter(undefined, undefined, undefined, undefined, undefined);
+    const fromMap = new MapNodeToNodeConverter(undefined, undefined);
+    return fromMap.convert(toMap.convert({ ...selected, properties: {} } as Node));
+  }
+
+  it('preserves export metadata when right-clicking a canvas node', () => {
+    const selected = throughCanvas({ ...node('qemu'), netmiko_device_type: 'cisco_nxos' });
+    fixture.componentInstance.openMenuForNode(selected, 0, 0);
+    fixture.detectChanges();
+    exportButton()!.click();
+    expect(exportConfiguration).toHaveBeenCalledWith(
+      controller,
+      expect.objectContaining({ node_id: selected.node_id }),
+      { device_type: 'cisco_nxos' },
+    );
+    expect(openDialog).not.toHaveBeenCalled();
+  });
+
+  it('offers saved files to auditors and running configuration with console access', () => {
+    const labels = () =>
+      Array.from(document.querySelectorAll('.cdk-overlay-container app-export-config-action button')).map((button) =>
+        button.textContent.replace('call_made', '').trim(),
+      );
+    const router = { ...node('iou'), status: 'started' } as Node;
+    privileges.set(new Set(['Node.Audit']));
+    fixture.componentInstance.openMenuForNode(router, 0, 0);
+    fixture.detectChanges();
+    expect(labels()).toEqual(['Export config']);
+    privileges.set(new Set(['Node.Audit', 'Node.Console']));
+    fixture.componentInstance.openMenuForNode(router, 0, 0);
+    fixture.detectChanges();
+    expect(labels()).toEqual(['Export config', 'Export running config']);
+  });
+
+  it('keeps read-only exports available and never saves into the project set', () => {
+    fixture.componentRef.setInput('project', { readonly: true } as Project);
+    const selected = node('vpcs');
+    fixture.componentInstance.openMenuForNode(selected, 0, 0);
+    fixture.detectChanges();
+    expect(exportButton()).not.toBeNull();
+    exportButton()!.click();
+    expect(exportConfiguration).toHaveBeenCalledWith(controller, selected, {});
+  });
+
+  it.each([
+    ['offers no Wipe without every privilege the server asks for', ['Node.Audit', 'Node.Modify', 'Node.Console'], true],
+    ['offers no Export without Node.Audit', ['Project.Modify', 'Node.Modify', 'Node.Console'], false],
+  ])('%s', (_name, granted, exports) => {
+    privileges.set(new Set(granted));
+    fixture.componentInstance.openMenuForNode(node('vpcs'), 0, 0);
+    fixture.detectChanges();
+    expect(!!exportButton()).toBe(exports);
+    expect(!!wipeButton()).toBe(!exports);
+  });
+
+  it.each([
+    ['a read-only project', { readonly: true }],
+    // The server refuses to wipe a frozen distributed template.
+    ['a frozen distributed template', { readonly: false, frozen: true }],
+  ])('keeps Export but hides Wipe in %s', (_name, project) => {
+    fixture.componentRef.setInput('project', project as Project);
+    fixture.componentInstance.openMenuForNode(node('vpcs'), 0, 0);
+    fixture.detectChanges();
+    expect(exportButton()).not.toBeNull();
+    expect(wipeButton()).toBeNull();
+  });
+
+  it('shows Export config without requiring recognized QEMU metadata', () => {
+    fixture.componentInstance.openMenuForNode({ ...node('qemu'), netmiko_device_type: undefined }, 0, 0);
+    fixture.detectChanges();
+    expect(exportButton()?.textContent).toContain('Export config');
+    expect(exportConfiguration).not.toHaveBeenCalled();
+  });
+
+  it('groups export, import and wipe immediately after console actions', () => {
+    fixture.componentInstance.openMenuForNode(node('iou'), 0, 0);
+    fixture.detectChanges();
+    const exportAction = document.querySelector('.cdk-overlay-container app-export-config-action');
+    expect(exportAction.previousElementSibling.tagName).toBe('APP-CONSOLE-DEVICE-ACTION-BROWSER');
+    expect(exportAction.nextElementSibling.tagName).toBe('APP-IMPORT-CONFIG-ACTION');
+    expect(exportAction.nextElementSibling.nextElementSibling.tagName).toBe('APP-WIPE-NODE-ACTION');
+  });
+
+  it('passes the full multi-selection from the Wipe nodes menu to the wipe service', () => {
+    const selection = [
+      { ...node('qemu'), status: 'started', locked: true } as Node,
+      { ...node('vpcs'), node_id: 'v2' },
+      { ...node('cloud'), node_id: 'cloud-1' },
+    ];
+    openSelection(...selection);
+    expect(exportButton()).toBeNull();
+    expect(wipeButton()?.textContent).toContain('Wipe nodes');
+    wipeButton()!.click();
+    expect(wipe).toHaveBeenCalledExactlyOnceWith(controller, 'project-1', selection);
+  });
+
+  it('opens configuration sets for the supported nodes in a multi-selection', () => {
+    const qemu = node('qemu');
+    const vpcs = { ...node('vpcs'), node_id: 'v2' };
+    openSelection(qemu, { ...node('ethernet_switch'), node_id: 'switch-1' }, vpcs);
+    const button = startupAction()?.querySelector('button');
+    expect(button?.textContent).toContain('Configuration sets (2 nodes)');
+    button!.click();
+    expect(openDialog).toHaveBeenCalledExactlyOnceWith(
+      StartupSelectionDialogComponent,
+      expect.objectContaining({ data: { controller, projectId: 'project-1', nodes: [qemu, vpcs] } }),
+    );
+  });
+
+  it('does not open configuration sets for fewer than two supported nodes', () => {
+    openSelection(node('qemu'), { ...node('ethernet_switch'), node_id: 'switch-1' });
+    const action = startupAction();
+    expect(action?.querySelector('button')).toBeNull();
+    getDebugNode(action)!.injector.get(StartupSelectionActionComponent).open();
+    expect(openDialog).not.toHaveBeenCalled();
+  });
+
+  it('requires project modification permission for multi-node configuration sets', () => {
+    privileges.set(new Set(['Node.Modify', 'Node.Audit']));
+    openSelection(node('qemu'), { ...node('vpcs'), node_id: 'v2' });
+    expect(startupAction()).toBeNull();
+  });
+
+  it('offers the file Import action only for an engine that has one, while the project can be modified', () => {
+    const importAction = (type: string) => {
+      fixture.componentInstance.openMenuForNode(node(type), 0, 0);
+      fixture.detectChanges();
+      return document.querySelector('.cdk-overlay-container app-import-config-action');
+    };
+    expect(importAction('qemu')).toBeNull();
+    expect(importAction('iou')).not.toBeNull();
+    fixture.componentRef.setInput('project', { readonly: true } as Project);
+    expect(importAction('iou')).toBeNull();
+  });
+
+  it('keeps exports independent when switching nodes in the menu', () => {
+    const first = { ...node('qemu'), node_id: 'first', name: 'First' };
+    const second = { ...node('qemu'), node_id: 'second', name: 'Second' };
+    const firstResult = new Subject<Blob>();
+    const secondResult = new Subject<Blob>();
+    exportConfiguration.mockReturnValueOnce(firstResult).mockReturnValueOnce(secondResult);
+    const open = (selected: Node) => {
+      fixture.componentInstance.openMenuForNode(selected, 0, 0);
+      fixture.detectChanges();
+    };
+
+    open(first);
+    exportButton()!.click();
+    open(second);
+    expect(exportButton()!.disabled).toBe(false);
+    expect(exportButton()!.textContent).toContain('Export config');
+    exportButton()!.click();
+    expect(exportConfiguration).toHaveBeenCalledTimes(2);
+
+    // Reopening a node must retain its busy state even with a fresh model object.
+    open({ ...first });
+    expect(exportButton()!.disabled).toBe(true);
+    expect(exportButton()!.textContent).toContain('Exporting config');
+    exportButton()!.click();
+    expect(exportConfiguration).toHaveBeenCalledTimes(2);
+
+    firstResult.complete();
+    fixture.detectChanges();
+    expect(exportButton()!.disabled).toBe(false);
+    open(second);
+    expect(exportButton()!.disabled).toBe(true);
+    secondResult.error({ error: { message: 'configuration_capture_timeout' } });
+    fixture.detectChanges();
+    expect(exportButton()!.disabled).toBe(false);
   });
 });

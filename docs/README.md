@@ -92,6 +92,7 @@ docs/
 | [Context Menu](./features/context-menu.md) | Context menu implementation (38 actions) |
 | [Console Devices Panel](./features/console/devices-panel-implementation.md) | Console devices panel (v2.0.0) |
 | [VNC Console](./features/console/vnc-console-implementation.md) | VNC console implementation |
+| [Startup Configurations, Import and Export](./features/startup-configurations.md) | Client behaviour: configuration sets, per-node startup, export/import/download, wipe, boot media profiles |
 | [Custom Adapters](./features/custom-adapters/custom-adapters-implementation.md) | Custom adapters implementation |
 | [Markdown Viewer](./features/markdown-viewer/markdown-viewer-implementation.md) | ⭐ Shared markdown rendering: token API, post-render behavior |
 | [API × Privilege × Web UI Map](./features/rbac/api-privilege-map.md) | ⭐ Generated server endpoint → privilege → page/button map (CSV alongside for Excel) |

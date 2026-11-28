@@ -1,327 +1,213 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { of, throwError } from 'rxjs';
-import { ExportConfigActionComponent } from './export-config-action.component';
-import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
-import { Node, Properties } from '../../../../../cartography/models/node';
+import { MatDialog } from '@angular/material/dialog';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
+import { configurationExportFileName, StartupConfigurationsService } from '@services/startup-configurations.service';
 import { ToasterService } from '@services/toaster.service';
-import { ChangeDetectorRef } from '@angular/core';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { of, Subject, throwError } from 'rxjs';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { Node } from '../../../../../cartography/models/node';
+import { captureDownloads } from '../../../configuration-editor.testing';
+import { ExportConfigActionComponent } from './export-config-action.component';
 
-describe('ExportConfigActionComponent', () => {
+const controller = { id: 1 } as Controller;
+const nodeFor = (node_type: string, driver?: string) =>
+  ({
+    node_id: 'node-1',
+    project_id: 'project-1',
+    node_type,
+    name: 'Router-1',
+    status: 'started',
+    netmiko_device_type: driver,
+    default_username: 'admin',
+    default_password: 'saved-password',
+  }) as Node;
+
+describe('Direct configuration export', () => {
   let fixture: ComponentFixture<ExportConfigActionComponent>;
-  let mockNodeService: {
-    getStartupConfiguration: ReturnType<typeof vi.fn>;
-    getPrivateConfiguration: ReturnType<typeof vi.fn>;
-  };
-  let mockDialog: { open: ReturnType<typeof vi.fn> };
-  let mockToasterService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
-  let mockDialogRef: { afterClosed: ReturnType<typeof vi.fn>; componentInstance: Record<string, unknown> };
-
-  const createMockController = (): Controller => ({
-    id: 1,
-    authToken: '',
-    name: 'Test Controller',
-    location: 'local',
-    host: 'localhost',
-    port: 3080,
-    path: '',
-    ubridge_path: '',
-    status: 'running',
-    protocol: 'http:',
-    username: '',
-    password: '',
-    tokenExpired: false,
-  });
-
-  const createMockNode = (nodeType: string, name = 'TestNode'): Node => ({
-    node_id: `node-${nodeType}`,
-    name,
-    status: 'running',
-    console_host: '0.0.0.0',
-    node_type: nodeType,
-    project_id: 'proj1',
-    command_line: '',
-    compute_id: 'local',
-    height: 50,
-    width: 50,
-    x: 0,
-    y: 0,
-    z: 0,
-    label: { text: '', x: 0, y: 0, style: '', rotation: 0 },
-    locked: false,
-    first_port_name: '',
-    port_name_format: '',
-    port_segment_size: 1,
-    ports: [],
-    properties: {} as Properties,
-    symbol: '',
-    symbol_url: '',
-    console: 0,
-    console_auto_start: false,
-    console_type: '',
-    node_directory: '',
-  });
+  let service: any;
+  let toaster: any;
+  let dialog: any;
+  let nodes: any;
+  let downloads: ReturnType<typeof captureDownloads>;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
-
-    mockDialogRef = {
-      afterClosed: vi.fn().mockReturnValue(of(undefined)),
-      componentInstance: {},
+    service = { exportConfiguration: vi.fn(() => of(new Blob(['hostname R1\nend\n']))) };
+    toaster = { success: vi.fn(), error: vi.fn() };
+    dialog = { open: vi.fn(() => ({ afterClosed: () => of('startup-config') })) };
+    nodes = {
+      getStartupConfiguration: vi.fn(() => of('hostname Saved\n')),
+      getPrivateConfiguration: vi.fn(() => of('private\n')),
     };
-    mockDialog = { open: vi.fn().mockReturnValue(mockDialogRef) };
-    mockToasterService = { success: vi.fn(), error: vi.fn() };
-    mockNodeService = {
-      getStartupConfiguration: vi.fn().mockReturnValue(of('mock startup config')),
-      getPrivateConfiguration: vi.fn().mockReturnValue(of('mock private config')),
-    };
-
+    downloads = captureDownloads();
     await TestBed.configureTestingModule({
-      imports: [ExportConfigActionComponent, MatDialogModule, MatButtonModule, MatIconModule, MatMenuModule],
+      imports: [ExportConfigActionComponent],
       providers: [
-        { provide: MatDialog, useValue: mockDialog },
-        { provide: NodeService, useValue: mockNodeService },
-        { provide: ToasterService, useValue: mockToasterService },
-        { provide: ChangeDetectorRef, useValue: { markForCheck: vi.fn() } },
+        { provide: StartupConfigurationsService, useValue: service },
+        { provide: ToasterService, useValue: toaster },
+        { provide: MatDialog, useValue: dialog },
+        { provide: NodeService, useValue: nodes },
       ],
     }).compileComponents();
-
     fixture = TestBed.createComponent(ExportConfigActionComponent);
+    fixture.componentRef.setInput('controller', controller);
   });
-
   afterEach(() => {
-    fixture.destroy();
+    fixture?.destroy();
     vi.restoreAllMocks();
   });
 
-  describe('button visibility', () => {
-    it('should show button for vpcs node type', () => {
-      fixture.componentRef.setInput('node', createMockNode('vpcs'));
-      fixture.componentRef.setInput('controller', createMockController());
-      fixture.detectChanges();
+  it.each([
+    ['qemu', 'cisco_ios', { device_type: 'cisco_ios_telnet' }],
+    ['qemu', 'cisco_nxos_telnet', { device_type: 'cisco_nxos' }],
+    ['docker', undefined, {}],
+    ['vpcs', undefined, {}],
+  ])('exports %s using saved settings without any dialog', (type, driver, options) => {
+    const node = nodeFor(type as string, driver as string);
+    fixture.componentRef.setInput('node', node);
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('button').click();
+    expect(service.exportConfiguration).toHaveBeenCalledWith(controller, node, options);
+    expect(dialog.open).not.toHaveBeenCalled();
+  });
 
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button).toBeTruthy();
-      expect(button.textContent).toContain('Export config');
+  it.each([
+    ['iou', 'startup-config', 'getStartupConfiguration', 'Router-1_startup.cfg'],
+    ['dynamips', 'private-config', 'getPrivateConfiguration', 'Router-1_private.cfg'],
+  ])('downloads the chosen saved file of a %s router, started or not', (type, choice, method, filename) => {
+    dialog.open.mockReturnValue({ afterClosed: () => of(choice) });
+    const node = nodeFor(type);
+    fixture.componentRef.setInput('node', node);
+    fixture.componentInstance.exportConfig();
+    expect(nodes[method]).toHaveBeenCalledWith(controller, node);
+    expect(service.exportConfiguration).not.toHaveBeenCalled();
+    expect(downloads.names).toEqual([filename]);
+  });
+
+  it('downloads nothing when the file choice is cancelled', () => {
+    dialog.open.mockReturnValue({ afterClosed: () => of(undefined) });
+    fixture.componentRef.setInput('node', nodeFor('iou'));
+    fixture.componentInstance.exportConfig();
+    expect(nodes.getStartupConfiguration).not.toHaveBeenCalled();
+    expect(downloads.blobs).toEqual([]);
+  });
+
+  it.each(['iou', 'dynamips'])('reads the running configuration of a started %s router on request', (type) => {
+    const node = nodeFor(type);
+    fixture.componentRef.setInput('node', node);
+    fixture.componentRef.setInput('running', true);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('button').textContent).toContain('Export running config');
+    fixture.nativeElement.querySelector('button').click();
+    expect(service.exportConfiguration).toHaveBeenCalledWith(controller, node, {
+      source: 'running',
+      device_type: 'cisco_ios_telnet',
     });
+    expect(dialog.open).not.toHaveBeenCalled();
+  });
 
-    it('should show button for dynamips node type', () => {
-      fixture.componentRef.setInput('node', createMockNode('dynamips'));
-      fixture.componentRef.setInput('controller', createMockController());
+  it.each([undefined, '', 'linux', 'unsupported_os'])(
+    'explains missing QEMU metadata without asking for credentials (%s)',
+    (driver) => {
+      fixture.componentRef.setInput('node', nodeFor('qemu', driver));
+      fixture.componentInstance.exportConfig();
+      expect(service.exportConfiguration).not.toHaveBeenCalled();
+      expect(toaster.error).toHaveBeenCalledWith(expect.stringContaining('General settings'));
+      expect(dialog.open).not.toHaveBeenCalled();
+    },
+  );
+
+  it('passes the returned blob and its filename to the download helper', () => {
+    const archive = new Blob(['zip'], { type: 'application/zip' });
+    const node = nodeFor('docker');
+    service.exportConfiguration.mockReturnValue(of(archive));
+    fixture.componentRef.setInput('node', node);
+    fixture.componentInstance.exportConfig();
+    expect(downloads.blobs).toEqual([archive]);
+    expect(downloads.names).toEqual([configurationExportFileName(node, {}, archive)]);
+  });
+
+  it('prevents duplicate exports and releases the busy state on completion', () => {
+    const pending = new Subject<Blob>();
+    service.exportConfiguration.mockReturnValue(pending);
+    fixture.componentRef.setInput('node', nodeFor('qemu', 'cisco_ios'));
+    fixture.componentInstance.exportConfig();
+    fixture.componentInstance.exportConfig();
+    expect(service.exportConfiguration).toHaveBeenCalledTimes(1);
+    expect(fixture.componentInstance.exportInProgress).toBe(true);
+    pending.next(new Blob(['config']));
+    pending.complete();
+    expect(fixture.componentInstance.exportInProgress).toBe(false);
+  });
+
+  it('releases a stalled export after 45 seconds', async () => {
+    service.exportConfiguration.mockReturnValue(new Subject());
+    fixture.componentRef.setInput('node', nodeFor('qemu', 'cisco_ios'));
+    fixture.componentInstance.exportConfig();
+    await vi.advanceTimersByTimeAsync(45000);
+    expect(fixture.componentInstance.exportInProgress).toBe(false);
+    expect(toaster.error).toHaveBeenCalledWith(expect.stringContaining('45 seconds'));
+    expect(downloads.blobs).toEqual([]);
+  });
+
+  it.each(['json', 'blob', 'wrapped blob'])(
+    'reports export errors from %s responses without opening a dialog',
+    async (format) => {
+      const body = { message: 'console_authentication_failed' };
+      const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
+      Object.defineProperty(blob, 'text', { value: async () => JSON.stringify(body) });
+      const response = { error: format === 'json' ? body : blob };
+      service.exportConfiguration.mockReturnValue(
+        throwError(() => (format === 'wrapped blob' ? { originalError: response } : response)),
+      );
+      fixture.componentRef.setInput('node', nodeFor('qemu', 'cisco_ios'));
+      fixture.componentInstance.exportConfig();
+      await vi.runAllTimersAsync();
+      expect(toaster.error).toHaveBeenCalledWith(expect.stringContaining('saved default username and password'));
+      expect(dialog.open).not.toHaveBeenCalled();
+      expect(fixture.componentInstance.exportInProgress).toBe(false);
+    },
+  );
+
+  it('asks to enter privileged mode when the device needs its enable secret', () => {
+    service.exportConfiguration.mockReturnValue(
+      throwError(() => ({ error: { message: 'console_enable_secret_required' } })),
+    );
+    fixture.componentRef.setInput('node', nodeFor('qemu', 'cisco_asa'));
+    fixture.componentInstance.exportConfig();
+    expect(toaster.error).toHaveBeenCalledWith(expect.stringContaining('Enter privileged mode'));
+    expect(dialog.open).not.toHaveBeenCalled();
+  });
+
+  it('does not request Netmiko credentials for a Docker file-export error', () => {
+    service.exportConfiguration.mockReturnValue(
+      throwError(() => ({ error: { message: 'invalid_configuration_request' } })),
+    );
+    fixture.componentRef.setInput('node', nodeFor('docker'));
+    fixture.componentInstance.exportConfig();
+    expect(toaster.error).toHaveBeenCalledWith(expect.stringContaining('saved-file export request'));
+  });
+
+  describe('menu visibility', () => {
+    it('hides the button for ethernet_switch nodes and when there is no node', () => {
+      fixture.componentRef.setInput('node', nodeFor('ethernet_switch'));
       fixture.detectChanges();
-
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button).toBeTruthy();
-      expect(button.textContent).toContain('Export config');
-    });
-
-    it('should show button for iou node type', () => {
-      fixture.componentRef.setInput('node', createMockNode('iou'));
-      fixture.componentRef.setInput('controller', createMockController());
-      fixture.detectChanges();
-
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button).toBeTruthy();
-      expect(button.textContent).toContain('Export config');
-    });
-
-    it('should hide button for ethernet_switch node type', () => {
-      fixture.componentRef.setInput('node', createMockNode('ethernet_switch'));
-      fixture.componentRef.setInput('controller', createMockController());
-      fixture.detectChanges();
-
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button).toBeFalsy();
-    });
-
-    it('should hide button when node is undefined', () => {
+      expect(fixture.nativeElement.querySelector('button')).toBeNull();
+      fixture.componentInstance.exportConfig();
+      expect(service.exportConfiguration).not.toHaveBeenCalled();
       fixture.componentRef.setInput('node', undefined);
-      fixture.componentRef.setInput('controller', createMockController());
       fixture.detectChanges();
-
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button).toBeFalsy();
+      expect(fixture.nativeElement.querySelector('button')).toBeNull();
     });
-  });
-
-  describe('exportConfig for vpcs nodes', () => {
-    it('should fetch startup configuration directly without opening dialog', () => {
-      const mockNode = createMockNode('vpcs', 'my-vpcs');
-      const mockController = createMockController();
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
+    it('shows a busy label and disables the button while exporting', () => {
+      service.exportConfiguration.mockReturnValue(new Subject());
+      fixture.componentRef.setInput('node', nodeFor('vpcs'));
       fixture.detectChanges();
-
       fixture.nativeElement.querySelector('button').click();
       fixture.detectChanges();
-
-      expect(mockNodeService.getStartupConfiguration).toHaveBeenCalledWith(mockController, mockNode);
-      expect(mockDialog.open).not.toHaveBeenCalled();
-    });
-
-    it('should trigger download with correct filename for vpcs', () => {
-      const mockNode = createMockNode('vpcs', 'my-vpcs');
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', createMockController());
-      fixture.detectChanges();
-
-      const clickSpy = vi.spyOn(MouseEvent.prototype, 'stopPropagation');
-      const createElementSpy = vi.spyOn(document, 'createElement').mockReturnValue({
-        setAttribute: vi.fn(),
-        dispatchEvent: vi.fn(),
-      } as unknown as HTMLAnchorElement);
-
-      fixture.nativeElement.querySelector('button').click();
-      fixture.detectChanges();
-
-      expect(createElementSpy).toHaveBeenCalledWith('a');
-    });
-
-    it('should show error toaster when startup config fetch fails for vpcs', async () => {
-      mockNodeService.getStartupConfiguration.mockReturnValue(
-        throwError(() => ({ error: { message: 'Fetch failed' } }))
-      );
-      const mockNode = createMockNode('vpcs');
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', createMockController());
-      fixture.detectChanges();
-
-      fixture.nativeElement.querySelector('button').click();
-      await vi.runAllTimersAsync();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Fetch failed');
-    });
-
-    it('should use fallback message when vpcs error has no message', async () => {
-      mockNodeService.getStartupConfiguration.mockReturnValue(throwError(() => ({})));
-      const mockNode = createMockNode('vpcs');
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', createMockController());
-      fixture.detectChanges();
-
-      const cdrSpy = vi.spyOn(fixture.componentInstance['cdr'], 'markForCheck');
-      fixture.nativeElement.querySelector('button').click();
-      await vi.runAllTimersAsync();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to export configuration');
-      expect(cdrSpy).toHaveBeenCalled();
-    });
-  });
-
-  describe('exportConfig for non-vpcs nodes', () => {
-    it('should open config dialog for dynamips nodes', () => {
-      const mockNode = createMockNode('dynamips');
-      const mockController = createMockController();
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
-
-      fixture.nativeElement.querySelector('button').click();
-      fixture.detectChanges();
-
-      expect(mockDialog.open).toHaveBeenCalledWith(ConfigDialogComponent, {
-        panelClass: ['base-dialog-panel', 'export-config-action-dialog-panel', 'dialog-medium-panel'],
-        autoFocus: false,
-        disableClose: false,
-      });
-    });
-
-    it('should open config dialog for iou nodes', () => {
-      const mockNode = createMockNode('iou');
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', createMockController());
-      fixture.detectChanges();
-
-      fixture.nativeElement.querySelector('button').click();
-      fixture.detectChanges();
-
-      expect(mockDialog.open).toHaveBeenCalled();
-    });
-
-    it('should fetch startup config when dialog closes with startup-config', () => {
-      mockDialogRef.afterClosed.mockReturnValue(of('startup-config'));
-      const mockNode = createMockNode('dynamips', 'router1');
-      const mockController = createMockController();
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
-
-      fixture.nativeElement.querySelector('button').click();
-      fixture.detectChanges();
-
-      expect(mockNodeService.getStartupConfiguration).toHaveBeenCalledWith(mockController, mockNode);
-      expect(mockNodeService.getPrivateConfiguration).not.toHaveBeenCalled();
-    });
-
-    it('should fetch private config when dialog closes with private-config', () => {
-      mockDialogRef.afterClosed.mockReturnValue(of('private-config'));
-      const mockNode = createMockNode('iou', 'switch1');
-      const mockController = createMockController();
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', mockController);
-      fixture.detectChanges();
-
-      fixture.nativeElement.querySelector('button').click();
-      fixture.detectChanges();
-
-      expect(mockNodeService.getPrivateConfiguration).toHaveBeenCalledWith(mockController, mockNode);
-      expect(mockNodeService.getStartupConfiguration).not.toHaveBeenCalled();
-    });
-
-    it('should fetch nothing when dialog closes with undefined', () => {
-      mockDialogRef.afterClosed.mockReturnValue(of(undefined));
-      const mockNode = createMockNode('dynamips');
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', createMockController());
-      fixture.detectChanges();
-
-      fixture.nativeElement.querySelector('button').click();
-      fixture.detectChanges();
-
-      expect(mockNodeService.getStartupConfiguration).not.toHaveBeenCalled();
-      expect(mockNodeService.getPrivateConfiguration).not.toHaveBeenCalled();
-    });
-
-    it('should show error toaster when startup config fetch fails for dynamips', async () => {
-      mockDialogRef.afterClosed.mockReturnValue(of('startup-config'));
-      mockNodeService.getStartupConfiguration.mockReturnValue(
-        throwError(() => ({ error: { message: 'Failed to export startup configuration' } }))
-      );
-      const mockNode = createMockNode('dynamips');
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', createMockController());
-      fixture.detectChanges();
-
-      const cdrSpy = vi.spyOn(fixture.componentInstance['cdr'], 'markForCheck');
-      fixture.nativeElement.querySelector('button').click();
-      await vi.runAllTimersAsync();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to export startup configuration');
-      expect(cdrSpy).toHaveBeenCalled();
-    });
-
-    it('should show error toaster when private config fetch fails for iou', async () => {
-      mockDialogRef.afterClosed.mockReturnValue(of('private-config'));
-      mockNodeService.getPrivateConfiguration.mockReturnValue(
-        throwError(() => ({ error: { message: 'Failed to export private configuration' } }))
-      );
-      const mockNode = createMockNode('iou');
-      fixture.componentRef.setInput('node', mockNode);
-      fixture.componentRef.setInput('controller', createMockController());
-      fixture.detectChanges();
-
-      const cdrSpy = vi.spyOn(fixture.componentInstance['cdr'], 'markForCheck');
-      fixture.nativeElement.querySelector('button').click();
-      await vi.runAllTimersAsync();
-
-      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to export private configuration');
-      expect(cdrSpy).toHaveBeenCalled();
+      const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+      expect(button.textContent).toContain('Exporting config');
+      expect(button.disabled).toBe(true);
     });
   });
 });

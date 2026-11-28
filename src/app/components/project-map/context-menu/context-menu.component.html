@@ -66,6 +66,36 @@
       [controller]="controller"
       [node]="nodes[0]"
     ></app-console-device-action-browser>
+    } @if (nodes.length === 1) {
+    <app-export-config-action
+      *appHasProjectPrivilege="exportPrivileges(nodes[0])"
+      [controller]="controller"
+      [node]="nodes[0]"
+    ></app-export-config-action>
+    } @if (nodes.length === 1 && offersRunningExport(nodes[0])) {
+    <app-export-config-action
+      *appHasProjectPrivilege="['Node.Audit', 'Node.Console']"
+      [controller]="controller"
+      [node]="nodes[0]"
+      [running]="true"
+    ></app-export-config-action>
+    } @if (!projectService.isReadOnly(project) && nodes.length === 1 && canImportConfig(nodes[0]) && !isFrozen) {
+    <app-import-config-action
+      *appHasProjectPrivilege="'Node.Modify'"
+      [controller]="controller"
+      [node]="nodes[0]"
+    ></app-import-config-action>
+    } @if (!projectService.isReadOnly(project) && nodes.length > 0 && !isFrozen) {
+    <app-wipe-node-action
+      *appHasProjectPrivilege="['Project.Modify', 'Node.Modify', 'Node.Console']"
+      [controller]="controller"
+      [nodes]="nodes"
+    ></app-wipe-node-action>
+    <app-startup-selection-action
+      *appHasProjectPrivilege="['Project.Modify', 'Node.Modify']"
+      [controller]="controller"
+      [nodes]="nodes"
+    ></app-startup-selection-action>
     } @if (nodes.length === 1 && !isFrozen) {
     <app-isolate-node-action
       *appHasProjectPrivilege="'Link.Modify'"
@@ -125,20 +155,6 @@
       [project]="project"
       [node]="nodes[0]"
     ></app-edit-config-action>
-    } @if (nodes.length === 1 && (nodes[0].node_type === 'vpcs' || nodes[0].node_type === 'iou' || nodes[0].node_type
-    === 'dynamips')) {
-    <app-export-config-action
-      *appHasProjectPrivilege="'Node.Audit'"
-      [controller]="controller"
-      [node]="nodes[0]"
-    ></app-export-config-action>
-    } @if (nodes.length === 1 && (nodes[0].node_type === 'vpcs' || nodes[0].node_type === 'iou' || nodes[0].node_type
-    === 'dynamips') && !isFrozen) {
-    <app-import-config-action
-      *appHasProjectPrivilege="'Node.Modify'"
-      [controller]="controller"
-      [node]="nodes[0]"
-    ></app-import-config-action>
     } @if (nodes.length === 1 && nodes[0].node_type === 'dynamips' && !isFrozen) {
     <app-idle-pc-action
       *appHasProjectPrivilege="['Node.Audit', 'Node.Modify']"

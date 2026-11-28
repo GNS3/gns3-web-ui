@@ -8,6 +8,12 @@
 // Unified selection states for menu items
 // ============================================= */
 
+:host,
+.menu-button-group {
+  display: flex;
+  align-items: center;
+}
+
 /* Selected/Active state */
 .marked {
   color: var(--mat-sys-primary);
@@ -24,4 +30,13 @@
 
 .menu-button:hover {
   transform: scale(1.2);
+}
+
+.configuration-separator {
+  flex: 0 0 auto;
+  align-self: center;
+  height: var(--gns3-density-control-height);
+  margin-inline: var(--gns3-density-space-4);
+  border-inline-start: 1px solid
+    color-mix(in srgb, var(--mat-sys-on-primary) var(--gns3-border-opacity-medium), transparent);
 }

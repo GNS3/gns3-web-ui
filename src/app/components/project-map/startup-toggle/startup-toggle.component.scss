@@ -1,0 +1,44 @@
+.startup-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  box-sizing: border-box;
+  width: calc(var(--gns3-density-control-height-sm) * 2 - 8px);
+  height: calc(var(--gns3-density-control-height-sm) - 8px);
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--mat-sys-outline);
+  border-radius: var(--gns3-density-radius-sm);
+  background: var(--mat-sys-surface);
+  font: inherit;
+  font-size: var(--gns3-helper-text-size);
+  font-weight: 600;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: -2px;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  &[data-state='unavailable']:disabled {
+    opacity: 1;
+  }
+}
+.startup-toggle-label {
+  display: grid;
+  place-items: center;
+  grid-column: 1;
+  background: var(--mat-sys-error);
+  color: var(--mat-sys-on-error);
+}
+.startup-toggle[data-state='on'] .startup-toggle-label {
+  grid-column: 2;
+  background: var(--custom-mat-sys-success);
+  color: var(--custom-mat-sys-on-success);
+}
+.startup-toggle[data-state='unavailable'] .startup-toggle-label {
+  background: var(--mat-sys-outline-variant);
+  color: var(--mat-sys-on-surface-variant);
+}

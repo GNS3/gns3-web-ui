@@ -19,6 +19,7 @@ export class MapNode implements Indexed {
   name: string;
   nodeDirectory: string;
   nodeType: string;
+  netmikoDeviceType?: string | null;
   portNameFormat: string;
   portSegmentSize: number;
   ports: MapPort[];

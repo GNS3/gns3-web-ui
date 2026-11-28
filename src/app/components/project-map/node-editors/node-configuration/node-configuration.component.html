@@ -1,0 +1,130 @@
+<div class="configuration-heading">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Startup configuration set</mat-label>
+    <mat-select [value]="selectedSetId()" (selectionChange)="chooseSet($event)" [disabled]="unavailable()">
+      @for (set of document()?.sets || []; track set.id) {
+        <mat-option [value]="set.id">{{ set.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  @if (node().node_type === 'qemu') {
+    <app-startup-media-profile-select
+      [(value)]="mediaProfile"
+      [deviceType]="pendingDeviceType()"
+      [controller]="controller()"
+      [disabled]="disabled()"
+      subscriptSizing="dynamic"
+    />
+  }
+  <div class="startup-state">
+    <span>Startup configuration:</span>
+    <app-startup-toggle
+      [state]="toggleState()"
+      [label]="'Apply startup configuration for ' + node().name"
+      [tooltip]="toggleTooltip()"
+      [disabled]="!canToggleStartup()"
+      (toggled)="toggleStartup()"
+    />
+  </div>
+</div>
+<aside class="startup-note" role="note" aria-label="Startup configuration requirement">
+  <mat-icon aria-hidden="true">info_outline</mat-icon>
+  <p>
+    After changing the startup configuration, use <strong>Wipe node</strong> to clear its saved device state, then start
+    it to load the new configuration.
+  </p>
+</aside>
+@if (loadError()) {
+  <p role="alert">{{ loadError() }}</p>
+  <button mat-button type="button" (click)="load()" [disabled]="busy()">Retry</button>
+}
+@if (!driver() && document()) {
+  <p>
+    Set a supported Netmiko device type in General settings and save the node settings to enable configuration
+    operations.
+  </p>
+}
+@if (startupHint()) {
+  <p role="note">{{ startupHint() }}</p>
+}
+@if (restoreWarning()) {
+  <p role="note">{{ restoreWarning() }}</p>
+}
+@if (nextStart()) {
+  <p class="next-start" role="note">{{ nextStart() }}</p>
+}
+<app-configuration-text-editor
+  label="Node configuration"
+  [value]="content()"
+  (valueChange)="content.set($event)"
+  [disabled]="unavailable()"
+></app-configuration-text-editor>
+<div class="configuration-actions" role="group" aria-label="Node configuration operations">
+  <button
+    mat-icon-button
+    type="button"
+    class="fetch"
+    aria-label="Fetch from node"
+    matTooltip="Fetch from node and save to this set"
+    (click)="fetch()"
+    [disabled]="!canFetch()"
+  >
+    <mat-icon>sync</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    type="button"
+    class="save"
+    aria-label="Save configuration"
+    matTooltip="Save to this set"
+    (click)="save()"
+    [disabled]="unavailable() || !dirty() || !driver()"
+  >
+    <mat-icon>save</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    type="button"
+    aria-label="Download configuration"
+    matTooltip="Download saved configuration"
+    (click)="download()"
+    [disabled]="unavailable() || !saved()?.content || dirty()"
+  >
+    <mat-icon>file_download</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    type="button"
+    class="apply"
+    aria-label="Apply to node"
+    matTooltip="Apply saved configuration to the running node"
+    (click)="apply()"
+    [disabled]="!canApply()"
+  >
+    <mat-icon>publish</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    type="button"
+    class="discard"
+    aria-label="Discard configuration edits"
+    matTooltip="Discard edits"
+    (click)="discard()"
+    [disabled]="unavailable() || !dirty()"
+  >
+    <mat-icon>undo</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    type="button"
+    aria-label="Reload saved configuration"
+    matTooltip="Reload saved configuration"
+    (click)="load()"
+    [disabled]="unavailable() || dirty()"
+  >
+    <mat-icon>refresh</mat-icon>
+  </button>
+</div>
+@if (result()) {
+  <p role="status">{{ result() }}</p>
+}
