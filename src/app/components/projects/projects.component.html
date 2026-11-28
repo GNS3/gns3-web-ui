@@ -318,7 +318,7 @@
 
       <!-- ===== Grid View ===== -->
       @if (viewMode() === 'grid') {
-      <div class="projects__grid" [class.projects__grid--with-details]="selectedProject()">
+      <div class="projects__grid">
         @for (project of paginatedProjects(); track project.project_id) {
         <div
           class="projects__card"
@@ -394,7 +394,31 @@
 
       <!-- ===== Project Details Panel ===== -->
       @if (selectedProject(); as project) {
-      <div class="projects__details">
+      <div
+        class="projects__details"
+        [class.projects__details--resizing]="detailsResizing()"
+        mwlResizable
+        [validateResize]="validateDetailsResize"
+        [enableGhostResize]="false"
+        (resizeStart)="onDetailsResizeStart()"
+        (resizing)="onDetailsResizing($event)"
+        (resizeEnd)="onDetailsResizeEnd($event)"
+        [style.--gns3-projects-details-width]="detailsWidth() + 'px'"
+      >
+        <!-- Left-edge resize handle: an invisible 10px hit zone living in
+             the flex gap, entirely OUTSIDE the border box (floating-window
+             standard). Silent gesture — the cursor morph is the only
+             feedback. Double-click resets the width. -->
+        <div
+          class="projects__details-resize-handle"
+          mwlResizeHandle
+          [resizeEdges]="{ left: true }"
+          (dblclick)="resetDetailsWidth()"
+        ></div>
+        <!-- Inner frame carries the background/radius/clip; the root must
+             stay unclipped or the outside handle is cut away and resize
+             dies silently. -->
+        <div class="projects__details-frame">
         <div class="projects__details-header">
           <h2 class="projects__details-title">{{ project.name }}</h2>
           <button
@@ -569,6 +593,7 @@
           (exportProject)="exportSelectProject(project)"
           (deleteProject)="delete(project); closeDetails()"
         />
+        </div>
       </div>
       }
     </div>

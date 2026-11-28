@@ -384,13 +384,12 @@ mat-cell {
   flex: 1;
   min-width: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  // auto-fill keeps the cards usable at any column width — the list area
+  // shrinks when the details panel is dragged wider and the grid reflows
+  // by itself instead of squeezing a fixed 3-column row.
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--gns3-density-card-gap);
   align-content: start;
-}
-
-.projects__grid--with-details {
-  grid-template-columns: repeat(3, 1fr);
 }
 
 /* Project Card */
@@ -542,14 +541,14 @@ mat-cell {
 /* =============================================
 // Details Panel
 // ============================================= */
+/* Root flex item: width comes from the drag gesture through the
+   --gns3-projects-details-width custom property (inline style binding),
+   so the stacked-layout media queries below can still override `width`
+   with plain declarations. */
 .projects__details {
-  flex: 0 0 clamp(380px, 30vw, 460px);
-  background: var(--mat-sys-surface);
-  border-radius: 16px;
-  border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 60%, transparent);
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
-  display: flex;
-  flex-direction: column;
+  flex: 0 0 auto;
+  width: var(--gns3-projects-details-width, 320px);
+  max-width: 50vw;
   // Fixed viewport height, decoupled from the project list (the parent's
   // align-items: flex-start keeps the row from stretching either column).
   // Viewport-ratio height sitting between the SDS 60/80 dialog tiers;
@@ -559,11 +558,44 @@ mat-cell {
   animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: sticky;
   top: 16px;
-  overflow: hidden;
+  // NEVER overflow: hidden here — the resize handle lives outside the
+  // border box and an unclipped root is what keeps it alive.
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
   }
+}
+
+/* Silent-gesture contract: the hit zone is functional but invisible —
+   the cursor morph is the only feedback, so no tint at rest, on hover or
+   mid-gesture. The strip is 10px deep, spans the full side and sits in
+   the flex gap entirely outside the border box. */
+.projects__details-resize-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -10px;
+  width: 10px;
+  cursor: ew-resize;
+  user-select: none;
+}
+
+.projects__details--resizing {
+  user-select: none;
+}
+
+/* Inner frame: the root's visual chrome moved here. Radius + clipping
+   belong to the inner wrapper (floating-window standard) so the outside
+   handle survives; the body keeps its own scroll. */
+.projects__details-frame {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 60%, transparent);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
+  overflow: hidden;
 }
 
 .projects__details-header {
@@ -821,9 +853,16 @@ mat-cell {
   .projects__details {
     position: static;
     flex-basis: auto;
+    // Stacked layout: full width, no drag geometry (the custom property
+    // stays set but plain declarations win here).
     width: 100%;
+    max-width: none;
     height: auto;
     max-height: none;
+  }
+
+  .projects__details-resize-handle {
+    display: none;
   }
 }
 
@@ -916,8 +955,13 @@ mat-cell {
   .projects__details {
     position: static;
     width: 100%;
+    max-width: none;
     height: auto;
     max-height: none;
+  }
+
+  .projects__details-resize-handle {
+    display: none;
   }
 
   .projects__header {
