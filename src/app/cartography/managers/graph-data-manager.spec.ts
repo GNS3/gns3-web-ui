@@ -135,6 +135,18 @@ describe('GraphDataManager', () => {
     );
   });
 
+  describe('Netmiko device type', () => {
+    it('reaches the map node without asking for a redraw', () => {
+      const node = makeNode('n1', 0, 0);
+      manager.setNodes([node]);
+
+      const affected = manager.setNodes([{ ...node, netmiko_device_type: 'cisco_ios_telnet' }]);
+
+      expect(nodesDataSource.get('n1').netmikoDeviceType).toBe('cisco_ios_telnet');
+      expect(affected.updates.size).toBe(0);
+    });
+  });
+
   describe('drag awareness in setNodes', () => {
     it('does not reset a dragged node live position on a mid-drag WS batch', () => {
       manager.setNodes([makeNode('n1', 10, 10)]);
